@@ -22,6 +22,7 @@ var container = intravenous.create();
 G = {};
 G.db = require('./lib/Pg').create();
 G.log = require('./lib/Logs');
+G.utils = require('./lib/Utils');
 
 
 /*=========================================

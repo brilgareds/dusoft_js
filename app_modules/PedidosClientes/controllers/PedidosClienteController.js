@@ -1,25 +1,23 @@
 
-var PedidosCliente = function(pedidos_clientes, kardex, facturacion_clientes) {
+var PedidosCliente = function(pedidos_clientes) {
 
-    console.log("Controlador Pedidos Cliente  Cargado ");
+    console.log("Modulo Pedidos Cliente  Cargado ");
 
-    this.m_pedidos_clientes = pedidos_clientes;
-    this.m_kardex = kardex;
-    this.m_facturacion_clientes = facturacion_clientes;
+    this.m_pedidos_clientes = pedidos_clientes;    
 
 };
 
-PedidosCliente.prototype.index = function(req, res) {
+PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
+    
     var that = this;
-    this.m_pedidos_clientes.sayHello(function(msj_pedidos_cliente) {
-        that.m_kardex.sayHello(function(msj_kardex) {
-            that.m_facturacion_clientes.sayHello(function(msj_facturacion_clientes) {
-                res.send({pedidos_cliente_dice: msj_pedidos_cliente, kardex_dice: msj_kardex, facturacion_clientes_dice: msj_facturacion_clientes})
-            });
-        });
+    var empresa_id = req.query.empresa_id;
+    var termino_busqueda = req.query.termino_busqueda;
+        
+    this.m_pedidos_clientes.listar_pedidos_clientes(empresa_id, termino_busqueda, function(err, lista_pedidos_clientes) {
+         res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, { pedidos_clientes: lista_pedidos_clientes }));
     });
 };
 
-PedidosCliente.$inject = ["m_pedidos_clientes", "m_kardex", "m_facturacion_clientes"];
+PedidosCliente.$inject = ["m_pedidos_clientes"];
 
 module.exports = PedidosCliente;

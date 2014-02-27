@@ -1,10 +1,9 @@
 
-var Kardex = function(kardex, facturacion_clientes) {
+var Kardex = function(kardex) {
 
-    console.log("Controlador Kardex  Cargado ");
+    console.log("Modulo Kardex  Cargado ");
 
     this.m_kardex = kardex;
-    this.m_facturacion_clientes = facturacion_clientes;
 
 };
 
@@ -47,6 +46,6 @@ Kardex.prototype.obtener_movimientos_producto = function(req, res) {
     });
 };
 
-Kardex.$inject = ["m_kardex", "m_facturacion_clientes"];
+Kardex.$inject = ["m_kardex"];
 
 module.exports = Kardex;

@@ -8,8 +8,12 @@ module.exports = function(app, di_container) {
 
     var c_pedidos_clientes = di_container.get("c_pedidos_clientes");
     
+    // ================= GET =======================
     app.get('/api/PedidosClientes/listarPedidos', function(req, res) {
          c_pedidos_clientes.listarPedidosClientes(req, res);
     });
-
+    
+    app.get('/api/PedidosClientes/asignarResponsable', function(req, res) {
+         c_pedidos_clientes.asignarResponsablesPedido(req, res);
+    });   
 };

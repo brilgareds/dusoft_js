@@ -10,6 +10,5 @@ module.exports = function(app, di_container) {
     
     app.get('/api/PedidosFarmacias/listarPedidos', function(req, res) {
          c_pedidos_farmacias.listarPedidosFarmacias(req, res);
-    });
-
+    });    
 };

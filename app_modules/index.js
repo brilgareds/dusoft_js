@@ -15,13 +15,13 @@ exports.configurarRoutes = function(req, res, app, di_container) {
 };
 
 
-exports.cargarRoutes = function(app, di_container) {
+exports.cargarRoutes = function(app, di_container, io) {
     var recargar_routes = false;
-    return _routes(app, di_container, recargar_routes);
+    return _routes(app, di_container, io, recargar_routes);
 };
 
 
-function _routes(app, di_container, recargar_routes, callback) {
+function _routes(app, di_container, io, recargar_routes, callback) {
 
     var listado_modulos = fs.readdirSync(__dirname);
     var modulos_no_cargados = [];
@@ -35,7 +35,7 @@ function _routes(app, di_container, recargar_routes, callback) {
                     delete require.cache[require.resolve(__dirname + '/' + modulo + '/routes')];
                 }
 
-                require(__dirname + '/' + modulo + '/routes')(app, di_container);
+                require(__dirname + '/' + modulo + '/routes')(app, di_container, io);
             }
         }
         catch (e) {

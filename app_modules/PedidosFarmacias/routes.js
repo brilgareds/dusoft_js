@@ -8,7 +8,13 @@ module.exports = function(app, di_container) {
 
     var c_pedidos_farmacias = di_container.get("c_pedidos_farmacias");
     
+    // ================= GET =======================
     app.get('/api/PedidosFarmacias/listarPedidos', function(req, res) {
          c_pedidos_farmacias.listarPedidosFarmacias(req, res);
     });    
+    
+    // ================= POST =======================
+    app.post('/api/PedidosFarmacias/asignarResponsable', function(req, res) {
+         c_pedidos_farmacias.asignarResponsablesPedido(req, res);
+    });  
 };

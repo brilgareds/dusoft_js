@@ -12,6 +12,7 @@
     "socket.io": "~0.9.16",
     "socket.io-client": "~0.9.16",
     "pg": "2.x",
-    "pg-query" : "0.x"
+    "pg-query" : "0.x",
+    "commander" : "2.1.0"
   }
 }

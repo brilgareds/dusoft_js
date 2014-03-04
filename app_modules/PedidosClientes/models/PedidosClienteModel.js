@@ -46,6 +46,87 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
 
 };
 
+// Seleccion UNO o VARIOS PEDIDOS segun los numeros de pedido
+PedidosClienteModel.prototype.seleccionar_pedido_by_numero_pedido = function(numero_pedido, callback) {
+
+    var sql = " select \
+                a.pedido_cliente_id as numero_pedido, \
+                b.tipo_id_tercero as tipo_id_cliente, \
+                b.tercero_id as identificacion_cliente, \
+                b.nombre_tercero as nombre_cliente, \
+                b.direccion as direccion_cliente, \
+                b.telefono as telefono_cliente, \
+                c.tipo_id_vendedor, \
+                c.vendedor_id as idetificacion_vendedor, \
+                c.nombre as nombre_vendedor, \
+                a.estado, \
+                case when a.estado = 0 then 'Inactivo ' \
+                     when a.estado = 1 then 'Activo' \
+                     when a.estado = 2 then 'Anulado' \
+                     when a.estado = 3 then 'Entregado' end as descripcion_estado, \
+                a.estado_pedido as estado_actual_pedido, \
+                case when a.estado_pedido = 0 then 'No Asignado' \
+                     when a.estado_pedido = 1 then 'Separado' \
+                     when a.estado_pedido = 2 then 'Auditado' \
+                     when a.estado_pedido = 3 then 'En Despacho' \
+                     when a.estado_pedido = 4 then 'Despachado' end as descripcion_estado_actual_pedido, \
+                a.fecha_registro \
+                from ventas_ordenes_pedidos a \
+                inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id \
+                inner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id \
+                where a.pedido_cliente_id = $1  \
+                AND (a.estado IN ('0','1','2','3')) order by 1 desc; ";
+
+    G.db.query(sql, [numero_pedido], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+// Lista Todos los Pedidos Activos que le corresponden a un operario de bodega para separar
+PedidosClienteModel.prototype.listar_pedidos_del_operario = function(empresa_id, responsable, callback) {
+
+    var sql = " select \
+                a.pedido_cliente_id as numero_pedido, \
+                b.tipo_id_tercero as tipo_id_cliente, \
+                b.tercero_id as identificacion_cliente, \
+                b.nombre_tercero as nombre_cliente, \
+                b.direccion as direccion_cliente, \
+                b.telefono as telefono_cliente, \
+                c.tipo_id_vendedor, \
+                c.vendedor_id as idetificacion_vendedor, \
+                c.nombre as nombre_vendedor, \
+                a.estado, \
+                case when a.estado = 0 then 'Inactivo' \
+                     when a.estado = 1 then 'Activo' \
+                     when a.estado = 2 then 'Anulado' \
+                     when a.estado = 3 then 'Entregado' end as descripcion_estado, \
+                a.estado_pedido as estado_actual_pedido, \
+                case when a.estado_pedido = 0 then 'No Asignado' \
+                     when a.estado_pedido = 1 then 'Separado' \
+                     when a.estado_pedido = 2 then 'Auditado' \
+                     when a.estado_pedido = 3 then 'En Despacho' \
+                     when a.estado_pedido = 4 then 'Despachado' end as descripcion_estado_actual_pedido, \
+                a.fecha_registro,\
+                d.responsable_id,\
+                e.nombre as responsable_pedido,\
+                d.fecha as fecha_asignacion_pedido \
+                from ventas_ordenes_pedidos a \
+                inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id \
+                inner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id \
+                inner join ventas_ordenes_pedidos_estado d on a.pedido_cliente_id = d.pedido_cliente_id and a.estado_pedido = d.estado\
+                inner join operarios_bodega e on d.responsable_id = e.operario_id\
+                where a.empresa_id = $1     -- Pedidos de la empresa seleccionada\
+                and a.estado_pedido = '1'   -- Pedidos que este  estado (1 - Separado)\
+                and d.responsable_id = $2   -- Que correspondan al resposable determinado\
+                AND (a.estado IN ('1'))     -- Solo Pedidos 1- Activos\
+                order by 1 desc;";
+
+    G.db.query(sql, [empresa_id, responsable], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+
 // Asigancion de responsable al pedido 
 PedidosClienteModel.prototype.asignar_responsables_pedidos = function(numero_pedido, estado_pedido, responsable, usuario, callback) {
 

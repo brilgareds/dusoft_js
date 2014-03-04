@@ -3,6 +3,7 @@ var PedidosFarmaciasModel = function() {
 };
 
 
+// Listar todos los pedidos de farmacias
 PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, termino_busqueda, callback) {
 
     var sql = " select \
@@ -35,6 +36,78 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
                 order by 1 desc";
 
     G.db.query(sql, [empresa_id, "%" + termino_busqueda + "%"], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+
+// Seleccionar Pedido Por un numero de pedido
+PedidosFarmaciasModel.prototype.seleccionar_pedido_by_numero_pedido = function(numero_pedido, callback) {
+
+    var sql = " select \
+                a.solicitud_prod_a_bod_ppal_id as numero_pedido, \
+                a.farmacia_id, \
+                d.empresa_id, \
+                a.centro_utilidad, \
+                a.bodega as bodega_id, \
+                d.razon_social as nombre_farmacia, \
+                b.descripcion as nombre_bodega,\
+                a.usuario_id, \
+                e.nombre as nombre_usuario ,\
+                a.estado as estado_actual, \
+                case when a.estado = 0 then 'No Asignado' \
+                     when a.estado = 1 then 'Separado' \
+                     when a.estado = 2 then 'Auditado' \
+                     when a.estado = 3 then 'En Despacho' \
+                     when a.estado = 4 then 'Despachado' end as descripcion_estado_actual_pedido, \
+                a.fecha_registro::date as fecha_registro \
+                from solicitud_productos_a_bodega_principal as a \
+                inner join bodegas as b on a.farmacia_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega \
+                inner join centros_utilidad as c on b.empresa_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad \
+                inner join empresas as d ON c.empresa_id = d.empresa_id \
+                inner join system_usuarios as e ON a.usuario_id = e.usuario_id \
+                where a.solicitud_prod_a_bod_ppal_id = $1 \
+                order by 1 desc";
+
+    G.db.query(sql, [numero_pedido], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsable, callback) {
+
+    var sql = " select \
+                a.solicitud_prod_a_bod_ppal_id as numero_pedido, \
+                a.farmacia_id, \
+                d.empresa_id, \
+                a.centro_utilidad, \
+                a.bodega as bodega_id, \
+                d.razon_social as nombre_farmacia, \
+                b.descripcion as nombre_bodega,\
+                a.usuario_id, \
+                e.nombre as nombre_usuario ,\
+                a.estado as estado_actual, \
+                case when a.estado = 0 then 'No Asignado' \
+                     when a.estado = 1 then 'Separado' \
+                     when a.estado = 2 then 'Auditado' \
+                     when a.estado = 3 then 'En Despacho' \
+                     when a.estado = 4 then 'Despachado' end as descripcion_estado_actual_pedido, \
+                a.fecha_registro::date as fecha_registro,\
+                f.responsable_id,\
+                g.nombre as responsable_pedido,\
+                f.fecha as fecha_asignacion_pedido \
+                from solicitud_productos_a_bodega_principal as a \
+                inner join bodegas as b on a.farmacia_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega \
+                inner join centros_utilidad as c on b.empresa_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad \
+                inner join empresas as d ON c.empresa_id = d.empresa_id \
+                inner join system_usuarios as e ON a.usuario_id = e.usuario_id \
+                inner join solicitud_productos_a_bodega_principal_estado f on a.solicitud_prod_a_bod_ppal_id = f.solicitud_prod_a_bod_ppal_id and a.estado = f.estado\
+                inner join operarios_bodega g on f.responsable_id = g.operario_id\
+                where f.responsable_id = $1 \
+                and a.estado = '1'\
+                order by 1 desc";
+
+    G.db.query(sql, [responsable], function(err, rows, result) {
         callback(err, rows);
     });
 };

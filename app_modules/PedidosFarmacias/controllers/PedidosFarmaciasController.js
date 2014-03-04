@@ -1,9 +1,10 @@
 
-var PedidosFarmacias = function(pedidos_farmacias) {
+var PedidosFarmacias = function(pedidos_farmacias, eventos_pedidos_farmacias) {
 
     console.log("Modulo Pedidos Farmacias  Cargado ");
 
     this.m_pedidos_farmacias = pedidos_farmacias;
+    this.e_pedidos_farmacias = eventos_pedidos_farmacias;
 
 };
 
@@ -38,12 +39,32 @@ PedidosFarmacias.prototype.asignarResponsablesPedido = function(req, res) {
                 return;
             }
 
-            if (--i === 0)
+            // Notificando Pedidos Actualizados en Real Time
+            that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+            // Notificar al operario, los pedidos Asignados en Real Time
+            that.e_pedidos_farmacias.onNotificacionOperarioPedidosAsignados({ numero_pedido: numero_pedido, responsable: responsable});
+            
+            if (--i === 0) {
                 res.send(G.utils.r(req.url, 'Asignacion de Resposables', 200, {}));
+            }
         });
     });
 };
 
-PedidosFarmacias.$inject = ["m_pedidos_farmacias"];
+
+PedidosFarmacias.prototype.listaPedidosOperariosBodega = function(req, res) {
+    
+    var that = this ;
+    
+    //var operario_bodega = req.body.responsable;
+    var operario_bodega = req.query.operario_id;
+    
+    this.m_pedidos_farmacias.listar_pedidos_del_operario(operario_bodega, function(err, lista_pedidos_farmacias){
+        res.send(G.utils.r(req.url, 'Lista Pedidos Farmacias', 200, {pedidos_farmacias: lista_pedidos_farmacias}));
+    });
+    
+};
+
+PedidosFarmacias.$inject = ["m_pedidos_farmacias", "e_pedidos_farmacias"];
 
 module.exports = PedidosFarmacias;

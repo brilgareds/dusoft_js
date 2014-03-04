@@ -15,7 +15,7 @@ PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
     var termino_busqueda = req.query.termino_busqueda;
 
     this.m_pedidos_clientes.listar_pedidos_clientes(empresa_id, termino_busqueda, function(err, lista_pedidos_clientes) {
-        res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {tipo_cliente: 'cliente', pedidos_clientes: lista_pedidos_clientes}));
+        res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {pedidos_clientes: lista_pedidos_clientes}));
     });
 };
 
@@ -23,9 +23,7 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
 
     var that = this;
 
-    //this.e_pedidos_clientes.onNotificarPedidosActualizados({ numero_pedido : 33895 });
-    //return;
-
+    //var empresa_id = req.body.empresa_id;
     var pedidos = req.body.pedidos;
     var estado_pedido = req.body.estado_pedido;
     var responsable = req.body.responsable;
@@ -41,18 +39,32 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
                 res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Asignacion de Resposables', 500, {}));
                 return;
             }
-            
+
             // Notificando Pedidos Actualizados en Real Time
-            that.e_pedidos_clientes.onNotificarPedidosActualizados({ numero_pedido : numero_pedido });
-            
+            that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+            // Notificacion al operario de los pedidos que le fueron asigandos
+            that.e_pedidos_clientes.onNotificacionOperarioPedidosAsignados({numero_pedido: numero_pedido, responsable: responsable});
+
             if (--i === 0) {
                 res.send(G.utils.r(req.url, 'Asignacion de Resposables', 200, {}));
-                // Notificacion al operario de los pedidos que le fueron asigandos
-                that.e_pedidos_clientes.onNotificacionOperarioPedidosAsignados();
             }
         });
     });
 };
+
+
+PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
+
+    var that = this;
+
+    var operario_bodega = req.query.operario_id;
+
+    this.m_pedidos_clientes.listar_pedidos_del_operario(operario_bodega, function(err, lista_pedidos_clientes) {
+        res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {pedidos_clientes: lista_pedidos_clientes}));
+    });
+
+};
+
 
 PedidosCliente.$inject = ["m_pedidos_clientes", "e_pedidos_clientes"];
 

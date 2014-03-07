@@ -15,6 +15,13 @@ module.exports = function(app, di_container, io) {
 
     // ================= GET =======================
     
+    // Listar Empresas a las que tiene acceso el usuario
+    // NOTA: Este tipo de accesos es temporal ya que se implementara
+    //       Un sistema de Roles y Permisos en el futuro.    
+    app.get('/api/PedidosFarmacias/obtenerEmpresas', function(req, res) {
+        c_pedidos_farmacias.obtenerEmpresas(req, res);
+    });
+    
     // Listar Todos los pedidos de farmacia
     app.get('/api/PedidosFarmacias/listarPedidos', function(req, res) {
         c_pedidos_farmacias.listarPedidosFarmacias(req, res);

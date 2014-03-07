@@ -8,12 +8,7 @@ module.exports = function(app, di_container) {
     
     
     var c_kardex = di_container.get("c_kardex");
-    
-    app.get('/api/Kardex/index', function(req, res) {
-         c_kardex.index(req, res);
-    });
-    
-    
+        
     app.get('/api/Kardex/listarProductos', function(req, res) {
          c_kardex.listar_productos(req, res);
     });

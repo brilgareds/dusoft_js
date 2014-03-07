@@ -8,6 +8,19 @@ var PedidosFarmacias = function(pedidos_farmacias, eventos_pedidos_farmacias) {
 
 };
 
+
+PedidosFarmacias.prototype.obtenerEmpresas = function(req, res) {
+    
+    var that = this;
+    
+    var usuario = req.query.usuario_id;
+    
+    this.m_pedidos_farmacias.listar_empresas(usuario, function(err, lista_empresas){
+       res.send(G.utils.r(req.url, 'Lista de Empresas', 200, { empresas : lista_empresas}));
+    });    
+};
+
+
 PedidosFarmacias.prototype.listarPedidosFarmacias = function(req, res) {
 
     var that = this;

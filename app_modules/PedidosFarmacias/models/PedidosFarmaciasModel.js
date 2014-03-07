@@ -2,6 +2,19 @@ var PedidosFarmaciasModel = function() {
 
 };
 
+PedidosFarmaciasModel.prototype.listar_empresas = function(usuario, callback) {
+    
+    var sql = " SELECT	b.empresa_id, b.tipo_id_tercero as tipo_identificacion, b.id as identificacion, b.razon_social AS razon_social \
+                FROM userpermisos_reportes_gral a \
+                inner join empresas b on a.empresa_id = b.empresa_id \
+                where a.usuario_id = $1 ";
+
+    G.db.query(sql, [usuario], function(err, rows, result) {
+        callback(err, rows);
+    });
+
+};
+
 
 // Listar todos los pedidos de farmacias
 PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, termino_busqueda, callback) {
@@ -16,7 +29,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
                 b.descripcion as nombre_bodega,\
                 a.usuario_id, \
                 e.nombre as nombre_usuario ,\
-                a.estado as estado_actual, \
+                a.estado as estado_actual_pedido, \
                 case when a.estado = 0 then 'No Asignado' \
                      when a.estado = 1 then 'Separado' \
                      when a.estado = 2 then 'Auditado' \
@@ -54,7 +67,7 @@ PedidosFarmaciasModel.prototype.seleccionar_pedido_by_numero_pedido = function(n
                 b.descripcion as nombre_bodega,\
                 a.usuario_id, \
                 e.nombre as nombre_usuario ,\
-                a.estado as estado_actual, \
+                a.estado as estado_actual_pedido, \
                 case when a.estado = 0 then 'No Asignado' \
                      when a.estado = 1 then 'Separado' \
                      when a.estado = 2 then 'Auditado' \

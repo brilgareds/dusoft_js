@@ -3,12 +3,6 @@ var KardexModel = function() {
 };
 
 
-KardexModel.prototype.sayHello = function(callback) {
-
-    var str = "Saludando desde Kardexx";
-    callback(str);
-};
-
 KardexModel.prototype.buscar_productos = function(termino_busqueda, callback) {
 
     var sql = " select\
@@ -180,7 +174,7 @@ KardexModel.prototype.obtener_movimientos_productos = function(empresa_id, centr
             "   ) " +
             " ) AS DATOS ORDER BY DATOS.fecha;";
 
-    G.log.trace(__dirname+'/logs.txt', sql);
+    //G.log.trace(__dirname+'/logs.txt', sql);
     
     G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, codigo_producto, fecha_inicial, fecha_final], function(err, rows, result) {
         callback(err, rows);

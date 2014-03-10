@@ -3,7 +3,7 @@ var PedidosFarmaciasModel = function() {
 };
 
 PedidosFarmaciasModel.prototype.listar_empresas = function(usuario, callback) {
-    
+
     var sql = " SELECT	b.empresa_id, b.tipo_id_tercero as tipo_identificacion, b.id as identificacion, b.razon_social AS razon_social \
                 FROM userpermisos_reportes_gral a \
                 inner join empresas b on a.empresa_id = b.empresa_id \
@@ -218,6 +218,29 @@ PedidosFarmaciasModel.prototype.obtener_responsables_del_pedido = function(numer
     });
 };
 
+// Pedidos en Donde esta pendiente por entregar el Producto
+PedidosFarmaciasModel.prototype.listar_pedidos_pendientes_by_producto = function(empresa, codigo_producto, callback) {
+
+    var sql = " select \
+                a.farmacia_id,\
+                c.razon_social,\
+                a.solicitud_prod_a_bod_ppal_id as numero_pedido,\
+                b.cantidad_solic as cantidad_solicitada,\
+                b.cantidad_pendiente,\
+                d.usuario_id,\
+                d.usuario,\
+                a.fecha_registro \
+                from solicitud_productos_a_bodega_principal a \
+                inner join solicitud_productos_a_bodega_principal_detalle b on a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id\
+                inner join empresas c on a.farmacia_id = c.empresa_id\
+                inner join system_usuarios d on a.usuario_id = d.usuario_id \
+                where a.empresa_destino = $1 and b.codigo_producto = $2 and b.cantidad_pendiente > 0 ; ";
+
+    G.db.query(sql, [empresa, codigo_producto], function(err, rows, result) {
+        callback(err, rows);
+    });
+
+};
 
 
 

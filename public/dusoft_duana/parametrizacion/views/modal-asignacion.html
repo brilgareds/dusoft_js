@@ -1,0 +1,38 @@
+<div class="modal-header">
+  <button type="button" class="close" ng-click="close()">&times;</button>
+    <h4 class="modal-title">{{titulo}}</h4>
+</div>
+<div class="modal-body">
+
+    <alert  type="'danger'" close="dialog = false" ng-show="dialog">{{msg}}</alert>
+
+    <h4 >Pedidos Seleccionados:</h4>
+
+    <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">
+        <ul>
+            <li ng-repeat="pedido in pedidosSeleccionados ">
+                Pedido No. {{pedido.numero_pedido}}-{{pedido.cliente.nombre_cliente || pedido.farmacia.nombre_farmacia}}
+
+            </li>
+        </ul>
+    </div>
+
+    <h4>Responsable Separacion:</h4>
+
+    <div class="row">
+
+        <select class="input-medium" style="width:300px" ng-model="operario_id"   ui-select2 ng-change="valorSeleccionado(operario_id)" data-placeholder="Seleccionar" >
+          <option ng-repeat="separador in  Empresa.getSeparadores()"  ng-value="{{separador.operario_id}}">{{separador.nombre_operario}}</option>
+          
+        </select>
+    </div>
+
+   <div class="modal-footer">
+       <button class="btn btn-primary" ng-click="realizarAsignacion()" ng-disabled="!operario_id" >Asignar</button>
+        <button class="btn btn-warning" ng-click="close()">Cancelar</button>
+         
+    </div>
+
+</div>
+
+

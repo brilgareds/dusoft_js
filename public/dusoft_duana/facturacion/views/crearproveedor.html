@@ -1,0 +1,20 @@
+<div>
+
+	<!--route 1 {{welcomemsg}} got to child  <a ui-sref="route1.item">Route item</a>-->
+
+	<h3>Crear proveedor</h3>
+
+	<ul>
+	    <li ng-repeat="proveedor in agencia.proveedores">
+	      <span>{{proveedor.nombre}}  <a href="#" ng-click="onBorrarProveedor(proveedor)">Borrar</a></span></span>
+	    </li>
+	</ul>
+
+	<form name="form">
+		<input type="text" name="proveedorNombre" placeholder="Nombre proveedor" ng-model="proveedorNombre"  required/>
+		 <span class="error" ng-show="form.proveedorNombre.$error.required">Required!</span></br>
+		<input type="button" value="Crear proveedor" ng-click="onCrearProveedor(proveedorNombre)" /> 
+	</form>
+	<div ui-view></div>
+
+</div>

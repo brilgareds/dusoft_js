@@ -1,0 +1,66 @@
+<div class="modal-header">
+  <button type="button" class="close" ng-click="cancel()">&times;</button>
+    <h4 class="modal-title">Producto: {{row.nombre}}</h4>
+</div>
+<div class="modal-body">
+        <div>Codigo: {{row.codigo}}</div>
+        <div>Precio: {{row.precio}}</div>
+        <div>Existencia: {{row.existencia}}</div></br>
+
+
+  <h4 >Seleccionar fecha de movimiento</h4>
+
+  <div class="row">
+    <div class="col-md-6">
+       <span>Fecha inicio: </span>
+        <p class="input-group">
+
+          <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="$parent.fechainicial" is-open="$parent.abrirfechainicial" min="minDate" max="'2015-06-22'"  date-disabled="disabled(date, mode)" ng-required="true" close-text="Cerrar" ng-change="fechainicialselected()" />
+          <!--input type="text" ng-datepickerange /-->
+          <span class="input-group-btn">
+
+            <button class="btn btn-default" ng-click="abrirFechaInicial($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+          </span>
+        </p>
+    </div>
+
+    <div class="col-md-6">
+       <span>Fecha fin: </span>
+        <p class="input-group">
+
+          <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="fechafinal" is-open="$parent.abrirfechafinal" min="$parent.fechainicial" max="'2015-06-22'"  date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" ng-change="fechafinalselected()" />
+          <span class="input-group-btn">
+
+            <button class="btn btn-default" ng-click="abrirFechaFinal($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+          </span>
+        </p>
+    </div>
+</div>
+
+
+</br>
+<h4 >Tipo de informe:</h4>
+<div class="row">
+  <div class="form-group col-md-3">
+      <label class="control-label" for="detallado" popover="Genera el informe detallado de todos los movimientos del producto" popover-placement="bottom" popover-trigger="mouseenter">Detallado</label>
+      <input id="detallado" type="checkbox">
+    </div>
+
+    <div class="form-group">
+      <label class="control-label" for="resumido" popover="Genera el informe resumido de las cantidades ingresadas y despachadas" popover-placement="bottom" popover-trigger="mouseenter">Resumido</label>
+      <input id="resumido" type="checkbox">
+    </div>
+
+
+ 
+  </div>
+
+ <div class="modal-footer">
+     <button class="btn btn-primary" ng-click="ok()" >Generar</button>
+      <button class="btn btn-warning" ng-click="cancel()">Cancelar</button>
+       
+  </div>
+
+</div>
+
+

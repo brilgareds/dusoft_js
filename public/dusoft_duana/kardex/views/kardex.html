@@ -1,0 +1,47 @@
+<div style="padding:10px;">
+
+	{{titulo}}
+	<button ng-click="cerrar()" class="pull-right btn btn-default btn-xs" style="margin-right:15px"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>
+
+	    <tabset  class="tabkardex">
+
+        <tab heading="Movimientos">
+
+        	
+        	<div class="row" style="padding:10px">
+		   <div class="list-group col-md-4 grupodefault" style="width:113px">
+			 <a href="#" class="list-group-item">
+		        <h5 class="list-group-item-heading">Entradas:</h5>
+		        <p class="list-group-item-text">{{cantidad_entradas}}</p>
+		      </a>
+		      
+			</div>
+
+			<div class="list-group col-md-4 grupodefault" style="width:113px">
+				<a href="#" class="list-group-item">
+			        <h5 class="list-group-item-heading">Salidas:</h5>
+			        <p class="list-group-item-text">{{cantidad_salidas}}</p>
+			    </a>
+		    </div>
+
+		 </div>
+            <div class="defaultGrid" ng-grid="lista_movimientos">
+
+            </div>
+
+        </tab>
+
+        <tab heading="Pendientes Farmacias">
+
+        </tab>
+
+        <tab heading="Pendientes Clientes">
+
+
+
+        </tab>
+
+
+    </tabset>
+
+</div>

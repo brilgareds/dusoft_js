@@ -1,0 +1,63 @@
+<div>
+
+    <!--route 1 {{welcomemsg}} got to child  <a ui-sref="route1.item">Route item</a>-->
+
+    <style type="text/css">
+        .gridStyle {
+            border: 1px solid rgb(212,212,212);
+            width: 100%; 
+            height: 450px;
+        }
+    </style>
+
+
+    <tabset  class="">
+
+        <tab heading="Clientes" ng-controller="PedidosClientesController">
+
+            <div class="input-group navbar-form">
+
+                <input type="text" class="form-control pull-right" ng-keypress="onKeyPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
+                <div class="input-group-btn" >
+                    <button class="btn btn-default" type="submit" ng-click="buscarPedidosCliente(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                </div>
+
+            </div>
+            <div class="gridStyle" ng-grid="lista_pedidos_clientes">
+
+            </div>
+            <br/>
+            <button type="button" class="btn btn-default btn-medium pull-right" ng-disabled="pedidosSeleccionados.length == 0" ng-click="abrirModalAsignar()">
+                <span class="glyphicon glyphicon-ok" ></span> Asignar Responsables
+            </button>
+        </tab>
+
+        <tab heading="Farmacias" ng-controller="PedidosFarmaciasController">
+
+            <select ui-select2  class="pull-left form-control" style="width:300px" ng-model="seleccion" data-placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
+                <option ng-repeat="empresa in  empresas"  ng-value="empresa.empresa_id" >{{empresa.razon_social}}</option>
+            </select>
+
+            <div class="input-group navbar-form">
+
+                <input type="text" class="form-control pull-right" ng-keypress="onKeyPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
+                <div class="input-group-btn" >
+                    <button class="btn btn-default" type="submit" ng-click="buscarPedidosFarmacias(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                </div>
+
+            </div>
+            <div class="gridStyle" ng-grid="lista_pedidos_farmacias">
+
+            </div>
+            <br/>
+            <button type="button" class="btn btn-default btn-medium pull-right" ng-disabled="pedidosSeleccionados.length == 0" ng-click="abrirModalAsignar()">
+                <span class="glyphicon glyphicon-ok" ></span> Asignar Responsables
+            </button>
+        </tab>
+
+    </tabset>
+
+    </br>
+
+
+</div>

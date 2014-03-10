@@ -1,0 +1,29 @@
+<div>
+
+    <div class="row">
+
+        <div class="col-md-3">
+            <p class="input-group">
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-default btn-sm" ng-click="administrarOperarioBodega({}, 0)">
+                        <span class="glyphicon glyphicon-plus"></span> Agregar
+                    </button>
+                </span>
+            </p>
+        </div>
+
+        <div class="col-md-2 pull-right">
+            <p class="input-group">
+                <input type="text" class="form-control" ng-keypress="onKeyPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
+                <span class="input-group-btn">
+
+                    <button class="btn btn-default" type="submit" ng-click="buscarPedidosCliente(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                </span>
+            </p>    
+        </div> 
+    </div>
+
+    <div class="defaultGrid" ng-grid="lista_operarios_bodega">
+
+    </div>
+</div>

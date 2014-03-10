@@ -1,0 +1,130 @@
+a {
+  color: #00B7FF;
+}
+
+.alertcontenido{
+	max-width: 500px;
+	width: auto;
+	margin: 0 auto;
+	height: 30px;
+	line-height: 1px;
+}
+
+.alertcontenido .modal-body {
+	max-height: 40px;
+}
+
+
+body {
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+.cellPedido{
+	background-color: black;
+}
+
+.contenedor{
+	padding: 10px;
+	margin-top: 60px;
+}
+
+.contenidoPrincipal{
+	height: 810px;
+}
+
+.checkseleccion{
+	padding-top: 9px;
+	text-align: center;
+
+}
+
+.defaultGrid {
+    border: 1px solid rgb(212,212,212);
+    width: 100%; 
+    height: 680px;
+}
+
+.defaultcursor{
+	cursor:default;
+}
+
+html{
+	overflow-x: hidden; 
+}
+
+input.readonlyinput[readonly]{
+	cursor: default;
+}
+
+.kardex{
+	width: 100%;
+	height:100%;
+	top:0px;
+	position: absolute;
+	background-color: rgba(248,248,248,0.9);
+	z-index: 4;
+}
+
+.largeCell{
+	overflow-y:auto;
+	height: 250px;
+}
+
+.loaderimg{
+	margin-right: 2px;
+}
+
+
+.loadingContent{
+	background-color: #E6E6E6;
+	bottom: 0px;
+	height: 30px;
+	margin: auto;
+	left: 0px;
+	padding-top: 2px;
+	position: absolute;
+	right: 0px;		
+	text-align: center;
+	top: 0px;
+	width: 200px;
+	-webkit-box-shadow: 0px 1px 11px 0px rgba(50, 50, 50, 0.75);
+	-moz-box-shadow:    0px 1px 11px 0px rgba(50, 50, 50, 0.75);
+	box-shadow:         0px 1px 11px 0px rgba(50, 50, 50, 0.75);
+}
+
+
+#loadingWidget{
+	bottom: 0px;
+	height: 100%;
+	position:absolute;
+	top:0px;
+	width: 100%;
+	z-index: 10000;
+}
+
+
+.ngHeaderCell	{
+	padding:0px;
+	text-align: left;
+}
+
+#systemAlerlt{
+	position: fixed;
+	top: 5px;
+	display: none;
+	z-index: 2000;
+	height: 60px;
+	left: 0px;
+	right:0px;
+	bottom:0px;
+	text-align: center;
+}
+
+.tabkardex .grupodefault{
+	padding-right: 0px;
+}
+
+.txt-center{
+	text-align: center;
+	padding-top: 4px;
+}

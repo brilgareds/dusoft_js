@@ -1,0 +1,50 @@
+<div>
+
+	<!--route 1 {{welcomemsg}} got to child  <a ui-sref="route1.item">Route item</a>-->
+
+	<div class="row">
+    <div class="col-md-3">
+        <p class="input-group">
+
+          <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="fechainicial" is-open="abrirfechainicial" min="minDate"   readonly  close-text="Cerrar" ng-change="fechainicialselected()" clear-text="Borrar" current-text="Hoy" placeholder="Fecha inicio" show-weeks="false" toggle-weeks-text="#"  />
+          <!--input type="text" ng-datepickerange /-->
+          <span class="input-group-btn">
+
+            <button class="btn btn-default" ng-click="abrirFechaInicial($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+          </span>
+        </p>
+    </div>
+
+    <div class="col-md-3">
+        <p class="input-group">
+
+          <input type="text" class="form-control readonlyinput" name="fechain" datepicker-popup="{{format}}" ng-model="fechafinal" is-open="abrirfechafinal" min="fechainicial"  readonly  close-text="Cerrar"
+          clear-text="Borrar"  placeholder="Fecha fin:" current-text="Hoy" show-weeks="false" toggle-weeks-text="#" />
+          <span class="input-group-btn">
+
+            <button class="btn btn-default"  ng-click="abrirFechaFinal($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+          </span>
+        </p>
+    </div>
+
+	 <div class="col-md-3 pull-right">
+        <p class="input-group">
+
+          <input type="text" class="form-control" ng-keypress="onKeyPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term" />
+          <span class="input-group-btn">
+
+            <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+          </span>
+        </p>
+    </div>
+     
+</div>
+
+
+	<div class="defaultGrid" ng-grid="gridOptions">
+  </div>
+
+  <div  class="kardex" slide-content class="slide" >
+      <div ng-include src="'views/kardex.html'"  ng-controller="MovimientoController"></div>
+  </div>
+</div>

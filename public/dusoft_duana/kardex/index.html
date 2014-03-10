@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+	<head>
+    <link href="../../stylesheets/style.css" rel="stylesheet">
+		 <link href="../../stylesheets/bootstrap.min.css" rel="stylesheet">
+     <link href="../../stylesheets/ng-grid.css" rel="stylesheet">
+     <link href="../../stylesheets/jtree/themes/default/style.css" rel="stylesheet">
+     <script src="../../javascripts/require/require.js" data-main="lib/require/main-dev"></script>
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+	</head>
+
+	<body>
+
+
+      <div class="row" ng-include src="'../includes/header/header.html'" ></div>
+       <div  ng-include src="'../includes/loader/loader.html'"></div>
+
+      <div class="row contenedor">
+         <div ng-include src="'../includes/menu/menu.html'" class="col-md-3" ng-controller="menucontroller"></div>
+
+          <div  ng-include src="'../includes/content/content.html'"></div>       
+      </div>  
+ 
+
+</body>
+
+
+</html>

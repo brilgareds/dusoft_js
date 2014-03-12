@@ -1,6 +1,7 @@
 //main app module
  define(["angular", "route", "bootstrap","js/controllers", "js/models", 
-  "controllers/logincontroller", "models/User", "bootstrapjs",
+  "controllers/Logincontroller", "models/User", "bootstrapjs", "js/directive","directive/focus","js/services",
+   "loader","storage", "includes/http/Request", 
   
   ], function(angular){
   /* App Module and its dependencies */
@@ -8,7 +9,9 @@
           'ui.router',
           'controllers',
           'models',
-          'ui.bootstrap'
+          'ui.bootstrap',
+          'directive',
+          'LocalStorageModule'
       ]);
 
       loginapp.config(function($stateProvider, $urlRouterProvider){
@@ -21,7 +24,7 @@
             .state('autenticar', {
                 url: "/autenticar",
                 templateUrl: "views/login.html",
-                controller:"logincontroller"
+                controller:"Logincontroller"
             })
 
     });

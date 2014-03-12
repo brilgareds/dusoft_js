@@ -1,20 +1,51 @@
 
 define(["angular", "js/controllers"], function(angular, controllers) {
 
-    controllers.controller('logincontroller', ['$scope', 'User',
-        function($scope, User) {
+    controllers.controller('Logincontroller', ['$scope', 'User', "Request", "localStorageService",
+        function($scope, User, Request, localStorageService) {
 
             console.log("init login controller");
+            $scope.usuario = "mauricio.barrios";
+            $scope.clave   = "123456";
+            $scope.mostrarmensaje = false;
 
-            $scope.autenticar = function(nombre, password) {
+            console.log($location.search())
+            if($location.search().noauth){
+                $scope.mostrarmensaje = true;
+                $scope.msgerror = "Su sesion ha sido cerrada porque no esta autenticado";
+            }
 
 
-                User.nombre = nombre;
-                User.password = password;
 
-                console.log(User.nombre + " " + User.password);
+            $scope.autenticar = function() {
+                if($scope.loginform.$invalid){
+                    console.log("invalido")
+                    return ;
+                }
 
-                window.location = "../pedidos/";
+                var obj = {
+                    session:{
+                        usuario_id:"",
+                        auth_token:""
+                    },
+                    data:{
+                        login:{
+                            usuario:$scope.usuario, 
+                            contrasenia:$scope.clave
+                        }
+                    }
+                };
+                console.log(localStorageService.get("session"))
+                Request.realizarRequest("/login","POST",obj,function(datos){
+                    if(datos.status == 200){
+                        localStorageService.add("session",JSON.stringify(datos.obj.sesion));
+                        window.location = "../pedidos/";
+                    } else {
+                        $scope.mostrarmensaje = true;
+                        $scope.msgerror = datos.msj || "Ha ocurrido un error...";
+                    }
+                });
+
             }
 
 

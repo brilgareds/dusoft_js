@@ -1,23 +1,18 @@
 
 define(["angular", "js/controllers", "controllers/OperariosBodega/AdministracionController"], function(angular, controllers) {
 
-    controllers.controller('OperariosBodegaController', ['$scope', '$rootScope', '$http', '$modal', 'API',
-        "socket", "$timeout", "Operario", "AlertService",
-        function($scope, $rootScope, $http, $modal, API, socket, $timeout, Operario, AlertService) {
+    controllers.controller('OperariosBodegaController', ['$scope', '$rootScope', 'Request', '$modal', 'API',
+        "socket", "$timeout", "Operario", "AlertService", "Usuario",
+        function($scope, $rootScope, Request, $modal, API, socket, $timeout, Operario, AlertService, Usuario) {
             $scope.termino_busqueda = "";
             $scope.operarios = [];
 
-            $scope.listarOperarios = function(url, termino, callback) {
-                $http({method: 'GET', url: url, params: {termino_busqueda: termino}}).success(function(data, status, headers, config) {                   
-                    callback(data.obj);
-                }).error(function(data, status, headers, config) {
-                    // called asynchronously if an error occurs
-                    // or server returns response with an error status.
-                });
-            };
-
+            
+            
+            $scope.session = { usuario_id: Usuario.usuario_id, auth_token: Usuario.token };
+            
             $scope.buscarOperario = function(termino_busqueda) {
-                $scope.listarOperarios(API.TERCEROS.LISTAR_OPERARIOS, termino_busqueda, function(data) {
+                Request.realizarRequest(API.TERCEROS.LISTAR_OPERARIOS, "POST", {session: $scope.session, data: { lista_operarios : { termino_busqueda: termino_busqueda } }}, function(data) {                
                     $scope.renderOperariosBodega(data);
                 });
             };
@@ -27,9 +22,9 @@ define(["angular", "js/controllers", "controllers/OperariosBodega/Administracion
 
                 $scope.operarios = [];
                 
-                for (var i in data.lista_operarios) {
+                for (var i in data.obj.lista_operarios) {
 
-                    var obj = data.lista_operarios[i];
+                    var obj = data.obj.lista_operarios[i];
                     var operario = Operario.get(obj.operario_id, obj.nombre_operario, obj.estado, obj.descripcion_estado, obj.usuario_id, obj.descripcion_usuario);
 
                     $scope.operarios.push(operario);

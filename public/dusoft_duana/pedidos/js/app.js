@@ -1,7 +1,14 @@
 //main app module
- define(["angular", "socketservice", "route", "bootstrap","js/controllers", "js/models", "js/services",  "js/directive", "nggrid",
-  "controllers/PedidosClientesController", "controllers/PedidosFarmaciasController",  "uiselect2", "loader",  "models/Empresa", "includes/menu/menucontroller", "config",
-  "includes/alert/Alert",
+ define([
+  "angular", "socketservice", "route", 
+  "bootstrap","js/controllers", "js/models",
+   "js/services",  "js/directive", "nggrid",
+  "controllers/PedidosClientesController", "controllers/PedidosFarmaciasController",  "uiselect2", 
+  "loader",  "models/Empresa", "includes/menu/menucontroller", 
+  "config", "includes/alert/Alert","includes/header/HeaderController",
+  'storage', "httpinterceptor", "includes/classes/Usuario",
+  "includes/http/Request"
+
   ], function(angular){
   /* App Module and its dependencies */
 
@@ -14,14 +21,16 @@
           'directive',
           'Config',
           'services',
-          'ui.select2'
+          'ui.select2',
+          'LocalStorageModule'
       ]);
 
       
 
-      Pedidos.config(function($stateProvider, $urlRouterProvider){
+      Pedidos.config(function($stateProvider, $urlRouterProvider, $httpProvider){
 
           // For any unmatched url, send to /route1
+          $httpProvider.responseInterceptors.push('HttpInterceptor');
 
           $urlRouterProvider.otherwise("/AsignarPedidos");
           
@@ -39,8 +48,12 @@
                   }
               })
 
-    }).run(function($rootScope){
-        $rootScope.name = "pedidos";        
+    }).run(function($rootScope,Usuario,localStorageService){
+        $rootScope.name = "pedidos";   
+        console.log(Usuario) 
+        var obj = localStorageService.get("session");
+        Usuario.setToken(obj.auth_token);
+        Usuario.setUsuarioId(obj.usuario_id);    
     });
 
     angular.bootstrap(document, ['pedidos']);

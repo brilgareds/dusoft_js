@@ -59,8 +59,7 @@ define(["angular", "js/controllers", "treemenu"], function(angular, controllers)
                 {"id": "9", "parent": "8", "text": "Usuarios del Sistema"},
                 {"id": "10", "parent": "8", "text": "Usuarios Dpto Ventas"},
                 {"id": "11", "parent": "8", "text": "Operarios de Bodega", "url": "OperariosBodega", "parentname": "parametrizacion"},
-                {"id": "12", "parent": "#", "text": "Kardex", "url": "kardex"},
-                {"id": "13", "parent": "12", "text": "Kardex", "url": "kardex", "parentname":"kardex", "url":"listarproductos.verkardex"}
+                {"id": "12", "parent": "#", "text": "Kardex", "url": "kardex"}
 
             ]
 

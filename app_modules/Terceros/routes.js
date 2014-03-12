@@ -8,7 +8,7 @@ module.exports = function(app, di_container) {
     
     var c_terceros = di_container.get("c_terceros");
     
-    app.get('/api/Terceros/operariosBodega/listar', function(req, res) {
+    app.post('/api/Terceros/operariosBodega/listar', function(req, res) {
          c_terceros.listarOperariosBodega(req, res);
     });
     

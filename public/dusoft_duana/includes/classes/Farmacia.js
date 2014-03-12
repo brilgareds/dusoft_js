@@ -15,6 +15,10 @@ define(["angular", "js/models"], function(angular, models) {
             return new Farmacia(farmacia_id, bodega_id, nombre_farmacia, nombre_bodega);
         };
 
+        this.getClass = function(){
+            return Farmacia;
+        };
+
         return this;
 
     });

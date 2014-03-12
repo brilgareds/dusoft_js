@@ -11,23 +11,49 @@ var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes) {
 PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
 
     var that = this;
-    var empresa_id = req.query.empresa_id;
-    var termino_busqueda = req.query.termino_busqueda;
+
+    var args = req.body.data;
+
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.termino_busqueda === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+
+
+    
+    var empresa_id = '03';
+    var termino_busqueda = args.pedidos_clientes.termino_busqueda;
 
     this.m_pedidos_clientes.listar_pedidos_clientes(empresa_id, termino_busqueda, function(err, lista_pedidos_clientes) {
-        res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {pedidos_clientes: lista_pedidos_clientes}));
+        res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, { pedidos_clientes: lista_pedidos_clientes}));
     });
 };
 
 PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
 
     var that = this;
+    
+    var args = req.body.data;
+    
+    if (args.asignacion_pedidos === undefined || args.asignacion_pedidos.pedidos === undefined || args.asignacion_pedidos.estado_pedido === undefined || args.asignacion_pedidos.responsable === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+    
+    var params = args.asignacion_pedidos;
+    
+    if (params.pedidos.length === 0 || params.estado_pedido === "" || params.responsable === "" ){
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios Estan Vacios', 404, {}));
+        return;
+    }
+    
+    
 
     //var empresa_id = req.body.empresa_id;
-    var pedidos = req.body.pedidos;
-    var estado_pedido = req.body.estado_pedido;
-    var responsable = req.body.responsable;
-    var usuario = req.body.usuario;
+    var pedidos = params.pedidos;
+    var estado_pedido = params.estado_pedido;
+    var responsable = params.responsable;
+    var usuario = req.session.user.usuario_id;
 
     var i = pedidos.length;
 

@@ -48,6 +48,11 @@ body {
 	cursor:default;
 }
 
+ul.dropdown-menu {
+	padding: 0px;
+    overflow: hidden;
+}
+
 html{
 	overflow-x: hidden; 
 }
@@ -58,7 +63,7 @@ input.readonlyinput[readonly]{
 
 .kardex{
 	width: 100%;
-	height:100%;
+	height:auto;
 	top:0px;
 	position: absolute;
 	background-color: rgba(248,248,248,0.9);
@@ -102,9 +107,28 @@ input.readonlyinput[readonly]{
 	z-index: 10000;
 }
 
+ .navbar-content
+{
+    width:320px;
+    padding: 15px;
+    padding-bottom:0px;
+}
+.navbar-content:before, .navbar-content:after
+{
+    display: table;
+    content: "";
+    line-height: 0;
+}
 
-.ngHeaderCell	{
-	padding:0px;
+.navbar-footer 
+{
+    background-color:#DDD;
+}
+.navbar-footer-content { padding:15px 15px 15px 15px; }
+
+
+div.ngHeaderCell	{
+	padding-top:0px;
 	text-align: left;
 }
 

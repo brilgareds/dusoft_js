@@ -8,7 +8,7 @@ module.exports = function(app, di_container) {
     
     var c_usuarios = di_container.get("c_usuarios");
     
-    app.get('/api/Usuarios/listar', function(req, res) {
+    app.post('/api/Usuarios/listar', function(req, res) {
          c_usuarios.listarUsuarios(req, res);
     });    
 };

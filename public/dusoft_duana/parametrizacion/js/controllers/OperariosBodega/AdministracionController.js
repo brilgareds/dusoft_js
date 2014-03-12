@@ -1,9 +1,9 @@
 
-define(["angular", "js/controllers", "js/models", "js/directive/renderusuarios"], function(angular, controllers) {
+define(["angular", "js/controllers", "js/models"], function(angular, controllers) {
 
-    controllers.controller('AdministracionController', ['$scope', '$rootScope', '$http', '$modal', 'API',
-        "socket", "$timeout", "$modalInstance", "operario", "accion", "AlertService", 
-        function($scope, $rootScope, $http, $modal, API, socket, $timeout, $modalInstance, operario, accion,AlertService) {
+    controllers.controller('AdministracionController', ['$scope', '$rootScope', 'Request', '$modal', 'API',
+        "socket", "$timeout", "$modalInstance", "operario", "accion", "AlertService", "Usuario",
+        function($scope, $rootScope, Request, $modal, API, socket, $timeout, $modalInstance, operario, accion, AlertService, Usuario) {
 
 
             $scope.operario = angular.copy(operario);
@@ -23,34 +23,6 @@ define(["angular", "js/controllers", "js/models", "js/directive/renderusuarios"]
                 $scope.operario.estado = '1';
             }
 
-            $scope.realizarRequest = function(url, method, params, callback) {
-
-                // console.log(params)
-
-                var requestObj = {method: method, url: url}
-
-                if (method == "GET") {
-                    requestObj.params = params;
-                } else {
-                    requestObj.data = params;
-                    requestObj.headers = {'Content-Type': 'application/json'};
-                }
-
-
-                $http(requestObj).success(function(data, status, headers, config) {
-                    callback(data);
-                }).error(function(data, status, headers, config) {
-                    $scope.dialog = true;
-                    $scope.msg = "Se a generado un error";
-                    callback(data);
-                });
-            };
-
-
-
-            $scope.loginSeleccionado = function() {
-
-            };
 
             $scope.realizarAccion = function() {
                 if (accion == '1') {
@@ -63,7 +35,7 @@ define(["angular", "js/controllers", "js/models", "js/directive/renderusuarios"]
 
             $scope.crearOperario = function() {
 
-                $scope.realizarRequest(API.TERCEROS.CREAR_OPERARIOS, "POST", {operario: $scope.operario}, function(data) {
+                Request.realizarRequest(API.TERCEROS.CREAR_OPERARIOS, "POST", { session: $scope.session, data: { operario : $scope.operario }} , function(data) {
 
                     if (data.status === 500) {
                         $scope.alert = true;
@@ -73,15 +45,15 @@ define(["angular", "js/controllers", "js/models", "js/directive/renderusuarios"]
                     if (data.status === 200) {
                         $rootScope.$emit('listarOperariosBodega', data);
                         $scope.close();
-                        AlertService.mostrarMensaje("success","Operario creado correctamente!");
+                        AlertService.mostrarMensaje("success", "Operario creado correctamente!");
                     }
                 });
 
             };
 
             $scope.modificarOperario = function() {
-                
-                $scope.realizarRequest(API.TERCEROS.MODIFICAR_OPERARIOS, "POST", {operario: $scope.operario}, function(data) {
+
+                Request.realizarRequest(API.TERCEROS.MODIFICAR_OPERARIOS, "POST", { session: $scope.session, data: { operario : $scope.operario }} , function(data) {
                     if (data.status === 500) {
                         $scope.alert = true;
                         $scope.msg = data.msj;
@@ -89,7 +61,7 @@ define(["angular", "js/controllers", "js/models", "js/directive/renderusuarios"]
                     if (data.status === 200) {
                         $rootScope.$emit('listarOperariosBodega', data);
                         $scope.close();
-                        AlertService.mostrarMensaje("success","Operario modificado correctamente!");
+                        AlertService.mostrarMensaje("success", "Operario modificado correctamente!");
                     }
                 });
             };
@@ -106,7 +78,13 @@ define(["angular", "js/controllers", "js/models", "js/directive/renderusuarios"]
                 $scope.alert = false;
             };
 
-            $scope.realizarRequest(API.USUARIOS.LISTAR_USUARIOS, "GET", {estado_registro: '1'}, function(data) {
+
+            $scope.session = {
+                usuario_id: Usuario.usuario_id,
+                auth_token: Usuario.token
+            };
+
+            Request.realizarRequest(API.USUARIOS.LISTAR_USUARIOS, "POST", { session: $scope.session, data: { lista_usuarios : { termino_busqueda: '' , estado_registro : '1' } }}, function(data) {
 
                 var lista_usuarios = data.obj.lista_usuarios;
 
@@ -122,11 +100,6 @@ define(["angular", "js/controllers", "js/models", "js/directive/renderusuarios"]
 
                     $scope.usuarios.push(usuario);
                 }
-
-                $rootScope.$emit("datosrecibidos",$scope.usuarios);
-
             });
-
-
         }]);
 });

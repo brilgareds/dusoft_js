@@ -1,133 +1,137 @@
 
-define(["angular","js/controllers",'../../../../includes/slide/slidecontent', "controllers/MovimientoController"], function(angular, controllers){
- 
-    var fo = controllers.controller('productoscontroller', ['$scope', "$http", "$filter", '$state','Empresa','ProductoMovimiento','$modal',"API","AlertService",
-	  function ($scope, $http, $filter, $state, Empresa, ProductoMovimiento, $modal, API,AlertService) {
-	  		
-	  		$scope.Empresa = Empresa;
-	  		var fechaActual = new Date();
+define(["angular", "js/controllers", '../../../../includes/slide/slidecontent', "controllers/MovimientoController"], function(angular, controllers) {
 
-	  		$scope.fechainicial =  new Date("01/01/"+fechaActual.getFullYear()); ;
-	  		$scope.fechafinal   = fechaActual;
-	  		$scope.abrirfechafinal = false;
+    var fo = controllers.controller('productoscontroller', [
+        '$scope', '$rootScope', "Request",
+        "$filter", '$state', 'Empresa',
+        'ProductoMovimiento', '$modal', "API",
+        "AlertService", 'localStorageService', "Usuario",
+        "socket",
+        function($scope, $rootScope, Request, $filter, $state, Empresa, ProductoMovimiento, $modal, API, AlertService, localStorageService, Usuario, socket) {
 
-            $scope.realizarRequest = function(url, method, params, callback) {
+            $scope.Empresa = Empresa;
+            var fechaActual = new Date();
 
-               // console.log(params)
-
-                var requestObj = {
-                    method:method,
-                    url:url
-                }
-
-                if(method == "GET"){
-                    requestObj.params = params;
-                } else {
-                    requestObj.data = params;
-                    requestObj.headers =  {'Content-Type': 'application/json'};
-                }
-
-
-                $http(requestObj).
-                    success(function(data, status, headers, config) {
-                    callback(data);
-                }).
-                error(function(data, status, headers, config) {
-                    $scope.dialog = true;
-                    $scope.msg   = "Se a generado un error";
-                    callback(data);
-                }); 
-
+            $scope.fechainicial = new Date("01/01/" + fechaActual.getFullYear());
+            ;
+            $scope.fechafinal = fechaActual;
+            $scope.abrirfechafinal = false;
+            $scope.session = {
+                usuario_id: Usuario.usuario_id,
+                auth_token: Usuario.token
             };
 
-            $scope.buscarProductos = function(termino_busqueda){
-            	$scope.realizarRequest(
-                    API.KARDEX.LISTAR_PRODUCTOS,
-                    "GET",
-                    {
-                    	termino_busqueda:termino_busqueda
-                    },
-                    function(data) {
-                        if(data.status == 200){
-                      		 $scope.renderProductos(data.obj);
-                      	}                
+            $scope.buscarProductos = function(termino_busqueda) {
+                Request.realizarRequest(
+                        API.KARDEX.LISTAR_PRODUCTOS,
+                        "POST",
+                        {
+                            session: $scope.session,
+                            data: {
+                                kardex: {
+                                    termino_busqueda: termino_busqueda
+                                }
+                            }
+                        },
+                function(data) {
+                    if (data.status == 200) {
+                        $scope.renderProductos(data.obj);
                     }
+                }
                 );
-            };	
+            };
 
-            $scope.renderProductos = function(data){
-            	$scope.Empresa.vaciarProductos();
+            $scope.renderProductos = function(data) {
+                $scope.Empresa.vaciarProductos();
 
-            	for(var i in data.lista_productos){
-            		var obj = data.lista_productos[i];
-	            	var producto = ProductoMovimiento.get(
-	            		obj.codigo_producto,
-	            		obj.nombre_producto,
-	            		obj.existencia,
-	            		obj.precio_venta,
-	            		obj.existencia_total,
-	            		obj.costo,
-	            		obj.costo_ultima_compra,
-	            		obj.porc_iva
-	            	);
+                for (var i in data.lista_productos) {
+                    var obj = data.lista_productos[i];
+                    var producto = ProductoMovimiento.get(
+                            obj.codigo_producto,
+                            obj.nombre_producto,
+                            obj.existencia,
+                            obj.precio_venta,
+                            obj.existencia_total,
+                            obj.costo,
+                            obj.costo_ultima_compra,
+                            obj.porc_iva,
+                            obj.descuadre
+                            );
 
-	            	$scope.Empresa.agregarProducto(	
-	            		producto
-	            	);
-	            }
+                    $scope.Empresa.agregarProducto(
+                            producto
+                            );
+                }
 
             };
 
 
-            $scope.gridOptions = { 
-            	data: 'Empresa.getProductos()',
-            	multiSelect: false,
-            	columnDefs: [
-            		 { field: 'codigo_producto', displayName: 'Codigo' },
-                     { field: 'descripcion', displayName: 'Nombre' },
-                     { field: 'existencia', displayName: 'Existencia' },
-                     { field: 'existencia_total', displayName: 'Existencia Total' },
-                     { field: 'costo', displayName: 'Costo' },
-                     { field: 'costo_ultima_compra', displayName: 'Costo Ultima Compra' },
-                     { field: 'precio', displayName: 'Precio' },
-                     { field: 'porc_iva', displayName: 'Iva' },
-                     { field: 'movimiento', displayName: "Movimiento", cellClass:"txt-center", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'  } ]
+            $scope.gridOptions = {
+                data: 'Empresa.getProductos()',
+                multiSelect: false,
+                columnDefs: [
+                    {field: 'codigo_producto', displayName: 'Codigo', width: "10%"},
+                    {field: 'descripcion', displayName: 'Nombre'},
+                    {field: 'existencia', displayName: 'Existencia', width: "9%"},
+                    {field: 'existencia_total', displayName: 'Existencia Total', width: "9%"},
+                    {field: 'costo', displayName: 'Costo', width: "7%"},
+                    {field: 'costo_ultima_compra', displayName: 'Costo Ultima Compra', width: "12%"},
+                    {field: 'precio', displayName: 'Precio', width: "7%"},
+                    {field: 'porc_iva', displayName: 'Iva', width: "5%"},
+                    {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'}]
 
-             };
+            };
 
 
-             $scope.onRowClick = function(row){
-             	console.log($filter('date')($scope.fechainicial,"yyyy-MM-dd"));
-             	console.log($filter('date')($scope.fechafinal,"yyyy-MM-dd"));
-                if($scope.fechafinal == null || $scope.fechainicial == null){
-                    AlertService.mostrarMensaje("danger","Las fechas son invalidas");
+            $scope.onRowClick = function(row) {
+                console.log($filter('date')($scope.fechainicial, "yyyy-MM-dd"));
+                console.log($filter('date')($scope.fechafinal, "yyyy-MM-dd"));
+                if ($scope.fechafinal == null || $scope.fechainicial == null) {
+                    AlertService.mostrarMensaje("danger", "Las fechas son invalidas");
                     return;
                 }
 
-             	$scope.realizarRequest(
-                    API.KARDEX.OBTENER_MOVIMIENTO,
-                    "GET",
-                    {
-                    	fecha_inicial:$filter('date')($scope.fechainicial,"yyyy-MM-dd"),
-                    	fecha_final:$filter('date')($scope.fechafinal,"yyyy-MM-dd"),
-                    	codigo_producto:row.entity.codigo_producto
-                    },
-                    function(data) {                    	
-                        if(data.status == 200){
-                        	$scope.$emit('mostrarslide',row.entity,data.obj.movimientos_producto);
-                      	}                
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        kardex: {
+                            fecha_inicial: $filter('date')($scope.fechainicial, "yyyy-MM-dd"),
+                            fecha_final: $filter('date')($scope.fechafinal, "yyyy-MM-dd"),
+                            codigo_producto: row.entity.codigo_producto
+                        }
                     }
-                );
-             	 
-             };
+                };
 
-             $scope.cerrar = function(){
-             	 $scope.$emit('cerrarslide');
-             };
+                Request.realizarRequest(
+                        API.KARDEX.OBTENER_MOVIMIENTO,
+                        "POST",
+                        obj,
+                        function(data) {
+                            if (data.status == 200) {
+                                if (data.obj.movimientos_producto.length > 0) {
+                                    $scope.$emit('mostrarslide', row.entity, data.obj);
+                                } else {
+                                    AlertService.mostrarMensaje("warning", "El producto no tiene movimientos");
+                                }
+
+                            }
+                        }
+                );
+
+            };
+
+            $scope.cerrar = function() {
+                $scope.$emit('cerrarslide');
+            };
+
+            $scope.cerrarSesion = function() {
+                localStorageService.remove("session");
+                window.location = "../login";
+            };
 
             //eventos
 
-              	//eventos de widgets
+            //eventos de widgets
             $scope.onKeyPress = function(ev, termino_busqueda) {
                 if (ev.which == 13) {
                     $scope.buscarProductos(termino_busqueda);
@@ -140,7 +144,7 @@ define(["angular","js/controllers",'../../../../includes/slide/slidecontent', "c
 
                 $scope.abrirfechainicial = true;
                 $scope.abrirfechafinal = false;
-                
+
 
                 console.log($scope.fechainicial)
             };
@@ -153,17 +157,39 @@ define(["angular","js/controllers",'../../../../includes/slide/slidecontent', "c
                 $scope.abrirfechainicial = false;
             };
 
-            $scope.fechainicialselected = function(){
+            $scope.fechainicialselected = function() {
                 $scope.fechafinal = $scope.fechainicial;
                 console.log($scope.fechafinal)
             };
 
-            $scope.fechafinalselected = function(){
+            $scope.fechafinalselected = function() {
                 $scope.fechainicial = $scope.fechafinal;
             };
 
-			$scope.buscarProductos("");
-			
+            //eventos del sistema
+            $rootScope.$on("cerrarSesion", $scope.cerrarSesion);
 
-	 }]);
+
+            //eventos socket
+            socket.on("onConnected", function(datos) {
+                var socketid = datos.socket_id;
+                var obj = {
+                    usuario_id: Usuario.usuario_id,
+                    auth_token: Usuario.token,
+                    socket_id: socketid
+                };
+
+                socket.emit("onActualizarSesion", obj);
+                console.log("onActualizarSesion");
+                console.log(obj);
+            });
+
+
+            socket.on("onCerrarSesion", $scope.cerrarSesion);
+
+
+            $scope.buscarProductos("");
+
+
+        }]);
 });

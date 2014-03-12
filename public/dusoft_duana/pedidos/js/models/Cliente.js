@@ -1,7 +1,7 @@
 
-define(["angular", "js/models"], function(angular, models, Empleado) {
+define(["angular", "js/models"], function(angular, models) {
 
-    models.factory('Cliente', function(Empleado) {
+    models.factory('Cliente', function() {
 
         function Cliente(nombre, direccion, tipo_id, id, telefono) {
             this.nombre_cliente = nombre;

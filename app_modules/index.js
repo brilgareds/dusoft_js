@@ -40,6 +40,7 @@ function _routes(app, di_container, io, recargar_routes, callback) {
         }
         catch (e) {
             console.log('Error cargando el modulo ' + modulo);
+            console.log(e)
             modulos_no_cargados.push(modulo);
         }
     });

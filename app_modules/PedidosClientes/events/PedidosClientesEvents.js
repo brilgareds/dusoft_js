@@ -31,7 +31,7 @@ PedidosClientesEvents.prototype.onNotificacionOperarioPedidosAsignados = functio
     // Seleccionar el Socket del Operario, si esta conectado en la Tablet    
     this.m_terceros.seleccionar_operario_bodega(datos.responsable, function(err, operarios_bodega) {
         operarios_bodega.forEach(function(operario) {
-            G.auth.get(operario.usuario_id, function(err, sessions) {
+            G.auth.getSessionsUser(operario.usuario_id, function(err, sessions) {
                 sessions.forEach(function(session) {
                     that.m_pedidos_clientes.seleccionar_pedido_by_numero_pedido(datos.numero_pedido, function(err, lista_pedidos_asignados) {
                         that.io.sockets.socket(session.socket_id).emit('onPedidosClientesAsignados', lista_pedidos_asignados);

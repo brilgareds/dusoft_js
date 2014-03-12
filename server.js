@@ -79,6 +79,11 @@ app.use(express.logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());
+//========================================
+app.use(express.cookieParser('123Dusoft123'));
+app.use(express.session());
+//========================================
+app.use(G.utils.validar_request());
 app.use(G.auth.validate());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
@@ -104,32 +109,14 @@ app.get('/api/configurarRoutes', function(req, res) {
     modulos.configurarRoutes(req, res, app, container);
 });
 
+app.get('/test', function(req, res) {
+   res.send(G.utils.r(req.url, 'test', 404, req.session));
+});
+
 app.all('/dusoft_duana', function(req, res) {
     res.redirect('/dusoft_duana/login');
 });
 
-
-/*=========================================
- * Servidor de Sockets
- * =========================================*/
-
-/*io.sockets.on('connection', function(socket) {
- 
-    socket.on('regitrar_clientes', function(cliente) {
-        console.log('El Cliente ' + cliente + ' Se ha conectado al servidor');
-        socket.emit('resultado_conexion', {cliente: cliente, resultado: true});
-    });
-
-    socket.on('enviar_mensaje', function(mensaje) {
-        socket.broadcast.emit('recibir_mensaje', mensaje);
-    });
-
-    if (clients.length === 3) {
-        clients.forEach(function(client) {
-            io.sockets.socket(client).emit('recibir_mensaje', {msj: 'Servidor Saludado a todos sus clientes '});
-        });
-    }
-});*/
 
 
 console.log('Express server listening on port ' + app.get('port'));

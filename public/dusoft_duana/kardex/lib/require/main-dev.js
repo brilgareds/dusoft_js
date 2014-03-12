@@ -18,7 +18,11 @@ requirejs.config({
         tree:"../../../../javascripts/jstree",
         config:"../includes/config/Config",
         loader:"../includes/loader/loader",
-        i18n:"http://code.angularjs.org/1.0.8/i18n/angular-locale_es-es"
+        i18n:"../../../../javascripts/angular/es",
+        httpinterceptor:"../includes/http/HttpInterceptor",
+        storage:"../../javascripts/angular/storage",
+        socket:"/socket.io/socket.io",
+        socketservice:"../includes/socket/socket"
     },
     shim: {
         "angular": {
@@ -45,6 +49,12 @@ requirejs.config({
         },
         "i18n":{
             deps:["angular"]
+        },
+        "storage":{
+            deps:["angular"]
+        },
+        "socketservice":{
+            deps:["socket"]
         }
     }
 });

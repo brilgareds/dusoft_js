@@ -21,7 +21,9 @@ requirejs.config({
         config:"../includes/config/Config",
         socket:"/socket.io/socket.io",
         socketservice:"../includes/socket/socket",
-        uiselect2:"../../../../javascripts/uiselect2"
+        uiselect2:"../../../../javascripts/uiselect2",
+        storage:"../../javascripts/angular/storage",
+        httpinterceptor:"../includes/http/HttpInterceptor"
     },
     shim: {
         "angular": {
@@ -55,6 +57,9 @@ requirejs.config({
         },
         "uiselect2":{
             deps:["angular","select"]
+        },
+        "storage":{
+            deps:["angular"]
         }
     }
 });

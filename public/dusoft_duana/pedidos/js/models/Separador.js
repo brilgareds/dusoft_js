@@ -1,7 +1,7 @@
 
-define(["angular","js/models"], function(angular, models, Empleado){
+define(["angular","js/models"], function(angular, models){
 
-	 models.factory('Separador', function(Empleado) {
+	 models.factory('Separador', function() {
 
 		function Separador(nombre, id){
 			this.nombre_operario = nombre;

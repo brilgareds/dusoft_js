@@ -9,20 +9,18 @@
      <meta name="viewport" content="width=device-width, initial-scale=1">
 	</head>
 
-	<body>
+	<body class="">
+        <div class="row" ng-include src="'../includes/header/header.html'" ng-controller="HeaderController"></div>
 
 
-      <div class="row" ng-include src="'../includes/header/header.html'" ></div>
-       <div  ng-include src="'../includes/loader/loader.html'"></div>
+        <div  ng-include src="'../includes/loader/loader.html'"></div>
 
-      <div class="row contenedor">
-         <div ng-include src="'../includes/menu/menu.html'" class="col-md-3" ng-controller="menucontroller"></div>
+        <div class="row contenedor">
+            <div ng-include src="'../includes/menu/menu.html'" class="col-md-3" ng-controller="menucontroller"></div>
 
-          <div  ng-include src="'../includes/content/content.html'"></div>       
-      </div>  
- 
-
-</body>
+            <div  ng-include src="'../includes/content/content.html'"></div>          
+        </div> 
+  </body>
 
 
 </html>

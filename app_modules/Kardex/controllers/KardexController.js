@@ -12,7 +12,15 @@ var Kardex = function(kardex, pedidos_farmacias, pedidos_clientes) {
 Kardex.prototype.listar_productos = function(req, res) {
     var that = this;
 
-    var termino_busqueda = (req.query.termino_busqueda === undefined) ? '' : req.query.termino_busqueda;
+    var args = req.body.data;
+
+    if (args.kardex === undefined || args.kardex.termino_busqueda === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+
+    var termino_busqueda = args.kardex.termino_busqueda;
+
 
     this.m_kardex.buscar_productos(termino_busqueda, function(err, lista_productos) {
         res.send(G.utils.r(req.url, 'Listado de Productos', 200, {lista_productos: lista_productos}));
@@ -23,17 +31,29 @@ Kardex.prototype.obtener_movimientos_producto = function(req, res) {
 
     var that = this;
 
+    var args = req.body.data;
+
+    if (args.kardex === undefined || args.kardex.fecha_inicial === undefined || args.kardex.fecha_final === undefined || args.kardex.codigo_producto === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+
+    if (args.kardex.codigo_producto === "" || args.kardex.fecha_inicial === "" || args.kardex.fecha_final === "") {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios Estan Vacios', 404, {}));
+        return;
+    }
+
     var empresa_id = '03'; //req.query.empresa_id;
     var centro_utilidad_id = '1'; //req.query.centro_utilidad_id;
     var bodega_id = '03'; //req.query.bodega_id;
-    var codigo_producto = req.query.codigo_producto;//'198A0010042';//
-    var fecha_inicial = req.query.fecha_inicial; //'2014-01-01';//
-    var fecha_final = req.query.fecha_final; //'2014-01-31';//
+    var codigo_producto = args.kardex.codigo_producto;//'198A0010042';//
+    var fecha_inicial = args.kardex.fecha_inicial; //'2014-01-01';//
+    var fecha_final = args.kardex.fecha_final; //'2014-01-31';//
 
     /*console.log(codigo_producto);
-     console.log(fecha_inicial);
-     console.log(fecha_final);
-     return;*/
+    console.log(fecha_inicial);
+    console.log(fecha_final);
+    return;*/
 
     this.m_kardex.obtener_movimientos_productos(empresa_id, centro_utilidad_id, bodega_id, codigo_producto, fecha_inicial, fecha_final, function(err, movimientos_producto) {
 

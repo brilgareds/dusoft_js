@@ -1,9 +1,12 @@
 
-define(["angular", "js/controllers", 'models/Usuario', 'controllers/asignacioncontroller', 'models/Farmacia', 'models/Pedido'], function(angular, controllers) {
+define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models/Farmacia', 'models/Pedido'], function(angular, controllers) {
 
-    controllers.controller('PedidosFarmaciasController', ['$scope','$rootScope', '$http', '$modal', 'Empresa', 'Usuario', 'Farmacia', 'Pedido', 'API',
-        'socket','AlertService',
-        function($scope, $rootScope, $http, $modal, Empresa, Usuario, Farmacia, Pedido, API, socket, AlertService) {
+    controllers.controller('PedidosFarmaciasController', [
+        '$scope','$rootScope', 'Request',
+        '$modal', 'Empresa', 'Farmacia', 
+        'Pedido', 'API','socket',
+        'AlertService',"Usuario",
+        function($scope, $rootScope, Request, $modal, Empresa, Farmacia, Pedido, API, socket, AlertService,Usuario) {
 
 
             $scope.Empresa = Empresa;
@@ -11,22 +14,23 @@ define(["angular", "js/controllers", 'models/Usuario', 'controllers/asignacionco
             $scope.pedidosSeleccionados = [];
             $scope.empresas = [];
             $scope.seleccion = "FD";
-
-            $scope.realizarRequest = function(url, params, callback) {
-                $http({method: 'GET', url: url, params: params}).
-                    success(function(data, status, headers, config) {
-                    callback(data);
-                }).
-                 error(function(data, status, headers, config) {
-                    console.log("request error");
-                    console.log(status);
-                });
+            $scope.session = {
+               usuario_id:Usuario.usuario_id,
+               auth_token:Usuario.token
             };
 
 
             $scope.buscarPedidosFarmacias = function(termino) {
-                // console.log($scope.seleccion);
-                $scope.realizarRequest(API.PEDIDOS.LISTAR_PEDIDOS_FARMACIAS, {termino_busqueda:termino, empresa_id:$scope.seleccion}, function(data) {
+                var obj = {
+                    session:$scope.session,
+                    data:{
+                        pedidos_farmacias:{
+                            termino_busqueda:termino, empresa_id:$scope.seleccion
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PEDIDOS.LISTAR_PEDIDOS_FARMACIAS, "POST", obj , function(data) {
                     if(data.status == 200){
                         $scope.renderPedidosFarmacias(data.obj);
                     }
@@ -35,8 +39,13 @@ define(["angular", "js/controllers", 'models/Usuario', 'controllers/asignacionco
             };
 
             $scope.listarEmpresas = function(){
-                 $scope.realizarRequest(API.PEDIDOS.LISTAR_EMPRESAS, {usuario_id:1350}, function(data) {
-                    
+
+                var obj = {
+                    session:$scope.session,
+                    data:{}
+                };
+
+                 Request.realizarRequest(API.PEDIDOS.LISTAR_EMPRESAS, "POST", obj, function(data) {
                     if(data.status == 200){
                         $scope.empresas = data.obj.empresas;
                         //console.log(JSON.stringify($scope.empresas))
@@ -53,7 +62,7 @@ define(["angular", "js/controllers", 'models/Usuario', 'controllers/asignacionco
                 columnDefs: [
                     {field: '', cellClass:"checkseleccion", width:"60",
                     cellTemplate:"<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)' ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
-                    {field: 'descripcion_estado_actual_pedido', displayName: "Estado Actual", cellClass:"estadoPedido",
+                    {field: 'descripcion_estado_actual_pedido', displayName: "Estado Actual", cellClass:"txt-center",
                     cellTemplate: '<div  ng-class="agregarClase(row.entity.estado_actual_pedido)">{{row.entity.descripcion_estado_actual_pedido}}</div>'},
                     {field: 'numero_pedido', displayName: 'Numero Pedido'},
                     {field: '', displayName: 'Zona'},

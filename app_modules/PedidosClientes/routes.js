@@ -15,39 +15,24 @@ module.exports = function(app, di_container, io) {
     var e_pedidos_clientes = di_container.get("e_pedidos_clientes");
 
 
-    // ================= GET =======================
-    
+
+    // ================= POST =======================
+
     // Listar todos los pedidos de los Clientes
-    app.get('/api/PedidosClientes/listarPedidos', function(req, res) {
+    app.post('/api/PedidosClientes/listarPedidos', function(req, res) {
         c_pedidos_clientes.listarPedidosClientes(req, res);
     });
 
     // Asignar o seleccionar responsables del pedido
-    app.get('/api/PedidosClientes/asignarResponsable', function(req, res) {
-        c_pedidos_clientes.asignarResponsablesPedido(req, res);
-    });
-
-    // Seleccionar los pedidos de un operario de bodega
-    app.get('/api/PedidosClientes/listaPedidosOperarioBodega', function(req, res) {
-        c_pedidos_clientes.listaPedidosOperariosBodega(req, res);
-    });
-
-
-    // ================= POST =======================
     app.post('/api/PedidosClientes/asignarResponsable', function(req, res) {
         c_pedidos_clientes.asignarResponsablesPedido(req, res);
     });
 
-
-
-    // ================= REAL TIME EVENTS =======================
-    io.sockets.on('connection', function(socket) {
-        console.log('=========== Conectado =============');
-        console.log(socket.id);
-
-        /*socket.on('notificar_asignacion', function(datos) {
-         e_pedidos_clientes.notificar_asignacion_pedido(datos);
-         });*/
+    // Seleccionar los pedidos de un operario de bodega
+    app.post('/api/PedidosClientes/listaPedidosOperarioBodega', function(req, res) {
+        c_pedidos_clientes.listaPedidosOperariosBodega(req, res);
     });
+
+
 
 };

@@ -13,36 +13,29 @@ module.exports = function(app, di_container, io) {
 
     var c_pedidos_farmacias = di_container.get("c_pedidos_farmacias");
 
-    // ================= GET =======================
-    
+    // ================= POST =======================
+
     // Listar Empresas a las que tiene acceso el usuario
     // NOTA: Este tipo de accesos es temporal ya que se implementara
-    //       Un sistema de Roles y Permisos en el futuro.    
-    app.get('/api/PedidosFarmacias/obtenerEmpresas', function(req, res) {
+    //       Un sistema de Roles y Permisos en el futuro. 2014    
+    app.post('/api/PedidosFarmacias/obtenerEmpresas', function(req, res) {
         c_pedidos_farmacias.obtenerEmpresas(req, res);
     });
-    
+
     // Listar Todos los pedidos de farmacia
-    app.get('/api/PedidosFarmacias/listarPedidos', function(req, res) {
+    app.post('/api/PedidosFarmacias/listarPedidos', function(req, res) {
         c_pedidos_farmacias.listarPedidosFarmacias(req, res);
     });
 
     // Asignar o seleccionar responsables del pedido
-    app.get('/api/PedidosFarmacias/asignarResponsable', function(req, res) {
+    app.post('/api/PedidosFarmacias/asignarResponsable', function(req, res) {
         c_pedidos_farmacias.asignarResponsablesPedido(req, res);
     });
-        
+
+    // ================= GET =======================
     // Seleccionar los pedidos de un operario de bodega
     app.get('/api/PedidosFarmacias/listaPedidosOperarioBodega', function(req, res) {
         c_pedidos_farmacias.listaPedidosOperariosBodega(req, res);
     });
-    
-    
 
-    // ================= POST =======================
-    
-    // Asignar o seleccionar responsables del pedido
-    app.post('/api/PedidosFarmacias/asignarResponsable', function(req, res) {
-        c_pedidos_farmacias.asignarResponsablesPedido(req, res);
-    });
 };

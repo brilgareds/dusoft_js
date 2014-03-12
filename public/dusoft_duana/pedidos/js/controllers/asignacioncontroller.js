@@ -1,7 +1,12 @@
 define(["angular", "js/controllers", 'models/Separador'], function(angular, controllers) {
 
-    controllers.controller('asignacioncontroller', ['$scope', '$rootScope', 'API', '$modalInstance', "pedidosSeleccionados", "url", "$http", "Separador", "Empresa",
-        function($scope, $rootScope, API, $modalInstance, pedidosSeleccionados, url, $http, Separador, Empresa) {
+    controllers.controller('asignacioncontroller', [
+        '$scope', '$rootScope', 'API', 
+        '$modalInstance', "pedidosSeleccionados", "url",
+        "Request", "Separador", "Empresa",
+        "Usuario",
+
+        function($scope, $rootScope, API, $modalInstance, pedidosSeleccionados, url, Request, Separador, Empresa,Usuario) {
 
             $scope.Empresa = Empresa;
             $scope.noAsignar = true;
@@ -12,44 +17,18 @@ define(["angular", "js/controllers", 'models/Separador'], function(angular, cont
             $scope.msg   = "";
             $scope.operario_id = false;
 
+            $scope.session = {
+               usuario_id:Usuario.usuario_id,
+               auth_token:Usuario.token
+            };
+
+
             $modalInstance.result.then(function() {
                 //on ok button press 
             }, function() {
                 //on cancel button press
                 console.log("Modal Closed");
             });
-
-
-
-
-            $scope.realizarRequest = function(url, method, params, callback) {
-
-               // console.log(params)
-
-                var requestObj = {
-                    method:method,
-                    url:url
-                }
-
-                if(method == "GET"){
-                    requestObj.params = params;
-                } else {
-                    requestObj.data = params;
-                    requestObj.headers =  {'Content-Type': 'application/json'};
-                }
-
-
-                $http(requestObj).
-                    success(function(data, status, headers, config) {
-                    callback(data);
-                }).
-                error(function(data, status, headers, config) {
-                    $scope.dialog = true;
-                    $scope.msg   = "Se a generado un error";
-                    callback(data);
-                }); 
-
-            };
 
 
             $scope.valorSeleccionado = function(valor) {
@@ -74,19 +53,22 @@ define(["angular", "js/controllers", 'models/Separador'], function(angular, cont
                     pedidos.push(pedido.numero_pedido);
                 }
 
+                var obj = {
+                    session:$scope.session,
+                    data:{
+                        asignacion_pedidos:{
+                            pedidos: pedidos,
+                            estado_pedido: "1",
+                            responsable: $scope.idAsignado
+                        }
+                    }
+                };
 
-
-                $scope.realizarRequest(
+                Request.realizarRequest(
                     url,
                     "POST",
-                    {
-                        pedidos: pedidos,
-                        estado_pedido: "1",
-                        responsable: $scope.idAsignado,
-                        usuario: 1350
-                    },
+                    obj,
                     function(data) {
-                        //console.log(data)
                         if(data.status == 200){
                             $modalInstance.close();
                             $rootScope.$emit("refrescarPedidos");
@@ -96,24 +78,41 @@ define(["angular", "js/controllers", 'models/Separador'], function(angular, cont
             };
 
 
-            $scope.realizarRequest(API.TERCEROS.LISTAR_OPERARIOS, "GET", {estado_registro:"1"}, function(data) {
-
-                Empresa.vaciarSeparadores();
-                var data = data.obj;
-
-                for (var i in data.lista_operarios) {
-
-                    var obj = data.lista_operarios[i];
-
-                    var separador = Separador.get(
-                        obj.nombre_operario,
-                        obj.operario_id
-                    );
-
-                    $scope.Empresa.agregarSeparador(
-                        separador
-                    );
+            var obj = {
+                session:$scope.session,
+                data:{
+                    lista_operarios:{
+                        estado_registro:"1"
+                    }
                 }
+            };
+
+
+            Request.realizarRequest(API.TERCEROS.LISTAR_OPERARIOS, "POST", obj, function(data) {
+                console.log(data)
+                if(data.obj.lista_operarios){
+                    var listado = data.obj.lista_operarios;
+                    Empresa.vaciarSeparadores();
+                    var data = data.obj;
+
+                    for (var i in listado) {
+
+                        var obj = listado[i];
+
+                        var separador = Separador.get(
+                            obj.nombre_operario,
+                            obj.operario_id
+                        );
+
+                        $scope.Empresa.agregarSeparador(
+                            separador
+                        );
+                    }
+                } else {
+                    $scope.dialog = true;
+                    $scope.msg = "No hay responsables disponibles";
+                }
+                
 
             });
 

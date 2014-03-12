@@ -1,41 +1,47 @@
 
-define(["angular", "js/controllers", 'models/Usuario', 'controllers/asignacioncontroller','models/Cliente', 'models/Pedido'], function(angular, controllers) {
+define(["angular", "js/controllers", 'controllers/asignacioncontroller','models/Cliente', 'models/Pedido'], function(angular, controllers) {
 
-    var fo = controllers.controller('PedidosClientesController', ['$scope', '$rootScope', '$http', '$modal', 'Empresa', 'Usuario', 'Cliente', 'Pedido', 'API',
-        "socket", "$timeout", "AlertService",
-        function($scope, $rootScope, $http, $modal, Empresa, Usuario, Cliente, Pedido, API, socket, $timeout, AlertService) {
+    var fo = controllers.controller('PedidosClientesController', [
+        '$scope', '$rootScope', 'Request', 
+        '$modal', 'Empresa','Cliente',
+         'Pedido', 'API',"socket", "$timeout", 
+         "AlertService","Usuario", "localStorageService",
+
+        function($scope, $rootScope, Request, $modal, Empresa, Cliente, Pedido, API, socket, $timeout, AlertService,Usuario,localStorageService) {
 
 
             $scope.termino_busqueda = "";
             $scope.Empresa = Empresa;
             $scope.pedidosSeleccionados = [];
+            $scope.session = {
+               usuario_id:Usuario.usuario_id,
+               auth_token:Usuario.token
+            };
+
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
             
 
-            $scope.obtenerPedidos = function(url, termino, callback) {
-                $http({method: 'GET', url: url, params: {empresa_id: '03', termino_busqueda: termino}}).
-                    success(function(data, status, headers, config) {
-                    callback(data.obj);
-                }).
-                error(function(data, status, headers, config) {
-                    // called asynchronously if an error occurs
-                    // or server returns response with an error status.
-                });
-            };
-
 
             $scope.buscarPedidosCliente = function(termino) {
-                $scope.obtenerPedidos(API.PEDIDOS.LISTAR_PEDIDOS, termino, function(data) {
-                    $scope.renderPedidosCliente(data);
+                var obj = {
+                    session:$scope.session,
+                    data:{
+                        pedidos_clientes:{
+                            termino_busqueda:termino
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PEDIDOS.LISTAR_PEDIDOS, "POST", obj, function(data) {
+
+                    $scope.renderPedidosCliente(data.obj);
                 });
             };
 
 
             $scope.renderPedidosCliente = function(data) {
-                //se crean los value objects
-                //console.log(data)
+
                 $scope.Empresa.vaciarPedidos();
-                
 
                 for (var i in data.pedidos_clientes) {
 
@@ -196,6 +202,11 @@ define(["angular", "js/controllers", 'models/Usuario', 'controllers/asignacionco
 
             };
 
+            $scope.cerrarSesion = function(){
+                 localStorageService.remove("session");
+                 window.location = "../login";
+             };
+
             //eventos
 
             //delegados del sistema
@@ -204,6 +215,8 @@ define(["angular", "js/controllers", 'models/Usuario', 'controllers/asignacionco
                 $scope.pedidosSeleccionados = [];
                // $scope.buscarPedidosCliente("");
             });
+
+            $rootScope.$on("cerrarSesion",$scope.cerrarSesion);
 
 
             //delegados del socket io
@@ -218,6 +231,23 @@ define(["angular", "js/controllers", 'models/Usuario', 'controllers/asignacionco
 
                 }
             });
+
+            //evento de coneccion al socket
+            socket.on("onConnected", function(datos){
+                var socketid = datos.socket_id;
+                var obj = {
+                  usuario_id : Usuario.usuario_id,
+                  auth_token : Usuario.token,
+                  socket_id : socketid
+                };
+
+                socket.emit("onActualizarSesion",obj);
+                console.log("onActualizarSesion");
+                console.log(obj);
+             });   
+
+            //el socket cerro la session
+            socket.on("onCerrarSesion",$scope.cerrarSesion);
 
             //eventos de widgets
             $scope.onKeyPress = function(ev, termino_busqueda) {

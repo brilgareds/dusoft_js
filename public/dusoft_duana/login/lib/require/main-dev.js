@@ -7,13 +7,16 @@ requirejs.config({
         angular: "../../javascripts/angular/angular",
         route: "../../javascripts/angular/angular-ui-router",
         controllers: "js/controllers/",
+        directive:"js/directive",
         models:"js/models",
         includes:"../includes/",
         bootstrap:"../../javascripts/bootstrap/bootstrap",
         bootstrapjs:"../../javascripts/bootstrap/bootstrap.min",
         jquery:"../../javascripts/jquery",
         treemenu:"../includes/myTree",
-        tree:"../../../../javascripts/jstree"
+        tree:"../../../../javascripts/jstree",
+        loader:"../includes/loader/loader",
+        storage:"../../javascripts/angular/storage"
     },
     shim: {
         "angular": {
@@ -33,6 +36,9 @@ requirejs.config({
         },
         "treemenu":{
             deps:["tree"]
+        },
+        "storage":{
+            deps:["angular"]
         }
     }
 });

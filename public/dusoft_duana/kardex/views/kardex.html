@@ -1,45 +1,61 @@
 <div style="padding:10px;">
 
-	{{titulo}}
+	<center><h4>{{titulo}} {{nombreProducto}}</h4></center>
 	<button ng-click="cerrar()" class="pull-right btn btn-default btn-xs" style="margin-right:15px"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>
 
 	    <tabset  class="tabkardex">
+	        <tab heading="Movimientos">
 
-        <tab heading="Movimientos">
+	        	
+	        	<div class="row" style="padding:10px">
+				   <div class="list-group col-md-4 grupodefault" style="width:113px">
+					 <a href="#" class="list-group-item">
+				        <h5 class="list-group-item-heading">Entradas:</h5>
+				        <p class="list-group-item-text">{{cantidad_entradas}}</p>
+				      </a>
+				      
+					</div>
 
-        	
-        	<div class="row" style="padding:10px">
-		   <div class="list-group col-md-4 grupodefault" style="width:113px">
-			 <a href="#" class="list-group-item">
-		        <h5 class="list-group-item-heading">Entradas:</h5>
-		        <p class="list-group-item-text">{{cantidad_entradas}}</p>
-		      </a>
-		      
-			</div>
+					<div class="list-group col-md-4 grupodefault" style="width:113px">
+						<a href="#" class="list-group-item">
+					        <h5 class="list-group-item-heading">Salidas:</h5>
+					        <p class="list-group-item-text">{{cantidad_salidas}}</p>
+					    </a>
+				    </div>
+				    <div class="list-group col-md-4 grupodefault" style="width:113px">
+						<a href="#" class="list-group-item">
+					        <h5 class="list-group-item-heading">Existencia:</h5>
+					        <p class="list-group-item-text">{{existencia}}</p>
+					    </a>
+				    </div>
+				    <div class="list-group col-md-4 grupodefault" style="width:113px">
+						<a href="#" class="list-group-item">
+					        <h5 class="list-group-item-heading">Descuadre:</h5>
+					        <p class="list-group-item-text">{{descuadre}}</p>
+					    </a>
+				    </div>
 
-			<div class="list-group col-md-4 grupodefault" style="width:113px">
-				<a href="#" class="list-group-item">
-			        <h5 class="list-group-item-heading">Salidas:</h5>
-			        <p class="list-group-item-text">{{cantidad_salidas}}</p>
-			    </a>
-		    </div>
+			 </div>
+	            <div class="defaultGrid" ng-grid="lista_movimientos">
 
-		 </div>
-            <div class="defaultGrid" ng-grid="lista_movimientos">
+	            </div>
 
-            </div>
+	        </tab>
 
-        </tab>
+	        <tab heading="Pendientes Farmacias">
+	        	 <div class="defaultGrid" ng-grid="lista_pendientes_farmacia">
 
-        <tab heading="Pendientes Farmacias">
+	            </div>
 
-        </tab>
+	        </tab>
 
-        <tab heading="Pendientes Clientes">
+	        <tab heading="Pendientes Clientes">
 
+	        	<div class="defaultGrid" ng-grid="lista_pendientes_cliente">
 
+	            </div>
 
-        </tab>
+	        </tab>
 
 
     </tabset>

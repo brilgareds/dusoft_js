@@ -9,14 +9,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             $scope.clave   = "123456";
             $scope.mostrarmensaje = false;
 
-            console.log($location.search())
-            if($location.search().noauth){
-                $scope.mostrarmensaje = true;
-                $scope.msgerror = "Su sesion ha sido cerrada porque no esta autenticado";
-            }
-
-
-
             $scope.autenticar = function() {
                 if($scope.loginform.$invalid){
                     console.log("invalido")

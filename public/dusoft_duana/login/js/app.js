@@ -11,7 +11,8 @@
           'models',
           'ui.bootstrap',
           'directive',
-          'LocalStorageModule'
+          'LocalStorageModule',
+          'services'
       ]);
 
       loginapp.config(function($stateProvider, $urlRouterProvider){

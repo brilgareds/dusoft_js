@@ -9,6 +9,7 @@ requirejs.config({
         controllers: "js/controllers/",
         directive:"js/directive",
         models:"js/models",
+        services:"js/services",
         includes:"../includes/",
         bootstrap:"../../javascripts/bootstrap/bootstrap",
         bootstrapjs:"../../javascripts/bootstrap/bootstrap.min",

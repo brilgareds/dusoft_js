@@ -73,6 +73,29 @@ define(["angular", "js/directive"], function(angular, directive) {
                                 }
                             });
                         });
+
+                        $(".botonmenu").on("click",function (e) {
+                            var el =  $(".contenedormenu");
+                            if(el.hasClass("mostrarmenu")){
+                                el.removeClass("mostrarmenu");
+                                el.addClass("cerrarmenu");
+                            } else {
+                                el.removeClass("cerrarmenu");
+                                el.addClass("mostrarmenu");
+                            }
+                            
+
+                        });
+
+                        $(".contenedormenu").on("mouseleave",function(){
+                             var el =  $(this);
+                             if(el.hasClass("mostrarmenu")){
+                                el.removeClass("mostrarmenu");
+                                el.addClass("cerrarmenu");
+                             }
+                        })
+
+
                     };
 
                 }

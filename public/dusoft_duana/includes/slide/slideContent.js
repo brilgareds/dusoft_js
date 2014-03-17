@@ -3,7 +3,7 @@ define(["angular","js/directive"], function(angular, directive){
     directive.directive('slideContent',[function() {
        return {
           link:function(scope, element, attrs) {
-             var rootWidth = $(window).width();
+             var rootWidth = $(window).width() +2000;
               angular.element(document).ready(function(){
                   $(element).css({"right":"-"+rootWidth+"px"});
               });
@@ -14,7 +14,7 @@ define(["angular","js/directive"], function(angular, directive){
 
           },
           controller: function($scope, $element) {
-              var rootWidth = $(window).width();
+              var rootWidth = $(window).width() + 200;
               $scope.$parent.$on('mostrarslide', function($event) {
                   $($element).animate({"right":"0px"});
               });

@@ -1,3 +1,9 @@
+
+@font-face {
+  font-family: 'Glyphicons Halflings';
+  src: url('../fonts/glyphicons-halflings-regular.eot');
+  src: url('../fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('../fonts/glyphicons-halflings-regular.woff') format('woff'), url('../fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('../fonts/glyphicons-halflings-regular.svg#glyphicons-halflingsregular') format('svg');
+}
 a {
   color: #00B7FF;
 }
@@ -14,9 +20,14 @@ a {
 	max-height: 40px;
 }
 
+.contenedormenu .botonmenu{
+	display: none;
+}
 
-body {
+
+html body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  font-size: 12px;
 }
 
 .cellPedido{
@@ -30,6 +41,11 @@ body {
 
 .contenidoPrincipal{
 	height: 810px;
+	width: 100%;
+}
+
+.contenedorcontenido{
+	width: 100%;
 }
 
 .checkseleccion{
@@ -151,4 +167,38 @@ div.ngHeaderCell	{
 .txt-center{
 	text-align: center;
 	padding-top: 4px;
+}
+
+/**media query*/
+
+@media screen and ( max-width: 1700px ) and (min-width: 769px) {
+	.contenedormenu .botonmenu{
+		display: inline;
+	}
+
+  div.contenedormenu {
+    position: fixed;
+    z-index: 4;
+    width: 300px;
+  }
+
+  div.cerrarmenu{
+  	left: -260px;
+  }
+
+  div.mostrarmenu{
+  	left: -13px;
+  }
+
+  div.contenedorDerecho{
+  	width: 100%;
+  }
+
+  div.contenidoPrincipal{
+  	width: 100%;
+  }
+}
+
+@font-face {
+  font-family: 'Glyphicons Halflings';
 }

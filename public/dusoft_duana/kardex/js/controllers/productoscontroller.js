@@ -96,21 +96,20 @@ define(["angular", "js/controllers", '../../../../includes/slide/slidecontent', 
             $scope.gridOptions = {
                 data: 'Empresa.getProductos()',
                 multiSelect: false,
-                afterSelectionChange:function(row){
+                /*afterSelectionChange:function(row){
                     if(row.selected){
                         $scope.onRowClick(row)
                     }
-                },
+                },*/
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Codigo', width: "10%"},
                     {field: 'descripcion', displayName: 'Nombre'},
-                    {field: 'existencia', displayName: 'Existencia', width: "9%"},
-                    {field: 'existencia_total', displayName: 'Existencia Total', width: "9%"},
+                    {field: 'existencia', displayName: 'Existencia', width: "7%"},
                     {field: 'costo', displayName: 'Costo', width: "7%"},
                     {field: 'costo_ultima_compra', displayName: 'Costo Ultima Compra', width: "12%"},
                     {field: 'precio', displayName: 'Precio', width: "7%"},
                     {field: 'porc_iva', displayName: 'Iva', width: "5%"},
-                    {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'}]
+                    {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-zoom-in" ng-click="onRowClick(row)">Ver</span></button></div>'}]
 
             };
 
@@ -118,6 +117,8 @@ define(["angular", "js/controllers", '../../../../includes/slide/slidecontent', 
             $scope.onRowClick = function(row) {
                 console.log($filter('date')($scope.fechainicial, "yyyy-MM-dd"));
                 console.log($filter('date')($scope.fechafinal, "yyyy-MM-dd"));
+
+                
                 if ($scope.fechafinal == null || $scope.fechainicial == null) {
                     AlertService.mostrarMensaje("danger", "Las fechas son invalidas");
                     return;

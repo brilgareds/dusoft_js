@@ -1,5 +1,5 @@
 
-define(["angular", "js/controllers", '../../../../includes/slide/slidecontent', "controllers/MovimientoController"], function(angular, controllers) {
+define(["angular", "js/controllers", '../../../../includes/slide/slideContent', "controllers/MovimientoController"], function(angular, controllers) {
 
     var fo = controllers.controller('productoscontroller', [
         '$scope', '$rootScope', "Request",
@@ -118,7 +118,7 @@ define(["angular", "js/controllers", '../../../../includes/slide/slidecontent', 
                 console.log($filter('date')($scope.fechainicial, "yyyy-MM-dd"));
                 console.log($filter('date')($scope.fechafinal, "yyyy-MM-dd"));
 
-                
+
                 if ($scope.fechafinal == null || $scope.fechainicial == null) {
                     AlertService.mostrarMensaje("danger", "Las fechas son invalidas");
                     return;

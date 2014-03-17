@@ -17,7 +17,9 @@ PedidosFarmaciasModel.prototype.listar_empresas = function(usuario, callback) {
 
 
 // Listar todos los pedidos de farmacias
-PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, termino_busqueda, callback) {
+PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, termino_busqueda, pagina, callback) {
+
+    var offset = G.settings.limit * pagina;
 
     var sql = " select \
                 a.solicitud_prod_a_bod_ppal_id as numero_pedido, \
@@ -46,9 +48,9 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
                       or d.razon_social ilike $2 \
                       or b.descripcion ilike $2 \
                       or e.nombre ilike $2 ) \
-                order by 1 desc";
+                order by 1 desc limit $3 offset $4 ";
 
-    G.db.query(sql, [empresa_id, "%" + termino_busqueda + "%"], function(err, rows, result) {
+    G.db.query(sql, [empresa_id, "%" + termino_busqueda + "%", G.settings.limit, offset], function(err, rows, result) {
         callback(err, rows);
     });
 };
@@ -235,6 +237,43 @@ PedidosFarmaciasModel.prototype.listar_pedidos_pendientes_by_producto = function
                 inner join empresas c on a.farmacia_id = c.empresa_id\
                 inner join system_usuarios d on a.usuario_id = d.usuario_id \
                 where a.empresa_destino = $1 and b.codigo_producto = $2 and b.cantidad_pendiente > 0 ; ";
+
+    var sql = " select \
+                a.solicitud_prod_a_bod_ppal_id as numero_pedido,\
+                a.cantidad_pendiente,\
+                a.cantidad_solicitada,\
+                a.farmacia_id,\
+                b.razon_social,\
+                a.usuario_id,\
+                c.usuario,\n\
+                a.fecha_registro \
+                from \
+                (  \
+                  select \
+                  a.solicitud_prod_a_bod_ppal_id,\
+                  a.cantidad_solic as cantidad_pendiente,\
+                  a.cantidad_solic as cantidad_solicitada,\
+                  a.farmacia_id,\
+                  b.usuario_id,\n\
+                  b.fecha_registro   \
+                  from solicitud_productos_a_bodega_principal_detalle a \
+                  inner join solicitud_productos_a_bodega_principal b on a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id\
+                  where b.empresa_destino = $1 and a.codigo_producto= $2 and b.sw_despacho = '0'  \
+                  union  \
+                  select \
+                  a.solicitud_prod_a_bod_ppal_id,\
+                  c.cantidad_pendiente,\
+                  c.cantidad_solicitad as cantidad_solicitada,\
+                  c.farmacia_id,\
+                  b.usuario_id,\n\
+                  b.fecha_registro  \
+                  from solicitud_productos_a_bodega_principal_detalle a \
+                  inner join solicitud_productos_a_bodega_principal b on a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id\
+                  inner join inv_mov_pendientes_solicitudes_frm c on a.solicitud_prod_a_bod_ppal_id = c.solicitud_prod_a_bod_ppal_id and a.solicitud_prod_a_bod_ppal_det_id = c.solicitud_prod_a_bod_ppal_det_id\
+                  where b.empresa_destino = $1 and a.codigo_producto = $2 and b.sw_despacho = '1'\
+                ) as a \
+                inner join empresas b on a.farmacia_id = b.empresa_id\
+                inner join system_usuarios c on a.usuario_id = c.usuario_id";
 
     G.db.query(sql, [empresa, codigo_producto], function(err, rows, result) {
         callback(err, rows);

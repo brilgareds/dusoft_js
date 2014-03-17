@@ -11,17 +11,29 @@ define(["angular", "js/controllers", '../../../../includes/slide/slidecontent', 
 
             $scope.Empresa = Empresa;
             var fechaActual = new Date();
+            $scope.paginas = 0;
+            $scope.items = 0;
+            $scope.paginaactual = 0;
+            $scope.termino_busqueda = "";
+            $scope.ultima_busqueda  = "";
 
+
+          //  $scope.fechainicial = new Date((fechaActual.getMonth() + 1)+"/01/" + (fechaActual.getFullYear() -1));
             $scope.fechainicial = new Date("01/01/" + fechaActual.getFullYear());
-            ;
             $scope.fechafinal = fechaActual;
             $scope.abrirfechafinal = false;
+            
             $scope.session = {
                 usuario_id: Usuario.usuario_id,
                 auth_token: Usuario.token
             };
 
-            $scope.buscarProductos = function(termino_busqueda) {
+            $scope.buscarProductos = function(termino_busqueda,paginando) {
+
+                if($scope.ultima_busqueda != $scope.termino_busqueda){
+                    $scope.paginaactual = 0;
+                }
+
                 Request.realizarRequest(
                         API.KARDEX.LISTAR_PRODUCTOS,
                         "POST",
@@ -29,21 +41,36 @@ define(["angular", "js/controllers", '../../../../includes/slide/slidecontent', 
                             session: $scope.session,
                             data: {
                                 kardex: {
-                                    termino_busqueda: termino_busqueda
+                                    termino_busqueda: termino_busqueda,
+                                    pagina_actual:$scope.paginaactual 
                                 }
                             }
                         },
                 function(data) {
                     if (data.status == 200) {
-                        $scope.renderProductos(data.obj);
+                        $scope.ultima_busqueda = $scope.termino_busqueda;
+                        $scope.renderProductos(data.obj, paginando);
                     }
                 }
                 );
             };
 
-            $scope.renderProductos = function(data) {
-                $scope.Empresa.vaciarProductos();
+            $scope.renderProductos = function(data, paginando) {
 
+
+                $scope.items = data.lista_productos.length;
+                //se valida que hayan registros en una siguiente pagina
+                if(paginando && $scope.items == 0){
+                    if($scope.paginaactual > 0){
+                        $scope.paginaactual--;
+                    }
+                    AlertService.mostrarMensaje("warning","No se encontraron mas registros");
+                    return;
+                }
+
+                $scope.Empresa.vaciarProductos();
+                $scope.paginas = (data.lista_productos.length / 10);
+                $scope.items = data.lista_productos.length;
                 for (var i in data.lista_productos) {
                     var obj = data.lista_productos[i];
                     var producto = ProductoMovimiento.get(
@@ -56,11 +83,11 @@ define(["angular", "js/controllers", '../../../../includes/slide/slidecontent', 
                             obj.costo_ultima_compra,
                             obj.porc_iva,
                             obj.descuadre
-                            );
+                    );
 
                     $scope.Empresa.agregarProducto(
                             producto
-                            );
+                    );
                 }
 
             };
@@ -69,6 +96,11 @@ define(["angular", "js/controllers", '../../../../includes/slide/slidecontent', 
             $scope.gridOptions = {
                 data: 'Empresa.getProductos()',
                 multiSelect: false,
+                afterSelectionChange:function(row){
+                    if(row.selected){
+                        $scope.onRowClick(row)
+                    }
+                },
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Codigo', width: "10%"},
                     {field: 'descripcion', displayName: 'Nombre'},
@@ -78,7 +110,7 @@ define(["angular", "js/controllers", '../../../../includes/slide/slidecontent', 
                     {field: 'costo_ultima_compra', displayName: 'Costo Ultima Compra', width: "12%"},
                     {field: 'precio', displayName: 'Precio', width: "7%"},
                     {field: 'porc_iva', displayName: 'Iva', width: "5%"},
-                    {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'}]
+                    {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'}]
 
             };
 
@@ -124,11 +156,6 @@ define(["angular", "js/controllers", '../../../../includes/slide/slidecontent', 
                 $scope.$emit('cerrarslide');
             };
 
-            $scope.cerrarSesion = function() {
-                localStorageService.remove("session");
-                window.location = "../login";
-            };
-
             //eventos
 
             //eventos de widgets
@@ -166,27 +193,19 @@ define(["angular", "js/controllers", '../../../../includes/slide/slidecontent', 
                 $scope.fechainicial = $scope.fechafinal;
             };
 
+
+            $scope.paginaAnterior = function(){
+                $scope.paginaactual--;
+                $scope.buscarProductos($scope.termino_busqueda,true);
+            };
+
+            $scope.paginaSiguiente = function(){
+                $scope.paginaactual++;
+                $scope.buscarProductos($scope.termino_busqueda,true);
+            };
+
             //eventos del sistema
             $rootScope.$on("cerrarSesion", $scope.cerrarSesion);
-
-
-            //eventos socket
-            socket.on("onConnected", function(datos) {
-                var socketid = datos.socket_id;
-                var obj = {
-                    usuario_id: Usuario.usuario_id,
-                    auth_token: Usuario.token,
-                    socket_id: socketid
-                };
-
-                socket.emit("onActualizarSesion", obj);
-                console.log("onActualizarSesion");
-                console.log(obj);
-            });
-
-
-            socket.on("onCerrarSesion", $scope.cerrarSesion);
-
 
             $scope.buscarProductos("");
 

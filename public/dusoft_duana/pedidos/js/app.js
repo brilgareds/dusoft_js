@@ -52,6 +52,7 @@
         $rootScope.name = "pedidos";   
         console.log(Usuario) 
         var obj = localStorageService.get("session");
+        if(!obj) return;
         Usuario.setToken(obj.auth_token);
         Usuario.setUsuarioId(obj.usuario_id);    
     });

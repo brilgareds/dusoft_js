@@ -14,17 +14,20 @@ PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.pedidos_clientes === undefined || args.pedidos_clientes.termino_busqueda === undefined) {
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.termino_busqueda === undefined || args.pedidos_clientes.pagina_actual === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
     }
+    if (args.pedidos_clientes.pagina_actual === '') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
+        return;
+    }
 
-
-    
     var empresa_id = '03';
     var termino_busqueda = args.pedidos_clientes.termino_busqueda;
+    var pagina_actual = args.pedidos_clientes.pagina_actual;
 
-    this.m_pedidos_clientes.listar_pedidos_clientes(empresa_id, termino_busqueda, function(err, lista_pedidos_clientes) {
+    this.m_pedidos_clientes.listar_pedidos_clientes(empresa_id, termino_busqueda, pagina_actual, function(err, lista_pedidos_clientes) {
         res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, { pedidos_clientes: lista_pedidos_clientes}));
     });
 };

@@ -15,6 +15,7 @@
     "pg-query" : "0.x",
     "commander" : "2.1.0",
     "db-migrate": "0.6.4",
-    "cron"   : ">=1.0.1"
+    "cron"   : ">=1.0.1",
+    "nodemailer" : "0.6.1"
   }
 }

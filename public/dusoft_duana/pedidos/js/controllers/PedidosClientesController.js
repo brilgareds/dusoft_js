@@ -9,39 +9,61 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller','models/
 
         function($scope, $rootScope, Request, $modal, Empresa, Cliente, Pedido, API, socket, $timeout, AlertService,Usuario,localStorageService) {
 
-
-            $scope.termino_busqueda = "";
             $scope.Empresa = Empresa;
             $scope.pedidosSeleccionados = [];
             $scope.session = {
                usuario_id:Usuario.usuario_id,
                auth_token:Usuario.token
             };
+            $scope.paginas = 0;
+            $scope.items = 0;
+            $scope.termino_busqueda = "";
+            $scope.ultima_busqueda  = "";
+            $scope.paginaactual = 0;
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
             
 
 
-            $scope.buscarPedidosCliente = function(termino) {
+            $scope.buscarPedidosCliente = function(termino, paginando) {
+
+                //valida si cambio el termino de busqueda
+                if($scope.ultima_busqueda != $scope.termino_busqueda){
+                    $scope.paginaactual = 0;
+                }
+
                 var obj = {
                     session:$scope.session,
                     data:{
                         pedidos_clientes:{
-                            termino_busqueda:termino
+                            termino_busqueda:termino,
+                            pagina_actual:$scope.paginaactual
                         }
                     }
                 };
 
-                Request.realizarRequest(API.PEDIDOS.LISTAR_PEDIDOS, "POST", obj, function(data) {
+               
 
-                    $scope.renderPedidosCliente(data.obj);
+                Request.realizarRequest(API.PEDIDOS.LISTAR_PEDIDOS, "POST", obj, function(data) {
+                    $scope.ultima_busqueda = $scope.termino_busqueda;
+                    $scope.renderPedidosCliente(data.obj, paginando);
                 });
             };
 
+            $scope.renderPedidosCliente = function(data, paginando) {
 
-            $scope.renderPedidosCliente = function(data) {
+                $scope.items = data.pedidos_clientes.length;
+                //se valida que hayan registros en una siguiente pagina
+                if(paginando && $scope.items == 0){
+                    if($scope.paginaactual > 0){
+                        $scope.paginaactual--;
+                    }
+                    AlertService.mostrarMensaje("warning","No se encontraron mas registros");
+                    return;
+                }
 
                 $scope.Empresa.vaciarPedidos();
+               
 
                 for (var i in data.pedidos_clientes) {
 
@@ -202,11 +224,6 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller','models/
 
             };
 
-            $scope.cerrarSesion = function(){
-                 localStorageService.remove("session");
-                 window.location = "../login";
-             };
-
             //eventos
 
             //delegados del sistema
@@ -232,22 +249,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller','models/
                 }
             });
 
-            //evento de coneccion al socket
-            socket.on("onConnected", function(datos){
-                var socketid = datos.socket_id;
-                var obj = {
-                  usuario_id : Usuario.usuario_id,
-                  auth_token : Usuario.token,
-                  socket_id : socketid
-                };
-
-                socket.emit("onActualizarSesion",obj);
-                console.log("onActualizarSesion");
-                console.log(obj);
-             });   
-
-            //el socket cerro la session
-            socket.on("onCerrarSesion",$scope.cerrarSesion);
+            
 
             //eventos de widgets
             $scope.onKeyPress = function(ev, termino_busqueda) {
@@ -255,6 +257,16 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller','models/
                 if (ev.which == 13) {
                     $scope.buscarPedidosCliente(termino_busqueda);
                 }
+            };
+
+            $scope.paginaAnterior = function(){
+                $scope.paginaactual--;
+                $scope.buscarPedidosCliente($scope.termino_busqueda,true);
+            };
+
+            $scope.paginaSiguiente = function(){
+                $scope.paginaactual++;
+                $scope.buscarPedidosCliente($scope.termino_busqueda,true);
             };
 
 

@@ -1,34 +1,83 @@
-define(["angular","js/directive"], function(angular, directive){
+define(["angular", "js/directive"], function(angular, directive) {
 
-    directive.directive('myTree',["$timeout", "$state",function(timer, $state) {
-       return function(scope, element, attrs) {
+    directive.directive('myTree', ["$state", "$rootScope", "$timeout", function($state, $rootScope, $timeout) {
+            return {
+                link: function(scope, element, attrs) {
 
-          //se debe esperar que el elemento este listo en el dom
-          angular.element(document).ready(function(){
-               $(element).jstree({
-                  'core':{
-                      data:scope.$parent.treedata,
-                      "open_parents": true
+                    //evento para saber el state del url
+                    //$rootScope.$on('$stateChangeSuccess', function(e, toState, toParams, fromState, fromParams){ 
+                    //observador para cuando los datos del arbol se carguen del servidor
 
-                  },
-                  "state" : { "key" : "demo2" },
-                  plugins: ["state"]
+                    var listener = scope.$watch(scope.$parent.treedata, function(e) {
+                        console.log("cambio de datos")
+                        var data = localStorage.getItem("tree");
 
-               }).
-               on("select_node.jstree",function(node,selected, event){
+                        if (data) {
+                            data = JSON.parse(data);
 
-                    //se valida si fue por medio de un evento o por el state del plugin
-                   if(selected.event){
-                      scope.$emit("nodeSelected",selected.node.original);
-                   }
-                   
-               });
+                        } else {
+                            data = {
+                                "state": {
+                                    "core": {
+                                        "open": [
+                                        ],
+                                        "scroll": {
+                                            "left": 0,
+                                            "top": 0
+                                        },
+                                        "selected": []
+                                    }
+                                }
+                            }
+                        };
 
+                        //timer para dar una espera en chrome
+                       $timeout(function() {
+                            for (var i in scope.$parent.treedata) {
+                                var obj = scope.$parent.treedata[i];
+                              //  console.log("url object " + obj.state + " current state" + $state.current.name)
+                                if (obj.state != undefined && obj.state != "") {
 
-           });
+                                    if (obj.state == $state.current.name) {
+                                        //console.log(obj.id)
+                                        data.state.core.selected = [obj.id];
 
-       }
-    }]);
+                                        localStorage.setItem("tree", JSON.stringify(data));
+                                        break;
+                                    }
+                                }
+                            }
+                            //remueve el listener
+                            listener();
+                            scope.iniTree();
+                        }, 100);
+
+                    });
+
+                    scope.iniTree = function() {
+                        //inicializacion del elemento cuando el dom este listo
+                        angular.element(document).ready(function() {
+                            $(element).jstree({
+                                'core': {
+                                    data: scope.$parent.treedata,
+                                    "open_parents": true
+
+                                },
+                                "state": {"key": "tree"},
+                                plugins: ["state"]
+
+                            }).on("select_node.jstree", function(node, selected, event) {
+                                //se valida si fue por medio de un evento o por el state del plugin
+                                if (selected.event) {
+                                    scope.$emit("nodeSelected", selected.node.original);
+                                }
+                            });
+                        });
+                    };
+
+                }
+            };
+        }]);
 
 });
 

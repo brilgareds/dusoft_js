@@ -7,6 +7,7 @@ var http = require('http');
 var path = require('path');
 var intravenous = require('intravenous');
 var program = require('commander');
+var nodemailer = require('nodemailer');
 
 
 /*=========================================
@@ -17,6 +18,7 @@ G.settings = require('./lib/Settings').create();
 G.db = require('./lib/Pg').create();
 G.log = require('./lib/Logs');
 G.utils = require('./lib/Utils');
+G.random = require('./lib/Random');
 G.auth = require('./lib/Authentication');
 
 /*=========================================
@@ -63,6 +65,9 @@ var server = app.listen(G.settings.server_port);
 var io = require('socket.io').listen(server);
 var container = intravenous.create();
 
+
+container.register("emails", nodemailer);
+
 /*=========================================
  * Inicializacion y Conexion a la Base de Datos
  * =========================================*/
@@ -107,10 +112,6 @@ modulos.cargarRoutes(app, container, io);
 
 app.get('/api/configurarRoutes', function(req, res) {
     modulos.configurarRoutes(req, res, app, container);
-});
-
-app.get('/test', function(req, res) {
-   res.send(G.utils.r(req.url, 'test', 404, req.session));
 });
 
 app.all('/dusoft_duana', function(req, res) {

@@ -3,6 +3,7 @@
         <div class="panel panel-primary" >
             <div class="panel-heading">
                 <div class="panel-title">Dusoft - Iniciar Sesion</div>
+                <div style="float:right; font-size: 80%; position: relative; top:-17px;"><a href="#recuperarContrasenia" style="color: #fff">Olvidó Contraseña?</a></div>
             </div>     
 
             <div style="padding-top:30px" class="panel-body" >
@@ -10,7 +11,7 @@
                 <alert type="danger"  class="col-sm-12 alert alert-danger" ng-show="mostrarmensaje">{{msgerror}}</alert>
 
                 <div class="col-xs-6 col-sm-6 col-md-6 separator social-login-box" style="width: 200px; height: 116px; position: relative;"> <br />
-                    <img src="/images/kde_folder_locked.png" style="position: absolute; top: -11px;">
+                    <img src="/images/Very-Basic-Lock-icon.png" style="position: absolute; top: -11px;">
                 </div>
 
 
@@ -31,14 +32,14 @@
             </div>    
             <div class="panel-footer">
                 <div class="row">
-                    <div class="col-xs-6 col-sm-6 col-md-6">
+                    <!--div class="col-xs-6 col-sm-6 col-md-6">
                         <div class="checkbox">
                             <label>
                                 <input type="checkbox" value="Remember">
                                 Recordarme!
                             </label>
                         </div>
-                    </div>
+                    </div-->
                     <div style="margin-top:10px" class="form-group">                         
                         <div class="col-md col-md-offset-10">
                             <button id="btn-fbsignup" type="button" class="btn btn-primary" name="btnentrar" ng-disabled="loginform.$invalid" ng-click="autenticar(usuario, clave)"><i class="icon-facebook"></i> Iniciar </button>

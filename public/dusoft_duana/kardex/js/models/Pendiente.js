@@ -12,6 +12,10 @@ define(["angular", "js/models"], function(angular, models) {
         	this.pedido = pedido;
         };
 
+        Pendiente.prototype.setOrden = function(orden){
+            this.orden = orden;
+        };
+
         this.get = function(fecha_registro) {
             return new Pendiente(fecha_registro);
         };

@@ -19,20 +19,42 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
                auth_token:Usuario.token
             };
 
+            $scope.paginas = 0;
+            $scope.items = 0;
+            $scope.termino_busqueda = "";
+            $scope.ultima_busqueda  = "";
+            $scope.paginaactual = 0;
 
-            $scope.buscarPedidosFarmacias = function(termino) {
+
+            $scope.buscarPedidosFarmacias = function(termino, paginando) {
+
+                //valida si cambio el termino de busqueda
+                if($scope.ultima_busqueda.termino_busqueda != $scope.termino_busqueda
+                    || $scope.ultima_busqueda.seleccion != $scope.seleccion){
+                    $scope.paginaactual = 0;
+                }
+
+                console.log($scope.ultima_busqueda);
+                console.log($scope.termino_busqueda +" "+$scope.seleccion)
+
                 var obj = {
                     session:$scope.session,
                     data:{
                         pedidos_farmacias:{
-                            termino_busqueda:termino, empresa_id:$scope.seleccion
+                            termino_busqueda:termino,
+                            empresa_id:$scope.seleccion,
+                            pagina_actual:$scope.paginaactual
                         }
                     }
                 };
 
                 Request.realizarRequest(API.PEDIDOS.LISTAR_PEDIDOS_FARMACIAS, "POST", obj , function(data) {
                     if(data.status == 200){
-                        $scope.renderPedidosFarmacias(data.obj);
+                        $scope.ultima_busqueda = {
+                            termino_busqueda:$scope.termino_busqueda,
+                            seleccion:$scope.seleccion
+                        }
+                        $scope.renderPedidosFarmacias(data.obj, paginando);
                     }
                     
                 });
@@ -135,8 +157,17 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
             };
 
 
-            $scope.renderPedidosFarmacias = function(data) {
+            $scope.renderPedidosFarmacias = function(data, paginando) {
                // console.log(data);
+               $scope.items = data.pedidos_farmacias.length;
+                //se valida que hayan registros en una siguiente pagina
+                if(paginando && $scope.items == 0){
+                    if($scope.paginaactual > 0){
+                        $scope.paginaactual--;
+                    }
+                    AlertService.mostrarMensaje("warning","No se encontraron mas registros");
+                    return;
+                }
 
                 $scope.Empresa.vaciarPedidosFarmacia();
 
@@ -238,6 +269,15 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
             };
 
 
+            $scope.paginaAnterior = function(){
+                $scope.paginaactual--;
+                $scope.buscarPedidosFarmacias($scope.termino_busqueda,true);
+            };
+
+            $scope.paginaSiguiente = function(){
+                $scope.paginaactual++;
+                $scope.buscarPedidosFarmacias($scope.termino_busqueda,true);
+            };
 
             $scope.buscarPedidosFarmacias("");
             $scope.listarEmpresas();

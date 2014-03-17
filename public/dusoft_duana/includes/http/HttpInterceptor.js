@@ -8,7 +8,11 @@ define(["angular","js/services"], function(angular, services){
 
                     //el usuario actual no esta autenticado en el api, el token no es valido
                     if(response.data.status == 401){
-                        window.location = "../pages/"+response.data.status+".html";
+                        /*var timer = setTimeout(function(){
+                            clearTimeout(timer);
+                            window.location = "../pages/"+response.data.status+".html";
+                        },500)*/
+                         window.location = "../pages/"+response.data.status+".html";
                     }
                     //return $q.reject(response);
 

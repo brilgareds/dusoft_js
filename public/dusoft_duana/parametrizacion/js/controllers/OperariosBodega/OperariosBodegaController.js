@@ -41,7 +41,7 @@ define(["angular", "js/controllers", "controllers/OperariosBodega/Administracion
             $scope.lista_operarios_bodega = {
                 data: 'operarios',
                 enableColumnResize: true,
-                enableRowSelection: false,
+                multiSelect: false,
                 columnDefs: [
                     {field: 'nombre_operario', displayName: 'Nombre Operario'},
                     {field: 'descripcion_estado', displayName: 'Estado'},

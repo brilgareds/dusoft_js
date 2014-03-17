@@ -3,9 +3,15 @@ var PedidosClienteModel = function() {
 };
 
 // Buscar Todos los pedidos de los clientes, permitiendo filtrar por cada uno de los campos
-PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, termino_busqueda, callback) {
+PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, termino_busqueda, pagina, callback) {
 
-
+    var offset = G.settings.limit * pagina;
+    
+    console.log('=========================================================');
+    console.log('Limit '+ G.settings.limit);
+    console.log('Offset ' + offset);
+    console.log('=========================================================');
+    
     var sql = " select \
                 a.pedido_cliente_id as numero_pedido, \
                 b.tipo_id_tercero as tipo_id_cliente, \
@@ -39,7 +45,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
                         or b.telefono ilike $2   \
                         or c.vendedor_id ilike $2 \
                         or c.nombre ilike $2) \
-                AND (a.estado IN ('0','1','2','3')) order by 1 desc; ";
+                AND (a.estado IN ('0','1','2','3')) order by 1 desc  limit $3 offset $4";
 
     /*var sql = " select \
      a.pedido_cliente_id as numero_pedido, \
@@ -82,7 +88,9 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
      AND (a.estado IN ('0','1','2','3')) order by 1 desc; ";*/
 
 
-    G.db.query(sql, [empresa_id, "%" + termino_busqueda + "%"], function(err, rows, result) {
+
+
+    G.db.query(sql, [empresa_id, "%" + termino_busqueda + "%", G.settings.limit, offset], function(err, rows, result) {
         callback(err, rows);
     });
 

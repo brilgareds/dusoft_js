@@ -1,5 +1,9 @@
 
-define(["angular", "js/controllers", "models/Movimiento", "models/Pendiente", "models/PedidoKardex", "models/FarmaciaKardex", "models/ClienteKardex"], function(angular, controllers) {
+define([
+    "angular", "js/controllers", "models/Movimiento",
+     "models/Pendiente", "models/PedidoKardex", "models/FarmaciaKardex", 
+     "models/ClienteKardex", "includes/classes/Proveedor", "includes/classes/OrdenCompra"],
+function(angular, controllers) {
 
     var fo = controllers.controller('MovimientoController', [
         '$scope', "$rootScope", "Request",
@@ -7,8 +11,10 @@ define(["angular", "js/controllers", "models/Movimiento", "models/Pendiente", "m
         'ProductoMovimiento', '$modal', "API",
         "Movimiento", "$sce", "$filter", "Pendiente",
         "PedidoKardex", "FarmaciaKardex", "ClienteKardex",
+        "Proveedor", "OrdenCompra",
+
         function($scope, $rootScope, Request, $filter, $state, Empresa, ProductoMovimiento, $modal, API,
-                Movimiento, $sce, $filter, Pendiente, PedidoKardex, FarmaciaKardex, ClienteKardex) {
+                Movimiento, $sce, $filter, Pendiente, PedidoKardex, FarmaciaKardex, ClienteKardex, Proveedor, OrdenCompra) {
 
             $scope.Empresa = Empresa;
             $scope.fechainicial = new Date();
@@ -69,9 +75,20 @@ define(["angular", "js/controllers", "models/Movimiento", "models/Pendiente", "m
                 columnDefs: [
                     {field: 'pedido.numero_pedido', displayName: 'Pedido'},
                     {field: 'pedido.cantidad_solicitada', displayName: 'Cant Solicitada'},
-                    {field: 'pedido.cliente.nombre_cliente', displayName: 'Cliente'},
+                    {field: 'pedido.cliente.nombre_tercero', displayName: 'Cliente'},
                     {field: 'fecha_registro', displayName: 'Fecha'},
                     {field: 'pedido.usuario', displayName: 'Usuario'}
+                ]
+            };
+
+            $scope.lista_pendientes_ordenes = {
+                data: "producto.getPendientesOrdenes()",
+                columnDefs: [
+                    {field: 'orden.numero_orden_compra', displayName: 'Orden De Compra'},
+                    {field: 'orden.cantidad_solicitada', displayName: 'Cant Solicitada'},
+                    {field: 'orden.proveedor.nombre_tercero', displayName: 'Proveedor'},
+                    {field: 'fecha_registro', displayName: 'Fecha'},
+                    {field: 'orden.usuario', displayName: 'Usuario'}
                 ]
             };
 
@@ -97,6 +114,8 @@ define(["angular", "js/controllers", "models/Movimiento", "models/Pendiente", "m
                 console.log($scope.producto)
                 $scope.existencia = $scope.producto.existencia;
                 $scope.nombreProducto = producto.descripcion;
+                $scope.cantidad_salidas = 0;
+                $scope.cantidad_entradas = 0;
 
                 //movimientos
                 for (var i in movimientos.movimientos_producto) {
@@ -168,7 +187,35 @@ define(["angular", "js/controllers", "models/Movimiento", "models/Pendiente", "m
                     $scope.producto.agregarPendienteCliente(pendiente);
                 }
 
-                console.log($scope.producto.getPendientesClientes());
+                //pendientes ordenes
+
+                for (var i in movimientos.pendientes_ordenes_compra) {
+                    var obj = movimientos.pendientes_ordenes_compra[i];
+
+                    var pendiente = Pendiente.get(obj.fecha_registro);
+                    var orden = OrdenCompra.get(obj.numero_orden_compra);
+
+                    var proveedor = Proveedor.get(
+                            obj.nombre_tercero,
+                            obj.tipo_id_tercero,
+                            obj.tercero_id
+                    );
+
+                    console.log(proveedor.nombre_tercero + " ===")
+                    orden.setDatos(
+                        {
+                            proveedor:proveedor,
+                            cantidad_solicitada:obj.cantidad_solicitada,
+                            cantidad_pendiente:obj.cantidad_pendiente,
+                            usuario:obj.usuario
+                        }
+                    );
+                    pendiente.setOrden(orden);
+
+                    $scope.producto.agregarPendienteOrden(pendiente);
+                }
+
+                console.log($scope.producto.getPendientesOrdenes());
 
             });
 

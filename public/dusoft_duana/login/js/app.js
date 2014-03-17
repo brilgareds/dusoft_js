@@ -27,6 +27,12 @@
                 templateUrl: "views/login.html",
                 controller:"Logincontroller"
             })
+            
+            .state('recuperarContrasenia', {
+                url: "/recuperarContrasenia",
+                templateUrl: "views/recuperar_contrasenia.html",
+                controller:"Logincontroller"
+            })
 
     });
 

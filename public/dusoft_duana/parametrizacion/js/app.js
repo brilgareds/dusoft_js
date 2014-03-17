@@ -45,7 +45,7 @@ define([
 
         $httpProvider.responseInterceptors.push('HttpInterceptor');
 
-        $urlRouterProvider.otherwise("/parametrizacion");
+        $urlRouterProvider.otherwise("/OperariosBodega");
 
         $stateProvider
             .state('OperariosBodega', {

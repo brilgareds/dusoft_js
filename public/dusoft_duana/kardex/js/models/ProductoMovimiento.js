@@ -10,6 +10,7 @@ define(["angular","js/models","includes/classes/Producto"], function(angular, mo
 			this.movimientos = [];
 			this.pendientesFarmacia = [];
 			this.pendientesClientes = [];
+			this.pendientesOrdenes  = [];
 			this.existencia = existencia;
 			this.precio = precio;
 			this.existencia_total = existencia_total;
@@ -49,6 +50,14 @@ define(["angular","js/models","includes/classes/Producto"], function(angular, mo
 
 		ProductoMovimiento.prototype.getPendientesClientes = function(){
 			return this.pendientesClientes;
+		};		
+
+		ProductoMovimiento.prototype.agregarPendienteOrden = function(pendiente){
+			this.pendientesOrdenes.push(pendiente);
+		};
+
+		ProductoMovimiento.prototype.getPendientesOrdenes = function(){
+			return this.pendientesOrdenes;
 		};		
 
 		this.get = function(codigo, nombre, existencia, precio, existencia_total, costo, costo_ultima_compra, porc_iva){

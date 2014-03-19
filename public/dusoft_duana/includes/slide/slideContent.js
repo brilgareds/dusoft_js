@@ -14,7 +14,7 @@ define(["angular","js/directive"], function(angular, directive){
 
           },
           controller: function($scope, $element) {
-              var rootWidth = $(window).width() + 200;
+              var rootWidth = $(window).width() + 2000;
               $scope.$parent.$on('mostrarslide', function($event) {
                   $($element).animate({"right":"0px"});
               });

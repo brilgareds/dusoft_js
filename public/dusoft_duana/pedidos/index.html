@@ -10,11 +10,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
     </head>
 
-    <body class="">
-        <div class="row" ng-include src="'../includes/header/header.html'" ng-controller="HeaderController"></div>
+    <body class="body">
+        <div class="row" class="header" ng-include src="'../includes/header/header.html'" ng-controller="HeaderController" ></div>
 
 
-        <div  ng-include src="'../includes/loader/loader.html'"></div>
+        <div class="loader"  ng-include src="'../includes/loader/loader.html'"></div>
 
         <div class="row contenedor">
             <div ng-include src="'../includes/menu/menu.html'" class="col-md-3 contenedormenu cerrarmenu" ng-controller="menucontroller"></div>

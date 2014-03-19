@@ -123,6 +123,10 @@ input.readonlyinput[readonly]{
 	z-index: 10000;
 }
 
+.menutitulo{
+	text-align: center;
+}
+
  .navbar-content
 {
     width:320px;
@@ -180,6 +184,12 @@ div.ngHeaderCell	{
     position: fixed;
     z-index: 4;
     width: 300px;
+    height: 100%;
+  }
+
+  div.contenedormenu .navbar{
+  	border: 1px solid gray;
+  	height: 100%;
   }
 
   div.cerrarmenu{

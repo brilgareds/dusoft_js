@@ -128,8 +128,8 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent', 
                     session: $scope.session,
                     data: {
                         kardex: {
-                            fecha_inicial: $filter('date')($scope.fechainicial, "yyyy-MM-dd"),
-                            fecha_final: $filter('date')($scope.fechafinal, "yyyy-MM-dd"),
+                            fecha_inicial: $filter('date')($scope.fechainicial, "yyyy-MM-dd") + " 00:00:00",
+                            fecha_final: $filter('date')($scope.fechafinal, "yyyy-MM-dd")+ " 23:59:00",
                             codigo_producto: row.entity.codigo_producto
                         }
                     }

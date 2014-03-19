@@ -5,28 +5,7 @@
         "text": "Administracion de Pedidos",
         "url": "pedidos"
     },
-    {
-        "id": "2",
-        "parent": "1",
-        "text": "Creacion De Pedidos",
-        "url": "route1",
-        "parentname": "pedidos"
-    },
-    {
-        "id": "3",
-        "parent": "2",
-        "text": "Clientes",
-        "url": "clientes",
-        "parentname": "pedidos"
-    },
-    {
-        "id": "4",
-        "parent": "2",
-        "text": "Farmacia",
-        "url": "route1",
-        "state":"route1",
-        "parentname": "pedidos"
-    },
+
     {
         "id": "5",
         "parent": "1",
@@ -36,11 +15,7 @@
         "icon": "glyphicon glyphicon-file",
         "state": "AsignarPedidos"
     },
-    {
-        "id": "6",
-        "parent": "1",
-        "text": "Auditoria De Pedidos"
-    },
+
     {
         "id": "7",
         "parent": "#",
@@ -54,16 +29,7 @@
         "url": "OperariosBodega",
         "parentname": "parametrizacion"
     },
-    {
-        "id": "9",
-        "parent": "8",
-        "text": "Usuarios del Sistema"
-    },
-    {
-        "id": "10",
-        "parent": "8",
-        "text": "Usuarios Dpto Ventas"
-    },
+
     {
         "id": "11",
         "parent": "8",

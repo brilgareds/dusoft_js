@@ -5,8 +5,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         function($scope, User, Request, localStorageService) {
 
             console.log("init login controller");
-            $scope.usuario = "mauricio.barrios";
-            $scope.clave = "123456";
+            $scope.usuario = "";
+            $scope.clave = "";
             $scope.mostrarmensaje = false;
             $scope.ocultar_formulario = true;
 
@@ -32,7 +32,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 Request.realizarRequest("/login", "POST", obj, function(datos) {
                     if (datos.status == 200) {
                         localStorageService.add("session", JSON.stringify(datos.obj.sesion));
-                        window.location = "../pedidos/";
+                        window.location = "../kardex/";
                     } else {
                         $scope.mostrarmensaje = true;
                         $scope.msgerror = datos.msj || "Ha ocurrido un error...";

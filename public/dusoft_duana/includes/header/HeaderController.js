@@ -1,6 +1,7 @@
 define(["angular", "js/controllers", "includes/classes/Usuario"], function(angular, controllers) {
     controllers.controller('HeaderController', ['$scope', '$rootScope', "$state", "Request", "Usuario","socket",
         function($scope, $rootScope, $state, Request, Usuario, socket) {
+           
             $scope.cerraSesionBtnClick = function($event) {
                 $event.preventDefault();
                 $scope.cerraSesion(function(){
@@ -24,6 +25,10 @@ define(["angular", "js/controllers", "includes/classes/Usuario"], function(angul
                     callback();
 
                 });
+            };
+
+            $scope.bloquearPantalla = function(){
+                alert("")
             };
 
             socket.on("onCerrarSesion",function(){

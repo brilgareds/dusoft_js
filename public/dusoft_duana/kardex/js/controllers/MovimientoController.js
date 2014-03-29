@@ -42,6 +42,7 @@ function(angular, controllers) {
                 data: 'producto.getMovimientos()',
                 multiSelect: false,
                 rowHeight: 250,
+                sortInfo: {fields:['tipo_movimiento', 'fecha'], directions:['asc', 'asc'] },
                 columnDefs: [
                     {field: 'tipo_movimiento', displayName: 'T M', width: "50"},
                     {field: 'fecha', displayName: 'Fecha', cellTemplate: "<div> {{formatearFecha(row.entity.fecha)}} </div>", width: "10%"},

@@ -30,6 +30,7 @@ program
         .option('-p, --port <n>', 'Run server on provided port', parseInt)
         .option('-d, --dev', 'Run server in Development mode')
         .option('-t, --test', 'Run server in Testing mode')
+        .option('-e, --eco', 'Run server in Testing mode in ecodev')
         .option('-P, --prod', 'Run server in Production mode')
         .option('-c, --config', 'Output settings');
 program.parse(process.argv);
@@ -44,6 +45,8 @@ else if (program.test)
     G.settings.setEnv(G.settings.envTesting());
 else if (program.prod)
     G.settings.setEnv(G.settings.envProduction());
+else if (program.eco)
+    G.settings.setEnv(G.settings.envExternalTesting());
 else
     G.settings.setEnv(G.settings.env);
 

@@ -1,6 +1,12 @@
-define(["angular", "js/controllers", "includes/classes/Usuario"], function(angular, controllers) {
+define(["angular", "js/controllers", "includes/classes/Usuario", "includes/header/lockscreen"], function(angular, controllers) {
     controllers.controller('HeaderController', ['$scope', '$rootScope', "$state", "Request", "Usuario","socket",
         function($scope, $rootScope, $state, Request, Usuario, socket) {
+
+            $scope.mostarLock = false;
+            $scope.obj = {
+                usuario:"fff",
+                clave:""
+            };
            
             $scope.cerraSesionBtnClick = function($event) {
                 $event.preventDefault();
@@ -17,7 +23,6 @@ define(["angular", "js/controllers", "includes/classes/Usuario"], function(angul
                     auth_token: Usuario.token
                 };
 
-                console.log(Usuario)
 
                 Request.realizarRequest('/api/logout', "POST", {session: $scope.session, data: {}}, function(data) {
                     //console.log(data)
@@ -27,8 +32,13 @@ define(["angular", "js/controllers", "includes/classes/Usuario"], function(angul
                 });
             };
 
+            $scope.autenticar = function(){
+                $scope.mostarLock = false;
+            };
+
             $scope.bloquearPantalla = function(){
-                alert("")
+                $scope.mostarLock = true;
+                $scope.obj = {};
             };
 
             socket.on("onCerrarSesion",function(){

@@ -56,6 +56,7 @@ KardexModel.prototype.buscar_productos = function(termino_busqueda, pagina, call
 // Selecciona los movimientos del producto dentro de un periodo de tiempo determinado
 KardexModel.prototype.obtener_movimientos_productos = function(empresa_id, centro_utilidad_id, bodega_id, codigo_producto, fecha_inicial, fecha_final, callback) {
 
+    // sql para la bd de pruebas
     var sql_ = " SELECT *  \n" +
             " FROM  " +
             " ( " +
@@ -205,7 +206,8 @@ KardexModel.prototype.obtener_movimientos_productos = function(empresa_id, centr
             "   ) " +
             " ) AS DATOS ORDER BY DATOS.fecha ;";
 
-
+           
+    // sql para la bd de produccion
     var sql = " SELECT *  \n" +
             " FROM  " +
             " ( " +

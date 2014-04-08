@@ -20,8 +20,29 @@ a {
 	max-height: 40px;
 }
 
+
+.bodybg{
+
+	background-image:url(../images/lock.jpg);
+	background-size: cover;
+	background-repeat: no-repeat;
+}
+
+
+.botonmenu{
+	width: 22px;
+	height: 22px;
+	padding:4px;
+	background-color: #428bca!important;
+}
+
 .contenedormenu .botonmenu{
 	display: none;
+
+}
+
+.contenedormenu .navbar{
+	background-color: #e7f2fa;
 }
 
 
@@ -77,6 +98,10 @@ input.readonlyinput[readonly]{
 	cursor: default;
 }
 
+.contenedormenu .jstree-hovered{
+	background-color: #beebff!important;
+}
+
 .kardex{
 	width: 100%;
 	height:auto;
@@ -84,6 +109,10 @@ input.readonlyinput[readonly]{
 	position: absolute;
 	background-color: rgba(248,248,248,0.9);
 	z-index: 4;
+}
+
+.lockScreen .text-muted{
+	font-size: 14px;
 }
 
 .largeCell{
@@ -123,6 +152,18 @@ input.readonlyinput[readonly]{
 	z-index: 10000;
 }
 
+.lockcontainer{
+	position: absolute;
+	top:23%;
+	right: 0px;
+	left:0px;
+	bottom: 0px;
+}
+
+.vbody{
+	top: 21%;
+}
+
 .lockScreen{
 	position: absolute;
 	top:0px;
@@ -130,11 +171,43 @@ input.readonlyinput[readonly]{
 	left:0px;
 	bottom: 0px;
 	background-color:rgba(0,0,0,0.6);
+	background-image:url(../images/lock.jpg);
+	background-size: 100% 100%;
 	z-index: 10000000;
 }
 
+
+.logincontainer{
+	width: 100%;
+}
+
+#loginform{
+	margin-bottom: 0px;
+}
 .menutitulo{
 	text-align: center;
+}
+
+ nav.navbar-fixed-top{
+	background-color: #428bca;
+	border-color: #428bca;
+}
+
+nav.navbar-default .navbar-nav>li>a, nav.navbar-default .navbar-brand {
+	color:white;
+}
+
+
+nav.navbar-default .navbar-nav>li>a:hover{
+	color: white;
+}
+
+.ngCanvas .ngRow.even{
+	background-color: #f9f9f9;
+}
+
+.ngCanvas .ngRow.odd{
+	background-color: white;
 }
 
  .navbar-content
@@ -174,6 +247,17 @@ div.ngHeaderCell	{
 	text-align: center;
 }
 
+.tabledisplay{
+	display: table;
+	height: 100%;
+}
+
+.tablecell{
+	display: table-cell;
+	float: none!important;
+	vertical-align: middle;
+}
+
 .tabkardex .grupodefault{
 	padding-right: 0px;
 }
@@ -181,6 +265,14 @@ div.ngHeaderCell	{
 .txt-center{
 	text-align: center;
 	padding-top: 4px;
+}
+
+.vcenter {
+    position: absolute;
+    top: 0px;
+    right:0px;
+    left:0px;
+    bottom: 0px;
 }
 
 /**media query*/
@@ -194,24 +286,32 @@ div.ngHeaderCell	{
     position: fixed;
     z-index: 4;
     width: 300px;
-    height: 100%;
+    top:53px;
+    height: 760px;
   }
 
   div.contenedormenu .navbar{
-  	border: 1px solid gray;
+  	/*border: 1px solid gray;*/
+  	background-color: rgba(231,242,250,0.9);
+  	-moz-box-shadow: 0 0 1px 1px #888;
+	-webkit-box-shadow: 0 0 1px 1px #888;
+	box-shadow: 0 0 1px 1px #888;
   	height: 100%;
   }
 
   div.cerrarmenu{
-  	left: -260px;
+  	left: -261px;
   }
 
+
+
   div.mostrarmenu{
-  	left: -13px;
+  	left: -14px;
   }
 
   div.contenedorDerecho{
-  	width: 100%;
+  	width: 98%;
+  	margin-left:10px;
   }
 
   div.contenidoPrincipal{

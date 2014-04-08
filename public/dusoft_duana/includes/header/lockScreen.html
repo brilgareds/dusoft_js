@@ -1,5 +1,5 @@
-<div class="container">       
-    <div id="loginbox" style="margin-top:50px;" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">                    
+<div class="container tabledisplay">       
+    <div id="loginbox"  class="tablecell mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">                    
         <div class="panel panel-primary" >
             <div class="panel-heading">
                 <div class="panel-title">Dusoft</div>
@@ -9,26 +9,30 @@
 
                     <alert type="danger"  class="col-sm-12 alert alert-danger" ng-show="mostrarmensaje">{{msgerror}}</alert>
 
-                    <div class="col-xs-6 col-sm-6 col-md-6 separator social-login-box" style="width: 200px; height: 116px; position: relative;"> <br />
-                        <img src="/images/Very-Basic-Lock-icon.png" style="position: absolute; top: -11px;">
+                    <div class="col-xs-6 col-sm-6 col-md-5 separator social-login-box" style="width: 200px; height: 122px; position: relative;"> <br />
+                        <img src="/images/avatar.png" style="position: absolute; top: -11px; width:137px;">
                     </div>
 
 
                   
 
                         <div style="margin-bottom: 25px" class="input-group">
-                            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-                            <input id="username" name="login-username" type="text" popover-placement="right" popover="Requerido" popover-trigger="focus" required class="form-control"  placeholder="Usuario" required ng-model="obj.usuario"  />                                        
+                            <span class="text-muted small">Pedro Meneses</span>
                         </div>
 
                         <div style="margin-bottom: 25px" class="input-group">
+                            <span class="text-muted small">meneses@duanaltda.com</span>
+                        </div>
+                        <div style="margin-bottom: 25px" class="input-group">
                             <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
                             <input id="password" popover-placement="right" popover="Requerido" popover-trigger="focus" type="password" required class="form-control"  placeholder="Contraseña" required ng-model="obj.clave" />
+                            <!--span class="input-group-addon"><i class="glyphicon glyphicon-circle-arrow-right"></i></span-->
                         </div>                                        
                        
 
 
                 </div>    
+
                 <div class="panel-footer">
                     <div class="row">
 
@@ -39,6 +43,7 @@
                         </div>
                     </div>
                 </div>
+  
             </form>  
         </div>  
     </div>

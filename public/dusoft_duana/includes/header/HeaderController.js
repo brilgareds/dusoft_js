@@ -4,7 +4,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/heade
 
             $scope.mostarLock = false;
             $scope.obj = {
-                usuario:"fff",
+                usuario:"",
                 clave:""
             };
            

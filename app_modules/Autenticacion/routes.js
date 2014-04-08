@@ -35,7 +35,7 @@ module.exports = function(app, di_container, io) {
     });
     
     app.post('/api/unlockScreen', function(req, res) {
-        c_auth.unlockScreen(req, res);
+        c_auth.unLockScreen(req, res);
     });
 
     app.post('/forgout', function(req, res) {

@@ -55,6 +55,52 @@ Autenticacion.prototype.loginUsuario = function(req, res) {
     });
 };
 
+Autenticacion.prototype.lockScreen = function(req, res) {
+
+    var that = this;
+
+    var usuario = req.session.user;
+
+    G.auth.get(usuario.usuario_id, usuario.auth_token, function(err, session) {
+        console.log('========session===========');
+        console.log(session);
+        return;
+        usuario.lock_screen = '1';
+
+        G.auth.update(usuario, function(err, rows) {
+            console.log('========rows===========');
+            console.log(rows);
+            return;
+        });
+    });
+};
+
+Autenticacion.prototype.unLockScreen = function(req, res) {
+
+    var that = this;
+
+    var usuario = req.session.user;
+    var args = req.body.data;
+
+    if (args.login.cotrasenia === undefined || args.login.contrasenia === "") {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios Estan Vacíos', 404, {}));
+        return;
+    }
+
+
+    G.auth.get(usuario.usuario_id, usuario.auth_token, function(err, session) {
+        console.log('========session===========');
+        console.log(session);
+        return;
+        usuario.lock_screen = '1';
+
+        G.auth.update(usuario, function(err, rows) {
+            console.log('========rows===========');
+            console.log(rows);
+            return;
+        });
+    });
+};
 
 Autenticacion.prototype.recuperarContrasenia = function(req, res) {
 
@@ -74,7 +120,7 @@ Autenticacion.prototype.recuperarContrasenia = function(req, res) {
 
     var nombre_usuario = args.login.usuario;
     var constrasenia = G.random.randomKey(2, 8);
-  
+
 
     var smtpTransport = this.emails.createTransport("SMTP", {
         service: "Gmail",
@@ -139,7 +185,6 @@ Autenticacion.prototype.recuperarContrasenia = function(req, res) {
         }
     });
 };
-
 
 Autenticacion.prototype.logoutUsuario = function(req, res) {
 

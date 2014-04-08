@@ -29,6 +29,14 @@ module.exports = function(app, di_container, io) {
     app.post('/login', function(req, res) {
         c_auth.loginUsuario(req, res);
     });
+    
+    app.post('/api/lockScreen', function(req, res) {
+        c_auth.lockScreen(req, res);
+    });
+    
+    app.post('/api/unlockScreen', function(req, res) {
+        c_auth.unlockScreen(req, res);
+    });
 
     app.post('/forgout', function(req, res) {
         c_auth.recuperarContrasenia(req, res);

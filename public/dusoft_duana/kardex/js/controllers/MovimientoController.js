@@ -41,8 +41,8 @@ function(angular, controllers) {
             $scope.lista_movimientos = {
                 data: 'producto.getMovimientos()',
                 multiSelect: false,
-                rowHeight: 250,
-                sortInfo: {fields:['tipo_movimiento', 'fecha'], directions:['asc', 'asc'] },
+                rowHeight: 220,
+                sortInfo: {fields:['fecha'], directions:['desc'] },
                 columnDefs: [
                     {field: 'tipo_movimiento', displayName: 'T M', width: "50"},
                     {field: 'fecha', displayName: 'Fecha', cellTemplate: "<div> {{formatearFecha(row.entity.fecha)}} </div>", width: "10%"},
@@ -109,10 +109,10 @@ function(angular, controllers) {
 
 
             //eventos personalizados
-            $rootScope.$on("mostrarslide", function(e, producto, movimientos) {
+            $rootScope.$on("mostrarslide", function(e, producto, movimientos, filtro) {
                 $scope.producto = angular.copy(producto);
                 console.log("====");
-                console.log($scope.producto)
+                console.log(filtro)
                 $scope.existencia = $scope.producto.existencia;
                 $scope.nombreProducto = producto.descripcion;
                 $scope.cantidad_salidas = 0;
@@ -122,7 +122,14 @@ function(angular, controllers) {
                 for (var i in movimientos.movimientos_producto) {
                     var movimiento = Movimiento.get();
                     movimiento.setDatos(movimientos.movimientos_producto[i]);
-                    $scope.producto.agregarMovimiento(movimiento);
+
+                    if(filtro.tipo == ""){
+                        $scope.producto.agregarMovimiento(movimiento);
+
+                    } else if(filtro.tipo == movimiento.tipo_movimiento){
+                        $scope.producto.agregarMovimiento(movimiento);
+                    }
+                    
 
                     if (movimiento.tipo_movimiento == "E") {
                         $scope.cantidad_salidas = $scope.cantidad_salidas + movimiento.cantidad_salidas;

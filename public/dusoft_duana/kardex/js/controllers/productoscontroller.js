@@ -17,6 +17,15 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent', 
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda  = "";
 
+            $scope.movimientos = [
+                {descripcion:"Filtrar tipo movimiento", tipo:""},
+                {descripcion:"E - Egreso", tipo:"E"},
+                {descripcion:"I - Ingreso", tipo:"I"}
+
+            ];
+
+            $scope.selemovimiento = $scope.movimientos[0];
+
 
           //  $scope.fechainicial = new Date((fechaActual.getMonth() + 1)+"/01/" + (fechaActual.getFullYear() -1));
             $scope.fechainicial = new Date("01/01/" + fechaActual.getFullYear());
@@ -142,7 +151,7 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent', 
                         function(data) {
                             if (data.status == 200) {
                                 if (data.obj.movimientos_producto.length > 0) {
-                                    $scope.$emit('mostrarslide', row.entity, data.obj);
+                                    $scope.$emit('mostrarslide', row.entity, data.obj, $scope.selemovimiento);
                                 } else {
                                     AlertService.mostrarMensaje("warning", "El producto no tiene movimientos");
                                 }

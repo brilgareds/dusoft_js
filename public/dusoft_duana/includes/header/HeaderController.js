@@ -64,6 +64,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/heade
 
 
 
+
                 Request.realizarRequest('/api/lockScreen', "POST", {session: session, data: {}}, function(data) {
                     if(data.status == 200){
                         $scope.mostarLock = true;

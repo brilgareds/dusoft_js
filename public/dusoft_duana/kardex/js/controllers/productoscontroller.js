@@ -17,18 +17,11 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent', 
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda  = "";
 
-            $scope.movimientos = [
-                {descripcion:"Filtrar tipo movimiento", tipo:""},
-                {descripcion:"E - Egreso", tipo:"E"},
-                {descripcion:"I - Ingreso", tipo:"I"}
-
-            ];
-
-            $scope.selemovimiento = $scope.movimientos[0];
+            $scope.slideurl = "views/kardex.html";
 
 
           //  $scope.fechainicial = new Date((fechaActual.getMonth() + 1)+"/01/" + (fechaActual.getFullYear() -1));
-            $scope.fechainicial = new Date("01/01/" + fechaActual.getFullYear());
+            $scope.fechainicial = new Date("01/01/" + (fechaActual.getFullYear() -2));
             $scope.fechafinal = fechaActual;
             $scope.abrirfechafinal = false;
             
@@ -105,6 +98,7 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent', 
             $scope.gridOptions = {
                 data: 'Empresa.getProductos()',
                 multiSelect: false,
+                enableHighlighting:true,
                 /*afterSelectionChange:function(row){
                     if(row.selected){
                         $scope.onRowClick(row)
@@ -126,7 +120,7 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent', 
             $scope.onRowClick = function(row) {
                 console.log($filter('date')($scope.fechainicial, "yyyy-MM-dd"));
                 console.log($filter('date')($scope.fechafinal, "yyyy-MM-dd"));
-
+                $scope.slideurl = "views/kardex.html?time="+new Date().getTime();;
 
                 if ($scope.fechafinal == null || $scope.fechainicial == null) {
                     AlertService.mostrarMensaje("danger", "Las fechas son invalidas");
@@ -151,7 +145,7 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent', 
                         function(data) {
                             if (data.status == 200) {
                                 if (data.obj.movimientos_producto.length > 0) {
-                                    $scope.$emit('mostrarslide', row.entity, data.obj, $scope.selemovimiento);
+                                    $scope.$emit('mostrarslide', row.entity, data.obj);
                                 } else {
                                     AlertService.mostrarMensaje("warning", "El producto no tiene movimientos");
                                 }

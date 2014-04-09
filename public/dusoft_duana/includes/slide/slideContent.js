@@ -5,7 +5,7 @@ define(["angular","js/directive"], function(angular, directive){
           link:function(scope, element, attrs) {
              var rootWidth = $(window).width() +2000;
               angular.element(document).ready(function(){
-                  $(element).css({"right":"-"+rootWidth+"px"});
+                  $(element).css({"right":"-"+rootWidth+"px", "display":"none"});
               });
           },
           
@@ -16,12 +16,12 @@ define(["angular","js/directive"], function(angular, directive){
           controller: function($scope, $element) {
               var rootWidth = $(window).width() + 2000;
               $scope.$parent.$on('mostrarslide', function($event) {
-                  $($element).animate({"right":"0px"});
+                  $($element).animate({"display":"block","right":"-8px"});
               });
 
               $scope.$parent.$on('cerrarslide', function($event) {
                   $($element).animate(
-                    {"right":"-"+rootWidth+"px"},
+                    {"right":"-"+rootWidth+"px", "display":"none"},
                     {
 
                       complete:function(){

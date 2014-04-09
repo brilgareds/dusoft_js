@@ -109,7 +109,7 @@ input.readonlyinput[readonly]{
 .kardex{
 	width: 100%;
 	height:auto;
-	top:0px;
+	top:-16px;
 	position: absolute;
 	background-color: rgba(248,248,248,0.9);
 	z-index: 4;
@@ -288,7 +288,7 @@ div.ngHeaderCell	{
 
   div.contenedormenu {
     position: fixed;
-    z-index: 4;
+    z-index: 5;
     width: 300px;
     top:53px;
     height: 760px;

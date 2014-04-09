@@ -76,18 +76,20 @@ function(angular, controllers) {
 
             $scope.lista_pendientes_farmacia = {
                 data: "producto.getPendientesFarmacia()",
+                enableHighlighting:true,
                 columnDefs: [
-                    {field: 'pedido.numero_pedido', displayName: 'Solicitud'},
-                    {field: 'pedido.cantidad_solicitada', displayName: 'Cant Solicitada'},
-                    {field: 'pedido.cantidad_pendiente', displayName: 'Cant Pendiente'},
-                    {field: 'pedido.farmacia.nombre_farmacia', displayName: 'Farmacia'},
-                    {field: 'pedido.usuario', displayName: 'Usuario'}
+                    {field: 'pedido.numero_pedido', displayName: 'Solicitud', width: "20%"},
+                    {field: 'pedido.cantidad_solicitada', displayName: 'Cant Solicitada', width: "20%"},
+                    {field: 'pedido.cantidad_pendiente', displayName: 'Cant Pendiente', width: "20%"},
+                    {field: 'pedido.farmacia.nombre_farmacia', displayName: 'Farmacia', width: "20%"},
+                    {field: 'pedido.usuario', displayName: 'Usuario', width: "20%"}
                 ]
             };
 
 
             $scope.lista_pendientes_cliente = {
                 data: "producto.getPendientesClientes()",
+                enableHighlighting:true,
                 columnDefs: [
                     {field: 'pedido.numero_pedido', displayName: 'Pedido'},
                     {field: 'pedido.cantidad_solicitada', displayName: 'Cant Solicitada'},
@@ -99,6 +101,7 @@ function(angular, controllers) {
 
             $scope.lista_pendientes_ordenes = {
                 data: "producto.getPendientesOrdenes()",
+                enableHighlighting:true,
                 columnDefs: [
                     {field: 'orden.numero_orden_compra', displayName: 'Orden De Compra'},
                     {field: 'orden.cantidad_solicitada', displayName: 'Cant Solicitada'},
@@ -127,6 +130,9 @@ function(angular, controllers) {
                  $scope.filterOptions.filterText = filterText;
             };
 
+            $scope.calcularRenderGrid = function() {
+                $(window).resize();
+            };
 
             //eventos personalizados
             $rootScope.$on("mostrarslide", function(e, producto, movimientos) {
@@ -236,6 +242,9 @@ function(angular, controllers) {
 
                     $scope.producto.agregarPendienteOrden(pendiente);
                 }
+
+                $scope.calcularRenderGrid();
+
 
                 console.log($scope.producto.getPendientesOrdenes());
 

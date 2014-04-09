@@ -21,7 +21,7 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent', 
 
 
           //  $scope.fechainicial = new Date((fechaActual.getMonth() + 1)+"/01/" + (fechaActual.getFullYear() -1));
-            $scope.fechainicial = new Date("01/01/" + (fechaActual.getFullYear() -2));
+            $scope.fechainicial = new Date("01/01/" + fechaActual.getFullYear());
             $scope.fechafinal = fechaActual;
             $scope.abrirfechafinal = false;
             
@@ -112,7 +112,7 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent', 
                     {field: 'costo_ultima_compra', displayName: 'Costo Ultima Compra', width: "12%"},
                     {field: 'precio', displayName: 'Precio', width: "7%"},
                     {field: 'porc_iva', displayName: 'Iva', width: "5%"},
-                    {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-zoom-in" ng-click="onRowClick(row)">Ver</span></button></div>'}]
+                    {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'}]
 
             };
 
@@ -189,8 +189,12 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent', 
             };
 
             $scope.fechainicialselected = function() {
-                $scope.fechafinal = $scope.fechainicial;
-                console.log($scope.fechafinal)
+                if($scope.fechainicial > $scope.fechafinal){
+                    console.log($scope.fechafinal)
+                    $scope.fechafinal = $scope.fechainicial;
+                }
+                
+                
             };
 
             $scope.fechafinalselected = function() {

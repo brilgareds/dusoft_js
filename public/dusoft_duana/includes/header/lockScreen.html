@@ -4,28 +4,28 @@
             <div class="panel-heading">
                 <div class="panel-title">Dusoft</div>
             </div>     
-              <form id="loginform" class="form-horizontal" name="loginform" role="form">
+              <form id="unlockform" class="form-horizontal" name="unlockform" role="form">
                 <div style="padding-top:30px" class="panel-body" >
 
                     <alert type="danger"  class="col-sm-12 alert alert-danger" ng-show="mostrarmensaje">{{msgerror}}</alert>
 
-                    <div class="col-xs-6 col-sm-6 col-md-5 separator social-login-box" style="width: 200px; height: 122px; position: relative;"> <br />
+                    <div class="col-md-3" style="width: 200px; height: 122px; position: relative; margin-bottom:25px;"> <br />
                         <img src="/images/avatar.png" style="position: absolute; top: -11px; width:137px;">
                     </div>
 
 
                   
 
-                        <div style="margin-bottom: 25px" class="input-group">
+                        <div style="margin-bottom: 25px" class="input-group col-md-3">
                             <span class="text-muted small">Pedro Meneses</span>
                         </div>
 
-                        <div style="margin-bottom: 25px" class="input-group">
+                        <div style="margin-bottom: 25px" class="input-group col-md-3">
                             <span class="text-muted small">meneses@duanaltda.com</span>
                         </div>
                         <div style="margin-bottom: 25px" class="input-group">
                             <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-                            <input id="password" popover-placement="right" popover="Requerido" popover-trigger="focus" type="password" required class="form-control"  placeholder="Contraseña" required ng-model="obj.clave" />
+                            <input id="clave" popover-placement="right" popover="Requerido" popover-trigger="focus" type="password" required class="form-control"  placeholder="Contraseña" required ng-model="obj.clave" />
                             <!--span class="input-group-addon"><i class="glyphicon glyphicon-circle-arrow-right"></i></span-->
                         </div>                                        
                        
@@ -36,9 +36,9 @@
                 <div class="panel-footer">
                     <div class="row">
 
-                        <div style="margin-top:10px" class="form-group">                         
-                            <div class="col-md col-md-offset-9">
-                                <button id="btn-fbsignup" type="submit" class="btn btn-primary" name="btnentrar" ng-disabled="loginform.$invalid" ng-click="autenticar(usuario, clave)"><i class="icon-facebook"></i> Desbloquear </button>
+                        <div style="margin:10px 18px 0px 0px" class="form-group">                         
+                            <div class="pull-right col-md col-md-offset-9">
+                                <button id="btn-fbsignup" type="submit" class="btn btn-primary" name="btnentrar" ng-disabled="unlockform.$invalid" ng-click="autenticar(clave)"><i class="icon-facebook"></i> Desbloquear </button>
                             </div>  
                         </div>
                     </div>

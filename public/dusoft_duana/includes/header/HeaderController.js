@@ -3,6 +3,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/heade
         function($scope, $rootScope, $state, Request, Usuario, socket) {
 
             $scope.mostarLock = false;
+            $scope.unlockform = {};
             $scope.obj = {
                 usuario:"",
                 clave:""
@@ -33,7 +34,25 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/heade
             };
 
             $scope.autenticar = function(){
-                $scope.mostarLock = false;
+
+                console.log($scope.obj.clave)
+                var session = {
+                    usuario_id: Usuario.usuario_id,
+                    auth_token: Usuario.token
+                };
+
+                Request.realizarRequest('/api/unLockScreen', "POST", {session: session, data: {login:{contrasenia:$scope.obj.clave}}}, function(data) {
+                    if(data.status == 200){
+                        $scope.msgerror = "";
+                        $scope.mostrarmensaje = false;
+                        $scope.mostarLock = false;
+                        $scope.obj = {};
+                    } else {
+                        $scope.msgerror = data.msj;
+                        $scope.mostrarmensaje = true;
+                    }
+
+                });
             };
 
             $scope.bloquearPantalla = function(){
@@ -43,10 +62,20 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/heade
                     auth_token: Usuario.token
                 };
 
+<<<<<<< HEAD
                 Request.realizarRequest('/api/lockScreen', "POST", {session: session, data: {}}, function(data) {
                     //console.log(data)
                     $scope.mostarLock = true;
                     $scope.obj = {};
+=======
+
+
+                Request.realizarRequest('/api/lockScreen', "POST", {session: session, data: {}}, function(data) {
+                    if(data.status == 200){
+                        $scope.mostarLock = true;
+                        $scope.obj = {};
+                    }
+>>>>>>> fdcbef0de12b4f8010e05b87210e83be0862d0ef
 
                 });
             };

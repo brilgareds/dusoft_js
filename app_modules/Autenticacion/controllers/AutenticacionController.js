@@ -55,6 +55,65 @@ Autenticacion.prototype.loginUsuario = function(req, res) {
     });
 };
 
+Autenticacion.prototype.lockScreen = function(req, res) {
+
+    var that = this;
+
+    var usuario = req.session.user;
+
+    G.auth.get(usuario.usuario_id, usuario.auth_token, function(err, session) {
+
+        usuario.lock_screen = '1';
+
+        G.auth.update(usuario, function(err, rows) {
+            res.send(G.utils.r(req.url, 'Pantalla Bloqueada Correctame', 200, {}));
+            return;
+        });
+    });
+};
+
+Autenticacion.prototype.unLockScreen = function(req, res) {
+
+    var that = this;
+
+    var usuario = req.session.user;
+    var args = req.body.data;
+
+    if (args.login === undefined || args.login.contrasenia === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+
+    if (args.login.contrasenia === "") {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios Estan Vacíos', 404, {}));
+        return;
+    }
+
+
+    G.auth.get(usuario.usuario_id, usuario.auth_token, function(err, session) {
+
+        session.forEach(function(value) {
+            
+            G.auth.login(value.usuario, args.login.contrasenia, function(err, usuario) {
+                if (err)
+                    res.send(G.utils.r(req.url, 'Error Interno', 500, {}));
+                else {
+                    if (usuario.length === 0) {
+                        res.send(G.utils.r(req.url, 'Contraseña Invalida', 404, {}));
+                    } else {
+
+                        usuario.lock_screen = '0';
+
+                        G.auth.update(usuario, function(err, rows) {
+                            res.send(G.utils.r(req.url, 'Pantalla Desbloqueada Correctame', 200, {}));
+                            return;
+                        });
+                    }
+                }
+            });
+        });
+    });
+};
 
 Autenticacion.prototype.recuperarContrasenia = function(req, res) {
 
@@ -74,7 +133,7 @@ Autenticacion.prototype.recuperarContrasenia = function(req, res) {
 
     var nombre_usuario = args.login.usuario;
     var constrasenia = G.random.randomKey(2, 8);
-  
+
 
     var smtpTransport = this.emails.createTransport("SMTP", {
         service: "Gmail",
@@ -139,7 +198,6 @@ Autenticacion.prototype.recuperarContrasenia = function(req, res) {
         }
     });
 };
-
 
 Autenticacion.prototype.logoutUsuario = function(req, res) {
 

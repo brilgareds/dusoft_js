@@ -15,7 +15,7 @@ AutenticacionEvents.prototype.onConnected = function(socket_id) {
 
 // Actualizar La sesion del usuario con el socket asignado
 AutenticacionEvents.prototype.onActualizarSesion = function(datos) { 
-    console.log('== Evneto Actualizando Sesion == ' + JSON.stringify(datos));
+    console.log('== Evento Actualizando Sesion == ' + JSON.stringify(datos));
     G.auth.update(datos);
 };
 
@@ -25,7 +25,7 @@ AutenticacionEvents.prototype.onCerrarSesion = function(sesion_usuario) {
     var that = this;
 
     if (sesion_usuario.socket_id)
-        that.io.sockets.socket(sesion_usuario.socket_id).emit('onCerrarSesion', {msj: 'Fuck Eduar'});
+        that.io.sockets.socket(sesion_usuario.socket_id).emit('onCerrarSesion', {msj: 'Sesion Cerrada'});
 };
 
 AutenticacionEvents.$inject = ["socket"];

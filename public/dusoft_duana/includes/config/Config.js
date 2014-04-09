@@ -1,11 +1,8 @@
    define(["angular"], function(angular){
 	var Config = angular.module('Config', []);
 
-<<<<<<< HEAD
-	var BASE_URL = "http://10.0.2.191:3002/api"; 
-=======
-	var BASE_URL = "http://10.0.2.158:3001/api"; 
->>>>>>> fdcbef0de12b4f8010e05b87210e83be0862d0ef
+	var BASE_URL = "/api"; 
+
 
     var data = {
 	  'API': {

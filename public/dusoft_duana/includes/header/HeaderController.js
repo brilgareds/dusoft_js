@@ -62,12 +62,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/heade
                     auth_token: Usuario.token
                 };
 
-<<<<<<< HEAD
-                Request.realizarRequest('/api/lockScreen', "POST", {session: session, data: {}}, function(data) {
-                    //console.log(data)
-                    $scope.mostarLock = true;
-                    $scope.obj = {};
-=======
+
 
 
                 Request.realizarRequest('/api/lockScreen', "POST", {session: session, data: {}}, function(data) {
@@ -75,7 +70,6 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/heade
                         $scope.mostarLock = true;
                         $scope.obj = {};
                     }
->>>>>>> fdcbef0de12b4f8010e05b87210e83be0862d0ef
 
                 });
             };

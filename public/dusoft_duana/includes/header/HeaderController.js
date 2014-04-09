@@ -37,8 +37,18 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/heade
             };
 
             $scope.bloquearPantalla = function(){
-                $scope.mostarLock = true;
-                $scope.obj = {};
+                
+                var session = {
+                    usuario_id: Usuario.usuario_id,
+                    auth_token: Usuario.token
+                };
+
+                Request.realizarRequest('/api/lockScreen', "POST", {session: session, data: {}}, function(data) {
+                    //console.log(data)
+                    $scope.mostarLock = true;
+                    $scope.obj = {};
+
+                });
             };
 
             socket.on("onCerrarSesion",function(){

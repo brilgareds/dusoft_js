@@ -4,6 +4,8 @@ define(["angular", "js/controllers", "controllers/OperariosBodega/Administracion
     controllers.controller('OperariosBodegaController', ['$scope', '$rootScope', 'Request', '$modal', 'API',
         "socket", "$timeout", "Operario", "AlertService", "Usuario",
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, Operario, AlertService, Usuario) {
+            
+            $scope.titulo_modulo= "Administracion de Operarios de Bodega";
             $scope.termino_busqueda = "";
             $scope.operarios = [];
 

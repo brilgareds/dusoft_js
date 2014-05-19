@@ -15,7 +15,7 @@ AutenticacionCronJobs.prototype.cerrarSesionesInactivas = function() {
     
     var cron = new this.cronJob({
         cronTime: '*/5 * * * *',
-        //cronTime: '* * * * * *',
+        //cronTime: '*/5 * * * * *',
         onTick: function() {
             G.auth.closeInactiveSessions(function(sesiones_cerradas){
                 that.e_auth.onCerrarSesion(sesiones_cerradas);

@@ -6,6 +6,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, $modalInstance, operario, accion, AlertService, Usuario) {
 
 
+            $scope.titulo_modulo= "Administracion de Operarios de Bodega";
             $scope.operario = angular.copy(operario);
             $scope.usuarios = [];
 

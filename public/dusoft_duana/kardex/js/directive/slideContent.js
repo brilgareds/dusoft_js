@@ -12,11 +12,11 @@ define(["angular","js/directive"], function(angular, directive){
           },
           controller: function($scope, $element) {
               $scope.$parent.$on('mostrarkardex', function($event) {
-                  $($element).animate({"right":"0px"});
+                  $($element).animate({"display":"block","right":"0px"});
               });
 
               $scope.$parent.$on('cerrarkardex', function($event) {
-                  $($element).animate({"right":"-2000px"});
+                  $($element).animate({"right":"-2000px", "display":"none"});
               });
           }
 

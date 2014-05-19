@@ -27,11 +27,7 @@
         </p>
     </div>
 
-     <div class="col-md-3">
-        <p class="input-group">
-          <select class="form-control" placeholder="Filtrar" ng-model="selemovimiento" ng-options="opt.descripcion for opt in movimientos"></select>
-        </p>
-    </div>
+     
 
 	 <div class="col-md-3 pull-right">
         <p class="input-group">
@@ -61,6 +57,6 @@
     </div>
 
   <div  class="kardex" slide-content class="slide" >
-      <div ng-include src="'views/kardex.html'"  ng-controller="MovimientoController"></div>
+      <div ng-include src="slideurl"  ng-controller="MovimientoController"></div>
   </div>
 </div>

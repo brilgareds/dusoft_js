@@ -27,6 +27,13 @@ function(angular, controllers) {
             $scope.descuadre = 0;
             $scope.nombreProducto = "";
 
+            $scope.movimientos = [
+                {descripcion:"Todos", tipo:""},
+                {descripcion:"E - Egreso", tipo:"E"},
+                {descripcion:"I - Ingreso", tipo:"I"}
+
+            ];
+
 
             $scope.validarHtml = function(html) {
                 var htmlValido = $sce.trustAsHtml(html);
@@ -37,23 +44,31 @@ function(angular, controllers) {
                 return $filter('date')(fecha, 'yyyy-MM-dd');
             };
 
+             
+            $scope.filterOptions = {
+                filterText: ''
+            };
+    
 
             $scope.lista_movimientos = {
                 data: 'producto.getMovimientos()',
                 multiSelect: false,
-                rowHeight: 220,
+                rowHeight: 200,
+                enableHighlighting:true,
+                filterOptions: $scope.filterOptions,
                 sortInfo: {fields:['fecha'], directions:['desc'] },
                 columnDefs: [
                     {field: 'tipo_movimiento', displayName: 'T M', width: "50"},
-                    {field: 'fecha', displayName: 'Fecha', cellTemplate: "<div> {{formatearFecha(row.entity.fecha)}} </div>", width: "10%"},
+                    {field: 'fecha', displayName: 'Fecha', cellTemplate: "<div> {{formatearFecha(row.entity.fecha)}} </div>", width: "9%"},
                     {field: 'numero', displayName: 'Numero', cellTemplate: "<div>{{row.entity.prefijo}} - {{row.entity.numero}} </div>", width: "10%"},
-                    {field: 'factura', displayName: 'Factura', width: "10%"},
+                    {field: 'factura', displayName: 'Factura', width: "9%"},
                     {field: 'detalle.getDetalle()', height: "200px", displayName: 'Terceros', cellTemplate: "<div class='largeCell' ng-bind-html=\"validarHtml(row.entity.detalle.getDetalle())\"></div>"},
-                    {field: 'cantidad_entradas', displayName: 'Entradas', width: "7%"},
-                    {field: 'cantidad_salidas', displayName: 'Salidas', width: "7%"},
-                    {field: 'costo', displayName: 'Costo', width: "7%"},
-                    {field: 'lote', displayName: 'Lote', width: "7%"},
-                    {field: 'fecha_vencimiento', displayName: 'Fecha V', cellTemplate: "<div> {{formatearFecha(row.entity.fecha_vencimiento)}} </div>", width: "10%"}
+                    {field: 'cantidad_entradas', displayName: 'Entradas', width: "6%"},
+                    {field: 'cantidad_salidas', displayName: 'Salidas', width: "6%"},
+                    {field: 'costo', displayName: 'Costo', width: "6%"},
+                    {field: 'lote', displayName: 'Lote', width: "5%"},
+                    {field: 'fecha_vencimiento', displayName: 'Fecha V', cellTemplate: "<div> {{formatearFecha(row.entity.fecha_vencimiento)}} </div>", width: "10%"},
+                    {field: 'usuario', displayName: 'Usuario', width: "7%"}
                 ]
 
             };
@@ -61,18 +76,20 @@ function(angular, controllers) {
 
             $scope.lista_pendientes_farmacia = {
                 data: "producto.getPendientesFarmacia()",
+                enableHighlighting:true,
                 columnDefs: [
-                    {field: 'pedido.numero_pedido', displayName: 'Solicitud'},
-                    {field: 'pedido.cantidad_solicitada', displayName: 'Cant Solicitada'},
-                    {field: 'pedido.cantidad_pendiente', displayName: 'Cant Pendiente'},
-                    {field: 'pedido.farmacia.nombre_farmacia', displayName: 'Farmacia'},
-                    {field: 'pedido.usuario', displayName: 'Usuario'}
+                    {field: 'pedido.numero_pedido', displayName: 'Solicitud', width: "20%"},
+                    {field: 'pedido.cantidad_solicitada', displayName: 'Cant Solicitada', width: "20%"},
+                    {field: 'pedido.cantidad_pendiente', displayName: 'Cant Pendiente', width: "20%"},
+                    {field: 'pedido.farmacia.nombre_farmacia', displayName: 'Farmacia', width: "20%"},
+                    {field: 'pedido.usuario', displayName: 'Usuario', width: "20%"}
                 ]
             };
 
 
             $scope.lista_pendientes_cliente = {
                 data: "producto.getPendientesClientes()",
+                enableHighlighting:true,
                 columnDefs: [
                     {field: 'pedido.numero_pedido', displayName: 'Pedido'},
                     {field: 'pedido.cantidad_solicitada', displayName: 'Cant Solicitada'},
@@ -84,6 +101,7 @@ function(angular, controllers) {
 
             $scope.lista_pendientes_ordenes = {
                 data: "producto.getPendientesOrdenes()",
+                enableHighlighting:true,
                 columnDefs: [
                     {field: 'orden.numero_orden_compra', displayName: 'Orden De Compra'},
                     {field: 'orden.cantidad_solicitada', displayName: 'Cant Solicitada'},
@@ -99,37 +117,39 @@ function(angular, controllers) {
             };
 
             $scope.cerrar = function() {
+                $scope.filterOptions.filterText = "";
                 $scope.$emit('cerrarslide');
+                console.log($scope.selemovimiento)
             };
 
             //eventos
 
             //eventos de widgets
+            $scope.filtrar_movimiento = function(opt){
+                 var filterText = 'tipo_movimiento:'+opt.tipo;
+                 $scope.filterOptions.filterText = filterText;
+            };
 
-
+            $scope.calcularRenderGrid = function() {
+                $(window).resize();
+            };
 
             //eventos personalizados
-            $rootScope.$on("mostrarslide", function(e, producto, movimientos, filtro) {
+            $rootScope.$on("mostrarslide", function(e, producto, movimientos) {
                 $scope.producto = angular.copy(producto);
-                console.log("====");
-                console.log(filtro)
                 $scope.existencia = $scope.producto.existencia;
                 $scope.nombreProducto = producto.descripcion;
                 $scope.cantidad_salidas = 0;
                 $scope.cantidad_entradas = 0;
+                $scope.selemovimiento = $scope.movimientos[0];
+
 
                 //movimientos
                 for (var i in movimientos.movimientos_producto) {
                     var movimiento = Movimiento.get();
                     movimiento.setDatos(movimientos.movimientos_producto[i]);
 
-                    if(filtro.tipo == ""){
-                        $scope.producto.agregarMovimiento(movimiento);
-
-                    } else if(filtro.tipo == movimiento.tipo_movimiento){
-                        $scope.producto.agregarMovimiento(movimiento);
-                    }
-                    
+                    $scope.producto.agregarMovimiento(movimiento);
 
                     if (movimiento.tipo_movimiento == "E") {
                         $scope.cantidad_salidas = $scope.cantidad_salidas + movimiento.cantidad_salidas;
@@ -222,6 +242,9 @@ function(angular, controllers) {
 
                     $scope.producto.agregarPendienteOrden(pendiente);
                 }
+
+                $scope.calcularRenderGrid();
+
 
                 console.log($scope.producto.getPendientesOrdenes());
 

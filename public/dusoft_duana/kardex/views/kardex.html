@@ -35,6 +35,13 @@
 					    </a>
 				    </div>
 
+				    <div class="col-md-3">
+				        <p class="input-group">
+				        	<span class="list-group-item-heading">Filtrar Movimientos:</span>
+				          <select class="form-control" placeholder="Filtrar" ng-model="selemovimiento" ng-options="opt.descripcion for opt in movimientos" ng-change="filtrar_movimiento(selemovimiento)"></select>
+				        </p>
+				    </div>
+
 			 </div>
 	            <div class="defaultGrid" ng-grid="lista_movimientos">
 
@@ -64,6 +71,7 @@
 	            </div>
 
 	        </tab>
+
 
 
     </tabset>

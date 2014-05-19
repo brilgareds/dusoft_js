@@ -420,7 +420,7 @@ KardexModel.prototype.obtener_detalle_movimientos_producto = function(empresa_id
             sql = " SELECT \
                     a.tipo_id_tercero || ' ' || a.tercero_id || ' : '|| b.nombre_tercero as \"TERCERO QUE DEVUELVE EL PRESTAMO\",\
                     a.prefijo_prestamo || '-' || a.numero_prestamo as \"DOCUMENTO DE PRESTAMO\"\
-                    FROM inv_bodegas_movimiento_ing_dev_prestamos a,\
+                    FROM inv_bodegas_movimiento_ing_dev_prestamos a\
                     inner join terceros b on a.tipo_id_tercero =  b.tipo_id_tercero and a.tercero_id = b.tercero_id\
                     WHERE a.empresa_id = $1 AND a.prefijo = $2 AND a.numero = $3 ;";
 

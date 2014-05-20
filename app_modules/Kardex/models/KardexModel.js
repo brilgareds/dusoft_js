@@ -45,12 +45,24 @@ KardexModel.prototype.buscar_productos = function(termino_busqueda, pagina, call
                 and ( b.codigo_producto ILIKE $1 or b.descripcion ILIKE $1 ) \
                 ORDER BY 5 DESC limit $2 offset $3 ";
 
-    G.db.query(sql, ["%" + termino_busqueda + "%", G.settings.limit, offset ], function(err, rows, result) {
+    G.db.query(sql, ["%" + termino_busqueda + "%", G.settings.limit, offset], function(err, rows, result) {
         callback(err, rows);
     });
 
 };
 
+//Seleccionar la existencia inicial del producto
+KardexModel.prototype.obtener_existencia_inicial = function(empresa_id, centro_utilidad_id, bodega_id, codigo_producto, fecha_cierre, callback) {
+
+    var d = new Date(fecha_cierre);
+    var lapso = d.addMonths(-1).toFormat('YYYYMM');    
+
+    var sql = "SELECT existencia_final as existencia_inicial FROM inv_bodegas_movimiento_cierres_por_lapso WHERE lapso =$5 AND empresa_id = $1 AND centro_utilidad =$2 AND bodega =$3 AND codigo_producto =$4 ;";
+
+    G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, codigo_producto, lapso], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
 
 
 // Selecciona los movimientos del producto dentro de un periodo de tiempo determinado
@@ -206,7 +218,7 @@ KardexModel.prototype.obtener_movimientos_productos = function(empresa_id, centr
             "   ) " +
             " ) AS DATOS ORDER BY DATOS.fecha ;";
 
-           
+
     // sql para la bd de produccion
     var sql = " SELECT *  \n" +
             " FROM  " +

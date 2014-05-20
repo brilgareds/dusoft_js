@@ -8,6 +8,7 @@ var path = require('path');
 var intravenous = require('intravenous');
 var program = require('commander');
 var nodemailer = require('nodemailer');
+var date_utils = require('date-utils');
 
 
 /*=========================================
@@ -68,8 +69,11 @@ var server = app.listen(G.settings.server_port);
 var io = require('socket.io').listen(server);
 var container = intravenous.create();
 
-
+/*=========================================
+ * Registrar dependecias en el contendorDI
+ * =========================================*/
 container.register("emails", nodemailer);
+container.register("date_utils", date_utils);
 
 /*=========================================
  * Inicializacion y Conexion a la Base de Datos

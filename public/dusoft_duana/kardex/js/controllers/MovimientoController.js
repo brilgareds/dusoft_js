@@ -65,6 +65,7 @@ function(angular, controllers) {
                     {field: 'detalle.getDetalle()', height: "200px", displayName: 'Terceros', cellTemplate: "<div class='largeCell' ng-bind-html=\"validarHtml(row.entity.detalle.getDetalle())\"></div>"},
                     {field: 'cantidad_entradas', displayName: 'Entradas', width: "6%"},
                     {field: 'cantidad_salidas', displayName: 'Salidas', width: "6%"},
+                    {field: 'stock_actual', displayName: 'Existencia', width: "6%"},
                     {field: 'costo', displayName: 'Costo', width: "6%"},
                     {field: 'lote', displayName: 'Lote', width: "5%"},
                     {field: 'fecha_vencimiento', displayName: 'Fecha V', cellTemplate: "<div> {{formatearFecha(row.entity.fecha_vencimiento)}} </div>", width: "10%"},

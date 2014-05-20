@@ -9,6 +9,8 @@ define(["angular","js/models", "js/models/Detalle"], function(angular, models){
 		Movimiento.prototype.setDatos = function(datos){
 
 			datos.cantidad = parseInt(datos.cantidad);
+			datos.stock_actual = parseInt(datos.stock_actual);
+                        
 			this.bodegas_doc_id  = datos.bodegas_doc_id;
 			this.cantidad_entradas = 0;
 			this.cantidad_salidas  = 0;
@@ -27,6 +29,7 @@ define(["angular","js/models", "js/models/Detalle"], function(angular, models){
 			this.usuario = datos.usuario;
 			this.valor = datos.valor;
 			this.detalle = Detalle.get(datos.detalle);
+                        this.stock_actual = datos.stock_actual;
 
 			if(this.tipo_movimiento == "E"){
 				this.cantidad_salidas = datos.cantidad;

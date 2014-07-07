@@ -31,11 +31,12 @@ module.exports = function(app, di_container, io) {
     app.post('/api/PedidosFarmacias/asignarResponsable', function(req, res) {
         c_pedidos_farmacias.asignarResponsablesPedido(req, res);
     });
-
-    // ================= GET =======================
+    
     // Seleccionar los pedidos de un operario de bodega
-    app.get('/api/PedidosFarmacias/listaPedidosOperarioBodega', function(req, res) {
+    app.post('/api/PedidosFarmacias/listaPedidosOperarioBodega', function(req, res) {
         c_pedidos_farmacias.listaPedidosOperariosBodega(req, res);
     });
+
+    // ================= GET =======================
 
 };

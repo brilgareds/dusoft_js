@@ -28,29 +28,29 @@ PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
     var pagina_actual = args.pedidos_clientes.pagina_actual;
 
     this.m_pedidos_clientes.listar_pedidos_clientes(empresa_id, termino_busqueda, pagina_actual, function(err, lista_pedidos_clientes) {
-        res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, { pedidos_clientes: lista_pedidos_clientes}));
+        res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {pedidos_clientes: lista_pedidos_clientes}));
     });
 };
 
 PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
 
     var that = this;
-    
+
     var args = req.body.data;
-    
+
     if (args.asignacion_pedidos === undefined || args.asignacion_pedidos.pedidos === undefined || args.asignacion_pedidos.estado_pedido === undefined || args.asignacion_pedidos.responsable === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
     }
-    
+
     var params = args.asignacion_pedidos;
-    
-    if (params.pedidos.length === 0 || params.estado_pedido === "" || params.responsable === "" ){
+
+    if (params.pedidos.length === 0 || params.estado_pedido === "" || params.responsable === "") {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios Estan Vacios', 404, {}));
         return;
     }
-    
-    
+
+
 
     //var empresa_id = req.body.empresa_id;
     var pedidos = params.pedidos;
@@ -86,7 +86,18 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
 
     var that = this;
 
-    var operario_bodega = req.query.operario_id;
+    var args = req.body.data;
+
+    if (args.lista_pedidos === undefined || args.lista_pedidos.operario_id === undefined ) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+    if (args.lista_pedidos.operario_id === '') {
+        res.send(G.utils.r(req.url, 'Se requiere el id de un operario de bodega', 404, {}));
+        return;
+    }
+
+    var operario_bodega = args.lista_pedidos.operario_id;
 
     this.m_pedidos_clientes.listar_pedidos_del_operario(operario_bodega, function(err, lista_pedidos_clientes) {
         res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {pedidos_clientes: lista_pedidos_clientes}));

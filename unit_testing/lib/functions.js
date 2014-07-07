@@ -39,6 +39,17 @@ exports.assertEmptyObj = function(){
     };
 }
 
+exports.assertArrayObj = function(key){
+    return function (e, res, body) {
+        
+        assert.isObject(body.obj);
+        assert.isArray(body.obj[key]);
+        body.obj[key].forEach(function(i){
+           assert.isObject(i);
+        })
+    };
+}
+
 exports.log = function(){
     return function (e, res, body) {
         console.log(body);

@@ -27,7 +27,7 @@ PedidosFarmacias.prototype.listarPedidosFarmacias = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.pedidos_farmacias === undefined || args.pedidos_farmacias.empresa_id === undefined || args.pedidos_farmacias.termino_busqueda === undefined || args.pedidos_farmacias.pagina_actual === undefined ) {
+    if (args.pedidos_farmacias === undefined || args.pedidos_farmacias.empresa_id === undefined || args.pedidos_farmacias.termino_busqueda === undefined || args.pedidos_farmacias.pagina_actual === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
     }
@@ -69,7 +69,7 @@ PedidosFarmacias.prototype.asignarResponsablesPedido = function(req, res) {
     var estado_pedido = params.estado_pedido;
     var responsable = params.responsable;
     var usuario = req.session.user.usuario_id;
-       var i = pedidos.length;
+    var i = pedidos.length;
 
     pedidos.forEach(function(numero_pedido) {
 
@@ -97,8 +97,18 @@ PedidosFarmacias.prototype.listaPedidosOperariosBodega = function(req, res) {
 
     var that = this;
 
-    //var operario_bodega = req.body.responsable;
-    var operario_bodega = req.query.operario_id;
+    var args = req.body.data;
+
+    if (args.lista_pedidos === undefined || args.lista_pedidos.operario_id === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+    if (args.lista_pedidos.operario_id === '') {
+        res.send(G.utils.r(req.url, 'Se requiere el id de un operario de bodega', 404, {}));
+        return;
+    }
+
+    var operario_bodega = args.lista_pedidos.operario_id;
 
     this.m_pedidos_farmacias.listar_pedidos_del_operario(operario_bodega, function(err, lista_pedidos_farmacias) {
         res.send(G.utils.r(req.url, 'Lista Pedidos Farmacias', 200, {pedidos_farmacias: lista_pedidos_farmacias}));

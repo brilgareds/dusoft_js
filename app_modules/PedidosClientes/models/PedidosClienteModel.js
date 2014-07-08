@@ -7,11 +7,6 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
 
     var offset = G.settings.limit * pagina;
     
-    console.log('=========================================================');
-    console.log('Limit '+ G.settings.limit);
-    console.log('Offset ' + offset);
-    console.log('=========================================================');
-    
     var sql = " select \
                 a.pedido_cliente_id as numero_pedido, \
                 b.tipo_id_tercero as tipo_id_cliente, \

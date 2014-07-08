@@ -8,6 +8,71 @@ var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes) {
 
 };
 
+/**
+ * @api {post} /api/PedidosClientes/listarPedidos Listar Pedidos
+ * @apiName Listar Pedidos Clientes
+ * @apiGroup Pedidos Clientes
+ * @apiDescription Proporciona un listado de Pedidos de Clientes, permite filtrar lo pedidos por los siguientes campos,
+ * numero del pedido, identificacion o nombre del tercero, direccion, telefono, identificacion o nombre del vendedor.
+ * @apiDefinePermission autenticado Requiere Autenticacion
+ * Requiere que el usuario esté autenticado.
+ * @apiPermission autenticado
+ * @apiParam {String} usuario_id  Identificador del Usuario.
+ * @apiParam {String} auth_token  Token de Autenticación, este define si el usuario esta autenticado o no.
+ * @apiParam {Number} empresa_id Identificacion de la empresa de la cual se requieren los pedidos.
+ * @apiParam {String} termino_busqueda Termino por el cual desea filtrar los pedidos.
+ * @apiParam {Number} pagina_actual Numero de la pagina, requerido para la paginacion.
+ * @apiSuccessExample Ejemplo Válido del Request.
+ *     HTTP/1.1 200 OK
+ *     {  
+ *          session: {              
+ *              usuario_id: 'jhon.doe',
+ *              auth_token: 'asdf2hgt56hjjhgrt-mnjhbgfd-asdfgyh-ghjmnbgfd'
+ *          },
+ *          data : {
+ *              pedidos_clientes :  { 
+ *                                      termino_busqueda : '',
+ *                                      pagina_actual: ''
+ *                                  }
+ *          }
+ *     }
+ * @apiSuccessExample Respuesta-Exitosa:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       service : '/api/PedidosClientes/listarPedidos',   
+ *       msj : 'Lista Pedidos Clientes',
+ *       status: '200',
+ *       obj : {
+ *                  pedidos_clientes : [ 
+ *                                        {   
+ *                                             numero_pedido: 33872,
+ *                                             tipo_id_cliente: 'CE',
+ *                                             identificacion_cliente: '10365',
+ *                                             nombre_cliente: 'CLINICA SANTA GRACIA DUMIAN MEDICAL
+ *                                             direccion_cliente: 'CALLE 14 15-49',
+ *                                             telefono_cliente: '8236444',
+ *                                             tipo_id_vendedor: 'CC ',
+ *                                             idetificacion_vendedor: '94518917',
+ *                                             nombre_vendedor: 'GUSTAVO ADOLFO MEJIA',
+ *                                             estado: '1',
+ *                                             descripcion_estado: 'Activo',
+ *                                             estado_actual_pedido: '1',
+ *                                             descripcion_estado_actual_pedido: 'Separado',
+ *                                             fecha_registro: '2014-01-21T17:28:50.700Z' 
+ *                                         }
+ *                                      ]
+ *             }
+ *     }
+ * @apiErrorExample Respuesta-Error:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       service : '/api/PedidosClientes/listarPedidos',   
+ *       msj : 'Mensaje Error',
+ *       status: 404,
+ *       obj : {},
+ *     }  
+ */
+
 PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
 
     var that = this;
@@ -31,6 +96,54 @@ PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
         res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {pedidos_clientes: lista_pedidos_clientes}));
     });
 };
+
+/**
+ * @api {post} /api/PedidosClientes/asignarResponsable Asignar Responsables 
+ * @apiName Asignar Responsables.
+ * @apiGroup Pedidos Clientes
+ * @apiDescription Asignar o delegar los pedidos a un operario de bodega para su correspondiente separacion.
+ * @apiDefinePermission autenticado Requiere Autenticacion
+ * Requiere que el usuario esté autenticado.
+ * @apiPermission autenticado
+ * @apiParam {String} usuario_id  Identificador del Usuario.
+ * @apiParam {String} auth_token  Token de Autenticación, este define si el usuario esta autenticado o no.
+ * @apiParam {String[]} pedidos Lista de pedidos 
+ * @apiParam {Number} estado_pedido ID del estado a asignar 
+ * @apiParam {Number} responsable Operario de Bodega al que se le asigna el pedido.
+ * @apiSuccessExample Ejemplo Válido del Request.
+ *     HTTP/1.1 200 OK
+ *     {  
+ *          session: {              
+ *              usuario_id: 'jhon.doe',
+ *              auth_token: 'asdf2hgt56hjjhgrt-mnjhbgfd-asdfgyh-ghjmnbgfd'
+ *          },
+ *          data : {
+ *              asignacion_pedidos :  { 
+ *                                      pedidos : [],
+ *                                      estado_pedido: '',
+ *                                      responsable : ''
+ *                                  }
+ *          }
+ *     }
+ * @apiSuccessExample Respuesta-Exitosa:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       service : '/api/PedidosClientes/asignarResponsable',   
+ *       msj : 'Asignacion de Resposables',
+ *       status: '200',
+ *       obj : {
+ *             }
+ *     }
+ * @apiErrorExample Respuesta-Error:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       service : '/api/PedidosClientes/asignarResponsable',   
+ *       msj : 'Mensaje Error',
+ *       status: 404,
+ *       obj : {},
+ *     }  
+ */
+
 
 PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
 
@@ -81,11 +194,10 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
     });
 };
 
-
 /**
- * @api {post} /api/PedidosClientes/listaPedidosOperarioBodega Pedidos Clientes Asignados a Operario de Bodega
+ * @api {post} /api/PedidosClientes/listaPedidosOperarioBodega Listar Pedidos Operarios
  * @apiName listaPedidosOperarioBodega
- * @apiGroup PedidosClientes
+ * @apiGroup Pedidos Clientes
  * @apiDescription Proporciona una lista con todos los pedidos de clientes asignados a un operario de bodega
  * @apiDefinePermission autenticado Requiere Autenticacion
  * Requiere que el usuario esté autenticado.
@@ -101,16 +213,16 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
  *              auth_token: 'asdf2hgt56hjjhgrt-mnjhbgfd-asdfgyh-ghjmnbgfd'
  *          },
  *          data : {
- *              lista_pedidos : { 
- *                                  operario_id:  19
- *                              }
+ *              pedidos_clientes : { 
+    *                                  operario_id:  19
+    *                              }
  *          }
  *     }
  * @apiSuccessExample Respuesta-Exitosa:
  *     HTTP/1.1 200 OK
  *     {
  *       service : '/api/PedidosClientes/listaPedidosOperarioBodega',   
- *       msj : 'Listado Pedidos Clientes',
+ *       msj : 'Lista Pedidos Clientes',
  *       status: '200',
  *       obj : {
  *                  pedidos_clientes : [ 
@@ -152,16 +264,16 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.lista_pedidos === undefined || args.lista_pedidos.operario_id === undefined) {
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.operario_id === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
     }
-    if (args.lista_pedidos.operario_id === '') {
+    if (args.pedidos_clientes.operario_id === '') {
         res.send(G.utils.r(req.url, 'Se requiere el id de un operario de bodega', 404, {}));
         return;
     }
 
-    var operario_bodega = args.lista_pedidos.operario_id;
+    var operario_bodega = args.pedidos_clientes.operario_id;
 
     this.m_pedidos_clientes.listar_pedidos_del_operario(operario_bodega, function(err, lista_pedidos_clientes) {
         res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {pedidos_clientes: lista_pedidos_clientes}));

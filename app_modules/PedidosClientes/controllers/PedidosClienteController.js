@@ -82,13 +82,77 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
 };
 
 
+/**
+ * @api {post} /api/PedidosClientes/listaPedidosOperarioBodega Pedidos Clientes Asignados a Operario de Bodega
+ * @apiName listaPedidosOperarioBodega
+ * @apiGroup PedidosClientes
+ * @apiDescription Proporciona una lista con todos los pedidos de clientes asignados a un operario de bodega
+ * @apiDefinePermission autenticado Requiere Autenticacion
+ * Requiere que el usuario esté autenticado.
+ * @apiPermission autenticado
+ * @apiParam {String} usuario_id  Identificador del Usuario.
+ * @apiParam {String} auth_token  Token de Autenticación, este define si el usuario esta autenticado o no.
+ * @apiParam {Number} operario_id Identificador asignado al operario de Bodega.
+ * @apiSuccessExample Ejemplo Válido del Request.
+ *     HTTP/1.1 200 OK
+ *     {  
+ *          session: {              
+ *              usuario_id: 'jhon.doe',
+ *              auth_token: 'asdf2hgt56hjjhgrt-mnjhbgfd-asdfgyh-ghjmnbgfd'
+ *          },
+ *          data : {
+ *              lista_pedidos : { 
+ *                                  operario_id:  19
+ *                              }
+ *          }
+ *     }
+ * @apiSuccessExample Respuesta-Exitosa:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       service : '/api/PedidosClientes/listaPedidosOperarioBodega',   
+ *       msj : 'Listado Pedidos Clientes',
+ *       status: '200',
+ *       obj : {
+ *                  pedidos_clientes : [ 
+ *                                        {   
+ *                                             numero_pedido: 33872,
+ *                                             tipo_id_cliente: 'CE',
+ *                                             identificacion_cliente: '10365',
+ *                                             nombre_cliente: 'CLINICA SANTA GRACIA DUMIAN MEDICAL
+ *                                             direccion_cliente: 'CALLE 14 15-49',
+ *                                             telefono_cliente: '8236444',
+ *                                             tipo_id_vendedor: 'CC ',
+ *                                             idetificacion_vendedor: '94518917',
+ *                                             nombre_vendedor: 'GUSTAVO ADOLFO MEJIA',
+ *                                             estado: '1',
+ *                                             descripcion_estado: 'Activo',
+ *                                             estado_actual_pedido: '1',
+ *                                             descripcion_estado_actual_pedido: 'Separado',
+ *                                             fecha_registro: '2014-01-21T17:28:50.700Z',
+ *                                             responsable_id: 19,
+ *                                             responsable_pedido: 'Ixon Eduardo Niño',
+ *                                             fecha_asignacion_pedido: '2014-03-04T17:44:30.911Z' 
+ *                                         }
+ *                                      ]
+ *             }
+ *     }
+ * @apiErrorExample Respuesta-Error:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       service : '/api/PedidosClientes/listaPedidosOperarioBodega',   
+ *       msj : 'Mensaje Error',
+ *       status: 404,
+ *       obj : {},
+ *     }  
+ */
+
 PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
 
     var that = this;
 
     var args = req.body.data;
 
-    if (args.lista_pedidos === undefined || args.lista_pedidos.operario_id === undefined ) {
+    if (args.lista_pedidos === undefined || args.lista_pedidos.operario_id === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
     }

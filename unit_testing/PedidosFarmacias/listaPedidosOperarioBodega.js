@@ -63,7 +63,8 @@ vows.describe('Test Lista Pedidos Operarios Bodega - Pedidos Farmacias').addBatc
             'Debe Responder con el url del Servicio': fn.assertService(url),
             'Debe Responder con Lista Pedidos Farmacias': fn.assertMsj('Lista Pedidos Farmacias'),
             'Debe Responder con Status 200': fn.assertStatus(200),
-            'Debe Responder con Array Datos (obj)': fn.assertArrayObj('pedidos_farmacias')
+            'Debe Responder con Array Datos (obj)': fn.assertArrayObj('pedidos_farmacias'),
+            'log': fn.log()
         }
     }
 }).export(module);

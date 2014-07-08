@@ -28,6 +28,7 @@ vows.describe('Test Lista Pedidos Operarios Bodega - Pedidos Clientes').addBatch
             'Debe Responder con Datos Obligatorios': fn.assertMsj('Algunos Datos Obligatorios No Estan Definidos'),
             'Debe Responder con Status 404': fn.assertStatus(404),
             'Debe Responder con Datos Vacios (obj)': fn.assertEmptyObj(),            
+            //'log' : fn.log()
         },
         'Listar Pedidos Operario - Parametros Vacios': {
             topic: function(topic) {
@@ -63,7 +64,8 @@ vows.describe('Test Lista Pedidos Operarios Bodega - Pedidos Clientes').addBatch
             'Debe Responder con el url del Servicio': fn.assertService(url),
             'Debe Responder con Lista Pedidos Clientes': fn.assertMsj('Lista Pedidos Clientes'),
             'Debe Responder con Status 200': fn.assertStatus(200),
-            'Debe Responder con Array Datos (obj)': fn.assertArrayObj('pedidos_clientes')
+            'Debe Responder con Array Datos (obj)': fn.assertArrayObj('pedidos_clientes'),
+            //'log' : fn.log()
         }
     }
 }).export(module);

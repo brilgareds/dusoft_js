@@ -92,6 +92,67 @@ PedidosFarmacias.prototype.asignarResponsablesPedido = function(req, res) {
     });
 };
 
+/**
+ * @api {post} /api/PedidosFarmacias/listaPedidosOperarioBodega Pedidos Farmacias Asignados a Operario de Bodega
+ * @apiName listaPedidosOperarioBodega
+ * @apiGroup PedidosFarmacias
+ * @apiDescription Proporciona una lista con todos los pedidos de farmacias asignados a un operario de bodega
+ * @apiDefinePermission autenticado Requiere Autenticacion
+ * Requiere que el usuario esté autenticado.
+ * @apiPermission autenticado
+ * @apiParam {String} usuario_id  Identificador del Usuario.
+ * @apiParam {String} auth_token  Token de Autenticación, este define si el usuario esta autenticado o no.
+ * @apiParam {Number} operario_id Identificador asignado al operario de Bodega.
+ * @apiSuccessExample Ejemplo Válido del Request.
+ *     HTTP/1.1 200 OK
+ *     {  
+ *          session: {              
+ *              usuario_id: 'jhon.doe',
+ *              auth_token: 'asdf2hgt56hjjhgrt-mnjhbgfd-asdfgyh-ghjmnbgfd'
+ *          },
+ *          data : {
+ *              lista_pedidos : { 
+ *                                  operario_id:  19
+ *                              }
+ *          }
+ *     }
+ * @apiSuccessExample Respuesta-Exitosa:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       service : '/api/PedidosFarmacias/listaPedidosOperarioBodega',   
+ *       msj : 'Listado Pedidos Farmacias',
+ *       status: '200',
+ *       obj : {
+ *                  pedidos_farmacias : [ 
+ *                                           {  
+ *                                              numero_pedido: 65774,
+ *                                              farmacia_id: 'FD',
+ *                                              empresa_id: 'FD',
+ *                                              centro_utilidad: '18',
+ *                                              bodega_id: '18',
+ *                                              nombre_farmacia: 'FARMACIAS DUANA',
+ *                                              nombre_bodega: 'POPAYAN',
+ *                                              usuario_id: 1350,
+ *                                              nombre_usuario: 'MAURICIO BARRIOS',
+ *                                              estado_actual: '1',
+ *                                              descripcion_estado_actual_pedido: 'Separado',
+ *                                              fecha_registro: '2014-05-28T00:00:00.000Z',
+ *                                              responsable_id: 19,
+ *                                              responsable_pedido: 'Ixon Eduardo Niño',
+ *                                              fecha_asignacion_pedido: '2014-07-08T14:11:16.901Z' 
+ *                                           }                                       
+ *                                      ]
+ *             }
+ *     }
+ * @apiErrorExample Respuesta-Error:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       service : '/api/PedidosFarmacias/listaPedidosOperarioBodega',   
+ *       msj : 'Mensaje Error',
+ *       status: 404,
+ *       obj : {},
+ *     }  
+ */
 
 PedidosFarmacias.prototype.listaPedidosOperariosBodega = function(req, res) {
 

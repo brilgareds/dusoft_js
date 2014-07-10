@@ -8,6 +8,51 @@ var Autenticacion = function(usuarios, emails) {
 };
 
 
+/**
+ * @api {post} /login Login
+ * @apiName Autenticación de Usuarios
+ * @apiGroup Autenticacion
+ * @apiDescription Autentica un usuario en el sistema, permitiendole hacer uso de las funcionalidades del Sistema de Informacion Empresarial
+ * @apiParam {String} [usuario_id]  Identificador del Usuario.
+ * @apiParam {String} [auth_token]  Token de Autenticación, este define si el usuario esta autenticado o no.
+ * @apiParam {String} usuario Nombre de Usuario, debe ser un usuario registrado en el Sistema de Información.
+ * @apiParam {String} contrasenia Contraseña valida para el usuario ingresado.
+ * @apiSuccessExample Ejemplo Válido del Request.
+ *     HTTP/1.1 200 OK
+ *     {  
+ *          session: {              
+ *              usuario_id: '',
+ *              auth_token: ''
+ *          },
+ *          data : {
+ *              login :  { 
+ *                          usuario : 'jhon.doe',
+ *                          contrasenia: '123jhon456'
+ *                       }
+ *          }
+ *     }
+ * @apiSuccessExample Respuesta-Exitosa:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       service : '/login',   
+ *       msj : 'Usuario Autenticado Correctamente',
+ *       status: '200',
+ *       obj : {
+ *                  sesion : {
+ *                      usuario_id : 123456,
+ *                      auth_token : 'WUVgrfTd-lowg8Lsv-Qun6OzAQ-m0QaUhsl-LlzO1zF4'
+ *                  }
+ *             }
+ *     }
+ * @apiErrorExample Respuesta-Error:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       service : '/login',   
+ *       msj : 'Usuario o Contraseña Invalidos',
+ *       status: 404,
+ *       obj : {},
+ *     }  
+ */
 
 Autenticacion.prototype.loginUsuario = function(req, res) {
 

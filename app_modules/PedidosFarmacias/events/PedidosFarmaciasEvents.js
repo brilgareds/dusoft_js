@@ -34,7 +34,7 @@ PedidosFarmaciasEvents.prototype.onNotificacionOperarioPedidosAsignados = functi
             G.auth.getSessionsUser(operario.usuario_id, function(err, sessions) {
                 sessions.forEach(function(session) {
                     that.m_pedidos_farmacias.seleccionar_pedido_by_numero_pedido(datos.numero_pedido, function(err, lista_pedidos_asignados) {
-                        that.io.sockets.socket(session.socket_id).emit('onPedidosFarmaciasAsignados', lista_pedidos_asignados);
+                        that.io.sockets.socket(session.socket_id).emit('onPedidosFarmaciasAsignados', {pedidos_farmacias : lista_pedidos_asignados});
                     });
                 });
             });

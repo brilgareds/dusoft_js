@@ -22,7 +22,12 @@ module.exports = function(app, di_container, io) {
     app.post('/api/PedidosClientes/listarPedidos', function(req, res) {
         c_pedidos_clientes.listarPedidosClientes(req, res);
     });
-
+    
+    // Obtiene la informacion especifica del pedido seleccionado.
+    app.post('/api/PedidosClientes/obtenerPedido', function(req, res) {
+        c_pedidos_clientes.listarPedidosClientes(req, res);
+    });
+    
     // Asignar o seleccionar responsables del pedido
     app.post('/api/PedidosClientes/asignarResponsable', function(req, res) {
         c_pedidos_clientes.asignarResponsablesPedido(req, res);

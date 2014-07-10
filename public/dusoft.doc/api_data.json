@@ -1,6 +1,70 @@
 [
   {
     "type": "post",
+    "url": "/login",
+    "title": "Login",
+    "name": "Autenticación_de_Usuarios",
+    "group": "Autenticacion",
+    "description": "Autentica un usuario en el sistema, permitiendole hacer uso de las funcionalidades del Sistema de Informacion Empresarial",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "field": "usuario_id",
+            "optional": true,
+            "description": "Identificador del Usuario."
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "field": "auth_token",
+            "optional": true,
+            "description": "Token de Autenticación, este define si el usuario esta autenticado o no."
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "field": "usuario",
+            "optional": false,
+            "description": "Nombre de Usuario, debe ser un usuario registrado en el Sistema de Información."
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "field": "contrasenia",
+            "optional": false,
+            "description": "Contraseña valida para el usuario ingresado."
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Ejemplo Válido del Request.",
+          "content": "   HTTP/1.1 200 OK\n   {  \n        session: {              \n            usuario_id: '',\n            auth_token: ''\n        },\n        data : {\n            login :  { \n                        usuario : 'jhon.doe',\n                        contrasenia: '123jhon456'\n                     }\n        }\n   }\n"
+        },
+        {
+          "title": "Respuesta-Exitosa:",
+          "content": "   HTTP/1.1 200 OK\n   {\n     service : '/login',   \n     msj : 'Usuario Autenticado Correctamente',\n     status: '200',\n     obj : {\n                sesion : {\n                    usuario_id : 123456,\n                    auth_token : 'WUVgrfTd-lowg8Lsv-Qun6OzAQ-m0QaUhsl-LlzO1zF4'\n                }\n           }\n   }\n"
+        }
+      ]
+    },
+    "error": {
+      "examples": [
+        {
+          "title": "Respuesta-Error:",
+          "content": "   HTTP/1.1 404 Not Found\n   {\n     service : '/login',   \n     msj : 'Usuario o Contraseña Invalidos',\n     status: 404,\n     obj : {},\n   }\n"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "dusoft/app_modules/Autenticacion/controllers/AutenticacionController.js"
+  },
+  {
+    "type": "post",
     "url": "/api/PedidosClientes/asignarResponsable",
     "title": "Asignar Responsables",
     "name": "Asignar_Responsables.",

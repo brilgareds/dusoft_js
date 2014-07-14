@@ -34,7 +34,7 @@ vows.describe('Test Lista Pedidos Operarios Bodega - Pedidos Farmacias').addBatc
                 var body = topic.body;
                 var obj = config.request_obj;
                 obj.session = body.obj.sesion;
-                obj.data = { lista_pedidos : { operario_id: '' }}
+                obj.data = { pedidos_farmacias : { operario_id: '' }}
 
                 client.post(config.api_url + url, {
                     json: obj
@@ -52,7 +52,7 @@ vows.describe('Test Lista Pedidos Operarios Bodega - Pedidos Farmacias').addBatc
                 var body = topic.body;
                 var obj = config.request_obj;
                 obj.session = body.obj.sesion;
-                obj.data = { lista_pedidos : { operario_id: 19 }}
+                obj.data = { pedidos_farmacias : { operario_id: 19 }}
 
                 client.post(config.api_url + url, {
                     json: obj

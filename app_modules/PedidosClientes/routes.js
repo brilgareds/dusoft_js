@@ -23,9 +23,9 @@ module.exports = function(app, di_container, io) {
         c_pedidos_clientes.listarPedidosClientes(req, res);
     });
     
-    // Obtiene la informacion especifica del pedido seleccionado.
+    // Obtiene la informacion especifica del pedido seleccionado, busca por numero de pedido.
     app.post('/api/PedidosClientes/obtenerPedido', function(req, res) {
-        c_pedidos_clientes.listarPedidosClientes(req, res);
+        c_pedidos_clientes.obtenerPedido(req, res);
     });
     
     // Asignar o seleccionar responsables del pedido

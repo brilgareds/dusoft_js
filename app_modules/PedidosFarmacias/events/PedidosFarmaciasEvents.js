@@ -13,7 +13,7 @@ PedidosFarmaciasEvents.prototype.onNotificarPedidosActualizados = function(datos
 
     var that = this;
 
-    this.m_pedidos_farmacias.seleccionar_pedido_by_numero_pedido(datos.numero_pedido, function(err, lista_pedidos_actualizados) {
+    this.m_pedidos_farmacias.consultar_pedido(datos.numero_pedido, function(err, lista_pedidos_actualizados) {
         var response = G.utils.r('onListarPedidosFarmacias', 'Lista Pedidos Farmacias Actualizados', 200, {pedidos_farmacias: lista_pedidos_actualizados});
         that.io.sockets.emit('onListarPedidosFarmacias', response);
     });
@@ -33,7 +33,7 @@ PedidosFarmaciasEvents.prototype.onNotificacionOperarioPedidosAsignados = functi
         operario_bodega.forEach(function(operario) {
             G.auth.getSessionsUser(operario.usuario_id, function(err, sessions) {
                 sessions.forEach(function(session) {
-                    that.m_pedidos_farmacias.seleccionar_pedido_by_numero_pedido(datos.numero_pedido, function(err, lista_pedidos_asignados) {
+                    that.m_pedidos_farmacias.consultar_pedido(datos.numero_pedido, function(err, lista_pedidos_asignados) {
                         that.io.sockets.socket(session.socket_id).emit('onPedidosFarmaciasAsignados', {pedidos_farmacias : lista_pedidos_asignados});
                     });
                 });

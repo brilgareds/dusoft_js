@@ -57,7 +57,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
 
 
 // Seleccionar Pedido Por un numero de pedido
-PedidosFarmaciasModel.prototype.seleccionar_pedido_by_numero_pedido = function(numero_pedido, callback) {
+PedidosFarmaciasModel.prototype.consultar_pedido = function(numero_pedido, callback) {
 
     var sql = " select \
                 a.solicitud_prod_a_bod_ppal_id as numero_pedido, \

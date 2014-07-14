@@ -35,7 +35,7 @@ vows.describe('Test Lista Pedidos Operarios Bodega - Pedidos Clientes').addBatch
                 var body = topic.body;
                 var obj = config.request_obj;
                 obj.session = body.obj.sesion;
-                obj.data = { lista_pedidos : { operario_id: '' }}
+                obj.data = { pedidos_clientes : { operario_id: '' }}
 
                 client.post(config.api_url + url, {
                     json: obj
@@ -53,7 +53,7 @@ vows.describe('Test Lista Pedidos Operarios Bodega - Pedidos Clientes').addBatch
                 var body = topic.body;
                 var obj = config.request_obj;
                 obj.session = body.obj.sesion;
-                obj.data = { lista_pedidos : { operario_id: 19 }}
+                obj.data = { pedidos_clientes : { operario_id: 19 }}
 
                 client.post(config.api_url + url, {
                     json: obj
@@ -65,7 +65,7 @@ vows.describe('Test Lista Pedidos Operarios Bodega - Pedidos Clientes').addBatch
             'Debe Responder con Lista Pedidos Clientes': fn.assertMsj('Lista Pedidos Clientes'),
             'Debe Responder con Status 200': fn.assertStatus(200),
             'Debe Responder con Array Datos (obj)': fn.assertArrayObj('pedidos_clientes'),
-            //'log' : fn.log()
+        'log' : fn.log()
         }
     }
 }).export(module);

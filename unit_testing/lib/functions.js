@@ -52,6 +52,6 @@ exports.assertArrayObj = function(key){
 
 exports.log = function(){
     return function (e, res, body) {
-        console.log(body);
+        console.log(body.obj);
     };
 }

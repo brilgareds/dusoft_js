@@ -97,6 +97,11 @@ PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
     });
 };
 
+PedidosCliente.prototype.consultarPedido = function(req, res) {
+
+
+};
+
 /**
  * @api {post} /api/PedidosClientes/asignarResponsable Asignar Responsables 
  * @apiName Asignar Responsables.
@@ -143,7 +148,6 @@ PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
  *       obj : {},
  *     }  
  */
-
 
 PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
 
@@ -214,8 +218,8 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
  *          },
  *          data : {
  *              pedidos_clientes : { 
-    *                                  operario_id:  19
-    *                              }
+ *                                  operario_id:  19
+ *                              }
  *          }
  *     }
  * @apiSuccessExample Respuesta-Exitosa:
@@ -243,7 +247,22 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
  *                                             fecha_registro: '2014-01-21T17:28:50.700Z',
  *                                             responsable_id: 19,
  *                                             responsable_pedido: 'Ixon Eduardo Niño',
- *                                             fecha_asignacion_pedido: '2014-03-04T17:44:30.911Z' 
+ *                                             fecha_asignacion_pedido: '2014-03-04T17:44:30.911Z',
+ *                                             lista_productos:[
+ *                                                               {
+ *                                                                  numero_pedido : 33872,
+ *                                                                  codigo_producto : '1145C1131279',
+ *                                                                  descripcion_producto : 'OFTAFLOX . UNGUENTO OFTALMICO | TUBO X 5GR. SCANDINAVIA',
+ *                                                                  cantidad_solicitada : 10,
+ *                                                                  cantidad_despachada : 0,
+ *                                                                  cantidad_pendiente : 10,
+ *                                                                  cantidad_facturada : 0,
+ *                                                                  valor_unitario: 8450,
+ *                                                                  porcentaje_iva : 0,
+ *                                                                  valor_unitario_con_iva: 8450,
+ *                                                                  valor_iva: 0
+ *                                                               }
+ *                                             ] 
  *                                         }
  *                                      ]
  *             }
@@ -276,7 +295,24 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
     var operario_bodega = args.pedidos_clientes.operario_id;
 
     this.m_pedidos_clientes.listar_pedidos_del_operario(operario_bodega, function(err, lista_pedidos_clientes) {
-        res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {pedidos_clientes: lista_pedidos_clientes}));
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Se Ha Generado Un Error Interno', 500, {}));
+            return;
+        }
+        var i = lista_pedidos_clientes.length;
+
+        lista_pedidos_clientes.forEach(function(pedido) {
+
+            that.m_pedidos_clientes.consultar_detalle_pedido(pedido.numero_pedido, function(err, detalle_pedido) {
+                pedido.lista_productos = detalle_pedido;
+
+                if (--i === 0)
+                    res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {pedidos_clientes: lista_pedidos_clientes}));
+
+            });
+        });
+
     });
 
 };

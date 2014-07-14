@@ -9,17 +9,21 @@ var PedidosClientesEvents = function(socket, pedidos_clientes, terceros) {
 };
 
 // Notificacion en Real Time de los Pedidos Actualizados
+// Callbacks :  *   Modulo: PedidosClientes 
+//                          Controller - asignarResponsablesPedido();
 PedidosClientesEvents.prototype.onNotificarPedidosActualizados = function(datos) {
 
     var that = this;
 
-    this.m_pedidos_clientes.seleccionar_pedido_by_numero_pedido(datos.numero_pedido, function(err, lista_pedidos_actualizados) {
+    this.m_pedidos_clientes.consultar_pedido(datos.numero_pedido, function(err, lista_pedidos_actualizados) {
         var response = G.utils.r('onListarPedidosClientes', 'Lista Pedidos Clientes Actualizados', 200, {pedidos_clientes: lista_pedidos_actualizados});
         that.io.sockets.emit('onListarPedidosClientes', response);
     });
 };
 
 // Notificacion a los Operarios de los Pedidos Asigandos
+// Callbacks :  *   Modulo: PedidosClientes 
+//                          Controller - asignarResponsablesPedido();
 PedidosClientesEvents.prototype.onNotificacionOperarioPedidosAsignados = function(datos) {
 
     // ---- Parametros Requeridos ------//
@@ -33,7 +37,7 @@ PedidosClientesEvents.prototype.onNotificacionOperarioPedidosAsignados = functio
         operarios_bodega.forEach(function(operario) {            
             G.auth.getSessionsUser(operario.usuario_id, function(err, sessions) {
                 sessions.forEach(function(session) {
-                    that.m_pedidos_clientes.seleccionar_pedido_by_numero_pedido(datos.numero_pedido, function(err, lista_pedidos_asignados) {
+                    that.m_pedidos_clientes.consultar_pedido(datos.numero_pedido, function(err, lista_pedidos_asignados) {
                         that.io.sockets.socket(session.socket_id).emit('onPedidosClientesAsignados', { pedidos_clientes : lista_pedidos_asignados });
                     });
                 });

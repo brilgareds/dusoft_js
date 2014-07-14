@@ -12,7 +12,6 @@ var that = this;
 vows.describe('Test Listar Pedidos Clientes').addBatch({
     'Autenticar Usuario -> ': {
         topic: config.post(url_login, config.auth_request_obj),
-        'log': fn.log(),
         'Listar Pedidos Clientes - Parametros Incorrectos': {
             topic: function(topic) {
                 var body = topic.body;

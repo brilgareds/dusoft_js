@@ -55,6 +55,8 @@ TercerosModel.prototype.listar_operarios_bodega = function(termino_busqueda, est
 };
 
 // Selecciona un operario de bodega, por el ID
+//  Callbacks :     * Modulo :  PedidosClientes 
+//                              Evento - onNotificacionOperarioPedidosAsignados();
 TercerosModel.prototype.seleccionar_operario_bodega = function(operario_id, callback) {
 
     var sql = "select operario_id, nombre as nombre_operario, usuario_id, estado from operarios_bodega where operario_id = $1";

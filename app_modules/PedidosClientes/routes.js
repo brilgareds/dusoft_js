@@ -37,7 +37,4 @@ module.exports = function(app, di_container, io) {
     app.post('/api/PedidosClientes/listaPedidosOperarioBodega', function(req, res) {
         c_pedidos_clientes.listaPedidosOperariosBodega(req, res);
     });
-
-
-
 };

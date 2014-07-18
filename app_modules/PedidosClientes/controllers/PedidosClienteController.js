@@ -97,6 +97,7 @@ PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
     });
 };
 
+/**/
 PedidosCliente.prototype.consultarPedido = function(req, res) {
 
 

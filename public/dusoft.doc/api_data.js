@@ -68,7 +68,7 @@ define({ api: [
     "url": "/api/PedidosClientes/asignarResponsable",
     "title": "Asignar Responsables",
     "name": "Asignar_Responsables.",
-    "group": "Pedidos_Clientes",
+    "group": "PedidosClientes",
     "description": "Asignar o delegar los pedidos a un operario de bodega para su correspondiente separacion.",
     "permission": {
       "name": "autenticado",
@@ -144,7 +144,7 @@ define({ api: [
     "url": "/api/PedidosClientes/listarPedidos",
     "title": "Listar Pedidos",
     "name": "Listar_Pedidos_Clientes",
-    "group": "Pedidos_Clientes",
+    "group": "PedidosClientes",
     "description": "Proporciona un listado de Pedidos de Clientes, permite filtrar lo pedidos por los siguientes campos,\nnumero del pedido, identificacion o nombre del tercero, direccion, telefono, identificacion o nombre del vendedor.",
     "permission": {
       "name": "autenticado",
@@ -217,10 +217,61 @@ define({ api: [
   },
   {
     "type": "event",
+    "url": "onNotificarPedidosActualizados",
+    "title": "Notificación Pedidos Actualizados",
+    "name": "Notificación_Pedidos_Actualizados",
+    "group": "PedidosClientes_(evt)",
+    "description": "Notifica a todos los usuarios en tiempo real que pedidos han sido actualizados.",
+    "permission": {
+      "name": "autenticado",
+      "title": "Requiere Autenticacion",
+      "description": "Requiere que el usuario esté autenticado.\n"
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Object",
+            "field": "numero_pedidos",
+            "optional": false,
+            "description": "Lista de pedidos que le fueron asignados al operario de bodega."
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "field": "responsable",
+            "optional": false,
+            "description": "Operario de Bodega al que se le asigna el pedido."
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Este Evento se usa en:",
+          "content": "   Modulo : PedidosClientes\n   Accion : Controller - asignarResponsablesPedido();\n"
+        },
+        {
+          "title": "Ejemplo Válido del Request.",
+          "content": "   HTTP/1.1 200 OK\n   {  \n        numero_pedido: 15\n        \n   }\n"
+        },
+        {
+          "title": "Emite o Notifica al evento onListarPedidosClientes",
+          "content": "   HTTP/1.1 200 OK\n   {\n      pedidos_clientes : [ \n                            {   \n                                 numero_pedido: 33872,\n                                 tipo_id_cliente: 'CE',\n                                 identificacion_cliente: '10365',\n                                 nombre_cliente: 'CLINICA SANTA GRACIA DUMIAN MEDICAL\n                                 direccion_cliente: 'CALLE 14 15-49',\n                                 telefono_cliente: '8236444',\n                                 tipo_id_vendedor: 'CC ',\n                                 idetificacion_vendedor: '94518917',\n                                 nombre_vendedor: 'GUSTAVO ADOLFO MEJIA',\n                                 estado: '1',\n                                 descripcion_estado: 'Activo',\n                                 estado_actual_pedido: '1',\n                                 descripcion_estado_actual_pedido: 'Separado',\n                                 fecha_registro: '2014-01-21T17:28:50.700Z',\n                                 responsable_id: 19,\n                                 responsable_pedido: 'Ixon Eduardo Niño',\n                                 fecha_asignacion_pedido: '2014-03-04T17:44:30.911Z'                                   \n                               }\n                          ] \n   }\n"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "dusoft/app_modules/PedidosClientes/events/PedidosClientesEvents.js"
+  },
+  {
+    "type": "event",
     "url": "onNotificacionOperarioPedidosAsignados",
     "title": "Notificación Pedidos Asignados",
     "name": "Notificación_Pedidos_Asignados",
-    "group": "Pedidos_Clientes_Eventos",
+    "group": "PedidosClientes_(evt)",
     "description": "Emite un evento o notificacion en tiempo real, a las plataformas conectados al API Dusoft Server, de los pedidos de clientes que le fueron asignado a un operario de bodega que se encuentre autenticado en el sistema.",
     "permission": {
       "name": "autenticado",
@@ -259,7 +310,7 @@ define({ api: [
         },
         {
           "title": "Emite o Notifica al evento onPedidosClientesAsignados",
-          "content": "   HTTP/1.1 200 OK\n   {\n      pedidos_clientes : [ \n                            {\n                            } \n                          ] \n   }\n"
+          "content": "   HTTP/1.1 200 OK\n   {\n      pedidos_clientes : [ \n                            {   \n                                 numero_pedido: 33872,\n                                 tipo_id_cliente: 'CE',\n                                 identificacion_cliente: '10365',\n                                 nombre_cliente: 'CLINICA SANTA GRACIA DUMIAN MEDICAL\n                                 direccion_cliente: 'CALLE 14 15-49',\n                                 telefono_cliente: '8236444',\n                                 tipo_id_vendedor: 'CC ',\n                                 idetificacion_vendedor: '94518917',\n                                 nombre_vendedor: 'GUSTAVO ADOLFO MEJIA',\n                                 estado: '1',\n                                 descripcion_estado: 'Activo',\n                                 estado_actual_pedido: '1',\n                                 descripcion_estado_actual_pedido: 'Separado',\n                                 fecha_registro: '2014-01-21T17:28:50.700Z',\n                                 responsable_id: 19,\n                                 responsable_pedido: 'Ixon Eduardo Niño',\n                                 fecha_asignacion_pedido: '2014-03-04T17:44:30.911Z'     \n                                 lista_productos:[\n                                                             {\n                                                                numero_pedido : 33872,\n                                                                codigo_producto : '1145C1131279',\n                                                                descripcion_producto : 'OFTAFLOX . UNGUENTO OFTALMICO | TUBO X 5GR. SCANDINAVIA',\n                                                                cantidad_solicitada : 10,\n                                                                cantidad_despachada : 0,\n                                                                cantidad_pendiente : 10,\n                                                                cantidad_facturada : 0,\n                                                                valor_unitario: 8450,\n                                                                porcentaje_iva : 0,\n                                                                valor_unitario_con_iva: 8450,\n                                                                valor_iva: 0\n                                                             }\n                                           ]                               \n                               }\n                          ] \n   }\n"
         }
       ]
     },
@@ -267,11 +318,467 @@ define({ api: [
     "filename": "dusoft/app_modules/PedidosClientes/events/PedidosClientesEvents.js"
   },
   {
+    "type": "sql",
+    "url": "actualizar_responsables_pedidos",
+    "title": "Actualizar Responsables Pedido",
+    "name": "Actualizar_Responsables_Pedido",
+    "group": "PedidosClientes_(sql)",
+    "description": "Permite cambiar el estado actual del pedido, dependiendo en momento o gestion determinada en donde se encuentre.\nLos estados permitidos son:\n0 = No Asignado. Cuando se crea el pedido por primera vez\n1 = Asignado, cuando el pedido fue asignado a un operario de bodega para ser despachado\n2 = Auditado, Cuando se ha separado el pedido y lo estan auditando para verificar su correcta separacion.\n3 = En Despacho, Cuando se encuentra listo para ser despachado al lugar de destino.\n4 = Despachado, Cuando el pedido ha sido despachado en su total al lugar de destino.",
+    "permission": {
+      "name": "autenticado",
+      "title": "Requiere Autenticacion",
+      "description": "Requiere que el usuario esté autenticado.\n"
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "field": "numero_pedido",
+            "optional": false,
+            "description": "Numero del pedido a asignar"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "field": "estado_pedido",
+            "optional": false,
+            "description": "Estado del pedido"
+          },
+          {
+            "group": "Parameter",
+            "type": "Function",
+            "field": "callback",
+            "optional": false,
+            "description": "Funcion de retorno de informacion."
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Este SQL se usa en:",
+          "content": "   Modulo : PedidosClientes\n   Accion : Modelo - asignar_responsables_pedidos();\n"
+        },
+        {
+          "title": "SQL.",
+          "content": "        UPDATE ventas_ordenes_pedidos SET estado_pedido=$2 WHERE pedido_cliente_id=$1;\n"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "dusoft/app_modules/PedidosClientes/models/PedidosClienteModel.js"
+  },
+  {
+    "type": "sql",
+    "url": "actualizar_responsables_pedidos",
+    "title": "Actualizar Responsables Pedido",
+    "name": "Actualizar_Responsables_Pedido",
+    "group": "PedidosClientes_(sql)",
+    "description": "Asigna el Pedido a otro operario de bodega.",
+    "permission": {
+      "name": "autenticado",
+      "title": "Requiere Autenticacion",
+      "description": "Requiere que el usuario esté autenticado.\n"
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "field": "numero_pedido",
+            "optional": false,
+            "description": "Numero del pedido a asignar"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "field": "estado_pedido",
+            "optional": false,
+            "description": "Estado del pedido"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "field": "responsable",
+            "optional": false,
+            "description": "Id del Operario de bodega"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "field": "usuario",
+            "optional": false,
+            "description": "Id del usuario que registra la asignacion."
+          },
+          {
+            "group": "Parameter",
+            "type": "Function",
+            "field": "callback",
+            "optional": false,
+            "description": "Funcion de retorno de informacion."
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Este SQL se usa en:",
+          "content": "   Modulo : PedidosClientes\n   Accion : Modelo - asignar_responsables_pedidos();\n"
+        },
+        {
+          "title": "SQL.",
+          "content": "        UPDATE ventas_ordenes_pedidos_estado SET responsable_id=$3, fecha=NOW(), usuario_id=$4  WHERE pedido_cliente_id=$1 AND estado=$2;\n"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "dusoft/app_modules/PedidosClientes/models/PedidosClienteModel.js"
+  },
+  {
+    "type": "sql",
+    "url": "asignar_responsables_pedidos",
+    "title": "Asignar Responsables",
+    "name": "Asignar_Responsables",
+    "group": "PedidosClientes_(sql)",
+    "description": "Se le asignan pedidos a un operario de bodega para ser separados.",
+    "permission": {
+      "name": "autenticado",
+      "title": "Requiere Autenticacion",
+      "description": "Requiere que el usuario esté autenticado.\n"
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "field": "numero_pedido",
+            "optional": false,
+            "description": "Numero del pedido a asignar"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "field": "estado_pedido",
+            "optional": false,
+            "description": "Estado del pedido"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "field": "responsable",
+            "optional": false,
+            "description": "Id del Operario de bodega"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "field": "usuario",
+            "optional": false,
+            "description": "Id del usuario que registra la asignacion."
+          },
+          {
+            "group": "Parameter",
+            "type": "Function",
+            "field": "callback",
+            "optional": false,
+            "description": "Funcion de retorno de informacion."
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Este SQL se usa en:",
+          "content": "   Modulo : PedidosClientes\n   Accion : Controller - asignarResponsablesPedido();\n"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "dusoft/app_modules/PedidosClientes/models/PedidosClienteModel.js"
+  },
+  {
+    "type": "sql",
+    "url": "consultar_pedido",
+    "title": "Consultar Pedido",
+    "name": "Consultar_Pedido",
+    "group": "PedidosClientes_(sql)",
+    "description": "Consulta la información principal del pedido seleccionado.",
+    "permission": {
+      "name": "autenticado",
+      "title": "Requiere Autenticacion",
+      "description": "Requiere que el usuario esté autenticado.\n"
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "field": "numero_pedido",
+            "optional": false,
+            "description": "Numero del Pedido"
+          },
+          {
+            "group": "Parameter",
+            "type": "Function",
+            "field": "callback",
+            "optional": false,
+            "description": "Funcion de retorno de informacion."
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Este SQL se usa en:",
+          "content": "   Modulo : PedidosClientes\n   Accion : Evento - onNotificarPedidosActualizados();\n   \n   Modulo : PedidosClientes\n   Accion : Evento - onNotificacionOperarioPedidosAsignados();\n"
+        },
+        {
+          "title": "SQL.",
+          "content": "        select \n           a.pedido_cliente_id as numero_pedido, \n           b.tipo_id_tercero as tipo_id_cliente, \n           b.tercero_id as identificacion_cliente, \n           b.nombre_tercero as nombre_cliente, \n           b.direccion as direccion_cliente, \n           b.telefono as telefono_cliente, \n           c.tipo_id_vendedor, \n           c.vendedor_id as idetificacion_vendedor, \n           c.nombre as nombre_vendedor, \n           a.estado, \n           case when a.estado = 0 then 'Inactivo ' \n                when a.estado = 1 then 'Activo' \n                when a.estado = 2 then 'Anulado' \n                when a.estado = 3 then 'Entregado' end as descripcion_estado, \n           a.estado_pedido as estado_actual_pedido, \n           case when a.estado_pedido = 0 then 'No Asignado' \n                when a.estado_pedido = 1 then 'Asignado' \n                when a.estado_pedido = 2 then 'Auditado' \n                when a.estado_pedido = 3 then 'En Despacho' \n                when a.estado_pedido = 4 then 'Despachado' end as descripcion_estado_actual_pedido, \n           a.fecha_registro \n           from ventas_ordenes_pedidos a \n           inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id \n           inner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id \n           where a.pedido_cliente_id = $1  \n           AND (a.estado IN ('0','1','2','3')) order by 1 desc;\n"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "dusoft/app_modules/PedidosClientes/models/PedidosClienteModel.js"
+  },
+  {
+    "type": "sql",
+    "url": "consultar_detalle_pedido",
+    "title": "Detalle Pedido",
+    "name": "Detalle_Pedido",
+    "group": "PedidosClientes_(sql)",
+    "description": "Consulta toda la informacion detallada del pedido como productos, cantidades, precios, iva etc.",
+    "permission": {
+      "name": "autenticado",
+      "title": "Requiere Autenticacion",
+      "description": "Requiere que el usuario esté autenticado.\n"
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "field": "numero_pedido",
+            "optional": false,
+            "description": "Numero del Pedido"
+          },
+          {
+            "group": "Parameter",
+            "type": "Function",
+            "field": "callback",
+            "optional": false,
+            "description": "Funcion de retorno de informacion."
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Este SQL se usa en:",
+          "content": "   Modulo : PedidosClientes\n   Accion : Controller - listaPedidosOperariosBodega();\n"
+        },
+        {
+          "title": "SQL.",
+          "content": "        select\n           a.pedido_cliente_id as numero_pedido,\n           a.codigo_producto,\n           fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\n           a.numero_unidades as cantidad_solicitada,\n           a.cantidad_despachada,\n           a.numero_unidades - a.cantidad_despachada as cantidad_pendiente,\n           a.cantidad_facturada,\n           a.valor_unitario,\n           a.porc_iva as porcentaje_iva,\n           (a.valor_unitario+(a.valor_unitario*(a.porc_iva/100)))as valor_unitario_con_iva,\n           (a.numero_unidades*(a.valor_unitario*(a.porc_iva/100))) as valor_iva\n           from ventas_ordenes_pedidos_d a where a.pedido_cliente_id = $1 ;\n"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "dusoft/app_modules/PedidosClientes/models/PedidosClienteModel.js"
+  },
+  {
+    "type": "sql",
+    "url": "insertar_responsables_pedidos",
+    "title": "Ingresar Responsables Pedido",
+    "name": "Ingresar_Responsables_Pedido",
+    "group": "PedidosClientes_(sql)",
+    "description": "Ingresar el responsable del pedido asignado",
+    "permission": {
+      "name": "autenticado",
+      "title": "Requiere Autenticacion",
+      "description": "Requiere que el usuario esté autenticado.\n"
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "field": "numero_pedido",
+            "optional": false,
+            "description": "Numero del pedido a asignar"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "field": "estado_pedido",
+            "optional": false,
+            "description": "Estado del pedido"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "field": "responsable",
+            "optional": false,
+            "description": "Id del Operario de bodega"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "field": "usuario",
+            "optional": false,
+            "description": "Id del usuario que registra la asignacion."
+          },
+          {
+            "group": "Parameter",
+            "type": "Function",
+            "field": "callback",
+            "optional": false,
+            "description": "Funcion de retorno de informacion."
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Este SQL se usa en:",
+          "content": "   Modulo : PedidosClientes\n   Accion : Modelo - asignar_responsables_pedidos();\n"
+        },
+        {
+          "title": "SQL.",
+          "content": "        INSERT INTO ventas_ordenes_pedidos_estado( pedido_cliente_id, estado, responsable_id, fecha, usuario_id) VALUES ($1, $2, $3, now(), $4);\n"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "dusoft/app_modules/PedidosClientes/models/PedidosClienteModel.js"
+  },
+  {
+    "type": "sql",
+    "url": "listar_pedidos_del_operario",
+    "title": "Listar Pedidos Operarios",
+    "name": "Listar_Pedidos_Operarios",
+    "group": "PedidosClientes_(sql)",
+    "description": "Listar los pedidos asignados a un operario de bodega.",
+    "permission": {
+      "name": "autenticado",
+      "title": "Requiere Autenticacion",
+      "description": "Requiere que el usuario esté autenticado.\n"
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "field": "responsable",
+            "optional": false,
+            "description": "Nombre del Operario"
+          },
+          {
+            "group": "Parameter",
+            "type": "Function",
+            "field": "callback",
+            "optional": false,
+            "description": "Funcion de retorno de informacion."
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Este SQL se usa en:",
+          "content": "   Modulo : PedidosClientes\n   Accion : Controller - listaPedidosOperariosBodega();\n"
+        },
+        {
+          "title": "SQL.",
+          "content": "    select \n       a.pedido_cliente_id as numero_pedido, \n       b.tipo_id_tercero as tipo_id_cliente, \n       b.tercero_id as identificacion_cliente, \n       b.nombre_tercero as nombre_cliente, \n       b.direccion as direccion_cliente, \n       b.telefono as telefono_cliente, \n       c.tipo_id_vendedor, \n       c.vendedor_id as idetificacion_vendedor, \n       c.nombre as nombre_vendedor, \n       a.estado, \n       case when a.estado = 0 then 'Inactivo' \n            when a.estado = 1 then 'Activo' \n            when a.estado = 2 then 'Anulado' \n            when a.estado = 3 then 'Entregado' end as descripcion_estado, \n       a.estado_pedido as estado_actual_pedido, \n       case when a.estado_pedido = 0 then 'No Asignado' \n            when a.estado_pedido = 1 then 'Asignado' \n            when a.estado_pedido = 2 then 'Auditado' \n            when a.estado_pedido = 3 then 'En Despacho' \n            when a.estado_pedido = 4 then 'Despachado' end as descripcion_estado_actual_pedido, \n       a.fecha_registro,\n       d.responsable_id,\n       e.nombre as responsable_pedido,\n       d.fecha as fecha_asignacion_pedido \n       from ventas_ordenes_pedidos a \n       inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id \n       inner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id \n       inner join ventas_ordenes_pedidos_estado d on a.pedido_cliente_id = d.pedido_cliente_id and a.estado_pedido = d.estado\n       inner join operarios_bodega e on d.responsable_id = e.operario_id\n       where d.responsable_id = $1  \n       and a.estado_pedido = '1' \n       AND (a.estado IN ('1'))   \n       order by 1 desc;\n"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "dusoft/app_modules/PedidosClientes/models/PedidosClienteModel.js"
+  },
+  {
+    "type": "sql",
+    "url": "listar_pedidos_clientes",
+    "title": "Pedidos Clientes",
+    "name": "Pedidos_Clientes",
+    "group": "PedidosClientes_(sql)",
+    "description": "Lista todos los pedidos realizados a clientes.",
+    "permission": {
+      "name": "autenticado",
+      "title": "Requiere Autenticacion",
+      "description": "Requiere que el usuario esté autenticado.\n"
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "field": "empresa_id",
+            "optional": false,
+            "description": "Identificador de la Empresa que realizó el pedido"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "field": "termino_busqueda",
+            "optional": false,
+            "description": "Termino por el cual desea filtrar lo pedidos.\n                   Se puede filtrar por:\n                   numero del pedido\n                   identificacion del tercero\n                   nombre del tercero\n                   direccion\n                   telefono\n                   identificacion del vendedor\n                   nombre del vendedor."
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "field": "pagina",
+            "optional": false,
+            "description": "Numero de la pagina, actualmente se traen 1000 registros por pagina (Cambiar en configuraciones de empresa)"
+          },
+          {
+            "group": "Parameter",
+            "type": "Function",
+            "field": "callback",
+            "optional": false,
+            "description": "Funcion de retorno de informacion."
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Este SQL se usa en:",
+          "content": "   Modulo : PedidosClientes\n   Accion : Controller - listarPedidosClientes();\n"
+        },
+        {
+          "title": "SQL.",
+          "content": "        select \n           a.pedido_cliente_id as numero_pedido, \n           b.tipo_id_tercero as tipo_id_cliente, \n           b.tercero_id as identificacion_cliente, \n           b.nombre_tercero as nombre_cliente, \n           b.direccion as direccion_cliente, \n           b.telefono as telefono_cliente, \n           c.tipo_id_vendedor, \n           c.vendedor_id as idetificacion_vendedor, \n           c.nombre as nombre_vendedor, \n           a.estado, \n           case when a.estado = 0 then 'Inactivo ' \n           when a.estado = 1 then 'Activo' \n           when a.estado = 2 then 'Anulado' \n           when a.estado = 3 then 'Entregado' end as descripcion_estado, \n           a.estado_pedido as estado_actual_pedido, \n           case when a.estado_pedido = 0 then 'No Asignado' \n           when a.estado_pedido = 1 then 'Asignado' \n           when a.estado_pedido = 2 then 'Auditado' \n           when a.estado_pedido = 3 then 'En Despacho' \n           when a.estado_pedido = 4 then 'Despachado' end as descripcion_estado_actual_pedido, \n           a.fecha_registro \n           from ventas_ordenes_pedidos a \n           inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id \n           inner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id \n           where a.empresa_id = $1 \n           and (   a.pedido_cliente_id ilike $2  \n                   or b.tercero_id ilike $2 \n                   or b.nombre_tercero ilike $2 \n                   or b.direccion ilike $2  \n                   or b.telefono ilike $2   \n                   or c.vendedor_id ilike $2 \n                   or c.nombre ilike $2) \n           AND (a.estado IN ('0','1','2','3')) order by 1 desc  limit $3 offset $4\n"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "dusoft/app_modules/PedidosClientes/models/PedidosClienteModel.js"
+  },
+  {
     "type": "post",
     "url": "/api/PedidosClientes/listaPedidosOperarioBodega",
     "title": "Listar Pedidos Operarios",
     "name": "listaPedidosOperarioBodega",
-    "group": "Pedidos_Clientes",
+    "group": "PedidosClientes",
     "description": "Proporciona una lista con todos los pedidos de clientes asignados a un operario de bodega",
     "permission": {
       "name": "autenticado",

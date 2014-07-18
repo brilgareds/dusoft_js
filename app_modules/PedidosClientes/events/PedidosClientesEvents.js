@@ -8,9 +8,52 @@ var PedidosClientesEvents = function(socket, pedidos_clientes, terceros) {
     this.m_terceros = terceros;
 };
 
-// Notificacion en Real Time de los Pedidos Actualizados
-// Callbacks :  *   Modulo: PedidosClientes 
-//                          Controller - asignarResponsablesPedido();
+/**
+ * @api {event} onNotificarPedidosActualizados Notificación Pedidos Actualizados 
+ * @apiName Notificación Pedidos Actualizados
+ * @apiGroup PedidosClientes (evt)
+ * @apiDescription Notifica a todos los usuarios en tiempo real que pedidos han sido actualizados.
+ * @apiDefinePermission autenticado Requiere Autenticacion
+ * Requiere que el usuario esté autenticado.
+ * @apiPermission autenticado
+ * @apiParam {Object} numero_pedidos  Lista de pedidos que le fueron asignados al operario de bodega.
+ * @apiParam {Number} responsable Operario de Bodega al que se le asigna el pedido.
+ * @apiSuccessExample Este Evento se usa en:
+ *     Modulo : PedidosClientes
+ *     Accion : Controller - asignarResponsablesPedido();
+ * @apiSuccessExample Ejemplo Válido del Request.
+ *     HTTP/1.1 200 OK
+ *     {  
+ *          numero_pedido: 15
+ *          
+ *     }
+ * @apiSuccessExample Emite o Notifica al evento onListarPedidosClientes
+ *     HTTP/1.1 200 OK
+ *     {
+ *        pedidos_clientes : [ 
+ *                              {   
+*                                   numero_pedido: 33872,
+*                                   tipo_id_cliente: 'CE',
+*                                   identificacion_cliente: '10365',
+*                                   nombre_cliente: 'CLINICA SANTA GRACIA DUMIAN MEDICAL
+*                                   direccion_cliente: 'CALLE 14 15-49',
+*                                   telefono_cliente: '8236444',
+*                                   tipo_id_vendedor: 'CC ',
+*                                   idetificacion_vendedor: '94518917',
+*                                   nombre_vendedor: 'GUSTAVO ADOLFO MEJIA',
+*                                   estado: '1',
+*                                   descripcion_estado: 'Activo',
+*                                   estado_actual_pedido: '1',
+*                                   descripcion_estado_actual_pedido: 'Separado',
+*                                   fecha_registro: '2014-01-21T17:28:50.700Z',
+*                                   responsable_id: 19,
+*                                   responsable_pedido: 'Ixon Eduardo Niño',
+*                                   fecha_asignacion_pedido: '2014-03-04T17:44:30.911Z'                                   
+*                                 }
+ *                            ] 
+ *     }
+ */
+
 PedidosClientesEvents.prototype.onNotificarPedidosActualizados = function(datos) {
 
     var that = this;
@@ -25,7 +68,7 @@ PedidosClientesEvents.prototype.onNotificarPedidosActualizados = function(datos)
 /**
  * @api {event} onNotificacionOperarioPedidosAsignados Notificación Pedidos Asignados 
  * @apiName Notificación Pedidos Asignados
- * @apiGroup Pedidos Clientes Eventos
+ * @apiGroup PedidosClientes (evt)
  * @apiDescription Emite un evento o notificacion en tiempo real, a las plataformas conectados al API Dusoft Server, de los pedidos de clientes que le fueron asignado a un operario de bodega que se encuentre autenticado en el sistema.
  * @apiDefinePermission autenticado Requiere Autenticacion
  * Requiere que el usuario esté autenticado.
@@ -46,8 +89,40 @@ PedidosClientesEvents.prototype.onNotificarPedidosActualizados = function(datos)
  *     HTTP/1.1 200 OK
  *     {
  *        pedidos_clientes : [ 
- *                              {
- *                              } 
+ *                              {   
+*                                   numero_pedido: 33872,
+*                                   tipo_id_cliente: 'CE',
+*                                   identificacion_cliente: '10365',
+*                                   nombre_cliente: 'CLINICA SANTA GRACIA DUMIAN MEDICAL
+*                                   direccion_cliente: 'CALLE 14 15-49',
+*                                   telefono_cliente: '8236444',
+*                                   tipo_id_vendedor: 'CC ',
+*                                   idetificacion_vendedor: '94518917',
+*                                   nombre_vendedor: 'GUSTAVO ADOLFO MEJIA',
+*                                   estado: '1',
+*                                   descripcion_estado: 'Activo',
+*                                   estado_actual_pedido: '1',
+*                                   descripcion_estado_actual_pedido: 'Separado',
+*                                   fecha_registro: '2014-01-21T17:28:50.700Z',
+*                                   responsable_id: 19,
+*                                   responsable_pedido: 'Ixon Eduardo Niño',
+*                                   fecha_asignacion_pedido: '2014-03-04T17:44:30.911Z'     
+*                                   lista_productos:[
+ *                                                               {
+ *                                                                  numero_pedido : 33872,
+ *                                                                  codigo_producto : '1145C1131279',
+ *                                                                  descripcion_producto : 'OFTAFLOX . UNGUENTO OFTALMICO | TUBO X 5GR. SCANDINAVIA',
+ *                                                                  cantidad_solicitada : 10,
+ *                                                                  cantidad_despachada : 0,
+ *                                                                  cantidad_pendiente : 10,
+ *                                                                  cantidad_facturada : 0,
+ *                                                                  valor_unitario: 8450,
+ *                                                                  porcentaje_iva : 0,
+ *                                                                  valor_unitario_con_iva: 8450,
+ *                                                                  valor_iva: 0
+ *                                                               }
+ *                                             ]                               
+*                                 }
  *                            ] 
  *     }
  */
@@ -101,12 +176,6 @@ PedidosClientesEvents.prototype.onNotificacionOperarioPedidosAsignados = functio
             });
         });
     });
-
-    // 2. Consultar el tercero * 
-    // 3. Obtener la sesion de usuario
-    // 1. Consultar los pedidos asignados
-    // 4. enviar por sockets
-
 };
 
 PedidosClientesEvents.$inject = ["socket", "m_pedidos_clientes", "m_terceros"];

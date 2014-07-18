@@ -11,7 +11,7 @@ var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes) {
 /**
  * @api {post} /api/PedidosClientes/listarPedidos Listar Pedidos
  * @apiName Listar Pedidos Clientes
- * @apiGroup Pedidos Clientes
+ * @apiGroup PedidosClientes
  * @apiDescription Proporciona un listado de Pedidos de Clientes, permite filtrar lo pedidos por los siguientes campos,
  * numero del pedido, identificacion o nombre del tercero, direccion, telefono, identificacion o nombre del vendedor.
  * @apiDefinePermission autenticado Requiere Autenticacion
@@ -106,7 +106,7 @@ PedidosCliente.prototype.consultarPedido = function(req, res) {
 /**
  * @api {post} /api/PedidosClientes/asignarResponsable Asignar Responsables 
  * @apiName Asignar Responsables.
- * @apiGroup Pedidos Clientes
+ * @apiGroup PedidosClientes
  * @apiDescription Asignar o delegar los pedidos a un operario de bodega para su correspondiente separacion.
  * @apiDefinePermission autenticado Requiere Autenticacion
  * Requiere que el usuario esté autenticado.
@@ -204,7 +204,7 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
 /**
  * @api {post} /api/PedidosClientes/listaPedidosOperarioBodega Listar Pedidos Operarios
  * @apiName listaPedidosOperarioBodega
- * @apiGroup Pedidos Clientes
+ * @apiGroup PedidosClientes
  * @apiDescription Proporciona una lista con todos los pedidos de clientes asignados a un operario de bodega
  * @apiDefinePermission autenticado Requiere Autenticacion
  * Requiere que el usuario esté autenticado.

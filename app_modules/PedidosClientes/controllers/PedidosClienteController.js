@@ -190,9 +190,11 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
             // Notificando Pedidos Actualizados en Real Time
             that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
             // Notificacion al operario de los pedidos que le fueron asigandos
-            that.e_pedidos_clientes.onNotificacionOperarioPedidosAsignados({numero_pedido: numero_pedido, responsable: responsable});
+            //that.e_pedidos_clientes.onNotificacionOperarioPedidosAsignados({numero_pedido: numero_pedido, responsable: responsable});
 
             if (--i === 0) {
+                // Notificacion al operario de los pedidos que le fueron asigandos
+                that.e_pedidos_clientes.onNotificacionOperarioPedidosAsignados({numero_pedidos: pedidos, responsable: responsable});
                 res.send(G.utils.r(req.url, 'Asignacion de Resposables', 200, {}));
             }
         });

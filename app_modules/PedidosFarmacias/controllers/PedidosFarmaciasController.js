@@ -258,6 +258,8 @@ PedidosFarmacias.prototype.asignarResponsablesPedido = function(req, res) {
  * @apiParam {String} usuario_id  Identificador del Usuario.
  * @apiParam {String} auth_token  Token de Autenticación, este define si el usuario esta autenticado o no.
  * @apiParam {Number} operario_id Identificador asignado al operario de Bodega.
+ * @apiParam {Number} pagina_actual Numero de la pagina que requiere.
+ * @apiParam {Number} [limite] Cantidad de registros por cada pagina.
  * @apiSuccessExample Ejemplo Válido del Request.
  *     HTTP/1.1 200 OK
  *     {  
@@ -267,7 +269,9 @@ PedidosFarmacias.prototype.asignarResponsablesPedido = function(req, res) {
  *          },
  *          data : {
  *              pedidos_farmacias : { 
- *                                  operario_id:  19
+ *                                  operario_id:  19,
+ *                                  pagina_actual : 1,
+ *                                  limite : 40
  *                              }
  *          }
  *     }
@@ -323,18 +327,38 @@ PedidosFarmacias.prototype.listaPedidosOperariosBodega = function(req, res) {
         res.send(G.utils.r(req.url, 'Se requiere el id de un operario de bodega', 404, {}));
         return;
     }
-    if (args.pedidos_farmacias.pagina_actual === '') {
+    if (args.pedidos_farmacias.pagina_actual === '' || parseInt(args.pedidos_farmacias.pagina_actual) <= 0) {
         res.send(G.utils.r(req.url, 'Se requiere el numero de la pagina para traer registros', 404, {}));
         return;
     }
 
 
     var operario_bodega = args.pedidos_farmacias.operario_id;
-    var pagina_actual = args.pedidos_farmacias.pagina_actual;
+    var pagina_actual = args.pedidos_farmacias.pagina_actual - 1;
     var limite = args.pedidos_farmacias.limite;
 
-    this.m_pedidos_farmacias.listar_pedidos_del_operario(operario_bodega, pagina_actual, limite,  function(err, lista_pedidos_farmacias) {
-        res.send(G.utils.r(req.url, 'Lista Pedidos Farmacias', 200, {pedidos_farmacias: lista_pedidos_farmacias}));
+    this.m_pedidos_farmacias.listar_pedidos_del_operario(operario_bodega, pagina_actual, limite, function(err, lista_pedidos_farmacias) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Se Ha Generado Un Error Interno', 500, {}));
+            return;
+        }
+
+        var i = lista_pedidos_farmacias.length;
+
+        lista_pedidos_farmacias.forEach(function(pedido) {
+
+            that.m_pedidos_farmacias.consultar_detalle_pedido(pedido.numero_pedido, function(err, detalle_pedido) {
+                pedido.lista_productos = detalle_pedido;
+
+                if (--i === 0)
+                    res.send(G.utils.r(req.url, 'Lista Pedidos Farmacias', 200, {pedidos_farmacias: lista_pedidos_farmacias}));
+
+            });
+        });
+
+        if (lista_pedidos_farmacias.length === 0)
+            res.send(G.utils.r(req.url, 'Lista Pedidos Farmacias', 200, {pedidos_farmacias: lista_pedidos_farmacias}));
     });
 
 };

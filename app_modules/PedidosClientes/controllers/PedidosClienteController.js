@@ -212,6 +212,8 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
  * @apiParam {String} usuario_id  Identificador del Usuario.
  * @apiParam {String} auth_token  Token de Autenticación, este define si el usuario esta autenticado o no.
  * @apiParam {Number} operario_id Identificador asignado al operario de Bodega.
+ * @apiParam {Number} pagina_actual Numero de la pagina que requiere.
+ * @apiParam {Number} [limite] Cantidad de registros por cada pagina.
  * @apiSuccessExample Ejemplo Válido del Request.
  *     HTTP/1.1 200 OK
  *     {  
@@ -221,7 +223,9 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
  *          },
  *          data : {
  *              pedidos_clientes : { 
- *                                  operario_id:  19
+ *                                  operario_id:  19,
+ *                                  pagina_actual : 1,
+ *                                  limite : 40
  *                              }
  *          }
  *     }
@@ -294,16 +298,16 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
         res.send(G.utils.r(req.url, 'Se requiere el id de un operario de bodega', 404, {}));
         return;
     }
-    if (args.pedidos_clientes.pagina_actual === '') {
+    if (args.pedidos_clientes.pagina_actual === '' || parseInt(args.pedidos_clientes.pagina_actual) <= 0) {
         res.send(G.utils.r(req.url, 'Se requiere el numero de la pagina para traer registros', 404, {}));
         return;
     }
 
     var operario_bodega = args.pedidos_clientes.operario_id;
-    var pagina_actual = args.pedidos_clientes.pagina_actual;
+    var pagina_actual = args.pedidos_clientes.pagina_actual - 1;
     var limite = args.pedidos_clientes.limite;
 
-    this.m_pedidos_clientes.listar_pedidos_del_operario(operario_bodega, pagina_actual,  limite, function(err, lista_pedidos_clientes) {
+    this.m_pedidos_clientes.listar_pedidos_del_operario(operario_bodega, pagina_actual, limite, function(err, lista_pedidos_clientes) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Se Ha Generado Un Error Interno', 500, {}));
@@ -321,6 +325,9 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
 
             });
         });
+
+        if (lista_pedidos_clientes.length === 0)
+            res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {pedidos_clientes: lista_pedidos_clientes}));
 
     });
 

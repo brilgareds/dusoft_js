@@ -543,7 +543,7 @@
         },
         {
           "title": "SQL.",
-          "content": "        select \n           a.pedido_cliente_id as numero_pedido, \n           b.tipo_id_tercero as tipo_id_cliente, \n           b.tercero_id as identificacion_cliente, \n           b.nombre_tercero as nombre_cliente, \n           b.direccion as direccion_cliente, \n           b.telefono as telefono_cliente, \n           c.tipo_id_vendedor, \n           c.vendedor_id as idetificacion_vendedor, \n           c.nombre as nombre_vendedor, \n           a.estado, \n           case when a.estado = 0 then 'Inactivo ' \n                when a.estado = 1 then 'Activo' \n                when a.estado = 2 then 'Anulado' \n                when a.estado = 3 then 'Entregado' end as descripcion_estado, \n           a.estado_pedido as estado_actual_pedido, \n           case when a.estado_pedido = 0 then 'No Asignado' \n                when a.estado_pedido = 1 then 'Asignado' \n                when a.estado_pedido = 2 then 'Auditado' \n                when a.estado_pedido = 3 then 'En Despacho' \n                when a.estado_pedido = 4 then 'Despachado' end as descripcion_estado_actual_pedido, \n           a.fecha_registro \n           from ventas_ordenes_pedidos a \n           inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id \n           inner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id \n           where a.pedido_cliente_id = $1  \n           AND (a.estado IN ('0','1','2','3')) order by 1 desc;\n"
+          "content": "        select \na.pedido_cliente_id as numero_pedido, \nb.tipo_id_tercero as tipo_id_cliente, \nb.tercero_id as identificacion_cliente, \nb.nombre_tercero as nombre_cliente, \nb.direccion as direccion_cliente, \nb.telefono as telefono_cliente, \nc.tipo_id_vendedor, \nc.vendedor_id as idetificacion_vendedor, \nc.nombre as nombre_vendedor, \na.estado, \ncase when a.estado = 0 then 'Inactivo ' \nwhen a.estado = 1 then 'Activo' \nwhen a.estado = 2 then 'Anulado' \nwhen a.estado = 3 then 'Entregado' end as descripcion_estado, \na.estado_pedido as estado_actual_pedido, \ncase when a.estado_pedido = 0 then 'No Asignado' \nwhen a.estado_pedido = 1 then 'Asignado' \nwhen a.estado_pedido = 2 then 'Auditado' \nwhen a.estado_pedido = 3 then 'En Despacho' \nwhen a.estado_pedido = 4 then 'Despachado' end as descripcion_estado_actual_pedido, \na.fecha_registro \nfrom ventas_ordenes_pedidos a \ninner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id \ninner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id \nwhere a.pedido_cliente_id = $1  \nAND (a.estado IN ('0','1','2','3')) order by 1 desc;\n"
         }
       ]
     },
@@ -590,7 +590,7 @@
         },
         {
           "title": "SQL.",
-          "content": "        select\n           a.pedido_cliente_id as numero_pedido,\n           a.codigo_producto,\n           fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\n           a.numero_unidades as cantidad_solicitada,\n           a.cantidad_despachada,\n           a.numero_unidades - a.cantidad_despachada as cantidad_pendiente,\n           a.cantidad_facturada,\n           a.valor_unitario,\n           a.porc_iva as porcentaje_iva,\n           (a.valor_unitario+(a.valor_unitario*(a.porc_iva/100)))as valor_unitario_con_iva,\n           (a.numero_unidades*(a.valor_unitario*(a.porc_iva/100))) as valor_iva\n           from ventas_ordenes_pedidos_d a where a.pedido_cliente_id = $1 ;\n"
+          "content": "        select\na.pedido_cliente_id as numero_pedido,\na.codigo_producto,\nfc_descripcion_producto(a.codigo_producto) as descripcion_producto,\na.numero_unidades as cantidad_solicitada,\na.cantidad_despachada,\na.numero_unidades - a.cantidad_despachada as cantidad_pendiente,\na.cantidad_facturada,\na.valor_unitario,\na.porc_iva as porcentaje_iva,\n(a.valor_unitario+(a.valor_unitario*(a.porc_iva/100)))as valor_unitario_con_iva,\n(a.numero_unidades*(a.valor_unitario*(a.porc_iva/100))) as valor_iva\nfrom ventas_ordenes_pedidos_d a where a.pedido_cliente_id = $1 ;\n"
         }
       ]
     },
@@ -689,6 +689,20 @@
           },
           {
             "group": "Parameter",
+            "type": "Number",
+            "field": "pagina",
+            "optional": false,
+            "description": "Número de la pagina que requiere traer registros"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "field": "limite",
+            "optional": false,
+            "description": "Cantidad de resgistros por pagina, si no se envia el limite default es 1000"
+          },
+          {
+            "group": "Parameter",
             "type": "Function",
             "field": "callback",
             "optional": false,
@@ -705,7 +719,7 @@
         },
         {
           "title": "SQL.",
-          "content": "    select \n       a.pedido_cliente_id as numero_pedido, \n       b.tipo_id_tercero as tipo_id_cliente, \n       b.tercero_id as identificacion_cliente, \n       b.nombre_tercero as nombre_cliente, \n       b.direccion as direccion_cliente, \n       b.telefono as telefono_cliente, \n       c.tipo_id_vendedor, \n       c.vendedor_id as idetificacion_vendedor, \n       c.nombre as nombre_vendedor, \n       a.estado, \n       case when a.estado = 0 then 'Inactivo' \n            when a.estado = 1 then 'Activo' \n            when a.estado = 2 then 'Anulado' \n            when a.estado = 3 then 'Entregado' end as descripcion_estado, \n       a.estado_pedido as estado_actual_pedido, \n       case when a.estado_pedido = 0 then 'No Asignado' \n            when a.estado_pedido = 1 then 'Asignado' \n            when a.estado_pedido = 2 then 'Auditado' \n            when a.estado_pedido = 3 then 'En Despacho' \n            when a.estado_pedido = 4 then 'Despachado' end as descripcion_estado_actual_pedido, \n       a.fecha_registro,\n       d.responsable_id,\n       e.nombre as responsable_pedido,\n       d.fecha as fecha_asignacion_pedido \n       from ventas_ordenes_pedidos a \n       inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id \n       inner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id \n       inner join ventas_ordenes_pedidos_estado d on a.pedido_cliente_id = d.pedido_cliente_id and a.estado_pedido = d.estado\n       inner join operarios_bodega e on d.responsable_id = e.operario_id\n       where d.responsable_id = $1  \n       and a.estado_pedido = '1' \n       AND (a.estado IN ('1'))   \n       order by 1 desc;\n"
+          "content": "    select \n    a.pedido_cliente_id as numero_pedido, \n    b.tipo_id_tercero as tipo_id_cliente, \n    b.tercero_id as identificacion_cliente, \n    b.nombre_tercero as nombre_cliente, \n    b.direccion as direccion_cliente, \n    b.telefono as telefono_cliente, \n    c.tipo_id_vendedor, \n    c.vendedor_id as idetificacion_vendedor, \n    c.nombre as nombre_vendedor, \n    a.estado, \n    case when a.estado = 0 then 'Inactivo' \n    when a.estado = 1 then 'Activo' \n    when a.estado = 2 then 'Anulado' \n    when a.estado = 3 then 'Entregado' end as descripcion_estado, \n    a.estado_pedido as estado_actual_pedido, \n    case when a.estado_pedido = 0 then 'No Asignado' \n    when a.estado_pedido = 1 then 'Asignado' \n    when a.estado_pedido = 2 then 'Auditado' \n    when a.estado_pedido = 3 then 'En Despacho' \n    when a.estado_pedido = 4 then 'Despachado' end as descripcion_estado_actual_pedido, \n    a.fecha_registro,\n    d.responsable_id,\n    e.nombre as responsable_pedido,\n    d.fecha as fecha_asignacion_pedido \n    from ventas_ordenes_pedidos a \n    inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id \n    inner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id \n    inner join ventas_ordenes_pedidos_estado d on a.pedido_cliente_id = d.pedido_cliente_id and a.estado_pedido = d.estado\n    inner join operarios_bodega e on d.responsable_id = e.operario_id\n    where d.responsable_id = $1  \n    and a.estado_pedido = '1' \n    AND (a.estado IN ('1'))   \n    order by by d.fecha desc limit $2 offset $3 ;;\n"
         }
       ]
     },
@@ -766,7 +780,7 @@
         },
         {
           "title": "SQL.",
-          "content": "        select \n           a.pedido_cliente_id as numero_pedido, \n           b.tipo_id_tercero as tipo_id_cliente, \n           b.tercero_id as identificacion_cliente, \n           b.nombre_tercero as nombre_cliente, \n           b.direccion as direccion_cliente, \n           b.telefono as telefono_cliente, \n           c.tipo_id_vendedor, \n           c.vendedor_id as idetificacion_vendedor, \n           c.nombre as nombre_vendedor, \n           a.estado, \n           case when a.estado = 0 then 'Inactivo ' \n           when a.estado = 1 then 'Activo' \n           when a.estado = 2 then 'Anulado' \n           when a.estado = 3 then 'Entregado' end as descripcion_estado, \n           a.estado_pedido as estado_actual_pedido, \n           case when a.estado_pedido = 0 then 'No Asignado' \n           when a.estado_pedido = 1 then 'Asignado' \n           when a.estado_pedido = 2 then 'Auditado' \n           when a.estado_pedido = 3 then 'En Despacho' \n           when a.estado_pedido = 4 then 'Despachado' end as descripcion_estado_actual_pedido, \n           a.fecha_registro \n           from ventas_ordenes_pedidos a \n           inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id \n           inner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id \n           where a.empresa_id = $1 \n           and (   a.pedido_cliente_id ilike $2  \n                   or b.tercero_id ilike $2 \n                   or b.nombre_tercero ilike $2 \n                   or b.direccion ilike $2  \n                   or b.telefono ilike $2   \n                   or c.vendedor_id ilike $2 \n                   or c.nombre ilike $2) \n           AND (a.estado IN ('0','1','2','3')) order by 1 desc  limit $3 offset $4\n"
+          "content": "        select \na.pedido_cliente_id as numero_pedido, \nb.tipo_id_tercero as tipo_id_cliente, \nb.tercero_id as identificacion_cliente, \nb.nombre_tercero as nombre_cliente, \nb.direccion as direccion_cliente, \nb.telefono as telefono_cliente, \nc.tipo_id_vendedor, \nc.vendedor_id as idetificacion_vendedor, \nc.nombre as nombre_vendedor, \na.estado, \ncase when a.estado = 0 then 'Inactivo ' \nwhen a.estado = 1 then 'Activo' \nwhen a.estado = 2 then 'Anulado' \nwhen a.estado = 3 then 'Entregado' end as descripcion_estado, \na.estado_pedido as estado_actual_pedido, \ncase when a.estado_pedido = 0 then 'No Asignado' \nwhen a.estado_pedido = 1 then 'Asignado' \nwhen a.estado_pedido = 2 then 'Auditado' \nwhen a.estado_pedido = 3 then 'En Despacho' \nwhen a.estado_pedido = 4 then 'Despachado' end as descripcion_estado_actual_pedido, \na.fecha_registro \nfrom ventas_ordenes_pedidos a \ninner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id \ninner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id \nwhere a.empresa_id = $1 \nand (   a.pedido_cliente_id ilike $2  \nor b.tercero_id ilike $2 \nor b.nombre_tercero ilike $2 \nor b.direccion ilike $2  \nor b.telefono ilike $2   \nor c.vendedor_id ilike $2 \nor c.nombre ilike $2) \nAND (a.estado IN ('0','1','2','3')) order by 1 desc  limit $3 offset $4\n"
         }
       ]
     },
@@ -808,6 +822,20 @@
             "field": "operario_id",
             "optional": false,
             "description": "Identificador asignado al operario de Bodega."
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "field": "pagina_actual",
+            "optional": false,
+            "description": "Numero de la pagina que requiere."
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "field": "limite",
+            "optional": true,
+            "description": "Cantidad de registros por cada pagina."
           }
         ]
       }
@@ -816,7 +844,7 @@
       "examples": [
         {
           "title": "Ejemplo Válido del Request.",
-          "content": "   HTTP/1.1 200 OK\n   {  \n        session: {              \n            usuario_id: 'jhon.doe',\n            auth_token: 'asdf2hgt56hjjhgrt-mnjhbgfd-asdfgyh-ghjmnbgfd'\n        },\n        data : {\n            pedidos_clientes : { \n                                operario_id:  19\n                            }\n        }\n   }\n"
+          "content": "   HTTP/1.1 200 OK\n   {  \n        session: {              \n            usuario_id: 'jhon.doe',\n            auth_token: 'asdf2hgt56hjjhgrt-mnjhbgfd-asdfgyh-ghjmnbgfd'\n        },\n        data : {\n            pedidos_clientes : { \n                                operario_id:  19,\n                                pagina_actual : 1,\n                                limite : 40\n                            }\n        }\n   }\n"
         },
         {
           "title": "Respuesta-Exitosa:",
@@ -1077,6 +1105,20 @@
             "field": "operario_id",
             "optional": false,
             "description": "Identificador asignado al operario de Bodega."
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "field": "pagina_actual",
+            "optional": false,
+            "description": "Numero de la pagina que requiere."
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "field": "limite",
+            "optional": true,
+            "description": "Cantidad de registros por cada pagina."
           }
         ]
       }
@@ -1085,7 +1127,7 @@
       "examples": [
         {
           "title": "Ejemplo Válido del Request.",
-          "content": "   HTTP/1.1 200 OK\n   {  \n        session: {              \n            usuario_id: 'jhon.doe',\n            auth_token: 'asdf2hgt56hjjhgrt-mnjhbgfd-asdfgyh-ghjmnbgfd'\n        },\n        data : {\n            pedidos_farmacias : { \n                                operario_id:  19\n                            }\n        }\n   }\n"
+          "content": "   HTTP/1.1 200 OK\n   {  \n        session: {              \n            usuario_id: 'jhon.doe',\n            auth_token: 'asdf2hgt56hjjhgrt-mnjhbgfd-asdfgyh-ghjmnbgfd'\n        },\n        data : {\n            pedidos_farmacias : { \n                                operario_id:  19,\n                                pagina_actual : 1,\n                                limite : 40\n                            }\n        }\n   }\n"
         },
         {
           "title": "Respuesta-Exitosa:",

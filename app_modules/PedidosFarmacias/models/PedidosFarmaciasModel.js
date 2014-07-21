@@ -89,11 +89,29 @@ PedidosFarmaciasModel.prototype.consultar_pedido = function(numero_pedido, callb
     });
 };
 
+PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedido, callback) {
+
+    var sql = " select \
+                a.solicitud_prod_a_bod_ppal_id as numero_pedido,\
+                a.codigo_producto,\
+                fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
+                a.cantidad_solic as cantidad_solicitada,\
+                a.cantidad_solic - a.cantidad_pendiente as cantidad_despachada,\
+                a.cantidad_pendiente\
+                from solicitud_productos_a_bodega_principal_detalle a\
+                where a.solicitud_prod_a_bod_ppal_id= $1; ";
+
+    G.db.query(sql, [numero_pedido], function(err, rows, result) {
+        callback(err, rows);
+    });
+
+}
+
 PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsable, pagina, limite, callback) {
 
     var offset = G.settings.limit * pagina;
 
-    if (limite === undefined) {
+    if (limite !== undefined) {
         offset = limite * pagina;
     }
 

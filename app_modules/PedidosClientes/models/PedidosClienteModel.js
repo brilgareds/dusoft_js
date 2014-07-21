@@ -302,10 +302,10 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
 
     var offset = G.settings.limit * pagina;
 
-    if (limite === undefined) {
+    if (limite !== undefined) {
         offset = limite * pagina;
     }
-
+    
     var sql = " select \
                 a.pedido_cliente_id as numero_pedido, \
                 b.tipo_id_tercero as tipo_id_cliente, \

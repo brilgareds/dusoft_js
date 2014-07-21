@@ -286,7 +286,7 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.pedidos_clientes === undefined || args.pedidos_clientes.operario_id === undefined) {
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.operario_id === undefined, args.pedidos_clientes.pagina_actual === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
     }
@@ -294,10 +294,16 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
         res.send(G.utils.r(req.url, 'Se requiere el id de un operario de bodega', 404, {}));
         return;
     }
+    if (args.pedidos_clientes.pagina_actual === '') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de la pagina para traer registros', 404, {}));
+        return;
+    }
 
     var operario_bodega = args.pedidos_clientes.operario_id;
+    var pagina_actual = args.pedidos_clientes.pagina_actual;
+    var limite = args.pedidos_clientes.limite;
 
-    this.m_pedidos_clientes.listar_pedidos_del_operario(operario_bodega, function(err, lista_pedidos_clientes) {
+    this.m_pedidos_clientes.listar_pedidos_del_operario(operario_bodega, pagina_actual,  limite, function(err, lista_pedidos_clientes) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Se Ha Generado Un Error Interno', 500, {}));

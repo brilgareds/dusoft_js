@@ -28,42 +28,42 @@ var PedidosClienteModel = function() {
  *     Accion : Controller - listarPedidosClientes();
  * @apiSuccessExample SQL.
  *          select 
-            a.pedido_cliente_id as numero_pedido, 
-            b.tipo_id_tercero as tipo_id_cliente, 
-            b.tercero_id as identificacion_cliente, 
-            b.nombre_tercero as nombre_cliente, 
-            b.direccion as direccion_cliente, 
-            b.telefono as telefono_cliente, 
-            c.tipo_id_vendedor, 
-            c.vendedor_id as idetificacion_vendedor, 
-            c.nombre as nombre_vendedor, 
-            a.estado, 
-            case when a.estado = 0 then 'Inactivo ' 
-            when a.estado = 1 then 'Activo' 
-            when a.estado = 2 then 'Anulado' 
-            when a.estado = 3 then 'Entregado' end as descripcion_estado, 
-            a.estado_pedido as estado_actual_pedido, 
-            case when a.estado_pedido = 0 then 'No Asignado' 
-            when a.estado_pedido = 1 then 'Asignado' 
-            when a.estado_pedido = 2 then 'Auditado' 
-            when a.estado_pedido = 3 then 'En Despacho' 
-            when a.estado_pedido = 4 then 'Despachado' end as descripcion_estado_actual_pedido, 
-            a.fecha_registro 
-            from ventas_ordenes_pedidos a 
-            inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id 
-            inner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id 
-            where a.empresa_id = $1 
-            and (   a.pedido_cliente_id ilike $2  
-                    or b.tercero_id ilike $2 
-                    or b.nombre_tercero ilike $2 
-                    or b.direccion ilike $2  
-                    or b.telefono ilike $2   
-                    or c.vendedor_id ilike $2 
-                    or c.nombre ilike $2) 
-            AND (a.estado IN ('0','1','2','3')) order by 1 desc  limit $3 offset $4
+ a.pedido_cliente_id as numero_pedido, 
+ b.tipo_id_tercero as tipo_id_cliente, 
+ b.tercero_id as identificacion_cliente, 
+ b.nombre_tercero as nombre_cliente, 
+ b.direccion as direccion_cliente, 
+ b.telefono as telefono_cliente, 
+ c.tipo_id_vendedor, 
+ c.vendedor_id as idetificacion_vendedor, 
+ c.nombre as nombre_vendedor, 
+ a.estado, 
+ case when a.estado = 0 then 'Inactivo ' 
+ when a.estado = 1 then 'Activo' 
+ when a.estado = 2 then 'Anulado' 
+ when a.estado = 3 then 'Entregado' end as descripcion_estado, 
+ a.estado_pedido as estado_actual_pedido, 
+ case when a.estado_pedido = 0 then 'No Asignado' 
+ when a.estado_pedido = 1 then 'Asignado' 
+ when a.estado_pedido = 2 then 'Auditado' 
+ when a.estado_pedido = 3 then 'En Despacho' 
+ when a.estado_pedido = 4 then 'Despachado' end as descripcion_estado_actual_pedido, 
+ a.fecha_registro 
+ from ventas_ordenes_pedidos a 
+ inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id 
+ inner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id 
+ where a.empresa_id = $1 
+ and (   a.pedido_cliente_id ilike $2  
+ or b.tercero_id ilike $2 
+ or b.nombre_tercero ilike $2 
+ or b.direccion ilike $2  
+ or b.telefono ilike $2   
+ or c.vendedor_id ilike $2 
+ or c.nombre ilike $2) 
+ AND (a.estado IN ('0','1','2','3')) order by 1 desc  limit $3 offset $4
  *      
  */
-                            
+
 PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, termino_busqueda, pagina, callback) {
 
     var offset = G.settings.limit * pagina;
@@ -127,35 +127,35 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
  *     Accion : Evento - onNotificacionOperarioPedidosAsignados();
  * @apiSuccessExample SQL.
  *          select 
-            a.pedido_cliente_id as numero_pedido, 
-            b.tipo_id_tercero as tipo_id_cliente, 
-            b.tercero_id as identificacion_cliente, 
-            b.nombre_tercero as nombre_cliente, 
-            b.direccion as direccion_cliente, 
-            b.telefono as telefono_cliente, 
-            c.tipo_id_vendedor, 
-            c.vendedor_id as idetificacion_vendedor, 
-            c.nombre as nombre_vendedor, 
-            a.estado, 
-            case when a.estado = 0 then 'Inactivo ' 
-                 when a.estado = 1 then 'Activo' 
-                 when a.estado = 2 then 'Anulado' 
-                 when a.estado = 3 then 'Entregado' end as descripcion_estado, 
-            a.estado_pedido as estado_actual_pedido, 
-            case when a.estado_pedido = 0 then 'No Asignado' 
-                 when a.estado_pedido = 1 then 'Asignado' 
-                 when a.estado_pedido = 2 then 'Auditado' 
-                 when a.estado_pedido = 3 then 'En Despacho' 
-                 when a.estado_pedido = 4 then 'Despachado' end as descripcion_estado_actual_pedido, 
-            a.fecha_registro 
-            from ventas_ordenes_pedidos a 
-            inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id 
-            inner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id 
-            where a.pedido_cliente_id = $1  
-            AND (a.estado IN ('0','1','2','3')) order by 1 desc;
+ a.pedido_cliente_id as numero_pedido, 
+ b.tipo_id_tercero as tipo_id_cliente, 
+ b.tercero_id as identificacion_cliente, 
+ b.nombre_tercero as nombre_cliente, 
+ b.direccion as direccion_cliente, 
+ b.telefono as telefono_cliente, 
+ c.tipo_id_vendedor, 
+ c.vendedor_id as idetificacion_vendedor, 
+ c.nombre as nombre_vendedor, 
+ a.estado, 
+ case when a.estado = 0 then 'Inactivo ' 
+ when a.estado = 1 then 'Activo' 
+ when a.estado = 2 then 'Anulado' 
+ when a.estado = 3 then 'Entregado' end as descripcion_estado, 
+ a.estado_pedido as estado_actual_pedido, 
+ case when a.estado_pedido = 0 then 'No Asignado' 
+ when a.estado_pedido = 1 then 'Asignado' 
+ when a.estado_pedido = 2 then 'Auditado' 
+ when a.estado_pedido = 3 then 'En Despacho' 
+ when a.estado_pedido = 4 then 'Despachado' end as descripcion_estado_actual_pedido, 
+ a.fecha_registro 
+ from ventas_ordenes_pedidos a 
+ inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id 
+ inner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id 
+ where a.pedido_cliente_id = $1  
+ AND (a.estado IN ('0','1','2','3')) order by 1 desc;
  *      
  */
-    
+
 PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callback) {
 
     var sql = " select \
@@ -206,21 +206,21 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
  *     Accion : Controller - listaPedidosOperariosBodega();
  * @apiSuccessExample SQL.
  *          select
-            a.pedido_cliente_id as numero_pedido,
-            a.codigo_producto,
-            fc_descripcion_producto(a.codigo_producto) as descripcion_producto,
-            a.numero_unidades as cantidad_solicitada,
-            a.cantidad_despachada,
-            a.numero_unidades - a.cantidad_despachada as cantidad_pendiente,
-            a.cantidad_facturada,
-            a.valor_unitario,
-            a.porc_iva as porcentaje_iva,
-            (a.valor_unitario+(a.valor_unitario*(a.porc_iva/100)))as valor_unitario_con_iva,
-            (a.numero_unidades*(a.valor_unitario*(a.porc_iva/100))) as valor_iva
-            from ventas_ordenes_pedidos_d a where a.pedido_cliente_id = $1 ;
+ a.pedido_cliente_id as numero_pedido,
+ a.codigo_producto,
+ fc_descripcion_producto(a.codigo_producto) as descripcion_producto,
+ a.numero_unidades as cantidad_solicitada,
+ a.cantidad_despachada,
+ a.numero_unidades - a.cantidad_despachada as cantidad_pendiente,
+ a.cantidad_facturada,
+ a.valor_unitario,
+ a.porc_iva as porcentaje_iva,
+ (a.valor_unitario+(a.valor_unitario*(a.porc_iva/100)))as valor_unitario_con_iva,
+ (a.numero_unidades*(a.valor_unitario*(a.porc_iva/100))) as valor_iva
+ from ventas_ordenes_pedidos_d a where a.pedido_cliente_id = $1 ;
  *      
  */
-                 
+
 PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido, callback) {
 
     var sql = " select\
@@ -252,48 +252,59 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
  * Requiere que el usuario esté autenticado.
  * @apiPermission autenticado
  * @apiParam {Number} responsable Nombre del Operario
+ * @apiParam {Number} pagina Número de la pagina que requiere traer registros
+ * @apiParam {Number} limite Cantidad de resgistros por pagina, si no se envia el limite default es 1000
  * @apiParam {Function} callback Funcion de retorno de informacion.
  * @apiSuccessExample Este SQL se usa en:
  *     Modulo : PedidosClientes
  *     Accion : Controller - listaPedidosOperariosBodega();
  * @apiSuccessExample SQL.
  *      select 
-        a.pedido_cliente_id as numero_pedido, 
-        b.tipo_id_tercero as tipo_id_cliente, 
-        b.tercero_id as identificacion_cliente, 
-        b.nombre_tercero as nombre_cliente, 
-        b.direccion as direccion_cliente, 
-        b.telefono as telefono_cliente, 
-        c.tipo_id_vendedor, 
-        c.vendedor_id as idetificacion_vendedor, 
-        c.nombre as nombre_vendedor, 
-        a.estado, 
-        case when a.estado = 0 then 'Inactivo' 
-             when a.estado = 1 then 'Activo' 
-             when a.estado = 2 then 'Anulado' 
-             when a.estado = 3 then 'Entregado' end as descripcion_estado, 
-        a.estado_pedido as estado_actual_pedido, 
-        case when a.estado_pedido = 0 then 'No Asignado' 
-             when a.estado_pedido = 1 then 'Asignado' 
-             when a.estado_pedido = 2 then 'Auditado' 
-             when a.estado_pedido = 3 then 'En Despacho' 
-             when a.estado_pedido = 4 then 'Despachado' end as descripcion_estado_actual_pedido, 
-        a.fecha_registro,
-        d.responsable_id,
-        e.nombre as responsable_pedido,
-        d.fecha as fecha_asignacion_pedido 
-        from ventas_ordenes_pedidos a 
-        inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id 
-        inner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id 
-        inner join ventas_ordenes_pedidos_estado d on a.pedido_cliente_id = d.pedido_cliente_id and a.estado_pedido = d.estado
-        inner join operarios_bodega e on d.responsable_id = e.operario_id
-        where d.responsable_id = $1  
-        and a.estado_pedido = '1' 
-        AND (a.estado IN ('1'))   
-        order by 1 desc;
- */ 
-                          
-PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable, callback) {
+ *      a.pedido_cliente_id as numero_pedido, 
+ *      b.tipo_id_tercero as tipo_id_cliente, 
+ *      b.tercero_id as identificacion_cliente, 
+ *      b.nombre_tercero as nombre_cliente, 
+ *      b.direccion as direccion_cliente, 
+ *      b.telefono as telefono_cliente, 
+ *      c.tipo_id_vendedor, 
+ *      c.vendedor_id as idetificacion_vendedor, 
+ *      c.nombre as nombre_vendedor, 
+ *      a.estado, 
+ *      case when a.estado = 0 then 'Inactivo' 
+ *      when a.estado = 1 then 'Activo' 
+ *      when a.estado = 2 then 'Anulado' 
+ *      when a.estado = 3 then 'Entregado' end as descripcion_estado, 
+ *      a.estado_pedido as estado_actual_pedido, 
+ *      case when a.estado_pedido = 0 then 'No Asignado' 
+ *      when a.estado_pedido = 1 then 'Asignado' 
+ *      when a.estado_pedido = 2 then 'Auditado' 
+ *      when a.estado_pedido = 3 then 'En Despacho' 
+ *      when a.estado_pedido = 4 then 'Despachado' end as descripcion_estado_actual_pedido, 
+ *      a.fecha_registro,
+ *      d.responsable_id,
+ *      e.nombre as responsable_pedido,
+ *      d.fecha as fecha_asignacion_pedido 
+ *      from ventas_ordenes_pedidos a 
+ *      inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id 
+ *      inner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id 
+ *      inner join ventas_ordenes_pedidos_estado d on a.pedido_cliente_id = d.pedido_cliente_id and a.estado_pedido = d.estado
+ *      inner join operarios_bodega e on d.responsable_id = e.operario_id
+ *      where d.responsable_id = $1  
+ *      and a.estado_pedido = '1' 
+ *      AND (a.estado IN ('1'))   
+ *      order by by d.fecha desc limit $2 offset $3 ;;
+ */
+
+PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable, pagina, limite, callback) {
+
+
+
+
+    var offset = G.settings.limit * pagina;
+
+    if (limite === undefined) {
+        offset = limite * pagina;
+    }
 
     var sql = " select \
                 a.pedido_cliente_id as numero_pedido, \
@@ -328,9 +339,9 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
                 where d.responsable_id = $1  \
                 and a.estado_pedido = '1' \
                 AND (a.estado IN ('1'))   \
-                order by 1 desc;";
+                order by d.fecha desc limit $2 offset $3 ;";
 
-    G.db.query(sql, [responsable], function(err, rows, result) {
+    G.db.query(sql, [responsable, limite, offset], function(err, rows, result) {
         callback(err, rows);
     });
 };
@@ -353,7 +364,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
  *     Modulo : PedidosClientes
  *     Accion : Controller - asignarResponsablesPedido();
  */
-           
+
 PedidosClienteModel.prototype.asignar_responsables_pedidos = function(numero_pedido, estado_pedido, responsable, usuario, callback) {
 
     var that = this;

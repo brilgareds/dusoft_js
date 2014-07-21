@@ -89,7 +89,14 @@ PedidosFarmaciasModel.prototype.consultar_pedido = function(numero_pedido, callb
     });
 };
 
-PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsable, callback) {
+PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsable, pagina, limite, callback) {
+
+    var offset = G.settings.limit * pagina;
+
+    if (limite === undefined) {
+        offset = limite * pagina;
+    }
+
 
     var sql = " select \
                 a.solicitud_prod_a_bod_ppal_id as numero_pedido, \
@@ -120,9 +127,9 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                 inner join operarios_bodega g on f.responsable_id = g.operario_id\
                 where f.responsable_id = $1 \
                 and a.estado = '1'\
-                order by 1 desc";
+                order by f.fecha desc limit $2 offset $3 ;";
 
-    G.db.query(sql, [responsable], function(err, rows, result) {
+    G.db.query(sql, [responsable, limite, offset], function(err, rows, result) {
         callback(err, rows);
     });
 };

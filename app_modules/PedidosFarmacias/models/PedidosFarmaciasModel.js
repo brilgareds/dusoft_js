@@ -95,9 +95,9 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                 a.solicitud_prod_a_bod_ppal_id as numero_pedido,\
                 a.codigo_producto,\
                 fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
-                a.cantidad_solic as cantidad_solicitada,\
-                a.cantidad_solic - a.cantidad_pendiente as cantidad_despachada,\
-                a.cantidad_pendiente\
+                a.cantidad_solic::integer as cantidad_solicitada,\
+                (a.cantidad_solic - a.cantidad_pendiente)::integer as cantidad_despachada,\
+                a.cantidad_pendiente::integer\
                 from solicitud_productos_a_bodega_principal_detalle a\
                 where a.solicitud_prod_a_bod_ppal_id= $1; ";
 

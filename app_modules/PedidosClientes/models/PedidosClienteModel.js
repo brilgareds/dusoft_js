@@ -1,5 +1,6 @@
-var PedidosClienteModel = function() {
+var PedidosClienteModel = function(productos) {
 
+    //this.m_productos = productos;
 };
 
 /**
@@ -227,10 +228,10 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
                 a.pedido_cliente_id as numero_pedido,\
                 a.codigo_producto,\
                 fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
-                a.numero_unidades as cantidad_solicitada,\
-                a.cantidad_despachada,\
-                a.numero_unidades - a.cantidad_despachada as cantidad_pendiente,\
-                a.cantidad_facturada,\
+                a.numero_unidades::integer as cantidad_solicitada,\
+                a.cantidad_despachada::integer,\
+                (a.numero_unidades - a.cantidad_despachada)::integer as cantidad_pendiente,\
+                a.cantidad_facturada::integer,\
                 a.valor_unitario,\
                 a.porc_iva as porcentaje_iva,\
                 (a.valor_unitario+(a.valor_unitario*(a.porc_iva/100)))as valor_unitario_con_iva,\
@@ -305,7 +306,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
     if (limite !== undefined) {
         offset = limite * pagina;
     }
-    
+
     var sql = " select \
                 a.pedido_cliente_id as numero_pedido, \
                 b.tipo_id_tercero as tipo_id_cliente, \
@@ -546,5 +547,139 @@ PedidosClienteModel.prototype.listar_pedidos_pendientes_by_producto = function(e
 };
 
 
+// Función para calcular la disponibilidad de un producto, teniendo en cuenta las "reservas"
+PedidosClienteModel.prototype.calcular_disponibilidad_producto = function(identificador, empresa_id, numero_pedido, codigo_producto, callback) {
+    var that = this;
+
+    var that = this;
+
+    var stock = 0;
+    var cantidad_total_despachada = 0;
+    var cantidad_total_solicitada = 0;
+    var cantidad_despachada = 0;
+    var disponible_bodega = 0;
+
+
+    // Formula Disponibilidad producto
+    disponible_bodega = cantidad_total_despachada + stock - cantidad_total_solicitada - cantidad_despachada;
+
+    disponible_bodega = (disponible_bodega < 0) ? 0 : disponible_bodega;
+    disponible_bodega = (disponible_bodega > stock) ? stock : disponible_bodega;
+
+
+    if (identificador === 'FM') {
+        that.m_pedidos_farmacias.consultar_pedido(numero_pedido, function(err, pedido) {
+
+            pedido.forEach(function(datos) {
+
+                var fecha_registro_pedido = datos.fecha_registro;
+
+                that.consultar_cantidad_total_solicitada_producto(empresa_id, codigo_producto, fecha_registro_pedido, function(err, cantidad) {
+
+                    that.consultar_cantidad_total_productos_despachados(empresa_id, codigo_producto, fecha_registro_pedido, function(err, total_despachados) {
+
+                        that.m_pedidos_farmacias.consultar_detalle_pedido(numero_pedido, function(err, detalle_pedido) {
+                            callback(disponible_bodega);
+                        });
+                    });
+                });
+            });
+        });
+    } else {
+        that.consultar_pedido(numero_pedido, function(err, pedido) {
+
+            pedido.forEach(function(datos) {
+
+                var fecha_registro_pedido = datos.fecha_registro;
+
+
+
+                consultar_cantidad_total_solicitada_producto(empresa_id, codigo_producto, fecha_registro_pedido, function(err, cantidad_total) {
+
+
+                    cantidad_total_solicitada = (cantidad_total.length === 1) ? cantidad_total[0].cantidad_solicitada : 0;
+
+                    consultar_cantidad_total_productos_despachados(empresa_id, codigo_producto, fecha_registro_pedido, function(err, total_despachados) {
+
+                        cantidad_total_despachada = (total_despachados.length === 1) ? total_despachados[0].cantidad_despachada : 0;
+
+                        that.consultar_detalle_pedido(numero_pedido, function(err, detalle_pedido) {
+
+                            var producto = detalle_pedido.filter(function(el) {
+                                return el.codigo_producto === codigo_producto;
+                            });
+
+                            cantidad_despachada = (producto.length === 1) ? producto[0].cantidad_despachada : 0;
+                            
+                            that.m_productos.consultar_stock_producto(empresa_id, codigo_producto, function(err, stock_producto){
+                                
+                                console.log(err, stock_producto);
+                                return;
+                                callback(disponible_bodega);
+                                
+                                
+                            });
+                            
+                        });
+                    });
+                });
+            });
+        });
+    }
+
+};
+
+
+
+// Funion que calcula cuales han sido los ultimo pedidos (Clientes / Farmacias ) en donde se 
+// ha solicitado un producto deteminado
+function consultar_cantidad_total_solicitada_producto(empresa_id, codigo_producto, fecha_registro_pedido, callback) {
+
+    var that = this;
+
+    var sql = " select codigo_producto, sum(cantidad)::integer as cantidad_solicitada from (\
+                    SELECT a.empresa_destino as empresa_id, a.fecha_registro, b.codigo_producto, sum(b.cantidad_solic) as cantidad, 1\
+                    FROM   solicitud_productos_a_bodega_principal a\
+                    inner join solicitud_productos_a_bodega_principal_detalle b on a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id\
+                    GROUP BY 1,2,3\
+                    union\
+                    select a.empresa_id, a.fecha_registro, b.codigo_producto, sum(b.numero_unidades) AS cantidad, 2\
+                    from ventas_ordenes_pedidos a\
+                    inner join ventas_ordenes_pedidos_d b on a.pedido_cliente_id = b.pedido_cliente_id\
+                    GROUP BY  1,2,3\
+                ) as a where a.empresa_id= $1 and a.codigo_producto = $2 and a.fecha_registro < ( $3 )\
+                group by 1 ; ";
+
+    G.db.query(sql, [empresa_id, codigo_producto, fecha_registro_pedido], function(err, rows, result) {
+        callback(err, rows);
+    });
+}
+;
+
+// Funcion que calcual la cantidad total que ha sido despachada de un producto
+function consultar_cantidad_total_productos_despachados(empresa_id, codigo_producto, fecha_registro_pedido, callback) {
+
+
+    var sql = " select codigo_producto, sum (cantidad_despachada)::integer as cantidad_despachada from (\
+                    select a.empresa_destino as empresa_id, a.fecha_registro, b.codigo_producto, COALESCE(SUM(b.cantidad_solic - b.cantidad_pendiente)::integer,0) as cantidad_despachada,  1 \
+                    from solicitud_productos_a_bodega_principal a\
+                    inner join solicitud_productos_a_bodega_principal_detalle b on a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id \
+                    group by 1,2,3\
+                    union \
+                    select a.empresa_id, a.fecha_registro , b.codigo_producto, sum( b.cantidad_despachada ) as cantidad_despachada,  2\
+                    from ventas_ordenes_pedidos a\
+                    inner join ventas_ordenes_pedidos_d b on a.pedido_cliente_id = b.pedido_cliente_id\
+                    group by 1,2,3\
+                ) as  a where a.empresa_id = $1 and a.codigo_producto=  $2 and a.fecha_registro <= ($3)\
+                group by 1 order by 1 asc ; ";
+
+    G.db.query(sql, [empresa_id, codigo_producto, fecha_registro_pedido], function(err, rows, result) {
+        callback(err, rows);
+    });
+}
+;
+
+
+PedidosClienteModel.$inject = ["m_productos"];
 
 module.exports = PedidosClienteModel;

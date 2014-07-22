@@ -1,10 +1,11 @@
 
-var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes) {
+var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, productos) {
 
     console.log("Modulo Pedidos Cliente  Cargado ");
 
     this.m_pedidos_clientes = pedidos_clientes;
     this.e_pedidos_clientes = eventos_pedidos_clientes;
+   this.m_productos = productos;
 
 };
 
@@ -334,6 +335,31 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
 };
 
 
-PedidosCliente.$inject = ["m_pedidos_clientes", "e_pedidos_clientes"];
+PedidosCliente.prototype.consultarDisponibilidadProducto = function(req, res) {
+
+    var that = this;
+
+
+    var empresa_id = '03';
+    var codigo_producto = '2261V000933288';
+    var numero_pedido = '32609'
+    var identificador = 'CL'; // FM o CL
+
+    that.m_productos.consultar_existencias_producto(empresa_id, codigo_producto, function(err, existencias_productos) {
+
+        that.m_pedidos_clientes.calcular_disponibilidad_producto(identificador, empresa_id, numero_pedido, codigo_producto, function(err, disponibilidad) {
+            console.log(err, disponibilidad);
+        });
+
+
+        if (existencias_productos.length === 0) {
+            // No Hay existencias
+        }
+
+    });
+
+};
+
+PedidosCliente.$inject = ["m_pedidos_clientes", "e_pedidos_clientes", "m_productos"];
 
 module.exports = PedidosCliente;

@@ -26,10 +26,10 @@ function _routes(app, di_container, io, recargar_routes, callback) {
     var listado_modulos = fs.readdirSync(__dirname);
     var modulos_no_cargados = [];
     listado_modulos.forEach(function(modulo) {
-
-        try
-        {
+        //try
+        //{
             if (fs.lstatSync(__dirname + '/' + modulo).isDirectory()) {
+        console.log(modulo);
 
                 if (recargar_routes) {
                     delete require.cache[require.resolve(__dirname + '/' + modulo + '/routes')];
@@ -37,12 +37,12 @@ function _routes(app, di_container, io, recargar_routes, callback) {
 
                 require(__dirname + '/' + modulo + '/routes')(app, di_container, io);
             }
-        }
+        /*}
         catch (e) {
             console.log('Error cargando el modulo ' + modulo);
             console.log(e)
             modulos_no_cargados.push(modulo);
-        }
+        }*/
     });
 
     var resultado = true;

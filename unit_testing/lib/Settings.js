@@ -5,7 +5,7 @@ var qs = require('querystring');
 var Settings = function() {
     var that = this;
     this.host = "http://localhost";
-    this.port = "3000";
+    this.port = "4000";
     this.api_path = "/api";
     this.api_url = this.host + ':' + this.port;
 

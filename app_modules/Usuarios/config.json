@@ -1,0 +1,21 @@
+{
+    "module": "Usuarios",
+    "dependency": {
+        "controllers": [{
+                "usuarios_controller": {
+                    "module": "Usuarios",
+                    "controller": "UsuariosController",
+                    "alias": "c_usuarios"
+                }
+            }],
+        "models": [{
+                "terceros_model": {
+                    "module": "Usuarios",
+                    "model": "UsuariosModel",
+                    "alias": "m_usuarios"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

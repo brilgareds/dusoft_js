@@ -1,0 +1,21 @@
+{
+    "module": "OrdenesCompra",
+    "dependency": {
+        "controllers": [{
+                "ordenes_compra_controller": {
+                    "module": "OrdenesCompra",
+                    "controller": "OrdenesCompraController",
+                    "alias": "c_ordenes_compra"
+                }
+            }],
+        "models": [{
+                "ordenes_compra_model": {
+                    "module": "OrdenesCompra",
+                    "model": "OrdenesCompraModel",
+                    "alias": "m_ordenes_compra"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

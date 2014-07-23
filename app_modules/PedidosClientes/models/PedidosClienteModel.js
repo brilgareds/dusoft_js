@@ -1,6 +1,7 @@
 var PedidosClienteModel = function(productos) {
 
-    //this.m_productos = productos;
+    // Temporalmente
+    this.m_productos = productos;
 };
 
 /**
@@ -678,8 +679,7 @@ function consultar_cantidad_total_productos_despachados(empresa_id, codigo_produ
     });
 }
 ;
-
-
 PedidosClienteModel.$inject = ["m_productos"];
+
 
 module.exports = PedidosClienteModel;

@@ -1,13 +1,8 @@
-module.exports = function(app, di_container, io) {
+module.exports = function(app, di_container) {
 
-
-    /*var emails = di_container.get("emails");
-     console.log(emails);
-     return;*/
-
-    var auth_controller = require('./controllers/AutenticacionController');
+    /*var auth_controller = require('./controllers/AutenticacionController');
     var auth_events = require('./events/AutenticacionEvents');
-    var auth_model = require('./models/AutenticacionModel');
+    var auth_model = require('./models/AutenticacionModel');    
     var auth_cron = require('./cronjobs/AutenticacionCronJobs');
 
     var usuarios_model = require('../Usuarios/models/UsuariosModel');
@@ -19,11 +14,12 @@ module.exports = function(app, di_container, io) {
     di_container.register("m_auth", auth_model);        // Models
     di_container.register("j_auth", auth_cron);         // CronJobs
 
-    di_container.register("m_usuarios", usuarios_model);
+    di_container.register("m_usuarios", usuarios_model);*/
 
     var c_auth = di_container.get("c_auth");
     var e_auth = di_container.get("e_auth");
     var j_auth = di_container.get("j_auth");
+    var io = di_container.get("socket");
 
     // Router
     app.post('/login', function(req, res) {

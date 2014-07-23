@@ -1,0 +1,37 @@
+{
+    "module": "PedidosClientes",
+    "dependency": {
+        "controllers": [{
+                "pedidos_cliente_controller": {
+                    "module": "PedidosClientes",
+                    "controller": "PedidosClienteController",
+                    "alias": "c_pedidos_clientes"
+                }
+            }],
+        "models": [{
+                "pedidos_clientes_model": {
+                    "module": "PedidosClientes",
+                    "model": "PedidosClienteModel",
+                    "alias": "m_pedidos_clientes"
+                },
+                "terceros_model": {
+                    "module": "Terceros",
+                    "model": "TercerosModel",
+                    "alias": "m_terceros"
+                },
+                "productos_model": {
+                    "module": "Productos",
+                    "model": "ProductosModel",
+                    "alias": "m_productos"
+                }
+            }],
+        "events": [{
+                "pedidos_clientes_events": {
+                    "module": "PedidosClientes",
+                    "event": "PedidosClientesEvents",
+                    "alias": "e_pedidos_clientes"
+                }
+            }],
+        "cronJobs": []
+    }
+}

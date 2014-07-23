@@ -1,0 +1,38 @@
+{
+    "module": "Autenticacion",
+    "dependency": {
+        "controllers": [{
+                "auth_controller": {
+                    "module": "Autenticacion",
+                    "controller": "AutenticacionController",
+                    "alias": "c_auth"
+                }
+            }],
+        "models": [{
+                "auth_model": {
+                    "module": "Autenticacion",
+                    "model": "AutenticacionModel",
+                    "alias": "m_auth"
+                },
+                "usuarios_model": {
+                    "module": "Usuarios",
+                    "model": "UsuariosModel",
+                    "alias": "m_usuarios"
+                }
+            }],
+        "events": [{
+                "auth_events": {
+                    "module": "Autenticacion",
+                    "event": "AutenticacionEvents",
+                    "alias": "e_auth"
+                }
+            }],
+        "cronJobs": [{
+                "auth_events": {
+                    "module": "Autenticacion",
+                    "cronjob": "AutenticacionCronJobs",
+                    "alias": "j_auth"
+                }
+            }]
+    }
+}

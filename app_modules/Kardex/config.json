@@ -1,0 +1,36 @@
+{
+    "module": "Kardex",
+    "dependency": {
+        "controllers": [{
+                "kardex_controller": {
+                    "module": "Kardex",
+                    "controller": "KardexController",
+                    "alias": "c_kardex"
+                }
+            }],
+        "models": [{
+                "kardex_model": {
+                    "module": "Kardex",
+                    "model": "KardexModel",
+                    "alias": "m_kardex"
+                },
+                "pedidos_farmacias_model": {
+                    "module": "PedidosFarmacias",
+                    "model": "PedidosFarmaciasModel",
+                    "alias": "m_pedidos_farmacias"
+                },
+                "pedidos_clientes_model": {
+                    "module": "PedidosClientes",
+                    "model": "PedidosClienteModel",
+                    "alias": "m_pedidos_clientes"
+                },
+                "ordenes_compra_model": {
+                    "module": "OrdenesCompra",
+                    "model": "OrdenesCompraModel",
+                    "alias": "m_ordenes_compra"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

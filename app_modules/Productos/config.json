@@ -1,0 +1,21 @@
+{
+    "module": "Productos",
+    "dependency": {
+        "controllers": [{
+                "productos_controller": {
+                    "module": "Productos",
+                    "controller": "ProductosController",
+                    "alias": "c_productos"
+                }
+            }],
+        "models": [{
+                "productos_model": {
+                    "module": "Productos",
+                    "model": "ProductosModel",
+                    "alias": "m_productos"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

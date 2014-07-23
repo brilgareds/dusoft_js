@@ -5,7 +5,7 @@ var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, produc
 
     this.m_pedidos_clientes = pedidos_clientes;
     this.e_pedidos_clientes = eventos_pedidos_clientes;
-   this.m_productos = productos;
+    this.m_productos = productos;
 
 };
 

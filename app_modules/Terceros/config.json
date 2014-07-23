@@ -1,0 +1,21 @@
+{
+    "module": "Terceros",
+    "dependency": {
+        "controllers": [{
+                "terceros_controller": {
+                    "module": "Terceros",
+                    "controller": "TercerosController",
+                    "alias": "c_terceros"
+                }
+            }],
+        "models": [{
+                "terceros_model": {
+                    "module": "Terceros",
+                    "model": "TercerosModel",
+                    "alias": "m_terceros"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

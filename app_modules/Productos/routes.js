@@ -1,10 +1,10 @@
-module.exports = function(app, di_container, io) {
+module.exports = function(app, di_container) {
 
-    var productos_controller = require('./controllers/ProductosController');
+    /*var productos_controller = require('./controllers/ProductosController');
     var productos_model = require('./models/ProductosModel');
    
     di_container.register("c_productos", productos_controller);
-    di_container.register("m_productos", productos_model);
+    di_container.register("m_productos", productos_model);*/
     
 
     var c_productos = di_container.get("c_productos");

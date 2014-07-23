@@ -69,11 +69,21 @@ var server = app.listen(G.settings.server_port);
 var io = require('socket.io').listen(server);
 var container = intravenous.create();
 
+
+/*=========================================
+ * Configuracion Sockets.io
+ * =========================================*/
+io.configure(function() {
+    io.set("log level", 0);
+});
+
+
 /*=========================================
  * Registrar dependecias en el contendorDI
  * =========================================*/
 container.register("emails", nodemailer);
 container.register("date_utils", date_utils);
+container.register("socket", io);
 
 /*=========================================
  * Inicializacion y Conexion a la Base de Datos
@@ -106,13 +116,6 @@ if ('development' == app.get('env')) {
 }
 
 /*=========================================
- * Configuracion Sockets.io
- * =========================================*/
-io.configure(function() {
-    io.set("log level", 0);
-});
-
-/*=========================================
  * Ruteo del Servidor
  * =========================================*/
 modulos.cargarRoutes(app, container, io);
@@ -124,8 +127,6 @@ app.get('/api/configurarRoutes', function(req, res) {
 app.all('/dusoft_duana', function(req, res) {
     res.redirect('/dusoft_duana/login');
 });
-
-
 
 console.log('Express server listening on port ' + app.get('port'));
 

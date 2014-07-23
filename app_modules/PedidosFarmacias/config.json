@@ -1,0 +1,32 @@
+{
+    "module": "PedidosFarmacias",
+    "dependency": {
+        "controllers": [{
+                "pedidos_farmacias_controller": {
+                    "module": "PedidosFarmacias",
+                    "controller": "PedidosFarmaciasController",
+                    "alias": "c_pedidos_farmacias"
+                }
+            }],
+        "models": [{
+                "pedidos_farmacias_model": {
+                    "module": "PedidosFarmacias",
+                    "model": "PedidosFarmaciasModel",
+                    "alias": "m_pedidos_farmacias"
+                },
+                "terceros_model": {
+                    "module": "Terceros",
+                    "model": "TercerosModel",
+                    "alias": "m_terceros"
+                }
+            }],
+        "events": [{
+                "pedidos_farmacias_events": {
+                    "module": "PedidosFarmacias",
+                    "event": "PedidosFarmaciasEvents",
+                    "alias": "e_pedidos_farmacias"
+                }
+            }],
+        "cronJobs": []
+    }
+}

@@ -54,7 +54,7 @@ ProductosModel.prototype.buscar_productos = function(termino_busqueda, pagina, c
 // Consultar stock producto
 ProductosModel.prototype.consultar_stock_producto = function(empresa_id, codigo_producto, callback) {
 
-    var sql = " select a.existencia from existencias_bodegas a\
+    var sql = " select a.existencia::integer from existencias_bodegas a\
                 inner join inventarios b on a.codigo_producto = b.codigo_producto and a.empresa_id = b.empresa_id\
                 inner join inventarios_productos c on b.codigo_producto = c.codigo_producto\
                 where a.empresa_id = $1 and a.codigo_producto = $2 and a.estado = '1' and c.estado = '1'";
@@ -75,7 +75,7 @@ ProductosModel.prototype.consultar_existencias_producto = function(empresa_id, c
                 a.codigo_producto,\
                 fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
                 a.lote,\
-                a.fecha_vencimiento,\
+                to_char(a.fecha_vencimiento, 'dd-mm-yyyy') AS fecha_vencimiento,\
                 a.existencia_actual\
                 from existencias_bodegas_lote_fv a \
                 inner join existencias_bodegas b on a.empresa_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega and a.codigo_producto = b.codigo_producto\

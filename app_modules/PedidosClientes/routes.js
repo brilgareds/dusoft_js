@@ -1,4 +1,4 @@
-module.exports = function(app, di_container, io) {
+module.exports = function(app, di_container) {
 
     /*var pedidos_cliente_controller = require('./controllers/PedidosClienteController');
     var pedidos_clientes_model = require('./models/PedidosClienteModel');
@@ -40,10 +40,5 @@ module.exports = function(app, di_container, io) {
     // Seleccionar los pedidos de un operario de bodega
     app.post('/api/PedidosClientes/listaPedidosOperarioBodega', function(req, res) {
         c_pedidos_clientes.listaPedidosOperariosBodega(req, res);
-    });
-    
-    // Consultar la disponibilidad productos
-    app.post('/api/Pedidos/consultarDisponibilidad', function(req, res) {
-        c_pedidos_clientes.consultarDisponibilidadProducto(req, res);
-    });
+    });   
 };

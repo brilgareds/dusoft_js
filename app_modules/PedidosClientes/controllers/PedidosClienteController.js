@@ -291,7 +291,7 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.pedidos_clientes === undefined || args.pedidos_clientes.operario_id === undefined, args.pedidos_clientes.pagina_actual === undefined) {
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.operario_id === undefined || args.pedidos_clientes.pagina_actual === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
     }
@@ -329,32 +329,6 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
 
         if (lista_pedidos_clientes.length === 0)
             res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {pedidos_clientes: lista_pedidos_clientes}));
-
-    });
-
-};
-
-
-PedidosCliente.prototype.consultarDisponibilidadProducto = function(req, res) {
-
-    var that = this;
-
-
-    var empresa_id = '03';
-    var codigo_producto = '2261V000933288';
-    var numero_pedido = '32609'
-    var identificador = 'CL'; // FM o CL
-
-    that.m_productos.consultar_existencias_producto(empresa_id, codigo_producto, function(err, existencias_productos) {
-
-        that.m_pedidos_clientes.calcular_disponibilidad_producto(identificador, empresa_id, numero_pedido, codigo_producto, function(err, disponibilidad) {
-            console.log(err, disponibilidad);
-        });
-
-
-        if (existencias_productos.length === 0) {
-            // No Hay existencias
-        }
 
     });
 

@@ -297,15 +297,19 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
  *      order by by d.fecha desc limit $2 offset $3 ;;
  */
 
-PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable, pagina, limite, callback) {
+PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable, termino_busqueda, pagina, limite, callback) {
 
 
 
 
     var offset = G.settings.limit * pagina;
-
+    
     if (limite !== undefined) {
         offset = limite * pagina;
+    }
+    
+    if(limite === undefined){
+        limite = G.settings.limit;
     }
 
     var sql = " select \
@@ -341,11 +345,20 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
                 where d.responsable_id = $1  \
                 and a.estado_pedido = '1' \
                 AND (a.estado IN ('1'))   \
-                order by d.fecha desc limit $2 offset $3 ;";
-
-    G.db.query(sql, [responsable, limite, offset], function(err, rows, result) {
-        callback(err, rows);
+                and (\
+                        a.pedido_cliente_id ilike $2 or\
+                        b.tercero_id ilike $2 or\
+                        b.nombre_tercero  ilike $2 or\
+                        c.vendedor_id ilike $2 or\
+                        c.nombre ilike $2\
+                    )\
+                order by d.fecha desc ";
+    
+    G.db.pagination(sql, [responsable, "%" + termino_busqueda + "%"], limite, offset, function(err, rows, result, total_records) {        
+        callback(err, rows, total_records);
     });
+
+
 };
 
 

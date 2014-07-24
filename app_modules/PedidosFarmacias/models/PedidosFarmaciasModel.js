@@ -33,7 +33,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
                 e.nombre as nombre_usuario ,\
                 a.estado as estado_actual_pedido, \
                 case when a.estado = 0 then 'No Asignado' \
-                     when a.estado = 1 then 'Separado' \
+                     when a.estado = 1 then 'Asignado' \
                      when a.estado = 2 then 'Auditado' \
                      when a.estado = 3 then 'En Despacho' \
                      when a.estado = 4 then 'Despachado' end as descripcion_estado_actual_pedido, \
@@ -71,11 +71,11 @@ PedidosFarmaciasModel.prototype.consultar_pedido = function(numero_pedido, callb
                 e.nombre as nombre_usuario ,\
                 a.estado as estado_actual_pedido, \
                 case when a.estado = 0 then 'No Asignado' \
-                     when a.estado = 1 then 'Separado' \
+                     when a.estado = 1 then 'Asignado' \
                      when a.estado = 2 then 'Auditado' \
                      when a.estado = 3 then 'En Despacho' \
                      when a.estado = 4 then 'Despachado' end as descripcion_estado_actual_pedido, \
-                a.fecha_registro::date as fecha_registro \
+                to_char(a.fecha_registro, 'dd-mm-yyyy HH24:MI:SS.MS') as fecha_registro \
                 from solicitud_productos_a_bodega_principal as a \
                 inner join bodegas as b on a.farmacia_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega \
                 inner join centros_utilidad as c on b.empresa_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad \
@@ -107,7 +107,7 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
 
 }
 
-PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsable, pagina, limite, callback) {
+PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsable, termino_busqueda, pagina, limite, callback) {
 
     var offset = G.settings.limit * pagina;
 
@@ -115,6 +115,9 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
         offset = limite * pagina;
     }
 
+    if (limite === undefined) {
+        limite = G.settings.limit;
+    }
 
     var sql = " select \
                 a.solicitud_prod_a_bod_ppal_id as numero_pedido, \
@@ -128,7 +131,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                 e.nombre as nombre_usuario ,\
                 a.estado as estado_actual, \
                 case when a.estado = 0 then 'No Asignado' \
-                     when a.estado = 1 then 'Separado' \
+                     when a.estado = 1 then 'Asignado' \
                      when a.estado = 2 then 'Auditado' \
                      when a.estado = 3 then 'En Despacho' \
                      when a.estado = 4 then 'Despachado' end as descripcion_estado_actual_pedido, \
@@ -145,10 +148,15 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                 inner join operarios_bodega g on f.responsable_id = g.operario_id\
                 where f.responsable_id = $1 \
                 and a.estado = '1'\
-                order by f.fecha desc limit $2 offset $3 ;";
+                and (\
+                        a.solicitud_prod_a_bod_ppal_id ilike $2 or\
+                        d.razon_social ilike  $2 or\
+                        b.descripcion ilike $2 or\
+                        e.nombre  ilike $2 \
+                ) order by f.fecha desc ";
 
-    G.db.query(sql, [responsable, limite, offset], function(err, rows, result) {
-        callback(err, rows);
+    G.db.pagination(sql, [responsable, "%" + termino_busqueda + "%"], limite, offset, function(err, rows, result, total_records) {
+        callback(err, rows, total_records);
     });
 };
 
@@ -225,7 +233,7 @@ PedidosFarmaciasModel.prototype.obtener_responsables_del_pedido = function(numer
                 a.solicitud_prod_a_bod_ppal_id as numero_pedido,  \
                 a.estado,\
                 case when a.estado=0 then 'Registrado'\
-                     when a.estado=1 then 'Separado'\
+                     when a.estado=1 then 'Asignado'\
                      when a.estado=2 then 'Auditado'\
                      when a.estado=3 then 'En Despacho' \
                      when a.estado=4 then 'Despachado' end as descripcion_estado,\

@@ -319,7 +319,7 @@ PedidosFarmacias.prototype.listaPedidosOperariosBodega = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.pedidos_farmacias === undefined || args.pedidos_farmacias.operario_id === undefined || args.pedidos_farmacias.pagina_actual === undefined) {
+    if (args.pedidos_farmacias === undefined || args.pedidos_farmacias.operario_id === undefined || args.pedidos_farmacias.pagina_actual === undefined || args.pedidos_farmacias.termino_busqueda === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
     }
@@ -333,11 +333,12 @@ PedidosFarmacias.prototype.listaPedidosOperariosBodega = function(req, res) {
     }
 
 
+    var termino_busqueda = args.pedidos_farmacias.termino_busqueda;
     var operario_bodega = args.pedidos_farmacias.operario_id;
     var pagina_actual = args.pedidos_farmacias.pagina_actual - 1;
     var limite = args.pedidos_farmacias.limite;
 
-    this.m_pedidos_farmacias.listar_pedidos_del_operario(operario_bodega, pagina_actual, limite, function(err, lista_pedidos_farmacias) {
+    this.m_pedidos_farmacias.listar_pedidos_del_operario(operario_bodega, termino_busqueda, pagina_actual, limite, function(err, lista_pedidos_farmacias, total_registros) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Se Ha Generado Un Error Interno', 500, {}));
@@ -352,13 +353,13 @@ PedidosFarmacias.prototype.listaPedidosOperariosBodega = function(req, res) {
                 pedido.lista_productos = detalle_pedido;
 
                 if (--i === 0)
-                    res.send(G.utils.r(req.url, 'Lista Pedidos Farmacias', 200, {pedidos_farmacias: lista_pedidos_farmacias}));
+                    res.send(G.utils.r(req.url, 'Lista Pedidos Farmacias', 200, {pedidos_farmacias: lista_pedidos_farmacias, total_registros: total_registros}));
 
             });
         });
 
         if (lista_pedidos_farmacias.length === 0)
-            res.send(G.utils.r(req.url, 'Lista Pedidos Farmacias', 200, {pedidos_farmacias: lista_pedidos_farmacias}));
+            res.send(G.utils.r(req.url, 'Lista Pedidos Farmacias', 200, {pedidos_farmacias: lista_pedidos_farmacias, total_registros: total_registros}));
     });
 
 };

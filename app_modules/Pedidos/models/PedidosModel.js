@@ -60,6 +60,12 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                 disponible_bodega = (disponible_bodega < 0) ? 0 : disponible_bodega;
                                 disponible_bodega = (disponible_bodega > stock) ? stock : disponible_bodega;
 
+                                console.log("cantidad_total_despachada ", cantidad_total_despachada);
+                                console.log("stock ", stock);
+                                console.log("cantidad_total_solicitada", cantidad_total_solicitada);
+                                console.log("cantidad_despachada ",cantidad_despachada);
+                                console.log("disponible_bodega", disponible_bodega);
+                                return;
                                 callback(err, {codigo_producto: codigo_producto, disponible_bodega: disponible_bodega});
 
                             });
@@ -143,7 +149,7 @@ function consultar_cantidad_total_solicitada_producto(empresa_id, codigo_product
                     GROUP BY  1,2,3\
                 ) as a where a.empresa_id= $1 and a.codigo_producto = $2 and a.fecha_registro < ( $3 )\
                 group by 1 ; ";
-
+    
     G.db.query(sql, [empresa_id, codigo_producto, fecha_registro_pedido], function(err, rows, result) {
         callback(err, rows);
     });
@@ -167,6 +173,8 @@ function consultar_cantidad_total_productos_despachados(empresa_id, codigo_produ
                 ) as  a where a.empresa_id = $1 and a.codigo_producto=  $2 and a.fecha_registro <= ($3)\
                 group by 1 order by 1 asc ; ";
 
+    /*console.log(empresa_id, codigo_producto, fecha_registro_pedido, sql);
+    return*/
     G.db.query(sql, [empresa_id, codigo_producto, fecha_registro_pedido], function(err, rows, result) {
         callback(err, rows);
     });

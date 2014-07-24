@@ -291,7 +291,7 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.pedidos_clientes === undefined || args.pedidos_clientes.operario_id === undefined || args.pedidos_clientes.pagina_actual === undefined) {
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.operario_id === undefined || args.pedidos_clientes.pagina_actual === undefined || args.pedidos_clientes.termino_busqueda === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
     }
@@ -304,11 +304,13 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
         return;
     }
 
+    var termino_busqueda = args.pedidos_clientes.pagina_actual;
     var operario_bodega = args.pedidos_clientes.operario_id;
     var pagina_actual = args.pedidos_clientes.pagina_actual - 1;
     var limite = args.pedidos_clientes.limite;
+    
 
-    this.m_pedidos_clientes.listar_pedidos_del_operario(operario_bodega, pagina_actual, limite, function(err, lista_pedidos_clientes) {
+    this.m_pedidos_clientes.listar_pedidos_del_operario(operario_bodega, termino_busqueda, pagina_actual, limite, function(err, lista_pedidos_clientes, total_registros) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Se Ha Generado Un Error Interno', 500, {}));
@@ -322,13 +324,13 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
                 pedido.lista_productos = detalle_pedido;
 
                 if (--i === 0)
-                    res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {pedidos_clientes: lista_pedidos_clientes}));
+                    res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {pedidos_clientes: lista_pedidos_clientes, total_registros: total_registros}));
 
             });
         });
 
         if (lista_pedidos_clientes.length === 0)
-            res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {pedidos_clientes: lista_pedidos_clientes}));
+            res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {pedidos_clientes: lista_pedidos_clientes, total_registros: total_registros}));
 
     });
 

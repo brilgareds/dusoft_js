@@ -59,13 +59,7 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
 
                                 disponible_bodega = (disponible_bodega < 0) ? 0 : disponible_bodega;
                                 disponible_bodega = (disponible_bodega > stock) ? stock : disponible_bodega;
-
-                                console.log("cantidad_total_despachada ", cantidad_total_despachada);
-                                console.log("stock ", stock);
-                                console.log("cantidad_total_solicitada", cantidad_total_solicitada);
-                                console.log("cantidad_despachada ",cantidad_despachada);
-                                console.log("disponible_bodega", disponible_bodega);
-                                return;
+                                
                                 callback(err, {codigo_producto: codigo_producto, disponible_bodega: disponible_bodega});
 
                             });

@@ -231,13 +231,23 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
                 fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
                 a.numero_unidades::integer as cantidad_solicitada,\
                 a.cantidad_despachada::integer,\
-                (a.numero_unidades - a.cantidad_despachada)::integer as cantidad_pendiente,\
+                (a.numero_unidades - a.cantidad_despachada - COALESCE(b.cantidad_temporalmente_separada,0))::integer as cantidad_pendiente,\
                 a.cantidad_facturada::integer,\
                 a.valor_unitario,\
                 a.porc_iva as porcentaje_iva,\
                 (a.valor_unitario+(a.valor_unitario*(a.porc_iva/100)))as valor_unitario_con_iva,\
                 (a.numero_unidades*(a.valor_unitario*(a.porc_iva/100))) as valor_iva\
-                from ventas_ordenes_pedidos_d a where a.pedido_cliente_id = $1 ;";
+                from ventas_ordenes_pedidos_d a \
+                left join (\
+                    select \
+                    a.pedido_cliente_id as numero_pedido,\
+                    b.codigo_producto,\
+                    SUM(b.cantidad) as cantidad_temporalmente_separada\
+                    from inv_bodegas_movimiento_tmp_despachos_clientes a \
+                    inner join inv_bodegas_movimiento_tmp_d b on a.usuario_id = b.usuario_id and a.doc_tmp_id = b.doc_tmp_id\
+                    group by 1,2\
+                ) as b on a.pedido_cliente_id = b.numero_pedido and a.codigo_producto = b.codigo_producto\
+                where a.pedido_cliente_id = $1 ;";
 
     G.db.query(sql, [numero_pedido], function(err, rows, result) {
         callback(err, rows);

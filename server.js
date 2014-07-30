@@ -124,6 +124,10 @@ app.get('/api/configurarRoutes', function(req, res) {
     modulos.configurarRoutes(req, res, app, container);
 });
 
+app.post('/testing', function(req, res){
+    res.send(200, { msj : ' Servicio de Prueba '})
+});
+
 app.all('/dusoft_duana', function(req, res) {
     res.redirect('/dusoft_duana/login');
 });

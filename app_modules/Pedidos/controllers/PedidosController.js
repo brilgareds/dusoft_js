@@ -10,7 +10,7 @@ var Pedidos = function(pedidos, productos) {
 Pedidos.prototype.consultarDisponibilidadProducto = function(req, res) {
 
     var that = this;
-    /*var args = req.body.data;
+    var args = req.body.data;
 
     if (args.pedidos === undefined || args.pedidos.empresa_id === undefined ||
             args.pedidos.numero_pedido === undefined || args.pedidos.codigo_producto === undefined || args.pedidos.identificador === undefined) {
@@ -21,22 +21,19 @@ Pedidos.prototype.consultarDisponibilidadProducto = function(req, res) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Vacíos ', 404, {}));
         return;
     }
-    
+
     // Identificador FM=>Farmacias, CL=>Clientes
-    if(args.pedidos.identificador !== 'FM' && args.pedidos.identificador !== 'CL'){
+    if (args.pedidos.identificador !== 'FM' && args.pedidos.identificador !== 'CL') {
         res.send(G.utils.r(req.url, 'Identificador Desconocido ', 404, {}));
         return;
-    }*/
+    }
 
 
-    /*var empresa_id = args.pedidos.empresa_id;
+    var empresa_id = args.pedidos.empresa_id;
     var codigo_producto = args.pedidos.codigo_producto;
     var numero_pedido = args.pedidos.numero_pedido;
-    var identificador = args.pedidos.identificador; // FM o CL*/
-    var empresa_id = '03';
-    var codigo_producto = '154A0140160';
-    var numero_pedido = '65673';
-    var identificador = 'FM';
+    var identificador = args.pedidos.identificador; // FM o CL
+
 
     that.m_productos.consultar_existencias_producto(empresa_id, codigo_producto, function(err, existencias_productos) {
 

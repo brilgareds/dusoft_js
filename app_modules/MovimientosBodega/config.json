@@ -21,7 +21,7 @@
                 },
                 "E008_model": {
                     "module": "MovimientosBodega",
-                    "model": "E008",
+                    "model": "DocBodegaE008",
                     "alias": "m_e008"
                 }
             }],

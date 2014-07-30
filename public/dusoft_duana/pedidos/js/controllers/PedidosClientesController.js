@@ -68,6 +68,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller','models/
                 for (var i in data.pedidos_clientes) {
 
                     var obj = data.pedidos_clientes[i];
+                    //console.log(obj);
                     var pedido = $scope.crearPedido(obj);
 
                     $scope.Empresa.agregarPedido(
@@ -123,9 +124,9 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller','models/
                  '</div>',*/
                 columnDefs: [
                     {field: '', cellClass:"checkseleccion", width:"60", 
-                    cellTemplate:"<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)' ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
+                    cellTemplate:"<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)' ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 || row.entity.estado == 3'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
                     {field: 'descripcion_estado_actual_pedido', displayName: "Estado Actual", cellClass:"txt-center",
-                    cellTemplate: '<div ng-class="agregarClase(row.entity.estado_actual_pedido)">{{row.entity.descripcion_estado_actual_pedido}}</div>'},
+                    cellTemplate: '<div ng-class="agregarClase(row.entity.estado_actual_pedido)" >{{row.entity.descripcion_estado_actual_pedido}}</div>'},
                     {field: 'numero_pedido', displayName: 'Numero Pedido'},
                     {field: 'cliente.nombre_cliente', displayName: 'Cliente'},
                     {field: 'cliente.direccion_cliente', displayName: 'Ubicacion'},

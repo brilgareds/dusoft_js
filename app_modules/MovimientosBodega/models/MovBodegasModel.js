@@ -42,4 +42,40 @@ MovimientosBodegasModel.prototype.ingresar_detalle_movimiento_bodega_temporal =
             });
         };
 
+// Inserta registros (detalle) en la tabla principal (temporal) de los detalles de movimientos de bodega
+MovimientosBodegasModel.prototype.consultar_detalle_movimiento_bodega_temporal = function(doc_tmp_id, usuario_id, callback) {
+
+
+    var sql = " select\
+                b.item_id,\
+                b.doc_tmp_id,\
+                b.empresa_id,\
+                b.centro_utilidad as centro_utilidad_id,\
+                b.bodega as bodega_id,\
+                b.codigo_producto,\
+                fc_descripcion_producto(b.codigo_producto) as decripcion_producto,\
+                b.cantidad,\
+                b.porcentaje_gravamen,\
+                b.total_costo,\
+                b.fecha_vencimiento,\
+                b.lote,\
+                b.local_prod,\
+                b.observacion_cambio,\
+                b.valor_unitario,\
+                b.total_costo_pedido,\
+                b.sw_ingresonc,\
+                b.item_id_compras,\
+                b.prefijo_temp,\
+                b.lote_devuelto,\
+                b.cantidad_sistema\
+                from inv_bodegas_movimiento_tmp a \
+                inner join inv_bodegas_movimiento_tmp_d b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
+                where a.doc_tmp_id = $1 and a.usuario_id = $2 ";
+
+    G.db.query(sql, [doc_tmp_id, usuario_id], function(err, rows, result) {
+
+        callback(err, rows);
+    });
+};
+
 module.exports = MovimientosBodegasModel;

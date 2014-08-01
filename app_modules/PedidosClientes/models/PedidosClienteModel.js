@@ -68,7 +68,7 @@ var PedidosClienteModel = function(productos) {
 
 PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, termino_busqueda, pagina, callback) {
 
-    var offset = G.settings.limit * pagina;
+    //var offset = G.settings.limit * pagina;
 
     var sql = " select \
                 a.pedido_cliente_id as numero_pedido, \
@@ -105,7 +105,11 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
                         or c.nombre ilike $2) \
                 AND (a.estado IN ('0','1','2','3')) order by 1 desc  limit $3 offset $4";
 
-    G.db.query(sql, [empresa_id, "%" + termino_busqueda + "%", G.settings.limit, offset], function(err, rows, result) {
+    /*G.db.query(sql, [empresa_id, "%" + termino_busqueda + "%", G.settings.limit, offset], function(err, rows, result) {
+        callback(err, rows);
+    });*/
+    
+    G.db.pagination(sql, [empresa_id, "%" + termino_busqueda + "%", pagina, G.settings.limit], function(err, rows, result, total_records) {
         callback(err, rows);
     });
 
@@ -312,7 +316,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
 
 
 
-    var offset = G.settings.limit * pagina;
+    /*var offset = G.settings.limit * pagina;
     
     if (limite !== undefined) {
         offset = limite * pagina;
@@ -320,9 +324,10 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
     
     if(limite === undefined){
         limite = G.settings.limit;
-    }
+    }*/
 
     var sql = " select \
+                f.doc_tmp_id as documento_temporal_id,\
                 a.pedido_cliente_id as numero_pedido, \
                 b.tipo_id_tercero as tipo_id_cliente, \
                 b.tercero_id as identificacion_cliente, \
@@ -352,6 +357,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
                 inner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id \
                 inner join ventas_ordenes_pedidos_estado d on a.pedido_cliente_id = d.pedido_cliente_id and a.estado_pedido = d.estado\
                 inner join operarios_bodega e on d.responsable_id = e.operario_id\
+                left join inv_bodegas_movimiento_tmp_despachos_clientes f on a.pedido_cliente_id = f.pedido_cliente_id\
                 where d.responsable_id = $1  \
                 and a.estado_pedido = '1' \
                 AND (a.estado IN ('1'))   \
@@ -364,7 +370,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
                     )\
                 order by d.fecha desc ";
     
-    G.db.pagination(sql, [responsable, "%" + termino_busqueda + "%"], limite, offset, function(err, rows, result, total_records) {        
+    G.db.pagination(sql, [responsable, "%" + termino_busqueda + "%"], pagina, limite, function(err, rows, result, total_records) {        
         callback(err, rows, total_records);
     });
 

@@ -2,7 +2,7 @@ var MovimientosBodegasModel = function() {
 
 };
 
-
+// Consultar identificador del movimieto temporal
 MovimientosBodegasModel.prototype.obtener_identificicador_movimiento_temporal = function(usuario_id, callback) {
 
     var sql = "SELECT (COALESCE(MAX(doc_tmp_id),0) + 1) as doc_tmp_id FROM inv_bodegas_movimiento_tmp WHERE usuario_id = $1; "
@@ -12,7 +12,6 @@ MovimientosBodegasModel.prototype.obtener_identificicador_movimiento_temporal = 
         callback(err, movimiento_temporal_id);
     });
 };
-
 
 // Inserta registros (cabecera) en la tabla principal (temporal) de los movimientos de bodega
 MovimientosBodegasModel.prototype.ingresar_movimiento_bodega_temporal = function(movimiento_temporal_id, usuario_id, bodegas_doc_id, observacion, callback) {
@@ -42,7 +41,40 @@ MovimientosBodegasModel.prototype.ingresar_detalle_movimiento_bodega_temporal =
             });
         };
 
-// Inserta registros (detalle) en la tabla principal (temporal) de los detalles de movimientos de bodega
+// Eliminar Todo el Documento Temporal 
+MovimientosBodegasModel.prototype.eliminar_movimiento_bodega_temporal = function(doc_tmp_id, usuario_id, callback) {
+
+    var sql = " DELETE FROM inv_bodegas_movimiento_tmp WHERE doc_tmp_id = $1 AND usuario_id = $2 ; ";
+
+    G.db.transaction(sql, [doc_tmp_id, usuario_id], function(err, rows) {
+        callback(err, rows);
+    });
+
+};
+
+// Eliminar Todo el  Detalle del Documento Temporal 
+MovimientosBodegasModel.prototype.eliminar_detalle_movimiento_bodega_temporal = function(doc_tmp_id, usuario_id, callback) {
+
+    var sql = " DELETE FROM inv_bodegas_movimiento_tmp_d WHERE doc_tmp_id = $1 AND usuario_id = $2 ; ";
+
+    G.db.transaction(sql, [doc_tmp_id, usuario_id], function(err, rows) {
+        callback(err, rows);
+    });
+
+};
+
+// Eliminar Producto del Documento Temporal
+MovimientosBodegasModel.prototype.eliminar_producto_movimiento_bodega_temporal = function(item_id, callback) {
+
+    var sql = " DELETE FROM inv_bodegas_movimiento_tmp_d WHERE item_id = $1 ; ";
+
+    G.db.query(sql, [item_id], function(err, rows, result) {        
+        callback(err, rows);
+    });
+
+};
+
+// Consultar detalle movimiento temporal 
 MovimientosBodegasModel.prototype.consultar_detalle_movimiento_bodega_temporal = function(doc_tmp_id, usuario_id, callback) {
 
 
@@ -53,11 +85,11 @@ MovimientosBodegasModel.prototype.consultar_detalle_movimiento_bodega_temporal =
                 b.centro_utilidad as centro_utilidad_id,\
                 b.bodega as bodega_id,\
                 b.codigo_producto,\
-                fc_descripcion_producto(b.codigo_producto) as decripcion_producto,\
-                b.cantidad,\
+                fc_descripcion_producto(b.codigo_producto) as descripcion_producto,\
+                b.cantidad :: integer,\
                 b.porcentaje_gravamen,\
                 b.total_costo,\
-                b.fecha_vencimiento,\
+                to_char(b.fecha_vencimiento, 'dd-mm-yyyy') as fecha_vencimiento,\
                 b.lote,\
                 b.local_prod,\
                 b.observacion_cambio,\

@@ -306,7 +306,7 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
 
     var termino_busqueda = args.pedidos_clientes.termino_busqueda;
     var operario_bodega = args.pedidos_clientes.operario_id;
-    var pagina_actual = args.pedidos_clientes.pagina_actual - 1;
+    var pagina_actual = args.pedidos_clientes.pagina_actual;
     var limite = args.pedidos_clientes.limite;
     
 

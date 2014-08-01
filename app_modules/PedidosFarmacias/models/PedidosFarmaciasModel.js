@@ -109,16 +109,7 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
 
 PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsable, termino_busqueda, pagina, limite, callback) {
 
-    var offset = G.settings.limit * pagina;
-
-    if (limite !== undefined) {
-        offset = limite * pagina;
-    }
-
-    if (limite === undefined) {
-        limite = G.settings.limit;
-    }
-
+   
     var sql = " select \
                 a.solicitud_prod_a_bod_ppal_id as numero_pedido, \
                 a.farmacia_id, \
@@ -139,11 +130,11 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                 f.responsable_id,\
                 g.nombre as responsable_pedido,\
                 f.fecha as fecha_asignacion_pedido \
-                from solicitud_productos_a_bodega_principal as a \
-                inner join bodegas as b on a.farmacia_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega \
-                inner join centros_utilidad as c on b.empresa_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad \
-                inner join empresas as d ON c.empresa_id = d.empresa_id \
-                inner join system_usuarios as e ON a.usuario_id = e.usuario_id \
+                from solicitud_productos_a_bodega_principal a \
+                inner join bodegas b on a.farmacia_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega \
+                inner join centros_utilidad c on b.empresa_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad \
+                inner join empresas d ON c.empresa_id = d.empresa_id \
+                inner join system_usuarios e ON a.usuario_id = e.usuario_id \
                 inner join solicitud_productos_a_bodega_principal_estado f on a.solicitud_prod_a_bod_ppal_id = f.solicitud_prod_a_bod_ppal_id and a.estado = f.estado\
                 inner join operarios_bodega g on f.responsable_id = g.operario_id\
                 where f.responsable_id = $1 \
@@ -155,7 +146,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                         e.nombre  ilike $2 \
                 ) order by f.fecha desc ";
 
-    G.db.pagination(sql, [responsable, "%" + termino_busqueda + "%"], limite, offset, function(err, rows, result, total_records) {
+    G.db.pagination(sql, [responsable, "%" + termino_busqueda + "%"], pagina, limite, function(err, rows, result, total_records) {
         callback(err, rows, total_records);
     });
 };

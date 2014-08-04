@@ -103,13 +103,13 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
                         or b.telefono ilike $2   \
                         or c.vendedor_id ilike $2 \
                         or c.nombre ilike $2) \
-                AND (a.estado IN ('0','1','2','3')) order by 1 desc  limit $3 offset $4";
+                AND (a.estado IN ('0','1','2','3')) order by 1 desc ";
 
     /*G.db.query(sql, [empresa_id, "%" + termino_busqueda + "%", G.settings.limit, offset], function(err, rows, result) {
         callback(err, rows);
     });*/
     
-    G.db.pagination(sql, [empresa_id, "%" + termino_busqueda + "%", pagina, G.settings.limit], function(err, rows, result, total_records) {
+    G.db.pagination(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
         callback(err, rows);
     });
 

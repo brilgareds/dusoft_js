@@ -19,8 +19,6 @@ PedidosFarmaciasModel.prototype.listar_empresas = function(usuario, callback) {
 // Listar todos los pedidos de farmacias
 PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, termino_busqueda, pagina, callback) {
 
-    var offset = G.settings.limit * pagina;
-
     var sql = " select \
                 a.solicitud_prod_a_bod_ppal_id as numero_pedido, \
                 a.farmacia_id, \
@@ -48,9 +46,9 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
                       or d.razon_social ilike $2 \
                       or b.descripcion ilike $2 \
                       or e.nombre ilike $2 ) \
-                order by 1 desc limit $3 offset $4 ";
+                order by 1 desc ";
 
-    G.db.query(sql, [empresa_id, "%" + termino_busqueda + "%", G.settings.limit, offset], function(err, rows, result) {
+    G.db.pagination(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result) {
         callback(err, rows);
     });
 };

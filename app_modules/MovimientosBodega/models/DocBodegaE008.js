@@ -70,10 +70,19 @@ DocuemntoBodegaE008.prototype.ingresar_despacho_farmacias_temporal = function(bo
 
         var movimiento_temporal_id = doc_tmp_id;
 
+        
         G.db.begin(function() {
 
             that.m_movientos_bodegas.ingresar_movimiento_bodega_temporal(movimiento_temporal_id, usuario_id, bodegas_doc_id, observacion, function(err) {
 
+                console.log('*** ID FM*****');
+                console.log(movimiento_temporal_id);
+                console.log(empresa_id);
+                console.log(numero_pedido);
+                console.log(usuario_id);
+                console.log(err);
+                console.log('********');
+                //return;
                 if (err) {
                     callback(err);
                     return;
@@ -154,7 +163,7 @@ DocuemntoBodegaE008.prototype.consultar_documento_temporal_farmacias = function(
                 to_char(b.fecha_registro, 'dd-mm-yyyy') as fecha_registro \
                 from inv_bodegas_movimiento_tmp_despachos_farmacias a \
                 inner join inv_bodegas_movimiento_tmp b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
-                inner join solicitud_productos_a_bodega_principal c on a.solicitud_prod_a_bod_ppal_id = c.solicitud_prod_a_bod_ppal_id and a.farmacia_id = c.farmacia_id\
+                inner join solicitud_productos_a_bodega_principal c on a.solicitud_prod_a_bod_ppal_id = c.solicitud_prod_a_bod_ppal_id \
                 inner join bodegas d on c.farmacia_id = d.empresa_id and c.centro_utilidad = d.centro_utilidad and c.bodega = d.bodega\
                 inner join empresas f ON d.empresa_id = f.empresa_id\
                 inner join system_usuarios g ON a.usuario_id = g.usuario_id\
@@ -228,7 +237,7 @@ DocuemntoBodegaE008.prototype.consultar_documentos_temporales_farmacias_por_usua
                 to_char(b.fecha_registro, 'dd-mm-yyyy') as fecha_registro \
                 from inv_bodegas_movimiento_tmp_despachos_farmacias a \
                 inner join inv_bodegas_movimiento_tmp b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
-                inner join solicitud_productos_a_bodega_principal c on a.solicitud_prod_a_bod_ppal_id = c.solicitud_prod_a_bod_ppal_id and a.farmacia_id = c.farmacia_id\
+                inner join solicitud_productos_a_bodega_principal c on a.solicitud_prod_a_bod_ppal_id = c.solicitud_prod_a_bod_ppal_id \
                 inner join bodegas d on c.farmacia_id = d.empresa_id and c.centro_utilidad = d.centro_utilidad and c.bodega = d.bodega\
                 inner join empresas f ON d.empresa_id = f.empresa_id\
                 inner join system_usuarios g ON a.usuario_id = g.usuario_id\

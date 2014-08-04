@@ -94,9 +94,18 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                 a.codigo_producto,\
                 fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
                 a.cantidad_solic::integer as cantidad_solicitada,\
-                (a.cantidad_solic - a.cantidad_pendiente)::integer as cantidad_despachada,\
+                (a.cantidad_solic - a.cantidad_pendiente - COALESCE(b.cantidad_temporalmente_separada,0))::integer as cantidad_despachada,\
                 a.cantidad_pendiente::integer\
                 from solicitud_productos_a_bodega_principal_detalle a\
+                left join (\
+                    select \
+                    a.solicitud_prod_a_bod_ppal_id as numero_pedido,\
+                    b.codigo_producto,\
+                    SUM(b.cantidad) as cantidad_temporalmente_separada\
+                    from inv_bodegas_movimiento_tmp_despachos_farmacias a\
+                    inner join inv_bodegas_movimiento_tmp_d b on a.usuario_id = b.usuario_id and a.doc_tmp_id = b.doc_tmp_id\
+                    group by 1,2\
+                ) as b on a.solicitud_prod_a_bod_ppal_id = b.numero_pedido and a.codigo_producto = b.codigo_producto\
                 where a.solicitud_prod_a_bod_ppal_id= $1; ";
 
     G.db.query(sql, [numero_pedido], function(err, rows, result) {
@@ -109,6 +118,8 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
 
    
     var sql = " select \
+                h.doc_tmp_id,\
+                h.usuario_id,\
                 a.solicitud_prod_a_bod_ppal_id as numero_pedido, \
                 a.farmacia_id, \
                 d.empresa_id, \
@@ -135,14 +146,16 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                 inner join system_usuarios e ON a.usuario_id = e.usuario_id \
                 inner join solicitud_productos_a_bodega_principal_estado f on a.solicitud_prod_a_bod_ppal_id = f.solicitud_prod_a_bod_ppal_id and a.estado = f.estado\
                 inner join operarios_bodega g on f.responsable_id = g.operario_id\
+                left join inv_bodegas_movimiento_tmp_despachos_farmacias h on a.solicitud_prod_a_bod_ppal_id = h.solicitud_prod_a_bod_ppal_id\
                 where f.responsable_id = $1 \
-                and a.estado = '1'\
+                and a.estado = '1' \
+                and a.sw_despacho = '0' \
                 and (\
-                        a.solicitud_prod_a_bod_ppal_id ilike $2 or\
-                        d.razon_social ilike  $2 or\
-                        b.descripcion ilike $2 or\
-                        e.nombre  ilike $2 \
-                ) order by f.fecha desc ";
+                    a.solicitud_prod_a_bod_ppal_id ilike $2 or\
+                    d.razon_social ilike  $2 or\
+                    b.descripcion ilike $2 or\
+                    e.nombre  ilike $2 \
+                ) order by f.fecha asc ";
 
     G.db.pagination(sql, [responsable, "%" + termino_busqueda + "%"], pagina, limite, function(err, rows, result, total_records) {
         callback(err, rows, total_records);

@@ -314,18 +314,6 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
 PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable, termino_busqueda, pagina, limite, callback) {
 
 
-
-
-    /*var offset = G.settings.limit * pagina;
-    
-    if (limite !== undefined) {
-        offset = limite * pagina;
-    }
-    
-    if(limite === undefined){
-        limite = G.settings.limit;
-    }*/
-
     var sql = " select \
                 f.doc_tmp_id as documento_temporal_id,\
                 a.pedido_cliente_id as numero_pedido, \
@@ -368,7 +356,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
                         c.vendedor_id ilike $2 or\
                         c.nombre ilike $2\
                     )\
-                order by d.fecha desc ";
+                order by d.fecha asc ";
     
     G.db.pagination(sql, [responsable, "%" + termino_busqueda + "%"], pagina, limite, function(err, rows, result, total_records) {        
         callback(err, rows, total_records);

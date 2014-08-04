@@ -4,7 +4,6 @@ var DocuemntoBodegaE008 = function(movientos_bodegas) {
 
 };
 
-
 // Insertar la cabecera temporal del despacho de un pedido de clientes
 DocuemntoBodegaE008.prototype.ingresar_despacho_clientes_temporal = function(bodegas_doc_id, numero_pedido, tipo_tercero_id, tercero_id, observacion, usuario_id, callback) {
 
@@ -57,7 +56,6 @@ DocuemntoBodegaE008.prototype.ingresar_despacho_clientes_temporal = function(bod
     });
 };
 
-
 // Insertar la cabecera temporal del despacho de un pedido de farmacias
 DocuemntoBodegaE008.prototype.ingresar_despacho_farmacias_temporal = function(bodegas_doc_id, empresa_id, numero_pedido, observacion, usuario_id, callback) {
 
@@ -101,7 +99,6 @@ DocuemntoBodegaE008.prototype.ingresar_despacho_farmacias_temporal = function(bo
     });
 };
 
-
 // Consultar documento temporal de clientes x numero de pedido
 DocuemntoBodegaE008.prototype.consultar_documento_temporal_clientes = function(numero_pedido, callback) {
 
@@ -137,7 +134,41 @@ DocuemntoBodegaE008.prototype.consultar_documento_temporal_clientes = function(n
 
 };
 
-// Consultar documento temporal de clientes x usuario
+// Consultar documento temporal de Farmacias x numero de pedido
+DocuemntoBodegaE008.prototype.consultar_documento_temporal_farmacias = function(numero_pedido, callback) {
+
+    var sql = " select \
+                a.doc_tmp_id,\
+                b.bodegas_doc_id,\
+                c.solicitud_prod_a_bod_ppal_id as numero_pedido,\
+                c.farmacia_id, \
+                d.empresa_id, \
+                c.centro_utilidad,\
+                c.bodega as bodega_id,\
+                f.razon_social as nombre_farmacia, \
+                d.descripcion as nombre_bodega,\
+                c.usuario_id, \
+                g.nombre as nombre_usuario ,\
+                c.estado,\
+                a.observacion,\
+                to_char(b.fecha_registro, 'dd-mm-yyyy') as fecha_registro \
+                from inv_bodegas_movimiento_tmp_despachos_farmacias a \
+                inner join inv_bodegas_movimiento_tmp b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
+                inner join solicitud_productos_a_bodega_principal c on a.solicitud_prod_a_bod_ppal_id = c.solicitud_prod_a_bod_ppal_id and a.farmacia_id = c.farmacia_id\
+                inner join bodegas d on c.farmacia_id = d.empresa_id and c.centro_utilidad = d.centro_utilidad and c.bodega = d.bodega\
+                inner join empresas f ON d.empresa_id = f.empresa_id\
+                inner join system_usuarios g ON a.usuario_id = g.usuario_id\
+                inner join solicitud_productos_a_bodega_principal_estado h on c.solicitud_prod_a_bod_ppal_id = h.solicitud_prod_a_bod_ppal_id and c.estado = h.estado\
+                inner join operarios_bodega i on h.responsable_id = i.operario_id\
+                where a.solicitud_prod_a_bod_ppal_id = $1 ";
+
+    G.db.query(sql, [numero_pedido], function(err, rows, result) {
+
+        callback(err, rows);
+    });
+};
+
+// Consultar documentos temporales de clientes x usuario
 DocuemntoBodegaE008.prototype.consultar_documentos_temporales_clientes_por_usuario = function(usuario_id, termino_busqueda, pagina, limite, callback) {
 
     var sql = " select\
@@ -177,10 +208,40 @@ DocuemntoBodegaE008.prototype.consultar_documentos_temporales_clientes_por_usuar
     });
 };
 
-// Consultar documento temporal de farmacias x usuario
+// Consultar documentos temporales de farmacias x usuario
 DocuemntoBodegaE008.prototype.consultar_documentos_temporales_farmacias_por_usuario = function(usuario_id, termino_busqueda, pagina, limite, callback) {
 
-    var sql = "";
+    var sql = " select \
+                a.doc_tmp_id,\
+                b.bodegas_doc_id,\
+                c.solicitud_prod_a_bod_ppal_id as numero_pedido,\
+                c.farmacia_id, \
+                d.empresa_id, \
+                c.centro_utilidad,\
+                c.bodega as bodega_id,\
+                f.razon_social as nombre_farmacia, \
+                d.descripcion as nombre_bodega,\
+                c.usuario_id, \
+                g.nombre as nombre_usuario ,\
+                c.estado,\
+                a.observacion,\
+                to_char(b.fecha_registro, 'dd-mm-yyyy') as fecha_registro \
+                from inv_bodegas_movimiento_tmp_despachos_farmacias a \
+                inner join inv_bodegas_movimiento_tmp b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
+                inner join solicitud_productos_a_bodega_principal c on a.solicitud_prod_a_bod_ppal_id = c.solicitud_prod_a_bod_ppal_id and a.farmacia_id = c.farmacia_id\
+                inner join bodegas d on c.farmacia_id = d.empresa_id and c.centro_utilidad = d.centro_utilidad and c.bodega = d.bodega\
+                inner join empresas f ON d.empresa_id = f.empresa_id\
+                inner join system_usuarios g ON a.usuario_id = g.usuario_id\
+                inner join solicitud_productos_a_bodega_principal_estado h on c.solicitud_prod_a_bod_ppal_id = h.solicitud_prod_a_bod_ppal_id and c.estado = h.estado\
+                inner join operarios_bodega i on h.responsable_id = i.operario_id\
+                where a.usuario_id = $1\
+                and c.estado = '1'\
+                and (\
+                  c.solicitud_prod_a_bod_ppal_id ilike $2 or\
+                  f.razon_social ilike  $2 or\
+                  d.descripcion ilike $2 or\
+                  g.nombre  ilike $2 \
+                ) order by b.fecha_registro desc ";
 
     G.db.pagination(sql, [usuario_id, "%" + termino_busqueda + "%"], pagina, limite, function(err, rows, result, total_records) {
 
@@ -225,15 +286,46 @@ DocuemntoBodegaE008.prototype.eliminar_documento_temporal_clientes = function(do
             }
         });
     });
-
-
-
-
-
-
-
 };
 
+// Eliminar Documento Temporal Farmacias
+DocuemntoBodegaE008.prototype.eliminar_documento_temporal_farmacias = function(doc_tmp_id, usuario_id, callback){
+    
+    var that = this;
+
+    G.db.begin(function() {
+        // Eliminar Detalle del Documento Temporal
+        that.m_movientos_bodegas.eliminar_detalle_movimiento_bodega_temporal(doc_tmp_id, usuario_id, function(err) {
+            if (err) {
+                callback(err);
+                return;
+            } else {
+                // Eliminar Cabecera Documento Temporal Clientes
+                var sql = " DELETE FROM inv_bodegas_movimiento_tmp_despachos_farmacias WHERE  doc_tmp_id = $1 AND usuario_id = $2;";
+
+                G.db.transaction(sql, [doc_tmp_id, usuario_id], function(err, rows) {
+                    if (err) {
+                        callback(err);
+                        return;
+                    } else {
+                        // Eliminar Cabecera Documento Temporal
+                        that.m_movientos_bodegas.eliminar_movimiento_bodega_temporal(doc_tmp_id, usuario_id, function(err, rows) {
+                            if (err) {
+                                callback(err);
+                                return;
+                            } else {
+                                G.db.commit(function(err, rows) {
+                                    callback(err, rows);
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    });
+    
+}
 
 DocuemntoBodegaE008.$inject = ["m_movientos_bodegas"];
 

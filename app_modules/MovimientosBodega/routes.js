@@ -10,12 +10,22 @@ module.exports = function(app, di_container) {
     app.post('/api/movBodegas/E008/documentoTemporalClientes', function(req, res) {
         c_e008.documentoTemporalClientes(req, res);
     });
+    
+    // Finalizar Documento Temporal Clientes
+    app.post('/api/movBodegas/E008/finalizarDocumentoTemporalClientes', function(req, res) {
+        c_e008.finalizarDocumentoTemporalClientes(req, res);
+    });    
 
     // Generar Documento temporal de despacho farmacias
     app.post('/api/movBodegas/E008/documentoTemporalFarmacias', function(req, res) {
         c_e008.documentoTemporalFarmacias(req, res);
     });
 
+    // Finalizar Documento Temporal FARMACIAS
+    app.post('/api/movBodegas/E008/finalizarDocumentoTemporalFarmacias', function(req, res) {
+        c_e008.finalizarDocumentoTemporalFarmacias(req, res);
+    });
+    
     // Ingresar Detalle Documento temporal de farmacias/clientes
     app.post('/api/movBodegas/E008/detalleDocumentoTemporal', function(req, res) {
         c_e008.detalleDocumentoTemporal(req, res);

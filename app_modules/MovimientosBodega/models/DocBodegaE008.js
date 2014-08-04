@@ -340,6 +340,29 @@ DocuemntoBodegaE008.prototype.ingresar_justificaciones_pendientes = function(doc
 
 };
 
+// Finalizar documento temporal clientes
+DocuemntoBodegaE008.prototype.finalizar_documento_temporal_clientes = function(numero_pedido, callback) {
+
+    var sql = " UPDATE inv_bodegas_movimiento_tmp_despachos_clientes SET estado='1' WHERE pedido_cliente_id = $1 ;";
+
+    G.db.query(sql, [numero_pedido], function(err, rows, result) {
+
+        callback(err, rows);
+    });
+
+};
+// Finalizar documento temporal farmacias
+DocuemntoBodegaE008.prototype.finalizar_documento_temporal_farmacias = function(numero_pedido, callback) {
+
+    var sql = " UPDATE inv_bodegas_movimiento_tmp_despachos_farmacias SET estado='1' WHERE solicitud_prod_a_bod_ppal_id = $1 ;";
+
+    G.db.query(sql, [numero_pedido], function(err, rows, result) {
+
+        callback(err, rows);
+    });
+
+};
+
 DocuemntoBodegaE008.$inject = ["m_movientos_bodegas"];
 
 module.exports = DocuemntoBodegaE008;

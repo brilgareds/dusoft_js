@@ -45,6 +45,36 @@ E008Controller.prototype.documentoTemporalClientes = function(req, res) {
     });
 };
 
+// Finalizar Documento Temporal Clientes
+E008Controller.prototype.finalizarDocumentoTemporalClientes = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined) {
+        res.send(G.utils.r(req.url, 'El numero de pedido no está definido', 404, {}));
+        return;
+    }
+
+    if (args.documento_temporal.numero_pedido === '' || args.documento_temporal.numero_pedido === 0) {
+        res.send(G.utils.r(req.url, 'El numero de pedido debe ser mayor a cero', 404, {}));
+        return;
+    }
+
+    var numero_pedido = args.documento_temporal.numero_pedido;
+
+    that.m_e008.finalizar_documento_temporal_clientes(numero_pedido, function(err, rows) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Finalizando el Documento Temporal Clientes', 500, {documento_temporal: {}}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Documento Temporal Clientes Finalizado Correctamente', 200, {documento_temporal: {}}));
+            return;
+        }
+    });
+};
+
 // Generar Cabecera del Documento Temporal de FARMACIAS
 E008Controller.prototype.documentoTemporalFarmacias = function(req, res) {
 
@@ -80,6 +110,36 @@ E008Controller.prototype.documentoTemporalFarmacias = function(req, res) {
     });
 
 
+};
+
+// Finalizar Documento Temporal Clientes
+E008Controller.prototype.finalizarDocumentoTemporalFarmacias = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined) {
+        res.send(G.utils.r(req.url, 'El numero de pedido no está definido', 404, {}));
+        return;
+    }
+
+    if (args.documento_temporal.numero_pedido === '' || args.documento_temporal.numero_pedido === 0) {
+        res.send(G.utils.r(req.url, 'El numero de pedido debe ser mayor a cero', 404, {}));
+        return;
+    }
+
+    var numero_pedido = args.documento_temporal.numero_pedido;
+
+    that.m_e008.finalizar_documento_temporal_farmacias(numero_pedido, function(err, rows) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Finalizando el Documento Temporal Farmacias', 500, {documento_temporal: {}}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Documento Temporal Farmacias Finalizado Correctamente', 200, {documento_temporal: {}}));
+            return;
+        }
+    });
 };
 
 // Ingresar el detalle del documento temporal CLIENTES / FARMACIAS 
@@ -157,10 +217,13 @@ E008Controller.prototype.detalleDocumentoTemporal = function(req, res) {
 
     that.m_movientos_bodegas.ingresar_detalle_movimiento_bodega_temporal(empresa_id, centro_utilidad_id, bodega_id, doc_tmp_id, codigo_producto, cantidad_ingresada, lote, fecha_vencimiento, iva, valor_unitario, total_costo, total_costo_pedido, usuario_id, function(err, rows) {
         if (err) {
-            res.send(G.utils.r(req.url, 'Error Creando Ingresando el Producto en el documento', 500, {}));
+            res.send(G.utils.r(req.url, 'Error Creando Ingresando el Producto en el documento', 500, {documento_temporal: {item_id: 0}}));
             return;
         } else {
-            res.send(G.utils.r(req.url, 'Producto registrado correctamente en el documento temporal', 200, {}));
+
+            var item_id = (rows.length > 0) ? rows[0].item_id : 0;
+
+            res.send(G.utils.r(req.url, 'Producto registrado correctamente en el documento temporal', 200, {documento_temporal: {item_id: item_id}}));
             return;
         }
     });

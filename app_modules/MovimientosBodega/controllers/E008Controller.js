@@ -520,6 +520,57 @@ E008Controller.prototype.eliminarDocumentoTemporalFarmacias = function(req, res)
 
 };
 
+// Ingresar las justificaciones de los productos pendientes en el desapAcho de CLIENTES / FARMACIAS
+E008Controller.prototype.justificacionPendientes = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.documento_temporal === undefined || args.documento_temporal.doc_tmp_id === undefined || args.documento_temporal.codigo_producto === undefined) {
+        res.send(G.utils.r(req.url, 'El doc_tmp_id o codigo_producto no estan definidos', 404, {}));
+        return;
+    }
+
+    if (args.documento_temporal.cantidad_pendiente === undefined || args.documento_temporal.justificacion === undefined || args.documento_temporal.existencia === undefined) {
+        res.send(G.utils.r(req.url, 'La cantidad_pendiente, justificacion o existencia no estan definidos', 404, {}));
+        return;
+    }
+
+
+    if (args.documento_temporal.doc_tmp_id === "" || args.documento_temporal.codigo_producto === "") {
+        res.send(G.utils.r(req.url, 'El doc_tmp_id o codigo_producto estan vacíos', 404, {}));
+        return;
+    }
+
+    if (args.documento_temporal.cantidad_pendiente === "" || args.documento_temporal.justificacion === "" || args.documento_temporal.existencia === "") {
+        res.send(G.utils.r(req.url, 'La cantidad_pendiente, justificacion o existencia estan vacíos', 404, {}));
+        return;
+    }
+
+    if (args.documento_temporal.cantidad_pendiente > 0) {
+        res.send(G.utils.r(req.url, 'La cantidad_pendiente debe ser mayor a cero', 404, {}));
+        return;
+    }
+
+    var doc_tmp_id = args.documento_temporal.doc_tmp_id;
+    var codigo_producto = args.documento_temporal.codigo_producto;
+    var cantidad_pendiente = args.documento_temporal.cantidad_pendiente;
+    var justificacion = args.documento_temporal.justificacion;
+    var existencia = args.documento_temporal.existencia;
+    var usuario_id = req.session.user.usuario_id;
+
+    that.m_e008.ingresar_justificaciones_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, justificacion, existencia, function(err, rows) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error ingresando la justificación', 500, {documento_temporal: {}}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Justificacion Ingresada Correctamente', 200, {documento_temporal: {}}));
+            return;
+        }
+    });
+};
+
 E008Controller.$inject = ["m_movientos_bodegas", "m_e008"];
 
 module.exports = E008Controller;

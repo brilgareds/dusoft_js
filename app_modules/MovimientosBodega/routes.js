@@ -66,5 +66,10 @@ module.exports = function(app, di_container) {
         c_e008.eliminarDocumentoTemporalFarmacias(req, res);
     });
     
+    // Ingresar Justificacion de productos pendientes en despachos CLIENTES y FARMACIAS
+    app.post('/api/movBodegas/E008/justificacionPendientes', function(req, res) {
+        c_e008.justificacionPendientes(req, res);
+    });
+    
     // ======== FIN Rutas para Documentos E008 =============    
 };

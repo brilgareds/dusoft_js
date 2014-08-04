@@ -289,8 +289,8 @@ DocuemntoBodegaE008.prototype.eliminar_documento_temporal_clientes = function(do
 };
 
 // Eliminar Documento Temporal Farmacias
-DocuemntoBodegaE008.prototype.eliminar_documento_temporal_farmacias = function(doc_tmp_id, usuario_id, callback){
-    
+DocuemntoBodegaE008.prototype.eliminar_documento_temporal_farmacias = function(doc_tmp_id, usuario_id, callback) {
+
     var that = this;
 
     G.db.begin(function() {
@@ -324,8 +324,21 @@ DocuemntoBodegaE008.prototype.eliminar_documento_temporal_farmacias = function(d
             }
         });
     });
-    
+
 }
+
+// Ingresar Justificacion de Productos Pendientes
+DocuemntoBodegaE008.prototype.ingresar_justificaciones_pendientes = function(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, justificacion, existencia, callback) {
+
+    var sql = " INSERT INTO inv_bodegas_movimiento_tmp_justificaciones_pendientes ( doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, observacion, existencia ) \
+                VALUES ($1, $2, $3, $4, $5, $6 ); ";
+
+    G.db.query(sql, [doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, justificacion, existencia], function(err, rows, result) {
+
+        callback(err, rows);
+    });
+
+};
 
 DocuemntoBodegaE008.$inject = ["m_movientos_bodegas"];
 

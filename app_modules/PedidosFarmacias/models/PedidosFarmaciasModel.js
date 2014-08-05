@@ -112,13 +112,13 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
         callback(err, rows);
     });
 
-}
+};
 
 PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsable, termino_busqueda, pagina, limite, callback) {
 
    
     var sql = " select \
-                h.doc_tmp_id,\
+                h.doc_tmp_id as documento_temporal_id,\
                 h.usuario_id,\
                 a.solicitud_prod_a_bod_ppal_id as numero_pedido, \
                 a.farmacia_id, \

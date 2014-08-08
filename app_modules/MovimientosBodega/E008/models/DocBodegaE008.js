@@ -156,7 +156,7 @@ DocuemntoBodegaE008.prototype.consultar_documento_temporal_farmacias = function(
                 c.bodega as bodega_id,\
                 f.razon_social as nombre_farmacia, \
                 d.descripcion as nombre_bodega,\
-                c.usuario_id, \
+                a.usuario_id, \
                 g.nombre as nombre_usuario ,\
                 c.estado,\
                 a.observacion,\
@@ -301,7 +301,10 @@ DocuemntoBodegaE008.prototype.eliminar_documento_temporal_clientes = function(do
 DocuemntoBodegaE008.prototype.eliminar_documento_temporal_farmacias = function(doc_tmp_id, usuario_id, callback) {
 
     var that = this;
-
+    /*console.log('=======================');
+    console.log(doc_tmp_id, usuario_id);
+    console.log('=======================');
+    return;*/
     G.db.begin(function() {
         // Eliminar Detalle del Documento Temporal
         that.m_movientos_bodegas.eliminar_detalle_movimiento_bodega_temporal(doc_tmp_id, usuario_id, function(err) {

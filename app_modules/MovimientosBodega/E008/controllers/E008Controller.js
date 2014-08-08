@@ -1,6 +1,8 @@
 
 var E008Controller = function(movientos_bodegas, e008_sql) {
 
+    console.log("Modulo E008 Cargado ");
+    
     this.m_movientos_bodegas = movientos_bodegas;
     this.m_e008 = e008_sql;
 };
@@ -611,7 +613,7 @@ E008Controller.prototype.justificacionPendientes = function(req, res) {
         return;
     }
 
-    if (args.documento_temporal.cantidad_pendiente > 0) {
+    if ( parseInt(args.documento_temporal.cantidad_pendiente)  <= 0) {
         res.send(G.utils.r(req.url, 'La cantidad_pendiente debe ser mayor a cero', 404, {}));
         return;
     }

@@ -29,7 +29,6 @@
                     "model": "PedidosFarmaciasModel",
                     "alias": "m_pedidos_farmacias"
                 }
-                
             }],
         "events": [],
         "cronJobs": []

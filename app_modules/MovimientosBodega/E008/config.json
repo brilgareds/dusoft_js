@@ -1,26 +1,21 @@
 {
-    "module": "MovimientosBodega",
+    "module": "E008",
     "dependency": {
         "controllers": [{
-                "movimientos_bodegas_controller": {
-                    "module": "MovimientosBodega",
-                    "controller": "MovBodegasController",
-                    "alias": "c_movimientos_bodega"
-                },
                 "e008_controller": {
-                    "module": "MovimientosBodega",
+                    "module": "MovimientosBodega/E008",
                     "controller": "E008Controller",
                     "alias": "c_e008"
                 }
             }],
         "models": [{
                 "movimientos_bodegas_model": {
-                    "module": "MovimientosBodega",
+                    "module": "MovimientosBodega/MovBodegas",
                     "model": "MovBodegasModel",
                     "alias": "m_movientos_bodegas"
                 },
                 "E008_model": {
-                    "module": "MovimientosBodega",
+                    "module": "MovimientosBodega/E008",
                     "model": "DocBodegaE008",
                     "alias": "m_e008"
                 }

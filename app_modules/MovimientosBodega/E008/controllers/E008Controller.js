@@ -2,7 +2,7 @@
 var E008Controller = function(movientos_bodegas, e008_sql) {
 
     console.log("Modulo E008 Cargado ");
-    
+
     this.m_movientos_bodegas = movientos_bodegas;
     this.m_e008 = e008_sql;
 };
@@ -460,7 +460,7 @@ E008Controller.prototype.eliminarProductoDocumentoTemporal = function(req, res) 
 
     var args = req.body.data;
 
-    if (args.documento_temporal === undefined || args.documento_temporal.item_id === undefined) {
+    if (args.documento_temporal === undefined || args.documento_temporal.item_id === undefined || args.documento_temporal.documento_temporal_id === undefined || args.documento_temporal.codigo_producto === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
     }
@@ -469,22 +469,43 @@ E008Controller.prototype.eliminarProductoDocumentoTemporal = function(req, res) 
         res.send(G.utils.r(req.url, 'El item_id está vacio', 404, {}));
         return;
     }
+    
+    if (args.documento_temporal.documento_temporal_id === '' || args.documento_temporal.documento_temporal_id === "0") {
+        res.send(G.utils.r(req.url, 'El documento_temporal_id está vacio', 404, {}));
+        return;
+    }
+    
+    if (args.documento_temporal.codigo_producto === '') {
+        res.send(G.utils.r(req.url, 'El codigo_producto está vacio', 404, {}));
+        return;
+    }
 
     var item_id = args.documento_temporal.item_id;
+    var doc_tmp_id = args.documento_temporal.documento_temporal_id;
+    var usuario_id = (args.documento_temporal.usuario_id === undefined) ? req.session.user.usuario_id : args.documento_temporal.usuario_id;
+    var codigo_producto = args.documento_temporal.codigo_producto;
 
     that.m_movientos_bodegas.eliminar_producto_movimiento_bodega_temporal(item_id, function(err, rows) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error Eliminado el Producto del Documento Temporal Clientes', 500, {}));
             return;
         } else {
-            res.send(G.utils.r(req.url, 'Producto Eliminado Correctamente', 200, {}));
-            return;
+
+            that.m_e008.eliminar_justificaciones_producto(doc_tmp_id, usuario_id, codigo_producto, function(err, rows) {
+                if (err) {
+                    res.send(G.utils.r(req.url, 'Error Eliminado la justificacon del Producto', 500, {}));
+                    return;
+                } else {
+                    res.send(G.utils.r(req.url, 'Producto Eliminado Correctamente', 200, {}));
+                    return;
+                }
+            });
         }
     });
 
 };
 
-// Eliminar un definiticamente un documento temporal de CLIENTES 
+// Eliminar un definitivamente un documento temporal de CLIENTES 
 E008Controller.prototype.eliminarDocumentoTemporalClientes = function(req, res) {
 
     var that = this;
@@ -529,7 +550,6 @@ E008Controller.prototype.eliminarDocumentoTemporalClientes = function(req, res) 
                     return;
                 }
             });
-
         }
     });
 };
@@ -613,7 +633,7 @@ E008Controller.prototype.justificacionPendientes = function(req, res) {
         return;
     }
 
-    if ( parseInt(args.documento_temporal.cantidad_pendiente)  <= 0) {
+    if (parseInt(args.documento_temporal.cantidad_pendiente) <= 0) {
         res.send(G.utils.r(req.url, 'La cantidad_pendiente debe ser mayor a cero', 404, {}));
         return;
     }

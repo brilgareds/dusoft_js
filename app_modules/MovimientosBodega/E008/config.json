@@ -18,6 +18,16 @@
                     "module": "MovimientosBodega/E008",
                     "model": "DocBodegaE008",
                     "alias": "m_e008"
+                },
+                "pedidos_clientes_model": {
+                    "module": "PedidosClientes",
+                    "model": "PedidosClienteModel",
+                    "alias": "m_pedidos_clientes"
+                },
+                "pedidos_farmacias_model": {
+                    "module": "PedidosFarmacias",
+                    "model": "PedidosFarmaciasModel",
+                    "alias": "m_pedidos_farmacias"
                 }
             }],
         "events": [],

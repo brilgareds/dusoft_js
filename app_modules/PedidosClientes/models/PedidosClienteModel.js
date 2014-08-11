@@ -339,6 +339,9 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
                      when a.estado_pedido = 2 then 'Auditado' \
                      when a.estado_pedido = 3 then 'En Despacho' \
                      when a.estado_pedido = 4 then 'Despachado' end as descripcion_estado_actual_pedido, \
+                f.estado as estado_separacion,     \
+                case when f.estado = '0' then 'Separacion en Proceso' \
+                     when f.estado = '1' then 'Separacion Finalizada' end as descripcion_estado_separacion,\
                 a.fecha_registro,\
                 d.responsable_id,\
                 e.nombre as responsable_pedido,\

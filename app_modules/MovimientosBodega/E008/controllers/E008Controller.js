@@ -1,10 +1,12 @@
 
-var E008Controller = function(movientos_bodegas, e008_sql) {
+var E008Controller = function(movientos_bodegas, e008_sql, pedidos_clientes, pedidos_farmacias) {
 
     console.log("Modulo E008 Cargado ");
 
     this.m_movientos_bodegas = movientos_bodegas;
     this.m_e008 = e008_sql;
+    this.m_pedidos_clientes = pedidos_clientes;
+    this.m_pedidos_farmacias = pedidos_farmacias;
 };
 
 // Generar Cabecera del Documento Temporal de CLIENTES
@@ -367,19 +369,32 @@ E008Controller.prototype.consultarDocumentoTemporalClientes = function(req, res)
 
     var numero_pedido = args.documento_temporal.numero_pedido;
 
+    // Consultamos el documento temporal de despacho
     that.m_e008.consultar_documento_temporal_clientes(numero_pedido, function(err, documento_temporal) {
 
+        //Si genera error la consulta
         if (err) {
             res.send(G.utils.r(req.url, 'Error Consultado el Documento Temporal ', 500, {}));
             return;
         }
 
-        var i = documento_temporal.length;
+        // No Existe el Documento
+        if (documento_temporal.length === 0) {
+            res.send(G.utils.r(req.url, 'Información Documento Temporal Clientes ', 200, {documento_temporal: documento_temporal}));
+            return;
+        }
 
-        documento_temporal.forEach(function(documento) {
+        var documento = documento_temporal[0];
 
+        // Consultamos los productos del pedido.
+        that.m_pedidos_clientes.consultar_detalle_pedido(documento.numero_pedido, function(err, productos_pedidos) {
+
+            if (err) {
+                res.send(G.utils.r(req.url, 'Se ha generado un error consultado el detalle del pedido', 500, {documento_temporal: []}));
+                return;
+            }
+            // Consultar los productos asociados al documento temporal    
             that.m_movientos_bodegas.consultar_detalle_movimiento_bodega_temporal(documento.doc_tmp_id, documento.usuario_id, function(err, detalle_documento_temporal) {
-
                 if (err) {
                     res.send(G.utils.r(req.url, 'Se ha generado un error consultado el detall del documento temporal', 500, {documento_temporal: []}));
                     return;
@@ -387,15 +402,25 @@ E008Controller.prototype.consultarDocumentoTemporalClientes = function(req, res)
 
                 documento.lista_productos = detalle_documento_temporal;
 
-                if (--i === 0)
-                    res.send(G.utils.r(req.url, 'Información Documento Temporal Clientes ', 200, {documento_temporal: documento_temporal}));
+                detalle_documento_temporal.forEach(function(detalle) {
+
+                    var producto = productos_pedidos.filter(function(value) {
+                        return detalle.codigo_producto === value.codigo_producto;
+                    });
+
+                    if (producto.length > 0) {
+                        producto = producto[0];
+
+                        detalle.cantidad_solicitada = producto.cantidad_solicitada;
+                        detalle.cantidad_pendiente = producto.cantidad_solicitada - detalle.cantidad_ingresada;
+                        detalle.justificacion = producto.justificacion;
+                    }
+
+                });
+
+                res.send(G.utils.r(req.url, 'Información Documento Temporal Clientes ', 200, {documento_temporal: documento_temporal}));
             });
         });
-
-        if (documento_temporal.length === 0) {
-            // No Existe el Documento
-            res.send(G.utils.r(req.url, 'Información Documento Temporal Clientes ', 200, {documento_temporal: documento_temporal}));
-        }
     });
 };
 
@@ -405,7 +430,6 @@ E008Controller.prototype.consultarDocumentoTemporalFarmacias = function(req, res
     var that = this;
 
     var args = req.body.data;
-
     if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined) {
         res.send(G.utils.r(req.url, 'El numero de pedido no está definido', 404, {}));
         return;
@@ -426,9 +450,21 @@ E008Controller.prototype.consultarDocumentoTemporalFarmacias = function(req, res
             return;
         }
 
-        var i = documento_temporal.length;
+        // No Existe el Documento
+        if (documento_temporal.length === 0) {
+            res.send(G.utils.r(req.url, 'Información Documento Temporal Farmacias ', 200, {documento_temporal: documento_temporal}));
+            return;
+        }
 
-        documento_temporal.forEach(function(documento) {
+        var documento = documento_temporal[0];
+
+        // Consultamos los productos del pedido.
+        that.m_pedidos_farmacias.consultar_detalle_pedido(documento.numero_pedido, function(err, productos_pedidos) {
+
+            if (err) {
+                res.send(G.utils.r(req.url, 'Se ha generado un error consultado el detalle del pedido', 500, {documento_temporal: []}));
+                return;
+            }
 
             that.m_movientos_bodegas.consultar_detalle_movimiento_bodega_temporal(documento.doc_tmp_id, documento.usuario_id, function(err, detalle_documento_temporal) {
 
@@ -439,15 +475,26 @@ E008Controller.prototype.consultarDocumentoTemporalFarmacias = function(req, res
 
                 documento.lista_productos = detalle_documento_temporal;
 
-                if (--i === 0)
-                    res.send(G.utils.r(req.url, 'Información Documento Temporal Farmacias ', 200, {documento_temporal: documento_temporal}));
-            });
-        });
+                detalle_documento_temporal.forEach(function(detalle) {
 
-        if (documento_temporal.length === 0) {
-            // No Existe el Documento
-            res.send(G.utils.r(req.url, 'Información Documento Temporal Farmacias ', 200, {documento_temporal: documento_temporal}));
-        }
+                    var producto = productos_pedidos.filter(function(value) {
+                        return detalle.codigo_producto === value.codigo_producto;
+                    });
+
+                    if (producto.length > 0) {
+                        producto = producto[0];
+
+                        detalle.cantidad_solicitada = producto.cantidad_solicitada;
+                        detalle.cantidad_pendiente = producto.cantidad_solicitada - detalle.cantidad_ingresada;
+                        detalle.justificacion = producto.justificacion;
+                    }
+
+                });
+                
+                res.send(G.utils.r(req.url, 'Información Documento Temporal Farmacias ', 200, {documento_temporal: documento_temporal}));
+            });
+
+        });
     });
 
 };
@@ -459,22 +506,19 @@ E008Controller.prototype.eliminarProductoDocumentoTemporal = function(req, res) 
     var that = this;
 
     var args = req.body.data;
-
     if (args.documento_temporal === undefined || args.documento_temporal.item_id === undefined || args.documento_temporal.documento_temporal_id === undefined || args.documento_temporal.codigo_producto === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
     }
-
     if (args.documento_temporal.item_id === '' || args.documento_temporal.item_id === "0") {
         res.send(G.utils.r(req.url, 'El item_id está vacio', 404, {}));
         return;
     }
-    
+
     if (args.documento_temporal.documento_temporal_id === '' || args.documento_temporal.documento_temporal_id === "0") {
         res.send(G.utils.r(req.url, 'El documento_temporal_id está vacio', 404, {}));
         return;
     }
-    
     if (args.documento_temporal.codigo_producto === '') {
         res.send(G.utils.r(req.url, 'El codigo_producto está vacio', 404, {}));
         return;
@@ -511,19 +555,16 @@ E008Controller.prototype.eliminarDocumentoTemporalClientes = function(req, res) 
     var that = this;
 
     var args = req.body.data;
-
     if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
     }
-
     if (args.documento_temporal.numero_pedido === '') {
         res.send(G.utils.r(req.url, 'El numero_pedido está vacio', 404, {}));
         return;
     }
 
     var numero_pedido = args.documento_temporal.numero_pedido;
-
     that.m_e008.consultar_documento_temporal_clientes(numero_pedido, function(err, documento_temporal) {
 
         if (err) {
@@ -560,7 +601,6 @@ E008Controller.prototype.eliminarDocumentoTemporalFarmacias = function(req, res)
     var that = this;
 
     var args = req.body.data;
-
     if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
@@ -572,7 +612,6 @@ E008Controller.prototype.eliminarDocumentoTemporalFarmacias = function(req, res)
     }
 
     var numero_pedido = args.documento_temporal.numero_pedido;
-
     that.m_e008.consultar_documento_temporal_farmacias(numero_pedido, function(err, documento_temporal) {
 
         if (err) {
@@ -602,16 +641,13 @@ E008Controller.prototype.eliminarDocumentoTemporalFarmacias = function(req, res)
         }
     });
 
-
 };
 
 // Ingresar las justificaciones de los productos pendientes en el desapAcho de CLIENTES / FARMACIAS
 E008Controller.prototype.justificacionPendientes = function(req, res) {
-
     var that = this;
 
     var args = req.body.data;
-
     if (args.documento_temporal === undefined || args.documento_temporal.doc_tmp_id === undefined || args.documento_temporal.codigo_producto === undefined) {
         res.send(G.utils.r(req.url, 'El doc_tmp_id o codigo_producto no estan definidos', 404, {}));
         return;
@@ -656,6 +692,6 @@ E008Controller.prototype.justificacionPendientes = function(req, res) {
     });
 };
 
-E008Controller.$inject = ["m_movientos_bodegas", "m_e008"];
+E008Controller.$inject = ["m_movientos_bodegas", "m_e008", "m_pedidos_clientes", "m_pedidos_farmacias"];
 
 module.exports = E008Controller;

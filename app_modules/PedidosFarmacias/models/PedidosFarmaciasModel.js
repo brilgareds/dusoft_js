@@ -94,8 +94,8 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                 a.codigo_producto,\
                 fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
                 a.cantidad_solic::integer as cantidad_solicitada,\
-                (a.cantidad_solic - a.cantidad_pendiente - COALESCE(b.cantidad_temporalmente_separada,0))::integer as cantidad_despachada,\
-                a.cantidad_pendiente::integer,\
+                ABS((a.cantidad_solic - a.cantidad_pendiente - COALESCE(b.cantidad_temporalmente_separada,0))::integer) as cantidad_despachada,\
+                a.cantidad_pendiente::integer - ABS((a.cantidad_solic - a.cantidad_pendiente - COALESCE(b.cantidad_temporalmente_separada,0))::integer) as cantidad_pendiente,\
                 COALESCE(b.justificacion, '') as justificacion \
                 from solicitud_productos_a_bodega_principal_detalle a\
                 left join (\
@@ -138,7 +138,10 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                      when a.estado = 2 then 'Auditado' \
                      when a.estado = 3 then 'En Despacho' \
                      when a.estado = 4 then 'Despachado' end as descripcion_estado_actual_pedido, \
-                a.fecha_registro::date as fecha_registro,\
+                h.estado as estado_separacion,     \
+                case when h.estado = '0' then 'Separacion en Proceso' \
+                     when h.estado = '1' then 'Separacion Finalizada' end as descripcion_estado_separacion, \
+                a.fecha_registro::date as fecha_registro, \
                 f.responsable_id,\
                 g.nombre as responsable_pedido,\
                 f.fecha as fecha_asignacion_pedido \

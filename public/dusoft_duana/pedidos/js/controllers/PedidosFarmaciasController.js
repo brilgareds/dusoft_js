@@ -278,7 +278,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
                 $scope.paginaactual++;
                 $scope.buscarPedidosFarmacias($scope.termino_busqueda,true);
             };
-
+            
             $scope.buscarPedidosFarmacias("");
             $scope.listarEmpresas();
 

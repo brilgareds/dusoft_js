@@ -115,6 +115,28 @@ if ('development' == app.get('env')) {
     app.use(express.errorHandler());
 }
 
+
+/*=========================================
+ * error handlers
+ * development error handler
+ * will print stacktrace
+ * =========================================*/
+if (app.get('env') === 'development') {
+    app.use(function(err, req, res, next) {
+        res.status(err.status || 500);
+        res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {}));
+    });
+}
+
+/*=========================================
+ * production error handler
+ * no stacktraces leaked to user
+ * =========================================*/
+app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {}));
+});
+
 /*=========================================
  * Ruteo del Servidor
  * =========================================*/
@@ -124,8 +146,8 @@ app.get('/api/configurarRoutes', function(req, res) {
     modulos.configurarRoutes(req, res, app, container);
 });
 
-app.post('/testing', function(req, res){
-    res.send(200, { msj : ' Servicio de Prueba '})
+app.post('/testing', function(req, res) {
+    res.send(200, {msj: ' Servicio de Prueba '})
 });
 
 app.all('/dusoft_duana', function(req, res) {

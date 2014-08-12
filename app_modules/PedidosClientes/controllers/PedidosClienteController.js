@@ -307,10 +307,10 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
     var termino_busqueda = args.pedidos_clientes.termino_busqueda;
     var operario_bodega = args.pedidos_clientes.operario_id;
     var pagina_actual = args.pedidos_clientes.pagina_actual;
-    var limite = args.pedidos_clientes.limite;
+    var limite = args.pedidos_clientes.limite;   
+    var filtro = args.pedidos_clientes.filtro;
     
-
-    this.m_pedidos_clientes.listar_pedidos_del_operario(operario_bodega, termino_busqueda, pagina_actual, limite, function(err, lista_pedidos_clientes, total_registros) {
+    this.m_pedidos_clientes.listar_pedidos_del_operario(operario_bodega, termino_busqueda, filtro, pagina_actual, limite, function(err, lista_pedidos_clientes, total_registros) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Se Ha Generado Un Error Interno', 500, {}));

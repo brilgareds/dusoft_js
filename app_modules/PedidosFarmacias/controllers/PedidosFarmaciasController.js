@@ -337,8 +337,9 @@ PedidosFarmacias.prototype.listaPedidosOperariosBodega = function(req, res) {
     var operario_bodega = args.pedidos_farmacias.operario_id;
     var pagina_actual = args.pedidos_farmacias.pagina_actual;
     var limite = args.pedidos_farmacias.limite;
+    var filtro = args.pedidos_farmacias.filtro;
 
-    this.m_pedidos_farmacias.listar_pedidos_del_operario(operario_bodega, termino_busqueda, pagina_actual, limite, function(err, lista_pedidos_farmacias, total_registros) {
+    this.m_pedidos_farmacias.listar_pedidos_del_operario(operario_bodega, termino_busqueda, filtro, pagina_actual, limite, function(err, lista_pedidos_farmacias, total_registros) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Se Ha Generado Un Error Interno', 500, {}));

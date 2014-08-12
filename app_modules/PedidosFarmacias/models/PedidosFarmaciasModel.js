@@ -117,9 +117,26 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
 
 };
 
-PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsable, termino_busqueda, pagina, limite, callback) {
+PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsable, termino_busqueda, filtro, pagina, limite, callback) {
 
-   
+    var sql_aux = " ";
+
+    /*=========================================================================*/
+    // Se implementa este filtro, para poder filtrar los pedidos del clientes 
+    // asignados al operario de bodega y saber si el pedido tiene temporales o 
+    // fue finalizado correctamente.
+    /*=========================================================================*/
+
+    if (filtro !== undefined) {
+        if (filtro.temporales) {
+            sql_aux += " AND h.doc_tmp_id IS NOT NULL ";
+        }
+        if (filtro.finalizados) {
+            sql_aux += " AND h.estado = '1' ";
+        }
+    }
+
+
     var sql = " select \
                 h.doc_tmp_id as documento_temporal_id,\
                 h.usuario_id,\
@@ -153,7 +170,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                 inner join solicitud_productos_a_bodega_principal_estado f on a.solicitud_prod_a_bod_ppal_id = f.solicitud_prod_a_bod_ppal_id and a.estado = f.estado\
                 inner join operarios_bodega g on f.responsable_id = g.operario_id\
                 left join inv_bodegas_movimiento_tmp_despachos_farmacias h on a.solicitud_prod_a_bod_ppal_id = h.solicitud_prod_a_bod_ppal_id\
-                where f.responsable_id = $1 \
+                where f.responsable_id = $1 " + sql_aux + " \
                 and a.estado = '1' \
                 and a.sw_despacho = '0' \
                 and (\

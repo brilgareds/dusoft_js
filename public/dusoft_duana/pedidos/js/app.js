@@ -4,6 +4,7 @@
   "bootstrap","js/controllers", "js/models",
    "js/services",  "js/directive", "nggrid",
   "controllers/PedidosClientesController", "controllers/PedidosFarmaciasController",  "uiselect2", 
+  "controllers/AuditoriaPedidosClientesController", "controllers/AuditoriaPedidosFarmaciasController",  "controllers/DetallepedidoSeparadoController",
   "loader",  "models/Empresa", "includes/menu/menucontroller", 
   "config", "includes/alert/Alert","includes/header/HeaderController",
   'storage', "httpinterceptor", "includes/classes/Usuario",
@@ -40,12 +41,9 @@
                 templateUrl: "views/AsignarPedidos.html"
                 //controller:"pedidoscontroller"
             })
-            .state('route1', {
-                  url: "/route1",
-                  templateUrl: "views/route1.item.html",
-                  controller: function(){
-
-                  }
+            .state('AuditarPedidos', {
+                  url: "/AuditarPedidos",
+                  templateUrl: "views/AuditoriaPedidos.html"
               })
 
     }).run(function($rootScope,Usuario,localStorageService){

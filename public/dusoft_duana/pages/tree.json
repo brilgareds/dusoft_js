@@ -15,7 +15,15 @@
         "icon": "glyphicon glyphicon-file",
         "state": "AsignarPedidos"
     },
-
+    {
+        "id": "6",
+        "parent": "1",
+        "text": "Auditoria Pedidos",
+        "url": "AuditarPedidos",
+        "parentname": "pedidos",
+        "icon": "glyphicon glyphicon-file",
+        "state": "AsignarPedidos"
+    },
     {
         "id": "7",
         "parent": "#",

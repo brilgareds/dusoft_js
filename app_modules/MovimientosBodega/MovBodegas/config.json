@@ -1,0 +1,21 @@
+{
+    "module": "MovBodegas",
+    "dependency": {
+        "controllers": [{
+                "movimientos_bodegas_controller": {
+                    "module": "MovimientosBodega/MovBodegas",
+                    "controller": "MovBodegasController",
+                    "alias": "c_movimientos_bodega"
+                }
+            }],
+        "models": [{
+                "movimientos_bodegas_model": {
+                    "module": "MovimientosBodega/MovBodegas",
+                    "model": "MovBodegasModel",
+                    "alias": "m_movientos_bodegas"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

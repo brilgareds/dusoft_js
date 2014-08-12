@@ -49,9 +49,7 @@ Pedidos.prototype.consultarDisponibilidadProducto = function(req, res) {
             }
             res.send(G.utils.r(req.url, 'Lista Existencias Producto', 200, {existencias_producto: existencias_productos, disponibilidad_bodega: disponibilidad.disponible_bodega}));
         });
-
     });
-
 };
 
 Pedidos.$inject = ["m_pedidos", "m_productos"];

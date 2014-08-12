@@ -86,7 +86,7 @@ MovimientosBodegasModel.prototype.consultar_detalle_movimiento_bodega_temporal =
                 b.bodega as bodega_id,\
                 b.codigo_producto,\
                 fc_descripcion_producto(b.codigo_producto) as descripcion_producto,\
-                b.cantidad :: integer,\
+                b.cantidad :: integer as cantidad_ingresada,\
                 b.porcentaje_gravamen,\
                 b.total_costo,\
                 to_char(b.fecha_vencimiento, 'dd-mm-yyyy') as fecha_vencimiento,\

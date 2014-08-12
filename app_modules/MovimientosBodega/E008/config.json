@@ -1,0 +1,36 @@
+{
+    "module": "E008",
+    "dependency": {
+        "controllers": [{
+                "e008_controller": {
+                    "module": "MovimientosBodega/E008",
+                    "controller": "E008Controller",
+                    "alias": "c_e008"
+                }
+            }],
+        "models": [{
+                "movimientos_bodegas_model": {
+                    "module": "MovimientosBodega/MovBodegas",
+                    "model": "MovBodegasModel",
+                    "alias": "m_movientos_bodegas"
+                },
+                "E008_model": {
+                    "module": "MovimientosBodega/E008",
+                    "model": "DocBodegaE008",
+                    "alias": "m_e008"
+                },
+                "pedidos_clientes_model": {
+                    "module": "PedidosClientes",
+                    "model": "PedidosClienteModel",
+                    "alias": "m_pedidos_clientes"
+                },
+                "pedidos_farmacias_model": {
+                    "module": "PedidosFarmacias",
+                    "model": "PedidosFarmaciasModel",
+                    "alias": "m_pedidos_farmacias"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

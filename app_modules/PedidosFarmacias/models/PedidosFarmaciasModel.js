@@ -94,17 +94,20 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                 a.codigo_producto,\
                 fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
                 a.cantidad_solic::integer as cantidad_solicitada,\
-                (a.cantidad_solic - a.cantidad_pendiente - COALESCE(b.cantidad_temporalmente_separada,0))::integer as cantidad_despachada,\
-                a.cantidad_pendiente::integer\
+                ABS((a.cantidad_solic - a.cantidad_pendiente - COALESCE(b.cantidad_temporalmente_separada,0))::integer) as cantidad_despachada,\
+                a.cantidad_pendiente::integer - ABS((a.cantidad_solic - a.cantidad_pendiente - COALESCE(b.cantidad_temporalmente_separada,0))::integer) as cantidad_pendiente,\
+                COALESCE(b.justificacion, '') as justificacion \
                 from solicitud_productos_a_bodega_principal_detalle a\
                 left join (\
                     select \
                     a.solicitud_prod_a_bod_ppal_id as numero_pedido,\
                     b.codigo_producto,\
+                    c.observacion as justificacion,\
                     SUM(b.cantidad) as cantidad_temporalmente_separada\
                     from inv_bodegas_movimiento_tmp_despachos_farmacias a\
                     inner join inv_bodegas_movimiento_tmp_d b on a.usuario_id = b.usuario_id and a.doc_tmp_id = b.doc_tmp_id\
-                    group by 1,2\
+                    left join inv_bodegas_movimiento_tmp_justificaciones_pendientes c on b.doc_tmp_id = c.doc_tmp_id and b.usuario_id = c.usuario_id and b.codigo_producto = c.codigo_producto\
+                    group by 1,2,3\
                 ) as b on a.solicitud_prod_a_bod_ppal_id = b.numero_pedido and a.codigo_producto = b.codigo_producto\
                 where a.solicitud_prod_a_bod_ppal_id= $1; ";
 
@@ -135,7 +138,10 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                      when a.estado = 2 then 'Auditado' \
                      when a.estado = 3 then 'En Despacho' \
                      when a.estado = 4 then 'Despachado' end as descripcion_estado_actual_pedido, \
-                a.fecha_registro::date as fecha_registro,\
+                h.estado as estado_separacion,     \
+                case when h.estado = '0' then 'Separacion en Proceso' \
+                     when h.estado = '1' then 'Separacion Finalizada' end as descripcion_estado_separacion, \
+                a.fecha_registro::date as fecha_registro, \
                 f.responsable_id,\
                 g.nombre as responsable_pedido,\
                 f.fecha as fecha_asignacion_pedido \

@@ -19,17 +19,11 @@ DocuemntoBodegaE008.prototype.ingresar_despacho_clientes_temporal = function(bod
 
         var movimiento_temporal_id = doc_tmp_id;
 
-        console.log('*** ID *****');
-        console.log(movimiento_temporal_id);
-        console.log('********');
-
         G.db.begin(function() {
 
             that.m_movientos_bodegas.ingresar_movimiento_bodega_temporal(movimiento_temporal_id, usuario_id, bodegas_doc_id, observacion, function(err) {
 
                 if (err) {
-                    console.log('**** ERR 1****');
-                    console.log(err);
                     callback(err);
                     return;
                 } else {
@@ -44,8 +38,6 @@ DocuemntoBodegaE008.prototype.ingresar_despacho_clientes_temporal = function(bod
                             return;
                         } else {
                             G.db.commit(function(err, rows) {
-                                console.log('****ERR2****');
-                                console.log(err);
                                 callback(err, movimiento_temporal_id, rows)
                             });
                         }
@@ -70,19 +62,11 @@ DocuemntoBodegaE008.prototype.ingresar_despacho_farmacias_temporal = function(bo
 
         var movimiento_temporal_id = doc_tmp_id;
 
-        
+
         G.db.begin(function() {
 
             that.m_movientos_bodegas.ingresar_movimiento_bodega_temporal(movimiento_temporal_id, usuario_id, bodegas_doc_id, observacion, function(err) {
 
-                console.log('*** ID FM*****');
-                console.log(movimiento_temporal_id);
-                console.log(empresa_id);
-                console.log(numero_pedido);
-                console.log(usuario_id);
-                console.log(err);
-                console.log('********');
-                //return;
                 if (err) {
                     callback(err);
                     return;
@@ -156,7 +140,7 @@ DocuemntoBodegaE008.prototype.consultar_documento_temporal_farmacias = function(
                 c.bodega as bodega_id,\
                 f.razon_social as nombre_farmacia, \
                 d.descripcion as nombre_bodega,\
-                c.usuario_id, \
+                a.usuario_id, \
                 g.nombre as nombre_usuario ,\
                 c.estado,\
                 a.observacion,\
@@ -271,22 +255,30 @@ DocuemntoBodegaE008.prototype.eliminar_documento_temporal_clientes = function(do
                 callback(err);
                 return;
             } else {
-                // Eliminar Cabecera Documento Temporal Clientes
-                var sql = " DELETE FROM inv_bodegas_movimiento_tmp_despachos_clientes WHERE  doc_tmp_id = $1 AND usuario_id = $2;";
-
-                G.db.transaction(sql, [doc_tmp_id, usuario_id], function(err, rows) {
+                //Eliminar Justificaciones
+                that.eliminar_justificaciones_pendientes(doc_tmp_id, usuario_id, function(err) {
                     if (err) {
                         callback(err);
                         return;
                     } else {
-                        // Eliminar Cabecera Documento Temporal
-                        that.m_movientos_bodegas.eliminar_movimiento_bodega_temporal(doc_tmp_id, usuario_id, function(err, rows) {
+                        // Eliminar Cabecera Documento Temporal Clientes
+                        var sql = " DELETE FROM inv_bodegas_movimiento_tmp_despachos_clientes WHERE  doc_tmp_id = $1 AND usuario_id = $2;";
+
+                        G.db.transaction(sql, [doc_tmp_id, usuario_id], function(err, rows) {
                             if (err) {
                                 callback(err);
                                 return;
                             } else {
-                                G.db.commit(function(err, rows) {
-                                    callback(err, rows);
+                                // Eliminar Cabecera Documento Temporal
+                                that.m_movientos_bodegas.eliminar_movimiento_bodega_temporal(doc_tmp_id, usuario_id, function(err, rows) {
+                                    if (err) {
+                                        callback(err);
+                                        return;
+                                    } else {
+                                        G.db.commit(function(err, rows) {
+                                            callback(err, rows);
+                                        });
+                                    }
                                 });
                             }
                         });
@@ -347,6 +339,28 @@ DocuemntoBodegaE008.prototype.ingresar_justificaciones_pendientes = function(doc
         callback(err, rows);
     });
 
+};
+
+// Eliminar Justificacion de Productos Pendientes
+DocuemntoBodegaE008.prototype.eliminar_justificaciones_pendientes = function(doc_tmp_id, usuario_id, callback) {
+
+    var sql = "DELETE FROM inv_bodegas_movimiento_tmp_justificaciones_pendientes WHERE doc_tmp_id = $1 AND usuario_id = $2;";
+
+    G.db.transaction(sql, [doc_tmp_id, usuario_id], function(err, rows, result) {
+
+        callback(err, rows);
+    });
+};
+
+// Eliminar Justificacion de Producto
+DocuemntoBodegaE008.prototype.eliminar_justificaciones_producto = function(doc_tmp_id, usuario_id, codigo_producto, callback) {
+
+    var sql = "DELETE FROM inv_bodegas_movimiento_tmp_justificaciones_pendientes WHERE doc_tmp_id = $1 AND usuario_id = $2 AND codigo_producto = $3;";
+
+    G.db.query(sql, [doc_tmp_id, usuario_id, codigo_producto], function(err, rows, result) {
+
+        callback(err, rows);
+    });
 };
 
 // Finalizar documento temporal clientes

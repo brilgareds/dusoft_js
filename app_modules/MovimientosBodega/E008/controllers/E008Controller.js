@@ -34,15 +34,10 @@ E008Controller.prototype.documentoTemporalClientes = function(req, res) {
     var usuario_id = req.session.user.usuario_id;
 
     that.m_e008.ingresar_despacho_clientes_temporal(bodegas_doc_id, numero_pedido, tipo_tercero_id, tercero_id, observacion, usuario_id, function(err, doc_tmp_id) {
-        if (err) {
-            console.log('******** Responder Error *********');
-            console.log(err);
+        if (err) {            
             res.send(G.utils.r(req.url, 'Error Creando el Documento Temporal Clientes', 500, {documento_temporal: {}}));
             return;
         } else {
-            console.log('******** Doc tmp id **************');
-            console.log(doc_tmp_id);
-            console.log('**********************');
             res.send(G.utils.r(req.url, 'Documento Temporal Cliente Creado Correctamente', 200, {documento_temporal: {doc_tmp_id: doc_tmp_id}}));
             return;
         }

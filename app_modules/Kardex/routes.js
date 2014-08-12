@@ -11,6 +11,4 @@ module.exports = function(app, di_container) {
     app.post('/api/Kardex/obtenerMovimientosProducto', function(req, res) {
         c_kardex.obtener_movimientos_producto(req, res);
     });
-
-
 };

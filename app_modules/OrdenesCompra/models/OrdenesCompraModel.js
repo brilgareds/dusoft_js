@@ -7,7 +7,7 @@ var OrdenesCompraModel = function() {
 // Listar Las Ordenes de Compra Pendientes con ese producto
 OrdenesCompraModel.prototype.listar_ordenes_compra_pendientes_by_producto = function(empresa_id, codigo_producto, callback) {
 
-    console.log('============ Modelo Ordenes Compras 4');
+   
     var sql = " select \
                 a.orden_pedido_id as numero_orden_compra,\
                 b.numero_unidades as cantidad_solicitada, \
@@ -25,12 +25,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_pendientes_by_producto = func
                 where a.empresa_id = $1 and b.codigo_producto = $2 and b.numero_unidades <> COALESCE(b.numero_unidades_recibidas,0)\
                 and a.estado = '1' ; ";
 
-    G.db.query(sql, [empresa_id, codigo_producto], function(err, rows, result) {
-        console.log('=======================================================================')
-        console.log(err)
-        console.log(rows)
-        console.log('=======================================================================')
-        
+    G.db.query(sql, [empresa_id, codigo_producto], function(err, rows, result) {              
         callback(err, rows);
     });
 };

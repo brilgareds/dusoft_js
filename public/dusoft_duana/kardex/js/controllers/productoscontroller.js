@@ -120,7 +120,7 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent', 
             $scope.onRowClick = function(row) {
                 console.log($filter('date')($scope.fechainicial, "yyyy-MM-dd"));
                 console.log($filter('date')($scope.fechafinal, "yyyy-MM-dd"));
-                $scope.slideurl = "views/kardex.html?time="+new Date().getTime();;
+                $scope.slideurl = "views/kardex.html?time="+new Date().getTime();
 
                 if ($scope.fechafinal == null || $scope.fechainicial == null) {
                     AlertService.mostrarMensaje("danger", "Las fechas son invalidas");

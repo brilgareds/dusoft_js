@@ -1,4 +1,4 @@
-define(["angular", "js/controllers", 'controllers/asignacioncontroller','models/Cliente', 'models/Pedido'], function(angular, controllers) {
+define(["angular", "js/controllers", 'controllers/asignacioncontroller', '../../../../includes/slide/slideContent','models/Cliente', 'models/Pedido'], function(angular, controllers) {
 
     var fo = controllers.controller('AuditoriaPedidosFarmaciasController', [
         '$scope', '$rootScope', 'Request', 
@@ -19,12 +19,15 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller','models/
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda  = "";
             $scope.paginaactual = 0;
+            
+            //Arreglo temporal para prueba de Grid
+            $scope.pedidosSeparados = [];
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
             
 
 
-            $scope.buscarPedidosSeparadosCliente = function(termino, paginando) {
+            $scope.buscarPedidosSeparadosFarmacia = function(termino, paginando) {
 
                 //valida si cambio el termino de busqueda
                 if($scope.ultima_busqueda != $scope.termino_busqueda){
@@ -48,29 +51,51 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller','models/
                     $scope.ultima_busqueda = $scope.termino_busqueda;
                     
                     //--** En éste punto simular el render mientras están listos lo servicios
-                    $scope.renderPedidosSeparadosCliente(data.obj, paginando);
+                    $scope.renderPedidosSeparadosFarmacia(data.obj, paginando);
                 });
             };
             
             
             //informacion temporal
             for(var i=0; i < 100; i++){
+                
+                var estado = '';
+                var zona = '';
+                
+                if(i%2)
+                    estado = 'Terminado';
+                else
+                    estado = 'En Proceso';
+                
+                if(i%4 == 0)
+                    zona = 'Norte';
+                else if(i%4 == 1)
+                    zona = 'Sur';
+                else if(i%4 == 2)
+                    zona = 'Oriente';
+                else if(i%4 == 3)
+                    zona = 'Occidente';
+                
                 var pedido = {
                     numero_pedido : '102001_'+i,
-                    cliente: 'Juan Manuel Santos_'+i,
-                    vendedor: 'Carlos Marín',
-                    descripcion_estado_actual_separado: 'en proceso',
-                    estado_actual_separado: 2,
+                    nombre_cliente: 'Pedro Conga_'+i,
+                    nombre_vendedor: 'Carlos Marín',
+                    zona_pedido: zona,
+                    descripcion_estado_actual_separado: estado,
+                    estado_actual_separado: 2+(2*(i%2)),
                     nombre_separador: 'Pepito Perez',
                     fecha_registro: '12-08-2014',
                 };
                  $scope.Empresa.agregarPedido(pedido);
+                 
+                 //Se adiciona aquí porque no coincipen los campos con los de pedido asociado a la empresa
+                 $scope.pedidosSeparados.push(pedido);
             }
 
             
           
 
-            $scope.renderPedidosSeparadosCliente = function(data, paginando) {
+            $scope.renderPedidosSeparadosFarmacia = function(data, paginando) {
 
                 $scope.items = data.pedidos_separados_clientes.length;
                 //se valida que hayan registros en una siguiente pagina
@@ -124,7 +149,8 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller','models/
             //definicion y delegados del Tabla de pedidos clientes
 
             $scope.lista_pedidos_separados_farmacias = {
-                data: 'Empresa.getPedidos()',
+                //data: 'Empresa.getPedidos()',
+                data: 'pedidosSeparados',
                 enableColumnResize: true,
                 enableRowSelection:false,
                 //enableSorting:false,
@@ -134,14 +160,14 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller','models/
                     '</div>' +
                  '</div>',*/
                 columnDefs: [
-                    {field: 'descripcion_estado_actual_pedido', displayName: "Estado Actual", cellClass:"txt-center",
-                    cellTemplate: '<div ng-class="agregarClase(row.entity.estado_actual_pedido)" >{{row.entity.descripcion_estado_actual_pedido}}</div>'},
+//                    {field: 'descripcion_estado_actual_pedido', displayName: "Estado Actual", cellClass:"txt-center",
+//                    cellTemplate: '<div ng-class="agregarClase(row.entity.estado_actual_separado)" >{{row.entity.descripcion_estado_actual_separado}}</div>'},
                     {field: 'numero_pedido', displayName: 'Numero Pedido'},
-                    {field: 'cliente.nombre_cliente', displayName: 'Cliente'},
-                    {field: 'cliente.direccion_cliente', displayName: 'Ubicacion'},
-                    {field: 'cliente.telefono_cliente', displayName: 'Telefono'},
+                    {field: 'nombre_cliente', displayName: 'Cliente'},
                     {field: 'nombre_vendedor', displayName: 'Vendedor'},
-                    {field: 'descripcion_estado', displayName: "Estado"},
+                    {field: 'zona_pedido', displayName: 'Zona'},
+//                    {field: 'descripcion_estado_actual_separado', displayName: "Estado"},
+                    {field: 'nombre_separador', displayName: 'Separador'},
                     {field: 'fecha_registro', displayName: "Fecha Registro"},
                     {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Auditar</span></button></div>'}
  
@@ -150,6 +176,12 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller','models/
 
             };
 
+            $scope.onRowClick = function(row){
+                 console.log("on row clicked");
+                 $scope.slideurl = "views/pedidoseparado.html?time="+new Date().getTime();
+                 $scope.$emit('mostrarslide',row.entity);
+            };
+            
             $scope.agregarClase = function(estado){
                 return estados[estado];
             };
@@ -213,21 +245,21 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller','models/
             
 
             //eventos de widgets
-            $scope.onKeyPress = function(ev, termino_busqueda) {
+            $scope.onKeySeparadosPress = function(ev, termino_busqueda) {
                 //Empresa.getPedidos()[0].numero_pedido = 0000;
                 if (ev.which == 13) {
-                    $scope.buscarPedidosSeparadosCliente(termino_busqueda);
+                    $scope.buscarPedidosSeparadosFarmacia(termino_busqueda);
                 }
             };
 
             $scope.paginaAnterior = function(){
                 $scope.paginaactual--;
-                $scope.buscarPedidosSeparadosCliente($scope.termino_busqueda,true);
+                $scope.buscarPedidosSeparadosFarmacia($scope.termino_busqueda,true);
             };
 
             $scope.paginaSiguiente = function(){
                 $scope.paginaactual++;
-                $scope.buscarPedidosSeparadosCliente($scope.termino_busqueda,true);
+                $scope.buscarPedidosSeparadosFarmacia($scope.termino_busqueda,true);
             };
 
 
@@ -235,7 +267,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller','models/
             //fin de eventos
 
             //se realiza el llamado a api para pedidos
-           $scope.buscarPedidosSeparadosCliente("");
+           $scope.buscarPedidosSeparadosFarmacia("");
 
 
         }]);

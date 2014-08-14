@@ -45,6 +45,10 @@
                   url: "/AuditarPedidos",
                   templateUrl: "views/AuditoriaPedidos.html"
               })
+            .state('AuditarPedidos2', {
+                  url: "/AuditarPedidos2",
+                  templateUrl: "views/AuditoriaPedidos2.html"
+              })
 
     }).run(function($rootScope,Usuario,localStorageService){
         $rootScope.name = "pedidos";   

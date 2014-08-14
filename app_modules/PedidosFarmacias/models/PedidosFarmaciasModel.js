@@ -117,9 +117,26 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
 
 };
 
-PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsable, termino_busqueda, pagina, limite, callback) {
+PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsable, termino_busqueda, filtro, pagina, limite, callback) {
 
-   
+    var sql_aux = " ";
+
+    /*=========================================================================*/
+    // Se implementa este filtro, para poder filtrar los pedidos del clientes 
+    // asignados al operario de bodega y saber si el pedido tiene temporales o 
+    // fue finalizado correctamente.
+    /*=========================================================================*/
+
+    if (filtro !== undefined) {
+        if (filtro.temporales) {
+            sql_aux += " AND h.doc_tmp_id IS NOT NULL ";
+        }
+        if (filtro.finalizados) {
+            sql_aux += " AND h.estado = '1' ";
+        }
+    }
+
+
     var sql = " select \
                 h.doc_tmp_id as documento_temporal_id,\
                 h.usuario_id,\
@@ -144,7 +161,8 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                 a.fecha_registro::date as fecha_registro, \
                 f.responsable_id,\
                 g.nombre as responsable_pedido,\
-                f.fecha as fecha_asignacion_pedido \
+                f.fecha as fecha_asignacion_pedido, \
+                i.fecha_registro as fecha_separacion_pedido  \
                 from solicitud_productos_a_bodega_principal a \
                 inner join bodegas b on a.farmacia_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega \
                 inner join centros_utilidad c on b.empresa_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad \
@@ -152,8 +170,9 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                 inner join system_usuarios e ON a.usuario_id = e.usuario_id \
                 inner join solicitud_productos_a_bodega_principal_estado f on a.solicitud_prod_a_bod_ppal_id = f.solicitud_prod_a_bod_ppal_id and a.estado = f.estado\
                 inner join operarios_bodega g on f.responsable_id = g.operario_id\
-                left join inv_bodegas_movimiento_tmp_despachos_farmacias h on a.solicitud_prod_a_bod_ppal_id = h.solicitud_prod_a_bod_ppal_id\
-                where f.responsable_id = $1 \
+                left join inv_bodegas_movimiento_tmp_despachos_farmacias h on a.solicitud_prod_a_bod_ppal_id = h.solicitud_prod_a_bod_ppal_id \
+                left join inv_bodegas_movimiento_tmp i on h.doc_tmp_id = i.doc_tmp_id and h.usuario_id = i.usuario_id \
+                where f.responsable_id = $1 " + sql_aux + " \
                 and a.estado = '1' \
                 and a.sw_despacho = '0' \
                 and (\

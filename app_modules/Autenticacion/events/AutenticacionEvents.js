@@ -1,9 +1,10 @@
 
-var AutenticacionEvents = function(socket) {
+var AutenticacionEvents = function(socket, pedidos_farmacias) {
 
     console.log("Eventos Pedidos Cliente  Cargado ");
 
     this.io = socket;
+    this.m_pedidos_farmacias = pedidos_farmacias;
 };
 
 // Notificacion al Clientes que esta conectado al socket
@@ -28,6 +29,6 @@ AutenticacionEvents.prototype.onCerrarSesion = function(sesion_usuario) {
         that.io.sockets.socket(sesion_usuario.socket_id).emit('onCerrarSesion', {msj: 'Sesion Cerrada'});
 };
 
-AutenticacionEvents.$inject = ["socket"];
+AutenticacionEvents.$inject = ["socket", "m_pedidos_farmacias"];
 
 module.exports = AutenticacionEvents;

@@ -30,7 +30,13 @@
                     "alias": "m_pedidos_farmacias"
                 }
             }],
-        "events": [],
+        "events": [{
+                "E008_events": {
+                    "module": "MovimientosBodega/E008",
+                    "event": "E008Events",
+                    "alias": "e_e008"
+                }
+            }],
         "cronJobs": []
     }
 }

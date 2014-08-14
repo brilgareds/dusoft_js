@@ -144,7 +144,8 @@ DocuemntoBodegaE008.prototype.consultar_documento_temporal_farmacias = function(
                 g.nombre as nombre_usuario ,\
                 c.estado,\
                 a.observacion,\
-                to_char(b.fecha_registro, 'dd-mm-yyyy') as fecha_registro \
+                to_char(b.fecha_registro, 'dd-mm-yyyy') as fecha_registro, \
+                b.fecha_registro as fecha_separacion_pedido \
                 from inv_bodegas_movimiento_tmp_despachos_farmacias a \
                 inner join inv_bodegas_movimiento_tmp b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
                 inner join solicitud_productos_a_bodega_principal c on a.solicitud_prod_a_bod_ppal_id = c.solicitud_prod_a_bod_ppal_id \
@@ -335,7 +336,9 @@ DocuemntoBodegaE008.prototype.ingresar_justificaciones_pendientes = function(doc
                 VALUES ($1, $2, $3, $4, $5, $6 ); ";
 
     G.db.query(sql, [doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, justificacion, existencia], function(err, rows, result) {
-
+        console.log('+--------------+');
+        console.log(err);
+        console.log('+--------------+');
         callback(err, rows);
     });
 

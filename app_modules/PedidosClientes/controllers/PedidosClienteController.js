@@ -307,9 +307,10 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
     var termino_busqueda = args.pedidos_clientes.termino_busqueda;
     var operario_bodega = args.pedidos_clientes.operario_id;
     var pagina_actual = args.pedidos_clientes.pagina_actual;
-    var limite = args.pedidos_clientes.limite;   
+    var limite = args.pedidos_clientes.limite;
     var filtro = args.pedidos_clientes.filtro;
-    
+    var fecha_actual = new Date();
+
     this.m_pedidos_clientes.listar_pedidos_del_operario(operario_bodega, termino_busqueda, filtro, pagina_actual, limite, function(err, lista_pedidos_clientes, total_registros) {
 
         if (err) {
@@ -320,6 +321,17 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
 
         lista_pedidos_clientes.forEach(function(pedido) {
 
+            // Calcular el tiempo de separacion del pedido
+            var fecha_separacion = 0;
+            var tiempo_separacion = 0;
+
+            if (pedido.fecha_separacion_pedido) {
+                fecha_separacion = new Date(pedido.fecha_separacion_pedido);
+                tiempo_separacion = fecha_separacion.getSecondsBetween(fecha_actual);
+            }
+
+            pedido.tiempo_separacion = tiempo_separacion;
+            
             that.m_pedidos_clientes.consultar_detalle_pedido(pedido.numero_pedido, function(err, detalle_pedido) {
                 pedido.lista_productos = detalle_pedido;
 

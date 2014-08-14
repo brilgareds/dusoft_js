@@ -1,10 +1,10 @@
 
-var E008Controller = function(movientos_bodegas, e008_sql, pedidos_clientes, pedidos_farmacias) {
+var E008Controller = function(movientos_bodegas, m_e008, pedidos_clientes, pedidos_farmacias) {
 
     console.log("Modulo E008 Cargado ");
 
     this.m_movientos_bodegas = movientos_bodegas;
-    this.m_e008 = e008_sql;
+    this.m_e008 = m_e008;
     this.m_pedidos_clientes = pedidos_clientes;
     this.m_pedidos_farmacias = pedidos_farmacias;
 };
@@ -678,6 +678,9 @@ E008Controller.prototype.justificacionPendientes = function(req, res) {
 
     that.m_e008.ingresar_justificaciones_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, justificacion, existencia, function(err, rows) {
         if (err) {
+            console.log('**********');
+            console.log(err);
+            console.log('**********');
             res.send(G.utils.r(req.url, 'Error ingresando la justificación', 500, {documento_temporal: {}}));
             return;
         } else {

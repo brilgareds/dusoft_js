@@ -361,13 +361,15 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
                 a.fecha_registro,\
                 d.responsable_id,\
                 e.nombre as responsable_pedido,\
-                d.fecha as fecha_asignacion_pedido \
+                d.fecha as fecha_asignacion_pedido, \
+                g.fecha_registro as fecha_separacion_pedido \
                 from ventas_ordenes_pedidos a \
                 inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id \
                 inner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id \
                 inner join ventas_ordenes_pedidos_estado d on a.pedido_cliente_id = d.pedido_cliente_id and a.estado_pedido = d.estado\
                 inner join operarios_bodega e on d.responsable_id = e.operario_id\
                 left join inv_bodegas_movimiento_tmp_despachos_clientes f on a.pedido_cliente_id = f.pedido_cliente_id\
+                left join inv_bodegas_movimiento_tmp g on f.usuario_id = g.usuario_id and f.doc_tmp_id = g.doc_tmp_id \
                 where d.responsable_id = $1 " + sql_aux + " \
                 and a.estado_pedido = '1' \
                 AND (a.estado IN ('1'))   \

@@ -10,7 +10,6 @@ var program = require('commander');
 var nodemailer = require('nodemailer');
 var date_utils = require('date-utils');
 
-
 /*=========================================
  * Variables Globales
  * =========================================*/

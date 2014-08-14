@@ -153,5 +153,5 @@ app.all('/dusoft_duana', function(req, res) {
     res.redirect('/dusoft_duana/login');
 });
 
-console.log('Express server listening on port ' + app.get('port'));
+console.log('Express server listening on port ' + app.get('port') + ' in Dir '+ __dirname);
 

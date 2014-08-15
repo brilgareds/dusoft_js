@@ -1,2 +1,54 @@
-Va la logica de pedidos separados
-<button ng-click="cerrar()" class="pull-right btn btn-default btn-xs" style="margin-right:15px"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>
+<!--Va la logica de pedidos separados-->
+
+<div>
+
+    <!--Auditoria de pedidos-->
+
+    <!--route 1 {{welcomemsg}} got to child  <a ui-sref="route1.item">Route item</a>-->
+
+    <tabset  class="">
+        
+        <table style="width:300px;margin-left:900px; margin-left:900px;" >   
+            <tr>
+              <th>Nombre Cliente</th>
+              <th>Nombre Separador</th> 
+              <th>Fecha Registro</th>
+            </tr>
+            <tr>
+              <td>{{nombre_cliente}}</td>
+              <td>{{nombre_separador}}</td> 
+              <td>{{fecha_registro}}</td>
+            </tr>
+        </table>
+        
+        <tab heading="Separado Pedido N°: {{ numero_pedido }}" ng-controller="DetallepedidoSeparadoController">
+            
+               <!--<div class="input-group navbar-form">
+
+                    <input type="text" class="form-control pull-right" ng-keypress="onKeySeparadosPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
+                    <div class="input-group-btn" >
+                        <button class="btn btn-default" type="submit" ng-click="buscarPedidosSeparadosCliente(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+               </div>-->
+
+               <div class="defaultGrid" ng-grid="detalle_pedido_separado_cliente"></div>
+
+               <!--<br/>
+
+               <div class="row text-center">
+                    <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 0" ng-click="paginaAnterior()">
+                        <span class="glyphicon glyphicon-chevron-left" ></span>
+                    </button>
+                    <button type="button" class="btn btn-default btn-medium" ng-disabled="items == 0" ng-click="paginaSiguiente()">
+                        <span class="glyphicon glyphicon-chevron-right" ></span>
+                    </button>
+               </div>-->
+        </tab>
+
+            <button ng-click="cerrar()" class="pull-right btn btn-default btn-xs" style="margin-right:15px"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>
+        
+    </tabset>
+
+    <br/>
+
+</div>

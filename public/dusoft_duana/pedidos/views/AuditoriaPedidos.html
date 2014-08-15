@@ -49,7 +49,7 @@
 
                 <input type="text" class="form-control pull-right" ng-keypress="onKeySeparadosPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
                 <div class="input-group-btn" >
-                    <button class="btn btn-default" type="submit" ng-click="buscarPedidosSeparadosFarmacias(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                    <button class="btn btn-default" type="submit" ng-click="buscarPedidosSeparadosFarmacia(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
                 </div>
 
             </div>
@@ -69,6 +69,10 @@
                 <button type="button" class="btn btn-default btn-medium" ng-disabled="items == 0" ng-click="paginaSiguiente()">
                     <span class="glyphicon glyphicon-chevron-right" ></span>
                 </button>
+            </div>
+            
+            <div slide-content class="slide" >
+                <div ng-include src="slideurl"  ng-controller="DetallepedidoSeparadoController" ></div>
             </div>
 
         </tab>

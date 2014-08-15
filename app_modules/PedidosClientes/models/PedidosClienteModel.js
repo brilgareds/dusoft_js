@@ -244,15 +244,18 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
                 COALESCE(b.justificacion, '') as justificacion \
                 from ventas_ordenes_pedidos_d a \
                 left join (\
-                    select \
-                    a.pedido_cliente_id as numero_pedido,\
-                    b.codigo_producto,\
-                    c.observacion as justificacion,\
-                    SUM(b.cantidad) as cantidad_temporalmente_separada\
-                    from inv_bodegas_movimiento_tmp_despachos_clientes a \
-                    inner join inv_bodegas_movimiento_tmp_d b on a.usuario_id = b.usuario_id and a.doc_tmp_id = b.doc_tmp_id\
-                    left join inv_bodegas_movimiento_tmp_justificaciones_pendientes c on b.doc_tmp_id = c.doc_tmp_id and b.usuario_id = c.usuario_id and b.codigo_producto = c.codigo_producto\
-                    group by 1,2,3\
+                    select a.numero_pedido, a.codigo_producto, a.justificacion, sum(a.cantidad_temporalmente_separada) as cantidad_temporalmente_separada \
+                    from (\
+                      select a.pedido_cliente_id as numero_pedido,  b.codigo_producto,  c.observacion as justificacion,  SUM(b.cantidad) as cantidad_temporalmente_separada\
+                      from inv_bodegas_movimiento_tmp_despachos_clientes a \
+                      inner join inv_bodegas_movimiento_tmp_d b on a.usuario_id = b.usuario_id and a.doc_tmp_id = b.doc_tmp_id\
+                      left join inv_bodegas_movimiento_tmp_justificaciones_pendientes c on b.doc_tmp_id = c.doc_tmp_id and b.usuario_id = c.usuario_id and b.codigo_producto = c.codigo_producto\
+                      group by 1,2,3\
+                      union \
+                      select a.pedido_cliente_id  as numero_pedido, b.codigo_producto, b.observacion as justificacion, 0 as cantidad_temporalmente_separada\
+                      from inv_bodegas_movimiento_tmp_despachos_clientes a \
+                      left join inv_bodegas_movimiento_tmp_justificaciones_pendientes b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
+                    ) a group by 1,2,3\
                 ) as b on a.pedido_cliente_id = b.numero_pedido and a.codigo_producto = b.codigo_producto\
                 where a.pedido_cliente_id = $1 ;";
 

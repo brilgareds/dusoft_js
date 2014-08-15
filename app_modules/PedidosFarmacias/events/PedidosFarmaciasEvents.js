@@ -21,26 +21,54 @@ PedidosFarmaciasEvents.prototype.onNotificarPedidosActualizados = function(datos
 
 // Notificacion a los Operarios de los Pedidos Asigandos
 PedidosFarmaciasEvents.prototype.onNotificacionOperarioPedidosAsignados = function(datos) {
-    
-    // ---- Parametros Requeridos ------//
-    // * numero_pedido 
-    // * responsable
-    // ---------------------------------//
 
     var that = this;
-    // Seleccionar el Socket del Operario, si esta conectado en la Tablet    
-    this.m_terceros.seleccionar_operario_bodega(datos.responsable, function(err, operario_bodega) {
-        operario_bodega.forEach(function(operario) {
+    var lista_pedidos = [];
+    var i = 0;
+
+
+// Seleccionar el Socket del Operario, si esta conectado en la Tablet.    
+    this.m_terceros.seleccionar_operario_bodega(datos.responsable, function(err, operarios_bodega) {
+
+        operarios_bodega.forEach(function(operario) {
+
+            // Selecciona la sesion del usuario para obtener conexion a los sockets.
             G.auth.getSessionsUser(operario.usuario_id, function(err, sessions) {
-                sessions.forEach(function(session) {
-                    that.m_pedidos_farmacias.consultar_pedido(datos.numero_pedido, function(err, lista_pedidos_asignados) {
-                        that.io.sockets.socket(session.socket_id).emit('onPedidosFarmaciasAsignados', {pedidos_farmacias : lista_pedidos_asignados});
+
+                // Recorrer la lista de pedidos.
+                datos.numero_pedidos.forEach(function(numero_pedido) {
+
+                    // Se obtiene la informacion de la cabecera del pedido.
+                    that.m_pedidos_farmacias.consultar_pedido(numero_pedido, function(err, datos_pedido) {
+
+                        datos_pedido.forEach(function(pedido) {
+
+                            // Se consulta el detalle del pedido.
+                            that.m_pedidos_farmacias.consultar_detalle_pedido(pedido.numero_pedido, function(err, detalle_pedido) {
+
+                                pedido.lista_productos = detalle_pedido;
+
+                                lista_pedidos.push(pedido);
+
+                                if (++i === datos.numero_pedidos.length) {
+
+                                    //Se recorre cada una de las sesiones abiertas por el usuario
+                                    sessions.forEach(function(session) {
+
+                                        //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
+                                        that.io.sockets.socket(session.socket_id).emit('onPedidosFarmaciasAsignados', {pedidos_farmacias: lista_pedidos});
+                                    });
+                                }
+
+                            });
+                        });
+
                     });
                 });
             });
         });
-    });
 
+    });   
 };
 
 PedidosFarmaciasEvents.$inject = ["socket", "m_pedidos_farmacias", "m_terceros"];

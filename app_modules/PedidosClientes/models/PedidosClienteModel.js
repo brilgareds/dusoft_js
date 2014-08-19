@@ -243,6 +243,9 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
                 (a.numero_unidades*(a.valor_unitario*(a.porc_iva/100))) as valor_iva,\
                 COALESCE(b.justificacion, '') as justificacion \
                 from ventas_ordenes_pedidos_d a \
+                inner join inventarios_productos c on a.codigo_producto = c.codigo_producto \
+                inner join inv_subclases_inventarios d on c.grupo_id = d.grupo_id and c.clase_id = d.clase_id and c.subclase_id = d.subclase_id \
+                inner join inv_clases_inventarios e on d.grupo_id = e.grupo_id and d.clase_id = e.clase_id \
                 left join (\
                     select a.numero_pedido, a.codigo_producto, a.justificacion, sum(a.cantidad_temporalmente_separada) as cantidad_temporalmente_separada \
                     from (\
@@ -257,7 +260,7 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
                       left join inv_bodegas_movimiento_tmp_justificaciones_pendientes b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
                     ) a group by 1,2,3\
                 ) as b on a.pedido_cliente_id = b.numero_pedido and a.codigo_producto = b.codigo_producto\
-                where a.pedido_cliente_id = $1 ;";
+                where a.pedido_cliente_id = $1 order by d.descripcion ;";
 
     G.db.query(sql, [numero_pedido], function(err, rows, result) {
         callback(err, rows);

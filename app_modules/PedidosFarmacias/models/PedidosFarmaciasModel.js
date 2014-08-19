@@ -98,6 +98,10 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                 a.cantidad_pendiente::integer - ABS((a.cantidad_solic - a.cantidad_pendiente - COALESCE(b.cantidad_temporalmente_separada,0))::integer) as cantidad_pendiente,\
                 COALESCE(b.justificacion, '') as justificacion \
                 from solicitud_productos_a_bodega_principal_detalle a\
+                inner join solicitud_productos_a_bodega_principal g on a.solicitud_prod_a_bod_ppal_id = g.solicitud_prod_a_bod_ppal_id\
+                inner join inventarios f on a.codigo_producto = f.codigo_producto and g.empresa_destino = f.empresa_id\
+                inner join inventarios_productos c on f.codigo_producto = c.codigo_producto \
+                inner join inv_clases_inventarios e on c.grupo_id = e.grupo_id and c.clase_id = e.clase_id \
                 left join (\
                     SELECT a.numero_pedido, a.codigo_producto, a.justificacion, sum(a.cantidad_temporalmente_separada) as cantidad_temporalmente_separada \
                     FROM ( \
@@ -112,7 +116,7 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                       left join inv_bodegas_movimiento_tmp_justificaciones_pendientes b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
                     ) a group by 1,2,3 \
                 ) as b on a.solicitud_prod_a_bod_ppal_id = b.numero_pedido and a.codigo_producto = b.codigo_producto\
-                where a.solicitud_prod_a_bod_ppal_id= $1; ";
+                where a.solicitud_prod_a_bod_ppal_id= $1 order by e.descripcion ; ";
 
     G.db.query(sql, [numero_pedido], function(err, rows, result) {
         callback(err, rows);

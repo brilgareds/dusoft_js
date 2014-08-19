@@ -28,6 +28,12 @@ E008Events.prototype.onObtenerTiempoSeparacionCliente = function(socket_id, dato
                 if (documento_temporal.fecha_registro) {
                     fecha_separacion = new Date(documento_temporal.fecha_registro);
                     tiempo_separacion = fecha_separacion.getSecondsBetween(fecha_actual);
+                    //tiempo_separacion = fecha_actual.getSecondsBetween(fecha_separacion);
+                    console.log('============================ CL tiempo ============================');
+                    console.log(fecha_actual);
+                    console.log(fecha_separacion);
+                    console.log(tiempo_separacion);
+                    console.log('=======================================================================');
                 }
 
                 that.io.sockets.socket(socket_id).emit('onTiempoSeparacionCliente', {numero_pedido: numero_pedido, tiempo_separacion: tiempo_separacion});
@@ -59,6 +65,12 @@ E008Events.prototype.onObtenerTiempoSeparacionFarmacias = function(socket_id, da
                 if (documento_temporal.fecha_separacion_pedido) {
                     fecha_separacion = new Date(documento_temporal.fecha_separacion_pedido);
                     tiempo_separacion = fecha_separacion.getSecondsBetween(fecha_actual);
+                    //tiempo_separacion = fecha_actual.getSecondsBetween(fecha_separacion);
+                    console.log('============================ Facias tiempo ============================');
+                    console.log(fecha_actual);
+                    console.log(fecha_separacion);
+                    console.log(tiempo_separacion);
+                    console.log('=======================================================================');
                 }
 
                 that.io.sockets.socket(socket_id).emit('onTiempoSeparacionFarmacias', {numero_pedido: numero_pedido, tiempo_separacion: tiempo_separacion});

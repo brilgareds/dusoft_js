@@ -237,10 +237,10 @@ PedidosFarmacias.prototype.asignarResponsablesPedido = function(req, res) {
 
             // Notificando Pedidos Actualizados en Real Time
             that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
-            // Notificar al operario, los pedidos Asignados en Real Time
-            that.e_pedidos_farmacias.onNotificacionOperarioPedidosAsignados({numero_pedido: numero_pedido, responsable: responsable});
 
             if (--i === 0) {
+                // Notificar al operario, los pedidos Asignados en Real Time
+                that.e_pedidos_farmacias.onNotificacionOperarioPedidosAsignados({numero_pedidos: pedidos, responsable: responsable});
                 res.send(G.utils.r(req.url, 'Asignacion de Resposables', 200, {}));
             }
         });

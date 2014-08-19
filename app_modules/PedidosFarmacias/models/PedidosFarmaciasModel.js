@@ -99,15 +99,18 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                 COALESCE(b.justificacion, '') as justificacion \
                 from solicitud_productos_a_bodega_principal_detalle a\
                 left join (\
-                    select \
-                    a.solicitud_prod_a_bod_ppal_id as numero_pedido,\
-                    b.codigo_producto,\
-                    c.observacion as justificacion,\
-                    SUM(b.cantidad) as cantidad_temporalmente_separada\
-                    from inv_bodegas_movimiento_tmp_despachos_farmacias a\
-                    inner join inv_bodegas_movimiento_tmp_d b on a.usuario_id = b.usuario_id and a.doc_tmp_id = b.doc_tmp_id\
-                    left join inv_bodegas_movimiento_tmp_justificaciones_pendientes c on b.doc_tmp_id = c.doc_tmp_id and b.usuario_id = c.usuario_id and b.codigo_producto = c.codigo_producto\
-                    group by 1,2,3\
+                    SELECT a.numero_pedido, a.codigo_producto, a.justificacion, sum(a.cantidad_temporalmente_separada) as cantidad_temporalmente_separada \
+                    FROM ( \
+                      select a.solicitud_prod_a_bod_ppal_id as numero_pedido, b.codigo_producto, c.observacion as justificacion, SUM(b.cantidad) as cantidad_temporalmente_separada\
+                      from inv_bodegas_movimiento_tmp_despachos_farmacias a\
+                      inner join inv_bodegas_movimiento_tmp_d b on a.usuario_id = b.usuario_id and a.doc_tmp_id = b.doc_tmp_id\
+                      left join inv_bodegas_movimiento_tmp_justificaciones_pendientes c on b.doc_tmp_id = c.doc_tmp_id and b.usuario_id = c.usuario_id and b.codigo_producto = c.codigo_producto\
+                      group by 1,2,3\
+                      UNION\
+                      select a.solicitud_prod_a_bod_ppal_id  as numero_pedido, b.codigo_producto, b.observacion as justificacion, 0 as cantidad_temporalmente_separada\
+                      from inv_bodegas_movimiento_tmp_despachos_farmacias a \
+                      left join inv_bodegas_movimiento_tmp_justificaciones_pendientes b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
+                    ) a group by 1,2,3 \
                 ) as b on a.solicitud_prod_a_bod_ppal_id = b.numero_pedido and a.codigo_producto = b.codigo_producto\
                 where a.solicitud_prod_a_bod_ppal_id= $1; ";
 
@@ -174,7 +177,6 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                 left join inv_bodegas_movimiento_tmp i on h.doc_tmp_id = i.doc_tmp_id and h.usuario_id = i.usuario_id \
                 where f.responsable_id = $1 " + sql_aux + " \
                 and a.estado = '1' \
-                and a.sw_despacho = '0' \
                 and (\
                     a.solicitud_prod_a_bod_ppal_id ilike $2 or\
                     d.razon_social ilike  $2 or\

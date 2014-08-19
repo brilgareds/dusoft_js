@@ -1,54 +1,263 @@
 <!--Va la logica de pedidos separados-->
 
 <div>
-
-    <!--Auditoria de pedidos-->
-
-    <!--route 1 {{welcomemsg}} got to child  <a ui-sref="route1.item">Route item</a>-->
-
-    <tabset  class="">
+      
+<!--       <tabset  class="">-->
+   
+        <div class="row">
+            <button ng-click="cerrar()" class="pull-right btn btn-default btn-xs" style="margin-right:15px"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>   
+        </div>
         
-        <table style="width:300px;margin-left:900px; margin-left:900px;" >   
-            <tr>
-              <th>Nombre Cliente</th>
-              <th>Nombre Separador</th> 
-              <th>Fecha Registro</th>
-            </tr>
-            <tr>
-              <td>{{nombre_cliente}}</td>
-              <td>{{nombre_separador}}</td> 
-              <td>{{fecha_registro}}</td>
-            </tr>
-        </table>
-        
-        <tab heading="Separado Pedido N°: {{ numero_pedido }}" ng-controller="DetallepedidoSeparadoController">
-            
-               <!--<div class="input-group navbar-form">
-
-                    <input type="text" class="form-control pull-right" ng-keypress="onKeySeparadosPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
-                    <div class="input-group-btn" >
-                        <button class="btn btn-default" type="submit" ng-click="buscarPedidosSeparadosCliente(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
-                    </div>
-               </div>-->
-
+        <!--Ojo con ésta sección de código - Es importante al relacionar la lógica -->
+        <!--<tab heading="Separado Pedido N°: {{ numero_pedido }}" ng-controller="DetallepedidoSeparadoController">
                <div class="defaultGrid" ng-grid="detalle_pedido_separado_cliente"></div>
-
-               <!--<br/>
-
-               <div class="row text-center">
-                    <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 0" ng-click="paginaAnterior()">
-                        <span class="glyphicon glyphicon-chevron-left" ></span>
-                    </button>
-                    <button type="button" class="btn btn-default btn-medium" ng-disabled="items == 0" ng-click="paginaSiguiente()">
-                        <span class="glyphicon glyphicon-chevron-right" ></span>
-                    </button>
-               </div>-->
-        </tab>
-
-            <button ng-click="cerrar()" class="pull-right btn btn-default btn-xs" style="margin-right:15px"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>
+        </tab>-->    
+           
+        <div class="row">
+            <div class="col-xs-6 text-left">
+              <h4>Tipo Documento</h4>
+              <!--<h4><small>Pedido: 12345678</small></h4>-->
+                <li class="dropdown pull-left">
+                    <a href="#" data-toggle="dropdown" class="dropdown-toggle">Documento <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">EFC</a></li>
+                        <li><a href="#">ECC</a></li>
+                        <li><a href="#">CVC</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">BBVA</a></li>
+                    </ul>
+                </li>
+            </div>
+            <div class="col-xs-6 text-right">
+                <h1>
+                    <a href="">
+                    <img src="">
+                        Logo aquí
+                    </a>
+                </h1>
+            </div>
+            <hr>           
+      </div>
+           
+      <div class="row">
         
-    </tabset>
+        <div class="col-xs-6">
+    
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4>De: <a href="#">DUANA Y CIA LTDA</a></h4>
+            </div>
+            <div class="panel-body">
+              <p>
+                Dirección <br>
+                deralles <br>
+                más <br>
+              </p>
+            </div>
+          </div>
+            
+        </div>
+        <div class="col-xs-6 ">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4>Hacia : <a href="#">CLIENTE</a></h4>
+            </div>
+            <div class="panel-body">
+              <p>
+                Dirección <br>
+                detalles <br>
+                más <br>
+              </p>
+            </div>
+           </div>
+        </div>
+
+      </div> <!-- / end client details section -->
+      
+      <!-- Begin Código desplazado -->
+      
+            <div class="row"> <!-- / begin payment details section -->
+          <div class="col-xs-4">
+            
+            
+            <div class="panel panel-info"> <!-- / begin banking details -->
+                <div class="panel-heading">
+                  <h4>Rótulos Cajas</h4>
+                </div>
+                <div class="panel-body">
+                  <p>Cliente</p>
+                  <p>Número de Cajas</p>
+                  <p>Rótulos</p>
+                  <p>Pedido : 12345678</p>
+                  <p>Lote : ------</p>
+                </div>
+            </div> <!-- / end banking details -->
+            
+          </div>
+          <div class="col-xs-8">
+            
+            <div class="span7"> <!-- / begin contact details -->
+                <div class="panel panel-info">
+                  <div class="panel-heading">
+                    <h4>Auditar</h4>
+                  </div>
+                  <div class="panel-body">
+                    <!--<p>
+                        Pedido : 12345678 <br><br>
+                        Separador : Ricardo Arjona <br> <br>
+                        Productos  : <a href="https://twitter.com/tahirtaous">Los productos</a> | Laboratorio : <a href="http://www.sitepoint.com/author/ttaous/">Pfizer</a>
+                    </p>
+                    <h4><small>Éste producto tiene condiciones especiales</h4>-->
+                    <div class="input-group navbar-form">
+                        <input type="text" class="form-control pull-right" ng-keypress="onKeySeparadosPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar Pedido" name="srch-term" id="srch-term">
+                        <div class="input-group-btn" >
+                            <button class="btn btn-default" type="submit" ng-click="buscarPedidosSeparadosCliente(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                    
+                    <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th><h4>Número Pedido</h4></th>
+                        <th><h4>Cliente</h4></th>
+                        <th><h4>Vendedor</h4></th>
+                        <th><h4>Zona</h4></th>
+                        <th><h4>Separador</h4></th>
+                        <th><h4>Fecha Registro</h4></th>
+                        <th><h4>Movimiento</h4></th>
+                        <th><h4>Sub Total</h4></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                          <td><a href="#">12345678</a></td>
+                          <td class="text-right">Exito</td>
+                          <td class="text-right">Pepe Gonzalez</td>
+                          <td class="text-right">Cali</td>
+                          <td class="text-right">Willi Colón</td>
+                          <td class="text-right">15-08-2014</td>
+                          <td class="text-right">Botón</td>
+                          <td class="text-right">$200.00</td>
+                      </tr>
+                      <tr>
+                          <td><a href="#">12345679</a></td>
+                          <td class="text-right">Exito2</td>
+                          <td class="text-right">Pepe Gonzalez2</td>
+                          <td class="text-right">Cali2</td>
+                          <td class="text-right">Willi Colón2</td>
+                          <td class="text-right">15-08-2014</td>
+                          <td class="text-right">Botón</td>
+                          <td class="text-right">$200.00</td>
+                      </tr>
+                      <tr>
+                          <td><a href="#">12345677</a></td>
+                          <td class="text-right">Exito3</td>
+                          <td class="text-right">Pepe Gonzalez3</td>
+                          <td class="text-right">Cali3</td>
+                          <td class="text-right">Willi Colón3</td>
+                          <td class="text-right">15-08-2014</td>
+                          <td class="text-right">Botón</td>
+                          <td class="text-right">$200.00</td>
+                      </tr>
+                    </tbody>
+                  </table> <!-- / end project details section -->
+                  </div>
+                </div>
+            </div> <!-- / end contact details -->
+           
+           
+          </div>
+      </div> <!-- / end payment details section -->
+      
+      <!-- End Código desplazado -->
+      <div class="row">
+          
+          <div class="col-xs-12">
+          
+            <div class="panel panel-info"> <!-- / begin banking details -->
+
+                  <div class="panel-heading">
+                    <h4>Auditados</h4>
+                  </div>
+                <div class="panel-body">
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th><h4>Número Pedido</h4></th>
+                        <th><h4>Cliente</h4></th>
+                        <th><h4>Vendedor</h4></th>
+                        <th><h4>Zona</h4></th>
+                        <th><h4>Separador</h4></th>
+                        <th><h4>Fecha Registro</h4></th>
+                        <th><h4>Movimiento</h4></th>
+                        <th><h4>Sub Total</h4></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                          <td><a href="#">12345678</a></td>
+                          <td class="text-right">Exito</td>
+                          <td class="text-right">Pepe Gonzalez</td>
+                          <td class="text-right">Cali</td>
+                          <td class="text-right">Willi Colón</td>
+                          <td class="text-right">15-08-2014</td>
+                          <td class="text-right">Botón</td>
+                          <td class="text-right">$200.00</td>
+                      </tr>
+                      <tr>
+                          <td><a href="#">12345679</a></td>
+                          <td class="text-right">Exito2</td>
+                          <td class="text-right">Pepe Gonzalez2</td>
+                          <td class="text-right">Cali2</td>
+                          <td class="text-right">Willi Colón2</td>
+                          <td class="text-right">15-08-2014</td>
+                          <td class="text-right">Botón</td>
+                          <td class="text-right">$200.00</td>
+                      </tr>
+                      <tr>
+                          <td><a href="#">12345677</a></td>
+                          <td class="text-right">Exito3</td>
+                          <td class="text-right">Pepe Gonzalez3</td>
+                          <td class="text-right">Cali3</td>
+                          <td class="text-right">Willi Colón3</td>
+                          <td class="text-right">15-08-2014</td>
+                          <td class="text-right">Botón</td>
+                          <td class="text-right">$200.00</td>
+                      </tr>
+                    </tbody>
+                  </table> <!-- / end project details section -->
+                </div> 
+
+            <div class="row text-right"> <!-- / begin total amount section -->
+              <div class="col-xs-2 col-xs-offset-8">
+                <p>
+                  <strong>
+                    Sub Total : <br>
+                    Total : <br>
+                  </strong>
+                </p>
+              </div>
+              <div class="col-xs-2">
+                <strong>
+                  $1200.00 <br>
+                  $1200.00 <br>
+                </strong>
+              </div>
+            </div> <!-- / end total amount section -->         
+
+            </div>
+              
+        </div>    
+      </div> <!-- / end class row --> 
+      
+      <div class="row button-right">
+        <div class="col-xs-2">
+            <button type="submit" class="btn btn-primary pull-right">Generar Documento</button>
+        </div>
+      </div>
+<!--    </tabset> -->
 
     <br/>
 
 </div>
+

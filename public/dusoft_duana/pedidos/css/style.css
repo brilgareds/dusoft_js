@@ -1,0 +1,18 @@
+/* 
+    Document   : style.css
+    Created on : 19/08/2014, 08:29:08 AM
+    Author     : Alexander López Guerrero
+    Description:
+        Se crea éste estilo con el objetivo de reducir el padding entre los páneles predefinidos 
+        en Bootstrap y cualquier otra personalización de estilo dentro del módulo pedidos.
+*/
+
+.col-xs-6 {
+padding: 0%;
+}
+.col-xs-4 {
+padding: 0%;
+}
+.col-xs-8 {
+padding: 0%;
+}

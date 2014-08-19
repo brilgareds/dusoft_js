@@ -1,4 +1,4 @@
-define(["angular", "js/controllers", "includes/classes/Usuario", "includes/header/lockscreen"], function(angular, controllers) {
+define(["angular", "js/controllers", "includes/classes/Usuario", "includes/header/lockscreen", "includes/content/rutamodulo"], function(angular, controllers) {
     controllers.controller('HeaderController', ['$scope', '$rootScope', "$state", "Request", "Usuario","socket",
         function($scope, $rootScope, $state, Request, Usuario, socket) {
 

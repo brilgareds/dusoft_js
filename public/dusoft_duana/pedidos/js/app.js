@@ -38,11 +38,13 @@
           $stateProvider
             .state('AsignarPedidos', {
                 url: "/AsignarPedidos",
+                text:"Asignar Pedidos",
                 templateUrl: "views/AsignarPedidos.html"
                 //controller:"pedidoscontroller"
             })
             .state('AuditarPedidos', {
                   url: "/AuditarPedidos",
+                  text:"Auditar Pedidos",
                   templateUrl: "views/AuditoriaPedidos.html"
               })
             .state('AuditarPedidos2', {
@@ -51,7 +53,7 @@
               })
 
     }).run(function($rootScope,Usuario,localStorageService){
-        $rootScope.name = "pedidos";   
+        $rootScope.titulo_modulo = "pedidos";   
         console.log(Usuario) 
         var obj = localStorageService.get("session");
         if(!obj) return;

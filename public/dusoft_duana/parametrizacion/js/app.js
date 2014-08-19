@@ -50,6 +50,7 @@ define([
         $stateProvider
             .state('OperariosBodega', {
             url: "/OperariosBodega",
+            text:"Operarios Bodega",
             templateUrl: "views/OperariosBodega/listaOperarios.html",
             controller: "OperariosBodegaController"
         });

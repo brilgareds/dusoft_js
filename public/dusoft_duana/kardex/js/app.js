@@ -30,11 +30,13 @@
           $stateProvider
             .state('listarproductos', {
                 url: "/listarproductos",
+                text:"Listado de Productos",
                 templateUrl: "views/listarproductos.html",
                 controller:"productoscontroller"
             }).
             state('listarproductos.verkardex', {
                 url: "/listarproductos.verkardex",
+                text:"Kardex",
                 templateUrl: "views/route1.item.html"
             });
 

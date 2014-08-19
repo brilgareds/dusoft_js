@@ -15,7 +15,7 @@ define(["angular","js/directive"], function(angular, directive){
           },
           controller: function($scope, $element) {
 
-              $rootScope.$on("menuiniciado",function(){
+              angular.element(document).ready(function() {
                   var rootWidth = $(window).width() + 2000;
 
                   var menuWidth = $(".contenedormenu").width() + 20;

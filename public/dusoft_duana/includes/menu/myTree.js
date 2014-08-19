@@ -50,6 +50,7 @@ define(["angular", "js/directive"], function(angular, directive) {
                             //remueve el listener
                             listener();
                             scope.iniTree();
+                            $rootScope.$emit("menuiniciado");
                         }, 500);
 
                     });

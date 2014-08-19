@@ -101,7 +101,8 @@ define(["angular", "js/controllers", 'models/Separador'], function(angular, cont
 
                         var separador = Separador.get(
                             obj.nombre_operario,
-                            obj.operario_id
+                            obj.operario_id,
+                            obj.total_pedidos_asignados
                         );
 
                         $scope.Empresa.agregarSeparador(

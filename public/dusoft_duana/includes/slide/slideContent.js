@@ -15,17 +15,23 @@ define(["angular","js/directive"], function(angular, directive){
           },
           controller: function($scope, $element) {
               var rootWidth = $(window).width() + 2000;
+
+              var menuWidth = $(".contenedormenu").width() + 20;
+              
+              $($element).appendTo(document.body);
+              $element.width($element.width() - menuWidth);
+
               $scope.$parent.$on('mostrarslide', function($event) {
                   $($element).animate({"display":"block","right":"-8px"});
               });
 
               $scope.$parent.$on('cerrarslide', function($event) {
                   $($element).animate(
-                    {"right":"-"+rootWidth+"px", "display":"none"},
+                    {"right":"-"+rootWidth+"px"},
                     {
 
                       complete:function(){
-
+                        $element.css("display:none");
                       }
                     }
 

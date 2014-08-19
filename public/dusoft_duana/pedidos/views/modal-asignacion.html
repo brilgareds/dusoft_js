@@ -22,7 +22,7 @@
     <div class="row">
 
         <select class="input-medium" style="width:300px" ng-model="operario_id"   ui-select2 ng-change="valorSeleccionado(operario_id)" data-placeholder="Seleccionar" >
-          <option ng-repeat="separador in  Empresa.getSeparadores()"  ng-value="{{separador.operario_id}}">{{separador.nombre_operario}}</option>
+          <option ng-repeat="separador in  Empresa.getSeparadores()"  ng-value="{{separador.operario_id}}">{{separador.nombre_operario}} ({{separador.total_pedidos_asignados}})</option>
           
         </select>
     </div>

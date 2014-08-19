@@ -1,12 +1,12 @@
 define(["angular","js/directive"], function(angular, directive){
 
     directive.directive('slideContent',["$rootScope",function($rootScope) {
-       return {
+       var slide =  {
+          margen: 2000,
+
           link:function(scope, element, attrs) {
-             var rootWidth = $(window).width() +2000;
-              angular.element(document).ready(function(){
-                  $(element).css({"right":"-"+rootWidth+"px", "display":"none"});
-              });
+             
+
           },
           
           scope:{
@@ -16,35 +16,75 @@ define(["angular","js/directive"], function(angular, directive){
           controller: function($scope, $element) {
 
               angular.element(document).ready(function() {
-                  var rootWidth = $(window).width() + 2000;
 
-                  var menuWidth = $(".contenedormenu").width() + 20;
-                  console.log("menu width ",menuWidth, "menu iniciado")              
+                  $rootScope.$emit("slidecargado");
+                  //determina el margen del slide cuando el menu esta listo
+                  $rootScope.$on("configurarslide",function(){
+                    slide.configurarSlide($element);
+                  });
+
+                  $( window ).resize(function() {
+
+                    if($(window).width() < 1688){
+                      menuWidth = 10;
+                    }
+
+                    slide.configurarSlide($element);
+                  });
+
+                  //asegura que el slide este cerrado
+                  slide.cerrarslide($element, false);
+
+                  var rootWidth = $(window).width() + slide.margen;
+                  
+
+                  //coloca el elemento en el body
                   $(document.body).append($element.detach());
-                  $element.width($element.width() - menuWidth);
 
+                 
+                  
                   $scope.$parent.$on('mostrarslide', function($event) {
-                      $($element).animate({"display":"block","right":"-8px"});
+                     slide.mostrarslide($element);
                   });
 
                   $scope.$parent.$on('cerrarslide', function($event) {
-                      $($element).animate(
-                        {"right":"-"+rootWidth+"px"},
-                        {
-
-                          complete:function(){
-                            $element.css("display:none");
-                          }
-                        }
-
-                      );
+                      slide.cerrarslide($element, true);
                   });
-              }); 
-              
+              });  
+          },
+
+          configurarSlide : function($element){
+              var width = $(".contenidoPrincipal").width();
+              console.log("configure slide with width "+width);
+              $element.width(width +30);
+          },
+
+          mostrarslide: function($element){
+             $($element).animate({"display":"block","right":"-8px"});
+          },
+
+          cerrarslide: function($element, animado){
+            var rootWidth = $(window).width() +slide.margen
+            if(animado){
+              $element.animate(
+                {"right":"-"+rootWidth+"px"},
+                {
+
+                  complete:function(){
+                    $element.css("display:none");
+                  }
+                }
+
+              );
+            } else {
+              $element.css({"right":"-"+rootWidth+"px", "display":"none"});
+            }
+            
           }
 
+       };
 
-       }
+       return slide;
        
     }]);
 

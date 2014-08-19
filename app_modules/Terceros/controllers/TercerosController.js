@@ -1,13 +1,13 @@
 
-var Terceros = function(terceros) {
+var Terceros = function(terceros, pedidos_clientes, pedidos_farmacias) {
 
     console.log("Modulo Terceros  Cargado ");
 
     this.m_terceros = terceros;
+    this.m_pedidos_clientes = pedidos_clientes;
+    this.m_pedidos_farmacias = pedidos_farmacias;
 
 };
-
-
 
 Terceros.prototype.listarOperariosBodega = function(req, res) {
     var that = this;
@@ -21,13 +21,45 @@ Terceros.prototype.listarOperariosBodega = function(req, res) {
 
     var termino_busqueda = (args.lista_operarios.termino_busqueda === undefined) ? '' : args.lista_operarios.termino_busqueda;
     var estado_registro = (args.lista_operarios.estado_registro === undefined) ? '' : args.lista_operarios.estado_registro;
-
+    var total_pedidos_clientes = 0;
+    var total_pedidos_farmacias = 0;
 
     this.m_terceros.listar_operarios_bodega(termino_busqueda, estado_registro, function(err, lista_operarios) {
         if (err)
             res.send(G.utils.r(req.url, 'Error Listado Los Operarios de Bodega', 500, {}));
-        else
-            res.send(G.utils.r(req.url, 'Lista Operarios Bodega', 200, {lista_operarios: lista_operarios}));
+        else {
+
+            var i = lista_operarios.length;
+
+            lista_operarios.forEach(function(operario_bodega) {
+
+                that.m_pedidos_clientes.listar_pedidos_del_operario(operario_bodega.operario_id, '', '', 1, undefined, function(err, rows, total_registros_clientes) {
+
+                    total_pedidos_clientes = (err) ? 0 : parseInt(total_registros_clientes);
+
+                    operario_bodega.total_pedidos_clientes = total_pedidos_clientes;
+
+                    that.m_pedidos_farmacias.listar_pedidos_del_operario(operario_bodega.operario_id, '', '', 1, undefined, function(err, rows, total_registros_farmacias) {
+
+                        total_pedidos_farmacias = (err) ? 0 : parseInt(total_registros_farmacias);
+
+                        operario_bodega.total_pedidos_farmacias = total_pedidos_farmacias;
+
+                        total_pedidos = parseInt(total_pedidos_clientes) + parseInt(total_pedidos_farmacias);
+
+                        operario_bodega.total_pedidos_asignados = operario_bodega.total_pedidos_clientes + operario_bodega.total_pedidos_farmacias;
+
+                        if (--i === 0) {
+                            res.send(G.utils.r(req.url, 'Lista Operarios Bodega', 200, {lista_operarios: lista_operarios}));
+                        }
+
+                    });
+                });
+
+
+
+            });
+        }
     });
 };
 
@@ -64,16 +96,16 @@ Terceros.prototype.modificarOperariosBodega = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.operario === undefined || args.operario.operario_id === undefined  || args.operario.nombre_operario === undefined || args.operario.usuario_id === undefined || args.operario.estado === undefined) {
+    if (args.operario === undefined || args.operario.operario_id === undefined || args.operario.nombre_operario === undefined || args.operario.usuario_id === undefined || args.operario.estado === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
     }
 
-    if (args.operario.operario_id === ""  ||args.operario.nombre_operario === "" || args.operario.usuario_id === "" || args.operario.estado === "") {
+    if (args.operario.operario_id === "" || args.operario.nombre_operario === "" || args.operario.usuario_id === "" || args.operario.estado === "") {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios Estan Vacios', 404, {}));
         return;
     }
-    
+
     var operario = args.operario;
 
     this.m_terceros.modificar_operarios_bodega(operario.operario_id, operario.nombre_operario, operario.usuario_id, operario.estado, function(err, rows) {
@@ -85,6 +117,6 @@ Terceros.prototype.modificarOperariosBodega = function(req, res) {
 };
 
 
-Terceros.$inject = ["m_terceros"];
+Terceros.$inject = ["m_terceros", "m_pedidos_clientes", "m_pedidos_farmacias"];
 
 module.exports = Terceros;

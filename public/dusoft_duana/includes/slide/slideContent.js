@@ -18,7 +18,7 @@ define(["angular","js/directive"], function(angular, directive){
 
               var menuWidth = $(".contenedormenu").width() + 20;
               
-              $($element).appendTo(document.body);
+              $(document.body).append($element.detach());
               $element.width($element.width() - menuWidth);
 
               $scope.$parent.$on('mostrarslide', function($event) {

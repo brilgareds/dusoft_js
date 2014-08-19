@@ -17,8 +17,9 @@ define(["angular","js/directive"], function(angular, directive){
 
               angular.element(document).ready(function() {
 
+                  $rootScope.$emit("slidecargado");
                   //determina el margen del slide cuando el menu esta listo
-                  $rootScope.$on("itemmenuseleccionado",function(){
+                  $rootScope.$on("configurarslide",function(){
                     slide.configurarSlide($element);
                   });
 

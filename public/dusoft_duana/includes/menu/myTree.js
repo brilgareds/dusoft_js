@@ -4,6 +4,10 @@ define(["angular", "js/directive"], function(angular, directive) {
             return {
                 link: function(scope, element, attrs) {
 
+                    //configura el slide basado en la carga del menu
+                    $rootScope.$on("slidecargado", function(){
+                        $rootScope.$emit("configurarslide");
+                    });
                     //evento para saber el state del url
                     //$rootScope.$on('$stateChangeSuccess', function(e, toState, toParams, fromState, fromParams){ 
                     //observador para cuando los datos del arbol se carguen del servidor
@@ -50,7 +54,6 @@ define(["angular", "js/directive"], function(angular, directive) {
                             //remueve el listener
                             listener();
                             scope.iniTree();
-                            $rootScope.$emit("menuiniciado");
                         }, 500);
 
                     });
@@ -69,7 +72,9 @@ define(["angular", "js/directive"], function(angular, directive) {
 
                             }).on("select_node.jstree", function(node, selected, event) {
                                 //se valida si fue por medio de un evento o por el state del plugin
-                                $rootScope.$emit("itemmenuseleccionado");
+                                //configura el slide para el modulo visto en el menu
+                                $rootScope.$emit("configurarslide");
+
                                 if (selected.event) {
                                     scope.$emit("nodeSelected", selected.node.original);
                                 }

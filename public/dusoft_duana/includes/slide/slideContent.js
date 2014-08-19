@@ -1,6 +1,6 @@
 define(["angular","js/directive"], function(angular, directive){
 
-    directive.directive('slideContent',[function() {
+    directive.directive('slideContent',["$rootScope",function($rootScope) {
        return {
           link:function(scope, element, attrs) {
              var rootWidth = $(window).width() +2000;
@@ -14,29 +14,33 @@ define(["angular","js/directive"], function(angular, directive){
 
           },
           controller: function($scope, $element) {
-              var rootWidth = $(window).width() + 2000;
 
-              var menuWidth = $(".contenedormenu").width() + 20;
+              $rootScope.$on("menuiniciado",function(){
+                  var rootWidth = $(window).width() + 2000;
+
+                  var menuWidth = $(".contenedormenu").width() + 20;
+                  console.log("menu width ",menuWidth, "menu iniciado")              
+                  $(document.body).append($element.detach());
+                  $element.width($element.width() - menuWidth);
+
+                  $scope.$parent.$on('mostrarslide', function($event) {
+                      $($element).animate({"display":"block","right":"-8px"});
+                  });
+
+                  $scope.$parent.$on('cerrarslide', function($event) {
+                      $($element).animate(
+                        {"right":"-"+rootWidth+"px"},
+                        {
+
+                          complete:function(){
+                            $element.css("display:none");
+                          }
+                        }
+
+                      );
+                  });
+              }); 
               
-              $(document.body).append($element.detach());
-              $element.width($element.width() - menuWidth);
-
-              $scope.$parent.$on('mostrarslide', function($event) {
-                  $($element).animate({"display":"block","right":"-8px"});
-              });
-
-              $scope.$parent.$on('cerrarslide', function($event) {
-                  $($element).animate(
-                    {"right":"-"+rootWidth+"px"},
-                    {
-
-                      complete:function(){
-                        $element.css("display:none");
-                      }
-                    }
-
-                  );
-              });
           }
 
 

@@ -335,7 +335,7 @@ div.ngHeaderCell	{
 .slide{
     width: 100%;
     height: 100%;
-    top: -16px;
+    top: 55px;
     position: absolute;
     background-color: rgba(248,248,248,0.9);
     z-index: 4;

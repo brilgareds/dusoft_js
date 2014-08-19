@@ -112,7 +112,7 @@
                   <div class="panel-heading">
                     <h4>Auditar</h4>
                   </div>
-                  <div class="panel-body">
+                  <div class="panel-body" ng-controller="DetallepedidoSeparadoController">
                     <!--<p>
                         Pedido : 12345678 <br><br>
                         Separador : Ricardo Arjona <br> <br>
@@ -126,7 +126,9 @@
                         </div>
                     </div>
                     
-                    <table class="table table-bordered">
+                    <div class="defaultGrid" ng-grid="detalle_pedido_separado_cliente"></div>
+                    
+<!--                    <table class="table table-bordered">
                     <thead>
                       <tr>
                         <th><h4>Número Pedido</h4></th>
@@ -171,7 +173,7 @@
                           <td class="text-right">$200.00</td>
                       </tr>
                     </tbody>
-                  </table> <!-- / end project details section -->
+                  </table>  / end project details section -->
                   </div>
                 </div>
             </div> <!-- / end contact details -->
@@ -190,8 +192,10 @@
                   <div class="panel-heading">
                     <h4>Auditados</h4>
                   </div>
-                <div class="panel-body">
-                  <table class="table table-bordered">
+                <div class="panel-body" ng-controller="AuditoriaPedidosClientesController">
+                    
+                    <div class="defaultGrid" ng-grid="lista_pedidos_separados_clientes"></div>
+<!--                  <table class="table table-bordered">
                     <thead>
                       <tr>
                         <th><h4>Número Pedido</h4></th>
@@ -236,7 +240,7 @@
                           <td class="text-right">$200.00</td>
                       </tr>
                     </tbody>
-                  </table> <!-- / end project details section -->
+                  </table>  / end project details section -->
                   
                 <div class="row text-right"> <!-- / begin total amount section -->
                   <div class="col-xs-2 col-xs-offset-8">
@@ -263,18 +267,13 @@
       </div> <!-- / end class row --> 
       
     <div class="panel panel-default">            
-    <div class="panel-body">
-      <div class="row">
-        <div class="col-xs-1">
-        <!--<div class="panel panel-info">  / begin banking details -->
-            <!--<div class="panel-body">-->
-                <button type="submit" class="btn btn-primary pull-right">Generar Documento</button>
-            <!--</div>-->
-        <!--</div>-->
+        <div class="panel-body">
+            <div class="row">
+                <button type="submit" class="btn btn-primary pull-right">Generar Documento</button>    
         </div>
       </div>
     </div>
-    </div>
+
 <!--    </tabset> -->
 
     <br/>

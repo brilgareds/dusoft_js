@@ -4,6 +4,10 @@
       
 <!--       <tabset  class="">-->
    
+
+
+<div class="panel panel-default">            
+    <div class="panel-body">
         <div class="row">
             <button ng-click="cerrar()" class="pull-right btn btn-default btn-xs" style="margin-right:15px"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>   
         </div>
@@ -38,6 +42,13 @@
             </div>
             <hr>           
       </div>
+        
+    </div>
+</div>
+        
+        
+        
+        
            
       <div class="row">
         
@@ -226,35 +237,44 @@
                       </tr>
                     </tbody>
                   </table> <!-- / end project details section -->
+                  
+                <div class="row text-right"> <!-- / begin total amount section -->
+                  <div class="col-xs-2 col-xs-offset-8">
+                    <p>
+                      <strong>
+                        Sub Total : <br>
+                        Total : <br>
+                      </strong>
+                    </p>
+                  </div>
+                  <div class="col-xs-2">
+                    <strong>
+                      $1200.00 <br>
+                      $1200.00 <br>
+                    </strong>
+                  </div>
+                </div> <!-- / end total amount section -->                           
+                  
                 </div> 
-
-            <div class="row text-right"> <!-- / begin total amount section -->
-              <div class="col-xs-2 col-xs-offset-8">
-                <p>
-                  <strong>
-                    Sub Total : <br>
-                    Total : <br>
-                  </strong>
-                </p>
-              </div>
-              <div class="col-xs-2">
-                <strong>
-                  $1200.00 <br>
-                  $1200.00 <br>
-                </strong>
-              </div>
-            </div> <!-- / end total amount section -->         
 
             </div>
               
         </div>    
       </div> <!-- / end class row --> 
       
-      <div class="row button-right">
-        <div class="col-xs-2">
-            <button type="submit" class="btn btn-primary pull-right">Generar Documento</button>
+    <div class="panel panel-default">            
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-xs-1">
+        <!--<div class="panel panel-info">  / begin banking details -->
+            <!--<div class="panel-body">-->
+                <button type="submit" class="btn btn-primary pull-right">Generar Documento</button>
+            <!--</div>-->
+        <!--</div>-->
         </div>
       </div>
+    </div>
+    </div>
 <!--    </tabset> -->
 
     <br/>

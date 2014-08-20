@@ -60,7 +60,7 @@ define(["angular","js/directive"], function(angular, directive){
           },
 
           mostrarslide: function($element){
-             $($element).animate({"display":"block","right":"-8px"});
+             $element.animate({"display":"block","right":"-8px"});
           },
 
           cerrarslide: function($element, animado){

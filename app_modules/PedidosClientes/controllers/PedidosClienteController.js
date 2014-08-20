@@ -335,8 +335,9 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
             that.m_pedidos_clientes.consultar_detalle_pedido(pedido.numero_pedido, function(err, detalle_pedido) {
                 pedido.lista_productos = detalle_pedido;
 
-                if (--i === 0)
+                if (--i === 0){                    
                     res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {pedidos_clientes: lista_pedidos_clientes, total_registros: total_registros}));
+                }
 
             });
         });

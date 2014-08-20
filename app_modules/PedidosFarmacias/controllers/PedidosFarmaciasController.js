@@ -365,8 +365,9 @@ PedidosFarmacias.prototype.listaPedidosOperariosBodega = function(req, res) {
             that.m_pedidos_farmacias.consultar_detalle_pedido(pedido.numero_pedido, function(err, detalle_pedido) {
                 pedido.lista_productos = detalle_pedido;
 
-                if (--i === 0)
+                if (--i === 0) {                    
                     res.send(G.utils.r(req.url, 'Lista Pedidos Farmacias', 200, {pedidos_farmacias: lista_pedidos_farmacias, total_registros: total_registros}));
+                }
 
             });
         });

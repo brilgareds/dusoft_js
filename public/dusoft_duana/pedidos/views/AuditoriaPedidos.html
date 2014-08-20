@@ -3,11 +3,11 @@
     <!--Auditoria de pedidos-->
 
     <!--route 1 {{welcomemsg}} got to child  <a ui-sref="route1.item">Route item</a>-->
-
+   
     <tabset  class="">
-
+        
         <tab heading="Clientes" ng-controller="AuditoriaPedidosClientesController">
-
+            mensaje {{Mensaje}}
             <div class="input-group navbar-form">
 
                 <input type="text" class="form-control pull-right" ng-keypress="onKeySeparadosPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">

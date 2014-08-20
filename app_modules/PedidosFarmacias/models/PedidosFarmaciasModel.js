@@ -35,12 +35,14 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
                      when a.estado = 2 then 'Auditado' \
                      when a.estado = 3 then 'En Despacho' \
                      when a.estado = 4 then 'Despachado' end as descripcion_estado_actual_pedido, \
+                f.estado as estado_separacion, \
                 a.fecha_registro::date as fecha_registro \
                 from solicitud_productos_a_bodega_principal as a \
                 inner join bodegas as b on a.farmacia_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega \
                 inner join centros_utilidad as c on b.empresa_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad \
                 inner join empresas as d ON c.empresa_id = d.empresa_id \
                 inner join system_usuarios as e ON a.usuario_id = e.usuario_id \
+                left join inv_bodegas_movimiento_tmp_despachos_farmacias f on a.solicitud_prod_a_bod_ppal_id = f.solicitud_prod_a_bod_ppal_id  \
                 where a.farmacia_id = $1 \
                 and ( a.solicitud_prod_a_bod_ppal_id ilike $2 \
                       or d.razon_social ilike $2 \

@@ -3,7 +3,6 @@
     <!--route 1 {{welcomemsg}} got to child  <a ui-sref="route1.item">Route item</a>-->
 
     <tabset  class="">
-
         <tab heading="Clientes" ng-controller="PedidosClientesController">
             <select ui-select2  class="pull-left" style="width:300px" ng-model="seleccion" data-placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
                 <option ng-repeat="empresa in  empresas"  ng-value="empresa.empresa_id" >{{empresa.razon_social}}</option>
@@ -37,9 +36,9 @@
 
         <tab heading="Farmacias" ng-controller="PedidosFarmaciasController">
 
-                <select ui-select2  class="pull-left" style="width:300px" ng-model="seleccion" data-placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
-                    <option ng-repeat="empresa in  empresas"  ng-value="empresa.empresa_id" >{{empresa.razon_social}}</option>
-                </select>
+            <select ui-select2  class="pull-left" style="width:300px" ng-model="seleccion" data-placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
+                <option ng-repeat="empresa in  empresas"  ng-value="empresa.empresa_id" >{{empresa.razon_social}}</option>
+            </select>
 
             <div class="input-group navbar-form">
 
@@ -58,7 +57,7 @@
                 <span class="glyphicon glyphicon-ok" ></span> Asignar Responsables
             </button>
 
-             <div class="row text-center">
+            <div class="row text-center">
                 <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 0" ng-click="paginaAnterior()">
                     <span class="glyphicon glyphicon-chevron-left" ></span>
                 </button>

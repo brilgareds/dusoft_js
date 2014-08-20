@@ -17,15 +17,23 @@ define(["angular","js/directive"], function(angular, directive){
 
               angular.element(document).ready(function() {
 
+                  //modal del slider
+                  var modalslide = $("#contenedormodalslide");
+
+                  if(!modalslide.length > 0){
+                    $(document.body).append("<div id='contenedormodalslide'> </div>");
+                    modalslide = $("#contenedormodalslide");
+                  }
+
                   //asegura que el slide este cerrado
-                  slide.cerrarslide($element, false);
+                  slide.cerrarslide($element, false, modalslide);
 
                   //emite al menu que ha sido cargado el slide
                   $rootScope.$emit("slidecargado");
 
                   //determina el margen del slide cuando el menu esta listo
                   $rootScope.$on("configurarslide",function(){
-                    slide.configurarSlide($element);
+                    slide.configurarSlide($element, modalslide);
                   });
 
                   //configura el ancho del slide de acuerdo al evento de resize del navegador
@@ -35,35 +43,40 @@ define(["angular","js/directive"], function(angular, directive){
                       menuWidth = 10;
                     }
 
-                    slide.configurarSlide($element);
+                    slide.configurarSlide($element, modalslide);
                   });
+
                   //coloca el elemento en el body
-                  $(document.body).append($element.detach());
+                  if($(".slide").length == 0){
+                    $(document.body).append($element.detach());
+                  }
+                  
 
                   $scope.$parent.$on('mostrarslide', function($event) {
-                     slide.mostrarslide($element);
+                     slide.mostrarslide($element, modalslide);
                   });
 
                   $rootScope.$on('cerrarslide', function($event, datos) {
                       if(!datos){
                           datos = {animado :false};
                       }
-                      slide.cerrarslide($element, datos.animado);
+                      slide.cerrarslide($element, datos.animado, modalslide);
                   });
               });  
           },
 
-          configurarSlide : function($element){
+          configurarSlide : function($element, contenedor){
               var width = $(".contenidoPrincipal").width();
               //console.log("configure slide with width "+width);
               $element.width(width +30);
           },
 
-          mostrarslide: function($element){
-             $($element).animate({"display":"block","right":"-8px"});
+          mostrarslide: function($element, contenedor){
+             $element.animate({"display":"block","right":"-8px"});
+             contenedor.show();
           },
 
-          cerrarslide: function($element, animado){
+          cerrarslide: function($element, animado, contenedor){
             var rootWidth = $(window).width() +slide.margen
             if(animado){
               $element.animate(
@@ -72,13 +85,17 @@ define(["angular","js/directive"], function(angular, directive){
 
                   complete:function(){
                     $element.css("display:none");
+
                   }
                 }
 
               );
             } else {
               $element.css({"display":"none","right":"-"+rootWidth+"px"});
+              
             }
+
+            contenedor.hide();
             
           }
 

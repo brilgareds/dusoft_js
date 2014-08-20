@@ -2,11 +2,11 @@
 define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models/Farmacia', 'models/Pedido'], function(angular, controllers) {
 
     controllers.controller('PedidosFarmaciasController', [
-        '$scope','$rootScope', 'Request',
-        '$modal', 'Empresa', 'Farmacia', 
-        'Pedido', 'API','socket',
-        'AlertService',"Usuario",
-        function($scope, $rootScope, Request, $modal, Empresa, Farmacia, Pedido, API, socket, AlertService,Usuario) {
+        '$scope', '$rootScope', 'Request',
+        '$modal', 'Empresa', 'Farmacia',
+        'Pedido', 'API', 'socket',
+        'AlertService', "Usuario",
+        function($scope, $rootScope, Request, $modal, Empresa, Farmacia, Pedido, API, socket, AlertService, Usuario) {
 
 
             $scope.Empresa = Empresa;
@@ -15,60 +15,60 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
             $scope.empresas = [];
             $scope.seleccion = "FD";
             $scope.session = {
-               usuario_id:Usuario.usuario_id,
-               auth_token:Usuario.token
+                usuario_id: Usuario.usuario_id,
+                auth_token: Usuario.token
             };
 
             $scope.paginas = 0;
             $scope.items = 0;
             $scope.termino_busqueda = "";
-            $scope.ultima_busqueda  = "";
+            $scope.ultima_busqueda = "";
             $scope.paginaactual = 0;
 
 
             $scope.buscarPedidosFarmacias = function(termino, paginando) {
 
                 //valida si cambio el termino de busqueda
-                if($scope.ultima_busqueda.termino_busqueda != $scope.termino_busqueda
-                    || $scope.ultima_busqueda.seleccion != $scope.seleccion){
+                if ($scope.ultima_busqueda.termino_busqueda != $scope.termino_busqueda
+                        || $scope.ultima_busqueda.seleccion != $scope.seleccion) {
                     $scope.paginaactual = 0;
                 }
 
                 console.log($scope.ultima_busqueda);
-                console.log($scope.termino_busqueda +" "+$scope.seleccion)
+                console.log($scope.termino_busqueda + " " + $scope.seleccion)
 
                 var obj = {
-                    session:$scope.session,
-                    data:{
-                        pedidos_farmacias:{
-                            termino_busqueda:termino,
-                            empresa_id:$scope.seleccion,
-                            pagina_actual:$scope.paginaactual
+                    session: $scope.session,
+                    data: {
+                        pedidos_farmacias: {
+                            termino_busqueda: termino,
+                            empresa_id: $scope.seleccion,
+                            pagina_actual: $scope.paginaactual
                         }
                     }
                 };
 
-                Request.realizarRequest(API.PEDIDOS.LISTAR_PEDIDOS_FARMACIAS, "POST", obj , function(data) {
-                    if(data.status == 200){
+                Request.realizarRequest(API.PEDIDOS.LISTAR_PEDIDOS_FARMACIAS, "POST", obj, function(data) {
+                    if (data.status == 200) {
                         $scope.ultima_busqueda = {
-                            termino_busqueda:$scope.termino_busqueda,
-                            seleccion:$scope.seleccion
+                            termino_busqueda: $scope.termino_busqueda,
+                            seleccion: $scope.seleccion
                         }
                         $scope.renderPedidosFarmacias(data.obj, paginando);
                     }
-                    
+
                 });
             };
 
-            $scope.listarEmpresas = function(){
+            $scope.listarEmpresas = function() {
 
                 var obj = {
-                    session:$scope.session,
-                    data:{}
+                    session: $scope.session,
+                    data: {}
                 };
 
-                 Request.realizarRequest(API.PEDIDOS.LISTAR_EMPRESAS, "POST", obj, function(data) {
-                    if(data.status == 200){
+                Request.realizarRequest(API.PEDIDOS.LISTAR_EMPRESAS, "POST", obj, function(data) {
+                    if (data.status == 200) {
                         $scope.empresas = data.obj.empresas;
                         //console.log(JSON.stringify($scope.empresas))
                     }
@@ -80,72 +80,81 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
                 data: 'Empresa.getPedidosFarmacia()',
                 enableColumnResize: true,
                 enableColumnResize: true,
-                enableRowSelection:false,
+                        enableRowSelection: false,
                 columnDefs: [
-                    {field: '', cellClass:"checkseleccion", width:"60",
-                    cellTemplate:"<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)' ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
-                    {field: 'descripcion_estado_actual_pedido', displayName: "Estado Actual", cellClass:"txt-center",
-                    cellTemplate: '<div  ng-class="agregarClase(row.entity.estado_actual_pedido)">{{row.entity.descripcion_estado_actual_pedido}}</div>'},
+                    {field: '', cellClass: "checkseleccion", width: "60",
+                        cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)' ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 || row.entity.estado_separacion'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
+                    {field: 'descripcion_estado_actual_pedido', displayName: "Estado Actual", cellClass: "txt-center",
+                        //cellTemplate: '<div  ng-class="agregarClase(row.entity.estado_actual_pedido)">{{row.entity.descripcion_estado_actual_pedido}}</div>'},
+                        cellTemplate: "<button type='button' ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},                        
                     {field: 'numero_pedido', displayName: 'Numero Pedido'},
                     {field: '', displayName: 'Zona'},
                     {field: 'farmacia.nombre_farmacia', displayName: 'Farmacia'},
                     {field: 'farmacia.nombre_bodega', displayName: 'Bodega'},
-                   
                     {field: 'fecha_registro', displayName: "Fecha Registro"}
                 ]
 
             };
 
 
-            $scope.agregarClase = function(estado){
+            $scope.agregarClase = function(estado) {
                 return estados[estado];
             };
+
+            // Agregar Restriccion de acuerdo al estado de asigancion del pedido
+            $scope.agregarRestriccion = function(estado_separacion) {
+
+                var clase = "";
+                if (estado_separacion)
+                    clase = "glyphicon glyphicon-lock";
+
+                return clase;
+            };
+
 
 
             //fin delegado grid pedidos //
 
-            $scope.onPedidoSeleccionado = function(check, row){
+            $scope.onPedidoSeleccionado = function(check, row) {
                 console.log("agregar!!!!!");
                 console.log(check)
                 console.log(row);
 
                 row.selected = check;
-                if(check){
+                if (check) {
                     $scope.agregarPedido(row.entity);
                 } else {
-                   
+
                     $scope.quitarPedido(row.entity);
                 }
-                
-                console.log($scope.pedidosSeleccionados);
-            },  
 
-            $scope.quitarPedido = function(pedido){
-                for(var i in $scope.pedidosSeleccionados){
+                console.log($scope.pedidosSeleccionados);
+            },
+                    $scope.quitarPedido = function(pedido) {
+                for (var i in $scope.pedidosSeleccionados) {
                     var _pedido = $scope.pedidosSeleccionados[i];
-                    if(_pedido.numero_pedido == pedido.numero_pedido){
-                        $scope.pedidosSeleccionados.splice(i,true);
+                    if (_pedido.numero_pedido == pedido.numero_pedido) {
+                        $scope.pedidosSeleccionados.splice(i, true);
                     }
                 }
-            };  
+            };
 
-            $scope.agregarPedido = function(pedido){
+            $scope.agregarPedido = function(pedido) {
                 //valida que no exista el pedido en el array
-                for(var i in $scope.pedidosSeleccionados){
+                for (var i in $scope.pedidosSeleccionados) {
                     var _pedido = $scope.pedidosSeleccionados[i];
-                    if(_pedido.numero_pedido == pedido.numero_pedido){
+                    if (_pedido.numero_pedido == pedido.numero_pedido) {
                         return false;
                     }
                 }
 
                 $scope.pedidosSeleccionados.push(pedido);
             },
-
-            $scope.buscarSeleccion = function(row){
+                    $scope.buscarSeleccion = function(row) {
                 var pedido = row.entity;
-                for(var i in $scope.pedidosSeleccionados){
+                for (var i in $scope.pedidosSeleccionados) {
                     var _pedido = $scope.pedidosSeleccionados[i];
-                    if(_pedido.numero_pedido == pedido.numero_pedido){
+                    if (_pedido.numero_pedido == pedido.numero_pedido) {
                         //console.log("buscarSeleccion encontrado **************");
                         //console.log(pedido);
                         row.selected = true;
@@ -158,14 +167,14 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
 
 
             $scope.renderPedidosFarmacias = function(data, paginando) {
-               // console.log(data);
-               $scope.items = data.pedidos_farmacias.length;
+                // console.log(data);
+                $scope.items = data.pedidos_farmacias.length;
                 //se valida que hayan registros en una siguiente pagina
-                if(paginando && $scope.items == 0){
-                    if($scope.paginaactual > 0){
+                if (paginando && $scope.items == 0) {
+                    if ($scope.paginaactual > 0) {
                         $scope.paginaactual--;
                     }
-                    AlertService.mostrarMensaje("warning","No se encontraron mas registros");
+                    AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
                     return;
                 }
 
@@ -181,7 +190,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
             };
 
 
-            $scope.crearPedido = function(obj){
+            $scope.crearPedido = function(obj) {
                 var pedido = Pedido.get();
                 pedido.setDatos(obj);
 
@@ -192,12 +201,12 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
                 return pedido;
             };
 
-            $scope.reemplazarPedidoEstado = function(pedido){
-                for(var i in $scope.Empresa.getPedidosFarmacia()){
+            $scope.reemplazarPedidoEstado = function(pedido) {
+                for (var i in $scope.Empresa.getPedidosFarmacia()) {
                     var _pedido = $scope.Empresa.getPedidosFarmacia()[i];
 
-                    if(pedido.numero_pedido == _pedido.numero_pedido){
-                        
+                    if (pedido.numero_pedido == _pedido.numero_pedido) {
+
                         console.log(pedido.numero_pedido);
                         _pedido.descripcion_estado_actual_pedido = pedido.descripcion_estado_actual_pedido;
                         _pedido.estado_actual_pedido = pedido.estado_actual_pedido;
@@ -221,7 +230,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
                         pedidosSeleccionados: function() {
                             return $scope.pedidosSeleccionados;
                         },
-                        url:function(){
+                        url: function() {
                             return API.PEDIDOS.ASIGNAR_RESPONSABLE_FARMACIA
                         }
                     }
@@ -233,26 +242,26 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
             };
 
 
-             //eventos
+            //eventos
 
             //delegados del sistema
-            $rootScope.$on("refrescarPedidos",function(){
+            $rootScope.$on("refrescarPedidos", function() {
                 console.log("refrescar pedidos listened");
                 $scope.pedidosSeleccionados = [];
-               // $scope.buscarPedidosCliente("");
+                // $scope.buscarPedidosCliente("");
             });
 
 
             //delegados del socket io
-            socket.on("onListarPedidosFarmacias", function(datos){
+            socket.on("onListarPedidosFarmacias", function(datos) {
                 //console.log(datos);
-                if(datos.status == 200){
-                    var obj    = datos.obj.pedidos_farmacias[0];
+                if (datos.status == 200) {
+                    var obj = datos.obj.pedidos_farmacias[0];
                     var pedido = $scope.crearPedido(obj);
                     console.log("objecto del socket");
                     console.log(pedido)
                     $scope.reemplazarPedidoEstado(pedido);
-                    AlertService.mostrarMensaje("success","pedido Asignado Correctamente!");
+                    AlertService.mostrarMensaje("success", "pedido Asignado Correctamente!");
                 }
             });
 
@@ -263,22 +272,22 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
                 }
             };
 
-            $scope.valorSeleccionado = function(valor){
-               
+            $scope.valorSeleccionado = function(valor) {
+
                 $scope.buscarPedidosFarmacias("");
             };
 
 
-            $scope.paginaAnterior = function(){
+            $scope.paginaAnterior = function() {
                 $scope.paginaactual--;
-                $scope.buscarPedidosFarmacias($scope.termino_busqueda,true);
+                $scope.buscarPedidosFarmacias($scope.termino_busqueda, true);
             };
 
-            $scope.paginaSiguiente = function(){
+            $scope.paginaSiguiente = function() {
                 $scope.paginaactual++;
-                $scope.buscarPedidosFarmacias($scope.termino_busqueda,true);
+                $scope.buscarPedidosFarmacias($scope.termino_busqueda, true);
             };
-            
+
             $scope.buscarPedidosFarmacias("");
             $scope.listarEmpresas();
 

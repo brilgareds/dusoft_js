@@ -17,12 +17,18 @@ define(["angular","js/directive"], function(angular, directive){
 
               angular.element(document).ready(function() {
 
+                  //asegura que el slide este cerrado
+                  slide.cerrarslide($element, false);
+
+                  //emite al menu que ha sido cargado el slide
                   $rootScope.$emit("slidecargado");
+
                   //determina el margen del slide cuando el menu esta listo
                   $rootScope.$on("configurarslide",function(){
                     slide.configurarSlide($element);
                   });
 
+                  //configura el ancho del slide de acuerdo al evento de resize del navegador
                   $( window ).resize(function() {
 
                     if($(window).width() < 1688){
@@ -31,31 +37,22 @@ define(["angular","js/directive"], function(angular, directive){
 
                     slide.configurarSlide($element);
                   });
-
-                  //asegura que el slide este cerrado
-                  slide.cerrarslide($element, false);
-
-                  var rootWidth = $(window).width() + slide.margen;
-                  
-
                   //coloca el elemento en el body
                   $(document.body).append($element.detach());
 
-                 
-                  
                   $scope.$parent.$on('mostrarslide', function($event) {
                      slide.mostrarslide($element);
                   });
 
-                  $scope.$parent.$on('cerrarslide', function($event) {
-                      slide.cerrarslide($element, true);
+                  $rootScope.$on('cerrarslide', function($event, datos) {
+                      slide.cerrarslide($element, datos.animado);
                   });
               });  
           },
 
           configurarSlide : function($element){
               var width = $(".contenidoPrincipal").width();
-              console.log("configure slide with width "+width);
+              //console.log("configure slide with width "+width);
               $element.width(width +30);
           },
 
@@ -77,7 +74,7 @@ define(["angular","js/directive"], function(angular, directive){
 
               );
             } else {
-              $element.css({"right":"-"+rootWidth+"px", "display":"none"});
+              $element.css({"display":"none","right":"-"+rootWidth+"px"});
             }
             
           }

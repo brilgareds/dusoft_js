@@ -331,11 +331,16 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
     /*=========================================================================*/
     
     if (filtro !== undefined ) {        
+        
+        if(filtro.asignados){
+            sql_aux = " AND f.doc_tmp_id IS NULL ";
+        }
+        
         if(filtro.temporales){
-            sql_aux += " AND f.doc_tmp_id IS NOT NULL ";
+            sql_aux = " AND f.doc_tmp_id IS NOT NULL AND f.estado = '0'";
         }        
         if(filtro.finalizados){
-            sql_aux += " AND f.estado = '1' ";            
+            sql_aux = " AND f.estado = '1' ";            
         }        
     }
     
@@ -388,7 +393,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
                     )\
                 order by d.fecha asc ";
     
-    G.db.pagination(sql, [responsable, "%" + termino_busqueda + "%"], pagina, limite, function(err, rows, result, total_records) {        
+    G.db.pagination(sql, [responsable, "%" + termino_busqueda + "%"], pagina, limite, function(err, rows, result, total_records) {           
         callback(err, rows, total_records);
     });
 

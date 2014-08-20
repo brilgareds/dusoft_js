@@ -50,9 +50,12 @@ body{
 }
 
 
-html body {
+html, body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
   font-size: 12px;
+  height: 100%;
+  margin:0;
+   padding:0;
 }
 
 .cellPedido{
@@ -96,6 +99,7 @@ ul.dropdown-menu {
 
 html{
 	overflow-x: hidden; 
+	background-color: transparent;
 }
 
 input.readonlyinput[readonly]{
@@ -327,6 +331,16 @@ div.ngHeaderCell	{
   }
 }
 
+
+/*media query general (botones, textos etc)*/
+
+@media (max-width: 769px) {
+    .btn-accion{
+        width: 100%;
+    }
+   
+}
+
 @font-face {
   font-family: 'Glyphicons Halflings';
 }
@@ -335,7 +349,9 @@ div.ngHeaderCell	{
 .slide{
     width: 100%;
     top: 55px;
+    height: 100%;
     position: absolute;
     background-color: rgba(248,248,248,0.9);
     z-index: 4;
+    margin-bottom:5px;
 }

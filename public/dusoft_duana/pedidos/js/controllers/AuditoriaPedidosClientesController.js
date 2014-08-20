@@ -21,6 +21,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', '../../
             $scope.paginaactual = 0;
             //Arreglo temporal para prueba de Grid
             $scope.pedidosSeparados = [];
+            $scope.Mensaje = "";
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
             
@@ -32,92 +33,111 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', '../../
                 }
                 
                 //**-- El data viene definido de la lógica en el node js ... pedidos_separados_clientes deberá definirse allá y se debe cambiar si biene con otro nombre
-                var obj = {
-                    session:$scope.session,
-                    data:{
-                        pedidos_separados_clientes:{
-                            termino_busqueda:termino,
-                            pagina_actual:$scope.paginaactual
-                        }
-                    }
-                };
+                
+//                var obj = {
+//                    session:$scope.session,
+//                    data:{
+//                        pedidos_separados_clientes:{
+//                            termino_busqueda:termino,
+//                            pagina_actual:$scope.paginaactual
+//                        }
+//                    }
+//                };
 
+                obj = {};
                
                // --** En éste punto se usará API.PEDIDOS.LISTAR_PEDIDOS_SEPARADOS **--
+               
               /*  Request.realizarRequest(API.PEDIDOS.LISTAR_PEDIDOS_SEPARADOS, "POST", obj, function(data) {
                     $scope.ultima_busqueda = $scope.termino_busqueda;
                     
                     //--** En éste punto simular el render mientras están listos lo servicios
                     $scope.renderPedidosSeparadosCliente(data.obj, paginando);
                 });*/
+                
+                Request.realizarRequest("/testing", "POST", obj, function(data) {
+                    //$scope.ultima_busqueda = $scope.termino_busqueda;
+                    
+                    $scope.Mensaje = data.msj;
+                    console.log("mensaje scope ",$scope.Mensaje );
+                    
+                    //--** En éste punto simular el render mientras están listos lo servicios
+                    //$scope.renderPedidosSeparadosCliente(data.obj, paginando);
+                    
+                     for(var i=0; i < 100; i++){
+
+                        var estado = '';
+                        var zona = '';
+
+                        if(i%2)
+                            estado = 'Terminado';
+                        else
+                            estado = 'En Proceso';
+
+                        if(i%4 == 0)
+                            zona = 'Norte';
+                        else if(i%4 == 1)
+                            zona = 'Sur';
+                        else if(i%4 == 2)
+                            zona = 'Oriente';
+                        else if(i%4 == 3)
+                            zona = 'Occidente';
+
+                        var pedido = {
+                            numero_pedido : '102001_'+i,
+                            nombre_cliente: 'Juan Cliente Mejía_'+i,
+                            nombre_vendedor: 'Carlos Marín',
+                            zona_pedido: zona,
+                            descripcion_estado_actual_separado: estado,
+                            estado_actual_separado: 2+(2*(i%2)),
+                            nombre_separador: $scope.Mensaje,
+                            fecha_registro: '12-08-2014',
+                        };
+                         $scope.Empresa.agregarPedido(pedido);
+
+                         //Se adiciona aquí porque no coincipen los campos con los de pedido asociado a la empresa
+                         $scope.pedidosSeparados.push(pedido);
+
+                    };
+
+                });
             };
             
             //informacion temporal
-            for(var i=0; i < 100; i++){
-                
-                var estado = '';
-                var zona = '';
-                
-                if(i%2)
-                    estado = 'Terminado';
-                else
-                    estado = 'En Proceso';
-                
-                if(i%4 == 0)
-                    zona = 'Norte';
-                else if(i%4 == 1)
-                    zona = 'Sur';
-                else if(i%4 == 2)
-                    zona = 'Oriente';
-                else if(i%4 == 3)
-                    zona = 'Occidente';
-                
-                var pedido = {
-                    numero_pedido : '102001_'+i,
-                    nombre_cliente: 'Juan Cliente Mejía_'+i,
-                    nombre_vendedor: 'Carlos Marín',
-                    zona_pedido: zona,
-                    descripcion_estado_actual_separado: estado,
-                    estado_actual_separado: 2+(2*(i%2)),
-                    nombre_separador: 'Juanito Perez',
-                    fecha_registro: '12-08-2014',
-                };
-                 $scope.Empresa.agregarPedido(pedido);
-                 
-                 //Se adiciona aquí porque no coincipen los campos con los de pedido asociado a la empresa
-                 $scope.pedidosSeparados.push(pedido);
-                 
-            }
-
-            $scope.renderPedidosSeparadosCliente = function(data, paginando) {
-
-                $scope.items = data.pedidos_separados_clientes.length;
-                //se valida que hayan registros en una siguiente pagina
-                if(paginando && $scope.items == 0){
-                    if($scope.paginaactual > 0){
-                        $scope.paginaactual--;
-                    }
-                    AlertService.mostrarMensaje("warning","No se encontraron mas registros");
-                    return;
-                }
-
-                $scope.Empresa.vaciarPedidos();
-               
-
-                for (var i in data.pedidos_separados_clientes) {
-
-                    var obj = data.pedidos_separados_clientes[i];
-                    //console.log(obj);
-                    var pedido = $scope.crearPedido(obj);
-
-                    $scope.Empresa.agregarPedido(
-                        pedido
-                    );
+            
+//            $scope.renderPedidosSeparadosCliente = function(data, paginando) {
+//
+//                $scope.items = data.pedidos_separados_clientes.length;
+//                //se valida que hayan registros en una siguiente pagina
+//                if(paginando && $scope.items == 0){
+//                    if($scope.paginaactual > 0){
+//                        $scope.paginaactual--;
+//                    }
+//                    AlertService.mostrarMensaje("warning","No se encontraron mas registros");
+//                    return;
+//                }
+//
+//                $scope.Empresa.vaciarPedidos();
+//               
+//
+//                for (var i in data.pedidos_separados_clientes) {
+//
+//                    var obj = data.pedidos_separados_clientes[i];
+//                    //console.log(obj);
+//                    var pedido = $scope.crearPedido(obj);
+//
+//                    $scope.Empresa.agregarPedido(
+//                        pedido
+//                    );
+//
+//
+//                }
+//
+//            };
 
 
-                }
+           
 
-            };
 
             //**-- Se debe llamar crearPedido o debe llamarse crearPedidoSeparado ?
             //**-- Con el pedido debe crearse el documento relacionado que contiene lo que se ha separado

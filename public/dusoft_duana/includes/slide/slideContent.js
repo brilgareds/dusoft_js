@@ -44,20 +44,23 @@ define(["angular","js/directive"], function(angular, directive){
                      slide.mostrarslide($element);
                   });
 
-                  $scope.$parent.$on('cerrarslide', function($event) {
-                      slide.cerrarslide($element, true);
+                  $rootScope.$on('cerrarslide', function($event, datos) {
+                      if(!datos){
+                          datos = {animado :false};
+                      }
+                      slide.cerrarslide($element, datos.animado);
                   });
               });  
           },
 
           configurarSlide : function($element){
               var width = $(".contenidoPrincipal").width();
-              console.log("configure slide with width "+width);
+              //console.log("configure slide with width "+width);
               $element.width(width +30);
           },
 
           mostrarslide: function($element){
-             $($element).animate({"display":"block","right":"-8px"});
+             $element.animate({"display":"block","right":"-8px"});
           },
 
           cerrarslide: function($element, animado){
@@ -74,7 +77,7 @@ define(["angular","js/directive"], function(angular, directive){
 
               );
             } else {
-              $element.css({"right":"-"+rootWidth+"px", "display":"none"});
+              $element.css({"display":"none","right":"-"+rootWidth+"px"});
             }
             
           }

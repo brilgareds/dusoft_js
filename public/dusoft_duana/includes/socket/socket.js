@@ -5,9 +5,13 @@ define(["angular","js/services"], function(angular, services){
         on: function (eventName, callback) {
           socket.on(eventName, function () {  
             var args = arguments;
-            $rootScope.$apply(function () {
-              callback.apply(socket, args);
-            });
+            
+            if(!$rootScope.$$phase) {
+               $rootScope.$apply(function () {
+                callback.apply(socket, args);
+              });
+            }
+           
           });
         },
         emit: function (eventName, data, callback) {

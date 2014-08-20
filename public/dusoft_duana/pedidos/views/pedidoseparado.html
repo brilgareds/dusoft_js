@@ -6,53 +6,49 @@
    
 
 
-<div class="panel panel-default">            
-    <div class="panel-body">
-        <div class="row">
-            <button ng-click="cerrar()" class="pull-right btn btn-default btn-xs" style="margin-right:15px"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>   
+    <div class="row">            
+        <div class="panel-body col-sm-12">
+            <div class="row">
+                <button ng-click="cerrar()" class="pull-right btn btn-default btn-xs" style="margin-right:15px"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>   
+            </div>
+
+            <!--Ojo con ésta sección de código - Es importante al relacionar la lógica -->
+            <!--<tab heading="Separado Pedido N°: {{ numero_pedido }}" ng-controller="DetallepedidoSeparadoController">
+                   <div class="defaultGrid" ng-grid="detalle_pedido_separado_cliente"></div>
+            </tab>-->    
+
+            <div class="row">
+                <div class="col-xs-6 text-left">
+                  <h4>Tipo Documento</h4>
+                  <!--<h4><small>Pedido: 12345678</small></h4>-->
+                    <li class="dropdown pull-left">
+                        <a href="#" data-toggle="dropdown" class="dropdown-toggle">Documento <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">EFC</a></li>
+                            <li><a href="#">ECC</a></li>
+                            <li><a href="#">CVC</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">BBVA</a></li>
+                        </ul>
+                    </li>
+                </div>
+                <div class="col-xs-6 text-right">
+                    <h1>
+                        <a href="">
+                        <img src="">
+                            Logo aquí
+                        </a>
+                    </h1>
+                </div>
+                <hr>           
+          </div>
+
         </div>
-        
-        <!--Ojo con ésta sección de código - Es importante al relacionar la lógica -->
-        <!--<tab heading="Separado Pedido N°: {{ numero_pedido }}" ng-controller="DetallepedidoSeparadoController">
-               <div class="defaultGrid" ng-grid="detalle_pedido_separado_cliente"></div>
-        </tab>-->    
-           
-        <div class="row">
-            <div class="col-xs-6 text-left">
-              <h4>Tipo Documento</h4>
-              <!--<h4><small>Pedido: 12345678</small></h4>-->
-                <li class="dropdown pull-left">
-                    <a href="#" data-toggle="dropdown" class="dropdown-toggle">Documento <b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">EFC</a></li>
-                        <li><a href="#">ECC</a></li>
-                        <li><a href="#">CVC</a></li>
-                        <li class="divider"></li>
-                        <li><a href="#">BBVA</a></li>
-                    </ul>
-                </li>
-            </div>
-            <div class="col-xs-6 text-right">
-                <h1>
-                    <a href="">
-                    <img src="">
-                        Logo aquí
-                    </a>
-                </h1>
-            </div>
-            <hr>           
-      </div>
-        
     </div>
-</div>
-        
-        
-        
-        
-           
+ 
       <div class="row">
         
-        <div class="col-xs-6">
+        <div class="col-sm-12 col-md-6">
     
           <div class="panel panel-default">
             <div class="panel-heading">
@@ -68,7 +64,7 @@
           </div>
             
         </div>
-        <div class="col-xs-6 ">
+        <div class="col-sm-12 col-md-6">
           <div class="panel panel-default">
             <div class="panel-heading">
               <h4>Hacia : <a href="#">CLIENTE</a></h4>
@@ -87,8 +83,8 @@
       
       <!-- Begin Código desplazado -->
       
-            <div class="row"> <!-- / begin payment details section -->
-          <div class="col-xs-4">
+     <div class="row"> <!-- / begin payment details section -->
+          <div class="col-sm-12 col-md-4">
             
             
             <div class="panel panel-info"> <!-- / begin banking details -->
@@ -105,7 +101,7 @@
             </div> <!-- / end banking details -->
             
           </div>
-          <div class="col-xs-8">
+          <div class="col-sm-12 col-md-8">
             
             <div class="span7"> <!-- / begin contact details -->
                 <div class="panel panel-info">
@@ -242,23 +238,6 @@
                     </tbody>
                   </table>  / end project details section -->
                   
-                <div class="row text-right"> <!-- / begin total amount section -->
-                  <div class="col-xs-2 col-xs-offset-8">
-                    <p>
-                      <strong>
-                        Sub Total : <br>
-                        Total : <br>
-                      </strong>
-                    </p>
-                  </div>
-                  <div class="col-xs-2">
-                    <strong>
-                      $1200.00 <br>
-                      $1200.00 <br>
-                    </strong>
-                  </div>
-                </div> <!-- / end total amount section -->                           
-                  
                 </div> 
 
             </div>
@@ -266,13 +245,11 @@
         </div>    
       </div> <!-- / end class row --> 
       
-    <div class="panel panel-default">            
-        <div class="panel-body">
-            <div class="row">
-                <button type="submit" class="btn btn-primary pull-right">Generar Documento</button>    
-        </div>
-      </div>
-    </div>
+
+       <div class="col-sm-12">
+           <button type="submit" class="btn btn-accion btn-primary pull-right">Generar Documento</button>    
+       </div>
+
 
 <!--    </tabset> -->
 

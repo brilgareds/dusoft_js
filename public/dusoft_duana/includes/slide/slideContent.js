@@ -45,6 +45,9 @@ define(["angular","js/directive"], function(angular, directive){
                   });
 
                   $rootScope.$on('cerrarslide', function($event, datos) {
+                      if(!datos){
+                          datos = {animado :false};
+                      }
                       slide.cerrarslide($element, datos.animado);
                   });
               });  

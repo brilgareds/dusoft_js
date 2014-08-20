@@ -327,6 +327,16 @@ div.ngHeaderCell	{
   }
 }
 
+
+/*media query general (botones, textos etc)*/
+
+@media (max-width: 769px) {
+    .btn-accion{
+        width: 100%;
+    }
+   
+}
+
 @font-face {
   font-family: 'Glyphicons Halflings';
 }

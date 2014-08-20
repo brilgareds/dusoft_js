@@ -135,14 +135,18 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
     /*=========================================================================*/
 
     if (filtro !== undefined) {
+
+        if (filtro.asignados) {
+            sql_aux = " AND h.doc_tmp_id IS NULL ";
+        }
+
         if (filtro.temporales) {
-            sql_aux += " AND h.doc_tmp_id IS NOT NULL ";
+            sql_aux = " AND h.doc_tmp_id IS NOT NULL AND h.estado = '0' ";
         }
         if (filtro.finalizados) {
-            sql_aux += " AND h.estado = '1' ";
+            sql_aux = " AND h.estado = '1' ";
         }
     }
-
 
     var sql = " select \
                 h.doc_tmp_id as documento_temporal_id,\
@@ -189,6 +193,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                 ) order by f.fecha asc ";
 
     G.db.pagination(sql, [responsable, "%" + termino_busqueda + "%"], pagina, limite, function(err, rows, result, total_records) {
+       
         callback(err, rows, total_records);
     });
 };

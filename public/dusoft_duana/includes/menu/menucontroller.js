@@ -5,7 +5,7 @@ define(["angular", "js/controllers", "treemenu"], function(angular, controllers)
 
             $scope.$on("nodeSelected", function(e, data) {
 
-                console.log(data);
+                
 
                 var parent = data.parent;
                 var url = data.url;
@@ -20,22 +20,18 @@ define(["angular", "js/controllers", "treemenu"], function(angular, controllers)
                     } else {
                         //si no posee la propiedad parentname se coloca por default el nombre del modulo actual
                         var parentname = (data.parentname == undefined) ? $rootScope.name : data.parentname;
-
                         if ($rootScope.name == parentname) {
                             $state.go(data.url);
                         } else {
                             url = "../" + parentname + "/#/" + url;
                             $scope.changelocation(url);
-
                         }
-
+                        //se ecargar de cerrar cualquier slide que este abierto
+                        $rootScope.$emit("cerrarslide", {animado:false});
                     }
                 } else {
                     console.log("No se encontro el url");
                 }
-
-
-
             });
 
 

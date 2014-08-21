@@ -363,5 +363,5 @@ div.ngHeaderCell	{
     background-color: rgba(248,248,248,0.9);
     z-index: 101;
     margin-bottom:5px;
-    padding: 5px;
+    right: 5px;
 }

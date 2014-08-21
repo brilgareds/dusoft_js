@@ -68,11 +68,11 @@ define(["angular","js/directive"], function(angular, directive){
           configurarSlide : function($element, contenedor){
               var width = $(".contenidoPrincipal").width();
               //console.log("configure slide with width "+width);
-              $element.width(width +30);
+              $element.width(width +25);
           },
 
           mostrarslide: function($element, contenedor){
-             $element.animate({"display":"block","right":"-8px"});
+             $element.animate({"display":"block","right":"0px"});
              contenedor.show();
           },
 

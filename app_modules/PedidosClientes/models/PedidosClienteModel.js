@@ -220,7 +220,8 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
                      when a.estado_pedido = 1 then 'Asignado' \
                      when a.estado_pedido = 2 then 'Auditado' \
                      when a.estado_pedido = 3 then 'En Despacho' \
-                     when a.estado_pedido = 4 then 'Despachado' end as descripcion_estado_actual_pedido, \
+                     when a.estado_pedido = 4 then 'Despachado' \
+                     when a.estado_pedido = 5 then 'Despachado con Pendientes' end as descripcion_estado_actual_pedido, \
                 a.fecha_registro \
                 from ventas_ordenes_pedidos a \
                 inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id \
@@ -401,7 +402,8 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
                      when a.estado_pedido = 1 then 'Asignado' \
                      when a.estado_pedido = 2 then 'Auditado' \
                      when a.estado_pedido = 3 then 'En Despacho' \
-                     when a.estado_pedido = 4 then 'Despachado' end as descripcion_estado_actual_pedido, \
+                     when a.estado_pedido = 4 then 'Despachado' \
+                     when a.estado_pedido = 5 then 'Despachado con Pendientes' end as descripcion_estado_actual_pedido, \
                 f.estado as estado_separacion,     \
                 case when f.estado = '0' then 'Separacion en Proceso' \
                      when f.estado = '1' then 'Separacion Finalizada' end as descripcion_estado_separacion,\

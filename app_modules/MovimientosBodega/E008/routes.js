@@ -43,16 +43,6 @@ module.exports = function(app, di_container) {
         c_e008.consultarDocumentosTemporalesFarmacias(req, res);
     });
 
-    // Consultar los documentos temporales de despacho CLIENTES que un operario de bodega ha creado
-    app.post('/api/movBodegas/E008/consultarDocumentoTemporalClientesPorUsuario', function(req, res) {
-        c_e008.consultarDocumentosTemporalesClientesPorUsuario(req, res);
-    });
-
-    // Consultar los documentos temporales de despacho FARMACIAS que un operario de bodega ha creado
-    app.post('/api/movBodegas/E008/consultarDocumentosTemporalesFarmaciasPorUsuario', function(req, res) {
-        c_e008.consultarDocumentosTemporalesFarmaciasPorUsuario(req, res);
-    });
-
     // Consultar Documento Temporal Clientes x numero de pedido
     app.post('/api/movBodegas/E008/consultarDocumentoTemporalClientes', function(req, res) {
         c_e008.consultarDocumentoTemporalClientes(req, res);

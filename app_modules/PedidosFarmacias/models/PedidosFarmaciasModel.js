@@ -17,7 +17,45 @@ PedidosFarmaciasModel.prototype.listar_empresas = function(usuario, callback) {
 
 
 // Listar todos los pedidos de farmacias
-PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, termino_busqueda, pagina, callback) {
+PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, termino_busqueda, filtro, pagina, callback) {
+    
+    /*=========================================================================*/
+    // Se implementa este filtro, para poder filtrar los pedidos por el estado actual
+    // 0 - No Asignado 
+    // 1 - Asignado
+    // 2 - Auditado
+    // 3 - En Zona Despacho
+    // 4 - Despachado
+    // 5 - Despachado con Pendientes
+    /*=========================================================================*/
+
+    var sql_aux = " ";
+
+    if (filtro !== undefined) {
+
+        if (filtro.no_asignados) {
+            sql_aux = " AND a.estado = '0' ";
+        }
+
+        if (filtro.asignados) {
+            sql_aux = " AND a.estado = '1' ";
+        }
+        if (filtro.auditados) {
+            sql_aux = " AND a.estado = '2'  ";
+        }
+
+        if (filtro.en_zona_despacho) {
+            sql_aux = " AND  a.estado = '3' ";
+        }
+
+        if (filtro.despachado) {
+            sql_aux = " AND a.estado = '4' ";
+        }
+
+        if (filtro.despachado_pendientes) {
+            sql_aux = " AND a.estado = '5' ";
+        }
+    }
 
     var sql = " select \
                 a.solicitud_prod_a_bod_ppal_id as numero_pedido, \
@@ -43,7 +81,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
                 inner join empresas as d ON c.empresa_id = d.empresa_id \
                 inner join system_usuarios as e ON a.usuario_id = e.usuario_id \
                 left join inv_bodegas_movimiento_tmp_despachos_farmacias f on a.solicitud_prod_a_bod_ppal_id = f.solicitud_prod_a_bod_ppal_id  \
-                where a.farmacia_id = $1 \
+                where a.farmacia_id = $1 "+ sql_aux +"\
                 and ( a.solicitud_prod_a_bod_ppal_id ilike $2 \
                       or d.razon_social ilike $2 \
                       or b.descripcion ilike $2 \

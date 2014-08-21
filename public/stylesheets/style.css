@@ -359,6 +359,15 @@ div.ngHeaderCell	{
 }
 
 
+div.selectgeneral{
+	padding-right:0px;
+	padding-left:0px;
+	border:0px;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+}
+
 .slide{
     width: 100%;
     top: 0px;

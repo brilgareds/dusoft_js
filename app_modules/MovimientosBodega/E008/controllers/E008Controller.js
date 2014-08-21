@@ -34,7 +34,7 @@ E008Controller.prototype.documentoTemporalClientes = function(req, res) {
     var usuario_id = req.session.user.usuario_id;
 
     that.m_e008.ingresar_despacho_clientes_temporal(bodegas_doc_id, numero_pedido, tipo_tercero_id, tercero_id, observacion, usuario_id, function(err, doc_tmp_id) {
-        if (err) {            
+        if (err) {
             res.send(G.utils.r(req.url, 'Error Creando el Documento Temporal Clientes', 500, {documento_temporal: {}}));
             return;
         } else {
@@ -231,7 +231,32 @@ E008Controller.prototype.detalleDocumentoTemporal = function(req, res) {
 // Consultar TODOS los documentos temporales de despacho clientes 
 E008Controller.prototype.consultarDocumentosTemporalesClientes = function(req, res) {
 
+    var that = this;
 
+    var args = req.body.data;
+
+    if (args.documento_temporal === undefined || args.documento_temporal.termino_busqueda === undefined || args.documento_temporal.pagina_actual === undefined) {
+        res.send(G.utils.r(req.url, 'El termino_busqueda o la pagina_actual no estan definidos', 404, {}));
+        return;
+    }
+    if (args.documento_temporal.pagina_actual === '' || args.documento_temporal.pagina_actual <= 0) {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual o que sea mayor a 0', 404, {}));
+        return;
+    }
+
+    var empresa_id = '03';
+    var termino_busqueda = args.documento_temporal.termino_busqueda;
+    var pagina_actual = args.documento_temporal.pagina_actual;
+    var filtro = args.documento_temporal.filtro;
+
+    that.m_movientos_bodegas.consultar_documentos_temporales_clientes(empresa_id, termino_busqueda, filtro, pagina_actual, function(err, documentos_temporales, total_records) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error consultado los documentos temporales de clientes', 500, {documentos_temporales: {}}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Lista Documentos Temporales ', 200, {documentos_temporales: documentos_temporales}));
+        }
+    });
 };
 
 // Consultar TODOS los documentos temporales de despacho farmacias 
@@ -381,7 +406,7 @@ E008Controller.prototype.consultarDocumentoTemporalFarmacias = function(req, res
                     }
 
                 });
-                
+
                 res.send(G.utils.r(req.url, 'Información Documento Temporal Farmacias ', 200, {documento_temporal: documento_temporal}));
             });
 

@@ -92,6 +92,87 @@ DocuemntoBodegaE008.prototype.ingresar_despacho_farmacias_temporal = function(bo
     });
 };
 
+// Consultar Documentos Temporales Clientes 
+DocuemntoBodegaE008.prototype.consultar_documentos_temporales_clientes = function(empresa_id, termino_busqueda, filtro, pagina, callback) {
+
+    /*=========================================================================*/
+    // Se implementa este filtro, para poder filtrar todos los docuemntos 
+    // temporales de clientes o solo los finalizados
+    /*=========================================================================*/
+
+    var sql_aux = " ";
+
+    if (filtro !== undefined) {
+
+        if (filtro.en_proceso) {
+            sql_aux = " AND a.estado = '0' ";
+        }
+        if (filtro.finalizados) {
+            sql_aux = " AND a.estado = '1' ";
+        }
+    }
+
+    var sql = " select \
+                a.doc_tmp_id as documento_temporal_id,\
+                a.pedido_cliente_id as numero_pedido,\
+                d.tipo_id_tercero as tipo_id_cliente, \
+                d.tercero_id as identificacion_cliente, \
+                d.nombre_tercero as nombre_cliente, \
+                d.direccion as direccion_cliente, \
+                d.telefono as telefono_cliente,\
+                e.tipo_id_vendedor, \
+                e.vendedor_id as idetificacion_vendedor, \
+                e.nombre as nombre_vendedor, \
+                c.estado,\
+                case when c.estado = 0 then 'Inactivo' \
+                     when c.estado = 1 then 'Activo' end as descripcion_estado,\
+                c.estado_pedido as estado_actual_pedido, \
+                case when c.estado_pedido = 0 then 'No Asignado' \
+                     when c.estado_pedido = 1 then 'Asignado' \
+                     when c.estado_pedido = 2 then 'Auditado' \
+                     when c.estado_pedido = 3 then 'En Despacho' \
+                     when c.estado_pedido = 4 then 'Despachado'\
+                     when c.estado_pedido = 5 then 'Despachado con Pendientes' end as descripcion_estado_actual_pedido,    \
+                f.responsable_id,\
+                g.nombre  as responsable_pedido,     \
+                a.estado as estado_separacion,     \
+                case when a.estado = '0' then 'Separacion en Proceso' \
+                     when a.estado = '1' then 'Separacion Finalizada' end as descripcion_estado_separacion,     \
+                c.fecha_registro,    \
+                f.fecha as fecha_asignacion_pedido, \
+                b.fecha_registro as fecha_separacion_pedido \
+                from inv_bodegas_movimiento_tmp_despachos_clientes a\
+                inner join inv_bodegas_movimiento_tmp b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
+                inner join ventas_ordenes_pedidos c on a.pedido_cliente_id = c.pedido_cliente_id\
+                inner join terceros d on c.tipo_id_tercero = d.tipo_id_tercero and c.tercero_id = d.tercero_id \
+                inner join vnts_vendedores e on c.tipo_id_vendedor = e.tipo_id_vendedor and c.vendedor_id = e.vendedor_id \
+                inner join ventas_ordenes_pedidos_estado f on c.pedido_cliente_id = f.pedido_cliente_id and c.estado_pedido = f.estado\
+                inner join operarios_bodega g on f.responsable_id = g.operario_id \
+                where c.empresa_id = $1 "+ sql_aux +"\
+                and (\
+                     a.pedido_cliente_id ilike $2 or\
+                     d.tercero_id ilike $2 or\
+                     d.nombre_tercero  ilike $2 or\
+                     e.vendedor_id ilike $2 or\
+                     e.nombre ilike $2 or\
+                     g.nombre ilike $2 \
+                )";
+
+    G.db.pagination(sql, [[empresa_id, "%" + termino_busqueda + "%"]], pagina, G.settings.limit, function(err, rows, result, total_records) {
+        callback(err, rows, total_records);
+    });
+};
+
+// Consultar Documentos Temporales Farmacias 
+DocuemntoBodegaE008.prototype.consultar_documentos_temporales_farmacias = function(callback) {
+
+    var sql = "  ";
+
+    G.db.query(sql, [], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
 // Consultar documento temporal de clientes x numero de pedido
 DocuemntoBodegaE008.prototype.consultar_documento_temporal_clientes = function(numero_pedido, callback) {
 
@@ -208,9 +289,7 @@ DocuemntoBodegaE008.prototype.ingresar_justificaciones_pendientes = function(doc
                 VALUES ($1, $2, $3, $4, $5, $6 ); ";
 
     G.db.query(sql, [doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, justificacion, existencia], function(err, rows, result) {
-        console.log('+--------------+');
-        console.log(err);
-        console.log('+--------------+');
+
         callback(err, rows);
     });
 

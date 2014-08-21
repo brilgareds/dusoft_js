@@ -4,9 +4,11 @@
 
     <tabset  class="">
         <tab heading="Clientes" ng-controller="PedidosClientesController">
-            <select ui-select2  class="pull-left" style="width:300px" ng-model="seleccion" data-placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
-                <option ng-repeat="empresa in  empresas"  ng-value="empresa.empresa_id" >{{empresa.razon_social}}</option>
+            <select ui-select2="selectestados"  class="pull-left" style="width:300px" ng-model="estadoseleccionado"  ng-change="seleccionEstado()">
+                <option></option>
+                <option ng-repeat="estado_pedido in  estados_pedido"  ng-value="estado_pedido.estado" >{{estado_pedido.nombre}}</option>
             </select>
+
             <div class="input-group navbar-form">
 
                 <input type="text" class="form-control pull-right" ng-keypress="onKeyPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">

@@ -18,24 +18,10 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
             $scope.items = 0;
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
-            $scope.paginaactual = 0;
+            $scope.paginaactual = 1;
 
 
-            $scope.selectestados = {
-                placeholder:"Seleccionar Estado"
-            };
-
-            $scope.estados_pedido = [
-                {estado:"", nombre:"Todos"},
-                {estado:"no_asignados", nombre:"No Asignado"},
-                {estado:"asignados", nombre:"Asignado"},
-                {estado:"auditados", nombre:"Auditado"},
-                {estado:"en_zona_despacho", nombre:"En zona de despacho"},
-                {estado:"despachado", nombre:"Despachado"},
-                {estado:"despachado_pendientes", nombre:"Despachado con pendientes"}
-            ];
-
-            $scope.estadoseleccionado = "";
+    
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
 
@@ -45,7 +31,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
 
                 //valida si cambio el termino de busqueda
                 if ($scope.ultima_busqueda != $scope.termino_busqueda) {
-                    $scope.paginaactual = 0;
+                    $scope.paginaactual = 1;
                 }
 
                 var obj = {
@@ -77,7 +63,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
                 $scope.items = data.pedidos_clientes.length;
                 //se valida que hayan registros en una siguiente pagina
                 if (paginando && $scope.items == 0) {
-                    if ($scope.paginaactual > 0) {
+                    if ($scope.paginaactual > 1) {
                         $scope.paginaactual--;
                     }
                     AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
@@ -94,8 +80,8 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
                     var pedido = $scope.crearPedido(obj);
 
                     $scope.Empresa.agregarPedido(
-                            pedido
-                            );
+                        pedido
+                    );
 
 
                 }
@@ -307,7 +293,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
 
 
             $scope.seleccionEstado = function(){
-                console.log("estado a seleccionar ",$scope.estadoseleccionado);
+                $scope.paginaactual = 1;
                 $scope.buscarPedidosCliente($scope.termino_busqueda, true);
             };
 

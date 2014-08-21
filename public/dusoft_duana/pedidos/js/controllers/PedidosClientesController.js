@@ -20,6 +20,23 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
             $scope.ultima_busqueda = "";
             $scope.paginaactual = 0;
 
+
+            $scope.selectestados = {
+                placeholder:"Seleccionar Estado"
+            };
+
+            $scope.estados_pedido = [
+                {estado:"", nombre:"Todos"},
+                {estado:"no_asignados", nombre:"No Asignado"},
+                {estado:"asignados", nombre:"Asignado"},
+                {estado:"auditados", nombre:"Auditado"},
+                {estado:"en_zona_despacho", nombre:"En zona de despacho"},
+                {estado:"despachado", nombre:"Despachado"},
+                {estado:"despachado_pendientes", nombre:"Despachado con pendientes"}
+            ];
+
+            $scope.estadoseleccionado = "";
+
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
 
 
@@ -36,11 +53,15 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
                     data: {
                         pedidos_clientes: {
                             termino_busqueda: termino,
-                            pagina_actual: $scope.paginaactual
+                            pagina_actual: $scope.paginaactual,
+                            filtro: {}
                         }
                     }
                 };
 
+                if($scope.estadoseleccionado != ""){
+                    obj.data.pedidos_clientes.filtro[$scope.estadoseleccionado] = true;
+                }
 
 
                 Request.realizarRequest(API.PEDIDOS.LISTAR_PEDIDOS, "POST", obj, function(data) {
@@ -284,6 +305,11 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
                 $scope.buscarPedidosCliente($scope.termino_busqueda, true);
             };
 
+
+            $scope.seleccionEstado = function(){
+                console.log("estado a seleccionar ",$scope.estadoseleccionado);
+                $scope.buscarPedidosCliente($scope.termino_busqueda, true);
+            };
 
 
             //fin de eventos

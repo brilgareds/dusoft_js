@@ -50,12 +50,15 @@ body{
 }
 
 
-html, body {
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  font-size: 12px;
+html body {
+  font: 13px "Lucida Grande", Helvetica, Arial, sans-serif;
+  /*font-size: 12px;*/
+}
+
+html, body{
   height: 100%;
   margin:0;
-   padding:0;
+  padding:0;
 }
 
 .cellPedido{

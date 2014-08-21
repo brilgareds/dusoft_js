@@ -17,11 +17,19 @@ padding: 0%;
 padding: 0%;
 }*/
 
+.paddingLeftCero {
+    padding-left: 0%;
+}
+
+.paddingRightCero {
+    padding-right: 0%;
+}
+
 .auditarGrid {
     display: block;
     border: 1px solid rgb(212,212,212);
     width: 100%; 
-    height: 90px;
+    height: 100px;
 }
 
 .auditadosGrid {
@@ -30,6 +38,22 @@ padding: 0%;
     width: 100%; 
     height: 150px;
 }
+
+.backWhite{
+    background-color: White;
+}
+/*
+.row {
+    background-color: white;
+}*/
+
+/*#box .boxes {
+    background-color:green;
+}*/
+
+/*.row {
+background-color: blue;
+}*/
 /*
 .col-xs-12 {
 padding-left: 1cm;

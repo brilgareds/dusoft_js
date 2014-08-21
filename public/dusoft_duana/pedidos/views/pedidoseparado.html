@@ -6,8 +6,9 @@
    
 
 
-    <div class="row">            
-        <div class="panel-body col-sm-12">
+    <div class="row">
+        <div class="panel-info col-sm-12">
+            <div class="panel-body col-sm-12">
             <div class="row">
                 <button ng-click="cerrar()" class="pull-right btn btn-default btn-xs" style="margin-right:15px"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>   
             </div>
@@ -21,16 +22,19 @@
                 <div class="col-xs-6 text-left">
                   <h4>Tipo Documento</h4>
                   <!--<h4><small>Pedido: 12345678</small></h4>-->
-                    <li class="dropdown pull-left">
-                        <a href="#" data-toggle="dropdown" class="dropdown-toggle">Documento <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#">EFC</a></li>
-                            <li><a href="#">ECC</a></li>
-                            <li><a href="#">CVC</a></li>
-                            <li class="divider"></li>
-                            <li><a href="#">BBVA</a></li>
-                        </ul>
-                    </li>
+                    
+                    <ul>  
+                        <li class="dropdown pull-left">
+                          <a href="#" data-toggle="dropdown" class="dropdown-toggle">Documento <b class="caret"></b></a>
+                          <ul class="dropdown-menu">
+                              <li><a href="#">EFC</a></li>
+                              <li><a href="#">ECC</a></li>
+                              <li><a href="#">CVC</a></li>
+                              <li class="divider"></li>
+                              <li><a href="#">BBVA</a></li>
+                          </ul>
+                        </li>
+                    </ul>
                 </div>
                 <div class="col-xs-6 text-right">
                     <h1>
@@ -42,13 +46,13 @@
                 </div>
                 <hr>           
           </div>
-
+        </div>
         </div>
     </div>
  
       <div class="row">
         
-        <div class="col-sm-12 col-md-6">
+        <div class="col-sm-12 col-md-6 paddingRightCero">
     
           <div class="panel panel-default">
             <div class="panel-heading">
@@ -64,7 +68,7 @@
           </div>
             
         </div>
-        <div class="col-sm-12 col-md-6">
+        <div class="col-sm-12 col-md-6 paddingLeftCero">
           <div class="panel panel-default">
             <div class="panel-heading">
               <h4>Hacia : <a href="#">CLIENTE</a></h4>
@@ -84,7 +88,7 @@
       <!-- Begin Código desplazado -->
       
      <div class="row"> <!-- / begin payment details section -->
-          <div class="col-sm-12 col-md-4">
+          <div class="col-sm-12 col-md-4 paddingRightCero">
             
             
             <div class="panel panel-info"> <!-- / begin banking details -->
@@ -101,7 +105,7 @@
             </div> <!-- / end banking details -->
             
           </div>
-          <div class="col-sm-12 col-md-8">
+          <div class="col-sm-12 col-md-8 paddingLeftCero">
             
             <div class="span7"> <!-- / begin contact details -->
                 <div class="panel panel-info">
@@ -246,7 +250,7 @@
       </div> <!-- / end class row --> 
       
 
-       <div class="col-sm-12">
+       <div class="col-sm-12 row">
            <button type="submit" class="btn btn-accion btn-primary pull-right">Generar Documento</button>    
        </div>
 

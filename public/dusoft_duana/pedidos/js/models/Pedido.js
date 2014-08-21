@@ -21,6 +21,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.descripcion_estado_actual_pedido = datos.descripcion_estado_actual_pedido;
             this.estado_actual_pedido = datos.estado_actual_pedido;
             this.estado = datos.estado;
+            this.estado_separacion = datos.estado_separacion;
         };
 
         Pedido.prototype.setCliente = function(cliente) {

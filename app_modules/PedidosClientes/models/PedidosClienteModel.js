@@ -66,7 +66,46 @@ var PedidosClienteModel = function(productos) {
  *      
  */
 
-PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, termino_busqueda, pagina, callback) {
+PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, termino_busqueda, filtro, pagina, callback) {
+
+
+    /*=========================================================================*/
+    // Se implementa este filtro, para poder filtrar los pedidos por el estado actual
+    // 0 - No Asignado 
+    // 1 - Asignado
+    // 2 - Auditado
+    // 3 - En Zona Despacho
+    // 4 - Despachado
+    // 5 - Despachado con Pendientes
+    /*=========================================================================*/
+
+    var sql_aux = " ";
+
+    if (filtro !== undefined) {
+
+        if (filtro.no_asignados) {
+            sql_aux = " AND a.estado_pedido = '0' ";
+        }
+
+        if (filtro.asignados) {
+            sql_aux = " AND a.estado_pedido = '1' ";
+        }
+        if (filtro.auditados) {
+            sql_aux = " AND a.estado_pedido = '2'  ";
+        }
+
+        if (filtro.en_zona_despacho) {
+            sql_aux = " AND  a.estado_pedido = '3' ";
+        }
+
+        if (filtro.despachado) {
+            sql_aux = " AND a.estado_pedido = '4' ";
+        }
+
+        if (filtro.despachado_pendientes) {
+            sql_aux = " AND a.estado_pedido = '5' ";
+        }
+    }
 
     var sql = " select \
                 a.pedido_cliente_id as numero_pedido, \
@@ -88,14 +127,15 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
                 when a.estado_pedido = 1 then 'Asignado' \
                 when a.estado_pedido = 2 then 'Auditado' \
                 when a.estado_pedido = 3 then 'En Despacho' \
-                when a.estado_pedido = 4 then 'Despachado' end as descripcion_estado_actual_pedido, \
+                when a.estado_pedido = 4 then 'Despachado' \
+                when a.estado_pedido = 5 then 'Despachado con Pendientes' end as descripcion_estado_actual_pedido, \
                 d.estado as estado_separacion, \
                 a.fecha_registro \
                 from ventas_ordenes_pedidos a \
                 inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id \
                 inner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id \
                 left join inv_bodegas_movimiento_tmp_despachos_clientes d on a.pedido_cliente_id = d.pedido_cliente_id  \
-                where a.empresa_id = $1 \
+                where a.empresa_id = $1 "+ sql_aux +"\
                 and (   a.pedido_cliente_id ilike $2  \
                         or b.tercero_id ilike $2 \
                         or b.nombre_tercero ilike $2 \
@@ -104,7 +144,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
                         or c.vendedor_id ilike $2 \
                         or c.nombre ilike $2) \
                 AND (a.estado IN ('0','1','2','3')) order by 1 desc ";
- 
+
     G.db.pagination(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
         callback(err, rows);
     });
@@ -180,7 +220,8 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
                      when a.estado_pedido = 1 then 'Asignado' \
                      when a.estado_pedido = 2 then 'Auditado' \
                      when a.estado_pedido = 3 then 'En Despacho' \
-                     when a.estado_pedido = 4 then 'Despachado' end as descripcion_estado_actual_pedido, \
+                     when a.estado_pedido = 4 then 'Despachado' \
+                     when a.estado_pedido = 5 then 'Despachado con Pendientes' end as descripcion_estado_actual_pedido, \
                 a.fecha_registro \
                 from ventas_ordenes_pedidos a \
                 inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id \
@@ -319,27 +360,27 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
 PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable, termino_busqueda, filtro, pagina, limite, callback) {
 
     var sql_aux = " ";
-    
+
     /*=========================================================================*/
     // Se implementa este filtro, para poder filtrar los pedidos del clientes 
     // asignados al operario de bodega y saber si el pedido tiene temporales o 
     // fue finalizado correctamente.
     /*=========================================================================*/
-    
-    if (filtro !== undefined ) {        
-        
-        if(filtro.asignados){
+
+    if (filtro !== undefined) {
+
+        if (filtro.asignados) {
             sql_aux = " AND f.doc_tmp_id IS NULL ";
         }
-        
-        if(filtro.temporales){
+
+        if (filtro.temporales) {
             sql_aux = " AND f.doc_tmp_id IS NOT NULL AND f.estado = '0'";
-        }        
-        if(filtro.finalizados){
-            sql_aux = " AND f.estado = '1' ";            
-        }        
+        }
+        if (filtro.finalizados) {
+            sql_aux = " AND f.estado = '1' ";
+        }
     }
-    
+
     var sql = " select \
                 f.doc_tmp_id as documento_temporal_id,\
                 a.pedido_cliente_id as numero_pedido, \
@@ -361,7 +402,8 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
                      when a.estado_pedido = 1 then 'Asignado' \
                      when a.estado_pedido = 2 then 'Auditado' \
                      when a.estado_pedido = 3 then 'En Despacho' \
-                     when a.estado_pedido = 4 then 'Despachado' end as descripcion_estado_actual_pedido, \
+                     when a.estado_pedido = 4 then 'Despachado' \
+                     when a.estado_pedido = 5 then 'Despachado con Pendientes' end as descripcion_estado_actual_pedido, \
                 f.estado as estado_separacion,     \
                 case when f.estado = '0' then 'Separacion en Proceso' \
                      when f.estado = '1' then 'Separacion Finalizada' end as descripcion_estado_separacion,\
@@ -388,8 +430,8 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
                         c.nombre ilike $2\
                     )\
                 order by d.fecha asc ";
-    
-    G.db.pagination(sql, [responsable, "%" + termino_busqueda + "%"], pagina, limite, function(err, rows, result, total_records) {           
+
+    G.db.pagination(sql, [responsable, "%" + termino_busqueda + "%"], pagina, limite, function(err, rows, result, total_records) {
         callback(err, rows, total_records);
     });
 

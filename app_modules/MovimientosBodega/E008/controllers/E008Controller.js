@@ -38,6 +38,12 @@ E008Controller.prototype.documentoTemporalClientes = function(req, res) {
             res.send(G.utils.r(req.url, 'Error Creando el Documento Temporal Clientes', 500, {documento_temporal: {}}));
             return;
         } else {
+            /* ===============================================*/
+            // Emitir Evento para restringir:
+            // - La modificacion del pedido
+            // - La reasignacion.
+            /* ===============================================*/
+            
             res.send(G.utils.r(req.url, 'Documento Temporal Cliente Creado Correctamente', 200, {documento_temporal: {doc_tmp_id: doc_tmp_id}}));
             return;
         }

@@ -17,7 +17,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', '../../
             $scope.items = 0;
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
-            $scope.paginaactual = 0;
+            $scope.paginaactual = 1;
             //Arreglo temporal para prueba de Grid
             $scope.pedidosSeparados = [];
             $scope.Mensaje = "";
@@ -55,7 +55,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', '../../
 
                     console.log("Datos de la DATA: ",data );
                     //--** En éste punto simular el render mientras están listos lo servicios
-                    $scope.renderPedidosSeparadosCliente(data.obj, paginando);
+                    //$scope.renderPedidosSeparadosCliente(data.obj, paginando);
                     
                     /* Inicio Llenado Pedido - Temporal */
                     for(var i=0; i < 100; i++){

@@ -249,7 +249,7 @@ E008Controller.prototype.consultarDocumentosTemporalesClientes = function(req, r
     var pagina_actual = args.documento_temporal.pagina_actual;
     var filtro = args.documento_temporal.filtro;
 
-    that.m_movientos_bodegas.consultar_documentos_temporales_clientes(empresa_id, termino_busqueda, filtro, pagina_actual, function(err, documentos_temporales, total_records) {
+    that.m_e008.consultar_documentos_temporales_clientes(empresa_id, termino_busqueda, filtro, pagina_actual, function(err, documentos_temporales, total_records) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error consultado los documentos temporales de clientes', 500, {documentos_temporales: {}}));
             return;

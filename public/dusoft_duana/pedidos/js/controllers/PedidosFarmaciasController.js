@@ -23,7 +23,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
             $scope.items = 0;
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
-            $scope.paginaactual = 0;
+            $scope.paginaactual = 1;
 
 
             $scope.buscarPedidosFarmacias = function(termino, paginando) {
@@ -31,7 +31,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
                 //valida si cambio el termino de busqueda
                 if ($scope.ultima_busqueda.termino_busqueda != $scope.termino_busqueda
                         || $scope.ultima_busqueda.seleccion != $scope.seleccion) {
-                    $scope.paginaactual = 0;
+                    $scope.paginaactual = 1;
                 }
 
                 console.log($scope.ultima_busqueda);
@@ -43,10 +43,15 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
                         pedidos_farmacias: {
                             termino_busqueda: termino,
                             empresa_id: $scope.seleccion,
-                            pagina_actual: $scope.paginaactual
+                            pagina_actual: $scope.paginaactual,
+                            filtro:{}
                         }
                     }
                 };
+
+                if($scope.estadoseleccionado != ""){
+                    obj.data.pedidos_farmacias.filtro[$scope.estadoseleccionado] = true;
+                }
 
                 Request.realizarRequest(API.PEDIDOS.LISTAR_PEDIDOS_FARMACIAS, "POST", obj, function(data) {
                     if (data.status == 200) {
@@ -130,7 +135,9 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
 
                 console.log($scope.pedidosSeleccionados);
             },
-                    $scope.quitarPedido = function(pedido) {
+            
+
+            $scope.quitarPedido = function(pedido) {
                 for (var i in $scope.pedidosSeleccionados) {
                     var _pedido = $scope.pedidosSeleccionados[i];
                     if (_pedido.numero_pedido == pedido.numero_pedido) {
@@ -150,7 +157,9 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
 
                 $scope.pedidosSeleccionados.push(pedido);
             },
-                    $scope.buscarSeleccion = function(row) {
+            
+
+            $scope.buscarSeleccion = function(row) {
                 var pedido = row.entity;
                 for (var i in $scope.pedidosSeleccionados) {
                     var _pedido = $scope.pedidosSeleccionados[i];
@@ -171,7 +180,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
                 $scope.items = data.pedidos_farmacias.length;
                 //se valida que hayan registros en una siguiente pagina
                 if (paginando && $scope.items == 0) {
-                    if ($scope.paginaactual > 0) {
+                    if ($scope.paginaactual > 1) {
                         $scope.paginaactual--;
                     }
                     AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
@@ -287,6 +296,13 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
                 $scope.paginaactual++;
                 $scope.buscarPedidosFarmacias($scope.termino_busqueda, true);
             };
+
+
+            $scope.seleccionEstado = function(){
+                $scope.paginaactual = 1;
+                $scope.buscarPedidosFarmacias($scope.termino_busqueda, true);
+            };
+
 
             $scope.buscarPedidosFarmacias("");
             $scope.listarEmpresas();

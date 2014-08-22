@@ -1,14 +1,16 @@
-<div>
+<div ng-controller="PedidosController">
 
     <!--route 1 {{welcomemsg}} got to child  <a ui-sref="route1.item">Route item</a>-->
 
     <tabset  class="">
         <tab heading="Clientes" ng-controller="PedidosClientesController">
-            <select ui-select2="selectestados"  class="pull-left" style="width:300px" ng-model="estadoseleccionado"  ng-change="seleccionEstado()">
-                <option></option>
-                <option ng-repeat="estado_pedido in  estados_pedido"  ng-value="estado_pedido.estado" >{{estado_pedido.nombre}}</option>
-            </select>
 
+            <div class="col-sm-12 col-md-3">
+                <select ui-select2="selectestados"  class="form-control selectgeneral"  ng-model="estadoseleccionado"  ng-change="seleccionEstado()">
+                    <option></option>
+                    <option ng-repeat="estado_pedido in  estados_pedido"  ng-value="estado_pedido.estado" >{{estado_pedido.nombre}}</option>
+                </select>
+            </div>
             <div class="input-group navbar-form">
 
                 <input type="text" class="form-control pull-right" ng-keypress="onKeyPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
@@ -26,7 +28,7 @@
             </button>
 
             <div class="row text-center">
-                <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 0" ng-click="paginaAnterior()">
+                <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 1" ng-click="paginaAnterior()">
                     <span class="glyphicon glyphicon-chevron-left" ></span>
                 </button>
                 <button type="button" class="btn btn-default btn-medium" ng-disabled="items == 0" ng-click="paginaSiguiente()">
@@ -38,18 +40,39 @@
 
         <tab heading="Farmacias" ng-controller="PedidosFarmaciasController">
 
-            <select ui-select2  class="pull-left" style="width:300px" ng-model="seleccion" data-placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
-                <option ng-repeat="empresa in  empresas"  ng-value="empresa.empresa_id" >{{empresa.razon_social}}</option>
-            </select>
 
-            <div class="input-group navbar-form">
+                <!--div class="col-sm-12 col-md-3">
 
-                <input type="text" class="form-control pull-right" ng-keypress="onKeyPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
-                <div class="input-group-btn" >
-                    <button class="btn btn-default" type="submit" ng-click="buscarPedidosFarmacias(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                        <label class="control-label col-md-3">fooo</label>
+                        <div class="col-md-9 col-sm-12">
+                            <select ui-select2  class="form-control selectgeneral"  ng-model="seleccion" data-placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
+                                <option ng-repeat="empresa in  empresas"  ng-value="empresa.empresa_id" >{{empresa.razon_social}}</option>
+                            </select>
+                        </div>
+                </div-->
+
+                <div class="col-sm-12 col-md-3">
+                    <select ui-select2  class="form-control selectgeneral"  ng-model="seleccion" data-placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
+                        <option ng-repeat="empresa in  empresas"  ng-value="empresa.empresa_id" >{{empresa.razon_social}}</option>
+                    </select>
                 </div>
 
-            </div>
+                <div class="col-sm-12 col-md-3">
+                     <select ui-select2="selectestados"  class="form-control selectgeneral"  ng-model="estadoseleccionado"  ng-change="seleccionEstado()">
+                        <option></option>
+                        <option ng-repeat="estado_pedido in  estados_pedido"  ng-value="estado_pedido.estado" >{{estado_pedido.nombre}}</option>
+                    </select>
+                </div>
+
+                <div class="input-group navbar-form">
+
+                    <input type="text" class="form-control pull-right" ng-keypress="onKeyPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
+                    <div class="input-group-btn" >
+                        <button class="btn btn-default" type="submit" ng-click="buscarPedidosFarmacias(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+
+                </div>
+
             <div class="defaultGrid" ng-grid="lista_pedidos_farmacias">
 
             </div>
@@ -60,7 +83,7 @@
             </button>
 
             <div class="row text-center">
-                <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 0" ng-click="paginaAnterior()">
+                <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 1" ng-click="paginaAnterior()">
                     <span class="glyphicon glyphicon-chevron-left" ></span>
                 </button>
                 <button type="button" class="btn btn-default btn-medium" ng-disabled="items == 0" ng-click="paginaSiguiente()">

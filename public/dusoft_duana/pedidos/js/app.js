@@ -3,7 +3,7 @@
   "angular", "socketservice", "route", 
   "bootstrap","js/controllers", "js/models",
    "js/services",  "js/directive", "nggrid",
-  "controllers/PedidosClientesController", "controllers/PedidosFarmaciasController",  "uiselect2", 
+  "controllers/PedidosController","controllers/PedidosClientesController", "controllers/PedidosFarmaciasController",  "uiselect2", 
   "controllers/AuditoriaPedidosClientesController", "controllers/AuditoriaPedidosFarmaciasController",  "controllers/DetallepedidoSeparadoController",
   "loader",  "models/Empresa", "includes/menu/menucontroller", 
   "config", "includes/alert/Alert","includes/header/HeaderController",

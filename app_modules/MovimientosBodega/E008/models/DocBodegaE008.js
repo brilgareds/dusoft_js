@@ -158,7 +158,7 @@ DocuemntoBodegaE008.prototype.consultar_documentos_temporales_clientes = functio
                      g.nombre ilike $2 \
                 )";
 
-    G.db.pagination(sql, [[empresa_id, "%" + termino_busqueda + "%"]], pagina, G.settings.limit, function(err, rows, result, total_records) {
+    G.db.pagination(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
         callback(err, rows, total_records);
     });
 };

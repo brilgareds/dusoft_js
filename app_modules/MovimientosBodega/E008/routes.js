@@ -1,7 +1,5 @@
 module.exports = function(app, di_container) {
 
-
-
     // ======== Rutas para Documentos E008 =============
 
     var c_e008 = di_container.get("c_e008");

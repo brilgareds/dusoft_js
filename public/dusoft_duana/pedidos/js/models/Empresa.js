@@ -7,6 +7,7 @@ define(["angular", "js/models"], function(angular, models) {
         this.pedidos = [];
         this.pedidosFarmacias = [];
         this.separadores = [];
+        this.documentosTemporales = [];
 
 
         this.setClientes = function() {
@@ -61,7 +62,19 @@ define(["angular", "js/models"], function(angular, models) {
             }
         }
 
+        //Documentos Temporales
+        this.agregarDocumentoTemporal = function(documento_temporal) {
+            this.documentosTemporales.push(documento_temporal);
+        }
 
+        this.getDocumentoTemporal = function() {
+            return this.documentosTemporales;
+        }
+
+        this.vaciarDocumentoTemporal = function() {
+            this.documentosTemporales = [];
+        }    
+        
         return this;
 
     });

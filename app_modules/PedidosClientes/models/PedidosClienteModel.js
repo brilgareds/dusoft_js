@@ -222,10 +222,12 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
                      when a.estado_pedido = 3 then 'En Despacho' \
                      when a.estado_pedido = 4 then 'Despachado' \
                      when a.estado_pedido = 5 then 'Despachado con Pendientes' end as descripcion_estado_actual_pedido, \
+                d.estado as estado_separacion, \
                 a.fecha_registro \
                 from ventas_ordenes_pedidos a \
                 inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id \
                 inner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id \
+                left join inv_bodegas_movimiento_tmp_despachos_clientes d on a.pedido_cliente_id = d.pedido_cliente_id\
                 where a.pedido_cliente_id = $1  \
                 AND (a.estado IN ('0','1','2','3')) order by 1 desc; ";
 

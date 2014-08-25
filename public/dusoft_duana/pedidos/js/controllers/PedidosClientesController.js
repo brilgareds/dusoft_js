@@ -114,6 +114,8 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
                     if (pedido.numero_pedido == _pedido.numero_pedido) {
                         _pedido.descripcion_estado_actual_pedido = pedido.descripcion_estado_actual_pedido;
                         _pedido.estado_actual_pedido = pedido.estado_actual_pedido;
+                        _pedido.estado_separacion = pedido.estado_separacion;
+                        
                         break;
                     }
                 }
@@ -266,7 +268,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
                     var obj = datos.obj.pedidos_clientes[0];
                     var pedido = $scope.crearPedido(obj);
                     console.log("objecto del socket");
-                    console.log(pedido)
+                    console.log(obj)
                     $scope.reemplazarPedidoEstado(pedido);
                     AlertService.mostrarMensaje("success", "pedido Asignado Correctamente!");
 

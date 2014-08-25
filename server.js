@@ -1,5 +1,3 @@
-require('newrelic');
-
 /*=========================================
  * Modulos y Dependecias
  * =========================================*/
@@ -61,6 +59,14 @@ if (program.config) {
     return;
 }
 ;
+
+/*=========================================
+ * Monitoring Server only Production
+ * =========================================*/
+if(program.prod){
+    require('newrelic');
+}
+
 
 /*=========================================
  * Inicializacion del Servidor

@@ -52,7 +52,7 @@ define(["angular", "js/controllers",
 
                 // --** En éste punto se usará API.PEDIDOS.LISTAR_PEDIDOS_SEPARADOS **--
 
-                Request.realizarRequest(LISTAR_DOCUMENTOS_TEMPORALES_CLIENTES, "POST", obj, function(data) {
+                Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.LISTAR_DOCUMENTOS_TEMPORALES_CLIENTES, "POST", obj, function(data) {
                     $scope.ultima_busqueda = $scope.termino_busqueda;
                     
                     if(data.obj.documentos_temporales != undefined) {
@@ -187,7 +187,7 @@ define(["angular", "js/controllers",
 //                    {field: 'descripcion_estado_actual_pedido', displayName: "Estado Actual", cellClass:"txt-center",
 //                    cellTemplate: '<div ng-class="agregarClase(row.entity.estado_actual_separado)" >{{row.entity.descripcion_estado_actual_separado}}</div>'},
                     {field: 'pedido.numero_pedido', displayName: 'Numero Pedido'},
-                    {field: 'pedido.cliente.nombre_cliente', displayName: 'Cliente'},
+                    {field: 'pedido.cliente.nombre_tercero', displayName: 'Cliente'},
                     {field: 'pedido.nombre_vendedor', displayName: 'Vendedor'},
 //                    {field: 'descripcion_estado_actual_separado', displayName: "Estado"},
                     {field: 'separador.nombre_operario', displayName: 'Separador'},

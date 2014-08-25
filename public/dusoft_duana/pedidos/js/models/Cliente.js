@@ -1,20 +1,18 @@
 
-define(["angular", "js/models"], function(angular, models) {
+define(["angular", "js/models", "../../../includes/classes/ClienteBase"], function(angular, models) {
 
-    models.factory('Cliente', function() {
+    models.factory('Cliente', function(ClienteBase) {
 
         function Cliente(nombre, direccion, tipo_id, id, telefono) {
-            this.nombre_cliente = nombre;
-            this.direccion_cliente = direccion;
-            this.tipo_id_cliente = tipo_id;
-            this.identificacion_cliente = id;
-            this.telefono_cliente = telefono;
+            ClienteBase.getClass().call(this,nombre, direccion, tipo_id, id, telefono);
         }
 
         this.get = function(nombre, direccion, tipo_id, id, telefono) {
             return new Cliente(nombre, direccion, tipo_id, id, telefono);
         }
 
+        Cliente.prototype = Object.create(ClienteBase.getClass().prototype)
+        
         return this;
 
     });

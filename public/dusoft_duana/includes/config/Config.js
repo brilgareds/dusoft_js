@@ -7,7 +7,7 @@
     var data = {
 	  'API': {
 	    'BASE_URL': BASE_URL,
-            'DOCUMENTOS TEMPORALES' : {
+            'DOCUMENTOS_TEMPORALES' : {
 	    	'LISTAR_DOCUMENTOS_TEMPORALES_CLIENTES': BASE_URL+'/movBodegas/E008/consultarDocumentosTemporalesClientes',	
 	    	'LISTAR_DOCUMENTOS_TEMPORALES_FARMACIAS': BASE_URL+'/movBodegas/E008/consultarDocumentosTemporalesFarmacias',
 	    },

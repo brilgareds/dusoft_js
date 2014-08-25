@@ -554,6 +554,7 @@ E008Controller.prototype.eliminarDocumentoTemporalClientes = function(req, res) 
                     res.send(G.utils.r(req.url, 'Error Eliminado el Documento Temporal Clientes', 500, {}));
                     return;
                 } else {
+                    that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido : numero_pedido});
                     res.send(G.utils.r(req.url, 'Documento Temporal Cliente Eliminado Correctamente', 200, {}));
                     return;
                 }
@@ -601,6 +602,7 @@ E008Controller.prototype.eliminarDocumentoTemporalFarmacias = function(req, res)
                     res.send(G.utils.r(req.url, 'Error Eliminado el Documento Temporal Farmacias', 500, {}));
                     return;
                 } else {
+                    that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido : numero_pedido});
                     res.send(G.utils.r(req.url, 'Documento Temporal Farmacias Eliminado Correctamente', 200, {}));
                     return;
                 }

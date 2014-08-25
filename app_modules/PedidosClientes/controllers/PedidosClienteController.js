@@ -182,7 +182,7 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
 
     pedidos.forEach(function(numero_pedido) {
 
-        that.m_pedidos_clientes.asignar_responsables_pedidos(numero_pedido, estado_pedido, responsable, usuario, function(err, rows) {
+        that.m_pedidos_clientes.asignar_responsables_pedidos(numero_pedido, estado_pedido, responsable, usuario, function(err, rows, responsable_estado_pedido) {
 
             if (err) {
                 res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Asignacion de Resposables', 500, {}));
@@ -191,11 +191,20 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
 
             // Notificando Pedidos Actualizados en Real Time
             that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
-            // Notificacion al operario de los pedidos que le fueron asigandos
-            //that.e_pedidos_clientes.onNotificacionOperarioPedidosAsignados({numero_pedido: numero_pedido, responsable: responsable});
 
             if (--i === 0) {
-                // Notificacion al operario de los pedidos que le fueron asigandos
+
+                // Notificar que al operario los pedidos  fueron reasignados
+                if (responsable_estado_pedido.length > 0) {
+                    
+                    responsable_estado_pedido = responsable_estado_pedido[0];
+
+                    if (responsable !== responsable_estado_pedido.responsable_id) {
+                        that.e_pedidos_clientes.onNotificacionOperarioPedidosReasignados({numero_pedidos: pedidos, responsable: responsable_estado_pedido.responsable_id});
+                    }
+                }
+
+                // Notificacion al operario de los pedidos que le fueron asignados
                 that.e_pedidos_clientes.onNotificacionOperarioPedidosAsignados({numero_pedidos: pedidos, responsable: responsable});
                 res.send(G.utils.r(req.url, 'Asignacion de Resposables', 200, {}));
             }
@@ -332,11 +341,11 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
             }
 
             pedido.tiempo_separacion = tiempo_separacion;
-            
+
             that.m_pedidos_clientes.consultar_detalle_pedido(pedido.numero_pedido, function(err, detalle_pedido) {
                 pedido.lista_productos = detalle_pedido;
 
-                if (--i === 0){                    
+                if (--i === 0) {
                     res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {pedidos_clientes: lista_pedidos_clientes, total_registros: total_registros}));
                 }
 

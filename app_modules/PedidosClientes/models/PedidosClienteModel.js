@@ -463,16 +463,16 @@ PedidosClienteModel.prototype.asignar_responsables_pedidos = function(numero_ped
 
     var that = this;
 
-    // Validar si existen responsables asigandos
+    // Validar si existen responsables asignados
     var sql = " SELECT * FROM ventas_ordenes_pedidos_estado a WHERE a.pedido_cliente_id=$1 AND a.estado = $2 ;";
 
-    G.db.query(sql, [numero_pedido, estado_pedido], function(err, rows, result) {
-        if (rows.length > 0) {
+    G.db.query(sql, [numero_pedido, estado_pedido], function(err, responsable_estado_pedido, result) {
+        if (responsable_estado_pedido.length > 0) {
             //Actualizar
             that.actualizar_responsables_pedidos(numero_pedido, estado_pedido, responsable, usuario, function(_err, _rows) {
                 //Actualizar estado actual del pedido
                 that.actualizar_estado_actual_pedido(numero_pedido, estado_pedido, function() {
-                    callback(_err, _rows);
+                    callback(_err, _rows, responsable_estado_pedido);
                     return;
                 });
             });
@@ -481,7 +481,7 @@ PedidosClienteModel.prototype.asignar_responsables_pedidos = function(numero_ped
             that.insertar_responsables_pedidos(numero_pedido, estado_pedido, responsable, usuario, function(_err, _rows) {
                 //Actualizar estado actual del pedido
                 that.actualizar_estado_actual_pedido(numero_pedido, estado_pedido, function() {
-                    callback(_err, _rows);
+                    callback(_err, _rows, responsable_estado_pedido);
                     return;
                 });
             });
@@ -546,7 +546,7 @@ PedidosClienteModel.prototype.insertar_responsables_pedidos = function(numero_pe
 PedidosClienteModel.prototype.actualizar_responsables_pedidos = function(numero_pedido, estado_pedido, responsable, usuario, callback) {
 
     var sql = "UPDATE ventas_ordenes_pedidos_estado SET responsable_id=$3, fecha=NOW(), usuario_id=$4 " +
-            "WHERE pedido_cliente_id=$1 AND estado=$2;";
+              "WHERE pedido_cliente_id=$1 AND estado=$2;";
 
     G.db.query(sql, [numero_pedido, estado_pedido, responsable, usuario], function(err, rows, result) {
         callback(err, rows);

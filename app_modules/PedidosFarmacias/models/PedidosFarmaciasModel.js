@@ -251,13 +251,13 @@ PedidosFarmaciasModel.prototype.asignar_responsables_pedidos = function(numero_p
     // Validar si existen responsables asigandos
     var sql = " SELECT * FROM solicitud_productos_a_bodega_principal_estado a WHERE a.solicitud_prod_a_bod_ppal_id = $1 AND a.estado = $2 ;";
 
-    G.db.query(sql, [numero_pedido, estado_pedido], function(err, rows, result) {
-        if (rows.length > 0) {
+    G.db.query(sql, [numero_pedido, estado_pedido], function(err, responsable_estado_pedido, result) {
+        if (responsable_estado_pedido.length > 0) {
             //Actualizar
             that.actualizar_responsables_pedidos(numero_pedido, estado_pedido, responsable, usuario, function(_err, _rows) {
                 // Actualizar Estado Actual del Pedido
                 that.actualizar_estado_actual_pedido(numero_pedido, estado_pedido, function() {
-                    callback(_err, _rows);
+                    callback(_err, _rows, responsable_estado_pedido);
                     return;
                 });
             });
@@ -266,7 +266,7 @@ PedidosFarmaciasModel.prototype.asignar_responsables_pedidos = function(numero_p
             that.insertar_responsables_pedidos(numero_pedido, estado_pedido, responsable, usuario, function(_err, _rows) {
                 // Actualizar Estado Actual del Pedido
                 that.actualizar_estado_actual_pedido(numero_pedido, estado_pedido, function() {
-                    callback(_err, _rows);
+                    callback(_err, _rows, responsable_estado_pedido);
                     return;
                 });
             });

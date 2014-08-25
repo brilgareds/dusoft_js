@@ -43,7 +43,7 @@ E008Controller.prototype.documentoTemporalClientes = function(req, res) {
             // - La modificacion del pedido
             // - La reasignacion.
             /* ===============================================*/
-            
+
             res.send(G.utils.r(req.url, 'Documento Temporal Cliente Creado Correctamente', 200, {documento_temporal: {doc_tmp_id: doc_tmp_id}}));
             return;
         }
@@ -268,6 +268,37 @@ E008Controller.prototype.consultarDocumentosTemporalesClientes = function(req, r
 // Consultar TODOS los documentos temporales de despacho farmacias 
 E008Controller.prototype.consultarDocumentosTemporalesFarmacias = function(req, res) {
 
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.documento_temporal === undefined || args.documento_temporal.empresa_id || args.documento_temporal.termino_busqueda === undefined || args.documento_temporal.pagina_actual === undefined) {
+        res.send(G.utils.r(req.url, 'El termino_busqueda, la empresa_id o la pagina_actual no estan definidos', 404, {}));
+        return;
+    }
+    if (args.documento_temporal.empresa_id === '' ) {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de la empresa_id ', 404, {}));
+        return;
+    }
+    
+    if (args.documento_temporal.pagina_actual === '' || args.documento_temporal.pagina_actual <= 0) {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual o que sea mayor a 0', 404, {}));
+        return;
+    }
+
+    var empresa_id = args.documento_temporal.empresa_id;
+    var termino_busqueda = args.documento_temporal.termino_busqueda;
+    var pagina_actual = args.documento_temporal.pagina_actual;
+    var filtro = args.documento_temporal.filtro;
+
+    that.m_e008.consultar_documentos_temporales_farmacias(empresa_id, termino_busqueda, filtro, pagina_actual, function(err, documentos_temporales, total_records) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error consultado los documentos temporales de farmacias', 500, {documentos_temporales: {}}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Lista Documentos Temporales ', 200, {documentos_temporales: documentos_temporales}));
+        }
+    });
 
 };
 

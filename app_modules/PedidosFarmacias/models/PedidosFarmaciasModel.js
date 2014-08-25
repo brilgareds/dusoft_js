@@ -72,7 +72,8 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
                      when a.estado = 1 then 'Asignado' \
                      when a.estado = 2 then 'Auditado' \
                      when a.estado = 3 then 'En Despacho' \
-                     when a.estado = 4 then 'Despachado' end as descripcion_estado_actual_pedido, \
+                     when a.estado = 4 then 'Despachado' \
+                     when a.estado = 5 then 'Despachado con Pendientes' end as descripcion_estado_actual_pedido, \
                 f.estado as estado_separacion, \
                 a.fecha_registro::date as fecha_registro \
                 from solicitud_productos_a_bodega_principal as a \
@@ -112,7 +113,8 @@ PedidosFarmaciasModel.prototype.consultar_pedido = function(numero_pedido, callb
                      when a.estado = 1 then 'Asignado' \
                      when a.estado = 2 then 'Auditado' \
                      when a.estado = 3 then 'En Despacho' \
-                     when a.estado = 4 then 'Despachado' end as descripcion_estado_actual_pedido, \
+                     when a.estado = 4 then 'Despachado' \
+                     when a.estado = 5 then 'Despachado con Pendientes' end as descripcion_estado_actual_pedido, \
                 to_char(a.fecha_registro, 'dd-mm-yyyy HH24:MI:SS.MS') as fecha_registro \
                 from solicitud_productos_a_bodega_principal as a \
                 inner join bodegas as b on a.farmacia_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega \
@@ -200,12 +202,13 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                 b.descripcion as nombre_bodega,\
                 a.usuario_id, \
                 e.nombre as nombre_usuario ,\
-                a.estado as estado_actual, \
+                a.estado as estado_actual_pedido, \
                 case when a.estado = 0 then 'No Asignado' \
                      when a.estado = 1 then 'Asignado' \
                      when a.estado = 2 then 'Auditado' \
                      when a.estado = 3 then 'En Despacho' \
-                     when a.estado = 4 then 'Despachado' end as descripcion_estado_actual_pedido, \
+                     when a.estado = 4 then 'Despachado' \
+                     when a.estado = 5 then 'Despachado con Pendientes' end as descripcion_estado_actual_pedido, \
                 h.estado as estado_separacion,     \
                 case when h.estado = '0' then 'Separacion en Proceso' \
                      when h.estado = '1' then 'Separacion Finalizada' end as descripcion_estado_separacion, \

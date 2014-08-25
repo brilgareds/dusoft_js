@@ -114,6 +114,7 @@ DocuemntoBodegaE008.prototype.consultar_documentos_temporales_clientes = functio
 
     var sql = " select \
                 a.doc_tmp_id as documento_temporal_id,\
+                a.usuario_id,\
                 a.pedido_cliente_id as numero_pedido,\
                 d.tipo_id_tercero as tipo_id_cliente, \
                 d.tercero_id as identificacion_cliente, \
@@ -164,12 +165,67 @@ DocuemntoBodegaE008.prototype.consultar_documentos_temporales_clientes = functio
 };
 
 // Consultar Documentos Temporales Farmacias 
-DocuemntoBodegaE008.prototype.consultar_documentos_temporales_farmacias = function(callback) {
+DocuemntoBodegaE008.prototype.consultar_documentos_temporales_farmacias = function(empresa_id, termino_busqueda, filtro, pagina, callback) {
 
-    var sql = "  ";
+    var sql_aux = " ";
+    
+     if (filtro !== undefined) {
 
-    G.db.query(sql, [], function(err, rows, result) {
-        callback(err, rows);
+        if (filtro.en_proceso) {
+            sql_aux = " AND a.estado = '0' ";
+        }
+        if (filtro.finalizados) {
+            sql_aux = " AND a.estado = '1' ";
+        }
+    }
+
+    var sql = " select \
+                a.doc_tmp_id as documento_temporal_id,\
+                a.usuario_id,\
+                a.solicitud_prod_a_bod_ppal_id as numero_pedido,\
+                c.farmacia_id,\
+                f.empresa_id,\
+                c.centro_utilidad,\
+                c.bodega as bodega_id,\
+                f.razon_social as nombre_farmacia,\
+                d.descripcion as nombre_bodega,\
+                c.usuario_id as usuario_genero,\
+                g.nombre as nombre_usuario,\
+                c.estado as esta_actual_pedido,\
+                case when c.estado = 0 then 'No Asignado' \
+                     when c.estado = 1 then 'Asignado' \
+                     when c.estado = 2 then 'Auditado' \
+                     when c.estado = 3 then 'En Despacho' \
+                     when c.estado = 4 then 'Despachado' \
+                     when c.estado = 5 then 'Despachado con Pendientes' end as descripcion_estado_actual_pedido, \
+                a.estado as estado_separacion,\
+                h.responsable_id,\
+                i.nombre as responsable_pedido,\
+                case when a.estado = '0' then 'Separacion en Proceso' \
+                     when a.estado = '1' then 'Separacion Finalizada' end as descripcion_estado_separacion,   \
+                c.fecha_registro,\
+                h.fecha_registro as fecha_asignacion_pedido,\
+                b.fecha_registro as fecha_separacion_pedido\
+                from inv_bodegas_movimiento_tmp_despachos_farmacias a\
+                inner join inv_bodegas_movimiento_tmp b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
+                inner join solicitud_productos_a_bodega_principal c on a.solicitud_prod_a_bod_ppal_id = c.solicitud_prod_a_bod_ppal_id\
+                inner join bodegas d on c.farmacia_id = d.empresa_id and c.centro_utilidad = d.centro_utilidad and c.bodega = d.bodega \
+                inner join centros_utilidad e on d.empresa_id = e.empresa_id and d.centro_utilidad = e.centro_utilidad \
+                inner join empresas f ON e.empresa_id = f.empresa_id \
+                inner join system_usuarios g ON c.usuario_id = g.usuario_id \
+                inner join solicitud_productos_a_bodega_principal_estado h on c.solicitud_prod_a_bod_ppal_id = h.solicitud_prod_a_bod_ppal_id and c.estado = h.estado\
+                inner join operarios_bodega i on h.responsable_id = i.operario_id\
+                where c.farmacia_id = $1 " + sql_aux + "\
+                and (\
+                        a.solicitud_prod_a_bod_ppal_id ilike $2 or\
+                        f.razon_social ilike $2 or\
+                        d.descripcion ilike $2 or\
+                        g.nombre ilike $2 or\
+                        i.nombre ilike $2 \
+                )";
+
+    G.db.pagination(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
+        callback(err, rows, total_records);
     });
 };
 

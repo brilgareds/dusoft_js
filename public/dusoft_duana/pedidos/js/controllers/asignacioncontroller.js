@@ -89,7 +89,6 @@ define(["angular", "js/controllers", 'models/Separador'], function(angular, cont
 
 
             Request.realizarRequest(API.TERCEROS.LISTAR_OPERARIOS, "POST", obj, function(data) {
-                console.log(data)
                 if(data.obj.lista_operarios){
                     var listado = data.obj.lista_operarios;
                     Empresa.vaciarSeparadores();

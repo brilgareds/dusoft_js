@@ -9,6 +9,8 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
         function($scope, $rootScope, Request, $modal, Empresa, Cliente, Pedido, API, socket, $timeout, AlertService, Usuario, localStorageService) {
 
             $scope.Empresa = Empresa;
+            Empresa.setNombre("Duana");
+
             $scope.pedidosSeleccionados = [];
             $scope.session = {
                 usuario_id: Usuario.usuario_id,

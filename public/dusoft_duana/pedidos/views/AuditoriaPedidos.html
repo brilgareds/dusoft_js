@@ -5,39 +5,6 @@
     <!--route 1 {{welcomemsg}} got to child  <a ui-sref="route1.item">Route item</a>-->
    
     <tabset  class="">
-        
-        <tab heading="Clientes" ng-controller="AuditoriaPedidosClientesController">
-
-            <div class="input-group navbar-form">
-
-                <input type="text" class="form-control pull-right" ng-keypress="onKeySeparadosPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
-                <div class="input-group-btn" >
-                    <button class="btn btn-default" type="submit" ng-click="buscarPedidosSeparadosCliente(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
-                </div>
-
-            </div>
-            <div class="defaultGrid" ng-grid="lista_pedidos_separados_clientes">
-
-            </div>
-            <br/>
-            <!--  <button type="button" class="btn btn-default btn-medium pull-right" ng-disabled="pedidosSeleccionados.length == 0" ng-click="abrirModalAsignar()">
-                  <span class="glyphicon glyphicon-ok" ></span> Asignar Responsables
-              </button>-->
-
-            <div class="row text-center">
-                <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 0" ng-click="paginaAnterior()">
-                    <span class="glyphicon glyphicon-chevron-left" ></span>
-                </button>
-                <button type="button" class="btn btn-default btn-medium" ng-disabled="items == 0" ng-click="paginaSiguiente()">
-                    <span class="glyphicon glyphicon-chevron-right" ></span>
-                </button>
-            </div>
-
-            <div slide-content class="slide" >
-                <div ng-include src="slideurl"  ng-controller="DetallepedidoSeparadoController" ></div>
-            </div>
-
-        </tab>
 
         <tab heading="Farmacias" ng-controller="AuditoriaPedidosFarmaciasController">
 
@@ -53,7 +20,7 @@
                 </div>
 
             </div>
-            <div class="defaultGrid" ng-grid="lista_pedidos_separados_farmacias">
+            <!--<div class="defaultGrid" ng-grid="lista_pedidos_separados_farmacias">-->
 
             </div>
             <br/>
@@ -72,6 +39,39 @@
             </div>
 
         </tab>
+        
+<!--        <tab heading="Clientes" ng-controller="AuditoriaPedidosClientesController">
+
+            <div class="input-group navbar-form">
+
+                <input type="text" class="form-control pull-right" ng-keypress="onKeySeparadosPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
+                <div class="input-group-btn" >
+                    <button class="btn btn-default" type="submit" ng-click="buscarPedidosSeparadosCliente(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                </div>
+
+            </div>
+            <div class="defaultGrid" ng-grid="lista_pedidos_separados_clientes">
+
+            </div>
+            <br/>
+              <button type="button" class="btn btn-default btn-medium pull-right" ng-disabled="pedidosSeleccionados.length == 0" ng-click="abrirModalAsignar()">
+                  <span class="glyphicon glyphicon-ok" ></span> Asignar Responsables
+              </button>
+
+            <div class="row text-center">
+                <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 0" ng-click="paginaAnterior()">
+                    <span class="glyphicon glyphicon-chevron-left" ></span>
+                </button>
+                <button type="button" class="btn btn-default btn-medium" ng-disabled="items == 0" ng-click="paginaSiguiente()">
+                    <span class="glyphicon glyphicon-chevron-right" ></span>
+                </button>
+            </div>
+
+            <div slide-content class="slide" >
+                <div ng-include src="slideurl"  ng-controller="DetallepedidoSeparadoController" ></div>
+            </div>
+
+        </tab>        -->
 
     </tabset>
 

@@ -11,7 +11,7 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent',
 
             $scope.Empresa = Empresa;
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
-            $scope.pedidosSeleccionados = [];
+            $scope.pedidosSeparadosSeleccionados = [];
             $scope.empresas = [];
             $scope.seleccion = "FD";
             $scope.session = {
@@ -37,9 +37,9 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent',
                     session:$scope.session,
                     data:{
                         documento_temporal:{
-                            termino_busqueda:termino,
+                            termino_busqueda: termino,
                             empresa_id: $scope.seleccion,
-                            pagina_actual:$scope.paginaactual,
+                            pagina_actual: $scope.paginaactual,
                             filtro: {
                                 finalizados: true
                             }
@@ -47,24 +47,28 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent',
                     }
                 };
                 
+                console.log("Objeto para enviar creado");
                 
-                if($scope.estadoseleccionado != ""){
-                    obj.data.pedidos_farmacias.filtro[$scope.estadoseleccionado] = true;
-                }
+//                if($scope.estadoseleccionado != ""){
+//                    obj.data.documento_temporal.filtro[$scope.estadoseleccionado] = true;
+//                }
 
                 Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.LISTAR_DOCUMENTOS_TEMPORALES_FARMACIAS, "POST", obj, function(data) {
-                    if(data.status == 200) { 
-                        $scope.ultima_busqueda = {
-                            termino_busqueda: $scope.termino_busqueda,
-                            seleccion: $scope.seleccion
-                        }
-                        
-                        if(data.obj.documentos_temporales != undefined) {
-                            $scope.renderPedidosSeparadosFarmacia(data.obj, paginando);
-                        }
-                        
-                        console.log("Datos de la DATA FARMACIAS: ",data );
-                    }
+                    
+                    console.log("Datos de la DATA FARMACIAS: ",data );
+                    
+//                    if(data.status == 200) { 
+//                        $scope.ultima_busqueda = {
+//                            termino_busqueda: $scope.termino_busqueda,
+//                            seleccion: $scope.seleccion
+//                        }
+//                        
+//                        if(data.obj.documentos_temporales != undefined) {
+//                            $scope.renderPedidosSeparadosFarmacia(data.obj, paginando);
+//                        }
+//                        
+//                        console.log("Datos de la DATA FARMACIAS: ",data );
+//                    }
                     
                 });
             };
@@ -187,35 +191,35 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent',
                     $scope.quitarPedido(row.entity);
                 }
                 
-                console.log($scope.pedidosSeleccionados);
+                console.log($scope.pedidosSeparadosSeleccionados);
             };  
 
 
             $scope.quitarPedido = function(pedido){
-                for(var i in $scope.pedidosSeleccionados){
-                    var _pedido = $scope.pedidosSeleccionados[i];
+                for(var i in $scope.pedidosSeparadosSeleccionados){
+                    var _pedido = $scope.pedidosSeparadosSeleccionados[i];
                     if(_pedido.numero_pedido == pedido.numero_pedido){
-                        $scope.pedidosSeleccionados.splice(i,true);
+                        $scope.pedidosSeparadosSeleccionados.splice(i,true);
                     }
                 }
             };  
 
             $scope.agregarPedido = function(pedido){
                 //valida que no exista el pedido en el array
-                for(var i in $scope.pedidosSeleccionados){
-                    var _pedido = $scope.pedidosSeleccionados[i];
+                for(var i in $scope.pedidosSeparadosSeleccionados){
+                    var _pedido = $scope.pedidosSeparadosSeleccionados[i];
                     if(_pedido.numero_pedido == pedido.numero_pedido){
                         return false;
                     }
                 }
 
-                $scope.pedidosSeleccionados.push(pedido);
+                $scope.pedidosSeparadosSeleccionados.push(pedido);
             };
 
             $scope.buscarSeleccion = function(row){
                 var pedido = row.entity;
-                for(var i in $scope.pedidosSeleccionados){
-                    var _pedido = $scope.pedidosSeleccionados[i];
+                for(var i in $scope.pedidosSeparadosSeleccionados){
+                    var _pedido = $scope.pedidosSeparadosSeleccionados[i];
                     if(_pedido.numero_pedido == pedido.numero_pedido){
                         //console.log("buscarSeleccion encontrado **************");
                         //console.log(pedido);

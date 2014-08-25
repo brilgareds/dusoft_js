@@ -421,7 +421,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
                 inner join operarios_bodega e on d.responsable_id = e.operario_id\
                 left join inv_bodegas_movimiento_tmp_despachos_clientes f on a.pedido_cliente_id = f.pedido_cliente_id\
                 left join inv_bodegas_movimiento_tmp g on f.usuario_id = g.usuario_id and f.doc_tmp_id = g.doc_tmp_id \
-                where d.responsable_id = $1 " + sql_aux + " \
+                where e.usuario_id = $1 " + sql_aux + " \
                 and a.estado_pedido = '1' \
                 AND (a.estado IN ('1'))   \
                 and (\
@@ -461,6 +461,11 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
 
 PedidosClienteModel.prototype.asignar_responsables_pedidos = function(numero_pedido, estado_pedido, responsable, usuario, callback) {
 
+    /*console.log('========== asignar_responsables_pedidos ==========');
+    console.log(responsable);
+    console.log(usuario);
+    console.log('==================================================');*/
+    
     var that = this;
 
     // Validar si existen responsables asignados

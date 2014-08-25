@@ -286,7 +286,7 @@ E008Controller.prototype.consultarDocumentosTemporalesFarmacias = function(req, 
 
     var args = req.body.data;
 
-    if (args.documento_temporal === undefined || args.documento_temporal.empresa_id || args.documento_temporal.termino_busqueda === undefined || args.documento_temporal.pagina_actual === undefined) {
+    if (args.documento_temporal === undefined || args.documento_temporal.empresa_id === undefined || args.documento_temporal.termino_busqueda === undefined || args.documento_temporal.pagina_actual === undefined) {
         res.send(G.utils.r(req.url, 'El termino_busqueda, la empresa_id o la pagina_actual no estan definidos', 404, {}));
         return;
     }

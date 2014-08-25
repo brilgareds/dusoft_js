@@ -228,7 +228,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                 inner join operarios_bodega g on f.responsable_id = g.operario_id\
                 left join inv_bodegas_movimiento_tmp_despachos_farmacias h on a.solicitud_prod_a_bod_ppal_id = h.solicitud_prod_a_bod_ppal_id \
                 left join inv_bodegas_movimiento_tmp i on h.doc_tmp_id = i.doc_tmp_id and h.usuario_id = i.usuario_id \
-                where f.responsable_id = $1 " + sql_aux + " \
+                where g.usuario_id = $1 " + sql_aux + " \
                 and a.estado = '1' \
                 and (\
                     a.solicitud_prod_a_bod_ppal_id ilike $2 or\

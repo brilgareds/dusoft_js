@@ -345,7 +345,8 @@ PedidosFarmacias.prototype.listaPedidosOperariosBodega = function(req, res) {
 
 
     var termino_busqueda = args.pedidos_farmacias.termino_busqueda;
-    var operario_bodega = args.pedidos_farmacias.operario_id;
+    //var operario_bodega = args.pedidos_farmacias.operario_id;
+    var operario_bodega = req.session.user.usuario_id;
     var pagina_actual = args.pedidos_farmacias.pagina_actual;
     var limite = args.pedidos_farmacias.limite;
     var filtro = args.pedidos_farmacias.filtro;

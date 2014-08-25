@@ -1,13 +1,13 @@
-define(["angular", "js/controllers", 'controllers/asignacioncontroller',
+define(["angular", "js/controllers",
         '../../../../includes/slide/slideContent', 'models/Cliente', 'models/Pedido',
         'models/Separador', 'models/DocumentoTemporal'], function(angular, controllers) {
 
     var fo = controllers.controller('AuditoriaPedidosClientesController', [
         '$scope', '$rootScope', 'Request',
-        '$modal', 'Empresa', 'Cliente',
-        'Pedido', 'Separador', 'DocumentoTemporal', 'API', "socket", "$timeout",
-        "AlertService", "Usuario", "localStorageService",
-        function($scope, $rootScope, Request, $modal, Empresa, Cliente, Pedido, Separador, DocumentoTemporal, API, socket, $timeout, AlertService, Usuario, localStorageService) {
+        'Empresa', 'Cliente',
+        'Pedido', 'Separador', 'DocumentoTemporal', 'API', "socket",
+        "AlertService", "Usuario",
+        function($scope, $rootScope, Request, Empresa, Cliente, Pedido, Separador, DocumentoTemporal, API, socket, AlertService, Usuario) {
 
             $scope.Empresa = Empresa;
             $scope.pedidosSeparadosSeleccionados = [];
@@ -52,7 +52,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller',
 
                 // --** En éste punto se usará API.PEDIDOS.LISTAR_PEDIDOS_SEPARADOS **--
 
-                Request.realizarRequest("/api/movBodegas/E008/consultarDocumentosTemporalesClientes", "POST", obj, function(data) {
+                Request.realizarRequest(LISTAR_DOCUMENTOS_TEMPORALES_CLIENTES, "POST", obj, function(data) {
                     $scope.ultima_busqueda = $scope.termino_busqueda;
                     
                     if(data.obj.documentos_temporales != undefined) {

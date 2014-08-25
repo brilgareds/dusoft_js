@@ -297,7 +297,7 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
                       left join inv_bodegas_movimiento_tmp_justificaciones_pendientes b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
                     ) a group by 1,2,3\
                 ) as b on a.pedido_cliente_id = b.numero_pedido and a.codigo_producto = b.codigo_producto\
-                where a.pedido_cliente_id = $1 order by d.descripcion ;";
+                where a.pedido_cliente_id = $1 order by e.descripcion ;";
 
     G.db.query(sql, [numero_pedido], function(err, rows, result) {
         callback(err, rows);

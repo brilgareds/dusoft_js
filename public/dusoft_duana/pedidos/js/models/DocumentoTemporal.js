@@ -8,32 +8,33 @@ define(["angular", "js/models"], function(angular, models) {
 
         //declare usermodel class
         function DocumentoTemporal() {
-            this.cliente;
-            this.farmacia;
+            this.pedido;
+            this.separador;
+            this.detalle_documento_temporal;
         }
 
         // Pedidos
         DocumentoTemporal.prototype.setDatos = function(datos) {
-            this.numero_pedido = datos.numero_pedido;
-            this.nombre_vendedor = datos.nombre_vendedor || datos.nombre_farmacia; // Se condiciona dependiendo del tipo de cliente si es farmacia o es cliente normal
-            this.fecha_registro = datos.fecha_registro;
-            this.descripcion_estado = datos.descripcion_estado || ''; // Se condiciona dependiendo del tipo de cliente si es farmacia o es cliente normal
-            this.descripcion_estado_actual_pedido = datos.descripcion_estado_actual_pedido;
-            this.estado_actual_pedido = datos.estado_actual_pedido;
-            this.estado = datos.estado;
+            this.estado_separacion = datos.estado_separacion;
+            this.descripcion_estado_separacion = datos.descripcion_estado_separacion;
+            this.fecha_separacion_pedido = datos.fecha_separacion_pedido;
         };
 
-        DocumentoTemporal.prototype.setCliente = function(cliente) {
-            this.cliente = cliente;
+        DocumentoTemporal.prototype.setPedido = function(pedido) {
+            this.pedido = pedido;
         };
         
-        DocumentoTemporal.prototype.setFarmacia = function(cliente) {
-            this.farmacia = cliente;
+        DocumentoTemporal.prototype.setSeparador = function(separador) {
+            this.separador = separador;
+        };
+        
+        DocumentoTemporal.prototype.setDetalleDocumentoTemporal = function(detalle_documento_temporal) {
+            this.detalle_documento_temporal = detalle_documento_temporal;
         };
 
         //we return new instance of usermodel class  because factory is a singleton and we dont need like that
         this.get = function() {
-            return new Pedido();
+            return new DocumentoTemporal();
         };
 
         //just return the factory wrapper

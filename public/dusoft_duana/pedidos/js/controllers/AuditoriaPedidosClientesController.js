@@ -1,14 +1,16 @@
-define(["angular", "js/controllers", 'controllers/asignacioncontroller', '../../../../includes/slide/slideContent', 'models/Cliente', 'models/Pedido'], function(angular, controllers) {
+define(["angular", "js/controllers", 'controllers/asignacioncontroller',
+        '../../../../includes/slide/slideContent', 'models/Cliente', 'models/Pedido',
+        'models/Separador', 'models/DocumentoTemporal'], function(angular, controllers) {
 
     var fo = controllers.controller('AuditoriaPedidosClientesController', [
         '$scope', '$rootScope', 'Request',
         '$modal', 'Empresa', 'Cliente',
-        'Pedido', 'API', "socket", "$timeout",
+        'Pedido', 'Separador', 'DocumentoTemporal', 'API', "socket", "$timeout",
         "AlertService", "Usuario", "localStorageService",
-        function($scope, $rootScope, Request, $modal, Empresa, Cliente, Pedido, API, socket, $timeout, AlertService, Usuario, localStorageService) {
+        function($scope, $rootScope, Request, $modal, Empresa, Cliente, Pedido, Separador, DocumentoTemporal, API, socket, $timeout, AlertService, Usuario, localStorageService) {
 
             $scope.Empresa = Empresa;
-            $scope.pedidosSeleccionados = [];
+            $scope.pedidosSeparadosSeleccionados = [];
             $scope.session = {
                 usuario_id: Usuario.usuario_id,
                 auth_token: Usuario.token
@@ -20,7 +22,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', '../../
             $scope.paginaactual = 1;
             //Arreglo temporal para prueba de Grid
             $scope.pedidosSeparados = [];
-            $scope.Mensaje = "";
+            //$scope.Mensaje = "";
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
 
@@ -28,7 +30,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', '../../
 
                 //valida si cambio el termino de busqueda
                 if ($scope.ultima_busqueda != $scope.termino_busqueda) {
-                    $scope.paginaactual = 0;
+                    $scope.paginaactual = 1;
                 }
 
                 //**-- El data viene definido de la lógica en el node js ... pedidos_separados_clientes deberá definirse allá y se debe cambiar si biene con otro nombre
@@ -52,46 +54,50 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', '../../
 
                 Request.realizarRequest("/api/movBodegas/E008/consultarDocumentosTemporalesClientes", "POST", obj, function(data) {
                     $scope.ultima_busqueda = $scope.termino_busqueda;
-
+                    
+                    if(data.obj.documentos_temporales != undefined) {
+                        $scope.renderPedidosSeparadosCliente(data.obj, paginando);
+                    }
+                    
                     console.log("Datos de la DATA: ",data );
                     //--** En éste punto simular el render mientras están listos lo servicios
-                    //$scope.renderPedidosSeparadosCliente(data.obj, paginando);
+                    
                     
                     /* Inicio Llenado Pedido - Temporal */
-                    for(var i=0; i < 100; i++){
-                 
-                            var estado = '';
-                            var zona = '';
-
-                            if(i%2)
-                            estado = 'Terminado';
-                            else
-                            estado = 'En Proceso';
-
-                            if(i%4 == 0)
-                            zona = 'Norte';
-                            else if(i%4 == 1)
-                            zona = 'Sur';
-                            else if(i%4 == 2)
-                            zona = 'Oriente';
-                            else if(i%4 == 3)
-                            zona = 'Occidente';
-
-                            var pedido = {
-                            numero_pedido : '102001_'+i,
-                            nombre_cliente: 'Juan Cliente Mejía_'+i,
-                            nombre_vendedor: 'Carlos Marín',
-                            zona_pedido: zona,
-                            descripcion_estado_actual_separado: estado,
-                            estado_actual_separado: 2+(2*(i%2)),
-                            nombre_separador: 'Pedro Perez',
-                            fecha_registro: '12-08-2014',
-                            };
-                            $scope.Empresa.agregarPedido(pedido);
-
-                            //Se adiciona aquí porque no coincipen los campos con los de pedido asociado a la empresa
-                            $scope.pedidosSeparados.push(pedido);
-                       }
+//                    for(var i=0; i < 100; i++){
+//                 
+//                            var estado = '';
+//                            var zona = '';
+//
+//                            if(i%2)
+//                            estado = 'Terminado';
+//                            else
+//                            estado = 'En Proceso';
+//
+//                            if(i%4 == 0)
+//                            zona = 'Norte';
+//                            else if(i%4 == 1)
+//                            zona = 'Sur';
+//                            else if(i%4 == 2)
+//                            zona = 'Oriente';
+//                            else if(i%4 == 3)
+//                            zona = 'Occidente';
+//
+//                            var pedido = {
+//                            numero_pedido : '102001_'+i,
+//                            nombre_cliente: 'Juan Cliente Mejía_'+i,
+//                            nombre_vendedor: 'Carlos Marín',
+//                            zona_pedido: zona,
+//                            descripcion_estado_actual_separado: estado,
+//                            estado_actual_separado: 2+(2*(i%2)),
+//                            nombre_separador: 'Pedro Perez',
+//                            fecha_registro: '12-08-2014',
+//                            };
+//                            //$scope.Empresa.agregarPedido(pedido);
+//
+//                            //Se adiciona aquí porque no coincipen los campos con los de pedido asociado a la empresa
+//                            $scope.pedidosSeparados.push(pedido);
+//                       }
                     /* Fin Llenado Pedido - Temporal */
                 });
 
@@ -100,91 +106,50 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', '../../
                  
                  $scope.Mensaje = data.msj;
                  console.log("mensaje scope ",$scope.Mensaje );
-                 
-                 //--** En éste punto simular el render mientras están listos lo servicios
-                 //$scope.renderPedidosSeparadosCliente(data.obj, paginando);
-                 
-                 for(var i=0; i < 100; i++){
-                 
-                 var estado = '';
-                 var zona = '';
-                 
-                 if(i%2)
-                 estado = 'Terminado';
-                 else
-                 estado = 'En Proceso';
-                 
-                 if(i%4 == 0)
-                 zona = 'Norte';
-                 else if(i%4 == 1)
-                 zona = 'Sur';
-                 else if(i%4 == 2)
-                 zona = 'Oriente';
-                 else if(i%4 == 3)
-                 zona = 'Occidente';
-                 
-                 var pedido = {
-                 numero_pedido : '102001_'+i,
-                 nombre_cliente: 'Juan Cliente Mejía_'+i,
-                 nombre_vendedor: 'Carlos Marín',
-                 zona_pedido: zona,
-                 descripcion_estado_actual_separado: estado,
-                 estado_actual_separado: 2+(2*(i%2)),
-                 nombre_separador: $scope.Mensaje,
-                 fecha_registro: '12-08-2014',
-                 };
-                 $scope.Empresa.agregarPedido(pedido);
-                 
-                 //Se adiciona aquí porque no coincipen los campos con los de pedido asociado a la empresa
-                 $scope.pedidosSeparados.push(pedido);
-                 
-                 };
-                 
-                 });*/
+                 */
             };
 
             //informacion temporal
 
-//            $scope.renderPedidosSeparadosCliente = function(data, paginando) {
-//
-//                $scope.items = data.pedidos_separados_clientes.length;
-//                //se valida que hayan registros en una siguiente pagina
-//                if(paginando && $scope.items == 0){
-//                    if($scope.paginaactual > 0){
-//                        $scope.paginaactual--;
-//                    }
-//                    AlertService.mostrarMensaje("warning","No se encontraron mas registros");
-//                    return;
-//                }
-//
-//                $scope.Empresa.vaciarPedidos();
-//               
-//
-//                for (var i in data.pedidos_separados_clientes) {
-//
-//                    var obj = data.pedidos_separados_clientes[i];
-//                    //console.log(obj);
-//                    var pedido = $scope.crearPedido(obj);
-//
-//                    $scope.Empresa.agregarPedido(
-//                        pedido
-//                    );
-//
-//
-//                }
-//
-//            };
+            $scope.renderPedidosSeparadosCliente = function(data, paginando) {
+
+                $scope.items = data.documentos_temporales.length;
+                //se valida que hayan registros en una siguiente pagina
+                if(paginando && $scope.items == 0){
+                    if($scope.paginaactual > 1){
+                        $scope.paginaactual--;
+                    }
+                    AlertService.mostrarMensaje("warning","No se encontraron mas registros");
+                    return;
+                }
+
+                $scope.Empresa.vaciarDocumentoTemporal();
+               
+
+                for (var i in data.documentos_temporales) {
+
+                    var obj = data.documentos_temporales[i];
+                    //console.log(obj);
+                    var documento_temporal = $scope.crearDocumentoTemporal(obj);
+
+                    $scope.Empresa.agregarDocumentoTemporal(
+                        documento_temporal
+                    );
 
 
+                }
 
-
+            };
 
             //**-- Se debe llamar crearPedido o debe llamarse crearPedidoSeparado ?
             //**-- Con el pedido debe crearse el documento relacionado que contiene lo que se ha separado
-            $scope.crearPedido = function(obj) {
-                var pedido = Pedido.get();
-                pedido.setDatos(obj);
+            $scope.crearDocumentoTemporal = function(obj) {
+                var documento_temporal = DocumentoTemporal.get();
+                documento_temporal.setDatos(obj);
 
+                var pedido = Pedido.get(obj);
+                pedido.setDatos(obj);
+                        
                 var cliente = Cliente.get(
                         obj.nombre_cliente,
                         obj.direccion_cliente,
@@ -194,8 +159,14 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', '../../
                         );
 
                 pedido.setCliente(cliente);
-
-                return pedido;
+                
+                documento_temporal.setPedido(pedido);
+                
+                var separador = Separador.get(obj.responsable_pedido, obj.responsable_id, 1);
+                
+                documento_temporal.setSeparador(separador);
+                
+                return documento_temporal;
             };
 
 
@@ -203,8 +174,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', '../../
             //definicion y delegados del Tabla de pedidos clientes
 
             $scope.lista_pedidos_separados_clientes = {
-                //data: 'Empresa.getPedidos()',
-                data: 'pedidosSeparados',
+                data: 'Empresa.getDocumentoTemporal()',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 //enableSorting:false,
@@ -216,13 +186,13 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', '../../
                 columnDefs: [
 //                    {field: 'descripcion_estado_actual_pedido', displayName: "Estado Actual", cellClass:"txt-center",
 //                    cellTemplate: '<div ng-class="agregarClase(row.entity.estado_actual_separado)" >{{row.entity.descripcion_estado_actual_separado}}</div>'},
-                    {field: 'numero_pedido', displayName: 'Numero Pedido'},
-                    {field: 'nombre_cliente', displayName: 'Cliente'},
-                    {field: 'nombre_vendedor', displayName: 'Vendedor'},
-                    {field: 'zona_pedido', displayName: 'Zona'},
+                    {field: 'pedido.numero_pedido', displayName: 'Numero Pedido'},
+                    {field: 'pedido.cliente.nombre_cliente', displayName: 'Cliente'},
+                    {field: 'pedido.nombre_vendedor', displayName: 'Vendedor'},
 //                    {field: 'descripcion_estado_actual_separado', displayName: "Estado"},
-                    {field: 'nombre_separador', displayName: 'Separador'},
-                    {field: 'fecha_registro', displayName: "Fecha Registro"},
+                    {field: 'separador.nombre_operario', displayName: 'Separador'},
+                    {field: 'descripcion_estado_separacion', displayName: 'Estado Separación'},
+                    {field: 'fecha_separacion_pedido', displayName: "Fecha Separación"},
                     {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Auditar</span></button></div>'}
 
                 ]
@@ -256,35 +226,35 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', '../../
                     $scope.quitarPedido(row.entity);
                 }
 
-                console.log($scope.pedidosSeleccionados);
+                console.log($scope.pedidosSeparadosSeleccionados);
             };
 
 
             $scope.quitarPedido = function(pedido) {
-                for (var i in $scope.pedidosSeleccionados) {
-                    var _pedido = $scope.pedidosSeleccionados[i];
+                for (var i in $scope.pedidosSeparadosSeleccionados) {
+                    var _pedido = $scope.pedidosSeparadosSeleccionados[i];
                     if (_pedido.numero_pedido == pedido.numero_pedido) {
-                        $scope.pedidosSeleccionados.splice(i, true);
+                        $scope.pedidosSeparadosSeleccionados.splice(i, true);
                     }
                 }
             };
 
             $scope.agregarPedido = function(pedido) {
                 //valida que no exista el pedido en el array
-                for (var i in $scope.pedidosSeleccionados) {
-                    var _pedido = $scope.pedidosSeleccionados[i];
+                for (var i in $scope.pedidosSeparadosSeleccionados) {
+                    var _pedido = $scope.pedidosSeparadosSeleccionados[i];
                     if (_pedido.numero_pedido == pedido.numero_pedido) {
                         return false;
                     }
                 }
 
-                $scope.pedidosSeleccionados.push(pedido);
+                $scope.pedidosSeparadosSeleccionados.push(pedido);
             };
 
             $scope.buscarSeleccion = function(row) {
                 var pedido = row.entity;
-                for (var i in $scope.pedidosSeleccionados) {
-                    var _pedido = $scope.pedidosSeleccionados[i];
+                for (var i in $scope.pedidosSeparadosSeleccionados) {
+                    var _pedido = $scope.pedidosSeparadosSeleccionados[i];
                     if (_pedido.numero_pedido == pedido.numero_pedido) {
                         //console.log("buscarSeleccion encontrado **************");
                         //console.log(pedido);

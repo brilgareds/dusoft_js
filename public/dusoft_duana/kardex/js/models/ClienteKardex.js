@@ -1,15 +1,15 @@
 
-define(["angular","js/models","includes/classes/Cliente"], function(angular, models, Cliente){
+define(["angular","js/models","includes/classes/ClienteBase"], function(angular, models, ClienteBase){
 
-	models.factory('ClienteKardex', function(Cliente) {
+	models.factory('ClienteKardex', function(ClienteBase) {
 
 		function ClienteKardex(nombre, direccion, tipo_id, id, telefono){
 			//constructor padre
-			Cliente.getClass().call(this,nombre, direccion, tipo_id, id, telefono);
+			ClienteBase.getClass().call(this,nombre, direccion, tipo_id, id, telefono);
 		}
 
 		//herencia
-		ClienteKardex.prototype = Object.create(Cliente.getClass().prototype)
+		ClienteKardex.prototype = Object.create(ClienteBase.getClass().prototype)
 
 
 		this.get = function(nombre, direccion, tipo_id, id, telefono){

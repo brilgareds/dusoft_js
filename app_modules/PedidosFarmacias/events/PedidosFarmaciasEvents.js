@@ -71,6 +71,31 @@ PedidosFarmaciasEvents.prototype.onNotificacionOperarioPedidosAsignados = functi
     });   
 };
 
+// Notificar a los clientes conectado a la aplicacion los pedidos que fueron reasignados
+PedidosFarmaciasEvents.prototype.onNotificacionOperarioPedidosReasignados = function(datos) {
+
+    var that = this;
+   
+    // Seleccionar el Socket del Operario, si esta conectado en la Tablet.    
+    this.m_terceros.seleccionar_operario_bodega(datos.responsable, function(err, operarios_bodega) {
+
+        operarios_bodega.forEach(function(operario) {
+
+            // Selecciona la sesion del usuario para obtener conexion a los sockets.
+            G.auth.getSessionsUser(operario.usuario_id, function(err, sessions) {
+
+                //Se recorre cada una de las sesiones abiertas por el usuario
+                sessions.forEach(function(session) {
+
+                    //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
+                    that.io.sockets.socket(session.socket_id).emit('onPedidosFarmaciasResignados', {pedidos_farmacias: datos.numero_pedidos});
+                });
+
+            });
+        });
+    });
+};
+
 PedidosFarmaciasEvents.$inject = ["socket", "m_pedidos_farmacias", "m_terceros"];
 
 module.exports = PedidosFarmaciasEvents;

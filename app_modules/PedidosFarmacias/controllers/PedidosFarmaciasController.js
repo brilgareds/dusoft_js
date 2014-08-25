@@ -229,7 +229,7 @@ PedidosFarmacias.prototype.asignarResponsablesPedido = function(req, res) {
 
     pedidos.forEach(function(numero_pedido) {
 
-        that.m_pedidos_farmacias.asignar_responsables_pedidos(numero_pedido, estado_pedido, responsable, usuario, function(err, rows) {
+        that.m_pedidos_farmacias.asignar_responsables_pedidos(numero_pedido, estado_pedido, responsable, usuario, function(err, rows, responsable_estado_pedido) {
 
             if (err) {
                 res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Asignacion de Resposables', 500, {}));
@@ -240,6 +240,16 @@ PedidosFarmacias.prototype.asignarResponsablesPedido = function(req, res) {
             that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
 
             if (--i === 0) {
+                
+                // Notificar que al operario los pedidos  fueron reasignados
+                if (responsable_estado_pedido.length > 0) {
+                    
+                    responsable_estado_pedido = responsable_estado_pedido[0];
+
+                    if (responsable !== responsable_estado_pedido.responsable_id) {
+                        that.e_pedidos_clientes.onNotificacionOperarioPedidosReasignados({numero_pedidos: pedidos, responsable: responsable_estado_pedido.responsable_id});
+                    }
+                }
                 // Notificar al operario, los pedidos Asignados en Real Time
                 that.e_pedidos_farmacias.onNotificacionOperarioPedidosAsignados({numero_pedidos: pedidos, responsable: responsable});
                 res.send(G.utils.r(req.url, 'Asignacion de Resposables', 200, {}));
@@ -335,7 +345,8 @@ PedidosFarmacias.prototype.listaPedidosOperariosBodega = function(req, res) {
 
 
     var termino_busqueda = args.pedidos_farmacias.termino_busqueda;
-    var operario_bodega = args.pedidos_farmacias.operario_id;
+    //var operario_bodega = args.pedidos_farmacias.operario_id;
+    var operario_bodega = req.session.user.usuario_id;
     var pagina_actual = args.pedidos_farmacias.pagina_actual;
     var limite = args.pedidos_farmacias.limite;
     var filtro = args.pedidos_farmacias.filtro;

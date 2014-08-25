@@ -32,24 +32,24 @@ var PedidosClientesEvents = function(socket, pedidos_clientes, terceros) {
  *     {
  *        pedidos_clientes : [ 
  *                              {   
-*                                   numero_pedido: 33872,
-*                                   tipo_id_cliente: 'CE',
-*                                   identificacion_cliente: '10365',
-*                                   nombre_cliente: 'CLINICA SANTA GRACIA DUMIAN MEDICAL
-*                                   direccion_cliente: 'CALLE 14 15-49',
-*                                   telefono_cliente: '8236444',
-*                                   tipo_id_vendedor: 'CC ',
-*                                   idetificacion_vendedor: '94518917',
-*                                   nombre_vendedor: 'GUSTAVO ADOLFO MEJIA',
-*                                   estado: '1',
-*                                   descripcion_estado: 'Activo',
-*                                   estado_actual_pedido: '1',
-*                                   descripcion_estado_actual_pedido: 'Separado',
-*                                   fecha_registro: '2014-01-21T17:28:50.700Z',
-*                                   responsable_id: 19,
-*                                   responsable_pedido: 'Ixon Eduardo Niño',
-*                                   fecha_asignacion_pedido: '2014-03-04T17:44:30.911Z'                                   
-*                                 }
+ *                                   numero_pedido: 33872,
+ *                                   tipo_id_cliente: 'CE',
+ *                                   identificacion_cliente: '10365',
+ *                                   nombre_cliente: 'CLINICA SANTA GRACIA DUMIAN MEDICAL
+ *                                   direccion_cliente: 'CALLE 14 15-49',
+ *                                   telefono_cliente: '8236444',
+ *                                   tipo_id_vendedor: 'CC ',
+ *                                   idetificacion_vendedor: '94518917',
+ *                                   nombre_vendedor: 'GUSTAVO ADOLFO MEJIA',
+ *                                   estado: '1',
+ *                                   descripcion_estado: 'Activo',
+ *                                   estado_actual_pedido: '1',
+ *                                   descripcion_estado_actual_pedido: 'Separado',
+ *                                   fecha_registro: '2014-01-21T17:28:50.700Z',
+ *                                   responsable_id: 19,
+ *                                   responsable_pedido: 'Ixon Eduardo Niño',
+ *                                   fecha_asignacion_pedido: '2014-03-04T17:44:30.911Z'                                   
+ *                                 }
  *                            ] 
  *     }
  */
@@ -90,24 +90,24 @@ PedidosClientesEvents.prototype.onNotificarPedidosActualizados = function(datos)
  *     {
  *        pedidos_clientes : [ 
  *                              {   
-*                                   numero_pedido: 33872,
-*                                   tipo_id_cliente: 'CE',
-*                                   identificacion_cliente: '10365',
-*                                   nombre_cliente: 'CLINICA SANTA GRACIA DUMIAN MEDICAL
-*                                   direccion_cliente: 'CALLE 14 15-49',
-*                                   telefono_cliente: '8236444',
-*                                   tipo_id_vendedor: 'CC ',
-*                                   idetificacion_vendedor: '94518917',
-*                                   nombre_vendedor: 'GUSTAVO ADOLFO MEJIA',
-*                                   estado: '1',
-*                                   descripcion_estado: 'Activo',
-*                                   estado_actual_pedido: '1',
-*                                   descripcion_estado_actual_pedido: 'Separado',
-*                                   fecha_registro: '2014-01-21T17:28:50.700Z',
-*                                   responsable_id: 19,
-*                                   responsable_pedido: 'Ixon Eduardo Niño',
-*                                   fecha_asignacion_pedido: '2014-03-04T17:44:30.911Z'     
-*                                   lista_productos:[
+ *                                   numero_pedido: 33872,
+ *                                   tipo_id_cliente: 'CE',
+ *                                   identificacion_cliente: '10365',
+ *                                   nombre_cliente: 'CLINICA SANTA GRACIA DUMIAN MEDICAL
+ *                                   direccion_cliente: 'CALLE 14 15-49',
+ *                                   telefono_cliente: '8236444',
+ *                                   tipo_id_vendedor: 'CC ',
+ *                                   idetificacion_vendedor: '94518917',
+ *                                   nombre_vendedor: 'GUSTAVO ADOLFO MEJIA',
+ *                                   estado: '1',
+ *                                   descripcion_estado: 'Activo',
+ *                                   estado_actual_pedido: '1',
+ *                                   descripcion_estado_actual_pedido: 'Separado',
+ *                                   fecha_registro: '2014-01-21T17:28:50.700Z',
+ *                                   responsable_id: 19,
+ *                                   responsable_pedido: 'Ixon Eduardo Niño',
+ *                                   fecha_asignacion_pedido: '2014-03-04T17:44:30.911Z'     
+ *                                   lista_productos:[
  *                                                               {
  *                                                                  numero_pedido : 33872,
  *                                                                  codigo_producto : '1145C1131279',
@@ -122,13 +122,13 @@ PedidosClientesEvents.prototype.onNotificarPedidosActualizados = function(datos)
  *                                                                  valor_iva: 0
  *                                                               }
  *                                             ]                               
-*                                 }
+ *                                 }
  *                            ] 
  *     }
  */
 
 PedidosClientesEvents.prototype.onNotificacionOperarioPedidosAsignados = function(datos) {
-    
+
     var that = this;
     var lista_pedidos = [];
     var i = 0;
@@ -137,10 +137,10 @@ PedidosClientesEvents.prototype.onNotificacionOperarioPedidosAsignados = functio
     this.m_terceros.seleccionar_operario_bodega(datos.responsable, function(err, operarios_bodega) {
 
         operarios_bodega.forEach(function(operario) {
-            
+
             // Selecciona la sesion del usuario para obtener conexion a los sockets.
             G.auth.getSessionsUser(operario.usuario_id, function(err, sessions) {
-                
+
                 // Recorrer la lista de pedidos.
                 datos.numero_pedidos.forEach(function(numero_pedido) {
 
@@ -148,7 +148,7 @@ PedidosClientesEvents.prototype.onNotificacionOperarioPedidosAsignados = functio
                     that.m_pedidos_clientes.consultar_pedido(numero_pedido, function(err, datos_pedido) {
 
                         datos_pedido.forEach(function(pedido) {
-                            
+
                             // Se consulta el detalle del pedido.
                             that.m_pedidos_clientes.consultar_detalle_pedido(pedido.numero_pedido, function(err, detalle_pedido) {
 
@@ -157,10 +157,10 @@ PedidosClientesEvents.prototype.onNotificacionOperarioPedidosAsignados = functio
                                 lista_pedidos.push(pedido);
 
                                 if (++i === datos.numero_pedidos.length) {
-                                    
+
                                     //Se recorre cada una de las sesiones abiertas por el usuario
                                     sessions.forEach(function(session) {
-                                        
+
                                         //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
                                         that.io.sockets.socket(session.socket_id).emit('onPedidosClientesAsignados', {pedidos_clientes: lista_pedidos});
                                     });
@@ -172,6 +172,32 @@ PedidosClientesEvents.prototype.onNotificacionOperarioPedidosAsignados = functio
                     });
                 });
 
+
+            });
+        });
+    });
+};
+
+
+// Notificar a los clientes conectado a la aplicacion los pedidos que fueron reasignados
+PedidosClientesEvents.prototype.onNotificacionOperarioPedidosReasignados = function(datos) {
+
+    var that = this;
+   
+    // Seleccionar el Socket del Operario, si esta conectado en la Tablet.    
+    this.m_terceros.seleccionar_operario_bodega(datos.responsable, function(err, operarios_bodega) {
+
+        operarios_bodega.forEach(function(operario) {
+
+            // Selecciona la sesion del usuario para obtener conexion a los sockets.
+            G.auth.getSessionsUser(operario.usuario_id, function(err, sessions) {
+
+                //Se recorre cada una de las sesiones abiertas por el usuario
+                sessions.forEach(function(session) {
+
+                    //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
+                    that.io.sockets.socket(session.socket_id).emit('onPedidosClientesResignados', {pedidos_clientes: datos.numero_pedidos});
+                });
 
             });
         });

@@ -1,12 +1,16 @@
 
-var E008Controller = function(movientos_bodegas, m_e008, pedidos_clientes, pedidos_farmacias) {
+var E008Controller = function(movientos_bodegas, m_e008, pedidos_clientes, pedidos_farmacias, eventos_pedidos_clientes, eventos_pedidos_farmacias) {
 
     console.log("Modulo E008 Cargado ");
 
     this.m_movientos_bodegas = movientos_bodegas;
     this.m_e008 = m_e008;
+    
     this.m_pedidos_clientes = pedidos_clientes;
+    this.e_pedidos_clientes = eventos_pedidos_clientes;
+    
     this.m_pedidos_farmacias = pedidos_farmacias;
+    this.e_pedidos_farmacias = eventos_pedidos_farmacias;
 };
 
 // Generar Cabecera del Documento Temporal de CLIENTES
@@ -43,7 +47,7 @@ E008Controller.prototype.documentoTemporalClientes = function(req, res) {
             // - La modificacion del pedido
             // - La reasignacion.
             /* ===============================================*/
-
+            that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido : numero_pedido});
             res.send(G.utils.r(req.url, 'Documento Temporal Cliente Creado Correctamente', 200, {documento_temporal: {doc_tmp_id: doc_tmp_id}}));
             return;
         }
@@ -74,6 +78,7 @@ E008Controller.prototype.finalizarDocumentoTemporalClientes = function(req, res)
             res.send(G.utils.r(req.url, 'Error Finalizando el Documento Temporal Clientes', 500, {documento_temporal: {}}));
             return;
         } else {
+            
             res.send(G.utils.r(req.url, 'Documento Temporal Clientes Finalizado Correctamente', 200, {documento_temporal: {}}));
             return;
         }
@@ -109,6 +114,15 @@ E008Controller.prototype.documentoTemporalFarmacias = function(req, res) {
             res.send(G.utils.r(req.url, 'Error Creando el Documento Temporal Farmacias', 500, {documento_temporal: {}}));
             return;
         } else {
+            
+            /* ===============================================*/
+            // Emitir Evento para restringir:
+            // - La modificacion del pedido
+            // - La reasignacion.
+            /* ===============================================*/
+            
+            that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido : numero_pedido});
+            
             res.send(G.utils.r(req.url, 'Documento Temporal Farmacias Creado Correctamente', 200, {documento_temporal: {doc_tmp_id: doc_tmp_id}}));
             return;
         }
@@ -648,6 +662,6 @@ E008Controller.prototype.justificacionPendientes = function(req, res) {
     });
 };
 
-E008Controller.$inject = ["m_movientos_bodegas", "m_e008", "m_pedidos_clientes", "m_pedidos_farmacias"];
+E008Controller.$inject = ["m_movientos_bodegas", "m_e008", "m_pedidos_clientes", "m_pedidos_farmacias", "e_pedidos_clientes", "e_pedidos_farmacias"];
 
 module.exports = E008Controller;

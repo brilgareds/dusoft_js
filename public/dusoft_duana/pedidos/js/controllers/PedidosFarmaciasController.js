@@ -219,6 +219,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
                         console.log(pedido.numero_pedido);
                         _pedido.descripcion_estado_actual_pedido = pedido.descripcion_estado_actual_pedido;
                         _pedido.estado_actual_pedido = pedido.estado_actual_pedido;
+                        _pedido.estado_separacion = pedido.estado_separacion;                        
                         break;
                     }
                 }

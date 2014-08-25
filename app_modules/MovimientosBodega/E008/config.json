@@ -35,6 +35,16 @@
                     "module": "MovimientosBodega/E008",
                     "event": "E008Events",
                     "alias": "e_e008"
+                },
+                "pedidos_clientes_events": {
+                    "module": "PedidosClientes",
+                    "event": "PedidosClientesEvents",
+                    "alias": "e_pedidos_clientes"
+                },
+                "pedidos_farmacias_events": {
+                    "module": "PedidosFarmacias",
+                    "event": "PedidosFarmaciasEvents",
+                    "alias": "e_pedidos_farmacias"
                 }
             }],
         "cronJobs": []

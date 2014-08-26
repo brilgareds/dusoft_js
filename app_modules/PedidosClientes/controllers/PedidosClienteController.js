@@ -200,6 +200,9 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
                     responsable_estado_pedido = responsable_estado_pedido[0];
 
                     if (responsable !== responsable_estado_pedido.responsable_id) {
+                        console.log('==== Notificar Reasignación ======');
+                        console.log("responsable Nuevo", responsable, " Repsonable Vejo", responsable_estado_pedido.responsable_id);
+                        console.log('===================================');
                         that.e_pedidos_clientes.onNotificacionOperarioPedidosReasignados({numero_pedidos: pedidos, responsable: responsable_estado_pedido.responsable_id});
                     }
                 }

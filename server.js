@@ -63,7 +63,7 @@ if (program.config) {
 /*=========================================
  * Monitoring Server only Production
  * =========================================*/
-if(program.prod){
+if (program.prod) {
     require('newrelic');
 }
 
@@ -118,9 +118,9 @@ app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // development only
-if ('development' == app.get('env')) {
-    app.use(express.errorHandler());
-}
+/*if ('development' == app.get('env')) {
+ app.use(express.errorHandler());
+ }*/
 
 
 /*=========================================
@@ -131,7 +131,7 @@ if ('development' == app.get('env')) {
 if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
         res.status(err.status || 500);
-        res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {}));
+        res.send(G.utils.r(req.url, 'Se ha generado un error interno code 1', 500, {}));
     });
 }
 
@@ -141,7 +141,7 @@ if (app.get('env') === 'development') {
  * =========================================*/
 app.use(function(err, req, res, next) {
     res.status(err.status || 500);
-    res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {}));
+    res.send(G.utils.r(req.url, 'Se ha generado un error interno code 2', 500, {}));
 });
 
 /*=========================================
@@ -158,10 +158,23 @@ app.post('/testing', function(req, res) {
     res.send(200, {msj: ' Servicio de Prueba '});
 });
 
+app.get('/testing', function(req, res) {
+
+    x;
+    console.log('=== ===');
+    res.send(200, {msj: ' Servicio de Prueba '});
+});
+
 
 app.all('/dusoft_duana', function(req, res) {
     res.redirect('/dusoft_duana/login');
 });
 
-console.log('Express server listening on port ' + app.get('port') + ' in Dir '+ __dirname);
+process.on('SIGINT', function() {
+    console.log("Señal de Interrumpcion Detectada");    
+    if (i_should_exit)
+        process.exit();
+});
+
+console.log('Express server listening on port ' + app.get('port') + ' in Dir ' + __dirname);
 

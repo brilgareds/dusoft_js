@@ -131,6 +131,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
         res.status(err.status || 500);
+        //io.sockets.emit('onDisconnect');
         res.send(G.utils.r(req.url, 'Se ha generado un error interno code 1', 500, {}));
     });
 }
@@ -141,6 +142,7 @@ if (app.get('env') === 'development') {
  * =========================================*/
 app.use(function(err, req, res, next) {
     res.status(err.status || 500);
+    //io.sockets.emit('onDisconnect');
     res.send(G.utils.r(req.url, 'Se ha generado un error interno code 2', 500, {}));
 });
 
@@ -171,9 +173,10 @@ app.all('/dusoft_duana', function(req, res) {
 });
 
 process.on('SIGINT', function() {
-    console.log("Señal de Interrumpcion Detectada");    
-    if (i_should_exit)
-        process.exit();
+    console.log("Señal de Interrumpcion Detectada");
+    io.sockets.emit('onDisconnect');
+    //if (i_should_exit)
+    process.exit();
 });
 
 console.log('Express server listening on port ' + app.get('port') + ' in Dir ' + __dirname);

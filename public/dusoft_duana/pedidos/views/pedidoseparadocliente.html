@@ -62,7 +62,7 @@
                 <div class="panel-heading">
                   <h4 class="h4MarginTopBottom">Rótulos Cajas</h4>
                 </div>
-                <div class="panel-body">
+                <div class="panel-body" ng-controller="DetallepedidoSeparadoClienteController">
                   <p>
                      Cliente &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -91,11 +91,11 @@
                     <h4 class="h4MarginTopBottom">Auditar</h4>
                   </div>
                     
-                  <div class="panel-body" ng-controller="DetallepedidoSeparadoController">
+                  <div class="panel-body" ng-controller="DetallepedidoSeparadoClienteController">
                     <div class="input-group navbar-form paddingRightZero">
-                        <input type="text" class="form-control pull-right" ng-keypress="onKeySeparadosPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar Pedido" name="srch-term" id="srch-term">
+                        <input type="text" class="form-control pull-right" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar Pedido" name="srch-term" id="srch-term">
                         <div class="input-group-btn" >
-                            <button class="btn btn-default pull-right" type="submit" ng-click="buscarPedidosSeparadosCliente(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                            <button class="btn btn-default pull-right" type="submit" ng-click="buscarDetalleDocumentoTemporal(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
                         </div>
                     </div>
                     

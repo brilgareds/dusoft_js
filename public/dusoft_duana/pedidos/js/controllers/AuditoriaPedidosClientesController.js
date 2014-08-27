@@ -49,8 +49,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                     if(data.obj.documentos_temporales != undefined) {
                         $scope.renderPedidosSeparadosCliente(data.obj, paginando);
                     }
-                    
-                    console.log("Datos de la DATA: ",data );
+
                 });
 
             };
@@ -67,7 +66,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                     return;
                 }
 
-                $scope.Empresa.vaciarDocumentoTemporal();
+                $scope.Empresa.vaciarDocumentoTemporal("Cliente");
                
                 for (var i in data.documentos_temporales) {
 
@@ -76,7 +75,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                     var documento_temporal = $scope.crearDocumentoTemporal(obj);
 
                     $scope.Empresa.agregarDocumentoTemporal(
-                        documento_temporal
+                        documento_temporal, "Cliente"
                     );
 
 
@@ -113,7 +112,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             //definicion y delegados del Tabla de pedidos clientes
 
             $scope.lista_pedidos_separados_clientes = {
-                data: 'Empresa.getDocumentoTemporal()',
+                data: 'Empresa.getDocumentoTemporal("Cliente")',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
@@ -130,8 +129,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             };
 
             $scope.onRowClick = function(row) {
-                console.log("on row clicked");
-                $scope.slideurl = "views/pedidoseparado.html?time=" + new Date().getTime();
+                $scope.slideurl = "views/pedidoseparadocliente.html?time=" + new Date().getTime();
                 $scope.$emit('mostrarslide', row.entity);
             };
 

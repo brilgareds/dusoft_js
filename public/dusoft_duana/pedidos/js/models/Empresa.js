@@ -4,10 +4,12 @@ define(["angular", "js/models", "../../../includes/classes/EmpresaBase"], functi
     models.factory('Empresa', function(EmpresaBase) {
 
         var Empresa =  Object.create(EmpresaBase.getClass().prototype);
+        
         Empresa.pedidos = [];
         Empresa.pedidosFarmacias = [];
         Empresa.separadores = [];
-        Empresa.documentosTemporales = [];
+        Empresa.documentosTemporalesClientes = [];
+        Empresa.documentosTemporalesFarmacias = [];
 
         Empresa.agregarPedido = function(pedido) {
             this.pedidos.push(pedido);
@@ -58,16 +60,37 @@ define(["angular", "js/models", "../../../includes/classes/EmpresaBase"], functi
         }
 
         //Documentos Temporales
-        Empresa.agregarDocumentoTemporal = function(documento_temporal) {
-            this.documentosTemporales.push(documento_temporal);
+        Empresa.agregarDocumentoTemporal = function(documento_temporal, tipo) {
+            
+            if (tipo == "Cliente") {
+                this.documentosTemporalesClientes.push(documento_temporal);
+            }
+            
+            if (tipo == "Farmacia") {
+                this.documentosTemporalesFarmacias.push(documento_temporal);
+            }
         }
 
-        Empresa.getDocumentoTemporal = function() {
-            return this.documentosTemporales;
+        Empresa.getDocumentoTemporal = function(tipo) {
+            
+            if (tipo == "Cliente") {
+                return this.documentosTemporalesClientes;
+            }
+            
+            if (tipo == "Farmacia") {
+                return this.documentosTemporalesFarmacias;
+            }
         }
 
-        Empresa.vaciarDocumentoTemporal = function() {
-            this.documentosTemporales = [];
+        Empresa.vaciarDocumentoTemporal = function(tipo) {
+            
+            if (tipo == "Cliente") {
+                this.documentosTemporalesClientes = [];
+            }
+            
+            if (tipo == "Farmacia") {
+                this.documentosTemporalesFarmacias = [];
+            }
         }    
         
         return Empresa;

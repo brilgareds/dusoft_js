@@ -22,11 +22,15 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent',
             $scope.paginas = 0;
             $scope.items = 0;
             $scope.termino_busqueda = "";
-            $scope.ultima_busqueda  = "";
+            $scope.ultima_busqueda  = {};
             $scope.paginaactual = 1;
+
 
             $scope.buscarPedidosSeparadosFarmacia = function(termino, paginando) {
 
+                $scope.ultima_busqueda.seleccion;
+                $scope.ultima_busqueda.termino_busqueda;
+                
                 //valida si cambio el termino de busqueda
                 if($scope.ultima_busqueda.termino_busqueda != $scope.termino_busqueda
                         || $scope.ultima_busqueda.seleccion != $scope.seleccion){
@@ -47,28 +51,22 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent',
                     }
                 };
                 
-                console.log("Objeto para enviar creado");
-                
 //                if($scope.estadoseleccionado != ""){
 //                    obj.data.documento_temporal.filtro[$scope.estadoseleccionado] = true;
 //                }
 
                 Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.LISTAR_DOCUMENTOS_TEMPORALES_FARMACIAS, "POST", obj, function(data) {
-                    
-                    console.log("Datos de la DATA FARMACIAS: ",data );
-                    
-//                    if(data.status == 200) { 
-//                        $scope.ultima_busqueda = {
-//                            termino_busqueda: $scope.termino_busqueda,
-//                            seleccion: $scope.seleccion
-//                        }
-//                        
-//                        if(data.obj.documentos_temporales != undefined) {
-//                            $scope.renderPedidosSeparadosFarmacia(data.obj, paginando);
-//                        }
-//                        
-//                        console.log("Datos de la DATA FARMACIAS: ",data );
-//                    }
+
+                    if(data.status == 200) { 
+                        $scope.ultima_busqueda = {
+                            termino_busqueda: $scope.termino_busqueda,
+                            seleccion: $scope.seleccion
+                        }
+                        
+                        if(data.obj.documentos_temporales != undefined) {
+                            $scope.renderPedidosSeparadosFarmacia(data.obj, paginando);
+                        }
+                    }
                     
                 });
             };
@@ -81,6 +79,7 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent',
                 };
 
                 Request.realizarRequest(API.PEDIDOS.LISTAR_EMPRESAS, "POST", obj, function(data) {
+                    
                     if (data.status == 200) {
                         $scope.empresas = data.obj.empresas;
                         //console.log(JSON.stringify($scope.empresas))
@@ -89,8 +88,9 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent',
             };
             
             $scope.renderPedidosSeparadosFarmacia = function(data, paginando) {
-                // console.log(data);
-                $scope.items = data.pedidos_farmacias.length;
+
+                $scope.items = data.documentos_temporales.length;
+                
                 //se valida que hayan registros en una siguiente pagina
                 if (paginando && $scope.items == 0) {
                     if ($scope.paginaactual > 1) {
@@ -100,8 +100,7 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent',
                     return;
                 }
                 
-                /*Modificar aquí la interacción entre objetos */
-                $scope.Empresa.vaciarDocumentoTemporal();
+                $scope.Empresa.vaciarDocumentoTemporal("Farmacia");
 
                 for (var i in data.documentos_temporales) {
 
@@ -109,12 +108,10 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent',
                     
                     var documento_temporal = $scope.crearDocumentoTemporal(obj);
 
-                    $scope.Empresa.agregarDocumentoTemporal(documento_temporal);
+                    $scope.Empresa.agregarDocumentoTemporal(documento_temporal, "Farmacia");
                 }
             };
 
-            //**-- Se debe llamar crearPedido o debe llamarse crearPedidoSeparado ?
-            //**-- Con el pedido debe crearse el documento relacionado que contiene lo que se ha separado
             $scope.crearDocumentoTemporal = function(obj){
                 
                 var documento_temporal = DocumentoTemporal.get();
@@ -142,33 +139,33 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent',
                 
             };
 
-
-
             //definicion y delegados del Tabla de pedidos clientes
 
             $scope.lista_pedidos_separados_farmacias = {
-                data: 'Empresa.getDocumentoTemporal()',
+                data: 'Empresa.getDocumentoTemporal("Farmacia")',
                 enableColumnResize: true,
                 enableRowSelection:false,
                 columnDefs: [
                     {field: 'pedido.numero_pedido', displayName: 'Numero Pedido'},
-                    {field: 'pedido.farmacia.nombre_farmacia', displayName: 'Cliente'},
-                    {field: 'pedido.farmacia.nombre_bodega', displayName: 'Vendedor'},
+                    {field: 'pedido.nombre_vendedor', displayName: 'Farmacia'},
+                    {field: 'pedido.farmacia.nombre_bodega', displayName: 'Bodega'},
                     {field: 'zona_pedido', displayName: 'Zona'},
 //                    {field: 'descripcion_estado_actual_separado', displayName: "Estado"},
-                    {field: 'nombre_separador', displayName: 'Separador'},
-                    {field: 'fecha_registro', displayName: "Fecha Registro"},
+                    {field: 'separador.nombre_operario', displayName: 'Separador'},
+                    {field: 'descripcion_estado_separacion', displayName: 'Estado Separación'},
+                    {field: 'fecha_separacion_pedido', displayName: "Fecha Separación"},
                     {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Auditar</span></button></div>'}
- 
-                    
                 ]
 
             };
 
             $scope.onRowClick = function(row){
-                 console.log("on row clicked");
-                 $scope.slideurl = "views/pedidoseparado.html?time="+new Date().getTime();
+                 $scope.slideurl = "views/pedidoseparadofarmacia.html?time="+new Date().getTime();
                  $scope.$emit('mostrarslide',row.entity);
+            };
+            
+            $scope.valorSeleccionado = function(valor) {
+                $scope.buscarPedidosSeparadosFarmacia("");
             };
             
             $scope.agregarClase = function(estado){
@@ -179,9 +176,6 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent',
             //fin delegado grid pedidos //
 
             $scope.onPedidoSeleccionado = function(check, row){
-                console.log("agregar!!!!!");
-                console.log(check)
-                console.log(row);
 
                 row.selected = check;
                 if(check){
@@ -190,8 +184,7 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent',
                    
                     $scope.quitarPedido(row.entity);
                 }
-                
-                console.log($scope.pedidosSeparadosSeleccionados);
+
             };  
 
 
@@ -221,8 +214,7 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent',
                 for(var i in $scope.pedidosSeparadosSeleccionados){
                     var _pedido = $scope.pedidosSeparadosSeleccionados[i];
                     if(_pedido.numero_pedido == pedido.numero_pedido){
-                        //console.log("buscarSeleccion encontrado **************");
-                        //console.log(pedido);
+                        
                         row.selected = true;
                         return true;
                     }
@@ -235,7 +227,7 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent',
 
             //eventos de widgets
             $scope.onKeySeparadosPress = function(ev, termino_busqueda) {
-                //Empresa.getPedidos()[0].numero_pedido = 0000;
+                
                 if (ev.which == 13) {
                     $scope.buscarPedidosSeparadosFarmacia(termino_busqueda);
                 }
@@ -257,7 +249,7 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent',
 
             //se realiza el llamado a api para pedidos
            $scope.buscarPedidosSeparadosFarmacia("");
-
+           $scope.listarEmpresas("");
 
         }]);
 });

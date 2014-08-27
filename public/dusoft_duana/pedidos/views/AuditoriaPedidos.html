@@ -5,42 +5,8 @@
     <!--route 1 {{welcomemsg}} got to child  <a ui-sref="route1.item">Route item</a>-->
    
     <tabset  class="">
-
-        <tab heading="Farmacias" ng-controller="AuditoriaPedidosFarmaciasController">
-
-            <select ui-select2  class="pull-left" style="width:300px" ng-model="seleccion" data-placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
-                <option ng-repeat="empresa in  empresas"  ng-value="empresa.empresa_id" >{{empresa.razon_social}}</option>
-            </select>
-
-            <div class="input-group navbar-form">
-
-                <input type="text" class="form-control pull-right" ng-keypress="onKeySeparadosPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
-                <div class="input-group-btn" >
-                    <button class="btn btn-default" type="submit" ng-click="buscarPedidosSeparadosFarmacia(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
-                </div>
-
-            </div>
-            <!--<div class="defaultGrid" ng-grid="lista_pedidos_separados_farmacias">-->
-
-            </div>
-            <br/>
-
-            <div class="row text-center">
-                <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 0" ng-click="paginaAnterior()">
-                    <span class="glyphicon glyphicon-chevron-left" ></span>
-                </button>
-                <button type="button" class="btn btn-default btn-medium" ng-disabled="items == 0" ng-click="paginaSiguiente()">
-                    <span class="glyphicon glyphicon-chevron-right" ></span>
-                </button>
-            </div>
-            
-            <div slide-content class="slide" >
-                <div ng-include src="slideurl"  ng-controller="DetallepedidoSeparadoController" ></div>
-            </div>
-
-        </tab>
         
-<!--        <tab heading="Clientes" ng-controller="AuditoriaPedidosClientesController">
+        <tab heading="Clientes" ng-controller="AuditoriaPedidosClientesController">
 
             <div class="input-group navbar-form">
 
@@ -68,10 +34,44 @@
             </div>
 
             <div slide-content class="slide" >
-                <div ng-include src="slideurl"  ng-controller="DetallepedidoSeparadoController" ></div>
+                <div ng-include src="slideurl"  ng-controller="DetallepedidoSeparadoClienteController" ></div>
             </div>
 
-        </tab>        -->
+        </tab>        
+
+        <tab heading="Farmacias" ng-controller="AuditoriaPedidosFarmaciasController">
+
+            <select ui-select2  class="pull-left" style="width:300px" ng-model="seleccion" data-placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
+                <option ng-repeat="empresa in  empresas"  ng-value="empresa.empresa_id" >{{empresa.razon_social}}</option>
+            </select>
+
+            <div class="input-group navbar-form">
+
+                <input type="text" class="form-control pull-right" ng-keypress="onKeySeparadosPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
+                <div class="input-group-btn" >
+                    <button class="btn btn-default" type="submit" ng-click="buscarPedidosSeparadosFarmacia(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                </div>
+
+            </div>
+            <div class="defaultGrid" ng-grid="lista_pedidos_separados_farmacias">
+
+            </div>
+            <br/>
+
+            <div class="row text-center">
+                <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 0" ng-click="paginaAnterior()">
+                    <span class="glyphicon glyphicon-chevron-left" ></span>
+                </button>
+                <button type="button" class="btn btn-default btn-medium" ng-disabled="items == 0" ng-click="paginaSiguiente()">
+                    <span class="glyphicon glyphicon-chevron-right" ></span>
+                </button>
+            </div>
+            
+            <div slide-content class="slide" >
+                <div ng-include src="slideurl"  ng-controller="DetallepedidoSeparadoFarmaciaController" ></div>
+            </div>
+
+        </tab>
 
     </tabset>
 

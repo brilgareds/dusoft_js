@@ -88,7 +88,7 @@ PedidosFarmaciasEvents.prototype.onNotificacionOperarioPedidosReasignados = func
                 sessions.forEach(function(session) {
 
                     //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
-                    that.io.sockets.socket(session.socket_id).emit('onPedidosFarmaciasResignados', {pedidos_farmacias: datos.numero_pedidos});
+                    that.io.sockets.socket(session.socket_id).emit('onPedidosFarmaciasReasignados', {pedidos_farmacias: datos.numero_pedidos});
                 });
 
             });

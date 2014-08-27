@@ -247,7 +247,7 @@ PedidosFarmacias.prototype.asignarResponsablesPedido = function(req, res) {
                     responsable_estado_pedido = responsable_estado_pedido[0];
 
                     if (responsable !== responsable_estado_pedido.responsable_id) {
-                        that.e_pedidos_clientes.onNotificacionOperarioPedidosReasignados({numero_pedidos: pedidos, responsable: responsable_estado_pedido.responsable_id});
+                        that.e_pedidos_farmacias.onNotificacionOperarioPedidosReasignados({numero_pedidos: pedidos, responsable: responsable_estado_pedido.responsable_id});
                     }
                 }
                 // Notificar al operario, los pedidos Asignados en Real Time

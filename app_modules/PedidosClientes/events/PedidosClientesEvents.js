@@ -183,11 +183,19 @@ PedidosClientesEvents.prototype.onNotificacionOperarioPedidosAsignados = functio
 PedidosClientesEvents.prototype.onNotificacionOperarioPedidosReasignados = function(datos) {
 
     var that = this;
-   
+
     // Seleccionar el Socket del Operario, si esta conectado en la Tablet.    
     this.m_terceros.seleccionar_operario_bodega(datos.responsable, function(err, operarios_bodega) {
 
+        console.log('============== operarios_bodega =================');
+        console.log(operarios_bodega);
+        console.log('=================================================');
+
         operarios_bodega.forEach(function(operario) {
+
+            console.log('============== operarios_bodega =================');
+            console.log(operario);
+            console.log('=================================================');
 
             // Selecciona la sesion del usuario para obtener conexion a los sockets.
             G.auth.getSessionsUser(operario.usuario_id, function(err, sessions) {
@@ -195,8 +203,12 @@ PedidosClientesEvents.prototype.onNotificacionOperarioPedidosReasignados = funct
                 //Se recorre cada una de las sesiones abiertas por el usuario
                 sessions.forEach(function(session) {
 
+                    console.log('============== session =================');
+                    console.log(session);
+                    console.log('=================================================');
+                    
                     //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
-                    that.io.sockets.socket(session.socket_id).emit('onPedidosClientesResignados', {pedidos_clientes: datos.numero_pedidos});
+                    that.io.sockets.socket(session.socket_id).emit('onPedidosClientesReasignados', {pedidos_clientes: datos.numero_pedidos});
                 });
 
             });

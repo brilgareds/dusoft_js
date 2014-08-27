@@ -33,7 +33,7 @@
                 </button>
             </div>
 
-            <div slide-content class="slide" >
+            <div slide-content open-callback="mostrardetallecliente" close-callback="cerrardetallecliente" class="slide" >
                 <div ng-include src="slideurl"  ng-controller="DetallepedidoSeparadoClienteController" ></div>
             </div>
 
@@ -67,7 +67,7 @@
                 </button>
             </div>
             
-            <div slide-content class="slide" >
+            <div slide-content open-callback="mostrardetallefarmacia" close-callback="cerrardetallefarmacia"  class="slide" >
                 <div ng-include src="slideurl"  ng-controller="DetallepedidoSeparadoFarmaciaController" ></div>
             </div>
 

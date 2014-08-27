@@ -6,15 +6,22 @@ define(["angular","js/directive"], function(angular, directive){
 
           link:function(scope, element, attrs) {
              
-
+             //console.log(attrs)
           },
           
-          scope:{
-           // datosbusqueda: '=selectsearch'
-
+          scope: {
+            'closeCallback' : '=',
+            'openCallback' : '='
           },
-          controller: function($scope, $element) {
-
+          controller: function($scope, $element, $attrs) {
+              console.log("opencallback ",$attrs);
+              
+              if(($attrs.closeCallback === undefined || $attrs.closeCallback.length == 0) || 
+                  ($attrs.openCallback === undefined || $attrs.openCallback.length == 0)){
+                 throw "No se han declarado los callbacks para el slide";
+                 return;
+              }
+              
               angular.element(document).ready(function() {
 
                   //modal del slider
@@ -52,11 +59,11 @@ define(["angular","js/directive"], function(angular, directive){
                   }
                   
 
-                  $scope.$parent.$on('mostrarslide', function($event) {
+                  $scope.$parent.$on($attrs.openCallback, function($event) {
                      slide.mostrarslide($element, modalslide);
                   });
 
-                  $rootScope.$on('cerrarslide', function($event, datos) {
+                  $rootScope.$on($attrs.closeCallback, function($event, datos) {
                       if(!datos){
                           datos = {animado :false};
                       }

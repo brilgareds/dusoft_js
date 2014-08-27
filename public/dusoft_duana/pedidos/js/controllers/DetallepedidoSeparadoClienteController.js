@@ -1,4 +1,4 @@
-define(["angular", "js/controllers", 'controllers/asignacioncontroller','models/Cliente', 'models/Pedido', 'models/Separador', 'models/DocumentoTemporal', 'models/DetalleDocumentoTemporal'], function(angular, controllers) {
+define(["angular", "js/controllers",'models/Cliente', 'models/Pedido', 'models/Separador', 'models/DocumentoTemporal', 'models/DetalleDocumentoTemporal'], function(angular, controllers) {
 
     var fo = controllers.controller('DetallepedidoSeparadoClienteController', [
         '$scope', '$rootScope', 'Request', 
@@ -25,13 +25,15 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller','models/
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
             
             $scope.cerrar = function(){
-               $scope.$emit('cerrarslide');
+               $scope.$emit('cerrardetallecliente');
             };
             
-            $rootScope.$on("mostrarslide", function(e, documento_temporal) {
+            $rootScope.$on("mostrardetallecliente", function(e, documento_temporal) {
                 
+                console.log("Documento Temporal",documento_temporal);
                 $scope.DocumentoTemporal = documento_temporal;
                 $scope.buscarDetalleDocumentoTemporal("");
+                $scope.cliente = $scope.DocumentoTemporal.pedido.cliente;
                 
             });
             
@@ -100,7 +102,9 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller','models/
                     var detalle_documento_temporal = $scope.crearDetalleDocumentoTemporal(obj);
 
                     $scope.DocumentoTemporal.agregarDetalleDocumentoTemporal(detalle_documento_temporal);
+                    
                     console.log("Detalle Documento Temporal Previo Grilla: ============ ",$scope.DocumentoTemporal.getDetalleDocumentoTemporal());
+                    
                     
                     
                 }
@@ -128,7 +132,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller','models/
                     {field: 'codigo_producto', displayName: 'Código Producto'},
                     {field: 'nombre_producto', displayName: 'Nombre Producto'},
                     {field: 'existencia_lotes', displayName: 'Existencia Lotes'},
-                    {field: 'cantidad_pedida', displayName: 'Cantidad Pedida'},
+                    {field: 'cantidad_pedida', displayName: 'Cantidad Solicitada'},
                     {field: 'cantidad_separada', displayName: "Cantidad Separada"},
                     {field: 'lote', displayName: 'Lote'},
                     {field: 'fecha_vencimiento', displayName: "Fecha Vencimiento"},
@@ -155,7 +159,6 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller','models/
                 $scope.paginaactual++;
                 $scope.buscarDetalleDocumentoTemporal($scope.termino_busqueda, true);
             };
-
 
         }]);
 

@@ -161,7 +161,8 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent',
 
             $scope.onRowClick = function(row){
                  $scope.slideurl = "views/pedidoseparadofarmacia.html?time="+new Date().getTime();
-                 $scope.$emit('mostrarslide',row.entity);
+                 $scope.$emit('mostrardetallefarmacia',row.entity);
+                 //console.log("Presionado Botón Auditar Farmacia: ", row.entity);
             };
             
             $scope.valorSeleccionado = function(valor) {

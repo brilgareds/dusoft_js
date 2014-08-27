@@ -130,7 +130,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
 
             $scope.onRowClick = function(row) {
                 $scope.slideurl = "views/pedidoseparadocliente.html?time=" + new Date().getTime();
-                $scope.$emit('mostrarslide', row.entity);
+                $scope.$emit('mostrardetallecliente', row.entity);
             };
 
             $scope.agregarClase = function(estado) {

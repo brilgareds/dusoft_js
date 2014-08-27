@@ -45,10 +45,17 @@
               <h4 class="h4MarginTopBottom">Hacia : <a href="#">CLIENTE</a></h4>
             </div>
             <div class="panel-body">
-              <p>
+                
+                <table>
+                    <tr><th>Nombre Cliente: </th><td>{{cliente.nombre_tercero}}</td></tr>
+                    <tr><th>Dirección: </th><td>{{cliente.direccion_cliente}}</td></tr>
+                    <tr><th>Teléfono: </th><td>{{cliente.telefono_cliente}}</td></tr>
+                    <tr><th>{{cliente.tipo_id_tercero}}: </th><td>{{cliente.id}}</td></tr>
+                </table>
+<!--              <p>
                 Dirección <br>
                 detalles <br>
-              </p>
+              </p>-->
             </div>
            </div>
         </div>

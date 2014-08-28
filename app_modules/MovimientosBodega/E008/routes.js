@@ -1,6 +1,6 @@
 module.exports = function(app, di_container) {
 
-    // ======== Rutas para Documentos E008 =============
+    // ======== Rutas para Documentos Temporales E008 =============
 
     var c_e008 = di_container.get("c_e008");
     var e_e008 = di_container.get("e_e008");
@@ -15,7 +15,7 @@ module.exports = function(app, di_container) {
     app.post('/api/movBodegas/E008/finalizarDocumentoTemporalClientes', function(req, res) {
         c_e008.finalizarDocumentoTemporalClientes(req, res);
     });
-
+  
     // Generar Documento temporal de despacho farmacias
     app.post('/api/movBodegas/E008/documentoTemporalFarmacias', function(req, res) {
         c_e008.documentoTemporalFarmacias(req, res);
@@ -72,8 +72,10 @@ module.exports = function(app, di_container) {
     });
 
     // ======== FIN Rutas para Documentos E008 =============    
+    
+    
 
-    // Events E008
+    // ======== Events E008 ========
     io.sockets.on('connection', function(socket) {
 
         console.log('=== onConnection E008 ====');

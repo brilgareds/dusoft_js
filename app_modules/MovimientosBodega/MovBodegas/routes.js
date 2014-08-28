@@ -6,5 +6,10 @@ module.exports = function(app, di_container) {
     app.post('/api/movBodegas/consultarDocumentosUsuario', function(req, res) {
         c_movimientos_bodega.consultarDocumentosUsuario(req, res);
     });
+    
+    // Actualizar bodegas_doc_id en documento temporal.
+    app.post('/api/movBodegas/actualizarTipoDocumentoTemporal', function(req, res) {
+        c_movimientos_bodega.actualizarTipoDocumentoTemporal(req, res);
+    });
 
 };

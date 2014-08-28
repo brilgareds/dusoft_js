@@ -5,7 +5,6 @@ define(["angular","js/models","includes/classes/Pedido"], function(angular, mode
 
 		function PedidoKardex(datos){
 			//constructor padre
-			console.log(Pedido)
 			Pedido.getClass().call();
 			this.setDatos(datos);
 			this.cantidad_pendiente = datos.cantidad_pendiente || null;

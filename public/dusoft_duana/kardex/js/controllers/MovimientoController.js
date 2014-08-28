@@ -119,7 +119,7 @@ function(angular, controllers) {
 
             $scope.cerrar = function() {
                 $scope.filterOptions.filterText = "";
-                $scope.$emit('cerrardetallekardex');
+                $scope.$emit('cerrardetallekardex', {animado:true});
             };
 
             //eventos

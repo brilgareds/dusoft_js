@@ -82,7 +82,7 @@ define(["angular","js/directive", "includes/slide/transition"], function(angular
             console.log("on mostrar slide");
             $element.css({"display":"block"});
             contenedor.show();
-            $element.transition({ x: '0px', duration:1200 });
+            $element.transition({ x: '0px', duration:1200, easing: 'in' });
            
           },
 

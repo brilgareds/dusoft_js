@@ -116,7 +116,7 @@ MovimientosBodegasModel.prototype.consultar_documentos_usuario = function(usuari
     var sql_aux = " ";
 
     if (tipo_documento !== '') {
-        sql_aux = " AND tipo_doc_general_id = '" + tipo_documento + "' ";
+        sql_aux = " AND c.tipo_doc_general_id = '" + tipo_documento + "' ";
     }
 
     var sql = " select \

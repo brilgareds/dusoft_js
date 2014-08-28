@@ -21,6 +21,8 @@ define(["angular", "js/controllers",'models/Cliente', 'models/Pedido', 'models/S
             $scope.paginaactual = 1;
             
             $scope.detalle_pedido_separado_cliente = {};
+            
+            $scope.documentos_usuarios = [];
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
             
@@ -100,13 +102,9 @@ define(["angular", "js/controllers",'models/Cliente', 'models/Pedido', 'models/S
                     
                     console.log("DOCUMENTOS USUARIO: ", data);
                     
-                    if(data.status == 200) {
-                        $scope.ultima_busqueda = {
-                            termino_busqueda: $scope.termino_busqueda,
-                            seleccion: $scope.seleccion
-                        }
+                    $scope.documentos_usuarios = data.obj.movimientos_bodegas;
 
-                    }
+                    
                 });
                 
                 /* Fin Request */
@@ -179,6 +177,12 @@ define(["angular", "js/controllers",'models/Cliente', 'models/Pedido', 'models/S
             $scope.paginaSiguiente = function() {
                 $scope.paginaactual++;
                 $scope.buscarDetalleDocumentoTemporal($scope.termino_busqueda, true);
+            };
+            
+            $scope.valorSeleccionado = function(valor) {
+
+                //$scope.buscarPedidosFarmacias("");
+                /* Poner aquí el código relacionado con el evento correspondiente a la opción seleccionada*/
             };
 
         }]);

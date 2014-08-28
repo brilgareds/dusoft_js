@@ -55,6 +55,9 @@ requirejs.config({
         },
         "socketservice":{
             deps:["socket"]
+        },
+        "transition":{
+            deps:["jquery"]
         }
     }
 });

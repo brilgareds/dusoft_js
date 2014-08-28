@@ -17,7 +17,7 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent', 
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda  = "";
 
-            $scope.slideurl = "views/kardex.html";
+            $scope.slideurl = "";
 
 
           //  $scope.fechainicial = new Date((fechaActual.getMonth() + 1)+"/01/" + (fechaActual.getFullYear() -1));
@@ -118,8 +118,8 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent', 
 
 
             $scope.onRowClick = function(row) {
-                console.log($filter('date')($scope.fechainicial, "yyyy-MM-dd"));
-                console.log($filter('date')($scope.fechafinal, "yyyy-MM-dd"));
+                //console.log($filter('date')($scope.fechainicial, "yyyy-MM-dd"));
+                //console.log($filter('date')($scope.fechafinal, "yyyy-MM-dd"));
                 $scope.slideurl = "views/kardex.html?time="+new Date().getTime();
 
                 if ($scope.fechafinal == null || $scope.fechainicial == null) {
@@ -145,7 +145,7 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent', 
                         function(data) {
                             if (data.status == 200) {
                                 if (data.obj.movimientos_producto.length > 0) {
-                                    $scope.$emit('mostrarslide', row.entity, data.obj);
+                                    $scope.$emit('mostrardetallekardex', row.entity, data.obj);
                                 } else {
                                     AlertService.mostrarMensaje("warning", "El producto no tiene movimientos");
                                 }
@@ -157,7 +157,7 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent', 
             };
 
             $scope.cerrar = function() {
-                $scope.$emit('cerrarslide');
+                $scope.$emit('cerrardetallekardex');
             };
 
             //eventos

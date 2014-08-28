@@ -1,4 +1,4 @@
-define(["angular","js/directive"], function(angular, directive){
+define(["angular","js/directive", "includes/slide/transition"], function(angular, directive){
 
     directive.directive('slideContent',["$rootScope",function($rootScope) {
        var slide =  {
@@ -79,31 +79,21 @@ define(["angular","js/directive"], function(angular, directive){
           },
 
           mostrarslide: function($element, contenedor){
-             $element.animate({"display":"block","right":"0px"});
-             contenedor.show();
+            console.log("on mostrar slide");
+            $element.css({"display":"block"});
+            contenedor.show();
+            $element.transition({ x: '0px', duration:1000 });
+           
           },
 
           cerrarslide: function($element, animado, contenedor){
             var rootWidth = $(window).width() +slide.margen
-            if(animado){
-              $element.animate(
-                {"right":"-"+rootWidth+"px"},
-                {
-
-                  complete:function(){
-                    $element.css("display:none");
-
-                  }
-                }
-
-              );
-            } else {
-              $element.css({"display":"none","right":"-"+rootWidth+"px"});
-              
-            }
-
-            contenedor.hide();
             
+            $element.transition({ x: rootWidth+"px", duration:1000},function(){
+               $element.css({"display":"none"});
+               contenedor.hide();
+            });
+
           }
 
        };

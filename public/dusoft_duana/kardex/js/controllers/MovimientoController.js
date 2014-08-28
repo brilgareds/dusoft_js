@@ -119,8 +119,7 @@ function(angular, controllers) {
 
             $scope.cerrar = function() {
                 $scope.filterOptions.filterText = "";
-                $scope.$emit('cerrarslide');
-                console.log($scope.selemovimiento)
+                $scope.$emit('cerrardetallekardex');
             };
 
             //eventos
@@ -136,7 +135,7 @@ function(angular, controllers) {
             };
 
             //eventos personalizados
-            $rootScope.$on("mostrarslide", function(e, producto, movimientos) {
+            $rootScope.$on("mostrardetallekardex", function(e, producto, movimientos) {
                 $scope.producto = angular.copy(producto);
                 $scope.existencia = $scope.producto.existencia;
                 $scope.nombreProducto = producto.descripcion;
@@ -176,10 +175,10 @@ function(angular, controllers) {
                     );
 
                     var farmacia = FarmaciaKardex.get(
-                            obj.farmacia_id,
-                            null,
-                            obj.razon_social
-                            );
+                        obj.farmacia_id,
+                        null,
+                        obj.razon_social
+                    );
 
                     pedido.setFarmacia(farmacia);
                     pendiente.setPedido(pedido);
@@ -230,7 +229,6 @@ function(angular, controllers) {
                             obj.tercero_id
                     );
 
-                    console.log(proveedor.nombre_tercero + " ===")
                     orden.setDatos(
                         {
                             proveedor:proveedor,

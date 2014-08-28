@@ -119,6 +119,7 @@ ul.dropdown-menu {
 html{
 	overflow-x: hidden; 
 	background-color: transparent;
+	height: 101%;
 }
 
 input.readonlyinput[readonly]{

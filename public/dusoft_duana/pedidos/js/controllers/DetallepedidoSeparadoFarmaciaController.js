@@ -21,6 +21,8 @@ define(["angular", "js/controllers",'models/Farmacia', 'models/Pedido', 'models/
             $scope.paginaactual = 1;
             
             $scope.detalle_pedido_separado_farmacia = {};
+            
+            $scope.documentos_usuarios = [];
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
             
@@ -28,13 +30,22 @@ define(["angular", "js/controllers",'models/Farmacia', 'models/Pedido', 'models/
                $scope.$emit('cerrardetallefarmacia');
             };
             
-            $rootScope.$on("mostrardetallefarmacia", function(e, documento_temporal) {
+            $rootScope.$on("mostrardetallefarmaciaCompleto", function(e, datos) {
                 
-                $scope.DocumentoTemporal = documento_temporal;
+                //$scope.DocumentoTemporal = documento_temporal;
+                
+                $scope.DocumentoTemporal = datos[1];
                 
                 $scope.buscarDetalleDocumentoTemporal("");
                 $scope.farmacia = $scope.DocumentoTemporal.pedido.farmacia;
                 
+                $scope.traerListadoDocumentosUsuario();
+                
+            });
+            
+            // Usar este evento si es necesario - Tras cerrar el Slide 
+            $rootScope.$on("cerrardetalleclienteCompleto", function(e, datos) {
+
             });
             
             $scope.buscarDetalleDocumentoTemporal = function(termino, paginando){
@@ -74,6 +85,39 @@ define(["angular", "js/controllers",'models/Farmacia', 'models/Pedido', 'models/
                 /* Fin Request */
                 
             };
+            
+            $scope.traerListadoDocumentosUsuario = function() {
+                
+                if($scope.ultima_busqueda != $scope.termino_busqueda) {
+                    $scope.paginaactual = 1;
+                }
+                
+                /* Inicio Objeto a enviar */
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        movimientos_bodegas: {
+                            centro_utilidad_id: '1',
+                            bodega_id: '03',
+                            tipo_documento: 'E008'
+                        }
+                    }
+                }
+                /* Fin Objeto a enviar */
+                
+                /* Inicio Request */
+                
+                Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.CONSULTAR_DOCUMENTOS_USUARIOS, "POST", obj, function(data) {
+                    
+                    console.log("DOCUMENTOS USUARIO: ", data);
+                    
+                    $scope.documentos_usuarios = data.obj.movimientos_bodegas;
+
+                    
+                });
+                
+                /* Fin Request */
+            }
             
             $scope.renderDetalleDocumentoTemporalFarmacia = function(data, paginando) {
 

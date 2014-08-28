@@ -30,14 +30,20 @@ define(["angular", "js/controllers",'models/Cliente', 'models/Pedido', 'models/S
                $scope.$emit('cerrardetallecliente', {animado:true});
             };
             
-            $rootScope.$on("mostrardetallecliente", function(e, documento_temporal) {
+            $rootScope.$on("mostrardetalleclienteCompleto", function(e, datos) {
                 
-                $scope.DocumentoTemporal = documento_temporal;
+                console.log("informacion enviada ", datos)
+                $scope.DocumentoTemporal = datos[1];
                 $scope.buscarDetalleDocumentoTemporal("");
                 $scope.cliente = $scope.DocumentoTemporal.pedido.cliente;
                 
                 $scope.traerListadoDocumentosUsuario();
                 
+            });
+            
+            // Usar este evento si es necesario - Tras cerrar el Slide 
+            $rootScope.$on("cerrardetalleclienteCompleto", function(e, datos) {
+
             });
             
             $scope.buscarDetalleDocumentoTemporal = function(termino, paginando){

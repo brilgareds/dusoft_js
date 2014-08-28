@@ -1,0 +1,159 @@
+<!--Va la logica de pedidos separados-->
+
+<div style ="padding:5px">
+    <div class="row">
+        <div class="panel-info col-sm-12 marginBottom5">
+            <div class="panel-body col-sm-12 marginBottom5">
+                <button ng-click="cerrar()" class="pull-right btn btn-default btn-xs" style="margin-right:15px"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>   
+
+                <div class="row marginBottom5">            
+                    <h4>Tipo Documento: </h4>
+                </div>
+
+                <div class="row marginBottom5">
+                    <select ui-select2 class="pull-left" style="width:300px" ng-model="seleccion" placeholder="Seleccionar Documento" ng-change="valorSeleccionado()">
+                        <option value=""></option>
+                    </select>  
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12 col-md-6 paddingRightZero">
+          <div class="panel panel-default marginBottom5">
+              
+            <div class="panel-heading">
+              <h4 class="h4MarginTopBottom">De: <a href="#">DUANA Y CIA LTDA</a></h4>
+            </div>
+              
+            <div class="panel-body">
+              <p>
+                Dirección <br>
+                deralles <br>
+              </p>
+            </div>
+              
+          </div>
+        </div>
+
+        <div class="col-sm-12 col-md-6 paddingLeftZero">
+          <div class="panel panel-default marginBottom5">
+            <div class="panel-heading">
+              <h4 class="h4MarginTopBottom">Hacia : <a href="#">CLIENTE</a></h4>
+            </div>
+            <div class="panel-body">
+                
+                <table>
+                    <tr><th>Nombre Cliente: </th><td>{{cliente.nombre_tercero}}</td></tr>
+                    <tr><th>Dirección: </th><td>{{cliente.direccion_cliente}}</td></tr>
+                    <tr><th>Teléfono: </th><td>{{cliente.telefono_cliente}}</td></tr>
+                    <tr><th>{{cliente.tipo_id_tercero}}: </th><td>{{cliente.id}}</td></tr>
+                </table>
+<!--              <p>
+                Dirección <br>
+                detalles <br>
+              </p>-->
+            </div>
+           </div>
+        </div>
+
+    </div> 
+            
+    <div class="row">          
+        <div class="col-sm-12 col-md-12">
+            
+            <div class="panel panel-info marginBottom5"> <!-- / begin banking details -->
+                <div class="panel-heading">
+                  <h4 class="h4MarginTopBottom">Rótulos Cajas</h4>
+                </div>
+                <div class="panel-body" ng-controller="DetallepedidoSeparadoClienteController">
+                  <p>
+                     Cliente &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                     Número de Cajas &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                     Rótulos
+                  </p>
+                  <p>
+                     Pedido : 12345678&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                     Lote : ------
+                  </p>
+                </div>
+            </div> <!-- / end banking details -->
+            
+        </div>         
+    </div>
+    
+    <div class="row"> <!-- / begin payment details section -->
+        <div class="col-sm-12 col-md-12">
+            
+            <div class="span7"> <!-- / begin contact details -->
+                <div class="panel panel-info marginBottom5">
+                    
+                  <div class="panel-heading">
+                    <h4 class="h4MarginTopBottom">Auditar</h4>
+                  </div>
+                    
+                  <div class="panel-body" ng-controller="DetallepedidoSeparadoClienteController">
+                    <div class="input-group navbar-form paddingRightZero">
+                        <input type="text" class="form-control pull-right" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar Pedido" name="srch-term" id="srch-term">
+                        <div class="input-group-btn" >
+                            <button class="btn btn-default pull-right" type="submit" ng-click="buscarDetalleDocumentoTemporal(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                    
+                    <div class="auditarGrid" ng-grid="detalle_pedido_separado_cliente"></div>
+                  </div>
+                    
+                </div>
+            </div> <!-- / end contact details -->
+
+        </div>
+    </div> <!-- / end payment details section -->
+      
+    <!-- End Código desplazado -->
+    <div class="row">
+        <div class="col-xs-12">
+          
+            <div class="panel panel-info marginBottom5"> <!-- / begin banking details -->
+
+                <div class="panel-heading">
+                  <h4 class="h4MarginTopBottom">Auditados</h4>
+                </div>
+                
+                <div class="panel-body">
+                    <tabset  class="">
+                        <tab heading="Pedidos" ng-controller="AuditoriaPedidosClientesController">
+                            <div class="auditadosGrid" ng-grid="lista_pedidos_separados_clientes">
+                            </div>
+                        </tab>
+                        <tab heading="Caja1" ng-controller="AuditoriaPedidosClientesController">
+                            <div class="auditadosGrid" ng-grid="lista_pedidos_separados_clientes">
+                             </div>
+                        </tab>
+                        <tab heading="Caja2" ng-controller="AuditoriaPedidosClientesController">
+                            <div class="auditadosGrid" ng-grid="lista_pedidos_separados_clientes">
+                             </div>
+                        </tab>
+                        <tab heading="Caja3" ng-controller="AuditoriaPedidosClientesController">
+                            <div class="auditadosGrid" ng-grid="lista_pedidos_separados_clientes">
+                             </div>
+                        </tab>
+                    </tabset>
+                </div>
+            </div>
+              
+        </div>    
+    </div> <!-- / end class row --> 
+
+    <div class="col-sm-12 row marginBottom5">
+        <button type="submit" class="btn btn-accion btn-primary pull-right">Generar Documento</button>    
+    </div>
+
+    <br/>
+
+</div>

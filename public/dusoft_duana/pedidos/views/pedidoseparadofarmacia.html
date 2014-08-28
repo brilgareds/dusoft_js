@@ -96,7 +96,7 @@
                     <h4 class="h4MarginTopBottom">Auditar</h4>
                   </div>
                     
-                  <div class="panel-body" ng-controller="DetallepedidoSeparadoFarmaciaController">
+                  <div class="panel-body">
                     <div class="input-group navbar-form paddingRightZero">
                         <input type="text" class="form-control pull-right" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Código Barras" name="srch-term" id="srch-term">
                         <div class="input-group-btn" >
@@ -124,24 +124,24 @@
                 </div>
                 
                 <div class="panel-body">
-<!--                    <tabset  class="">
-                        <tab heading="Pedidos" ng-controller="AuditoriaPedidosFarmaciasController">
+                    <tabset  class="">
+                        <tab heading="Pedidos">
                             <div class="auditadosGrid" ng-grid="lista_pedidos_separados_farmacias">
                             </div>
                         </tab>
-                        <tab heading="Caja1" ng-controller="AuditoriaPedidosFarmaciasController">
+                        <tab heading="Caja1">
                             <div class="auditadosGrid" ng-grid="lista_pedidos_separados_farmacia">
                              </div>
                         </tab>
-                        <tab heading="Caja2" ng-controller="AuditoriaPedidosFarmaciasController">
+                        <tab heading="Caja2">
                             <div class="auditadosGrid" ng-grid="lista_pedidos_separados_farmacias">
                              </div>
                         </tab>
-                        <tab heading="Caja3" ng-controller="AuditoriaPedidosFarmaciasController">
+                        <tab heading="Caja3">
                             <div class="auditadosGrid" ng-grid="lista_pedidos_separados_farmacias">
                              </div>
                         </tab>
-                    </tabset>-->
+                    </tabset>
                 </div>
             </div>
               

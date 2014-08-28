@@ -110,4 +110,32 @@ MovimientosBodegasModel.prototype.consultar_detalle_movimiento_bodega_temporal =
     });
 };
 
+// Consultar documentos asigandos al usuario 
+MovimientosBodegasModel.prototype.consultar_documentos_usuario = function(usuario_id, centro_utilidad_id, bodega_id, tipo_documento, callback) {
+
+    var sql_aux = " ";
+    
+    if(tipo_documento !== ''){
+        sql_aux = " AND tipo_doc_general_id = '"+tipo_documento+"' ";
+    }
+
+    var sql = " select \
+                d.inv_tipo_movimiento as tipo_movimiento,\
+                b.bodegas_doc_id,\
+                c.tipo_doc_general_id as tipo_doc_bodega_id,\
+                d.descripcion as tipo_clase_documento, \
+                c.prefijo,\
+                c.descripcion\
+                from inv_bodegas_userpermisos a\
+                inner join inv_bodegas_documentos b on a.documento_id = b.documento_id\
+                inner join documentos c on b.documento_id = c.documento_id and b.empresa_id = c.empresa_id\
+                inner join tipos_doc_generales d on c.tipo_doc_general_id = d.tipo_doc_general_id\
+                where a.usuario_id = $1 and a.centro_utilidad = $2 and a.bodega= $3 " + sql_aux ;
+
+    G.db.query(sql, [usuario_id, centro_utilidad_id, bodega_id], function(err, rows, result) {
+
+        callback(err, rows);
+    });
+};
+
 module.exports = MovimientosBodegasModel;

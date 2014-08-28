@@ -42,14 +42,13 @@
         <div class="col-sm-12 col-md-6 paddingLeftZero">
           <div class="panel panel-default marginBottom5">
             <div class="panel-heading">
-              <h4 class="h4MarginTopBottom">Hacia : <a href="#">FARMACIA</a></h4>
+              <h4 class="h4MarginTopBottom">Hacia : <a href="#">{{farmacia.nombre_farmacia}}</a></h4>
             </div>
             <div class="panel-body">
                 <table>
-<!--                    <tr><th>Nombre Farmacia: </th><td>{{cliente.nombre_tercero}}</td></tr>
-                    <tr><th>Dirección: </th><td>{{cliente.direccion_cliente}}</td></tr>
-                    <tr><th>Teléfono: </th><td>{{cliente.telefono_cliente}}</td></tr>
-                    <tr><th>{{cliente.tipo_id_tercero}}: </th><td>{{cliente.id}}</td></tr>-->
+                    <tr><th>ID Farmacia: &nbsp;</th><td>{{farmacia.farmacia_id}}</td></tr>
+                    <tr><th>Bodega: </th><td>{{farmacia.nombre_bodega}}</td></tr>
+                    <tr><th>ID Bodega: </th><td>{{farmacia.bodega_id}}</td></tr>
                 </table>
 <!--              <p>
                 Dirección <br>
@@ -97,15 +96,15 @@
                     <h4 class="h4MarginTopBottom">Auditar</h4>
                   </div>
                     
-                  <div class="panel-body" ng-controller="DetallepedidoSeparadoFarmaciaController">
-<!--                    <div class="input-group navbar-form paddingRightZero">
-                        <input type="text" class="form-control pull-right" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar Pedido" name="srch-term" id="srch-term">
+                  <div class="panel-body">
+                    <div class="input-group navbar-form paddingRightZero">
+                        <input type="text" class="form-control pull-right" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Código Barras" name="srch-term" id="srch-term">
                         <div class="input-group-btn" >
                             <button class="btn btn-default pull-right" type="submit" ng-click="buscarDetalleDocumentoTemporal(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
                         </div>
                     </div>
                     
-                    <div class="auditarGrid" ng-grid="detalle_pedido_separado_farmacia"></div>-->
+                    <div class="auditarGrid" ng-grid="detalle_pedido_separado_farmacia"></div>
                   </div>
                     
                 </div>
@@ -125,24 +124,24 @@
                 </div>
                 
                 <div class="panel-body">
-<!--                    <tabset  class="">
-                        <tab heading="Pedidos" ng-controller="AuditoriaPedidosFarmaciasController">
+                    <tabset  class="">
+                        <tab heading="Pedidos">
                             <div class="auditadosGrid" ng-grid="lista_pedidos_separados_farmacias">
                             </div>
                         </tab>
-                        <tab heading="Caja1" ng-controller="AuditoriaPedidosFarmaciasController">
+                        <tab heading="Caja1">
                             <div class="auditadosGrid" ng-grid="lista_pedidos_separados_farmacia">
                              </div>
                         </tab>
-                        <tab heading="Caja2" ng-controller="AuditoriaPedidosFarmaciasController">
+                        <tab heading="Caja2">
                             <div class="auditadosGrid" ng-grid="lista_pedidos_separados_farmacias">
                              </div>
                         </tab>
-                        <tab heading="Caja3" ng-controller="AuditoriaPedidosFarmaciasController">
+                        <tab heading="Caja3">
                             <div class="auditadosGrid" ng-grid="lista_pedidos_separados_farmacias">
                              </div>
                         </tab>
-                    </tabset>-->
+                    </tabset>
                 </div>
             </div>
               

@@ -25,7 +25,7 @@ define(["angular", "js/controllers",'models/Cliente', 'models/Pedido', 'models/S
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
             
             $scope.cerrar = function(){
-               $scope.$emit('cerrardetallecliente');
+               $scope.$emit('cerrardetallecliente', {animado:true});
             };
             
             $rootScope.$on("mostrardetallecliente", function(e, documento_temporal) {
@@ -38,7 +38,7 @@ define(["angular", "js/controllers",'models/Cliente', 'models/Pedido', 'models/S
             });
             
             $scope.buscarDetalleDocumentoTemporal = function(termino, paginando){
-                
+
                 
                 //valida si cambio el termino de busqueda
                 if ($scope.ultima_busqueda != $scope.termino_busqueda) {
@@ -55,11 +55,9 @@ define(["angular", "js/controllers",'models/Cliente', 'models/Pedido', 'models/S
                     }
                 };
                 /* Fin Objeto */
-                
                 /* Inicio Request */
                 Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.CONSULTAR_DOCUMENTO_TEMPORAL_CLIENTES, "POST", obj, function(data) {
-                    
-                    console.log("Info Documento desde Server: ", data);
+                    //console.log("Info Documento desde Server: ", data);
                     
                     if(data.status == 200) { 
                         $scope.ultima_busqueda = {
@@ -103,9 +101,9 @@ define(["angular", "js/controllers",'models/Cliente', 'models/Pedido', 'models/S
 
                     $scope.DocumentoTemporal.agregarDetalleDocumentoTemporal(detalle_documento_temporal);
                     
-                    console.log("Detalle Documento Temporal Previo Grilla: ============ ",$scope.DocumentoTemporal.getDetalleDocumentoTemporal());
+                    //console.log("Detalle Documento Temporal Previo Grilla: ============ ",$scope.DocumentoTemporal.getDetalleDocumentoTemporal());
                     
-                    
+                    //$scope.DocumentoTemporal.getDetalleDocumentoTemporal();
                     
                 }
             };
@@ -117,7 +115,7 @@ define(["angular", "js/controllers",'models/Cliente', 'models/Pedido', 'models/S
                 var detalle_documento_temporal = DetalleDocumentoTemporal.get();
                 detalle_documento_temporal.setDatos(obj);
                 
-                console.log("Objeto Detalle Documento Temporal", detalle_documento_temporal);
+                //console.log("Objeto Detalle Documento Temporal", detalle_documento_temporal);
 
                 return detalle_documento_temporal;
             };

@@ -82,14 +82,16 @@ define(["angular","js/directive", "includes/slide/transition"], function(angular
             console.log("on mostrar slide");
             $element.css({"display":"block"});
             contenedor.show();
-            $element.transition({ x: '0px', duration:1000 });
+            $element.transition({ x: '0px', duration:1200, easing: 'in' });
            
           },
 
           cerrarslide: function($element, animado, contenedor){
             var rootWidth = $(window).width() +slide.margen
-            
-            $element.transition({ x: rootWidth+"px", duration:1000},function(){
+            console.log("cerrarslide "+rootWidth + " animad "+animado);
+            var duration = (animado)?1000:0;
+
+            $element.transition({ x: rootWidth+"px", duration:duration},function(){
                $element.css({"display":"none"});
                contenedor.hide();
             });

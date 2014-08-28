@@ -24,6 +24,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.lote = datos.lote;
             this.fecha_vencimiento = datos.fecha_vencimiento;
             this.observacion = datos.observacion_cambio;
+            
         };
 
         //we return new instance of usermodel class  because factory is a singleton and we dont need like that

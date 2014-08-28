@@ -42,13 +42,12 @@
         <div class="col-sm-12 col-md-6 paddingLeftZero">
           <div class="panel panel-default marginBottom5">
             <div class="panel-heading">
-              <h4 class="h4MarginTopBottom">Hacia : <a href="#">CLIENTE</a></h4>
+              <h4 class="h4MarginTopBottom">Hacia : <a href="#">{{cliente.nombre_tercero}}</a></h4>
             </div>
             <div class="panel-body">
                 
                 <table>
-                    <tr><th>Nombre Cliente: </th><td>{{cliente.nombre_tercero}}</td></tr>
-                    <tr><th>Dirección: </th><td>{{cliente.direccion_cliente}}</td></tr>
+                    <tr><th>Dirección: &nbsp;</th><td>{{cliente.direccion_cliente}}</td></tr>
                     <tr><th>Teléfono: </th><td>{{cliente.telefono_cliente}}</td></tr>
                     <tr><th>{{cliente.tipo_id_tercero}}: </th><td>{{cliente.id}}</td></tr>
                 </table>
@@ -100,7 +99,7 @@
                     
                   <div class="panel-body" ng-controller="DetallepedidoSeparadoClienteController">
                     <div class="input-group navbar-form paddingRightZero">
-                        <input type="text" class="form-control pull-right" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar Pedido" name="srch-term" id="srch-term">
+                        <input type="text" class="form-control pull-right" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Código Barras" name="srch-term" id="srch-term">
                         <div class="input-group-btn" >
                             <button class="btn btn-default pull-right" type="submit" ng-click="buscarDetalleDocumentoTemporal(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
                         </div>

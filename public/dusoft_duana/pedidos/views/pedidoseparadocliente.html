@@ -68,7 +68,7 @@
                 <div class="panel-heading">
                   <h4 class="h4MarginTopBottom">Rótulos Cajas</h4>
                 </div>
-                <div class="panel-body" ng-controller="DetallepedidoSeparadoClienteController">
+                <div class="panel-body" >
                   <p>
                      Cliente &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -97,7 +97,7 @@
                     <h4 class="h4MarginTopBottom">Auditar</h4>
                   </div>
                     
-                  <div class="panel-body" ng-controller="DetallepedidoSeparadoClienteController">
+                  <div class="panel-body" >
                     <div class="input-group navbar-form paddingRightZero">
                         <input type="text" class="form-control pull-right" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Código Barras" name="srch-term" id="srch-term">
                         <div class="input-group-btn" >
@@ -126,19 +126,19 @@
                 
                 <div class="panel-body">
                     <tabset  class="">
-                        <tab heading="Pedidos" ng-controller="AuditoriaPedidosClientesController">
+                        <tab heading="Pedidos" >
                             <div class="auditadosGrid" ng-grid="lista_pedidos_separados_clientes">
                             </div>
                         </tab>
-                        <tab heading="Caja1" ng-controller="AuditoriaPedidosClientesController">
+                        <tab heading="Caja1">
                             <div class="auditadosGrid" ng-grid="lista_pedidos_separados_clientes">
                              </div>
                         </tab>
-                        <tab heading="Caja2" ng-controller="AuditoriaPedidosClientesController">
+                        <tab heading="Caja2">
                             <div class="auditadosGrid" ng-grid="lista_pedidos_separados_clientes">
                              </div>
                         </tab>
-                        <tab heading="Caja3" ng-controller="AuditoriaPedidosClientesController">
+                        <tab heading="Caja3">
                             <div class="auditadosGrid" ng-grid="lista_pedidos_separados_clientes">
                              </div>
                         </tab>

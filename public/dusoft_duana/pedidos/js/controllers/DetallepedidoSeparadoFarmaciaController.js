@@ -8,7 +8,7 @@ define(["angular", "js/controllers",'models/Farmacia', 'models/Pedido', 'models/
          "DetalleDocumentoTemporal",
 
         function($scope, $rootScope, Request, $modal, Empresa, Cliente, Pedido, API, socket, $timeout, AlertService, Usuario, localStorageService, DetalleDocumentoTemporal) {
-            //console.log("Aquí ingresamos a Detalle Farmacia");
+
             $scope.detalle_pedido_separado = [];
             $scope.session = {
                 usuario_id: Usuario.usuario_id,
@@ -29,9 +29,6 @@ define(["angular", "js/controllers",'models/Farmacia', 'models/Pedido', 'models/
             };
             
             $rootScope.$on("mostrardetallefarmacia", function(e, documento_temporal) {
-                
-                console.log("Documento Temporal",documento_temporal);
-                
                 
                 $scope.DocumentoTemporal = documento_temporal;
                 
@@ -61,8 +58,6 @@ define(["angular", "js/controllers",'models/Farmacia', 'models/Pedido', 'models/
                 
                 /* Inicio Request */
                 Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.CONSULTAR_DOCUMENTO_TEMPORAL_FARMACIAS, "POST", obj, function(data) {
-                    
-                    console.log("Info Documento desde Server: ", data);
                     
                     if(data.status == 200) { 
                         $scope.ultima_busqueda = {
@@ -95,8 +90,6 @@ define(["angular", "js/controllers",'models/Farmacia', 'models/Pedido', 'models/
                 
                 //$scope.DocumentoTemporal = data.documento_temporal;
                 $scope.DocumentoTemporal.vaciarDetalleDocumentoTemporal();
-                
-                console.log("Lista de Productos: ", data.lista_productos);
 
                 for (var i in data.lista_productos) {
 
@@ -106,29 +99,19 @@ define(["angular", "js/controllers",'models/Farmacia', 'models/Pedido', 'models/
 
                     $scope.DocumentoTemporal.agregarDetalleDocumentoTemporal(detalle_documento_temporal);
                     
-                    console.log("Detalle Documento Temporal Previo Grilla: ============ ",$scope.DocumentoTemporal.getDetalleDocumentoTemporal());
-                    
-                    
-                    
                 }
             };
             
             $scope.crearDetalleDocumentoTemporal = function(obj) {
                 
-                //console.log("Objeto para Insertar en Detalle", obj);
-                
                 var detalle_documento_temporal = DetalleDocumentoTemporal.get();
                 detalle_documento_temporal.setDatos(obj);
-                
-                console.log("Objeto Detalle Documento Temporal", detalle_documento_temporal);
 
                 return detalle_documento_temporal;
             };
             
             $scope.detalle_pedido_separado_farmacia = {
                 data: 'DocumentoTemporal.getDetalleDocumentoTemporal()',
-                //data: 'detalle_pedido_separado',
-                //data: 'DocumentoTemporal.detalle_documento_temporal',
                 enableColumnResize: true,
                 enableRowSelection:false,
                 columnDefs: [                
@@ -143,8 +126,6 @@ define(["angular", "js/controllers",'models/Farmacia', 'models/Pedido', 'models/
                 ]
 
             };
-            
-            //console.log("GRILLA: ",$scope.detalle_pedido_separado_cliente);
             
            //eventos de widgets
            $scope.onKeyDetalleDocumentoTemporalPress = function(ev, termino_busqueda) {

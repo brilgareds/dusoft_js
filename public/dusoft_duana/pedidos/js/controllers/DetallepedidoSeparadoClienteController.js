@@ -30,10 +30,11 @@ define(["angular", "js/controllers",'models/Cliente', 'models/Pedido', 'models/S
             
             $rootScope.$on("mostrardetallecliente", function(e, documento_temporal) {
                 
-                console.log("Documento Temporal",documento_temporal);
                 $scope.DocumentoTemporal = documento_temporal;
                 $scope.buscarDetalleDocumentoTemporal("");
                 $scope.cliente = $scope.DocumentoTemporal.pedido.cliente;
+                
+                $scope.traerListadoDocumentosUsuario();
                 
             });
             
@@ -45,7 +46,7 @@ define(["angular", "js/controllers",'models/Cliente', 'models/Pedido', 'models/S
                     $scope.paginaactual = 1;
                 }
                 
-                /* Inicio Objeto */
+                /* Inicio Objeto a enviar*/
                 var obj = {
                     session:$scope.session,
                     data:{
@@ -54,10 +55,9 @@ define(["angular", "js/controllers",'models/Cliente', 'models/Pedido', 'models/S
                         }
                     }
                 };
-                /* Fin Objeto */
+                /* Fin Objeto a enviar*/
                 /* Inicio Request */
                 Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.CONSULTAR_DOCUMENTO_TEMPORAL_CLIENTES, "POST", obj, function(data) {
-                    //console.log("Info Documento desde Server: ", data);
                     
                     if(data.status == 200) { 
                         $scope.ultima_busqueda = {
@@ -75,6 +75,43 @@ define(["angular", "js/controllers",'models/Cliente', 'models/Pedido', 'models/S
                 
             };
             
+            $scope.traerListadoDocumentosUsuario = function() {
+                
+                if($scope.ultima_busqueda != $scope.termino_busqueda) {
+                    $scope.paginaactual = 1;
+                }
+                
+                /* Inicio Objeto a enviar */
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        movimientos_bodegas: {
+                            centro_utilidad_id: '1',
+                            bodega_id: '03',
+                            tipo_documento: 'E008'
+                        }
+                    }
+                }
+                /* Fin Objeto a enviar */
+                
+                /* Inicio Request */
+                
+                Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.CONSULTAR_DOCUMENTOS_USUARIOS, "POST", obj, function(data) {
+                    
+                    console.log("DOCUMENTOS USUARIO: ", data);
+                    
+                    if(data.status == 200) {
+                        $scope.ultima_busqueda = {
+                            termino_busqueda: $scope.termino_busqueda,
+                            seleccion: $scope.seleccion
+                        }
+
+                    }
+                });
+                
+                /* Fin Request */
+            }
+            
             $scope.renderDetalleDocumentoTemporalCliente = function(data, paginando) {
 
                 $scope.items = data.documento_temporal.length;
@@ -90,8 +127,6 @@ define(["angular", "js/controllers",'models/Cliente', 'models/Pedido', 'models/S
                 
                 //$scope.DocumentoTemporal = data.documento_temporal;
                 $scope.DocumentoTemporal.vaciarDetalleDocumentoTemporal();
-                
-                console.log("Lista de Productos: ", data.documento_temporal[0].lista_productos);
 
                 for (var i in data.documento_temporal[0].lista_productos) {
 
@@ -101,29 +136,19 @@ define(["angular", "js/controllers",'models/Cliente', 'models/Pedido', 'models/S
 
                     $scope.DocumentoTemporal.agregarDetalleDocumentoTemporal(detalle_documento_temporal);
                     
-                    //console.log("Detalle Documento Temporal Previo Grilla: ============ ",$scope.DocumentoTemporal.getDetalleDocumentoTemporal());
-                    
-                    //$scope.DocumentoTemporal.getDetalleDocumentoTemporal();
-                    
                 }
             };
             
             $scope.crearDetalleDocumentoTemporal = function(obj) {
                 
-                //console.log("Objeto para Insertar en Detalle", obj);
-                
                 var detalle_documento_temporal = DetalleDocumentoTemporal.get();
                 detalle_documento_temporal.setDatos(obj);
-                
-                //console.log("Objeto Detalle Documento Temporal", detalle_documento_temporal);
 
                 return detalle_documento_temporal;
             };
             
             $scope.detalle_pedido_separado_cliente = {
                 data: 'DocumentoTemporal.getDetalleDocumentoTemporal()',
-                //data: 'detalle_pedido_separado',
-                //data: 'DocumentoTemporal.detalle_documento_temporal',
                 enableColumnResize: true,
                 enableRowSelection:false,
                 columnDefs: [                
@@ -138,8 +163,6 @@ define(["angular", "js/controllers",'models/Cliente', 'models/Pedido', 'models/S
                 ]
 
             };
-            
-            //console.log("GRILLA: ",$scope.detalle_pedido_separado_cliente);
             
            //eventos de widgets
            $scope.onKeyDetalleDocumentoTemporalPress = function(ev, termino_busqueda) {

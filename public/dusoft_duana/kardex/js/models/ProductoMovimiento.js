@@ -5,13 +5,12 @@ define(["angular","js/models","includes/classes/Producto"], function(angular, mo
 
 		function ProductoMovimiento(codigo, nombre, existencia, precio, existencia_total, costo, costo_ultima_compra, porc_iva, descuadre){
 			//constructor padre
-			Producto.getClass().call(this,codigo,nombre);
+			Producto.getClass().call(this,codigo,nombre, existencia);
 
 			this.movimientos = [];
 			this.pendientesFarmacia = [];
 			this.pendientesClientes = [];
 			this.pendientesOrdenes  = [];
-			this.existencia = existencia;
 			this.precio = precio;
 			this.existencia_total = existencia_total;
 			this.costo = costo;

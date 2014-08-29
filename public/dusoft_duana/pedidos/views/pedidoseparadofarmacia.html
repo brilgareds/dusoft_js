@@ -9,18 +9,13 @@
                 <div class="row marginBottom5">            
                     <h4>Tipo Documento: </h4>
                 </div>
-
-                <div class="row marginBottom5">
-                    <select ui-select2 class="pull-left" style="width:300px" ng-model="seleccion" placeholder="Seleccionar Documento" ng-change="valorSeleccionado()">
-                        <option ng-repeat="documento_usuario in  documentos_usuarios"  ng-value="documento_usuario.bodegas_doc_id" >{{documento_usuario.prefijo}}-{{documento_usuario.descripcion}}</option>
-                    </select>  
-                </div>
                 
-<!--                <div class="col-sm-12 col-md-3">
-                    <select ui-select2  class="form-control selectgeneral pull-left" ng-model="seleccion" data-placeholder="Seleccionar Documento" ng-change="valorSeleccionado()">
+                <div class="row marginBottom5 col-sm-12 col-md-3">
+                    <select ui-select2="seleccionfarmacia"  class="form-control selectgeneral pull-left" ng-model="$parent.seleccion" placeholder="Seleccionar Documento" ng-change="valorSeleccionado()">
+                        <option></option>
                         <option ng-repeat="documento_usuario in  documentos_usuarios"  ng-value="documento_usuario.bodegas_doc_id" >{{documento_usuario.prefijo}}-{{documento_usuario.descripcion}}</option>
                     </select>
-                </div>-->
+                </div>
 
             </div>
         </div>
@@ -137,7 +132,7 @@
                             </div>
                         </tab>
                         <tab heading="Caja1">
-                            <div class="auditadosGrid" ng-grid="lista_pedidos_separados_farmacia">
+                            <div class="auditadosGrid" ng-grid="lista_pedidos_separados_farmacias">
                              </div>
                         </tab>
                         <tab heading="Caja2">

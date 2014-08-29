@@ -8,7 +8,6 @@ define(["angular", "js/controllers",'models/Farmacia', 'models/Pedido', 'models/
          "DetalleDocumentoTemporal",
 
         function($scope, $rootScope, Request, $modal, Empresa, Cliente, Pedido, API, socket, $timeout, AlertService, Usuario, localStorageService, DetalleDocumentoTemporal) {
-
             $scope.detalle_pedido_separado = [];
             $scope.session = {
                 usuario_id: Usuario.usuario_id,
@@ -19,10 +18,11 @@ define(["angular", "js/controllers",'models/Farmacia', 'models/Pedido', 'models/
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = {};
             $scope.paginaactual = 1;
-            
             $scope.detalle_pedido_separado_farmacia = {};
-            
             $scope.documentos_usuarios = [];
+            $scope.documento_temporal_id = "";
+            $scope.usuario_id = "";
+            $scope.seleccion = "";            
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
             
@@ -66,59 +66,32 @@ define(["angular", "js/controllers",'models/Farmacia', 'models/Pedido', 'models/
                     }
                 };
                 /* Fin Objeto */
-                
                 /* Inicio Request */
                 Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.CONSULTAR_DOCUMENTO_TEMPORAL_FARMACIAS, "POST", obj, function(data) {
                     
                     if(data.status == 200) { 
-                        $scope.ultima_busqueda = {
-                            termino_busqueda: $scope.termino_busqueda,
-                            seleccion: $scope.seleccion
-                        }
+                        
+                        /* Esta búsqueda no funciona aún */
+//                        $scope.ultima_busqueda = {
+//                            termino_busqueda: $scope.termino_busqueda,
+//                            seleccion: $scope.seleccion
+//                        }
                         
                         if(data.obj.documento_temporal != undefined) {
+                            //Se manda Info para render en grid de DetalleDocumentoTemporalFarmacia
                             $scope.renderDetalleDocumentoTemporalFarmacia(data.obj.documento_temporal[0], paginando);
+                            
+                            //Se llenan éstos valores que se requieren más adelande para Actualizar Tipo Documento
+                            $scope.documento_temporal_id = data.obj.documento_temporal[0].doc_tmp_id;
+                            $scope.usuario_id = data.obj.documento_temporal[0].usuario_id;
                         }
                     }
-                    
                 });
                 /* Fin Request */
                 
             };
             
-            $scope.traerListadoDocumentosUsuario = function() {
-                
-                if($scope.ultima_busqueda != $scope.termino_busqueda) {
-                    $scope.paginaactual = 1;
-                }
-                
-                /* Inicio Objeto a enviar */
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        movimientos_bodegas: {
-                            centro_utilidad_id: '1',
-                            bodega_id: '03',
-                            tipo_documento: 'E008'
-                        }
-                    }
-                }
-                /* Fin Objeto a enviar */
-                
-                /* Inicio Request */
-                
-                Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.CONSULTAR_DOCUMENTOS_USUARIOS, "POST", obj, function(data) {
-                    
-                    console.log("DOCUMENTOS USUARIO: ", data);
-                    
-                    $scope.documentos_usuarios = data.obj.movimientos_bodegas;
-
-                    
-                });
-                
-                /* Fin Request */
-            }
-            
+            //Función para renderizar Grid de DetalleDocumentoTemporalFarmacia
             $scope.renderDetalleDocumentoTemporalFarmacia = function(data, paginando) {
 
                 $scope.items = data.lista_productos.length;
@@ -146,6 +119,7 @@ define(["angular", "js/controllers",'models/Farmacia', 'models/Pedido', 'models/
                 }
             };
             
+            //Crea un objeto DetalleDocumentoTemporal y le asigna los valores a sus propiedades por medio de obj
             $scope.crearDetalleDocumentoTemporal = function(obj) {
                 
                 var detalle_documento_temporal = DetalleDocumentoTemporal.get();
@@ -154,6 +128,64 @@ define(["angular", "js/controllers",'models/Farmacia', 'models/Pedido', 'models/
                 return detalle_documento_temporal;
             };
             
+            //Trae el Listado de Documentos de Usuario
+            $scope.traerListadoDocumentosUsuario = function() {
+
+                /* Inicio Objeto a enviar */
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        movimientos_bodegas: {
+                            centro_utilidad_id: '1',
+                            bodega_id: '03',
+                            tipo_documento: 'E008'
+                        }
+                    }
+                }
+                /* Fin Objeto a enviar */
+                
+                /* Inicio Request */
+                
+                Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.CONSULTAR_DOCUMENTOS_USUARIOS, "POST", obj, function(data) {
+                    
+                    if(data.obj.movimientos_bodegas != undefined){
+                        $scope.documentos_usuarios = data.obj.movimientos_bodegas;
+                    }
+                    
+                });
+                
+                /* Fin Request */
+            }
+            
+            // Valida si el Documento que se selecciona del listado de documentos
+            $scope.validarDocumentoUsuario = function() {
+                
+                /* Inicio Objeto a enviar */
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        movimientos_bodegas: {
+                            documento_temporal_id: $scope.documento_temporal_id, 
+                            usuario_id: $scope.usuario_id,
+                            bodegas_doc_id: $scope.seleccion
+                        }
+                    }
+                }
+                /* Fin Objeto a enviar */
+
+                /* Inicio Request */
+                Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.ACTUALIZAR_TIPO_DOCUMENTO_TEMPORAL, "POST", obj, function(data) {
+
+                    if(data.status === 200){
+                        AlertService.mostrarMensaje("success", data.msj);
+                    } else {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+                });
+                
+                /* Fin Request */
+            }
+
             $scope.detalle_pedido_separado_farmacia = {
                 data: 'DocumentoTemporal.getDetalleDocumentoTemporal()',
                 enableColumnResize: true,
@@ -187,7 +219,11 @@ define(["angular", "js/controllers",'models/Farmacia', 'models/Pedido', 'models/
                 $scope.paginaactual++;
                 $scope.buscarDetalleDocumentoTemporal($scope.termino_busqueda, true);
             };
-
+            
+            $scope.valorSeleccionado = function(){
+                //Llamado a la función que ejecuta la validación tras la selección en el DropDown de la view
+                $scope.validarDocumentoUsuario();                
+            }
         }]);
 
 });

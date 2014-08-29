@@ -134,8 +134,20 @@ function(angular, controllers) {
                 $(window).resize();
             };
 
+
+            $rootScope.$on("cerrardetallekardexCompleto", function(e, datos) {
+                $scope.producto = {};
+                $scope.existencia = 0;
+                $scope.nombreProducto = "";
+                $scope.cantidad_salidas = 0;
+                $scope.cantidad_entradas = 0;
+                $scope.selemovimiento = {};
+
+            });
             //eventos personalizados
-            $rootScope.$on("mostrardetallekardex", function(e, producto, movimientos) {
+            $rootScope.$on("mostrardetallekardexCompleto", function(e, datos) {
+                var producto = datos[1];
+                var movimientos = datos[2];
                 $scope.producto = angular.copy(producto);
                 $scope.existencia = $scope.producto.existencia;
                 $scope.nombreProducto = producto.descripcion;
@@ -245,7 +257,7 @@ function(angular, controllers) {
                 $scope.calcularRenderGrid();
 
 
-                console.log($scope.producto.getPendientesOrdenes());
+                //console.log($scope.producto.getPendientesOrdenes());
 
             });
 

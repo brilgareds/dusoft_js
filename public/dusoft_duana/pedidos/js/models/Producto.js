@@ -1,16 +1,14 @@
 
-define(["angular", "js/models"], function(angular, models) {
+define(["angular", "js/models", "includes/classes/Producto"], function(angular, models) {
 
     models.factory('Producto', function() {
 
         function Producto(codigo, nombre, existencia, precio) {
-            this.nombre = nombre;
-            this.codigo = codigo;
-            this.existencia = existencia;
+            Producto.getClass().call(this,codigo,nombre, existencia);
             this.precio = precio;
-
         }
 
+        Producto.prototype = Object.create(Producto.getClass().prototype);
 
         this.get = function(codigo, nombre, existencia, precio) {
             return new Producto(codigo, nombre, existencia, precio);

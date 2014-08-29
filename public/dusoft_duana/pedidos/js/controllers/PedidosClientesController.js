@@ -7,7 +7,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
         'Pedido', 'API', "socket", "$timeout",
         "AlertService", "Usuario", "localStorageService",
         function($scope, $rootScope, Request, $modal, Empresa, Cliente, Pedido, API, socket, $timeout, AlertService, Usuario, localStorageService) {
-
+            console.log("cliente controller ======")
             $scope.Empresa = Empresa;
             Empresa.setNombre("Duana");
 
@@ -141,7 +141,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
                         //cellTemplate: '<div ng-class="agregarClase(row.entity.estado_actual_pedido)" >{{row.entity.descripcion_estado_actual_pedido}}</div>'},
                         cellTemplate: "<button type='button' ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
                     {field: 'numero_pedido', displayName: 'Numero Pedido'},
-                    {field: 'cliente.nombre_cliente', displayName: 'Cliente'},
+                    {field: 'cliente.nombre_tercero', displayName: 'Cliente'},
                     {field: 'cliente.direccion_cliente', displayName: 'Ubicacion'},
                     {field: 'cliente.telefono_cliente', displayName: 'Telefono'},
                     {field: 'nombre_vendedor', displayName: 'Vendedor'},

@@ -3,9 +3,10 @@ define(["angular","js/models"], function(angular, models){
 
 	 models.factory('Producto', function() {
 
-		function Producto(codigo_producto, descripcion){
+		function Producto(codigo_producto, descripcion, existencia){
 			this.codigo_producto = codigo_producto;
 			this.descripcion = descripcion;
+			this.existencia  = existencia || 0;
 		}
 
 		Producto.prototype.setCodigoProducto = function(codigo) {

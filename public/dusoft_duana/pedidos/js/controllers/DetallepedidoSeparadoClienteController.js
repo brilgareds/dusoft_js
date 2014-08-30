@@ -1,13 +1,19 @@
-define(["angular", "js/controllers",'models/Cliente', 'models/Pedido', 'models/Separador', 'models/DocumentoTemporal', 'models/DetalleDocumentoTemporal'], function(angular, controllers) {
+define(["angular", "js/controllers",'models/Cliente',
+        'models/Pedido', 'models/Separador', 'models/DocumentoTemporal',
+        'models/DetalleDocumentoTemporal', 'models/ProductoPedido', 'models/LoteProductoPedido'], function(angular, controllers) {
 
     var fo = controllers.controller('DetallepedidoSeparadoClienteController', [
         '$scope', '$rootScope', 'Request', 
         '$modal', 'Empresa','Cliente',
          'Pedido', 'API',"socket", "$timeout", 
          "AlertService","Usuario", "localStorageService",
-         "DetalleDocumentoTemporal",
+         "DetalleDocumentoTemporal", "ProductoPedido", "LoteProductoPedido",
 
-        function($scope, $rootScope, Request, $modal, Empresa, Cliente, Pedido, API, socket, $timeout, AlertService,Usuario,localStorageService, DetalleDocumentoTemporal) {
+        function(   $scope, $rootScope, Request,
+                    $modal, Empresa, Cliente,
+                    Pedido, API, socket,
+                    $timeout, AlertService, Usuario,
+                    localStorageService, DetalleDocumentoTemporal, ProductoPedido, LoteProductoPedido) {
             
             $scope.detalle_pedido_separado = [];
             $scope.session = {
@@ -33,7 +39,7 @@ define(["angular", "js/controllers",'models/Cliente', 'models/Pedido', 'models/S
             
             $rootScope.$on("mostrardetalleclienteCompleto", function(e, datos) {
                 
-                console.log("informacion enviada SERVER: ", datos)
+                console.log("información Documento Temporal: ", datos[1]);
                 $scope.DocumentoTemporal = datos[1];
                 $scope.buscarDetalleDocumentoTemporal("");
                 $scope.cliente = $scope.DocumentoTemporal.pedido.cliente;
@@ -46,7 +52,7 @@ define(["angular", "js/controllers",'models/Cliente', 'models/Pedido', 'models/S
             
             // Usar este evento si es necesario - Tras cerrar el Slide 
             $rootScope.$on("cerrardetalleclienteCompleto", function(e, datos) {
-
+                //Liberar Memoria 
             });
             
             // Busqueda para actualización de Grid de pedidos para Auditar
@@ -77,6 +83,8 @@ define(["angular", "js/controllers",'models/Cliente', 'models/Pedido', 'models/S
 //                            termino_busqueda: $scope.termino_busqueda,
 //                            seleccion: $scope.seleccion
 //                        }
+                        
+                        console.log("INFORMACIÓN DE LA DATA DOCUMENTOS TEMPORALES: ",data)
                         
                         if(data.obj.documento_temporal != undefined) {
                             //Se manda Info para render en grid de DetalleDocumentoTemporalCliente
@@ -113,20 +121,39 @@ define(["angular", "js/controllers",'models/Cliente', 'models/Pedido', 'models/S
 
                     var obj = data.lista_productos[i];
                     
-                    var detalle_documento_temporal = $scope.crearDetalleDocumentoTemporal(obj);
-
-                    $scope.DocumentoTemporal.agregarDetalleDocumentoTemporal(detalle_documento_temporal);
+                    //var detalle_documento_temporal = $scope.crearDetalleDocumentoTemporal(obj);
                     
+                    var producto_pedido_separado = $scope.crearProductoPedidoDocumentoTemporal(obj);
+                    
+                    $scope.DocumentoTemporal.getPedido().agregarProducto(producto_pedido_separado);
+                    
+                    //$scope.DocumentoTemporal.agregarDetalleDocumentoTemporal(detalle_documento_temporal);
+                    
+                    console.log("DOCUMENTO TEMPORAL CON PRODUCTOS DE PEDIDO INGRESADOS",$scope.DocumentoTemporal);
                 }
             };
             
             //Crea un objeto DetalleDocumentoTemporal y le asigna los valores a sus propiedades por medio de obj
-            $scope.crearDetalleDocumentoTemporal = function(obj) {
+            $scope.crearProductoPedidoDocumentoTemporal = function(obj) {
                 
-                var detalle_documento_temporal = DetalleDocumentoTemporal.get();
-                detalle_documento_temporal.setDatos(obj);
+//                var detalle_documento_temporal = DetalleDocumentoTemporal.get();
+//                detalle_documento_temporal.setDatos(obj);
 
-                return detalle_documento_temporal;
+                //if(obj.lote)
+                var lote_pedido = LoteProductoPedido.get(obj.lote, obj.fecha_vencimiento);
+        
+                var producto_pedido_separado = ProductoPedido.get(  obj.codigo_producto, obj.descripcion_producto, "",
+                                                                    "", obj.cantidad_solicitada, obj.cantidad_ingresada,
+                                                                    obj.observacion_cambio);
+                                                                    
+                producto_pedido_separado.setLote(lote_pedido);
+                
+                
+                console.log("Estructura del Objeto Producto", producto_pedido_separado);
+                
+                return producto_pedido_separado;
+
+                //return detalle_documento_temporal;
             };
             
             //Trae el Listado de Documentos de Usuario
@@ -188,17 +215,17 @@ define(["angular", "js/controllers",'models/Cliente', 'models/Pedido', 'models/S
             }
             
             $scope.detalle_pedido_separado_cliente = {
-                data: 'DocumentoTemporal.getDetalleDocumentoTemporal()',
+                data: 'DocumentoTemporal.getPedido().getProductos()',
                 enableColumnResize: true,
                 enableRowSelection:false,
                 columnDefs: [                
                     {field: 'codigo_producto', displayName: 'Código Producto'},
-                    {field: 'nombre_producto', displayName: 'Nombre Producto'},
+                    {field: 'descripcion', displayName: 'Nombre Producto'},
                     {field: 'existencia_lotes', displayName: 'Existencia Lotes'},
-                    {field: 'cantidad_pedida', displayName: 'Cantidad Solicitada'},
+                    {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada'},
                     {field: 'cantidad_separada', displayName: "Cantidad Separada"},
-                    {field: 'lote', displayName: 'Lote'},
-                    {field: 'fecha_vencimiento', displayName: "Fecha Vencimiento"},
+                    {field: 'lote.codigo_lote', displayName: 'Lote'},
+                    {field: 'lote.fecha_vencimiento', displayName: "Fecha Vencimiento"},
                     {field: 'observacion', displayName: "Observación"}
                 ]
 

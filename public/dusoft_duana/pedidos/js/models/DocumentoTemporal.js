@@ -28,6 +28,14 @@ define(["angular", "js/models"], function(angular, models) {
             this.separador = separador;
         };
         
+        DocumentoTemporal.prototype.getPedido = function() {
+            return this.pedido;
+        }
+        
+        DocumentoTemporal.prototype.getSeparador = function () {
+            return this.separador;
+        }
+        
         DocumentoTemporal.prototype.setDetalleDocumentoTemporal = function(detalle_documento_temporal) {
             this.detalle_documento_temporal = detalle_documento_temporal;
         };

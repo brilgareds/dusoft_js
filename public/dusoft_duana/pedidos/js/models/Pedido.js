@@ -10,6 +10,7 @@ define(["angular", "js/models"], function(angular, models) {
         function Pedido() {
             this.cliente;
             this.farmacia;
+            this.productos = [];
         }
 
         // Pedidos
@@ -31,6 +32,14 @@ define(["angular", "js/models"], function(angular, models) {
         Pedido.prototype.setFarmacia = function(cliente) {
             this.farmacia = cliente;
         };
+        
+        Pedido.prototype.agregarProducto = function(productos) {
+            this.productos.push(productos);
+        };
+        
+        Pedido.prototype.getProductos = function() {
+            return this.productos;
+        }
 
         //we return new instance of usermodel class  because factory is a singleton and we dont need like that
         this.get = function() {

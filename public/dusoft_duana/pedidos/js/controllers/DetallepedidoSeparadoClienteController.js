@@ -46,8 +46,6 @@ define(["angular", "js/controllers",'models/Cliente',
                 
                 $scope.traerListadoDocumentosUsuario();
                 
-                //$scope.validarDocumentoUsuario();
-                
             });
             
             // Usar este evento si es necesario - Tras cerrar el Slide 
@@ -84,8 +82,6 @@ define(["angular", "js/controllers",'models/Cliente',
 //                            seleccion: $scope.seleccion
 //                        }
                         
-                        console.log("INFORMACIÓN DE LA DATA DOCUMENTOS TEMPORALES: ",data)
-                        
                         if(data.obj.documento_temporal != undefined) {
                             //Se manda Info para render en grid de DetalleDocumentoTemporalCliente
                             $scope.renderDetalleDocumentoTemporalCliente(data.obj.documento_temporal[0], paginando);
@@ -121,25 +117,18 @@ define(["angular", "js/controllers",'models/Cliente',
 
                     var obj = data.lista_productos[i];
                     
-                    //var detalle_documento_temporal = $scope.crearDetalleDocumentoTemporal(obj);
-                    
                     var producto_pedido_separado = $scope.crearProductoPedidoDocumentoTemporal(obj);
                     
                     $scope.DocumentoTemporal.getPedido().agregarProducto(producto_pedido_separado);
-                    
-                    //$scope.DocumentoTemporal.agregarDetalleDocumentoTemporal(detalle_documento_temporal);
-                    
+
                     console.log("DOCUMENTO TEMPORAL CON PRODUCTOS DE PEDIDO INGRESADOS",$scope.DocumentoTemporal);
                 }
             };
             
-            //Crea un objeto DetalleDocumentoTemporal y le asigna los valores a sus propiedades por medio de obj
+            //Crea un objeto Pedido y le asigna los valores a sus propiedades por medio de obj.
+            //Una de sus propiedades es un objeto LoteProductoPedido
             $scope.crearProductoPedidoDocumentoTemporal = function(obj) {
-                
-//                var detalle_documento_temporal = DetalleDocumentoTemporal.get();
-//                detalle_documento_temporal.setDatos(obj);
 
-                //if(obj.lote)
                 var lote_pedido = LoteProductoPedido.get(obj.lote, obj.fecha_vencimiento);
         
                 var producto_pedido_separado = ProductoPedido.get(  obj.codigo_producto, obj.descripcion_producto, "",
@@ -153,7 +142,6 @@ define(["angular", "js/controllers",'models/Cliente',
                 
                 return producto_pedido_separado;
 
-                //return detalle_documento_temporal;
             };
             
             //Trae el Listado de Documentos de Usuario

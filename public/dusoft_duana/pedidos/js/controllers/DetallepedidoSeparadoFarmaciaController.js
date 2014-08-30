@@ -1,13 +1,20 @@
-define(["angular", "js/controllers",'models/Farmacia', 'models/Pedido', 'models/Separador', 'models/DocumentoTemporal', 'models/DetalleDocumentoTemporal'], function(angular, controllers) {
+define(["angular", "js/controllers",'models/Farmacia',
+        'models/Pedido', 'models/Separador', 'models/DocumentoTemporal',
+        'models/DetalleDocumentoTemporal', 'models/ProductoPedido', 'models/LoteProductoPedido'], function(angular, controllers) {
 
     var fo = controllers.controller('DetallepedidoSeparadoFarmaciaController', [
         '$scope', '$rootScope', 'Request', 
         '$modal', 'Empresa','Farmacia',
          'Pedido', 'API',"socket", "$timeout", 
          "AlertService","Usuario", "localStorageService",
-         "DetalleDocumentoTemporal",
+         "DetalleDocumentoTemporal", "ProductoPedido", "LoteProductoPedido",
 
-        function($scope, $rootScope, Request, $modal, Empresa, Cliente, Pedido, API, socket, $timeout, AlertService, Usuario, localStorageService, DetalleDocumentoTemporal) {
+        function(   $scope, $rootScope, Request,
+                    $modal, Empresa, Cliente,
+                    Pedido, API, socket,
+                    $timeout, AlertService, Usuario,
+                    localStorageService, DetalleDocumentoTemporal, ProductoPedido, LoteProductoPedido) {
+                        
             $scope.detalle_pedido_separado = [];
             $scope.session = {
                 usuario_id: Usuario.usuario_id,
@@ -22,7 +29,7 @@ define(["angular", "js/controllers",'models/Farmacia', 'models/Pedido', 'models/
             $scope.documentos_usuarios = [];
             $scope.documento_temporal_id = "";
             $scope.usuario_id = "";
-            $scope.seleccion = "";            
+            $scope.seleccion = "";          
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
             
@@ -32,10 +39,8 @@ define(["angular", "js/controllers",'models/Farmacia', 'models/Pedido', 'models/
             
             $rootScope.$on("mostrardetallefarmaciaCompleto", function(e, datos) {
                 
-                //$scope.DocumentoTemporal = documento_temporal;
-                
+                console.log("información Documento Temporal: ", datos[1]);
                 $scope.DocumentoTemporal = datos[1];
-                
                 $scope.buscarDetalleDocumentoTemporal("");
                 $scope.farmacia = $scope.DocumentoTemporal.pedido.farmacia;
                 
@@ -45,12 +50,12 @@ define(["angular", "js/controllers",'models/Farmacia', 'models/Pedido', 'models/
             
             // Usar este evento si es necesario - Tras cerrar el Slide 
             $rootScope.$on("cerrardetalleclienteCompleto", function(e, datos) {
-
+                //Liberar Memoria
             });
             
+            // Busqueda para actualización de Grid de pedidos para Auditar
             $scope.buscarDetalleDocumentoTemporal = function(termino, paginando){
-                
-                
+
                 //valida si cambio el termino de busqueda
                 if ($scope.ultima_busqueda != $scope.termino_busqueda) {
                     $scope.paginaactual = 1;
@@ -112,20 +117,30 @@ define(["angular", "js/controllers",'models/Farmacia', 'models/Pedido', 'models/
 
                     var obj = data.lista_productos[i];
                     
-                    var detalle_documento_temporal = $scope.crearDetalleDocumentoTemporal(obj);
-
-                    $scope.DocumentoTemporal.agregarDetalleDocumentoTemporal(detalle_documento_temporal);
+                    var producto_pedido_separado = $scope.crearProductoPedidoDocumentoTemporal(obj);
                     
+                    $scope.DocumentoTemporal.getPedido().agregarProducto(producto_pedido_separado);
+                    
+                    console.log("DOCUMENTO TEMPORAL CON PRODUCTOS DE PEDIDO INGRESADOS",$scope.DocumentoTemporal);
                 }
             };
             
-            //Crea un objeto DetalleDocumentoTemporal y le asigna los valores a sus propiedades por medio de obj
-            $scope.crearDetalleDocumentoTemporal = function(obj) {
-                
-                var detalle_documento_temporal = DetalleDocumentoTemporal.get();
-                detalle_documento_temporal.setDatos(obj);
+            //Crea un objeto Pedido y le asigna los valores a sus propiedades por medio de obj.
+            //Una de sus propiedades es un objeto LoteProductoPedido
+            $scope.crearProductoPedidoDocumentoTemporal = function(obj) {
 
-                return detalle_documento_temporal;
+                var lote_pedido = LoteProductoPedido.get(obj.lote, obj.fecha_vencimiento);
+        
+                var producto_pedido_separado = ProductoPedido.get(  obj.codigo_producto, obj.descripcion_producto, "",
+                                                                    "", obj.cantidad_solicitada, obj.cantidad_ingresada,
+                                                                    obj.observacion_cambio);
+                                                                    
+                producto_pedido_separado.setLote(lote_pedido);
+                
+                
+                console.log("Estructura del Objeto Producto", producto_pedido_separado);
+                
+                return producto_pedido_separado;
             };
             
             //Trae el Listado de Documentos de Usuario
@@ -187,17 +202,17 @@ define(["angular", "js/controllers",'models/Farmacia', 'models/Pedido', 'models/
             }
 
             $scope.detalle_pedido_separado_farmacia = {
-                data: 'DocumentoTemporal.getDetalleDocumentoTemporal()',
+                data: 'DocumentoTemporal.getPedido().getProductos()',
                 enableColumnResize: true,
                 enableRowSelection:false,
                 columnDefs: [                
                     {field: 'codigo_producto', displayName: 'Código Producto'},
-                    {field: 'nombre_producto', displayName: 'Nombre Producto'},
+                    {field: 'descripcion', displayName: 'Nombre Producto'},
                     {field: 'existencia_lotes', displayName: 'Existencia Lotes'},
-                    {field: 'cantidad_pedida', displayName: 'Cantidad Solicitada'},
+                    {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada'},
                     {field: 'cantidad_separada', displayName: "Cantidad Separada"},
-                    {field: 'lote', displayName: 'Lote'},
-                    {field: 'fecha_vencimiento', displayName: "Fecha Vencimiento"},
+                    {field: 'lote.codigo_lote', displayName: 'Lote'},
+                    {field: 'lote.fecha_vencimiento', displayName: "Fecha Vencimiento"},
                     {field: 'observacion', displayName: "Observación"}
                 ]
 

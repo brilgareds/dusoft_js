@@ -10,7 +10,7 @@ define(["angular", "js/models"], function(angular, models) {
         function DocumentoTemporal() {
             this.pedido;
             this.separador;
-            this.detalle_documento_temporal = [];
+            //this.detalle_documento_temporal = [];
         }
 
         // Pedidos
@@ -34,24 +34,6 @@ define(["angular", "js/models"], function(angular, models) {
         
         DocumentoTemporal.prototype.getSeparador = function () {
             return this.separador;
-        }
-        
-        DocumentoTemporal.prototype.setDetalleDocumentoTemporal = function(detalle_documento_temporal) {
-            this.detalle_documento_temporal = detalle_documento_temporal;
-        };
-        
-        
-        // Operaciones para manejo de lista de detalle_documento_temporal
-        DocumentoTemporal.prototype.agregarDetalleDocumentoTemporal = function(detalle_documento_temporal) {
-            this.detalle_documento_temporal.push(detalle_documento_temporal);
-        }
-
-        DocumentoTemporal.prototype.getDetalleDocumentoTemporal = function() {
-            return this.detalle_documento_temporal;
-        }
-
-        DocumentoTemporal.prototype.vaciarDetalleDocumentoTemporal = function() {
-            this.detalle_documento_temporal = [];
         }
 
         //we return new instance of usermodel class  because factory is a singleton and we dont need like that

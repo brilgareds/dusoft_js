@@ -1,25 +1,26 @@
 define(["angular", "js/controllers",'models/Cliente',
         'models/Pedido', 'models/Separador', 'models/DocumentoTemporal',
-        'models/DetalleDocumentoTemporal', 'models/ProductoPedido', 'models/LoteProductoPedido'], function(angular, controllers) {
+        'models/ProductoPedido', 'models/LoteProductoPedido'], function(angular, controllers) {
 
     var fo = controllers.controller('DetallepedidoSeparadoClienteController', [
         '$scope', '$rootScope', 'Request', 
         '$modal', 'Empresa','Cliente',
          'Pedido', 'API',"socket", "$timeout", 
          "AlertService","Usuario", "localStorageService",
-         "DetalleDocumentoTemporal", "ProductoPedido", "LoteProductoPedido",
+         "ProductoPedido", "LoteProductoPedido",
 
         function(   $scope, $rootScope, Request,
                     $modal, Empresa, Cliente,
                     Pedido, API, socket,
                     $timeout, AlertService, Usuario,
-                    localStorageService, DetalleDocumentoTemporal, ProductoPedido, LoteProductoPedido) {
+                    localStorageService, ProductoPedido, LoteProductoPedido) {
             
             $scope.detalle_pedido_separado = [];
             $scope.session = {
                 usuario_id: Usuario.usuario_id,
                 auth_token: Usuario.token
             };
+            $scope.DocumentoTemporal = {};
             $scope.paginas = 0;
             $scope.items = 0;
             $scope.termino_busqueda = "";
@@ -30,6 +31,9 @@ define(["angular", "js/controllers",'models/Cliente',
             $scope.documento_temporal_id = "";
             $scope.usuario_id = "";
             $scope.seleccion = "";
+            $scope.cajas = [];
+            $scope.seleccion_caja = "";
+            $scope.numero_pedido = "";
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
             
@@ -43,6 +47,7 @@ define(["angular", "js/controllers",'models/Cliente',
                 $scope.DocumentoTemporal = datos[1];
                 $scope.buscarDetalleDocumentoTemporal("");
                 $scope.cliente = $scope.DocumentoTemporal.pedido.cliente;
+                $scope.numero_pedido = $scope.DocumentoTemporal.pedido.numero_pedido;
                 
                 $scope.traerListadoDocumentosUsuario();
                 
@@ -50,7 +55,10 @@ define(["angular", "js/controllers",'models/Cliente',
             
             // Usar este evento si es necesario - Tras cerrar el Slide 
             $rootScope.$on("cerrardetalleclienteCompleto", function(e, datos) {
+                
                 //Liberar Memoria 
+                $scope.DocumentoTemporal = {};
+                
             });
             
             // Busqueda para actualización de Grid de pedidos para Auditar
@@ -110,8 +118,8 @@ define(["angular", "js/controllers",'models/Cliente',
                     return;
                 }
                 
-                //$scope.DocumentoTemporal = data.documento_temporal;
-                $scope.DocumentoTemporal.vaciarDetalleDocumentoTemporal();
+                //Vaciar el listado de Productos
+                $scope.DocumentoTemporal.getPedido().vaciarProductos();
 
                 for (var i in data.lista_productos) {
 
@@ -214,7 +222,17 @@ define(["angular", "js/controllers",'models/Cliente',
                     {field: 'cantidad_separada', displayName: "Cantidad Separada"},
                     {field: 'lote.codigo_lote', displayName: 'Lote'},
                     {field: 'lote.fecha_vencimiento', displayName: "Fecha Vencimiento"},
-                    {field: 'observacion', displayName: "Observación"}
+                    {field: 'observacion', displayName: "Observación"},
+                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
+                        cellTemplate: ' <div class="row">\n\
+                                            <button class="btn btn-default btn-xs" ng-click="onRowClick(row)">\n\
+                                                <span class="glyphicon glyphicon-zoom-in">Editar</span>\n\
+                                            </button>\n\
+                                            <button class="btn btn-default btn-xs" ng-click="onRowClick(row)">\n\
+                                                <span class="glyphicon glyphicon-zoom-in">Eliminar</span>\n\
+                                            </button>\n\
+                                        </div>'
+                    }
                 ]
 
             };

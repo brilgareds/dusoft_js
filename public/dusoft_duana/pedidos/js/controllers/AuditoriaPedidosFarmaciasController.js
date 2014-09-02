@@ -24,6 +24,7 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent',
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda  = {};
             $scope.paginaactual = 1;
+            $scope.numero_pedido = "";
 
 
             $scope.buscarPedidosSeparadosFarmacia = function(termino, paginando) {
@@ -152,6 +153,7 @@ define(["angular", "js/controllers", '../../../../includes/slide/slideContent',
                     {field: 'zona_pedido', displayName: 'Zona'},
 //                    {field: 'descripcion_estado_actual_separado', displayName: "Estado"},
                     {field: 'separador.nombre_operario', displayName: 'Separador'},
+                    {field: 'auditor.nombre_operario', displayName: 'Auditor'},
                     {field: 'descripcion_estado_separacion', displayName: 'Estado Separación'},
                     {field: 'fecha_separacion_pedido', displayName: "Fecha Separación"},
                     {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Auditar</span></button></div>'}

@@ -6,7 +6,16 @@
    
     <tabset  class="">
         
-        <tab heading="Clientes" ng-controller="AuditoriaPedidosClientesController">
+        <tab ng-controller="AuditoriaPedidosClientesController">
+            <tab-heading>
+                Clientes <span class="badge badge-warning">42</span>
+            </tab-heading>
+            <!--<span class="badge badge-warning">42</span>-->
+<!--            <ul class="nav nav-pills nav-stacked">
+                <li class="active">-->
+                    
+<!--                </li>
+            </ul>-->
 
             <div class="input-group navbar-form">
 
@@ -20,9 +29,6 @@
 
             </div>
             <br/>
-              <button type="button" class="btn btn-default btn-medium pull-right" ng-disabled="pedidosSeleccionados.length == 0" ng-click="abrirModalAsignar()">
-                  <span class="glyphicon glyphicon-ok" ></span> Asignar Responsables
-              </button>
 
             <div class="row text-center">
                 <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 0" ng-click="paginaAnterior()">
@@ -39,8 +45,12 @@
 
         </tab>        
 
-        <tab heading="Farmacias" ng-controller="AuditoriaPedidosFarmaciasController">
-
+        <tab ng-controller="AuditoriaPedidosFarmaciasController">
+            
+            <tab-heading>
+                Farmacias <span class="badge badge-warning">43</span>
+            </tab-heading>
+            
             <select ui-select2  class="pull-left" style="width:300px" ng-model="seleccion" data-placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
                 <option ng-repeat="empresa in  empresas"  ng-value="empresa.empresa_id" >{{empresa.razon_social}}</option>
             </select>

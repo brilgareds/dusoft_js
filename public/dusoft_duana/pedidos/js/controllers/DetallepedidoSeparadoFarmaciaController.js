@@ -38,7 +38,7 @@ define(["angular", "js/controllers",'models/Farmacia',
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
             
             $scope.cerrar = function(){
-               $scope.$emit('cerrardetallefarmacia');
+               $scope.$emit('cerrardetallefarmacia', {animado:true});
             };
             
             $rootScope.$on("mostrardetallefarmaciaCompleto", function(e, datos) {

@@ -1,0 +1,48 @@
+<div>
+
+    <!--Auditoria de pedidos-->
+
+    <!--route 1 {{welcomemsg}} got to child  <a ui-sref="route1.item">Route item</a>-->
+   
+    <tabset  class="">
+        
+        <tab ng-controller="CotizacionesController">
+            <tab-heading>
+                Cotizaciones
+            </tab-heading>
+
+            <div class="input-group navbar-form">
+                
+                <button type="submit" class="btn btn-accion btn-primary pull-left">Crear Cotización</button>
+
+                <input type="text" class="form-control pull-right" ng-keypress="onKeySeparadosPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
+                <div class="input-group-btn" >
+                    <button class="btn btn-default" type="submit" ng-click="buscarPedidosSeparadosCliente(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                </div>
+
+            </div>
+            <div class="defaultGrid" ng-grid="lista_pedidos_separados_clientes">
+
+            </div>
+            <br/>
+
+            <div class="row text-center">
+                <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 0" ng-click="paginaAnterior()">
+                    <span class="glyphicon glyphicon-chevron-left" ></span>
+                </button>
+                <button type="button" class="btn btn-default btn-medium" ng-disabled="items == 0" ng-click="paginaSiguiente()">
+                    <span class="glyphicon glyphicon-chevron-right" ></span>
+                </button>
+            </div>
+
+            <div slide-content open-callback="mostrardetallecliente" close-callback="cerrardetallecliente" class="slide" >
+                <div ng-include src="slideurl"  ng-controller="DetallepedidoSeparadoClienteController" ></div>
+            </div>
+
+        </tab>        
+
+    </tabset>
+
+    </br>
+
+</div>

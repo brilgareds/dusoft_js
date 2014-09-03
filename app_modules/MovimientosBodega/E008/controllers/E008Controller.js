@@ -1,10 +1,12 @@
 
-var E008Controller = function(movientos_bodegas, m_e008, pedidos_clientes, pedidos_farmacias, eventos_pedidos_clientes, eventos_pedidos_farmacias, terceros) {
+var E008Controller = function(movientos_bodegas, m_e008, e_e008, pedidos_clientes, pedidos_farmacias, eventos_pedidos_clientes, eventos_pedidos_farmacias, terceros) {
 
     console.log("Modulo E008 Cargado ");
 
     this.m_movientos_bodegas = movientos_bodegas;
+
     this.m_e008 = m_e008;
+    this.e_e008 = e_e008;
 
     this.m_pedidos_clientes = pedidos_clientes;
     this.e_pedidos_clientes = eventos_pedidos_clientes;
@@ -77,11 +79,14 @@ E008Controller.prototype.finalizarDocumentoTemporalClientes = function(req, res)
     var numero_pedido = args.documento_temporal.numero_pedido;
     var estado = '1';
 
-    that.m_e008.actualizar_estado_documento_temporal_clientes(numero_pedido, estado, function(err, rows) {
-        if (err) {
+    that.m_e008.actualizar_estado_documento_temporal_clientes(numero_pedido, estado, function(err, rows, result) {
+        if (err || result.rowCount === 0) {
             res.send(G.utils.r(req.url, 'Error Finalizando el Documento Temporal Clientes', 500, {documento_temporal: {}}));
             return;
         } else {
+
+            // Emitir evento para actualizar la lista de Documentos Temporales
+            that.e_e008.onNotificarDocumentosTemporalesClientes({numero_pedido: numero_pedido});
 
             res.send(G.utils.r(req.url, 'Documento Temporal Clientes Finalizado Correctamente', 200, {documento_temporal: {}}));
             return;
@@ -160,6 +165,10 @@ E008Controller.prototype.finalizarDocumentoTemporalFarmacias = function(req, res
             res.send(G.utils.r(req.url, 'Error Finalizando el Documento Temporal Farmacias', 500, {documento_temporal: {}}));
             return;
         } else {
+
+            // Emitir evento para actualizar la lista de Documentos Temporales
+            that.e_e008.onNotificarDocumentosTemporalesFarmacias({numero_pedido: numero_pedido});
+
             res.send(G.utils.r(req.url, 'Documento Temporal Farmacias Finalizado Correctamente', 200, {documento_temporal: {}}));
             return;
         }
@@ -767,6 +776,9 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalClientes = function(req,
                                 // Emitir Evento de Actualizacion de Pedido.
                                 that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
 
+                                // Emitir evento para actualizar la lista de Documentos Temporales
+                                that.e_e008.onNotificarDocumentosTemporalesClientes({numero_pedido: numero_pedido});
+
                                 res.send(G.utils.r(req.url, 'Documento Temporal Actualizado Correctamete', 200, {movimientos_bodegas: {}}));
                             });
                         }
@@ -835,7 +847,7 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalFarmacias = function(req
 
                     // Actualizar estado documento a "En Auditoria"
                     that.m_e008.actualizar_estado_documento_temporal_farmacias(numero_pedido, estado, function(err, rows, result) {
-                        
+
                         if (err || result.rowCount === 0) {
                             res.send(G.utils.r(req.url, 'Error Actualizando el documento Temporal', 500, {movimientos_bodegas: {}}));
                             return;
@@ -845,6 +857,9 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalFarmacias = function(req
 
                                 // Emitir Evento de Actualizacion de Pedido.
                                 that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+
+                                // Emitir evento para actualizar la lista de Documentos Temporales
+                                that.e_e008.onNotificarDocumentosTemporalesFarmacias({numero_pedido: numero_pedido});
 
                                 res.send(G.utils.r(req.url, 'Documento Temporal Actualizado Correctamete', 200, {movimientos_bodegas: {}}));
                             });
@@ -858,6 +873,6 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalFarmacias = function(req
     });
 };
 
-E008Controller.$inject = ["m_movientos_bodegas", "m_e008", "m_pedidos_clientes", "m_pedidos_farmacias", "e_pedidos_clientes", "e_pedidos_farmacias", "m_terceros"];
+E008Controller.$inject = ["m_movientos_bodegas", "m_e008", "e_e008", "m_pedidos_clientes", "m_pedidos_farmacias", "e_pedidos_clientes", "e_pedidos_farmacias", "m_terceros"];
 
 module.exports = E008Controller;

@@ -140,7 +140,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                     
                     documento.getPedido().agregarProducto(producto_pedido_separado);
 
-                    console.log("DOCUMENTO TEMPORAL CON PRODUCTOS DE PEDIDO INGRESADOS",documento);
+                   // console.log("DOCUMENTO TEMPORAL CON PRODUCTOS DE PEDIDO INGRESADOS",documento);
                 }
             };
 

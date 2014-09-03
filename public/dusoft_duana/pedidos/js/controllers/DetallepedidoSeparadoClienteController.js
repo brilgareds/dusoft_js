@@ -42,7 +42,7 @@ define(["angular", "js/controllers",'models/Cliente',
             
             $rootScope.$on("mostrardetalleclienteCompleto", function(e, datos) {
                 
-                console.log("información Documento Temporal: ", datos[1]);
+                //console.log("información Documento Temporal: ", datos[1]);
                 $scope.DocumentoTemporal = datos[1];
                 $scope.buscarDetalleDocumentoTemporal($scope.obtenerParametros(), false, 1,$scope.resultadoBusquedaDocumento);
                 $scope.cliente = $scope.DocumentoTemporal.pedido.cliente;
@@ -66,7 +66,8 @@ define(["angular", "js/controllers",'models/Cliente',
             });
 
             $scope.resultadoBusquedaDocumento = function(data, paginando){
-                    data = $scope.usuario_id = data.obj.documento_temporal[0];
+                    console.log("resultado documento_temporal",data)
+                    data  = data.obj.documento_temporal[0];
                     $scope.items = data.lista_productos.length;
                     
                     //se valida que hayan registros en una siguiente pagina
@@ -79,8 +80,7 @@ define(["angular", "js/controllers",'models/Cliente',
                     }
                 
 
-                   $scope.renderDetalleDocumentoTemporal
-                   ($scope.DocumentoTemporal, data, paginando);
+                   $scope.renderDetalleDocumentoTemporal($scope.DocumentoTemporal, data, paginando);
                             
                    $scope.documento_temporal_id = data.doc_tmp_id;
                    $scope.usuario_id = data.usuario_id;
@@ -106,7 +106,7 @@ define(["angular", "js/controllers",'models/Cliente',
             };
 
             $scope.resultasdoListadoDocumentosUsuario = function(data){
-                console.log("resultadod listado ", data)
+                //console.log("resultadod listado ", data)
                 if(data.obj.movimientos_bodegas != undefined){
                     $scope.documentos_usuarios = data.obj.movimientos_bodegas;
                 }

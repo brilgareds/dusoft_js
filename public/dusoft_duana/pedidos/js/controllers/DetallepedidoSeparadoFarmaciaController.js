@@ -42,7 +42,7 @@ define(["angular", "js/controllers",'models/Farmacia',
             
             $rootScope.$on("mostrardetallefarmaciaCompleto", function(e, datos) {
                 
-                console.log("información Documento Temporal: ", datos[1]);
+                //console.log("información Documento Temporal: ", datos[1]);
                 $scope.DocumentoTemporal = datos[1];
                  $scope.buscarDetalleDocumentoTemporal($scope.obtenerParametros(), false, 2,$scope.resultadoBusquedaDocumento);
                 $scope.farmacia = $scope.DocumentoTemporal.pedido.farmacia;
@@ -98,7 +98,8 @@ define(["angular", "js/controllers",'models/Farmacia',
             };
             
             $scope.resultadoBusquedaDocumento = function(data, paginando){
-                    data = $scope.usuario_id = data.obj.documento_temporal[0];
+                console.log("documento temporal", data);
+                    data  = data.obj.documento_temporal[0];
                     $scope.items = data.lista_productos.length;
                     
                     //se valida que hayan registros en una siguiente pagina
@@ -110,9 +111,8 @@ define(["angular", "js/controllers",'models/Farmacia',
                         return;
                     }
                 
-
-                   $scope.renderDetalleDocumentoTemporal
-                   ($scope.DocumentoTemporal, data, paginando);
+                    $scope.DocumentoTemporal.bodegas_doc_id = data.bodegas_doc_id;
+                   $scope.renderDetalleDocumentoTemporal($scope.DocumentoTemporal, data, paginando);
                             
                    $scope.documento_temporal_id = data.doc_tmp_id;
                    $scope.usuario_id = data.usuario_id;

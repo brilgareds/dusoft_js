@@ -10,6 +10,7 @@ define(["angular", "js/models"], function(angular, models) {
         function DocumentoTemporal() {
             this.pedido;
             this.separador;
+            this.bodegas_doc_id = 0;
             //this.detalle_documento_temporal = [];
         }
 

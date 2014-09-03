@@ -178,8 +178,13 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
 
 
             $scope.validarDocumentoUsuario = function(obj, tipo, callback) {
+                var url = API.DOCUMENTOS_TEMPORALES.ACTUALIZAR_TIPO_DOCUMENTO_TEMPORAL_CLIENTES;
 
-                Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.ACTUALIZAR_TIPO_DOCUMENTO_TEMPORAL, "POST", obj, function(data) {
+                if(tipo == 2){
+                    url = API.DOCUMENTOS_TEMPORALES.ACTUALIZAR_TIPO_DOCUMENTO_TEMPORAL_FARMACIAS;
+                }
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
 
                     callback(data);
                     if(data.status === 200){

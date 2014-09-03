@@ -111,9 +111,9 @@ define(["angular", "js/controllers",'models/Farmacia',
                         return;
                     }
                 
-                    $scope.DocumentoTemporal.bodegas_doc_id = data.bodegas_doc_id;
+                   $scope.DocumentoTemporal.bodegas_doc_id = data.bodegas_doc_id;
                    $scope.renderDetalleDocumentoTemporal($scope.DocumentoTemporal, data, paginando);
-                            
+
                    $scope.documento_temporal_id = data.doc_tmp_id;
                    $scope.usuario_id = data.usuario_id;
             };

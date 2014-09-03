@@ -131,8 +131,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
         res.status(err.status || 500);
-        //io.sockets.emit('onDisconnect');
-        res.send(G.utils.r(req.url, 'Se ha generado un error interno code 1', 500, {}));
+        console.log(err);
+        res.send(G.utils.r(req.url, 'Se ha generado un error interno code 1', 500, { msj : err}));
     });
 }
 
@@ -142,8 +142,8 @@ if (app.get('env') === 'development') {
  * =========================================*/
 app.use(function(err, req, res, next) {
     res.status(err.status || 500);
-    //io.sockets.emit('onDisconnect');
-    res.send(G.utils.r(req.url, 'Se ha generado un error interno code 2', 500, {}));
+    console.log(err);
+    res.send(G.utils.r(req.url, 'Se ha generado un error interno code 2', 500, {msj : err}));
 });
 
 /*=========================================

@@ -15,7 +15,7 @@ module.exports = function(app, di_container) {
     app.post('/api/movBodegas/E008/finalizarDocumentoTemporalClientes', function(req, res) {
         c_e008.finalizarDocumentoTemporalClientes(req, res);
     });
-  
+
     // Generar Documento temporal de despacho farmacias
     app.post('/api/movBodegas/E008/documentoTemporalFarmacias', function(req, res) {
         c_e008.documentoTemporalFarmacias(req, res);
@@ -71,9 +71,19 @@ module.exports = function(app, di_container) {
         c_e008.justificacionPendientes(req, res);
     });
 
-    // ======== FIN Rutas para Documentos E008 =============    
+    // Actualizar bodegas_doc_id en documento temporal Clientes.
+    app.post('/api/movBodegas/actualizarTipoDocumentoTemporalClientes', function(req, res) {
+        c_e008.actualizarTipoDocumentoTemporalClientes(req, res);
+    });
     
+    // Actualizar bodegas_doc_id en documento temporal Clientes.
+    app.post('/api/movBodegas/actualizarTipoDocumentoTemporalFarmacias', function(req, res) {
+        c_e008.actualizarTipoDocumentoTemporalFarmacias(req, res);
+    });
     
+    // ======== FIN Rutas para Documentos Temporales E008 =============    
+
+
 
     // ======== Events E008 ========
     io.sockets.on('connection', function(socket) {

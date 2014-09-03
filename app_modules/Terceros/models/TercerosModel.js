@@ -141,5 +141,15 @@ TercerosModel.prototype.seleccionar_operario_bodega = function(operario_id, call
 
 };
 
+TercerosModel.prototype.seleccionar_operario_por_usuario_id = function(usuario_id, callback) {
+
+    var sql = "select operario_id, nombre as nombre_operario, usuario_id, estado from operarios_bodega where usuario_id = $1";
+
+    G.db.query(sql, [usuario_id], function(err, rows, result) {
+        callback(err, rows);
+    });
+    
+};
+
 
 module.exports = TercerosModel;

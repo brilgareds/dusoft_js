@@ -4,8 +4,8 @@ var qs = require('querystring');
 
 var Settings = function() {
     var that = this;
-    this.host = "http://localhost";
-    this.port = "4000";
+    this.host = "http://10.0.2.158";
+    this.port = "3000";
     this.api_path = "/api";
     this.api_url = this.host + ':' + this.port;
 

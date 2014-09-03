@@ -128,7 +128,8 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
                 when a.estado_pedido = 2 then 'Auditado' \
                 when a.estado_pedido = 3 then 'En Despacho' \
                 when a.estado_pedido = 4 then 'Despachado' \
-                when a.estado_pedido = 5 then 'Despachado con Pendientes' end as descripcion_estado_actual_pedido, \
+                when a.estado_pedido = 5 then 'Despachado con Pendientes' \
+                when a.estado_pedido = 6 then 'En Auditoria' end as descripcion_estado_actual_pedido, \
                 d.estado as estado_separacion, \
                 a.fecha_registro \
                 from ventas_ordenes_pedidos a \
@@ -221,7 +222,8 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
                      when a.estado_pedido = 2 then 'Auditado' \
                      when a.estado_pedido = 3 then 'En Despacho' \
                      when a.estado_pedido = 4 then 'Despachado' \
-                     when a.estado_pedido = 5 then 'Despachado con Pendientes' end as descripcion_estado_actual_pedido, \
+                     when a.estado_pedido = 5 then 'Despachado con Pendientes' \
+                     when a.estado_pedido = 6 then 'En Auditoria' end as descripcion_estado_actual_pedido, \
                 d.estado as estado_separacion, \
                 a.fecha_registro \
                 from ventas_ordenes_pedidos a \
@@ -405,7 +407,8 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
                      when a.estado_pedido = 2 then 'Auditado' \
                      when a.estado_pedido = 3 then 'En Despacho' \
                      when a.estado_pedido = 4 then 'Despachado' \
-                     when a.estado_pedido = 5 then 'Despachado con Pendientes' end as descripcion_estado_actual_pedido, \
+                     when a.estado_pedido = 5 then 'Despachado con Pendientes' \
+                     when a.estado_pedido = 6 then 'En Auditoria' end as descripcion_estado_actual_pedido, \
                 f.estado as estado_separacion,     \
                 case when f.estado = '0' then 'Separacion en Proceso' \
                      when f.estado = '1' then 'Separacion Finalizada' end as descripcion_estado_separacion,\
@@ -521,7 +524,7 @@ PedidosClienteModel.prototype.asignar_responsables_pedidos = function(numero_ped
 PedidosClienteModel.prototype.insertar_responsables_pedidos = function(numero_pedido, estado_pedido, responsable, usuario, callback) {
 
     var sql = "INSERT INTO ventas_ordenes_pedidos_estado( pedido_cliente_id, estado, responsable_id, fecha, usuario_id) " +
-            "VALUES ($1, $2, $3, now(), $4);";
+              "VALUES ($1, $2, $3, now(), $4);";
 
     G.db.query(sql, [numero_pedido, estado_pedido, responsable, usuario], function(err, rows, result) {
         callback(err, rows);
@@ -566,9 +569,11 @@ PedidosClienteModel.prototype.actualizar_responsables_pedidos = function(numero_
  * Los estados permitidos son:
  * 0 = No Asignado. Cuando se crea el pedido por primera vez
  * 1 = Asignado, cuando el pedido fue asignado a un operario de bodega para ser despachado
- * 2 = Auditado, Cuando se ha separado el pedido y lo estan auditando para verificar su correcta separacion.
- * 3 = En Despacho, Cuando se encuentra listo para ser despachado al lugar de destino.
- * 4 = Despachado, Cuando el pedido ha sido despachado en su total al lugar de destino.
+ * 2 = En Auditoria, Cuando se ha separado el pedido y lo estan auditando para verificar su correcta separacion.
+ * 3 = Auditado, Cuando se ha separado el pedido y lo estan auditando para verificar su correcta separacion.
+ * 4 = En Despacho, Cuando se encuentra listo para ser despachado al lugar de destino.
+ * 5 = Despachado, Cuando el pedido ha sido despachado en su total al lugar de destino.
+ * 6 = Despachado con Pendientes, Cuando el pedido ha sido despachado en su total al lugar de destino.
  * @apiDefinePermission autenticado Requiere Autenticacion
  * Requiere que el usuario esté autenticado.
  * @apiPermission autenticado
@@ -602,7 +607,9 @@ PedidosClienteModel.prototype.obtener_responsables_del_pedido = function(numero_
                      when a.estado=1 then 'Asignado'\
                      when a.estado=2 then 'Auditado'\
                      when a.estado=3 then 'En Despacho' \
-                     when a.estado=4 then 'Despachado' end as descripcion_estado,\
+                     when a.estado=4 then 'Despachado'\
+                     when a.estado=5 then 'Despachado con Pendientes' \
+                     when a.estado=6 then 'En Auditoria' end as descripcion_estado,\
                 b.operario_id,\
                 b.nombre as nombre_responsable,\
                 a.usuario_id,\

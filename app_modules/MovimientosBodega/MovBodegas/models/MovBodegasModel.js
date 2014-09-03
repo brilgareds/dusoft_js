@@ -143,10 +143,8 @@ MovimientosBodegasModel.prototype.actualizar_tipo_documento_temporal = function(
 
     var sql = " update inv_bodegas_movimiento_tmp set bodegas_doc_id = $3 where doc_tmp_id = $1  and usuario_id = $2 ";
 
-    G.db.query(sql, [documento_temporal_id, usuario_id, bodegas_doc_id, ], function(err, rows, result) {
-        console.log(err);
-        console.log(rows);
-        callback(err, rows);
+    G.db.query(sql, [documento_temporal_id, usuario_id, bodegas_doc_id, ], function(err, rows, result) {      
+        callback(err, rows, result);
     });
 };
 

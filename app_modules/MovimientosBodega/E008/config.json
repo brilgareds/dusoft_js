@@ -28,6 +28,11 @@
                     "module": "PedidosFarmacias",
                     "model": "PedidosFarmaciasModel",
                     "alias": "m_pedidos_farmacias"
+                },
+                "terceros_model": {
+                    "module": "Terceros",
+                    "model": "TercerosModel",
+                    "alias": "m_terceros"
                 }
             }],
         "events": [{

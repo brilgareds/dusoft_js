@@ -62,33 +62,33 @@ define(["angular", "js/models", "../../../includes/classes/EmpresaBase"], functi
         //Documentos Temporales
         Empresa.agregarDocumentoTemporal = function(documento_temporal, tipo) {
             
-            if (tipo == "Cliente") {
+            if (tipo == 1) {
                 this.documentosTemporalesClientes.push(documento_temporal);
             }
             
-            if (tipo == "Farmacia") {
+            if (tipo == 2) {
                 this.documentosTemporalesFarmacias.push(documento_temporal);
             }
         }
 
         Empresa.getDocumentoTemporal = function(tipo) {
             
-            if (tipo == "Cliente") {
+            if (tipo == 1) {
                 return this.documentosTemporalesClientes;
             }
             
-            if (tipo == "Farmacia") {
+            if (tipo == 2) {
                 return this.documentosTemporalesFarmacias;
             }
         }
 
         Empresa.vaciarDocumentoTemporal = function(tipo) {
             
-            if (tipo == "Cliente") {
+            if (tipo == 1) {
                 this.documentosTemporalesClientes = [];
             }
             
-            if (tipo == "Farmacia") {
+            if (tipo == 2) {
                 this.documentosTemporalesFarmacias = [];
             }
         }    

@@ -47,6 +47,11 @@
                   text:"Auditar Pedidos",
                   templateUrl: "views/AuditoriaPedidos.html"
               })
+            .state('PedidosClientes', {
+                  url: "/PedidosClientes",
+                  text:"Pedidos Clientes",
+                  templateUrl: "views/pedidosclientes.html"
+              })
 
     }).run(function($rootScope,Usuario,localStorageService){
         $rootScope.titulo_modulo = "pedidos";   

@@ -5,7 +5,12 @@
         "text": "Administracion de Pedidos",
         "url": "pedidos"
     },
-
+    {
+        "id": "13",
+        "parent": "1",
+        "text": "Generar Pedidos",
+        "url": "GenerarPedidos"
+    },
     {
         "id": "5",
         "parent": "1",
@@ -22,7 +27,7 @@
         "url": "AuditarPedidos",
         "parentname": "pedidos",
         "icon": "glyphicon glyphicon-file",
-        "state": "AsignarPedidos"
+        "state": "AuditarPedidos"
     },
     {
         "id": "7",
@@ -53,5 +58,32 @@
         "text": "Kardex",
         "url": "kardex",
         "state": "listarproductos"
+    },
+    {
+        "id": "14",
+        "parent": "13",
+        "text": "Pedidos Clientes",
+        "url": "PedidosClientes",
+        "icon": "glyphicon glyphicon-list-alt",
+        "parentname": "pedidos",
+        "state": "PedidosClientes"
+    },
+    {
+        "id": "15",
+        "parent": "13",
+        "text": "Pedidos Farmacias",
+        "url": "PedidosFarmacias",
+        "icon": "glyphicon glyphicon-list-alt",
+        "parentname": "pedidos",
+        "state": "PedidosFarmacias"
+    },
+    {
+        "id": "16",
+        "parent": "13",
+        "text": "Cargar Archivo Plano",
+        "url": "CargarArchivoPlano",
+        "icon": "glyphicon glyphicon-cloud-upload",        
+        "parentname": "pedidos",
+        "state": "CargarArchivoPlano"
     }
 ]

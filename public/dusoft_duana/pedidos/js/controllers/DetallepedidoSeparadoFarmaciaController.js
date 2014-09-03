@@ -7,20 +7,20 @@ define(["angular", "js/controllers",'models/Farmacia',
         '$modal', 'Empresa','Farmacia',
          'Pedido', 'API',"socket", "$timeout", 
          "AlertService","Usuario", "localStorageService",
-         "ProductoPedido", "LoteProductoPedido",
+         "ProductoPedido", "LoteProductoPedido", "DocumentoTemporal",
 
         function(   $scope, $rootScope, Request,
                     $modal, Empresa, Cliente,
                     Pedido, API, socket,
                     $timeout, AlertService, Usuario,
-                    localStorageService, ProductoPedido, LoteProductoPedido) {
+                    localStorageService, ProductoPedido, LoteProductoPedido, DocumentoTemporal) {
                         
             $scope.detalle_pedido_separado = [];
             $scope.session = {
                 usuario_id: Usuario.usuario_id,
                 auth_token: Usuario.token
             };
-            $scope.DocumentoTemporal = {};
+            $scope.DocumentoTemporal = DocumentoTemporal.get();
             $scope.paginas = 0;
             $scope.items = 0;
             $scope.termino_busqueda = "";
@@ -93,13 +93,15 @@ define(["angular", "js/controllers",'models/Farmacia',
 
             $scope.resultasdoListadoDocumentosUsuario = function(data){
                 if(data.obj.movimientos_bodegas != undefined){
+                    //$scope.DocumentoTemporal.bodegas_doc_id
                     $scope.documentos_usuarios = data.obj.movimientos_bodegas;
                 }
             };
             
             $scope.resultadoBusquedaDocumento = function(data, paginando){
-                console.log("documento temporal", data);
+               
                     data  = data.obj.documento_temporal[0];
+                     //console.log("documento temporal ========", data);
                     $scope.items = data.lista_productos.length;
                     
                     //se valida que hayan registros en una siguiente pagina
@@ -112,6 +114,7 @@ define(["angular", "js/controllers",'models/Farmacia',
                     }
                 
                    $scope.DocumentoTemporal.bodegas_doc_id = data.bodegas_doc_id;
+                   $scope.seleccion = $scope.DocumentoTemporal.bodegas_doc_id;
                    $scope.renderDetalleDocumentoTemporal($scope.DocumentoTemporal, data, paginando);
 
                    $scope.documento_temporal_id = data.doc_tmp_id;
@@ -169,13 +172,15 @@ define(["angular", "js/controllers",'models/Farmacia',
                         movimientos_bodegas: {
                             documento_temporal_id: $scope.documento_temporal_id, 
                             usuario_id: $scope.usuario_id,
-                            bodegas_doc_id: $scope.seleccion
+                            bodegas_doc_id: $scope.seleccion,
+                            numero_pedido:$scope.numero_pedido
                         }
                     }
                 };
 
                 $scope.validarDocumentoUsuario(obj, 2, function(data){
                     if(data.status === 200){
+                        $scope.DocumentoTemporal.bodegas_doc_id = $scope.seleccion;
                         AlertService.mostrarMensaje("success", data.msj);
                     } else {
                         AlertService.mostrarMensaje("warning", data.msj);

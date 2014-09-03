@@ -73,32 +73,7 @@
         </div>
 
     </div> 
-            
-<!--    <div class="row">          
-        <div class="col-sm-12 col-md-12">
-            
-            <div class="panel panel-info marginBottom5">  / begin banking details 
-                <div class="panel-heading">
-                  <h4 class="h4MarginTopBottom">Rótulos Cajas</h4>
-                </div>
-                <div class="panel-body">
-                  <p>
-                     Farmacia &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                     Número de Cajas &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                     Rótulos
-                  </p>
-                  <p>
-                     Pedido : 12345678&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                     Lote : ------
-                  </p>
-                </div>
-            </div>  / end banking details 
-            
-        </div>         
-    </div>-->
+
     
     <div class="row"> <!-- / begin payment details section -->
         <div class="col-sm-12 col-md-12">
@@ -112,9 +87,9 @@
                     
                   <div class="panel-body">
                     <div class="input-group navbar-form paddingRightZero">
-                        <input type="text" class="form-control pull-right" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Código Barras" name="srch-term" id="srch-term">
+                        <input type="text" class="form-control pull-right" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Código Barras" name="srch-term" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" id="srch-term">
                         <div class="input-group-btn" >
-                            <button class="btn btn-default pull-right" type="submit" ng-click="buscarDetalleDocumentoTemporal(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                            <button class="btn btn-default pull-right" type="submit" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ng-click="buscarDetalleDocumentoTemporal(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
                         </div>
                     </div>
                     
@@ -162,7 +137,7 @@
     </div> <!-- / end class row --> 
 
     <div class="col-sm-12 row marginBottom5">
-        <button type="submit" class="btn btn-accion btn-primary pull-right">Generar Documento</button>    
+        <button type="submit" class="btn btn-accion btn-primary pull-right" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0">Generar Documento</button>    
     </div>
 
     <br/><br/><br/><br/><br/>

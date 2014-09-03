@@ -79,3 +79,7 @@ background-color: blue;
 .col-xs-12 {
 padding-left: 1cm;
 }*/
+
+.modal .modal-dialog {
+   width: 800px;
+}

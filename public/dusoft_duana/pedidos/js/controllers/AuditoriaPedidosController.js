@@ -1,17 +1,19 @@
 define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
         'models/Cliente', 'models/Pedido', 'models/Separador',
-        'models/DocumentoTemporal', "controllers/AuditoriaPedidosClientesController","controllers/AuditoriaPedidosFarmaciasController"], function(angular, controllers) {
+        'models/DocumentoTemporal', "controllers/AuditoriaPedidosClientesController","controllers/AuditoriaPedidosFarmaciasController",
+        "controllers/EditarProductoController"], function(angular, controllers) {
 
     var fo = controllers.controller('AuditoriaPedidosController', [
         '$scope', '$rootScope', 'Request',
         'Empresa', 'Cliente', 'Farmacia', 'Pedido',
         'Separador', 'DocumentoTemporal', 'API',
         "socket", "AlertService", "ProductoPedido", "LoteProductoPedido",
+        "$modal",
         function($scope, $rootScope, Request, 
                  Empresa, Cliente, Farmacia, 
                  Pedido, Separador, DocumentoTemporal,
                  API, socket, AlertService,
-                 ProductoPedido, LoteProductoPedido) {
+                 ProductoPedido, LoteProductoPedido, $modal) {
 
             $scope.Empresa = Empresa;
             $scope.termino_busqueda = "";
@@ -195,7 +197,34 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                 });
                 
                 /* Fin Request */
-            }
+            };
+
+            $scope.esDocumentoBodegaValido = function(bodega_id){
+                return (!bodega_id > 0)?false:true
+            };
+
+
+            $scope.onEditarRow = function(row){
+                console.log("ediar producto ", row.entity);
+                var producto =  row.entity;
+                $scope.opts = {
+                    //backdrop: true,
+                    size: 1000,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    dialogClass:"editarproductomodal",
+                    templateUrl: 'views/editarproducto.html',
+                    controller: "EditarProductoController",
+                    resolve :{
+                          producto : function(){
+                              return producto;
+                          }
+                    }
+                };
+
+                var modalInstance = $modal.open($scope.opts);
+            };
 
 
         }]);

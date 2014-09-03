@@ -4,7 +4,7 @@
   "bootstrap","js/controllers", "js/models",
    "js/services",  "js/directive", "nggrid",
   "controllers/PedidosController","controllers/PedidosClientesController", "controllers/PedidosFarmaciasController",  "uiselect2", 
-  "controllers/AuditoriaPedidosClientesController", "controllers/AuditoriaPedidosFarmaciasController",  "controllers/DetallepedidoSeparadoClienteController",
+  "controllers/AuditoriaPedidosController",  "controllers/DetallepedidoSeparadoClienteController",
   "controllers/DetallepedidoSeparadoFarmaciaController", "loader",  "models/Empresa",
   "includes/menu/menucontroller", "config", "includes/alert/Alert",
   "includes/header/HeaderController", 'storage', "httpinterceptor",

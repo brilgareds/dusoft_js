@@ -1,26 +1,28 @@
 define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
-        'models/Cliente', 'models/Pedido'], function(angular, controllers) {
+        'models/Cliente', 'models/PedidoVenta'], function(angular, controllers) {
 
     var fo = controllers.controller('CotizacionesController', [
         '$scope', '$rootScope', 'Request',
-        'Empresa', 'Cliente', 'Pedido',
+        'Empresa', 'Cliente', 'PedidoVenta',
         'API', "socket", "AlertService",
+        '$state',
 
-        function($scope, $rootScope, Request, Empresa, Cliente, Pedido, API, socket, AlertService) {
+        function($scope, $rootScope, Request, Empresa, Cliente, PedidoVenta, API, socket, AlertService, $state) {
 
             //$scope.Empresa = Empresa;
             
-            $scope.session = {
-                usuario_id: Usuario.usuario_id,
-                auth_token: Usuario.token
-            };
+//            $scope.session = {
+//                usuario_id: Usuario.usuario_id,
+//                auth_token: Usuario.token
+//            };
             $scope.paginas = 0;
             $scope.items = 0;
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
             $scope.paginaactual = 1;
             //$scope.numero_pedido = "";
-            listado_cotizaciones = {};
+            //$scope.obj = {};
+            $scope.listado_cotizaciones = [];
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
 
@@ -30,6 +32,26 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                 if ($scope.ultima_busqueda != $scope.termino_busqueda) {
                     $scope.paginaactual = 1;
                 }
+                
+                for(i=0; i<10; i++)
+                {
+                    //var pedido = Pedido.get();
+                    
+                    obj = { 
+                            numero_cotizacion: '123456'+i,
+                            nombre_cliente: 'Franz Kafka',
+                            nombre_vendedor: 'Alexeiv Karpov'+i,
+                            fecha_cotizacion: '0'+i+'-09-2014',
+                            valor_cotizacion: i+'00.000',
+                            estado: 'Activo'
+                        }
+                    
+                    $scope.listado_cotizaciones.push(obj);
+                        
+                }
+                
+                console.log("LISTADO COTIZACIONES: ", $scope.listado_cotizaciones);
+                
 
                 
 //                var obj = {
@@ -113,7 +135,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
 
             //definicion y delegados del Tabla de pedidos clientes
 
-            $scope.lista_pedidos_separados_clientes = {
+            $scope.lista_pedidos_clientes = {
                 data: 'listado_cotizaciones',
                 enableColumnResize: true,
                 enableRowSelection: false,
@@ -124,12 +146,17 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                     {field: 'fecha_cotizacion', displayName: 'Fecha'},
                     {field: 'valor_cotizacion', displayName: 'Valor'},
                     {field: 'estado', displayName: 'Estado'},
-                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Auditar</span></button></div>'}
+                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Activar</span></button></div>'}
 
                 ]
 
             };
-
+            
+            $scope.abrirViewCotizacion = function()
+            {
+                $state.go('CotizacionCliente');
+            }
+            
             $scope.buscarCotizaciones("");
 
         }]);

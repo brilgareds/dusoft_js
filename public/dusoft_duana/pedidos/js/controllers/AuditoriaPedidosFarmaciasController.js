@@ -1,13 +1,13 @@
 define(["angular", "js/controllers", 
-        'models/Farmacia', 'models/Pedido', 'models/Separador',
+        'models/Farmacia', 'models/PedidoAuditoria', 'models/Separador',
         'models/DocumentoTemporal'], function(angular, controllers) {
 
     var fo = controllers.controller('AuditoriaPedidosFarmaciasController', [
         '$scope', '$rootScope', 'Request', 
-        'Empresa', 'Farmacia', 'Pedido',
+        'Empresa', 'Farmacia', 'PedidoAuditoria',
         'Separador', 'DocumentoTemporal', 'API',
         "socket", "AlertService", "Usuario", 
-        function($scope, $rootScope, Request, Empresa, Farmacia, Pedido, Separador, DocumentoTemporal, API, socket, AlertService,Usuario) {
+        function($scope, $rootScope, Request, Empresa, Farmacia, PedidoAuditoria, Separador, DocumentoTemporal, API, socket, AlertService,Usuario) {
 
             $scope.Empresa = Empresa;
             $scope.pedidosSeparadosSeleccionados = [];

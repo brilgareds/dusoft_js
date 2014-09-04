@@ -1,12 +1,12 @@
 
-define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models/Farmacia', 'models/Pedido'], function(angular, controllers) {
+define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models/Farmacia', 'models/PedidoAuditoria'], function(angular, controllers) {
 
     controllers.controller('PedidosFarmaciasController', [
         '$scope', '$rootScope', 'Request',
         '$modal', 'Empresa', 'Farmacia',
-        'Pedido', 'API', 'socket',
+        'PedidoAuditoria', 'API', 'socket',
         'AlertService', "Usuario",
-        function($scope, $rootScope, Request, $modal, Empresa, Farmacia, Pedido, API, socket, AlertService, Usuario) {
+        function($scope, $rootScope, Request, $modal, Empresa, Farmacia, PedidoAuditoria, API, socket, AlertService, Usuario) {
 
             $scope.Empresa = Empresa;
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
@@ -199,7 +199,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
 
 
             $scope.crearPedido = function(obj) {
-                var pedido = Pedido.get();
+                var pedido = PedidoAuditoria.get();
                 pedido.setDatos(obj);
 
                 var cliente = Farmacia.get(obj.farmacia_id, obj.bodega_id, obj.nombre_farmacia, obj.nombre_bodega);

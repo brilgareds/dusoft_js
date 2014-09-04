@@ -20,7 +20,8 @@ define(["angular", "js/models"], function(angular, models) {
             this.descripcion_estado = datos.descripcion_estado || ''; // Se condiciona dependiendo del tipo de cliente si es farmacia o es cliente normal
             this.descripcion_estado_actual_pedido = datos.descripcion_estado_actual_pedido || null;
             this.estado_actual_pedido = datos.estado_actual_pedido || null;
-            
+            this.estado = datos.estado || null;
+            this.estado_separacion = datos.estado_separacion || null;
         };
 
         Pedido.prototype.setCliente = function(cliente) {

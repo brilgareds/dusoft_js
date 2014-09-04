@@ -715,31 +715,31 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalClientes = function(req,
 
     var args = req.body.data;
 
-    if (args.movimientos_bodegas === undefined || args.movimientos_bodegas.documento_temporal_id === undefined || args.movimientos_bodegas.usuario_id === undefined || args.movimientos_bodegas.bodegas_doc_id === undefined) {
+    if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined || args.documento_temporal.usuario_id === undefined || args.documento_temporal.bodegas_doc_id === undefined) {
         res.send(G.utils.r(req.url, 'El documento_temporal_id, usuario_id o bodegas_doc_id NO estan definidos', 404, {}));
         return;
     }
 
-    if (args.movimientos_bodegas.numero_pedido === undefined) {
+    if (args.documento_temporal.numero_pedido === undefined) {
         res.send(G.utils.r(req.url, 'El numero_pedido NO esta definidos', 404, {}));
         return;
     }
 
-    if (args.movimientos_bodegas.documento_temporal_id === '' || args.movimientos_bodegas.usuario_id === '' || args.movimientos_bodegas.bodegas_doc_id === '') {
+    if (args.documento_temporal.documento_temporal_id === '' || args.documento_temporal.usuario_id === '' || args.documento_temporal.bodegas_doc_id === '') {
         res.send(G.utils.r(req.url, 'El documento_temporal_id, usuario_id o bodegas_doc_id estan vacíos', 404, {}));
         return;
     }
-    if (args.movimientos_bodegas.numero_pedido <= 0 || args.movimientos_bodegas.numero_pedido === '') {
+    if (args.documento_temporal.numero_pedido <= 0 || args.documento_temporal.numero_pedido === '') {
         res.send(G.utils.r(req.url, 'El numero_pedido esta vacio o debe ser mayor a cero', 404, {}));
         return;
     }
 
 
-    var documento_temporal_id = args.movimientos_bodegas.documento_temporal_id;
-    var usuario_id = args.movimientos_bodegas.usuario_id;
-    var bodegas_doc_id = args.movimientos_bodegas.bodegas_doc_id;
+    var documento_temporal_id = args.documento_temporal.documento_temporal_id;
+    var usuario_id = args.documento_temporal.usuario_id;
+    var bodegas_doc_id = args.documento_temporal.bodegas_doc_id;
 
-    var numero_pedido = args.movimientos_bodegas.numero_pedido;
+    var numero_pedido = args.documento_temporal.numero_pedido;
     var usuario_id = req.session.user.usuario_id;
     var auditor = 0;
     var estado = '2';
@@ -797,31 +797,31 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalFarmacias = function(req
 
     var args = req.body.data;
 
-    if (args.movimientos_bodegas === undefined || args.movimientos_bodegas.documento_temporal_id === undefined || args.movimientos_bodegas.usuario_id === undefined || args.movimientos_bodegas.bodegas_doc_id === undefined) {
+    if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined || args.documento_temporal.usuario_id === undefined || args.documento_temporal.bodegas_doc_id === undefined) {
         res.send(G.utils.r(req.url, 'El documento_temporal_id, usuario_id o bodegas_doc_id NO estan definidos', 404, {}));
         return;
     }
 
-    if (args.movimientos_bodegas.numero_pedido === undefined) {
+    if (args.documento_temporal.numero_pedido === undefined) {
         res.send(G.utils.r(req.url, 'El numero_pedido NO esta definidos', 404, {}));
         return;
     }
 
-    if (args.movimientos_bodegas.documento_temporal_id === '' || args.movimientos_bodegas.usuario_id === '' || args.movimientos_bodegas.bodegas_doc_id === '') {
+    if (args.documento_temporal.documento_temporal_id === '' || args.documento_temporal.usuario_id === '' || args.documento_temporal.bodegas_doc_id === '') {
         res.send(G.utils.r(req.url, 'El documento_temporal_id, usuario_id o bodegas_doc_id estan vacíos', 404, {}));
         return;
     }
 
-    if (args.movimientos_bodegas.numero_pedido <= 0 || args.movimientos_bodegas.numero_pedido === '') {
+    if (args.documento_temporal.numero_pedido <= 0 || args.documento_temporal.numero_pedido === '') {
         res.send(G.utils.r(req.url, 'El numero_pedido esta vacio o debe ser mayor a cero', 404, {}));
         return;
     }
 
-    var documento_temporal_id = args.movimientos_bodegas.documento_temporal_id;
-    var usuario_id = args.movimientos_bodegas.usuario_id;
-    var bodegas_doc_id = args.movimientos_bodegas.bodegas_doc_id;
+    var documento_temporal_id = args.documento_temporal.documento_temporal_id;
+    var usuario_id = args.documento_temporal.usuario_id;
+    var bodegas_doc_id = args.documento_temporal.bodegas_doc_id;
 
-    var numero_pedido = args.movimientos_bodegas.numero_pedido;
+    var numero_pedido = args.documento_temporal.numero_pedido;
     var usuario_id = req.session.user.usuario_id;
     var auditor = 0;
     var estado = '2';
@@ -871,6 +871,80 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalFarmacias = function(req
 
         }
     });
+};
+
+// Consultar productos Auditados
+E008Controller.prototype.consultarProductosAuditados = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined || args.documento_temporal.usuario_id === undefined) {
+        res.send(G.utils.r(req.url, 'El documento_temporal_id, usuario_id  NO estan definidos', 404, {}));
+        return;
+    }
+
+    if (args.documento_temporal.documento_temporal_id === '' || args.documento_temporal.usuario_id === '') {
+        res.send(G.utils.r(req.url, 'El documento_temporal_id, usuario_id o bodegas_doc_id estan vacíos', 404, {}));
+        return;
+    }
+
+    var documento_temporal_id = args.documento_temporal.documento_temporal_id;
+    var usuario_id = args.documento_temporal.usuario_id;
+    var lista_productos = [];
+
+    that.m_movientos_bodegas.consultar_detalle_movimiento_bodega_temporal(documento_temporal_id, usuario_id, function(err, detalle_documento_temporal) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error listando los productos auditados', 500, {movimientos_bodegas: {}}));
+            return;
+        } else {
+            detalle_documento_temporal.forEach(function(producto) {
+                if (producto.auditado === '1')
+                    lista_productos.push(producto);
+            });
+            res.send(G.utils.r(req.url, 'Listado productos auditados', 200, {movimientos_bodegas: {lista_productos_auditados: lista_productos}}));
+        }
+    });
+
+};
+
+// Auditar Producto Documento Temporal
+E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.documento_temporal === undefined || args.documento_temporal.item_id === undefined || args.documento_temporal.auditado === undefined) {
+        res.send(G.utils.r(req.url, 'El item_id o auditado No Estan Definidos', 404, {}));
+        return;
+    }
+    if (args.documento_temporal.item_id === '' || args.documento_temporal.item_id === "0" || args.documento_temporal.auditado === '') {
+        res.send(G.utils.r(req.url, 'El item_id o auditado  está vacio', 404, {}));
+        return;
+    }
+
+
+    var item_id = args.documento_temporal.item_id;
+    var auditado = args.documento_temporal.auditado;
+
+    that.m_movientos_bodegas.auditar_producto_movimiento_bodega_temporal(item_id, auditado, function(err, rows, result) {
+
+        if (err || result.rowCount === 0) {
+            res.send(G.utils.r(req.url, 'Error Auditando el Producto', 500, {movimientos_bodegas: {}}));
+            return;
+        } else {
+
+            var msj = " Producto Auditado Correctamente";
+            if (!auditado)
+                msj = " Producto ya NO esta auditado";
+
+            res.send(G.utils.r(req.url, msj, 200, {movimientos_bodegas: {}}));
+        }
+    });
+
 };
 
 E008Controller.$inject = ["m_movientos_bodegas", "m_e008", "e_e008", "m_pedidos_clientes", "m_pedidos_farmacias", "e_pedidos_clientes", "e_pedidos_farmacias", "m_terceros"];

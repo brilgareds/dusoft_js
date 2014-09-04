@@ -4,29 +4,45 @@ define(["angular", "js/controllers",'models/Cliente',
 
     var fo = controllers.controller('EditarProductoController', [
         '$scope', '$rootScope', 'Request', 
-        '$modal', 'Empresa','Cliente',
+        '$modalInstance', 'Empresa','Cliente',
          'PedidoAuditoria', 'API',"socket", "AlertService","producto",
 
         function(   $scope, $rootScope, Request,
-                    $modal, Empresa, Cliente,
+                    $modalInstance, Empresa, Cliente,
                     PedidoAuditoria, API, socket, AlertService,producto) {
             
-           $producto = producto;
-           
+           $scope.producto = producto;
+           console.log("producto ",producto)
+
+
+           $modalInstance.opened.then(function() {
+                //Pedidos/consultarDisponibilidad
+                /*obj.put("operario_id", "19");
+                obj.put("empresa_id", "03");
+                obj.put("identificador", (pedido.getTipoPedido() == 1)?"CL":"FM");
+                obj.put("numero_pedido", pedido.getNumero());
+                obj.put("limite", 20);
+                obj.put("codigo_producto", producto.getCodigo());*/
+               Request.realizarRequest(API.PEDIDOS.DISPONIBILIDAD, "POST", {}, function(data) {
+
+                    /*if(data.status === 200){
+                        AlertService.mostrarMensaje("success", data.msj);
+                    } else {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }*/
+                });
+           });
+                       
 
            $scope.lotes_producto = {
                 data: 'DocumentoTemporal.getPedido().getProductos()',
                 enableColumnResize: true,
                 enableRowSelection:false,
                 columnDefs: [                
-                    {field: 'codigo_producto', displayName: 'Código Producto'},
-                    {field: 'descripcion', displayName: 'Nombre Producto'},
-                    {field: 'existencia_lotes', displayName: 'Existencia Lotes'},
-                    {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada'},
-                    {field: 'cantidad_separada', displayName: "Cantidad Separada"},
-                    {field: 'lote.codigo_lote', displayName: 'Lote'},
-                    {field: 'lote.fecha_vencimiento', displayName: "Fecha Vencimiento"},
-                    {field: 'observacion', displayName: "Observación"},
+                    {field: 'codigo_producto', displayName: 'Código Lote'},
+                    {field: 'descripcion', displayName: 'Fecha Vencimiento'},
+                    {field: 'existencia_lotes', displayName: 'Existencia'},
+                    {field: 'cantidad_solicitada', displayName: 'Disponible'},
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
                         cellTemplate: ' <div class="row">\n\
                                             <button class="btn btn-default btn-xs" ng-click="onEditarRow(row)">\n\

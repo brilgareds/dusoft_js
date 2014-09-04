@@ -50,6 +50,11 @@ module.exports = function(app, di_container) {
     app.post('/api/movBodegas/E008/consultarDocumentoTemporalFarmacias', function(req, res) {
         c_e008.consultarDocumentoTemporalFarmacias(req, res);
     });
+    
+    // Consultar Detalle Documento Temporal
+    app.post('/api/movBodegas/E008/consultarDetalleDocumentoTemporal', function(req, res) {
+        // ========= Falta ===========
+    });
 
     // Eliminar Producto Documento Temporal CLIENTES / FARMACIAS
     app.post('/api/movBodegas/E008/eliminarProductoDocumentoTemporal', function(req, res) {
@@ -72,18 +77,45 @@ module.exports = function(app, di_container) {
     });
 
     // Actualizar bodegas_doc_id en documento temporal Clientes.
-    app.post('/api/movBodegas/actualizarTipoDocumentoTemporalClientes', function(req, res) {
+    app.post('/api/movBodegas/E008/actualizarTipoDocumentoTemporalClientes', function(req, res) {
         c_e008.actualizarTipoDocumentoTemporalClientes(req, res);
     });
-    
+
     // Actualizar bodegas_doc_id en documento temporal Clientes.
-    app.post('/api/movBodegas/actualizarTipoDocumentoTemporalFarmacias', function(req, res) {
+    app.post('/api/movBodegas/E008/actualizarTipoDocumentoTemporalFarmacias', function(req, res) {
         c_e008.actualizarTipoDocumentoTemporalFarmacias(req, res);
     });
-    
+
     // ======== FIN Rutas para Documentos Temporales E008 =============    
 
+    // ======== Auditoria de Documento de Despacho ====================
 
+    // Modificar detalle Documento Temporal
+    app.post('/api/movBodegas/E008/modificarDetalleDocumentoTemporal', function(req, res) {
+
+    });
+    
+    // Generar Rotulo 
+    app.post('/api/movBodegas/E008/generarRotulosCaja', function(req, res) {
+
+    });
+    
+    // Imprimir Rotulo 
+    app.post('/api/movBodegas/E008/imprimirRotulosCaja', function(req, res) {
+
+    });   
+
+    // Auditar Producto Documento Temporal
+    app.post('/api/movBodegas/E008/auditarProductoDocumentoTemporal', function(req, res) {
+        c_e008.auditarProductoDocumentoTemporal(req, res);
+    });
+
+    // Consultar productos Auditados
+    app.post('/api/movBodegas/E008/consultarProductosAuditados', function(req, res) {
+        c_e008.consultarProductosAuditados(req, res);
+    });
+
+    // ======== FIN Auditoria de Documento de Despacho ====================
 
     // ======== Events E008 ========
     io.sockets.on('connection', function(socket) {

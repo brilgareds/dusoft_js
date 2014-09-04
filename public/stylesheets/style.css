@@ -216,6 +216,9 @@ input.readonlyinput[readonly]{
 	text-align: center;
 }
 
+.modal-view{
+	overflow-y:hidden;
+}
  nav.navbar-fixed-top{
 	background-color: #428bca;
 	border-color: #428bca;

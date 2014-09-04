@@ -74,6 +74,17 @@ MovimientosBodegasModel.prototype.eliminar_producto_movimiento_bodega_temporal =
 
 };
 
+// Auditar Producto del Documento Temporal 0 = false ; 1 = true
+MovimientosBodegasModel.prototype.auditar_producto_movimiento_bodega_temporal = function(item_id, auditado, callback) {
+
+    var sql = " UPDATE  inv_bodegas_movimiento_tmp_d SET auditado = $2 WHERE item_id = $1  ; ";
+
+    G.db.query(sql, [item_id, auditado ? 1 : 0 ], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+
+};
+
 // Consultar detalle movimiento temporal 
 MovimientosBodegasModel.prototype.consultar_detalle_movimiento_bodega_temporal = function(doc_tmp_id, usuario_id, callback) {
 
@@ -99,7 +110,8 @@ MovimientosBodegasModel.prototype.consultar_detalle_movimiento_bodega_temporal =
                 b.item_id_compras,\
                 b.prefijo_temp,\
                 b.lote_devuelto,\
-                b.cantidad_sistema\
+                b.cantidad_sistema,\
+                b.auditado\
                 from inv_bodegas_movimiento_tmp a \
                 inner join inv_bodegas_movimiento_tmp_d b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
                 where a.doc_tmp_id = $1 and a.usuario_id = $2 ";

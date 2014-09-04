@@ -29,7 +29,7 @@ vows.describe('Test actualizarTipoDocumentoTemporalClientes').addBatch({
                     json: obj
                 }, this.callback);
             },
-            'log': fn.log()
+            'log': fn.log()            
         }
     }
 }).export(module);

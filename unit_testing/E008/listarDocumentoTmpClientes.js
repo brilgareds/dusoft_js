@@ -5,7 +5,7 @@ var client = require('request');
 var config = require('../lib/Settings').create();
 var fn = require('../lib/functions');
 var url_login = "/login";
-var url = "/api/movBodegas/E008/consultarDocumentosTemporalesClientes";
+var url = "/api/movBodegas/E008/consultarDocumentoTemporalClientes";
 
 
 var that = this;
@@ -19,9 +19,7 @@ vows.describe('Test actualizarTipoDocumentoTemporalClientes').addBatch({
                 obj.session = body.obj.sesion;
                 obj.data = {
                     documento_temporal: {
-                        termino_busqueda: '',
-                        pagina_actual: 1,
-                        filtro : { finalizados : true  }
+                        numero_pedido : 33895
                     }
                 };
 
@@ -29,7 +27,7 @@ vows.describe('Test actualizarTipoDocumentoTemporalClientes').addBatch({
                     json: obj
                 }, this.callback);
             },
-            'log': fn.log()
+            'log': fn.log()            
         }
     }
 }).export(module);

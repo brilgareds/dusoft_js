@@ -1,17 +1,17 @@
 define(["angular", "js/controllers",'models/Cliente',
-        'models/Pedido', 'models/Separador', 'models/DocumentoTemporal',
+        'models/Separador', 'models/DocumentoTemporal',
         'models/ProductoPedido', 'models/LoteProductoPedido'], function(angular, controllers) {
 
     var fo = controllers.controller('DetallepedidoSeparadoClienteController', [
         '$scope', '$rootScope', 'Request', 
         '$modal', 'Empresa','Cliente',
-         'Pedido', 'API',"socket", "$timeout", 
+         'API',"socket", "$timeout", 
          "AlertService","Usuario", "localStorageService",
          "ProductoPedido", "LoteProductoPedido", "DocumentoTemporal",
 
         function(   $scope, $rootScope, Request,
                     $modal, Empresa, Cliente,
-                    Pedido, API, socket,
+                    API, socket,
                     $timeout, AlertService, Usuario,
                     localStorageService, ProductoPedido, LoteProductoPedido, DocumentoTemporal) {
             
@@ -138,7 +138,7 @@ define(["angular", "js/controllers",'models/Cliente',
                     {field: 'observacion', displayName: "Observación"},
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
                         cellTemplate: ' <div class="row">\n\
-                                            <button class="btn btn-default btn-xs" ng-click="onRowClick(row)">\n\
+                                            <button class="btn btn-default btn-xs" ng-click="onEditarRow(row)">\n\
                                                 <span class="glyphicon glyphicon-zoom-in">Editar</span>\n\
                                             </button>\n\
                                             <button class="btn btn-default btn-xs" ng-click="onRowClick(row)">\n\
@@ -152,6 +152,7 @@ define(["angular", "js/controllers",'models/Cliente',
             
            //eventos de widgets
            $scope.onKeyDetalleDocumentoTemporalPress = function(ev, termino_busqueda) {
+                if(!$scope.esDocumentoBodegaValido($scope.DocumentoTemporal.bodegas_doc_id)) return;
                 if (ev.which == 13) {
                     $scope.buscarDetalleDocumentoTemporal(termino_busqueda);
                 }

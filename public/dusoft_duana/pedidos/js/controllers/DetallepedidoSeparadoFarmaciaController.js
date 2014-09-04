@@ -1,17 +1,17 @@
 define(["angular", "js/controllers",'models/Farmacia',
-        'models/Pedido', 'models/Separador', 'models/DocumentoTemporal',
+        'models/Separador', 'models/DocumentoTemporal',
         'models/ProductoPedido', 'models/LoteProductoPedido'], function(angular, controllers) {
 
     var fo = controllers.controller('DetallepedidoSeparadoFarmaciaController', [
         '$scope', '$rootScope', 'Request', 
         '$modal', 'Empresa','Farmacia',
-         'Pedido', 'API',"socket", "$timeout", 
+         'API',"socket", "$timeout", 
          "AlertService","Usuario", "localStorageService",
          "ProductoPedido", "LoteProductoPedido", "DocumentoTemporal",
 
         function(   $scope, $rootScope, Request,
                     $modal, Empresa, Cliente,
-                    Pedido, API, socket,
+                    API, socket,
                     $timeout, AlertService, Usuario,
                     localStorageService, ProductoPedido, LoteProductoPedido, DocumentoTemporal) {
                         

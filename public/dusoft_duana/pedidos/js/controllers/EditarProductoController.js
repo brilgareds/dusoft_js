@@ -1,15 +1,15 @@
 define(["angular", "js/controllers",'models/Cliente',
-        'models/Pedido', 'models/Separador', 'models/DocumentoTemporal',
+        'models/PedidoAuditoria', 'models/Separador', 'models/DocumentoTemporal',
         'models/ProductoPedido', 'models/LoteProductoPedido'], function(angular, controllers) {
 
     var fo = controllers.controller('EditarProductoController', [
         '$scope', '$rootScope', 'Request', 
         '$modal', 'Empresa','Cliente',
-         'Pedido', 'API',"socket", "AlertService","producto",
+         'PedidoAuditoria', 'API',"socket", "AlertService","producto",
 
         function(   $scope, $rootScope, Request,
                     $modal, Empresa, Cliente,
-                    Pedido, API, socket, AlertService,producto) {
+                    PedidoAuditoria, API, socket, AlertService,producto) {
             
            $producto = producto;
            

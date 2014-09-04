@@ -1,12 +1,12 @@
 
-define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models/Cliente', 'models/Pedido'], function(angular, controllers) {
+define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models/Cliente', 'models/PedidoAuditoria'], function(angular, controllers) {
 
     var fo = controllers.controller('PedidosClientesController', [
         '$scope', '$rootScope', 'Request',
         '$modal', 'Empresa', 'Cliente',
-        'Pedido', 'API', "socket", "$timeout",
+        'PedidoAuditoria', 'API', "socket", "$timeout",
         "AlertService", "Usuario", "localStorageService",
-        function($scope, $rootScope, Request, $modal, Empresa, Cliente, Pedido, API, socket, $timeout, AlertService, Usuario, localStorageService) {
+        function($scope, $rootScope, Request, $modal, Empresa, Cliente, PedidoAuditoria, API, socket, $timeout, AlertService, Usuario, localStorageService) {
             console.log("cliente controller ======")
             $scope.Empresa = Empresa;
             Empresa.setNombre("Duana");
@@ -91,7 +91,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
             };
 
             $scope.crearPedido = function(obj) {
-                var pedido = Pedido.get();
+                var pedido = PedidoAuditoria.get();
                 pedido.setDatos(obj);
 
                 var cliente = Cliente.get(

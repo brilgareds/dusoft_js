@@ -5,7 +5,8 @@
    "js/services",  "js/directive", "nggrid",
   "controllers/PedidosController","controllers/PedidosClientesController", "controllers/PedidosFarmaciasController",  "uiselect2", 
   "controllers/AuditoriaPedidosController",  "controllers/DetallepedidoSeparadoClienteController", "controllers/CotizacionesController",
-  "controllers/DetallepedidoSeparadoFarmaciaController", "loader",  "models/Empresa",
+  "controllers/DetallepedidoSeparadoFarmaciaController", "controllers/CreaCotizacionesController","controllers/SeleccionClienteController",
+  "controllers/SeleccionProductoController","loader",  "models/Empresa",
   "includes/menu/menucontroller", "config", "includes/alert/Alert",
   "includes/header/HeaderController", 'storage', "httpinterceptor",
   "includes/classes/Usuario", "includes/http/Request"
@@ -57,6 +58,12 @@
                 url: "/CotizacionCliente",
                 text:"Cotización Clientes",
                 templateUrl: "views/cotizacioncliente.html"
+              })
+            .state('PedidosFarmacias', {
+                //parent: "PedidosClientes",
+                url: "/PedidosFarmacias",
+                text:"Pedidos Farmacias",
+                templateUrl: "views/pedidosfarmacias.html"
               })
 
     }).run(function($rootScope,Usuario,localStorageService){

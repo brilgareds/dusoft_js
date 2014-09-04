@@ -13,16 +13,16 @@
             'CONSULTAR_DOCUMENTO_TEMPORAL_CLIENTES': BASE_URL+'/movBodegas/E008/consultarDocumentoTemporalClientes',
             'CONSULTAR_DOCUMENTO_TEMPORAL_FARMACIAS': BASE_URL+'/movBodegas/E008/consultarDocumentoTemporalFarmacias',
             'CONSULTAR_DOCUMENTOS_USUARIOS': BASE_URL+'/movBodegas/consultarDocumentosUsuario',
-            'ACTUALIZAR_TIPO_DOCUMENTO_TEMPORAL': BASE_URL+'/movBodegas/actualizarTipoDocumentoTemporal',
-            'ACTUALIZAR_TIPO_DOCUMENTO_TEMPORAL_CLIENTES': BASE_URL+"/movBodegas/actualizarTipoDocumentoTemporalClientes",
-            'ACTUALIZAR_TIPO_DOCUMENTO_TEMPORAL_FARMACIAS': BASE_URL+"/movBodegas/actualizarTipoDocumentoTemporalFarmacias"
+            'ACTUALIZAR_TIPO_DOCUMENTO_TEMPORAL_CLIENTES': BASE_URL+"/movBodegas/E008/actualizarTipoDocumentoTemporalClientes",
+            'ACTUALIZAR_TIPO_DOCUMENTO_TEMPORAL_FARMACIAS': BASE_URL+"/movBodegas/E008/actualizarTipoDocumentoTemporalFarmacias"
 	    },
 	    'PEDIDOS' : {
 	    	'LISTAR_PEDIDOS': BASE_URL+'/PedidosClientes/listarPedidos',	
 	    	'LISTAR_PEDIDOS_FARMACIAS': BASE_URL+'/PedidosFarmacias/listarPedidos',	
 	    	'ASIGNAR_RESPONSABLE_CLIENTE':BASE_URL+'/PedidosClientes/asignarResponsable',
 	    	'ASIGNAR_RESPONSABLE_FARMACIA':BASE_URL+'/PedidosFarmacias/asignarResponsable',
-	    	'LISTAR_EMPRESAS':BASE_URL+'/PedidosFarmacias/obtenerEmpresas'
+	    	'LISTAR_EMPRESAS':BASE_URL+'/PedidosFarmacias/obtenerEmpresas',
+	    	'DISPONIBILIDAD':BASE_URL+'/Pedidos/consultarDisponibilidad'
 	    },
 	    'TERCEROS':{
 	    	'LISTAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/listar",

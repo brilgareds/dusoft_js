@@ -80,6 +80,30 @@ background-color: blue;
 padding-left: 1cm;
 }*/
 
+.modal-view .row{
+    margin-bottom: 10px;
+}
+
 .modal .modal-dialog {
    width: 800px;
+}
+
+.modal-content{
+    padding: 5px;
+}
+
+.lbl_editar_producto{
+    margin-bottom: 3px;
+    font-weight: bold;
+    margin-right:5px;
+    font-size: 13px;
+
+}
+
+.panel-action{
+    padding: 5px;
+}
+
+.tab-content{
+    padding:2px;
 }

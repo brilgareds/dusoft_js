@@ -1,83 +1,139 @@
 
 <div style ="padding:5px" ng-controller="CreaCotizacionesController">    
-    <div class="row"> 
-        <div class="col-sm-12 col-md-12">
+    <div class="row marginBottom5"> <!--Div Row Superior-->
+        
+        <div class="col-sm-12 col-md-12 marginBottom5">
 
-                <div class="panel panel-info marginBottom5">
+                <div class="panel panel-info marginBottom0 paddingBottomZero"> <!--Div Panel Principal Superior-->
                     
                     <div class="panel-heading">
                         <h4 class="h4MarginTopBottom">Información General</h4>
                     </div>
-                    <div class="panel-body">
+                    <div class="panel-body marginBottom0 paddingBottomZero marginRightZero"> <!--Div Panel Body-->
                         
-                        <div class="row col-sm-6 col-md-12"> <!--Div Panel Superior-->
-                            <div class="pull-right"><h3><font color="blue">Pedido N°: 123456</font></h3></div>
-                        </div> <!--/Div Panel Superior-->
-                        
-                        <div class="row col-lg-9 col-md-9 col-sm-5"> <!-- Div Panel Izquierdo -->
-                            <div class="row"> <!--Div Fila 1-->
-                                
-                                <div class="col-md-4"> <!--Contenedor Izquierdo-->
-                                    <h4 class="h4MarginTopBottom">Cliente:</h4></br>
-                                    Arnulfo Trujillo
-                                </div> <!--/Contenedor Izq-->
-                                
-                                <div class="col-md-4"> <!--Contenedor Centro-->
-                                    <h4 class="h4MarginTopBottom">Dirección:</h4></br>
-                                    Calle 23A #12-13, Alambrados
-                                </div> <!--/Contenedor Centro-->
-                                
-                                <div class="col-md-4"> <!--Contenedor Derecho-->
-                                    <h4 class="h4MarginTopBottom">Teléfono:</h4></br>
-                                    320 12 00
-                                </div> <!--/Contenedor Der-->
-                                
-                            </div>  <!--/Div Fila 1-->
-                            <div class="row"> <!--Div Fila 2-->
+                        <div class="row col-sm-12 col-md-12 marginBottom0 paddingBottomZero paddingRightZero"> <!--Div Panel Superior--> <!--Div Contenedor Principal-->
+                            
+                            <div class="col-sm-12 col-md-6 paddingRightZero paddingLeftZero marginBottom0 paddingBottomZero"> <!--Div Contenedor Izquierdo-->
 
-                                <div class="col-md-4"> <!--Contenedor Izquierdo-->
-                                        </br></br>
-                                        <h4 class="h4MarginTopBottom">Vendedor: </h4>
-
-                                        <select ui-select2="seleccioncliente"  class="form-control selectgeneral pull-left" ng-model="$parent.seleccion"  placeholder="Seleccionar Documento" ng-change="valorSeleccionado()">
-                                            <option></option>
-                                            <option ng-repeat="documento_usuario in  documentos_usuarios"  ng-value="documento_usuario.bodegas_doc_id" >{{documento_usuario.prefijo}}-{{documento_usuario.descripcion}}</option>
-                                        </select>
-                                </div> <!--/Contenedor Izquierdo-->
+                                <div class="panel panel-info marginBottom0 col-sm-12 col-md-12 paddingBottomtZero"> <!--Div Izquierdo--> <!--Div Encabezado-->
+                                    <h4><b><i>De</i></b></h4>
+                                </div> <!--/Div Izquierdo--> <!--/Div Encabezado-->
                                 
-                                <div class="col-md-4"> <!--Contenedor Derecho-->
-                                    </br></br>
-                                    <h4 class="h4MarginTopBottom">Ubicación:</h4></br>
-                                    320 12 00
-                                </div> <!--/Contenedor Derecho-->
-                                
-                            </div> <!--/Div Fila 2-->
+                                <div class="panel panel-info marginTop0 col-sm-12 col-md-12 paddingTopZero marginBottom0 paddingBottomZero" style ="height:230px;"> <!--Div Cuerpo-->
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            </br>
+                                            <h4 class="h4MarginTopBottom">Empresa: </h4>
 
-                        </div> <!-- / Div Panel Izquierdo -->
-                        
-                        <div class="col-lg-3 col-md-3 col-sm-5"> <!-- Div Panel Derecho -->
-                            <!-- Contenido del cuadro Observación-->
-                            <!--<label>Observación:</label>-->
-                            <!--<textarea rows="4" cols="50">-->
-                            <h4 class="h4MarginTopBottom">Observación:</h4></br>
-                            <textarea class="col-lg-12 col-md-12 col-sm-5" rows="6" name="">
-                                Texto de la Observación
-                            </textarea>
-                        </div> <!-- / Div Panel Izquierdo -->
-                        
-                    </div>  
-<!--                  <div class="panel-body" >
-                    <div class="auditarGrid" ng-grid="detalle_pedido_separado_cliente"></div>
-                  </div>-->
+                                            <select ui-select2="seleccioncliente"  class="form-control selectgeneral pull-left" ng-model="$parent.seleccion"  placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
+                                                <option></option>
+                                                <option ng-repeat="documento_usuario in  documentos_usuarios"  ng-value="documento_usuario.bodegas_doc_id" >{{documento_usuario.prefijo}}-{{documento_usuario.descripcion}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            </br>
+                                            <h4 class="h4MarginTopBottom">Centro Utilidad: </h4>
+
+                                            <select ui-select2="seleccioncliente"  class="form-control selectgeneral pull-left" ng-model="$parent.seleccion"  placeholder="Seleccionar Centro" ng-change="valorSeleccionado()">
+                                                <option></option>
+                                                <option ng-repeat="documento_usuario in  documentos_usuarios"  ng-value="documento_usuario.bodegas_doc_id" >{{documento_usuario.prefijo}}-{{documento_usuario.descripcion}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            </br>
+                                            <h4 class="h4MarginTopBottom">Bodega: </h4>
+
+                                            <select ui-select2="seleccioncliente"  class="form-control selectgeneral pull-left" ng-model="$parent.seleccion"  placeholder="Seleccionar Bodega" ng-change="valorSeleccionado()">
+                                                <option></option>
+                                                <option ng-repeat="documento_usuario in  documentos_usuarios"  ng-value="documento_usuario.bodegas_doc_id" >{{documento_usuario.prefijo}}-{{documento_usuario.descripcion}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                </div> <!--/Div Cuerpo-->
+                            
+                            </div> <!--/Div Contenedor Izquierdo-->
+                            
+                            <div class="col-sm-12 col-md-6 paddingLeftZero paddingRightZero marginBottom0 paddingBottomZero"> <!--/Div Contenedor Derecho-->
+                                
+                                <div class="panel panel-info marginBottom0 col-sm-12 col-md-12 paddingBottomZero"> <!--Div Derecho--> <!--Div Encabezado-->
+
+                                    <div class="pull-left col-sm-12 col-md-6"> <!--Div Izquierdo-->
+                                        <h4><b><i>Para</i></b></h4>
+                                    </div> <!--/Div Izquierdo-->
+
+                                    <div class="pull-right col-sm-12 col-md-6"> <!--Div Derecho-->
+                                        <h3 class="h4MarginTopBottom"><font color="blue">Pedido N°: 123456</font></h3>
+                                    </div> <!--/Div Derecho-->
+
+                                </div> <!--/Div Derecho--> <!--/Div Encabezado-->
+                                
+                                <div class="panel panel-info marginTop0 col-sm-12 col-md-12 paddingTopZero marginBottom0 paddingBottomZero" style ="height:230px;"> <!--Div Cuerpo-->
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            </br>
+                                            <h4 class="h4MarginTopBottom">Empresa: </h4>
+
+                                            <select ui-select2="seleccioncliente"  class="form-control selectgeneral pull-left" ng-model="$parent.seleccion"  placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
+                                                <option></option>
+                                                <option ng-repeat="documento_usuario in  documentos_usuarios"  ng-value="documento_usuario.bodegas_doc_id" >{{documento_usuario.prefijo}}-{{documento_usuario.descripcion}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            </br>
+                                            <h4 class="h4MarginTopBottom">Centro Utilidad: </h4>
+
+                                            <select ui-select2="seleccioncliente"  class="form-control selectgeneral pull-left" ng-model="$parent.seleccion"  placeholder="Seleccionar Centro" ng-change="valorSeleccionado()">
+                                                <option></option>
+                                                <option ng-repeat="documento_usuario in  documentos_usuarios"  ng-value="documento_usuario.bodegas_doc_id" >{{documento_usuario.prefijo}}-{{documento_usuario.descripcion}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            </br>
+                                            <h4 class="h4MarginTopBottom">Bodega: </h4>
+
+                                            <select ui-select2="seleccioncliente"  class="form-control selectgeneral pull-left" ng-model="$parent.seleccion"  placeholder="Seleccionar Bodega" ng-change="valorSeleccionado()">
+                                                <option></option>
+                                                <option ng-repeat="documento_usuario in  documentos_usuarios"  ng-value="documento_usuario.bodegas_doc_id" >{{documento_usuario.prefijo}}-{{documento_usuario.descripcion}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                </div> <!--/Div Cuerpo-->
+                                
+                            </div> <!--/Div Contenedor Derecho-->
+                            
+                            <div class="panel panel-info marginTop0 paddingTopZero paddingBottomZero marginBottom0 col-sm-12 col-md-12 col-lg-12" style ="height:135px;"> <!--Div Contenedor Inferior-->
+                                </br>
+                                <h4 class="h4MarginTopBottom">Observación:</h4></br>
+                                <textarea class="col-lg-12 col-md-12 col-sm-12" rows="4" name="">
+                                    Texto de la Observación
+                                </textarea>
+
+                            </div> <!--/Div Contenedor Inferior-->
+
+                        </div> <!--/Div Panel Superior--> <!--/Div Contenedor Principal-->
+
+                    </div>  <!--/Div Panel Body-->
                     
-                </div>
+                </div> <!--/Div Panel Principal Superior-->
                 
-                <div slide-content open-callback="mostrarseleccioncliente" close-callback="cerrarseleccioncliente" class="slide" >
-                    <div ng-include src="slideurl"  ng-controller="SeleccionClienteController" ></div>
-                </div>
-
         </div>
-    </div> <!-- / end payment details section -->
+        
+    </div> <!--/Div Row Superior-->
       
     <!-- End Código desplazado -->
     <div class="row">
@@ -106,9 +162,9 @@
     </div> <!-- / end class row --> 
     
     <div class="col-sm-12 btn-toolbar">
-        <button type="submit" class="btn btn-accion btn-success pull-right">Generar Cotización</button>
-        <button type="submit" class="btn btn-accion btn-danger pull-right">Eliminar Cotización</button>
-        <button type="submit" class="btn btn-accion btn-warning pull-right">Cancelar Cotización</button>
+        <button type="submit" class="btn btn-accion btn-success pull-right">Generar Pedido</button>
+        <!--<button type="submit" class="btn btn-accion btn-danger pull-right">Eliminar Cotización</button>-->
+        <button type="submit" class="btn btn-accion btn-warning pull-right">Cancelar Pedido</button>
     </div>
 
     <br/><br/><br/><br/><br/>

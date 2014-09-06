@@ -25,6 +25,14 @@ padding: 0%;
     padding-right: 0%;
 }
 
+.marginLeftZero {
+    margin-left: 0%;
+}
+
+.marginRightZero {
+    margin-right: 0%;
+}
+
 .paddingToptZero {
     padding-top: 0%;
 }
@@ -42,8 +50,16 @@ margin-bottom: 0px;
     margin-bottom: 5px;
 }
 
+.marginBottom0{
+    margin-bottom: 0px;
+}
+
 .marginTop5{
     margin-top: 5px;
+}
+
+.marginTop0{
+    margin-top: 0px;
 }
 
 .auditarGrid {

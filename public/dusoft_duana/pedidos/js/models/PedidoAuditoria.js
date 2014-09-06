@@ -11,6 +11,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.cliente;
             this.farmacia;
             this.productos = [];
+            this.tipo = 1;
         }
 
          PedidoAuditoria.prototype = Object.create(Pedido.getClass().prototype)
@@ -19,6 +20,10 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         
         PedidoAuditoria.prototype.agregarProducto = function(productos) {
             this.productos.push(productos);
+        };
+
+        PedidoAuditoria.prototype.setTipo = function(tipo) {
+            this.tipo = tipo;
         };
         
         PedidoAuditoria.prototype.getProductos = function() {

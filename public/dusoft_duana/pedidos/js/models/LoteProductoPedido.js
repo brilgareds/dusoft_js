@@ -9,6 +9,7 @@ define(["angular", "js/models", "includes/classes/Lote"], function(angular, mode
         //declare usermodel class
         function LoteProductoPedido(codigo_lote, fecha_vencimiento) {
             Lote.getClass().call(this,codigo_lote, fecha_vencimiento);
+            this.existencia_actual = 0;
         }
 
         LoteProductoPedido.prototype = Object.create(Lote.getClass().prototype);

@@ -44,6 +44,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
 
                 var pedido = PedidoAuditoria.get(obj);
                 pedido.setDatos(obj);
+                pedido.setTipo(tipo);
                 
                 if(tipo == 1){
                     var cliente = Cliente.get(
@@ -203,7 +204,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             };
 
 
-            $scope.onEditarRow = function(row){
+            $scope.onEditarRow = function(pedido, row){
                 console.log("ediar producto ", row.entity);
                 var producto =  row.entity;
                 $scope.opts = {
@@ -216,6 +217,9 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                     templateUrl: 'views/editarproducto.html',
                     controller: "EditarProductoController",
                     resolve :{
+                          pedido : function(){
+                            return pedido;
+                          },
                           producto : function(){
                               return producto;
                           }

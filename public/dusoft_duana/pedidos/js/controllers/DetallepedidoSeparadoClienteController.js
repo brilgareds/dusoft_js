@@ -138,7 +138,7 @@ define(["angular", "js/controllers",'models/Cliente',
                     {field: 'observacion', displayName: "Observación"},
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
                         cellTemplate: ' <div class="row">\n\
-                                            <button class="btn btn-default btn-xs" ng-click="onEditarRow(row)">\n\
+                                            <button class="btn btn-default btn-xs" ng-click="onEditarRow(DocumentoTemporal.getPedido(), row)">\n\
                                                 <span class="glyphicon glyphicon-zoom-in">Editar</span>\n\
                                             </button>\n\
                                             <button class="btn btn-default btn-xs" ng-click="onRowClick(row)">\n\

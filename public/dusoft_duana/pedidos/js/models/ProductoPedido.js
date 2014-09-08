@@ -9,6 +9,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.cantidad_solicitada = cantidad_solicitada;
             this.cantidad_separada = cantidad_ingresada;
             this.observacion = observacion_cambio;
+            this.disponible = 0;
             
             //propiedades pendientes
             this.existencia_lotes = "";

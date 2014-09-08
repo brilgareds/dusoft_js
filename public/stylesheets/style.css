@@ -261,7 +261,7 @@ nav.navbar-default .navbar-nav>li>a:hover{
 .navbar-footer-content { padding:15px 15px 15px 15px; }
 
 
-.defaultGrid  .ngRow:hover{
+.ngGrid  .ngRow:hover{
 	background-color:#eee;
 }
 

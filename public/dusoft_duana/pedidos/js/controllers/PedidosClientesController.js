@@ -220,6 +220,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
                         return true;
                     }
                 }
+
                 row.selected = false;
                 return false;
             };

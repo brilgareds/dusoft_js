@@ -39,6 +39,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
 
 
             $scope.crearDocumentoTemporal = function(obj, tipo) {
+                //console.log("datos obj ",obj)
                 var documento_temporal = DocumentoTemporal.get();
                 documento_temporal.setDatos(obj);
 
@@ -120,7 +121,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                 Request.realizarRequest(url, "POST", obj, function(data) {
                      
                     if(data.status == 200) { 
-                        console.log("detalle ", data)
+                        //console.log("detalle ", data)
                         if(data.obj.documento_temporal != undefined) {
                             callback(data, paginando);
                         }
@@ -149,6 +150,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             $scope.crearProductoPedidoDocumentoTemporal = function(obj) {
 
                 var lote_pedido = LoteProductoPedido.get(obj.lote, obj.fecha_vencimiento);
+                lote_pedido.item_id = obj.item_id;
         
                 var producto_pedido_separado = ProductoPedido.get(  obj.codigo_producto, obj.descripcion_producto, "",
                                                                     "", obj.cantidad_solicitada, obj.cantidad_ingresada,
@@ -204,7 +206,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             };
 
 
-            $scope.onEditarRow = function(pedido, row){
+            $scope.onEditarRow = function(documento, row){
                 console.log("ediar producto ", row.entity);
                 var producto =  row.entity;
                 $scope.opts = {
@@ -217,8 +219,8 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                     templateUrl: 'views/editarproducto.html',
                     controller: "EditarProductoController",
                     resolve :{
-                          pedido : function(){
-                            return pedido;
+                          documento : function(){
+                            return documento;
                           },
                           producto : function(){
                               return producto;

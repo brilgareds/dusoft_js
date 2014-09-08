@@ -1,5 +1,5 @@
 define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
-        'models/Cliente', 'models/PedidoAuditoria', 'models/Separador',
+        'models/Cliente', 'models/PedidoAuditoria', 'models/Separador', 'models/Auditor',
         'models/DocumentoTemporal', "controllers/AuditoriaPedidosClientesController","controllers/AuditoriaPedidosFarmaciasController",
         "controllers/EditarProductoController"], function(angular, controllers) {
 
@@ -8,16 +8,17 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
         'Empresa', 'Cliente', 'Farmacia', 'PedidoAuditoria',
         'Separador', 'DocumentoTemporal', 'API',
         "socket", "AlertService", "ProductoPedido", "LoteProductoPedido",
-        "$modal",
+        "$modal", 'Auditor',
         function($scope, $rootScope, Request, 
                  Empresa, Cliente, Farmacia, 
                  PedidoAuditoria, Separador, DocumentoTemporal,
                  API, socket, AlertService,
-                 ProductoPedido, LoteProductoPedido, $modal) {
+                 ProductoPedido, LoteProductoPedido, $modal, Auditor) {
 
             $scope.Empresa = Empresa;
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
+            $scope.productosAuditados = [];
 
             $scope.buscarPedidosSeparados = function(obj, tipo, paginando, callback) {
                 var url = API.DOCUMENTOS_TEMPORALES.LISTAR_DOCUMENTOS_TEMPORALES_CLIENTES;
@@ -71,10 +72,14 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                 
                 documento_temporal.setPedido(pedido);
                 
-                var separador = Separador.get(obj.responsable_pedido, obj.responsable_id, 1);
+                var separador = Separador.get();
+                separador.setDatos(obj.responsables);
+
+                var auditor = Auditor.get();
+                auditor.setDatos(obj.responsables);
                 
                 documento_temporal.setSeparador(separador);
-                
+                documento_temporal.setAuditor(auditor);
                 return documento_temporal;
             };
 
@@ -229,6 +234,23 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                 };
 
                 var modalInstance = $modal.open($scope.opts);
+            };
+
+
+             $scope.traerProductosAuditatos = function(obj){
+
+                Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.CONSULTAR_PRODUCTOS_AUDITADOS, "POST", obj, function(data) {
+                    
+                    if(data.status == 200){
+                        console.log(data, "productos auditados")
+                    }
+
+                });
+                
+            };
+
+            $scope.renderProductosAuditados = function(data){
+
             };
 
 

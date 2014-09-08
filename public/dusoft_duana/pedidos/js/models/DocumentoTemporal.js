@@ -12,6 +12,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.separador;
             this.bodegas_doc_id = 0;
             this.documento_temporal_id = 0;
+            this.auditor;
             //this.detalle_documento_temporal = [];
         }
 
@@ -29,6 +30,10 @@ define(["angular", "js/models"], function(angular, models) {
         
         DocumentoTemporal.prototype.setSeparador = function(separador) {
             this.separador = separador;
+        };
+
+        DocumentoTemporal.prototype.setAuditor = function(auditor) {
+            this.auditor = auditor;
         };
         
         DocumentoTemporal.prototype.getPedido = function() {

@@ -57,13 +57,23 @@ define(["angular", "js/controllers",'models/Cliente',
                             tipo_documento: 'E008'
                         }
                     }
-                }
+                };
 
 
                 $scope.traerListadoDocumentosUsuario(obj, $scope.resultasdoListadoDocumentosUsuario);
+
+                //console.log($scope.DocumentoTemporal, "documento")
+                obj.data = {
+                    documento_temporal_id:$scope.DocumentoTemporal.documento_temporal_id,
+                    usuario_id:4
+                };
+
+                $scope.traerProductosAuditatos(obj);
                 
                 
             });
+
+            
 
             $scope.resultadoBusquedaDocumento = function(data, paginando){
                     console.log("resultado documento_temporal",data)
@@ -147,6 +157,11 @@ define(["angular", "js/controllers",'models/Cliente',
                                         </div>'
                     }
                 ]
+
+            };
+
+
+            $scope.lista_productos_auditados_clientes = {
 
             };
             

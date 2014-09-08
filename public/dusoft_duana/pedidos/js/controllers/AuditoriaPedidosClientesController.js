@@ -55,7 +55,7 @@ define(["angular", "js/controllers",
                     {field: 'pedido.cliente.nombre_tercero', displayName: 'Cliente'},
                     {field: 'pedido.nombre_vendedor', displayName: 'Vendedor'},
                     {field: 'separador.nombre_operario', displayName: 'Separador'},
-                    {field: 'auditor.nombre_operario', displayName: 'Auditor'},
+                    {field: 'auditor.nombre_responsable', displayName: 'Auditor'},
                     {field: 'descripcion_estado_separacion', displayName: 'Estado Separación'},
                     {field: 'fecha_separacion_pedido', displayName: "Fecha Separación"},
                     {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Auditar</span></button></div>'}

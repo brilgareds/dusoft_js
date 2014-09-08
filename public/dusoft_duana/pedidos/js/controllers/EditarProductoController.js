@@ -135,8 +135,8 @@ define(["angular", "js/controllers",'models/Cliente',
                     session:$scope.session,
                     data:{
                         documento_temporal: {
-                            item_id: $scope.producto.lote,
-                            auditad: true
+                            item_id: $scope.producto.lote.item_id,
+                            auditado: true
                         }
                     }
                 };

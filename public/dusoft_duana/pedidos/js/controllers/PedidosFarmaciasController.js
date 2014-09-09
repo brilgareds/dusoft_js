@@ -304,6 +304,11 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
             };
 
 
+            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
+               $scope.Empresa.vaciarPedidosFarmacia();
+            });
+
+
             $scope.buscarPedidosFarmacias("");
             $scope.listarEmpresas();
 

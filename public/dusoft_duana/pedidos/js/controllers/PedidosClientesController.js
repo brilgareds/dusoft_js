@@ -5,8 +5,8 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
         '$scope', '$rootScope', 'Request',
         '$modal', 'Empresa', 'Cliente',
         'PedidoAuditoria', 'API', "socket", "$timeout",
-        "AlertService", "Usuario", "localStorageService",
-        function($scope, $rootScope, Request, $modal, Empresa, Cliente, PedidoAuditoria, API, socket, $timeout, AlertService, Usuario, localStorageService) {
+        "AlertService", "Usuario", "localStorageService","$state",
+        function($scope, $rootScope, Request, $modal, Empresa, Cliente, PedidoAuditoria, API, socket, $timeout, AlertService, Usuario, localStorageService, $state) {
             console.log("cliente controller ======")
             $scope.Empresa = Empresa;
             Empresa.setNombre("Duana");
@@ -301,6 +301,11 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
                 $scope.paginaactual = 1;
                 $scope.buscarPedidosCliente($scope.termino_busqueda, true);
             };
+
+            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
+               $scope.Empresa.vaciarPedidos();
+            });
+
 
 
             //fin de eventos

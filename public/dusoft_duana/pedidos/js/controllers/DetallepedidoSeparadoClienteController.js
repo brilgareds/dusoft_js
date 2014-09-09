@@ -38,6 +38,8 @@ define(["angular", "js/controllers",'models/Cliente',
             
             $scope.cerrar = function(){
                $scope.$emit('cerrardetallecliente', {animado:true});
+               $scope.$emit('onDetalleCerrado');
+               $scope.DocumentoTemporal  = {};
             };
             
             $rootScope.$on("mostrardetalleclienteCompleto", function(e, datos) {
@@ -62,10 +64,11 @@ define(["angular", "js/controllers",'models/Cliente',
 
                 $scope.traerListadoDocumentosUsuario(obj, $scope.resultasdoListadoDocumentosUsuario);
 
-                //console.log($scope.DocumentoTemporal, "documento")
                 obj.data = {
-                    documento_temporal_id:$scope.DocumentoTemporal.documento_temporal_id,
-                    usuario_id:4
+                    documento_temporal:{
+                        documento_temporal_id:$scope.DocumentoTemporal.documento_temporal_id,
+                        usuario_id:$scope.DocumentoTemporal.separador.usuario_id
+                    }
                 };
 
                 $scope.traerProductosAuditatos(obj);
@@ -76,7 +79,6 @@ define(["angular", "js/controllers",'models/Cliente',
             
 
             $scope.resultadoBusquedaDocumento = function(data, paginando){
-                    console.log("resultado documento_temporal",data)
                     data  = data.obj.documento_temporal[0];
                     $scope.items = data.lista_productos.length;
                     
@@ -124,13 +126,6 @@ define(["angular", "js/controllers",'models/Cliente',
                 }
             };
 
-            // Usar este evento si es necesario - Tras cerrar el Slide 
-            $rootScope.$on("cerrardetalleclienteCompleto", function(e, datos) {
-                
-                //Liberar Memoria 
-                $scope.DocumentoTemporal = {};
-                
-            });
             
             
             $scope.detalle_pedido_separado_cliente = {
@@ -149,10 +144,7 @@ define(["angular", "js/controllers",'models/Cliente',
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
                         cellTemplate: ' <div class="row">\n\
                                             <button class="btn btn-default btn-xs" ng-click="onEditarRow(DocumentoTemporal, row)">\n\
-                                                <span class="glyphicon glyphicon-zoom-in">Editar</span>\n\
-                                            </button>\n\
-                                            <button class="btn btn-default btn-xs" ng-click="onRowClick(row)">\n\
-                                                <span class="glyphicon glyphicon-zoom-in">Eliminar</span>\n\
+                                                <span class="glyphicon glyphicon-zoom-in">VistaPrevia</span>\n\
                                             </button>\n\
                                         </div>'
                     }
@@ -162,7 +154,21 @@ define(["angular", "js/controllers",'models/Cliente',
 
 
             $scope.lista_productos_auditados_clientes = {
-
+                data:'productosAuditados',
+                columnDefs: [                
+                    {field: 'codigo_producto', displayName: 'Código Producto'},
+                    {field: 'descripcion', displayName: 'Nombre Producto'},
+                    {field: 'cantidad_separada', displayName: "Cantidad Separada"},
+                    {field: 'lote.codigo_lote', displayName: 'Lote'},
+                    {field: 'lote.fecha_vencimiento', displayName: "Fecha Vencimiento"},
+                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
+                        cellTemplate: ' <div class="row">\n\
+                                            <button class="btn btn-default btn-xs" ng-click="onEditarRow(DocumentoTemporal, row)">\n\
+                                                <span class="glyphicon glyphicon-zoom-in">Editar</span>\n\
+                                            </button>\n\
+                                        </div>'
+                    }
+                ]
             };
             
            //eventos de widgets

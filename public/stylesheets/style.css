@@ -116,6 +116,11 @@ ul.dropdown-menu {
     overflow: hidden;
 }
 
+input.grid-inline-input{
+	height: 22px;
+	margin-top: 3px;
+}
+
 html{
 	overflow-x: hidden; 
 	background-color: transparent;

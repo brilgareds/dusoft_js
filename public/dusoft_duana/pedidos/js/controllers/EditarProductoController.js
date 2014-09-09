@@ -78,6 +78,8 @@ define(["angular", "js/controllers",'models/Cliente',
                     {field: 'fecha_vencimiento', displayName: 'Fecha Vencimiento'},
                     {field: 'existencia_actual', displayName: 'Existencia'},
                     {field: 'disponible', displayName: 'Disponible'},
+                    {field:'cantidad_ingresada', displayName:'Cantidad', cellTemplate:'<div class="col-xs-12"><input type="text" class="form-control grid-inline-input" ng-disabled="!row.entity.selected" ng-change="onCantidadIngresadaChange(row)"'+
+                             'ng-model="row.entity.cantidad_ingresada" /></div>'},
                     {field: 'opciones', displayName: "Cambiar", cellClass: "txt-center", width: "10%",
                         cellTemplate: ' <div class="row">\n\
                                             <button class="btn btn-xs" ng-class="getClass(row)" ng-click="onEditarLote(row)">\n\
@@ -117,11 +119,61 @@ define(["angular", "js/controllers",'models/Cliente',
                         /*console.log("no selected",$scope.lotes[i]);
                         console.log("why",$scope.producto.lote, $scope.lotes[i])*/
                         $scope.lotes[i].selected = false;
+                        $scope.lotes[i].cantidad_ingresada = 0;
                         
                     }
                 }
                 
                 
+            };
+
+            $scope.onCantidadIngresadaChange= function(row){
+                if(!row.entity.selected) return;
+
+                var validacion = $scope.esCantidadIngresadaValida(row.entity);
+
+                if(validacion.valido){
+                    console.log("valido ", validacion)
+                    $scope.producto.cantidad_separada = row.entity.cantidad_ingresada;
+                } else {
+                    console.log("validacion mala ", validacion);
+                }
+                
+            };
+
+
+            $scope.esCantidadIngresadaValida = function(lote){
+                var obj = { valido : true};
+                var cantidad_ingresada = lote.cantidad_ingresada;
+                if(cantidad_ingresada == 0){
+                    obj.valido  = false;
+                    obj.mensaje = "La cantidad ingresada, debe ser menor o igual a la cantidad solicitada!!.";
+                    return obj;
+                    
+                }
+                
+                
+                if(cantidad_ingresada > $scope.producto.cantidad_solicitada){
+                    obj.valido  = false;
+                    obj.mensaje = "La cantidad ingresada, debe ser menor o igual a la cantidad solicitada!!.";
+                    return obj;
+                    
+                }
+                
+                
+                if(cantidad_ingresada > lote.disponible){
+                    obj.valido  = false;
+                    obj.mensaje = "La cantidad ingresada, NO PUEDE SER MAYOR A la Disponibilidad en BODEGA!!.";
+                    return obj;
+                }
+                
+                if(cantidad_ingresada > lote.existencia_actual){
+                    obj.valido  = false;
+                    obj.mensaje =  "La cantidad ingresada, debe ser menor al stock de la bodega!!.";
+                    return obj;
+                }
+
+                return obj;
             };
 
             $scope.esLoteSeleccionado = function(lote){
@@ -153,3 +205,47 @@ define(["angular", "js/controllers",'models/Cliente',
         }]);
 
 });
+
+
+/*public HashMap<String, Object> validarLote(){
+        HashMap<String, Object> obj = new HashMap<String, Object>();
+        int cantidad_ingresada = (cantidad.getText().toString().length() > 0)? Integer.parseInt(cantidad.getText().toString()):0;
+        
+        if(cantidad_ingresada == 0){
+            obj.put("valido", false );
+            obj.put("mensaje", "La cantidad ingresada, debe ser menor o igual a la cantidad solicitada!!.");
+            return obj;
+            
+        }
+        
+        
+        if(cantidad_ingresada > producto.getCantidadSolicitada()){
+            obj.put("valido", false );
+            obj.put("mensaje", "La cantidad ingresada, debe ser menor o igual a la cantidad solicitada!!.");
+            return obj;
+            
+        }
+        
+        if(cantidad_ingresada > producto.getCantidadpendiente()){
+            obj.put("valido", false );
+            obj.put("mensaje", "La cantidad ingresada, NO PUEDE SER MAYOR A la cantidad PENDIENTE!!.");
+            return obj;
+        }
+        
+        if(cantidad_ingresada > lote.getDisponible()){
+            obj.put("valido", false );
+            obj.put("mensaje", "La cantidad ingresada, NO PUEDE SER MAYOR A la Disponibilidad en BODEGA!!.");
+            return obj;
+        }
+        
+        if(cantidad_ingresada > lote.getCantidad()){
+            Log.d("response", "cantidad ingresada "+cantidad_ingresada + " cantidad del lote "+lote.getCantidad());
+            obj.put("valido", false );
+            obj.put("mensaje", "La cantidad ingresada, debe ser menor al stock de la bodega!!.");
+            return obj;
+        }
+        
+        obj.put("valido", true);
+        
+        return obj;
+    }*/

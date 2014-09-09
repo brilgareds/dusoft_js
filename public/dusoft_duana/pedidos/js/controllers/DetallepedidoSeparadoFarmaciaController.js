@@ -38,6 +38,8 @@ define(["angular", "js/controllers",'models/Farmacia',
             
             $scope.cerrar = function(){
                $scope.$emit('cerrardetallefarmacia', {animado:true});
+               $scope.$emit('onDetalleCerrado');
+               $scope.DocumentoTemporal  = {};
             };
             
             $rootScope.$on("mostrardetallefarmaciaCompleto", function(e, datos) {
@@ -62,16 +64,18 @@ define(["angular", "js/controllers",'models/Farmacia',
 
 
                 $scope.traerListadoDocumentosUsuario(obj, $scope.resultasdoListadoDocumentosUsuario);
+
+                 obj.data = {
+                    documento_temporal:{
+                        documento_temporal_id:$scope.DocumentoTemporal.documento_temporal_id,
+                        usuario_id:$scope.DocumentoTemporal.separador.usuario_id
+                    }
+                };
+
+                $scope.traerProductosAuditatos(obj);
                 
             });
             
-            // Usar este evento si es necesario - Tras cerrar el Slide 
-            $rootScope.$on("cerrardetalleclienteCompleto", function(e, datos) {
-                
-                //Liberar Memoria
-                $scope.DocumentoTemporal
-            });
-
             $scope.obtenerParametros = function(){
                                 //valida si cambio el termino de busqueda
                 if ($scope.ultima_busqueda != $scope.termino_busqueda) {
@@ -136,16 +140,31 @@ define(["angular", "js/controllers",'models/Farmacia',
                     {field: 'observacion', displayName: "Observación"},
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
                         cellTemplate: ' <div class="row">\n\
-                                            <button class="btn btn-default btn-xs" ng-click="onRowClick(row)">\n\
-                                                <span class="glyphicon glyphicon-zoom-in">Editar</span>\n\
-                                            </button>\n\
-                                            <button class="btn btn-default btn-xs" ng-click="onRowClick(row)">\n\
-                                                <span class="glyphicon glyphicon-zoom-in">Eliminar</span>\n\
+                                            <button class="btn btn-default btn-xs" ng-click="onEditarRow(DocumentoTemporal, row)">\n\
+                                                <span class="glyphicon glyphicon-zoom-in">VistaPrevia</span>\n\
                                             </button>\n\
                                         </div>'
                     }
                 ]
 
+            };
+
+             $scope.lista_productos_auditados_farmacias = {
+                data:'productosAuditados',
+                columnDefs: [                
+                    {field: 'codigo_producto', displayName: 'Código Producto'},
+                    {field: 'descripcion', displayName: 'Nombre Producto'},
+                    {field: 'cantidad_separada', displayName: "Cantidad Separada"},
+                    {field: 'lote.codigo_lote', displayName: 'Lote'},
+                    {field: 'lote.fecha_vencimiento', displayName: "Fecha Vencimiento"},
+                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
+                        cellTemplate: ' <div class="row">\n\
+                                            <button class="btn btn-default btn-xs" ng-click="onEditarRow(DocumentoTemporal, row)">\n\
+                                                <span class="glyphicon glyphicon-zoom-in">Editar</span>\n\
+                                            </button>\n\
+                                        </div>'
+                    }
+                ]
             };
             
            //eventos de widgets

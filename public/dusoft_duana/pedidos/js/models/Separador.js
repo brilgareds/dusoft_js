@@ -2,10 +2,11 @@ define(["angular", "js/models"], function(angular, models) {
 
     models.factory('Separador', function() {
 
-        function Separador() {
-            this.nombre_operario = "";
-            this.operario_id = 0;
-            this.total_pedidos_asignados = 0;
+        function Separador(nombre, id, total_pedidos_asignados) {
+            this.nombre_operario = nombre || "";
+            this.operario_id = id || "";
+            this.total_pedidos_asignados = total_pedidos_asignados || 0;
+            this.usuario_id = 0;
         }
 
         Separador.prototype.setDatos = function(datos) {
@@ -14,6 +15,7 @@ define(["angular", "js/models"], function(angular, models) {
                     this.nombre_operario = datos[i].nombre_responsable;
                     this.operario_id     = datos[i].operario_id;
                     this.estado          = datos[i].estado;
+                    this.usuario_id      = datos[i].usuario_id;
                     break;
                 }
             }
@@ -25,10 +27,6 @@ define(["angular", "js/models"], function(angular, models) {
 
         Separador.prototype.setNombre = function(nombre) {
             this.nombre_operario = nombre;
-        };
-
-        Separador.prototype.setUsuarioId = function(id) {
-            this.usuario_id = id;
         };
 
         Separador.prototype.setUsuarioId = function(id) {

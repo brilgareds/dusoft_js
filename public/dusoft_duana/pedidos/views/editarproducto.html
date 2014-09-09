@@ -6,7 +6,6 @@
         
         <tab >
             <tab-heading>
-                Descripcion Producto
             </tab-heading>
 
             <div class="panel panel-info">
@@ -24,7 +23,11 @@
                     </div>
                     <div class="row">
                         <div class ="col-md-3"><div class="lbl_editar_producto">Cant Solicitida</div>{{producto.cantidad_solicitada}}</div>
-                        <div class ="col-md-6"><div class="lbl_editar_producto">Cant Separada</div><input type="text" class="input-mini" ng-model="producto.cantidad_separada" ></div>
+                        <div class ="col-md-3"><div class="lbl_editar_producto">Cant Separada</div><input type="text" class="input-mini" ng-model="producto.cantidad_separada" ></div>
+                        <div class ="col-md-3">
+                            <label class="lbl_editar_producto">Verificar Lotes</label>
+                            <input type="checkbox" ng-model="modificarlotes" />
+                        </div>
 
                     </div>
 
@@ -90,28 +93,25 @@
 
                     </div>
                 </div>
-                <div class="panel text-right panel-info panel-action">
-                    <button class="btn btn-primary ng-binding" ng-click="auditarPedido()">Auditar</button>
-                </div>
+                
             </div>
 
-        </tab>
-        <tab>
-            
-            <tab-heading>
-                Lotes
-            </tab-heading>
-            
-           
+            <div class="animate-switch-container" ng-switch on="modificarlotes">
 
-            <div class="panel panel-info">
-                <div class="panel-heading">
-                     <h5 class="panel-title">Lotes Del Producto</h5>
-                </div>
-                <div class="panel-body">
-                    <div class="auditarGrid" ng-grid="lotes_producto"></div>
+                <div class="panel panel-info" ng-switch-when="true">
+                    <div class="panel-heading">
+                         <h5 class="panel-title">Lotes Del Producto</h5>
+                    </div>
+                    <div class="panel-body">
+                        <div class="auditarGrid" ng-grid="lotes_producto"></div>
+                    </div>
+
                 </div>
 
+            </div>
+
+            <div class="panel text-right panel-info panel-action">
+                    <button class="btn btn-primary ng-binding" ng-click="auditarPedido()">Auditar</button>
             </div>
 
         </tab>

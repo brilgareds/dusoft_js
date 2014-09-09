@@ -242,7 +242,8 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                 Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.CONSULTAR_PRODUCTOS_AUDITADOS, "POST", obj, function(data) {
                     
                     if(data.status == 200){
-                        console.log(data, "productos auditados")
+                        console.log(data, "productos auditados");
+                        $scope.renderProductosAuditados(data.obj.movimientos_bodegas.lista_productos_auditados);
                     }
 
                 });
@@ -251,7 +252,27 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
 
             $scope.renderProductosAuditados = function(data){
 
+                for(var i in data){
+                    var obj = data[i];
+                    var producto = ProductoPedido.get(
+                        obj.codigo_producto, obj.descripcion_producto,0,0,0,
+                        obj.cantidad_ingresada, obj.observacion_cambio
+                    );
+                    var lote = LoteProductoPedido.get(obj.lote, obj.fecha_vencimiento);
+                    lote.item_id = obj.item_id;
+
+                    producto.setLote(lote);
+
+                    $scope.productosAuditados.push(producto);
+                }
+
+                console.log("productos auditados  ======", $scope.productosAuditados)
+
             };
+
+            $scope.$on("onDetalleCerrado",function(){
+                $scope.productosAuditados = [];
+            });
 
 
         }]);

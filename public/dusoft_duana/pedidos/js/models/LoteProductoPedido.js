@@ -12,6 +12,7 @@ define(["angular", "js/models", "includes/classes/Lote"], function(angular, mode
             this.existencia_actual = 0;
             this.disponible = 0;
             this.item_id = 0;
+            this.cantidad_ingresada =  0;
         }
 
         LoteProductoPedido.prototype = Object.create(Lote.getClass().prototype);

@@ -8,7 +8,7 @@ define(["angular", "js/controllers",'models/Cliente',
          'API',"socket", "$timeout", 
          "AlertService","Usuario", "localStorageService",
          "ProductoPedido", "LoteProductoPedido", "DocumentoTemporal",
-
+   
         function(   $scope, $rootScope, Request,
                     $modal, Empresa, Cliente,
                     API, socket,

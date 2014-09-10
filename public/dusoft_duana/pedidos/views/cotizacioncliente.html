@@ -1,5 +1,6 @@
 
-<div style ="padding:5px" ng-controller="CreaCotizacionesController">    
+<div style="padding:5px" ng-controller="CreaCotizacionesController">  
+    
     <div class="row"> 
         <div class="col-sm-12 col-md-12">
 
@@ -57,9 +58,7 @@
                         </div> <!-- / Div Panel Izquierdo -->
                         
                         <div class="col-lg-3 col-md-3 col-sm-5"> <!-- Div Panel Derecho -->
-                            <!-- Contenido del cuadro Observación-->
-                            <!--<label>Observación:</label>-->
-                            <!--<textarea rows="4" cols="50">-->
+
                             <h4 class="h4MarginTopBottom">Observación:</h4></br>
                             <textarea class="col-lg-12 col-md-12 col-sm-5" rows="6" name="">
                                 Texto de la Observación
@@ -67,18 +66,15 @@
                         </div> <!-- / Div Panel Izquierdo -->
                         
                     </div>  
-<!--                  <div class="panel-body" >
-                    <div class="auditarGrid" ng-grid="detalle_pedido_separado_cliente"></div>
-                  </div>-->
                     
-                </div>
-                
-                <div slide-content open-callback="mostrarseleccioncliente" close-callback="cerrarseleccioncliente" class="slide" >
-                    <div ng-include src="slideurl"  ng-controller="SeleccionClienteController" ></div>
                 </div>
 
         </div>
     </div> <!-- / end payment details section -->
+    
+    <div slide-content open-callback="mostrarseleccioncliente" close-callback="cerrarseleccioncliente" class="slide" >
+        <div ng-include src="slideurl"  ng-controller="SeleccionClienteController" ></div>
+    </div>
       
     <!-- End Código desplazado -->
     <div class="row">

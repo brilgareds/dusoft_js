@@ -1,7 +1,7 @@
 define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
         'models/Cliente', 'models/PedidoVenta'], function(angular, controllers) {
 
-    var fo = controllers.controller('SeleccionClienteController', [
+    var fo = controllers.controller('VerPedidosFarmaciasController', [
         '$scope', '$rootScope', 'Request',
         'Empresa', 'Cliente', 'PedidoVenta',
         'API', "socket", "AlertService",
@@ -25,10 +25,6 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             $scope.listado_cotizaciones = [];
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
-            
-            $scope.cerrar = function(){
-               $scope.$emit('cerrarseleccioncliente', {animado:true});
-            };
 
             $scope.buscarCotizaciones = function(termino, paginando) {
 
@@ -42,11 +38,11 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                     //var pedido = Pedido.get();
                     
                     obj = { 
-                            numero_producto: '123456'+i,
-                            nombre_producto: 'Franz Kafka',
-                            nombre_vendedor: 'Alexeiv Karpov'+i,
-                            fecha_cotizacion: '0'+i+'-09-2014',
-                            valor_cotizacion: i+'00.000',
+                            numero_pedido: '123456'+i,
+                            nombre_farmacia: 'Farma Colombia',
+                            zona: 'Suroccidente'+i,
+                            fecha_pedido: '0'+i+'-09-2014',
+                            valor_pedido: i+'00.000',
                             estado: 'Activo'
                         }
                     
@@ -139,37 +135,27 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
 
             //definicion y delegados del Tabla de pedidos clientes
 
-            $scope.lista_pedidos_clientes = {
+            $scope.lista_pedidos_farmacias = {
                 data: 'listado_cotizaciones',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
-                    {field: 'numero_producto', displayName: 'Numero Producto'},
-                    {field: 'nombre_producto', displayName: 'Nombre Producto'},
-                    {field: 'nombre_vendedor', displayName: 'Vendedor'},
-                    {field: 'fecha_cotizacion', displayName: 'Fecha'},
-                    {field: 'valor_cotizacion', displayName: 'Valor'},
+                    {field: 'numero_pedido', displayName: 'Número Pedido'},
+                    {field: 'nombre_farmacia', displayName: 'Farmacia'},
+                    {field: 'zona', displayName: 'Zona'},
+                    {field: 'fecha_pedido', displayName: 'Fecha'},
+                    {field: 'valor_pedido', displayName: 'Valor'},
                     {field: 'estado', displayName: 'Estado'},
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Activar</span></button></div>'}
 
                 ]
 
             };
-            
-//            $scope.abrirViewCotizacion = function()
-//            {
-//                $state.go('CotizacionCliente');
-//            }
-//            
-//            $scope.onRowClickSelectCliente = function(row) {
-//                $scope.slideurl = "views/seleccioncliente.html?time=" + new Date().getTime();
-//                $scope.$emit('mostrarseleccioncliente', row.entity);
-//            };
-//            
-//            $scope.onRowClickSelectProducto = function(row) {
-//                $scope.slideurl = "views/seleccionproducto.html?time=" + new Date().getTime();
-//                $scope.$emit('mostrarseleccionproducto', row.entity);
-//            };
+ 
+            $scope.abrirViewPedidoFarmacia = function()
+            {
+                $state.go('CreaPedidosFarmacias');
+            }
             
             $scope.buscarCotizaciones("");
 

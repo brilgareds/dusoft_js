@@ -1,7 +1,7 @@
 define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
         'models/Cliente', 'models/PedidoVenta'], function(angular, controllers) {
 
-    var fo = controllers.controller('SeleccionProductoController', [
+    var fo = controllers.controller('CreaPedidoFarmaciaController', [
         '$scope', '$rootScope', 'Request',
         'Empresa', 'Cliente', 'PedidoVenta',
         'API', "socket", "AlertService",
@@ -20,15 +20,53 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
             $scope.paginaactual = 1;
+            $scope.bloquear = false; //Default True
             //$scope.numero_pedido = "";
             //$scope.obj = {};
             $scope.listado_cotizaciones = [];
+            
+            $scope.de_seleccion_empresa = 0;
+            $scope.de_seleccion_centro_utilidad = 0;
+            $scope.de_seleccion_bodega = 0;
+
+            $scope.para_seleccion_empresa = 0;
+            $scope.para_seleccion_centro_utilidad = 0;
+            $scope.para_seleccion_bodega = 0;
+            
+            $scope.de_lista_empresas = [    {id: 1, nombre: 'COSMITET'},
+                                            {id: 2, nombre: 'DUANA'},
+                                            {id: 3, nombre: 'DUMIAN'},
+                                            {id: 4, nombre: 'DUCATI'}
+                                            ];
+                                            
+            $scope.de_lista_centro_utilidad = [     {id: 1, nombre: 'CENTRO_1'},
+                                                    {id: 2, nombre: 'CENTRO_2'},
+                                                    {id: 3, nombre: 'CENTRO_3'},
+                                                    {id: 4, nombre: 'CENTRO_4'}
+                                                    ];
+            $scope.de_lista_bodegas = [     {id: 1, nombre: 'BODEGA_1'},
+                                            {id: 2, nombre: 'BODEGA_2'},
+                                            {id: 3, nombre: 'BODEGA_3'},
+                                            {id: 4, nombre: 'BODEGA_4'}
+                                            ];
+            
+            $scope.para_lista_empresas = [      {id: 1, nombre: 'FARMASANITAS'},
+                                                {id: 2, nombre: 'FARMAGISTERIO'},
+                                                {id: 3, nombre: 'FARMDEFENSA'},
+                                                {id: 4, nombre: 'FARMACIA X'}
+                                                ];
+            $scope.para_lista_centro_utilidad = [       {id: 1, nombre: 'CENTRO_1'},
+                                                        {id: 2, nombre: 'CENTRO_2'},
+                                                        {id: 3, nombre: 'CENTRO_3'},
+                                                        {id: 4, nombre: 'CENTRO_4'}
+                                                        ];
+            $scope.para_lista_bodegas = [       {id: 1, nombre: 'BODEGA_1'},
+                                                {id: 2, nombre: 'BODEGA_2'},
+                                                {id: 3, nombre: 'BODEGA_3'},
+                                                {id: 4, nombre: 'BODEGA_4'}
+                                                ];
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
-            
-            $scope.cerrar = function(){
-               $scope.$emit('cerrarseleccionproducto', {animado:true});
-            };
 
             $scope.buscarCotizaciones = function(termino, paginando) {
 
@@ -49,8 +87,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                             existencia_bodega: '20'+i,
                             existencia_disponible: '10'+i,
                             existencia_reservada: '10'+i,
-                            existencia_x_farmacia: 20*i,
-                            cantidad: 0
+                            existencia_x_farmacia: 20*i
                         }
                     
                     $scope.listado_cotizaciones.push(obj);
@@ -142,7 +179,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
 
             //definicion y delegados del Tabla de pedidos clientes
 
-            $scope.lista_productos_farmacia = {
+            $scope.lista_productos = {
                 data: 'listado_cotizaciones',
                 enableColumnResize: true,
                 enableRowSelection: false,
@@ -153,40 +190,15 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                     {field: 'codigo_producto', displayName: 'Código Producto'},
                     {field: 'descripcion', displayName: 'Descripción'},
                     {field: 'molecula', displayName: 'Molécula'},
-                    {field: 'existencia_farmacia', displayName: 'Existencia Farmacia', width: "10%"},
+                    {field: 'existencia_farmacia', displayName: 'Existencia Farmacia'},
                     {field: 'existencia_bodega', displayName: 'Existencia Bodega'},
                     {field: 'existencia_disponible', displayName: 'Disponible'},
                     {field: 'existencia_reservada', displayName: 'Reservado'},
                     {field: 'existencia_x_farmacia', displayName: 'Existencias Farmacias', width: "12%"},
-                    {field: 'cantidad', displayName: 'Cantidad', enableCellEdit: true},
-                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
-                        cellTemplate: ' <div class="row">\n\
-                                            <button class="btn btn-success btn-xs" ng-click="onRowClick1(row)">\n\
-                                                <span class="glyphicon glyphicon-plus-sign">Incluir</span>\n\
-                                            </button>\n\
-                                            <button class="btn btn-danger btn-xs" ng-click="onRowClick2(row)">\n\
-                                                <span class="glyphicon glyphicon-minus-sign">Eliminar</span>\n\
-                                            </button>\n\
-                                        </div>'
-                    }
+                    {field: 'cantidad', displayName: 'Cantidad'},
+                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Eliminar</span></button></div>'}
                 ]
 
-            };
-            
-            $scope.onRowClick1 = function(row) {
-                alert("Botón Presionado");
-//                row.entity.cellTemplate = ' <div class="row">\n\
-//                                            <button class="btn btn-default btn-xs" ng-click="onRowClick1(row)">\n\
-//                                                <span class="glyphicon glyphicon-ok">Incluido</span>\n\
-//                                            </button>\n\
-//                                            <button class="btn btn-danger btn-xs" ng-click="onRowClick2(row)">\n\
-//                                                <span class="glyphicon glyphicon-minus-sign">Eliminar</span>\n\
-//                                            </button>\n\
-//                                        </div>';
-                console.log(row);
-                console.log(row.rowIndex);
-                console.log($scope.lista_productos_farmacia);
-                //$scope.lista_productos_farmacia.$gridScope.renderedRows[row.rowIndex] = 
             };
             
 //            $scope.abrirViewCotizacion = function()
@@ -194,15 +206,51 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
 //                $state.go('CotizacionCliente');
 //            }
 //            
-//            $scope.onRowClickSelectCliente = function(row) {
+//            $scope.onRowClickSelectCliente = function() {
 //                $scope.slideurl = "views/seleccioncliente.html?time=" + new Date().getTime();
-//                $scope.$emit('mostrarseleccioncliente', row.entity);
+//                $scope.$emit('mostrarseleccioncliente');
 //            };
-//            
-//            $scope.onRowClickSelectProducto = function(row) {
-//                $scope.slideurl = "views/seleccionproducto.html?time=" + new Date().getTime();
-//                $scope.$emit('mostrarseleccionproducto', row.entity);
-//            };
+            
+            $scope.onRowClickSelectProducto = function() {
+                $scope.slideurl = "views/seleccionproducto.html?time=" + new Date().getTime();
+                $scope.$emit('mostrarseleccionproducto');
+            };
+            
+            $scope.valorSeleccionado = function(tipo_seleccion) {
+                
+                if($scope.de_seleccion_empresa != 0 && $scope.de_seleccion_centro_utilidad != 0
+                    && $scope.de_seleccion_bodega != 0 && $scope.para_seleccion_empresa != 0
+                    && $scope.para_seleccion_centro_utilidad != 0 && $scope.para_seleccion_bodega != 0)
+                {
+                    $scope.bloquear = false;
+                }
+                
+//                if(tipo_seleccion=='DeEmpresa') {
+//                    alert("de_seleccion_empresa :"+$scope.de_seleccion_empresa);
+//                }
+//                
+//                if(tipo_seleccion=='DeCentro') {
+//                    alert("de_seleccion_centro_utilidad :"+$scope.de_seleccion_centro_utilidad);
+//                }
+//                
+//                if(tipo_seleccion=='DeBodega') {
+//                    alert("de_seleccion_bodega :"+$scope.de_seleccion_bodega);
+//                }
+//                
+//                if(tipo_seleccion=='ParaEmpresa') {
+//                    alert("para_seleccion_empresa :"+$scope.para_seleccion_empresa);
+//                }
+//                
+//                if(tipo_seleccion=='ParaCentro') {
+//                    alert("para_seleccion_centro_utilidad :"+$scope.para_seleccion_centro_utilidad);
+//                }
+//                
+//                if(tipo_seleccion=='ParaBodega') {
+//                    alert("para_seleccion_bodega :"+$scope.para_seleccion_bodega);
+//                    alert("Bloquear = "+$scope.bloquear);
+//                }
+                
+            }
             
             $scope.buscarCotizaciones("");
 

@@ -72,10 +72,10 @@
         "id": "15",
         "parent": "13",
         "text": "Pedidos Farmacias",
-        "url": "PedidosFarmacias",
+        "url": "VerPedidosFarmacias",
         "icon": "glyphicon glyphicon-list-alt",
         "parentname": "pedidos",
-        "state": "PedidosFarmacias"
+        "state": "VerPedidosFarmacias"
     },
     {
         "id": "16",

@@ -1,5 +1,5 @@
 
-<div style ="padding:5px" ng-controller="CreaCotizacionesController">    
+<div style ="padding:5px" ng-controller="CreaPedidoFarmaciaController">    
     <div class="row marginBottom5"> <!--Div Row Superior-->
         
         <div class="col-sm-12 col-md-12 marginBottom5">
@@ -11,13 +11,13 @@
                     </div>
                     <div class="panel-body marginBottom0 paddingBottomZero marginRightZero"> <!--Div Panel Body-->
                         
-                        <div class="row col-sm-12 col-md-12 marginBottom0 paddingBottomZero paddingRightZero"> <!--Div Panel Superior--> <!--Div Contenedor Principal-->
+                        <div class="row col-sm-12 col-md-12 marginBottom0 paddingBottomZero paddingRightZero"> <!--Div Contenedor Principal-->
                             
                             <div class="col-sm-12 col-md-6 paddingRightZero paddingLeftZero marginBottom0 paddingBottomZero"> <!--Div Contenedor Izquierdo-->
 
-                                <div class="panel panel-info marginBottom0 col-sm-12 col-md-12 paddingBottomtZero"> <!--Div Izquierdo--> <!--Div Encabezado-->
+                                <div class="panel panel-info marginBottom0 col-sm-12 col-md-12 paddingBottomtZero"> <!--Div Encabezado-->
                                     <h4><b><i>De</i></b></h4>
-                                </div> <!--/Div Izquierdo--> <!--/Div Encabezado-->
+                                </div> <!--/Div Encabezado-->
                                 
                                 <div class="panel panel-info marginTop0 col-sm-12 col-md-12 paddingTopZero marginBottom0 paddingBottomZero" style ="height:230px;"> <!--Div Cuerpo-->
                                     <div class="row">
@@ -25,9 +25,9 @@
                                             </br>
                                             <h4 class="h4MarginTopBottom">Empresa: </h4>
 
-                                            <select ui-select2="seleccioncliente"  class="form-control selectgeneral pull-left" ng-model="$parent.seleccion"  placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
+                                            <select ui-select2="de_seleccionempresa"  class="form-control selectgeneral pull-left" ng-model="de_seleccion_empresa"  placeholder="Seleccionar Empresa" ng-change="valorSeleccionado('DeEmpresa')">
                                                 <option></option>
-                                                <option ng-repeat="documento_usuario in  documentos_usuarios"  ng-value="documento_usuario.bodegas_doc_id" >{{documento_usuario.prefijo}}-{{documento_usuario.descripcion}}</option>
+                                                <option ng-repeat="empresa in  de_lista_empresas"  ng-value="empresa.id" >{{empresa.id}}-{{empresa.nombre}}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -37,9 +37,9 @@
                                             </br>
                                             <h4 class="h4MarginTopBottom">Centro Utilidad: </h4>
 
-                                            <select ui-select2="seleccioncliente"  class="form-control selectgeneral pull-left" ng-model="$parent.seleccion"  placeholder="Seleccionar Centro" ng-change="valorSeleccionado()">
+                                            <select ui-select2="de_seleccioncentroutilidad"  class="form-control selectgeneral pull-left" ng-model="de_seleccion_centro_utilidad"  placeholder="Seleccionar Centro" ng-change="valorSeleccionado('DeCentro')">
                                                 <option></option>
-                                                <option ng-repeat="documento_usuario in  documentos_usuarios"  ng-value="documento_usuario.bodegas_doc_id" >{{documento_usuario.prefijo}}-{{documento_usuario.descripcion}}</option>
+                                                <option ng-repeat="centro_utilidad in  de_lista_centro_utilidad"  ng-value="centro_utilidad.id" >{{centro_utilidad.id}}-{{centro_utilidad.nombre}}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -49,9 +49,9 @@
                                             </br>
                                             <h4 class="h4MarginTopBottom">Bodega: </h4>
 
-                                            <select ui-select2="seleccioncliente"  class="form-control selectgeneral pull-left" ng-model="$parent.seleccion"  placeholder="Seleccionar Bodega" ng-change="valorSeleccionado()">
+                                            <select ui-select2="de_seleccionbodega"  class="form-control selectgeneral pull-left" ng-model="de_seleccion_bodega"  placeholder="Seleccionar Bodega" ng-change="valorSeleccionado('DeBodega')">
                                                 <option></option>
-                                                <option ng-repeat="documento_usuario in  documentos_usuarios"  ng-value="documento_usuario.bodegas_doc_id" >{{documento_usuario.prefijo}}-{{documento_usuario.descripcion}}</option>
+                                                <option ng-repeat="bodega in  de_lista_bodegas"  ng-value="bodega.id" >{{bodega.id}}-{{bodega.nombre}}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -62,7 +62,7 @@
                             
                             <div class="col-sm-12 col-md-6 paddingLeftZero paddingRightZero marginBottom0 paddingBottomZero"> <!--/Div Contenedor Derecho-->
                                 
-                                <div class="panel panel-info marginBottom0 col-sm-12 col-md-12 paddingBottomZero"> <!--Div Derecho--> <!--Div Encabezado-->
+                                <div class="panel panel-info marginBottom0 col-sm-12 col-md-12 paddingBottomZero"> <!--Div Encabezado-->
 
                                     <div class="pull-left col-sm-12 col-md-6"> <!--Div Izquierdo-->
                                         <h4><b><i>Para</i></b></h4>
@@ -72,7 +72,7 @@
                                         <h3 class="h4MarginTopBottom"><font color="blue">Pedido N°: 123456</font></h3>
                                     </div> <!--/Div Derecho-->
 
-                                </div> <!--/Div Derecho--> <!--/Div Encabezado-->
+                                </div> <!--/Div Encabezado-->
                                 
                                 <div class="panel panel-info marginTop0 col-sm-12 col-md-12 paddingTopZero marginBottom0 paddingBottomZero" style ="height:230px;"> <!--Div Cuerpo-->
                                     
@@ -81,9 +81,9 @@
                                             </br>
                                             <h4 class="h4MarginTopBottom">Empresa: </h4>
 
-                                            <select ui-select2="seleccioncliente"  class="form-control selectgeneral pull-left" ng-model="$parent.seleccion"  placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
+                                            <select ui-select2="para_seleccionempresa"  class="form-control selectgeneral pull-left" ng-model="para_seleccion_empresa"  placeholder="Seleccionar Empresa" ng-change="valorSeleccionado('ParaEmpresa')">
                                                 <option></option>
-                                                <option ng-repeat="documento_usuario in  documentos_usuarios"  ng-value="documento_usuario.bodegas_doc_id" >{{documento_usuario.prefijo}}-{{documento_usuario.descripcion}}</option>
+                                                <option ng-repeat="empresa in  para_lista_empresas"  ng-value="empresa.id" >{{empresa.id}}-{{empresa.nombre}}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -93,9 +93,9 @@
                                             </br>
                                             <h4 class="h4MarginTopBottom">Centro Utilidad: </h4>
 
-                                            <select ui-select2="seleccioncliente"  class="form-control selectgeneral pull-left" ng-model="$parent.seleccion"  placeholder="Seleccionar Centro" ng-change="valorSeleccionado()">
+                                            <select ui-select2="para_seleccioncentroutilidad"  class="form-control selectgeneral pull-left" ng-model="para_seleccion_centro_utilidad"  placeholder="Seleccionar Centro" ng-change="valorSeleccionado('ParaCentro')">
                                                 <option></option>
-                                                <option ng-repeat="documento_usuario in  documentos_usuarios"  ng-value="documento_usuario.bodegas_doc_id" >{{documento_usuario.prefijo}}-{{documento_usuario.descripcion}}</option>
+                                                <option ng-repeat="centro_utilidad in para_lista_centro_utilidad"  ng-value="centro_utilidad.id" >{{centro_utilidad.id}}-{{centro_utilidad.nombre}}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -105,9 +105,9 @@
                                             </br>
                                             <h4 class="h4MarginTopBottom">Bodega: </h4>
 
-                                            <select ui-select2="seleccioncliente"  class="form-control selectgeneral pull-left" ng-model="$parent.seleccion"  placeholder="Seleccionar Bodega" ng-change="valorSeleccionado()">
+                                            <select ui-select2="para_seleccionbodega"  class="form-control selectgeneral pull-left" ng-model="para_seleccion_bodega"  placeholder="Seleccionar Bodega" ng-change="valorSeleccionado('ParaBodega')">
                                                 <option></option>
-                                                <option ng-repeat="documento_usuario in  documentos_usuarios"  ng-value="documento_usuario.bodegas_doc_id" >{{documento_usuario.prefijo}}-{{documento_usuario.descripcion}}</option>
+                                                <option ng-repeat="bodega in  para_lista_bodegas"  ng-value="bodega.id" >{{bodega.id}}-{{bodega.nombre}}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -125,7 +125,7 @@
 
                             </div> <!--/Div Contenedor Inferior-->
 
-                        </div> <!--/Div Panel Superior--> <!--/Div Contenedor Principal-->
+                        </div> <!--/Div Contenedor Principal-->
 
                     </div>  <!--/Div Panel Body-->
                     
@@ -139,13 +139,13 @@
     <div class="row">
         <div class="col-xs-12">
           
-            <div class="panel panel-info marginBottom5"> <!-- / begin banking details -->
+            <div class="panel panel-info marginBottom5">
 
                 <div class="panel-heading">
                   <h4 class="h4MarginTopBottom">Productos</h4>
                 </div>
                 <div class="panel-body">
-                    <button type="submit" class="btn btn-accion btn-primary pull-left" ng-click="onRowClickSelectProducto()">Incluir Producto</button>
+                    <button type="submit" class="btn btn-accion btn-primary pull-left" ng-disabled="bloquear" ng-click="onRowClickSelectProducto()">Incluir Producto</button>
                     <div class="input-group navbar-form paddingRightZero">
                         <input type="text" class="form-control pull-right" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">
                         <div class="input-group-btn" >
@@ -154,16 +154,15 @@
                     </div>
                 </div>
                 <div class="panel-body">
-                    <div class="auditadosGrid" ng-grid="lista_pedidos_clientes"></div>
+                    <div class="auditadosGrid" ng-grid="lista_productos"></div>
                 </div>
             </div>
               
         </div>    
-    </div> <!-- / end class row --> 
+    </div>
     
     <div class="col-sm-12 btn-toolbar">
         <button type="submit" class="btn btn-accion btn-success pull-right">Generar Pedido</button>
-        <!--<button type="submit" class="btn btn-accion btn-danger pull-right">Eliminar Cotización</button>-->
         <button type="submit" class="btn btn-accion btn-warning pull-right">Cancelar Pedido</button>
     </div>
 

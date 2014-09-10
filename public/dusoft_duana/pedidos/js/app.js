@@ -6,7 +6,8 @@
   "controllers/PedidosController","controllers/PedidosClientesController", "controllers/PedidosFarmaciasController",  "uiselect2", 
   "controllers/AuditoriaPedidosController",  "controllers/DetallepedidoSeparadoClienteController", "controllers/CotizacionesController",
   "controllers/DetallepedidoSeparadoFarmaciaController", "controllers/CreaCotizacionesController","controllers/SeleccionClienteController",
-  "controllers/SeleccionProductoController","loader",  "models/Empresa",
+  "controllers/SeleccionProductoController", "controllers/CreaPedidoFarmaciaController", "controllers/VerPedidosFarmaciasController",
+  "loader",  "models/Empresa",
   "includes/menu/menucontroller", "config", "includes/alert/Alert",
   "includes/header/HeaderController", 'storage', "httpinterceptor",
   "includes/classes/Usuario", "includes/http/Request"
@@ -54,16 +55,19 @@
                 templateUrl: "views/pedidosclientes.html"
               })
             .state('CotizacionCliente', {
-                //parent: "PedidosClientes",
                 url: "/CotizacionCliente",
                 text:"Cotización Clientes",
                 templateUrl: "views/cotizacioncliente.html"
               })
-            .state('PedidosFarmacias', {
-                //parent: "PedidosClientes",
-                url: "/PedidosFarmacias",
+            .state('VerPedidosFarmacias', {
+                url: "/VerPedidosFarmacias",
                 text:"Pedidos Farmacias",
-                templateUrl: "views/pedidosfarmacias.html"
+                templateUrl: "views/verpedidosfarmacias.html"
+              })
+            .state('CreaPedidosFarmacias', {
+                url: "/CreaPedidosFarmacias",
+                text:"Crear/Editar Pedidos Farmacias",
+                templateUrl: "views/creapedidosfarmacias.html"
               })
 
     }).run(function($rootScope,Usuario,localStorageService){

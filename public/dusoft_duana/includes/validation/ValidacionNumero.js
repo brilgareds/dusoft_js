@@ -9,7 +9,7 @@ define(["angular","js/directive"], function(angular, directive){
                 console.log($.inArray(event.which,keyCode));
                 if($.inArray(event.which,keyCode) == -1) {
                     scope.$apply(function(){
-                        scope.$eval(attrs.onlyNum);
+                        //scope.$eval(attrs.onlyNum);
                         event.preventDefault();
                     });
                     event.preventDefault();

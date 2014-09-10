@@ -78,7 +78,7 @@ define(["angular", "js/controllers",'models/Cliente',
                     {field: 'fecha_vencimiento', displayName: 'Fecha Vencimiento'},
                     {field: 'existencia_actual', displayName: 'Existencia'},
                     {field: 'disponible', displayName: 'Disponible'},
-                    {field:'cantidad_ingresada', displayName:'Cantidad', cellTemplate:'<div class="col-xs-12"><input type="text" class="form-control grid-inline-input" ng-disabled="!row.entity.selected" ng-change="onCantidadIngresadaChange(row)"'+
+                    {field:'cantidad_ingresada', displayName:'Cantidad', cellTemplate:'<div class="col-xs-12"><input type="text" validacion-numero class="form-control grid-inline-input" ng-disabled="!row.entity.selected" ng-change="onCantidadIngresadaChange(row)"'+
                              'ng-model="row.entity.cantidad_ingresada" /></div>'},
                     {field: 'opciones', displayName: "Cambiar", cellClass: "txt-center", width: "10%",
                         cellTemplate: ' <div class="row">\n\
@@ -134,7 +134,7 @@ define(["angular", "js/controllers",'models/Cliente',
 
                 if(validacion.valido){
                     console.log("valido ", validacion)
-                    $scope.producto.cantidad_separada = row.entity.cantidad_ingresada;
+                    $scope.producto.cantidad_separada = Number(row.entity.cantidad_ingresada);
                 } else {
                     console.log("validacion mala ", validacion);
                 }
@@ -144,7 +144,7 @@ define(["angular", "js/controllers",'models/Cliente',
 
             $scope.esCantidadIngresadaValida = function(lote){
                 var obj = { valido : true};
-                var cantidad_ingresada = lote.cantidad_ingresada;
+                var cantidad_ingresada = parseInt(lote.cantidad_ingresada);
                 if(cantidad_ingresada == 0){
                     obj.valido  = false;
                     obj.mensaje = "La cantidad ingresada, debe ser menor o igual a la cantidad solicitada!!.";

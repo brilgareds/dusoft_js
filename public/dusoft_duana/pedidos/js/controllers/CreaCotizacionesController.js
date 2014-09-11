@@ -135,7 +135,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
 
             //definicion y delegados del Tabla de pedidos clientes
 
-            $scope.lista_pedidos_clientes = {
+            $scope.lista_productos = {
                 data: 'listado_cotizaciones',
                 enableColumnResize: true,
                 enableRowSelection: false,
@@ -152,9 +152,9 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
 
             };
             
-            $scope.abrirViewCotizacion = function()
+            $scope.abrirViewPedidosClientes = function()
             {
-                $state.go('CotizacionCliente');
+                $state.go('PedidosClientes');
             }
             
             $scope.onRowClickSelectCliente = function() {
@@ -162,9 +162,9 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                 $scope.$emit('mostrarseleccioncliente');
             };
             
-            $scope.onRowClickSelectProducto = function() {
+            $scope.onRowClickSelectProducto = function(tipo_cliente) {
                 $scope.slideurl = "views/seleccionproducto.html?time=" + new Date().getTime();
-                $scope.$emit('mostrarseleccionproducto');
+                $scope.$emit('mostrarseleccionproducto', tipo_cliente);
             };
             
             $scope.buscarCotizaciones("");

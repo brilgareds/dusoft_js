@@ -86,7 +86,7 @@
                   <h4 class="h4MarginTopBottom">Productos</h4>
                 </div>
                 <div class="panel-body">
-                    <button type="submit" class="btn btn-accion btn-primary pull-left" ng-click="onRowClickSelectProducto()">Incluir Producto</button>
+                    <button type="submit" class="btn btn-accion btn-primary pull-left" ng-click="onRowClickSelectProducto(1)">Incluir Producto</button>
                     <div class="input-group navbar-form paddingRightZero">
                         <input type="text" class="form-control pull-right" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">
                         <div class="input-group-btn" >
@@ -95,7 +95,7 @@
                     </div>
                 </div>
                 <div class="panel-body">
-                    <div class="auditadosGrid" ng-grid="lista_pedidos_clientes"></div>
+                    <div class="auditadosGrid" ng-grid="lista_productos"></div>
                 </div>
             </div>
               
@@ -105,7 +105,7 @@
     <div class="col-sm-12 btn-toolbar">
         <button type="submit" class="btn btn-accion btn-success pull-right">Generar Cotización</button>
         <button type="submit" class="btn btn-accion btn-danger pull-right">Eliminar Cotización</button>
-        <button type="submit" class="btn btn-accion btn-warning pull-right">Cancelar Cotización</button>
+        <button type="submit" class="btn btn-accion btn-warning pull-right" ng-click="abrirViewPedidosClientes()">Cancelar Cotización</button>
     </div>
 
     <br/><br/><br/><br/><br/>

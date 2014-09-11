@@ -145,7 +145,7 @@
                   <h4 class="h4MarginTopBottom">Productos</h4>
                 </div>
                 <div class="panel-body">
-                    <button type="submit" class="btn btn-accion btn-primary pull-left" ng-disabled="bloquear" ng-click="onRowClickSelectProducto()">Incluir Producto</button>
+                    <button type="submit" class="btn btn-accion btn-primary pull-left" ng-disabled="bloquear" ng-click="onRowClickSelectProducto(2)">Incluir Producto</button>
                     <div class="input-group navbar-form paddingRightZero">
                         <input type="text" class="form-control pull-right" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">
                         <div class="input-group-btn" >
@@ -163,7 +163,7 @@
     
     <div class="col-sm-12 btn-toolbar">
         <button type="submit" class="btn btn-accion btn-success pull-right">Generar Pedido</button>
-        <button type="submit" class="btn btn-accion btn-warning pull-right">Cancelar Pedido</button>
+        <button type="submit" class="btn btn-accion btn-warning pull-right" ng-click="abrirViewVerPedidosFarmacias()">Cancelar Pedido</button>
     </div>
 
     <br/><br/><br/><br/><br/>

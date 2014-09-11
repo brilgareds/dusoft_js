@@ -4,7 +4,6 @@
     <div class="row paddingBottomtZero">
         <div class="panel-info col-sm-6 marginBottom5">
             <div class="panel-body col-sm-12 marginBottom5">
-                <!--<button ng-click="cerrar()" class="pull-right btn btn-default btn-xs" style="margin-right:15px"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>-->   
 
                 <div class="row marginBottom5">            
                     <h4>Tipo Documento: </h4>
@@ -113,20 +112,7 @@
                 </div>
                 
                 <div class="panel-body">
-                    <div class="input-group navbar-form paddingRightZero">
 
-                        <div class="row">            
-                            <h4>Seleccionar Cajas: </h4>
-                        </div>
-
-                        <div class="row  marginBottom5 col-sm-12 col-md-3">
-                            <select ui-select2="seleccioncaja"  class="form-control selectgeneral pull-left" ng-model="$parent.seleccion_caja"  placeholder="Todas" ng-change="cajaSeleccionada()">
-                                <option></option>
-                                <option ng-repeat="caja in cajas"  ng-value="caja.id_caja" >{{caja.nombre}}</option>
-                            </select>
-                        </div>
-
-                    </div>
                     
                     <div class="auditadosGrid" ng-grid="lista_productos_auditados_farmacias"></div>
 

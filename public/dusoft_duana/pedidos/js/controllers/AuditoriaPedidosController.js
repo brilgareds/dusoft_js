@@ -274,6 +274,14 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                 $scope.productosAuditados = [];
             });
 
+            socket.on("onListarDocumentosTemporalesClientes",function(data){
+                console.log("onListarDocumentosTemporalesClientes", data);
+            });
+
+            socket.on("onConnected",function(){
+                console.log("onConnected ====");
+            });
+
 
         }]);
 });

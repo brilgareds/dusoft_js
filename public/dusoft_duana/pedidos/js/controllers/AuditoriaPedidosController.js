@@ -19,6 +19,8 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
             $scope.productosAuditados = [];
+            $scope.notificacionclientes = 0;
+            $scope.notificacionfarmacias = 0;
 
             $scope.buscarPedidosSeparados = function(obj, tipo, paginando, callback) {
                 var url = API.DOCUMENTOS_TEMPORALES.LISTAR_DOCUMENTOS_TEMPORALES_CLIENTES;
@@ -276,11 +278,29 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
 
             socket.on("onListarDocumentosTemporalesClientes",function(data){
                 console.log("onListarDocumentosTemporalesClientes", data);
+                if(data.status == 200){
+                    $scope.notificacionclientes++;
+                    for(var i in data.documento_temporal_clientes){
+                        var obj = data.documento_temporal_clientes[i];
+                        var documento_temporal = $scope.crearDocumentoTemporal(obj,1);
+                        $scope.Empresa.agregarDocumentoTemporal(documento_temporal, 1);
+                    }
+                }
             });
 
-            socket.on("onConnected",function(){
-                console.log("onConnected ====");
+             socket.on("onListarDocumentosTemporalesFarmacias",function(data){
+                console.log("onListarDocumentosTemporalesFarmacias", data);
+                if(data.status == 200){
+                    $scope.notificacionfarmacias++;
+                    for(var i in data.documento_temporal_farmacias){
+                        var obj = data.documento_temporal_farmacias[i];
+                        var documento_temporal = $scope.crearDocumentoTemporal(obj,2);
+                        $scope.Empresa.agregarDocumentoTemporal(documento_temporal, 2);
+                    }
+                }
             });
+
+
 
 
         }]);

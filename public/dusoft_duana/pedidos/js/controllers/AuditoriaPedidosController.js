@@ -280,10 +280,11 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                 console.log("onListarDocumentosTemporalesClientes", data);
                 if(data.status == 200){
                     $scope.notificacionclientes++;
-                    for(var i in data.documento_temporal_clientes){
-                        var obj = data.documento_temporal_clientes[i];
+                    for(var i in data.obj.documento_temporal_clientes){
+                        var obj = data.obj.documento_temporal_clientes[i];
                         var documento_temporal = $scope.crearDocumentoTemporal(obj,1);
                         $scope.Empresa.agregarDocumentoTemporal(documento_temporal, 1);
+                        console.log("object added client ",obj );
                     }
                 }
             });
@@ -292,10 +293,11 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                 console.log("onListarDocumentosTemporalesFarmacias", data);
                 if(data.status == 200){
                     $scope.notificacionfarmacias++;
-                    for(var i in data.documento_temporal_farmacias){
-                        var obj = data.documento_temporal_farmacias[i];
+                    for(var i in data.obj.documento_temporal_farmacias){
+                        var obj = data.obj.documento_temporal_farmacias[i];
                         var documento_temporal = $scope.crearDocumentoTemporal(obj,2);
                         $scope.Empresa.agregarDocumentoTemporal(documento_temporal, 2);
+                         console.log("object added farm ",obj );
                     }
                 }
             });

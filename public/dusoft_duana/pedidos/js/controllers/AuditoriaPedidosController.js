@@ -283,6 +283,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                     for(var i in data.obj.documento_temporal_clientes){
                         var obj = data.obj.documento_temporal_clientes[i];
                         var documento_temporal = $scope.crearDocumentoTemporal(obj,1);
+                        documento_temporal.esDocumentoNuevo = true;
                         $scope.Empresa.agregarDocumentoTemporal(documento_temporal, 1);
                         console.log("object added client ",obj );
                     }

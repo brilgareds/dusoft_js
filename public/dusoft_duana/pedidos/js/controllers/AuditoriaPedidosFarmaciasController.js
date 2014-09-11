@@ -111,6 +111,8 @@ define(["angular", "js/controllers",
             };
 
             $scope.onRowClick = function(row){
+                documento_temporal.esDocumentoNuevo = false;
+                $scope.notificacionfarmacias--;
                  $scope.slideurl = "views/pedidoseparadofarmacia.html?time="+new Date().getTime();
                  $scope.$emit('mostrardetallefarmacia',row.entity);
                  //console.log("Presionado Botón Auditar Farmacia: ", row.entity);

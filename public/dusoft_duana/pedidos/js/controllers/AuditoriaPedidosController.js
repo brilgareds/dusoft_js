@@ -107,7 +107,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                     var obj = data.documentos_temporales[i];
                     
                     var documento_temporal = $scope.crearDocumentoTemporal(obj,tipo);
-
+                   // documento_temporal.esDocumentoNuevo = true;
                     $scope.Empresa.agregarDocumentoTemporal(documento_temporal, tipo);
                 }
             };
@@ -296,8 +296,9 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                     for(var i in data.obj.documento_temporal_farmacias){
                         var obj = data.obj.documento_temporal_farmacias[i];
                         var documento_temporal = $scope.crearDocumentoTemporal(obj,2);
+                        documento_temporal.esDocumentoNuevo = true;
                         $scope.Empresa.agregarDocumentoTemporal(documento_temporal, 2);
-                         console.log("object added farm ",obj );
+                         console.log("object added client ",obj );
                     }
                 }
             });

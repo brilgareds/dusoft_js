@@ -13,6 +13,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.bodegas_doc_id = 0;
             this.documento_temporal_id = 0;
             this.auditor;
+            this.esDocumentoNuevo = false;
             //this.detalle_documento_temporal = [];
         }
 

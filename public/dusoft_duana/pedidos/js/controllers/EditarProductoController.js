@@ -15,6 +15,7 @@ define(["angular", "js/controllers",'models/Cliente',
             
            $scope.producto = angular.copy(producto);
            $scope.pedido   = angular.copy(documento.getPedido());
+           $scope.producto.lote.cantidad_ingresada = $scope.producto.cantidad_separada;
            $scope.lotes    = [];
             $scope.session = {
                 usuario_id: Usuario.usuario_id,
@@ -62,6 +63,8 @@ define(["angular", "js/controllers",'models/Cliente',
                 lote.disponible = $scope.producto.disponible;
                 if($scope.esLoteSeleccionado(lote)){
                     lote.selected = true;
+                    lote.cantidad_ingresada = $scope.producto.cantidad_separada;
+
                 }
 
                 $scope.lotes.push(
@@ -78,14 +81,10 @@ define(["angular", "js/controllers",'models/Cliente',
                     {field: 'fecha_vencimiento', displayName: 'Fecha Vencimiento'},
                     {field: 'existencia_actual', displayName: 'Existencia'},
                     {field: 'disponible', displayName: 'Disponible'},
-                    {field:'cantidad_ingresada', displayName:'Cantidad', cellTemplate:'<div class="col-xs-12"><input type="text" validacion-numero class="form-control grid-inline-input" ng-disabled="!row.entity.selected" ng-change="onCantidadIngresadaChange(row)"'+
+                    {field:'cantidad_ingresada', displayName:'Cantidad', cellTemplate:'<div class="col-xs-12"><input type="text" ng-value="row.entity.cantidad_ingresada" validacion-numero class="form-control grid-inline-input" ng-disabled="!row.entity.selected" ng-change="onCantidadIngresadaChange(row)"'+
                              'ng-model="row.entity.cantidad_ingresada" /></div>'},
                     {field: 'opciones', displayName: "Cambiar", cellClass: "txt-center", width: "10%",
-                        cellTemplate: ' <div class="row">\n\
-                                            <button class="btn btn-xs" ng-class="getClass(row)" ng-click="onEditarLote(row)">\n\
-                                                <span class="glyphicon glyphicon-check"></span>\n\
-                                            </button>\n\
-                                        </div>'
+                        cellTemplate: ' <input-check ng-model="row.entity.selected" ng-click="onEditarLote(row)"> />'
                     }
                 ]
 
@@ -102,27 +101,26 @@ define(["angular", "js/controllers",'models/Cliente',
             };
             
             $scope.onEditarLote = function(row){
-                
                 //evite desmargar el mismo seleccionado
                 if($scope.esLoteSeleccionado(row.entity)){
                     return;
                 }
 
                 $scope.producto.lote = row.entity;
-               // $scope.producto.lote.selected   = !row.entity.selected;
                 $scope.producto.cantidad_separada = 0;
 
-                $scope.producto.lote.selected = !row.entity.selected;
+                //$scope.producto.lote.selected = !row.entity.selected;
                 
                 for(var i in $scope.lotes){
                     if(!$scope.esLoteSeleccionado($scope.lotes[i])){
-                        /*console.log("no selected",$scope.lotes[i]);
+                       /* console.log("no selected",$scope.lotes[i]);
                         console.log("why",$scope.producto.lote, $scope.lotes[i])*/
                         $scope.lotes[i].selected = false;
                         $scope.lotes[i].cantidad_ingresada = 0;
                         
                     }
                 }
+
                 
                 
             };
@@ -176,9 +174,15 @@ define(["angular", "js/controllers",'models/Cliente',
                 return obj;
             };
 
+
             $scope.esLoteSeleccionado = function(lote){
-                return lote.codigo_lote == $scope.producto.lote.codigo_lote 
-                        && lote.fecha_vencimiento == $scope.producto.lote.fecha_vencimiento;
+                 if(lote.codigo_lote == $scope.producto.lote.codigo_lote 
+                        && lote.fecha_vencimiento == $scope.producto.lote.fecha_vencimiento){
+                   // console.log("es lote seleccionado ", lote)
+                    return true;
+                 } 
+
+                 return false;
             };
 
             $scope.auditarPedido = function(){

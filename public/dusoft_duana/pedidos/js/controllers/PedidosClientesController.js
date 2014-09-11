@@ -133,10 +133,15 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
                  '<div ng-repeat="col in renderedColumns" ng-class="col.colIndex()" class="ngCell "  >' +
                  '<div ng-cell ></div>' +
                  '</div>' +
-                 '</div>',*/
+                 '</div>', <input-check ng-model="row.entity.selected" ng-click="onEditarLote(row)"> />*/
                 columnDefs: [
-                    {field: '', cellClass: "checkseleccion", width: "60",
-                        cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)' ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 || row.entity.estado == 3 || row.entity.estado_separacion'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
+                   /* {field: '', cellClass: "checkseleccion", width: "60",
+                        cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)' ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 || row.entity.estado == 3 || row.entity.estado_separacion'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},*/
+                   {field: '', cellClass: "checkseleccion", width: "60",
+                        cellTemplate: "<input-check class='checkpedido' ng-checked='buscarSeleccion(row)'"+
+                                     " ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 || row.entity.estado == 3 || "+
+                                     "row.entity.estado_separacion'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
+
                     {field: 'descripcion_estado_actual_pedido', displayName: "Estado Actual", cellClass: "txt-center",
                         //cellTemplate: '<div ng-class="agregarClase(row.entity.estado_actual_pedido)" >{{row.entity.descripcion_estado_actual_pedido}}</div>'},
                         cellTemplate: "<button type='button' ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},

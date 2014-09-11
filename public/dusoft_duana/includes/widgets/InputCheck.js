@@ -4,7 +4,7 @@ define(["angular","js/directive"], function(angular, directive){
     directive.directive('inputCheck', function() {
 
         var directive = {};
-        directive.checked = false;
+        
         directive.replace = true;
         directive.require = "ngModel";
         directive.restrict = 'E';
@@ -13,29 +13,36 @@ define(["angular","js/directive"], function(angular, directive){
                     '</button>';
 
         directive.scope = {
-          ngModel: '=ngModel'
+
+        };
+
+        directive.controller = function($scope){
+            $scope.checked = false;
         };
 
         //cuando la etiqueta esta cargada en el dom
-        directive.link = function($scope, element, attrs, ngModel){
+        directive.link = function(scope, element, attrs, ngModel){
             element.on("click",function(){
-                directive.checked = !directive.checked;
-                directive.setClass(element);
-                ngModel.$setViewValue(directive.checked);
+                //console.log("init with ",scope.checked)
+                //console.log("on click" ,!scope.checked )
+                scope.checked = !scope.checked;
+                directive.setClass(element, scope);
+                ngModel.$setViewValue(scope.checked);
                 
             });
 
            //watch para revisar el cambio del modelo en tiempo real
-           $scope.$watch(function () {
+           scope.$watch(function () {
               return ngModel.$modelValue;
            }, function(newValue) {
-               directive.checked = newValue;
-               directive.setClass(element);
+               // console.log("on model change "+newValue)
+               scope.checked = newValue;
+               directive.setClass(element, scope);
            });
         };
 
-        directive.setClass = function(element){
-            if(directive.checked){
+        directive.setClass = function(element , scope){
+            if(scope.checked){
                 element.removeClass("btn-default");
                 element.addClass("btn-success");
             } else {

@@ -211,9 +211,9 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
 //                $scope.$emit('mostrarseleccioncliente');
 //            };
             
-            $scope.onRowClickSelectProducto = function() {
+            $scope.onRowClickSelectProducto = function(tipo_cliente) {
                 $scope.slideurl = "views/seleccionproducto.html?time=" + new Date().getTime();
-                $scope.$emit('mostrarseleccionproducto');
+                $scope.$emit('mostrarseleccionproducto', tipo_cliente);
             };
             
             $scope.valorSeleccionado = function(tipo_seleccion) {
@@ -250,6 +250,11 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
 //                    alert("Bloquear = "+$scope.bloquear);
 //                }
                 
+            }
+            
+            $scope.abrirViewVerPedidosFarmacias = function()
+            {
+                $state.go('VerPedidosFarmacias'); //Crear la URL para éste acceso y relacionarlo con el botón de "Cancelar en la View"
             }
             
             $scope.buscarCotizaciones("");

@@ -90,6 +90,11 @@ module.exports = function(app, di_container) {
 
     // ======== Auditoria de Documento de Despacho ====================
 
+    // Consultar Productos Documento Temporal 
+    app.post('/api/movBodegas/E008/auditoriaProductosDocumentoTemporal', function(req, res) {
+        c_e008.auditoriaProductosDocumentoTemporal(req, res);
+    });
+    
     // Modificar detalle Documento Temporal
     app.post('/api/movBodegas/E008/modificarDetalleDocumentoTemporal', function(req, res) {
 
@@ -110,7 +115,7 @@ module.exports = function(app, di_container) {
         c_e008.auditarProductoDocumentoTemporal(req, res);
     });
 
-    // Consultar productos Auditados
+    // Consultar productos Auditados ---- hacer aqui tambien el buscardor para los no auditados
     app.post('/api/movBodegas/E008/consultarProductosAuditados', function(req, res) {
         c_e008.consultarProductosAuditados(req, res);
     });

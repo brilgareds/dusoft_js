@@ -1,3 +1,5 @@
+//Controlador de la View verpedidosfarmacias.html
+
 define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
         'models/Cliente', 'models/PedidoVenta'], function(angular, controllers) {
 
@@ -22,11 +24,11 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             $scope.paginaactual = 1;
             //$scope.numero_pedido = "";
             //$scope.obj = {};
-            $scope.listado_cotizaciones = [];
+            $scope.listado_pedidos = [];
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
 
-            $scope.buscarCotizaciones = function(termino, paginando) {
+            $scope.buscarVerPedidosFarmacias = function(termino, paginando) {
 
                 //valida si cambio el termino de busqueda
                 if ($scope.ultima_busqueda != $scope.termino_busqueda) {
@@ -46,7 +48,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                             estado: 'Activo'
                         }
                     
-                    $scope.listado_cotizaciones.push(obj);
+                    $scope.listado_pedidos.push(obj);
                         
                 }
                 
@@ -136,7 +138,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             //definicion y delegados del Tabla de pedidos clientes
 
             $scope.lista_pedidos_farmacias = {
-                data: 'listado_cotizaciones',
+                data: 'listado_pedidos',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
@@ -155,9 +157,60 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             $scope.abrirViewPedidoFarmacia = function()
             {
                 $state.go('CreaPedidosFarmacias');
-            }
+            };
             
-            $scope.buscarCotizaciones("");
+            //Método para liberar Memoria de todo lo construido en ésta clase
+            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
+               
+               //alert("En éste momento debo limpiar algo");
+               $scope.listado_pedidos = [];
+
+            });
+            
+            //eventos de widgets
+            $scope.onKeyVerPedidosFarmaciasPress = function(ev, termino_busqueda) {
+                 //if(!$scope.buscarVerPedidosFarmacias($scope.DocumentoTemporal.bodegas_doc_id)) return;
+
+                 if (ev.which == 13) {
+                     $scope.buscarVerPedidosFarmacias(termino_busqueda);
+                 }
+            };
+
+            $scope.paginaAnterior = function() {
+                 $scope.paginaactual--;
+                 $scope.buscarVerPedidosFarmacias($scope.termino_busqueda, true);
+            };
+
+            $scope.paginaSiguiente = function() {
+                 $scope.paginaactual++;
+                 $scope.buscarVerPedidosFarmacias($scope.termino_busqueda, true);
+            };
+
+            $scope.valorSeleccionado = function() {
+//                 var obj = {
+//                     session: $scope.session,
+//                     data: {
+//                         movimientos_bodegas: {
+//                             documento_temporal_id: $scope.documento_temporal_id, 
+//                             usuario_id: $scope.usuario_id,
+//                             bodegas_doc_id: $scope.seleccion,
+//                             numero_pedido:$scope.numero_pedido
+//                         }
+//                     }
+//                 };
+//
+//                $scope.validarDocumentoUsuario(obj, 2, function(data){
+//                    if(data.status === 200){
+//                        $scope.DocumentoTemporal.bodegas_doc_id = $scope.seleccion;
+//                        AlertService.mostrarMensaje("success", data.msj);
+//                    } else {
+//                        AlertService.mostrarMensaje("warning", data.msj);
+//                    }
+//                });
+
+            };
+            
+            $scope.buscarVerPedidosFarmacias("");
 
         }]);
 });

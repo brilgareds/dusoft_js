@@ -1,3 +1,5 @@
+//Controlador de la View pedidosclientes.html
+
 define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
         'models/Cliente', 'models/PedidoVenta'], function(angular, controllers) {
 
@@ -156,6 +158,57 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             {
                 $state.go('CotizacionCliente');
             }
+            
+            //Método para liberar Memoria de todo lo construido en ésta clase
+            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
+               
+               //alert("En éste momento debo limpiar algo");
+               $scope.listado_cotizaciones = [];
+
+            });
+            
+            //eventos de widgets
+            $scope.onKeyCotizacionesPress = function(ev, termino_busqueda) {
+                 //if(!$scope.buscarVerPedidosFarmacias($scope.DocumentoTemporal.bodegas_doc_id)) return;
+
+                 if (ev.which == 13) {
+                     $scope.buscarCotizaciones(termino_busqueda);
+                 }
+            };
+
+            $scope.paginaAnterior = function() {
+                 $scope.paginaactual--;
+                 $scope.buscarCotizaciones($scope.termino_busqueda, true);
+            };
+
+            $scope.paginaSiguiente = function() {
+                 $scope.paginaactual++;
+                 $scope.buscarCotizaciones($scope.termino_busqueda, true);
+            };
+
+            $scope.valorSeleccionado = function() {
+//                 var obj = {
+//                     session: $scope.session,
+//                     data: {
+//                         movimientos_bodegas: {
+//                             documento_temporal_id: $scope.documento_temporal_id, 
+//                             usuario_id: $scope.usuario_id,
+//                             bodegas_doc_id: $scope.seleccion,
+//                             numero_pedido:$scope.numero_pedido
+//                         }
+//                     }
+//                 };
+//
+//                $scope.validarDocumentoUsuario(obj, 2, function(data){
+//                    if(data.status === 200){
+//                        $scope.DocumentoTemporal.bodegas_doc_id = $scope.seleccion;
+//                        AlertService.mostrarMensaje("success", data.msj);
+//                    } else {
+//                        AlertService.mostrarMensaje("warning", data.msj);
+//                    }
+//                });
+
+            };
             
             $scope.buscarCotizaciones("");
 

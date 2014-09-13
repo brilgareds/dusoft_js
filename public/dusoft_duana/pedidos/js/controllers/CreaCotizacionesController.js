@@ -1,3 +1,5 @@
+//Controlador de la View cotizacioncliente.html
+
 define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
         'models/Cliente', 'models/PedidoVenta'], function(angular, controllers) {
 
@@ -22,7 +24,17 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             $scope.paginaactual = 1;
             //$scope.numero_pedido = "";
             //$scope.obj = {};
-            $scope.listado_cotizaciones = [];
+            $scope.listado_productos = [];
+            
+            $scope.seleccion_vendedor = "";
+            
+            $scope.lista_vendedores = [ {id: 1, nombre: 'Oscar Huerta'},
+                                        {id: 2, nombre: 'Bruce Wayn'},
+                                        {id: 3, nombre: 'John Malcovich'},
+                                        {id: 4, nombre: 'Patricia Salgado'},
+                                        {id: 5, nombre: 'Sofia Vergara'},
+                                        {id: 6, nombre: 'Salma Hayec'}
+                                        ];
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
 
@@ -39,19 +51,16 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                     
                     obj = { 
                             numero_producto: '123456'+i,
-                            nombre_producto: 'Franz Kafka',
-                            nombre_vendedor: 'Alexeiv Karpov'+i,
+                            nombre_producto: 'Riboflavina Intuitiva factor '+1,
+                            nombre_vendedor: 'Bladimir Ribolovlev'+i,
                             fecha_cotizacion: '0'+i+'-09-2014',
                             valor_cotizacion: i+'00.000',
                             estado: 'Activo'
                         }
                     
-                    $scope.listado_cotizaciones.push(obj);
+                    $scope.listado_productos.push(obj);
                         
                 }
-                
-                console.log("LISTADO COTIZACIONES: ", $scope.listado_cotizaciones);
-                
 
                 
 //                var obj = {
@@ -136,11 +145,11 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             //definicion y delegados del Tabla de pedidos clientes
 
             $scope.lista_productos = {
-                data: 'listado_cotizaciones',
+                data: 'listado_productos',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
-                    {field: 'numero_producto', displayName: 'Numero Producto'},
+                    {field: 'numero_producto', displayName: 'Número Producto'},
                     {field: 'nombre_producto', displayName: 'Nombre Producto'},
                     {field: 'nombre_vendedor', displayName: 'Vendedor'},
                     {field: 'fecha_cotizacion', displayName: 'Fecha'},
@@ -166,6 +175,16 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                 $scope.slideurl = "views/seleccionproducto.html?time=" + new Date().getTime();
                 $scope.$emit('mostrarseleccionproducto', tipo_cliente);
             };
+            
+            //Método para liberar Memoria de todo lo construido en ésta clase
+            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
+               
+               //alert("En éste momento debo limpiar algo");
+               
+               $scope.listado_productos = [];
+               $scope.lista_vendedores = [];
+               
+            });
             
             $scope.buscarCotizaciones("");
 

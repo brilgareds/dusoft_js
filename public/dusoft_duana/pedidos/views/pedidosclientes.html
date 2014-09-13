@@ -1,29 +1,13 @@
 <div>
     <div ng-controller="CotizacionesController">
 
-    <!--Auditoria de pedidos-->
-
-    <!--route 1 {{welcomemsg}} got to child  <a ui-sref="route1.item">Route item</a>-->
-   
-<!--    <tabset  class="">
-        
-        <tab ng-controller="CotizacionesController">
-            <tab-heading>
-                Cotizaciones
-            </tab-heading>-->
-
             <div class="input-group navbar-form">
-                <!--<section ui-view>-->
-                    <button type="submit" class="btn btn-accion btn-primary pull-left" ng-click="abrirViewCotizacion()">Crear Cotización</button>
-                <!--</section>-->
-<!--                <button type="button" class="btn btn-default btn-medium pull-right" ng-disabled="pedidosSeleccionados.length == 0" ng-click="abrirModalAsignar()">
-                    <span class="glyphicon glyphicon-ok" ></span> Asignar Responsables
-                </button>-->
-                
 
-                <input type="text" class="form-control pull-right" ng-keypress="onKeySeparadosPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
+                    <button type="submit" class="btn btn-accion btn-primary pull-left" ng-click="abrirViewCotizacion()">Crear Cotización</button>
+
+                <input type="text" class="form-control pull-right" ng-keypress="onKeyCotizacionesPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
                 <div class="input-group-btn" >
-                    <button class="btn btn-default" type="submit" ng-click="buscarPedidosSeparadosCliente(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                    <button class="btn btn-default" type="submit" ng-click="buscarCotizaciones(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
                 </div>
 
             </div>
@@ -40,14 +24,6 @@
                     <span class="glyphicon glyphicon-chevron-right" ></span>
                 </button>
             </div>
-
-<!--            <div slide-content open-callback="mostrardetallecliente" close-callback="cerrardetallecliente" class="slide" >
-                <div ng-include src="slideurl"  ng-controller="DetallepedidoSeparadoClienteController" ></div>
-            </div>-->
-<!--
-        </tab>        
-
-    </tabset>-->
 
     </br>
     </div>

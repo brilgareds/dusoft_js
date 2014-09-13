@@ -16,21 +16,20 @@
                 <div class="panel-body">
                     
                     <div class="input-group navbar-form paddingRightZero">
-                        <input type="text" class="form-control pull-right" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar Cliente" name="srch-term" id="srch-term">
+                        <input type="text" class="form-control pull-right" ng-keypress="onKeySeleccionClientePress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar Cliente" name="srch-term" id="srch-term">
                         <div class="input-group-btn" >
-                            <button class="btn btn-default pull-right" type="submit" ng-click="buscarDetalleDocumentoTemporal(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                            <button class="btn btn-default pull-right" type="submit" ng-click="buscarSeleccionCliente(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
                         </div>
                     </div>
                     
                 </div>
-                <div class="panel-body">
-                    <div class="auditadosGrid" ng-grid="lista_pedidos_clientes"></div>
+                <div class="panel-body" ng-if="listado_clientes.length > 0">
+                    <div class="auditadosGrid" ng-grid="grid_clientes"></div>
                 </div>
             </div>
               
         </div>    
     </div> <!-- / end class row --> 
 
-    <br/><br/><br/><br/><br/>
 
 </div>

@@ -1,3 +1,5 @@
+//Controlador de la View seleccionproducto.html asociado a Slide en cotizacioncliente.html y creapedidosfarmacias.html
+
 define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
         'models/Cliente', 'models/PedidoVenta'], function(angular, controllers) {
 
@@ -31,22 +33,55 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
             
-            $scope.cerrar = function(){
-               $scope.$emit('cerrarseleccionproducto', {animado:true});
+            
+            $scope.lista_productos = {    
+                data: 'listado_productos_clientes',
+                enableColumnResize: true,
+                enableRowSelection: false,
+                enableCellSelection: true,
+                selectedItems: $scope.selectedRow,
+                multiSelect: false,
+                columnDefs: [
+                    {field: 'codigo_producto', displayName: 'Código Producto'},
+                    {field: 'descripcion', displayName: 'Descripción'},
+                    {field: 'molecula', displayName: 'Molécula'},
+                    {field: 'existencia_bodega', displayName: 'Existencia Bodega'},
+                    {field: 'existencia_disponible', displayName: 'Disponible'},
+                    {field: 'existencia_reservada', displayName: 'Reservado'},
+                    {field: 'cantidad', displayName: 'Cantidad', enableCellEdit: true},
+                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
+                        cellTemplate: ' <div class="row">\n\
+                                            <button class="btn btn-success btn-xs" ng-click="onRowClick1(row)">\n\
+                                                <span class="glyphicon glyphicon-plus-sign">Incluir</span>\n\
+                                            </button>\n\
+                                            <button class="btn btn-danger btn-xs" ng-click="onRowClick2(row)">\n\
+                                                <span class="glyphicon glyphicon-minus-sign">Eliminar</span>\n\
+                                            </button>\n\
+                                        </div>'
+                    }
+                ]
+
             };
             
-            $rootScope.$on("mostrarseleccionproducto", function(e, datos) {
+            $scope.cerrar = function(){
+                $scope.$emit('cerrarseleccionproductoCompleto', {animado:true});
+               
+                $scope.listado_productos_farmacias = [];
+                $scope.listado_productos_clientes = [];
+            };
+            
+            $rootScope.$on("mostrarseleccionproductoCompleto", function(e, datos) {
                 //alert("TIPO CLIENTE - FUENTE: ");
                 //console.log("TIPO CLIENTE - FUENTE: ", datos);
                 
-                $scope.tipo_cliente = datos;
+                $scope.tipo_cliente = datos[1];
                 //alert("TIPO CLIENTE - COPIA: ");
                 console.log("TIPO CLIENTE - COPIA: ", $scope.tipo_cliente);
                 
-                $scope.buscarCotizaciones("");
+                $scope.buscarSeleccionProducto("");
             });
 
-            $scope.buscarCotizaciones = function(termino, paginando) {
+            $scope.buscarSeleccionProducto = function(termino, paginando) {
 
                 //valida si cambio el termino de busqueda
                 if ($scope.ultima_busqueda != $scope.termino_busqueda) {
@@ -92,34 +127,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                 if($scope.tipo_cliente === 1) {
 
                     //$scope.lista_productos_clientes = {
-                    $scope.lista_productos = {    
-                        data: 'listado_productos_clientes',
-                        enableColumnResize: true,
-                        enableRowSelection: false,
-                        enableCellSelection: true,
-                        selectedItems: $scope.selectedRow,
-                        multiSelect: false,
-                        columnDefs: [
-                            {field: 'codigo_producto', displayName: 'Código Producto'},
-                            {field: 'descripcion', displayName: 'Descripción'},
-                            {field: 'molecula', displayName: 'Molécula'},
-                            {field: 'existencia_bodega', displayName: 'Existencia Bodega'},
-                            {field: 'existencia_disponible', displayName: 'Disponible'},
-                            {field: 'existencia_reservada', displayName: 'Reservado'},
-                            {field: 'cantidad', displayName: 'Cantidad', enableCellEdit: true},
-                            {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
-                                cellTemplate: ' <div class="row">\n\
-                                                    <button class="btn btn-success btn-xs" ng-click="onRowClick1(row)">\n\
-                                                        <span class="glyphicon glyphicon-plus-sign">Incluir</span>\n\
-                                                    </button>\n\
-                                                    <button class="btn btn-danger btn-xs" ng-click="onRowClick2(row)">\n\
-                                                        <span class="glyphicon glyphicon-minus-sign">Eliminar</span>\n\
-                                                    </button>\n\
-                                                </div>'
-                            }
-                        ]
-
-                    };
+                    
                 }
                 else if($scope.tipo_cliente === 2) {
 
@@ -263,22 +271,61 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                 //$scope.lista_productos_farmacia.$gridScope.renderedRows[row.rowIndex] = 
             };
             
-//            $scope.abrirViewCotizacion = function()
-//            {
-//                $state.go('CotizacionCliente');
-//            }
-//            
-//            $scope.onRowClickSelectCliente = function(row) {
-//                $scope.slideurl = "views/seleccioncliente.html?time=" + new Date().getTime();
-//                $scope.$emit('mostrarseleccioncliente', row.entity);
-//            };
-//            
-//            $scope.onRowClickSelectProducto = function(row) {
-//                $scope.slideurl = "views/seleccionproducto.html?time=" + new Date().getTime();
-//                $scope.$emit('mostrarseleccionproducto', row.entity);
-//            };
+            //Método para liberar Memoria de todo lo construido en ésta clase
+            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
+ 
+                //Este evento no funciona para los Slides, así que toca liberar memoria con el emit al cerrar el slide
+                //Las siguientes líneas son efectivas si se usa la view sin el slide
+
+                $scope.listado_productos_farmacias = [];
+                $scope.listado_productos_clientes = [];
+
+            });
             
-            //$scope.buscarCotizaciones("");
+            //eventos de widgets
+            $scope.onKeySeleccionProductoPress = function(ev, termino_busqueda) {
+                 //if(!$scope.buscarSeleccionProducto($scope.DocumentoTemporal.bodegas_doc_id)) return;
+
+                 if (ev.which == 13) {
+                     $scope.buscarSeleccionProducto(termino_busqueda);
+                 }
+            };
+
+            $scope.paginaAnterior = function() {
+                 $scope.paginaactual--;
+                 $scope.buscarSeleccionProducto($scope.termino_busqueda, true);
+            };
+
+            $scope.paginaSiguiente = function() {
+                 $scope.paginaactual++;
+                 $scope.buscarSeleccionProducto($scope.termino_busqueda, true);
+            };
+
+            $scope.valorSeleccionado = function() {
+//                 var obj = {
+//                     session: $scope.session,
+//                     data: {
+//                         movimientos_bodegas: {
+//                             documento_temporal_id: $scope.documento_temporal_id, 
+//                             usuario_id: $scope.usuario_id,
+//                             bodegas_doc_id: $scope.seleccion,
+//                             numero_pedido:$scope.numero_pedido
+//                         }
+//                     }
+//                 };
+//
+//                $scope.validarDocumentoUsuario(obj, 2, function(data){
+//                    if(data.status === 200){
+//                        $scope.DocumentoTemporal.bodegas_doc_id = $scope.seleccion;
+//                        AlertService.mostrarMensaje("success", data.msj);
+//                    } else {
+//                        AlertService.mostrarMensaje("warning", data.msj);
+//                    }
+//                });
+
+            };
+            
+            //$scope.buscarSeleccionProducto("");
 
         }]);
 });

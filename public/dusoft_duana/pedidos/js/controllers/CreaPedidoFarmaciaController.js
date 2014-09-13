@@ -23,7 +23,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             $scope.bloquear = false; //Default True
             //$scope.numero_pedido = "";
             //$scope.obj = {};
-            $scope.listado_cotizaciones = [];
+            $scope.listado_productos = [];
             
             $scope.de_seleccion_empresa = 0;
             $scope.de_seleccion_centro_utilidad = 0;
@@ -90,7 +90,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                             existencia_x_farmacia: 20*i
                         }
                     
-                    $scope.listado_cotizaciones.push(obj);
+                    $scope.listado_productos.push(obj);
                         
                 }
                 
@@ -180,7 +180,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             //definicion y delegados del Tabla de pedidos clientes
 
             $scope.lista_productos = {
-                data: 'listado_cotizaciones',
+                data: 'listado_productos',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 enableCellSelection: true,
@@ -250,12 +250,28 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
 //                    alert("Bloquear = "+$scope.bloquear);
 //                }
                 
-            }
+            };
             
             $scope.abrirViewVerPedidosFarmacias = function()
             {
                 $state.go('VerPedidosFarmacias'); //Crear la URL para éste acceso y relacionarlo con el botón de "Cancelar en la View"
-            }
+            };
+            
+            //Método para liberar Memoria de todo lo construido en ésta clase
+            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
+               
+               //alert("En éste momento debo limpiar algo");
+                $scope.listado_productos = [];
+               
+                $scope.de_lista_empresas = [];
+                $scope.de_lista_centro_utilidad = [];
+                $scope.de_lista_bodegas = [];
+
+                $scope.para_lista_empresas = [];
+                $scope.para_lista_centro_utilidad = [];
+                $scope.para_lista_bodegas = [];
+
+            });
             
             $scope.buscarCotizaciones("");
 

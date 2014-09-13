@@ -96,7 +96,8 @@ define(["angular", "js/controllers",
                 enableColumnResize: true,
                 enableRowSelection:false,
                 columnDefs: [
-                    {field: 'pedido.numero_pedido', displayName: 'Numero Pedido'},
+                    {field: 'pedido.numero_pedido', displayName: 'Numero Pedido', cellTemplate:"<div class='ngCellText ng-scope col1 colt1'>{{row.entity.pedido.numero_pedido}}"+
+                        "<span  ng-show='row.entity.esDocumentoNuevo' class='label label-danger pull-right'>Nuevo</span></div>"},
                     {field: 'pedido.nombre_vendedor', displayName: 'Farmacia'},
                     {field: 'pedido.farmacia.nombre_bodega', displayName: 'Bodega'},
                     {field: 'zona_pedido', displayName: 'Zona'},
@@ -111,6 +112,8 @@ define(["angular", "js/controllers",
             };
 
             $scope.onRowClick = function(row){
+                row.entity.esDocumentoNuevo = false;
+                $scope.notificacionfarmacias--;
                  $scope.slideurl = "views/pedidoseparadofarmacia.html?time="+new Date().getTime();
                  $scope.$emit('mostrardetallefarmacia',row.entity);
                  //console.log("Presionado Botón Auditar Farmacia: ", row.entity);

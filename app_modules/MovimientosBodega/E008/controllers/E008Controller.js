@@ -947,6 +947,66 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
 
 };
 
+// Consultar Productos Documento Temporal que estan pendientes por auditar
+E008Controller.prototype.auditoriaProductosDocumentoTemporal = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined || args.documento_temporal.usuario_id === undefined || args.documento_temporal.filtro === undefined) {
+        res.send(G.utils.r(req.url, 'documento_temporal_id,  usuario_id o filtro No Estan Definidos', 404, {}));
+        return;
+    }
+
+    if (args.documento_temporal.filtro.termino_busqueda === undefined) {
+        res.send(G.utils.r(req.url, 'termino_busqueda no esta definidos', 404, {}));
+        return;
+    }
+
+    if (args.documento_temporal.documento_temporal_id === '' || args.documento_temporal.usuario_id === '') {
+        res.send(G.utils.r(req.url, 'documento_temporal_id,  usuario_id estan vacios', 404, {}));
+        return;
+    }
+
+    if (args.documento_temporal.filtro.termino_busqueda === '') {
+        res.send(G.utils.r(req.url, 'termino_busqueda esta vacio', 404, {}));
+        return;
+    }
+
+
+    var documento_temporal_id = args.documento_temporal.documento_temporal_id;
+    var usuario_id = args.documento_temporal.usuario_id;
+    var filtro = args.documento_temporal.filtro;
+    var termino_busqueda = args.documento_temporal.filtro.termino_busqueda;
+
+    var lista_productos = [];
+
+    that.m_movientos_bodegas.consultar_detalle_movimiento_bodega_temporal(documento_temporal_id, usuario_id, function(err, detalle_documento_temporal) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error listando los productos auditados', 500, {movimientos_bodegas: {}}));
+            return;
+        } else {
+            detalle_documento_temporal.forEach(function(producto) {
+
+                //Si filtro es por codigo de barras.
+                if (filtro.codigo_barras) {
+                    if (producto.auditado === '0' && producto.codigo_barras === termino_busqueda)
+                        lista_productos.push(producto);
+                }
+
+                //si filtro es por descripcion 
+                if (filtro.descripcion_producto) {
+                    if (producto.auditado === '0' && producto.descripcion_producto.toLocaleLowerCase().substring(0, termino_busqueda.length) === termino_busqueda.toLowerCase())
+                        lista_productos.push(producto);
+                }
+            });
+            res.send(G.utils.r(req.url, 'Listado productos auditados', 200, {movimientos_bodegas: {lista_productos_auditados: lista_productos}}));
+        }
+    });
+};
+
 E008Controller.$inject = ["m_movientos_bodegas", "m_e008", "e_e008", "m_pedidos_clientes", "m_pedidos_farmacias", "e_pedidos_clientes", "e_pedidos_farmacias", "m_terceros"];
 
 module.exports = E008Controller;

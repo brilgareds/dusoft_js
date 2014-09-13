@@ -51,7 +51,8 @@ define(["angular", "js/controllers",
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
-                    {field: 'pedido.numero_pedido', displayName: 'Numero Pedido'},
+                    {field: 'pedido.numero_pedido', displayName: 'Numero Pedido', cellTemplate:"<div class='ngCellText ng-scope col1 colt1'>{{row.entity.pedido.numero_pedido}}"+
+                        "<span  ng-show='row.entity.esDocumentoNuevo' class='label label-danger pull-right'>Nuevo</span></div>"},
                     {field: 'pedido.cliente.nombre_tercero', displayName: 'Cliente'},
                     {field: 'pedido.nombre_vendedor', displayName: 'Vendedor'},
                     {field: 'separador.nombre_operario', displayName: 'Separador'},
@@ -78,6 +79,8 @@ define(["angular", "js/controllers",
             
 
             $scope.onRowClick = function(row) {
+                row.entity.esDocumentoNuevo = false;
+                $scope.notificacionclientes--;
                 $scope.slideurl = "views/pedidoseparadocliente.html?time=" + new Date().getTime();
                 $scope.$emit('mostrardetallecliente', row.entity);
             };

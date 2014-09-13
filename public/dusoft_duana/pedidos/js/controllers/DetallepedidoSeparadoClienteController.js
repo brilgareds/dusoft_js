@@ -64,15 +64,17 @@ define(["angular", "js/controllers",'models/Cliente',
 
                 $scope.traerListadoDocumentosUsuario(obj, $scope.resultasdoListadoDocumentosUsuario);
 
-                obj.data = {
-                    documento_temporal:{
-                        documento_temporal_id:$scope.DocumentoTemporal.documento_temporal_id,
-                        usuario_id:$scope.DocumentoTemporal.separador.usuario_id
+                var params ={
+                    session:$scope.session,
+                    data : {
+                        documento_temporal:{
+                            documento_temporal_id:$scope.DocumentoTemporal.documento_temporal_id,
+                            usuario_id:$scope.DocumentoTemporal.separador.usuario_id
+                        }
                     }
                 };
-
-                $scope.traerProductosAuditatos(obj);
                 
+                $scope.traerProductosAuditatos(params);
                 
             });
 
@@ -193,8 +195,8 @@ define(["angular", "js/controllers",'models/Cliente',
                 var obj = {
                     session: $scope.session,
                     data: {
-                        movimientos_bodegas: {
-                            documento_temporal_id: $scope.documento_temporal_id, 
+                        documento_temporal: {
+                            documento_temporal_id: $scope.DocumentoTemporal.documento_temporal_id, 
                             usuario_id: $scope.usuario_id,
                             bodegas_doc_id: $scope.seleccion,
                             numero_pedido:$scope.numero_pedido

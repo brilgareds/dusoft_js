@@ -19,6 +19,8 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
             $scope.productosAuditados = [];
+            $scope.notificacionclientes = 0;
+            $scope.notificacionfarmacias = 0;
 
             $scope.buscarPedidosSeparados = function(obj, tipo, paginando, callback) {
                 var url = API.DOCUMENTOS_TEMPORALES.LISTAR_DOCUMENTOS_TEMPORALES_CLIENTES;
@@ -105,7 +107,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                     var obj = data.documentos_temporales[i];
                     
                     var documento_temporal = $scope.crearDocumentoTemporal(obj,tipo);
-
+                   // documento_temporal.esDocumentoNuevo = true;
                     $scope.Empresa.agregarDocumentoTemporal(documento_temporal, tipo);
                 }
             };
@@ -273,6 +275,36 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             $scope.$on("onDetalleCerrado",function(){
                 $scope.productosAuditados = [];
             });
+
+            socket.on("onListarDocumentosTemporalesClientes",function(data){
+                console.log("onListarDocumentosTemporalesClientes", data);
+                if(data.status == 200){
+                    $scope.notificacionclientes++;
+                    for(var i in data.obj.documento_temporal_clientes){
+                        var obj = data.obj.documento_temporal_clientes[i];
+                        var documento_temporal = $scope.crearDocumentoTemporal(obj,1);
+                        documento_temporal.esDocumentoNuevo = true;
+                        $scope.Empresa.agregarDocumentoTemporal(documento_temporal, 1);
+                        console.log("object added client ",obj );
+                    }
+                }
+            });
+
+             socket.on("onListarDocumentosTemporalesFarmacias",function(data){
+                console.log("onListarDocumentosTemporalesFarmacias", data);
+                if(data.status == 200){
+                    $scope.notificacionfarmacias++;
+                    for(var i in data.obj.documento_temporal_farmacias){
+                        var obj = data.obj.documento_temporal_farmacias[i];
+                        var documento_temporal = $scope.crearDocumentoTemporal(obj,2);
+                        documento_temporal.esDocumentoNuevo = true;
+                        $scope.Empresa.agregarDocumentoTemporal(documento_temporal, 2);
+                         console.log("object added client ",obj );
+                    }
+                }
+            });
+
+
 
 
         }]);

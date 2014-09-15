@@ -1044,11 +1044,24 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                 res.send(G.utils.r(req.url, 'Algunos productos no ha sido auditados o tienen pendientes la justificacion', 404, {movimientos_bodegas: {productos_no_auditados: productos_no_auditados, productos_pendientes: productos_pendientes}}));
                 return;
             }
+            
         }
     });
 };
 
+// Generar Documento Despacho Farmacias
+E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) {
 
+
+    // Verificar Rotulos
+    // Verificar Pendientes
+    // Ingresar Justificacion
+
+
+};
+
+// Valida que loproductos con pendientes esten justificados
+// igualmente para los auditados
 function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento_temporal_id, usuario_id, callback) {
 
     var that = contexto;
@@ -1100,20 +1113,9 @@ function __validar_productos_pedidos_farmacias() {
 }
 ;
 
-
-
-// Generar Documento Despacho Farmacias
-E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) {
-
-
-    // Verificar Rotulos
-    // Verificar Pendientes
-    // Ingresar Justificacion
-
-
-};
-
-
+function __validar_rotulos_cajas(){
+    
+}
 
 
 

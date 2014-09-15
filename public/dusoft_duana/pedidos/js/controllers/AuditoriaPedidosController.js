@@ -138,6 +138,20 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                 
             };
 
+            $scope.buscarProductosSeparadosEnDocumento = function(obj,callback){
+                var url = API.DOCUMENTOS_TEMPORALES.CONSULTAR_DOCUMENTO_TEMPORAL;
+                 Request.realizarRequest(url, "POST", obj, function(data) {
+                     
+                    if(data.status == 200) { 
+                        console.log("detalle ", data)
+                        return;
+                        if(data.obj.documento_temporal != undefined) {
+                            callback(data, paginando);
+                        }
+                    }
+                });
+            };
+
             $scope.renderDetalleDocumentoTemporal = function(documento , data, paginando) {
                 //Vaciar el listado de Productos
                 documento.getPedido().vaciarProductos();

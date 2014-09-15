@@ -21,6 +21,9 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             $scope.productosAuditados = [];
             $scope.notificacionclientes = 0;
             $scope.notificacionfarmacias = 0;
+            $scope.filtro = {
+                codigo_barras:false
+            };
 
             $scope.buscarPedidosSeparados = function(obj, tipo, paginando, callback) {
                 var url = API.DOCUMENTOS_TEMPORALES.LISTAR_DOCUMENTOS_TEMPORALES_CLIENTES;
@@ -138,20 +141,54 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                 
             };
 
-            $scope.renderDetalleDocumentoTemporal = function(documento , data, paginando) {
+            $scope.buscarProductosSeparadosEnDocumento = function(obj,callback){
+                var url = API.DOCUMENTOS_TEMPORALES.CONSULTAR_DOCUMENTO_TEMPORAL;
+                 Request.realizarRequest(url, "POST", obj, function(data) {
+                     
+                    if(data.status == 200) { 
+
+                        if(data.obj.movimientos_bodegas != undefined) {
+                            callback(data);
+                        }
+                    }
+                });
+            };
+
+            $scope.renderDetalleDocumentoTemporal = function(documento , productos) {
                 //Vaciar el listado de Productos
+
+                if(productos.length == 0){
+                    console.log("should disabled filter =======")
+                    $scope.filtro.codigo_barras = false;
+                    return;
+                }
+
                 documento.getPedido().vaciarProductos();
 
-                for (var i in data.lista_productos) {
+                for (var i in productos) {
 
-                    var obj = data.lista_productos[i];
+                    var obj = productos[i];
                     
                     var producto_pedido_separado = $scope.crearProductoPedidoDocumentoTemporal(obj);
                     
                     documento.getPedido().agregarProducto(producto_pedido_separado);
 
-                   // console.log("DOCUMENTO TEMPORAL CON PRODUCTOS DE PEDIDO INGRESADOS",documento);
+                    //console.log("DOCUMENTO TEMPORAL CON PRODUCTOS DE PEDIDO INGRESADOS",productos);
                 }
+            };
+
+
+            $scope.onKeyDocumentosSeparadosPress = function(ev, termino_busqueda, documento, params){
+                
+
+                $scope.buscarProductosSeparadosEnDocumento(params,function(data){
+                    if(data.status == 200){
+                        var productos = data.obj.movimientos_bodegas.lista_productos_auditados;
+                        console.log("productos encontrados ",productos);
+
+                        $scope.renderDetalleDocumentoTemporal(documento , productos);
+                    }
+                });
             };
 
             $scope.crearProductoPedidoDocumentoTemporal = function(obj) {

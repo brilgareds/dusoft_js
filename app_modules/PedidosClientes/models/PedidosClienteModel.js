@@ -282,7 +282,8 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
                 a.porc_iva as porcentaje_iva,\
                 (a.valor_unitario+(a.valor_unitario*(a.porc_iva/100)))as valor_unitario_con_iva,\
                 (a.numero_unidades*(a.valor_unitario*(a.porc_iva/100))) as valor_iva,\
-                COALESCE(b.justificacion, '') as justificacion \
+                COALESCE(b.justificacion, '') as justificacion, \
+                '' as justificacion_auditor \
                 from ventas_ordenes_pedidos_d a \
                 inner join inventarios_productos c on a.codigo_producto = c.codigo_producto \
                 inner join inv_subclases_inventarios d on c.grupo_id = d.grupo_id and c.clase_id = d.clase_id and c.subclase_id = d.subclase_id \

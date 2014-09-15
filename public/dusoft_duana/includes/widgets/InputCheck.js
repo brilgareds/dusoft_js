@@ -27,7 +27,9 @@ define(["angular","js/directive"], function(angular, directive){
                 //console.log("on click" ,!scope.checked )
                 scope.checked = !scope.checked;
                 directive.setClass(element, scope);
+                console.log("chnage model")
                 ngModel.$setViewValue(scope.checked);
+                //ngModel.$setModelValue(scope.checked);
                 
             });
 

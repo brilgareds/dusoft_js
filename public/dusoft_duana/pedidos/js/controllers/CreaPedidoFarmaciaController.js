@@ -1,3 +1,5 @@
+//Controlador de la View creapedidosfarmacias.html
+
 define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
         'models/Cliente', 'models/PedidoVenta'], function(angular, controllers) {
 
@@ -212,7 +214,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
 //            };
             
             $scope.onRowClickSelectProducto = function(tipo_cliente) {
-                $scope.slideurl = "views/seleccionproducto.html?time=" + new Date().getTime();
+                $scope.slideurl = "views/seleccionproductofarmacia.html?time=" + new Date().getTime();
                 $scope.$emit('mostrarseleccionproducto', tipo_cliente);
             };
             

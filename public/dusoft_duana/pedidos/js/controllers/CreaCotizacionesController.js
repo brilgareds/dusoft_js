@@ -172,7 +172,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             };
             
             $scope.onRowClickSelectProducto = function(tipo_cliente) {
-                $scope.slideurl = "views/seleccionproducto.html?time=" + new Date().getTime();
+                $scope.slideurl = "views/seleccionproductocliente.html?time=" + new Date().getTime();
                 $scope.$emit('mostrarseleccionproducto', tipo_cliente);
             };
             

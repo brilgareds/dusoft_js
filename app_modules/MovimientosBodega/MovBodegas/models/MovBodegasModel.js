@@ -111,9 +111,11 @@ MovimientosBodegasModel.prototype.consultar_detalle_movimiento_bodega_temporal =
                 b.prefijo_temp,\
                 b.lote_devuelto,\
                 b.cantidad_sistema,\
-                b.auditado\
+                b.auditado,\
+                c.codigo_barras\
                 from inv_bodegas_movimiento_tmp a \
                 inner join inv_bodegas_movimiento_tmp_d b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
+                inner join inventarios_productos c on b.codigo_producto = c.codigo_producto\
                 where a.doc_tmp_id = $1 and a.usuario_id = $2 ";
 
     G.db.query(sql, [doc_tmp_id, usuario_id], function(err, rows, result) {

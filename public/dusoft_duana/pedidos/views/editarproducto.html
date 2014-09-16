@@ -1,6 +1,6 @@
 
 <div class="modal-view">
-    <alert ng-show="validacionproducto.valido == false">{{validacionproducto.mensaje}}</alert>
+    <alert ng-show="rootEditarProducto.validacionproducto.valido == false">{{rootEditarProducto.validacionproducto.mensaje}}</alert>
     <div class="panel panel-info">
         <div class="panel-heading">
             <h5 class="panel-title">Información General</h5>
@@ -8,16 +8,16 @@
         </div>
         <div class="panel-body">
             <div class="row" >
-                <div class ="col-md-3"><div class="lbl_editar_producto">Codigo</div>{{producto.codigo_producto}}</div>
-                <div class ="col-md-9"><div class="lbl_editar_producto">Descripcion</div>{{producto.descripcion}}</div>
+                <div class ="col-md-3"><div class="lbl_editar_producto">Codigo</div>{{rootEditarProducto.producto.codigo_producto}}</div>
+                <div class ="col-md-9"><div class="lbl_editar_producto">Descripcion</div>{{rootEditarProducto.producto.descripcion}}</div>
             </div>
             <div class="row">
-                <div class ="col-md-3"><div class="lbl_editar_producto">Lote</div>{{producto.lote.codigo_lote}}</div>
-                <div class ="col-md-9"><div class="lbl_editar_producto">Fecha_vencimiento</div>{{producto.lote.fecha_vencimiento}}</div>
+                <div class ="col-md-3"><div class="lbl_editar_producto">Lote</div>{{rootEditarProducto.producto.lote.codigo_lote}}</div>
+                <div class ="col-md-9"><div class="lbl_editar_producto">Fecha_vencimiento</div>{{rootEditarProducto.producto.lote.fecha_vencimiento}}</div>
             </div>
             <div class="row">
-                <div class ="col-md-3"><div class="lbl_editar_producto">Cant Solicitida</div>{{producto.cantidad_solicitada}}</div>
-                <div class ="col-md-3"><div class="lbl_editar_producto">Cant Separada</div>{{producto.cantidad_separada}}</div>
+                <div class ="col-md-3"><div class="lbl_editar_producto">Cant Solicitada</div>{{rootEditarProducto.producto.cantidad_solicitada}}</div>
+                <div class ="col-md-3"><div class="lbl_editar_producto">Cant Separada</div>{{rootEditarProducto.producto.cantidad_separada}}</div>
                 <div class ="col-md-3">
                     <label class="lbl_editar_producto">Verificar Lotes</label>
                     <input-check ng-model="modificarlotes" />
@@ -48,7 +48,7 @@
         </div>
         <div class="panel-body">
             <div class="row">
-                <div class ="col-md-6"><label class="lbl_editar_producto">Numero Caja: </label><input type="text" ng-model="numerocaja" class="input-mini" validacion-numero  ></div>
+                <div class ="col-md-6"><label class="lbl_editar_producto">Numero Caja: </label><input type="text" ng-model="rootEditarProducto.caja.numero" class="input-mini" validacion-numero ng-change="onValidarCaja()"  ></div>
                 <div class ="col-md-3">
                     <label class="lbl_editar_producto">Cerrar Caja</label>
                     <input-check ng-model="cerrar" />

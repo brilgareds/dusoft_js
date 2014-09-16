@@ -13,19 +13,23 @@ define(["angular", "js/controllers",'models/Cliente',
                     PedidoAuditoria, API, socket, AlertService, 
                     producto, Usuario, documento, LoteProductoPedido) {
             
-           $scope.producto = angular.copy(producto);
-           $scope.pedido   = angular.copy(documento.getPedido());
-           $scope.producto.lote.cantidad_ingresada = $scope.producto.cantidad_separada;
-           $scope.lotes    = [];
+           $scope.rootEditarProducto = {}; 
+           $scope.rootEditarProducto.producto = angular.copy(producto);
+           $scope.rootEditarProducto.pedido   = angular.copy(documento.getPedido());
+           $scope.rootEditarProducto.producto.lote.cantidad_ingresada = $scope.rootEditarProducto.producto.cantidad_separada;
+           $scope.rootEditarProducto.lotes    = [];
+
             $scope.session = {
                 usuario_id: Usuario.usuario_id,
                 auth_token: Usuario.token
             };
 
-            $scope.numerocaja = 0;
+            $scope.rootEditarProducto.caja  = {
+                numero:0
+            };
 
-            $scope.validacionlote = {valido:true};
-            $scope.validacionproducto = {
+            $scope.rootEditarProducto.validacionlote = {valido:true};
+            $scope.rootEditarProducto.validacionproducto = {
                 valido:true,
                 mensaje:"fppp"
             };
@@ -35,9 +39,9 @@ define(["angular", "js/controllers",'models/Cliente',
                     session:$scope.session,
                     data:{
                         pedidos: {
-                            numero_pedido: $scope.pedido.numero_pedido,
-                            codigo_producto: $scope.producto.codigo_producto,
-                            identificador: ($scope.pedido.tipo == 1)?"CL":"FM",
+                            numero_pedido: $scope.rootEditarProducto.pedido.numero_pedido,
+                            codigo_producto: $scope.rootEditarProducto.producto.codigo_producto,
+                            identificador: ($scope.rootEditarProducto.pedido.tipo == 1)?"CL":"FM",
                             limite:100,
                             empresa_id:"03"
                         }
@@ -49,7 +53,7 @@ define(["angular", "js/controllers",'models/Cliente',
                     if(data.status === 200){
                        var lotes = data.obj.existencias_producto;
 
-                       $scope.producto.disponible = data.obj.disponibilidad_bodega;
+                       $scope.rootEditarProducto.producto.disponible = data.obj.disponibilidad_bodega;
                        for(var i in lotes){
                             $scope.agregarLote(lotes[i]);
                        }
@@ -59,28 +63,27 @@ define(["angular", "js/controllers",'models/Cliente',
            });
 
             $modalInstance.result.finally(function() {
-                $scope.producto = {};
-                $scope.lotes = [];
+                $scope.rootEditarProducto = {};
             });
             
 
            $scope.agregarLote = function(data){
                 var lote = LoteProductoPedido.get(data.lote, data.fecha_vencimiento);
                 lote.existencia_actual = data.existencia_actual;
-                lote.disponible = $scope.producto.disponible;
+                lote.disponible = $scope.rootEditarProducto.producto.disponible;
                 if($scope.esLoteSeleccionado(lote)){
                     lote.selected = true;
-                    lote.cantidad_ingresada = $scope.producto.cantidad_separada;
+                    lote.cantidad_ingresada = $scope.rootEditarProducto.producto.cantidad_separada;
 
                 }
 
-                $scope.lotes.push(
+                $scope.rootEditarProducto.lotes.push(
                     lote
                 );
            }
 
            $scope.lotes_producto = {
-                data: 'lotes',
+                data: 'rootEditarProducto.lotes',
                 enableColumnResize: true,
                 enableRowSelection:false,
                 columnDefs: [                
@@ -113,17 +116,17 @@ define(["angular", "js/controllers",'models/Cliente',
                     return;
                 }
 
-                $scope.producto.lote = row.entity;
-                $scope.producto.cantidad_separada = 0;
+                $scope.rootEditarProducto.producto.lote = row.entity;
+                $scope.rootEditarProducto.producto.cantidad_separada = 0;
 
                 //$scope.producto.lote.selected = !row.entity.selected;
                 
-                for(var i in $scope.lotes){
-                    if(!$scope.esLoteSeleccionado($scope.lotes[i])){
+                for(var i in $scope.rootEditarProducto.lotes){
+                    if(!$scope.esLoteSeleccionado($scope.rootEditarProducto.lotes[i])){
                        /* console.log("no selected",$scope.lotes[i]);
                         console.log("why",$scope.producto.lote, $scope.lotes[i])*/
-                        $scope.lotes[i].selected = false;
-                        $scope.lotes[i].cantidad_ingresada = 0;
+                        $scope.rootEditarProducto.lotes[i].selected = false;
+                        $scope.rootEditarProducto.lotes[i].cantidad_ingresada = 0;
                         
                     }
                 }
@@ -135,13 +138,13 @@ define(["angular", "js/controllers",'models/Cliente',
             $scope.onCantidadIngresadaChange= function(row){
                 if(!row.entity.selected) return;
 
-                $scope.validacionlote = $scope.esCantidadIngresadaValida(row.entity);
+                $scope.rootEditarProducto.validacionlote = $scope.esCantidadIngresadaValida(row.entity);
 
-                if($scope.validacionlote.valido){
+                if($scope.rootEditarProducto.validacionlote.valido){
                     console.log("valido ", $scope.validacionlote)
-                    $scope.producto.cantidad_separada = Number(row.entity.cantidad_ingresada);
+                    $scope.rootEditarProducto.producto.cantidad_separada = Number(row.entity.cantidad_ingresada);
                 } else {
-                    console.log("validacion mala ", $scope.validacionlote);
+                    console.log("validacion mala ", $scope.rootEditarProducto.validacionlote);
                 }
                 
             };
@@ -158,7 +161,7 @@ define(["angular", "js/controllers",'models/Cliente',
                 }
                 
                 
-                if(cantidad_ingresada > $scope.producto.cantidad_solicitada){
+                if(cantidad_ingresada > $scope.rootEditarProducto.producto.cantidad_solicitada){
                     obj.valido  = false;
                     obj.mensaje = "La cantidad ingresada, debe ser menor o igual a la cantidad solicitada!!.";
                     return obj;
@@ -185,8 +188,8 @@ define(["angular", "js/controllers",'models/Cliente',
 
 
             $scope.esLoteSeleccionado = function(lote){
-                 if(lote.codigo_lote == $scope.producto.lote.codigo_lote 
-                        && lote.fecha_vencimiento == $scope.producto.lote.fecha_vencimiento){
+                 if(lote.codigo_lote == $scope.rootEditarProducto.producto.lote.codigo_lote 
+                        && lote.fecha_vencimiento == $scope.rootEditarProducto.producto.lote.fecha_vencimiento){
                    // console.log("es lote seleccionado ", lote)
                     return true;
                  } 
@@ -196,24 +199,25 @@ define(["angular", "js/controllers",'models/Cliente',
 
             $scope.auditarPedido = function(){
 
-                if(typeof $scope.producto.cantidad_separada != "number" || $scope.producto.cantidad_separada == 0){
+                if(isNaN($scope.rootEditarProducto.producto.cantidad_separada) || $scope.rootEditarProducto.producto.cantidad_separada == 0){
 
-                    $scope.validacionproducto.valido = false;
-                    $scope.validacionproducto.mensaje = "La cantidad separada no es valida";
+                    $scope.rootEditarProducto.validacionproducto.valido = false;
+                    $scope.rootEditarProducto.validacionproducto.mensaje = "La cantidad separada no es valida";
                     return;
                 }
 
-                if($scope.validacionlote.valido == false){
-                    console.log("validacion lote ", $scope.validacionlote)
-                    $scope.validacionproducto.valido = $scope.validacionlote.valido;
-                    $scope.validacionproducto.mensaje = $scope.validacionlote.mensaje;
+                if($scope.rootEditarProducto.validacionlote.valido == false){
+                    console.log("validacion lote ", $scope.rootEditarProducto.validacionlote)
+                    $scope.rootEditarProducto.validacionproducto.valido = $scope.rootEditarProducto.validacionlote.valido;
+                    $scope.rootEditarProducto.validacionproducto.mensaje = $scope.rootEditarProducto.validacionlote.mensaje;
 
                     return;
                 }
 
-                if(typeof $scope.numerocaja != "number" || $scope.numerocaja == 0){
-                    $scope.validacionproducto.valido = false
-                    $scope.validacionproducto.mensaje = "Número de caja no es válido";
+                if(isNaN($scope.rootEditarProducto.caja.numero) || $scope.rootEditarProducto.caja.numero == 0){
+                    console.log($scope.rootEditarProducto.caja.numero , " numero de caja ", isNaN($scope.rootEditarProducto.caja.numero), $scope)
+                    $scope.rootEditarProducto.validacionproducto.valido = false
+                    $scope.rootEditarProducto.validacionproducto.mensaje = "Número de caja no es válido";
 
                     return;
                 }
@@ -224,7 +228,7 @@ define(["angular", "js/controllers",'models/Cliente',
                     session:$scope.session,
                     data:{
                         documento_temporal: {
-                            item_id: $scope.producto.lote.item_id,
+                            item_id: $scope.rootEditarProducto.producto.lote.item_id,
                             auditado: true
                         }
                     }

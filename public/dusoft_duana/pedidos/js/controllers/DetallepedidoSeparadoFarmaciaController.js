@@ -122,7 +122,7 @@ define(["angular", "js/controllers",'models/Farmacia',
                 
                    $scope.DocumentoTemporal.bodegas_doc_id = data.bodegas_doc_id;
                    $scope.seleccion = $scope.DocumentoTemporal.bodegas_doc_id;
-                   $scope.renderDetalleDocumentoTemporal($scope.DocumentoTemporal, data, paginando);
+                   //$scope.renderDetalleDocumentoTemporal($scope.DocumentoTemporal, data, paginando);
 
                    $scope.documento_temporal_id = data.doc_tmp_id;
                    $scope.usuario_id = data.usuario_id;
@@ -187,6 +187,30 @@ define(["angular", "js/controllers",'models/Farmacia',
             $scope.paginaSiguiente = function() {
                 $scope.paginaactual++;
                 $scope.buscarDetalleDocumentoTemporal($scope.termino_busqueda, true);
+            };
+
+            $scope.onKeyDetalleDocumentoTemporalPress = function(ev, termino_busqueda, buscarcodigodebarras) {
+                if(!$scope.esDocumentoBodegaValido($scope.DocumentoTemporal.bodegas_doc_id)) return;
+                    if (ev.which == 13) {  
+                        console.log("search with code "+buscarcodigodebarras);
+                        $scope.filtro.termino_busqueda  =  termino_busqueda;
+                        $scope.filtro.codigo_barras = buscarcodigodebarras;
+                        $scope.filtro.descripcion_producto = !buscarcodigodebarras;
+
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                documento_temporal: {
+                                    documento_temporal_id : $scope.DocumentoTemporal.documento_temporal_id,
+                                    usuario_id: $scope.DocumentoTemporal.separador.usuario_id,
+                                    filtro:$scope.filtro
+                                }
+                            }
+                        };
+
+                    $scope.onKeyDocumentosSeparadosPress(ev, termino_busqueda, $scope.DocumentoTemporal, obj);
+                     
+                }
             };
             
             $scope.valorSeleccionado = function() {

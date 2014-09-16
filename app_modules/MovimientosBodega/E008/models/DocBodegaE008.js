@@ -513,7 +513,7 @@ DocuemntoBodegaE008.prototype.generar_rotulo_caja = function(documento_id, numer
 
 DocuemntoBodegaE008.prototype.cerrar_caja = function(documento_id, numero_caja, callback) {
 
-    var sql = " UPDATE inv_rotulo_caja SET caja_cerrada='1' WHERE a.documento_id = $1 and numero_caja = $2; ";
+    var sql = " UPDATE inv_rotulo_caja SET caja_cerrada='1' WHERE documento_id = $1 and numero_caja = $2; ";
   
 
     G.db.query(sql, [documento_id, numero_caja ], function(err, rows, result) {

@@ -1108,10 +1108,9 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
 
             if (rotulos_cajas.length > 0) {
                 var rotulo_caja = rotulos_cajas[0];
-                res.send(G.utils.r(req.url, 'Validacion caja producto', 404, {movimientos_bodegas: {caja_valida: (rotulo_caja.caja_cerrada === '0') ? true : false}}));
+                res.send(G.utils.r(req.url, 'Validacion caja producto', 200, {movimientos_bodegas: {caja_valida: (rotulo_caja.caja_cerrada === '0') ? true : false}}));
                 return;
             } else {
-
                 // Crear
                 that.m_e008.generar_rotulo_caja(documento_temporal_id, numero_pedido, nombre_cliente, direccion_cliente, cantidad, ruta, contenido, numero_caja, usuario_id, function(err, rotulo_caja) {
                     if (err) {

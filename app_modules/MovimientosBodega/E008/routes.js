@@ -50,7 +50,7 @@ module.exports = function(app, di_container) {
     app.post('/api/movBodegas/E008/consultarDocumentoTemporalFarmacias', function(req, res) {
         c_e008.consultarDocumentoTemporalFarmacias(req, res);
     });
-    
+
     // Consultar Detalle Documento Temporal
     app.post('/api/movBodegas/E008/consultarDetalleDocumentoTemporal', function(req, res) {
         // ========= Falta ===========
@@ -94,41 +94,48 @@ module.exports = function(app, di_container) {
     app.post('/api/movBodegas/E008/auditoriaProductosDocumentoTemporal', function(req, res) {
         c_e008.auditoriaProductosDocumentoTemporal(req, res);
     });
-    
+
+    // Consultar productos Auditados ---- hacer aqui tambien el buscardor para los no auditados
+    app.post('/api/movBodegas/E008/consultarProductosAuditados', function(req, res) {
+        c_e008.consultarProductosAuditados(req, res);
+    });
+
     // Modificar detalle Documento Temporal
     app.post('/api/movBodegas/E008/modificarDetalleDocumentoTemporal', function(req, res) {
 
     });
-    
-    // Generar Rotulo 
-    app.post('/api/movBodegas/E008/generarRotulosCaja', function(req, res) {
 
+    // Validar que el numero de caja sea valido 
+    app.post('/api/movBodegas/E008/validarCajaProducto', function(req, res) {
+        c_e008.validarCajaProducto(req, res);
     });
-    
+
+    // Generar Rotulo 
+    app.post('/api/movBodegas/E008/generarRotuloCaja', function(req, res) {
+        c_e008.generarRotuloCaja(req, res);
+    });
+
     // Imprimir Rotulo 
     app.post('/api/movBodegas/E008/imprimirRotulosCaja', function(req, res) {
 
-    });   
+    });
+
 
     // Auditar Producto Documento Temporal
     app.post('/api/movBodegas/E008/auditarProductoDocumentoTemporal', function(req, res) {
         c_e008.auditarProductoDocumentoTemporal(req, res);
     });
 
-    // Consultar productos Auditados ---- hacer aqui tambien el buscardor para los no auditados
-    app.post('/api/movBodegas/E008/consultarProductosAuditados', function(req, res) {
-        c_e008.consultarProductosAuditados(req, res);
-    });
-    
-    
+
+
     // Generar Documento Despacho Clientes
     app.post('/api/movBodegas/E008/generarDocumentoDespachoClientes', function(req, res) {
         c_e008.generarDocumentoDespachoClientes(req, res);
     });
-    
+
     // Generar Documento Despacho Farmacias
     app.post('/api/movBodegas/E008/generarDocumentoDespachoFarmacias', function(req, res) {
-        c_e008.generarDocumentoDespachoFarmacias(req, res);        
+        c_e008.generarDocumentoDespachoFarmacias(req, res);
     });
 
     // ======== FIN Auditoria de Documento de Despacho ====================

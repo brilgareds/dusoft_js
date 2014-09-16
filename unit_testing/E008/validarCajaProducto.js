@@ -20,10 +20,10 @@ vows.describe('Test actualizarTipoDocumentoTemporalClientes').addBatch({
                 obj.data = {
                     documento_temporal: {
                         documento_temporal_id: 2306,
-                        numero_caja: 1350,
-                        numero_pedido: 72,
-                        nombre_cliente : 33898,
-                        direccion_cliente : 33898
+                        numero_caja: 1,
+                        numero_pedido: 33896,
+                        nombre_cliente : 'Biomedical ',
+                        direccion_cliente : 'Cerca de aca'
                     }
                 };
 

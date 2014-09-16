@@ -1098,10 +1098,8 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
     var contenido = "";
     var usuario_id = req.session.user.usuario_id;
 
-    console.log(documento_temporal_id, numero_pedido, nombre_cliente, direccion_cliente, cantidad, ruta, contenido, numero_caja, usuario_id);
-    return;
+    that.m_e008.consultar_rotulo_caja(documento_temporal_id, numero_caja, function(err, rotulos_cajas) {
 
-    that.e008.consultar_rotulo_caja(documento_temporal_id, numero_caja, function(err, rotulos_cajas) {
         if (err) {
             res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
             return;
@@ -1110,15 +1108,12 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
 
             if (rotulos_cajas.length > 0) {
                 var rotulo_caja = rotulos_cajas[0];
-                res.send(G.utils.r(req.url, 'Validacion caja producto', 404, {movimientos_bodegas: {caja_valida: (rotulo_caja.caja_cerrada) ? true : false}}));
+                res.send(G.utils.r(req.url, 'Validacion caja producto', 404, {movimientos_bodegas: {caja_valida: (rotulo_caja.caja_cerrada === '0') ? true : false}}));
                 return;
             } else {
 
-                console.log(documento_temporal_id, numero_pedido, nombre_cliente, direccion_cliente, cantidad, ruta, contenido, numero_caja, usuario_id);
-                return;
-
                 // Crear
-                that.e008.generar_rotulo_caja(documento_temporal_id, numero_pedido, nombre_cliente, direccion_cliente, cantidad, ruta, contenido, numero_caja, usuario_id, function(err, rotulo_caja) {
+                that.m_e008.generar_rotulo_caja(documento_temporal_id, numero_pedido, nombre_cliente, direccion_cliente, cantidad, ruta, contenido, numero_caja, usuario_id, function(err, rotulo_caja) {
                     if (err) {
                         res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
                         return;
@@ -1134,6 +1129,37 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
 
 // Generar rotulos caja
 E008Controller.prototype.generarRotuloCaja = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined || args.documento_temporal.numero_caja === undefined) {
+        res.send(G.utils.r(req.url, 'documento_temporal_id  o numero_caja no estan definidos', 404, {}));
+        return;
+    }
+
+
+
+    if (args.documento_temporal.documento_temporal_id === '' || args.documento_temporal.numero_caja === '' || args.documento_temporal.numero_caja === '0') {
+        res.send(G.utils.r(req.url, 'documento_temporal_id o numero_caja estan vacios', 404, {}));
+        return;
+    }
+
+
+    var documento_temporal_id = args.documento_temporal.documento_temporal_id;
+    var numero_caja = args.documento_temporal.numero_caja;
+
+    that.m_e008.cerrar_caja(documento_temporal_id, numero_caja, function(err, rows, result) {
+        if (err || result.rowCount === 0) {
+            res.send(G.utils.r(req.url, 'Error cerrando la caja', 500, {documento_temporal: {}}));
+            return;
+        } else {
+
+            res.send(G.utils.r(req.url, 'Caja cerrada correctamente', 200, {documento_temporal: {}}));
+            return;
+        }
+    });
 
 
 };
@@ -1165,7 +1191,6 @@ function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento
                     callback(err);
                     return;
                 } else {
-
                     var productos_pendientes = [];
                     var productos_no_auditados = [];
 

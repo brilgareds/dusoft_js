@@ -109,7 +109,7 @@ module.exports = function(app, di_container) {
     app.post('/api/movBodegas/E008/validarCajaProducto', function(req, res) {
         c_e008.validarCajaProducto(req, res);
     });
-
+    
     // Generar Rotulo 
     app.post('/api/movBodegas/E008/generarRotuloCaja', function(req, res) {
         c_e008.generarRotuloCaja(req, res);

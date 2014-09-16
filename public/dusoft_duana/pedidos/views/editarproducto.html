@@ -1,9 +1,10 @@
 
 <div class="modal-view">
-
+    <alert ng-show="validacionproducto.valido == false">{{validacionproducto.mensaje}}</alert>
     <div class="panel panel-info">
         <div class="panel-heading">
             <h5 class="panel-title">Información General</h5>
+
         </div>
         <div class="panel-body">
             <div class="row" >
@@ -47,7 +48,7 @@
         </div>
         <div class="panel-body">
             <div class="row">
-                <div class ="col-md-6"><label class="lbl_editar_producto">Numero Caja: </label><input type="text" class="input-mini" validacion-numero  ></div>
+                <div class ="col-md-6"><label class="lbl_editar_producto">Numero Caja: </label><input type="text" ng-model="numerocaja" class="input-mini" validacion-numero  ></div>
                 <div class ="col-md-3">
                     <label class="lbl_editar_producto">Cerrar Caja</label>
                     <input-check ng-model="cerrar" />
@@ -105,7 +106,7 @@
         </div>
         
     </div-->
-
     <button class="btn btn-primary ng-binding pull-right" ng-click="auditarPedido()">Auditar</button>
+    <button class="btn btn-warning pull-right" style="margin-right:20px;" ng-click="cerrarModal()">Cancelar</button>
 
 </div>

@@ -157,12 +157,6 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             $scope.renderDetalleDocumentoTemporal = function(documento , productos) {
                 //Vaciar el listado de Productos
 
-                if(productos.length == 0){
-                    console.log("should disabled filter =======")
-                    $scope.filtro.codigo_barras = false;
-                    return;
-                }
-
                 documento.getPedido().vaciarProductos();
 
                 for (var i in productos) {
@@ -203,7 +197,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                 producto_pedido_separado.setLote(lote_pedido);
                 
                 
-                console.log("Estructura del Objeto Producto", producto_pedido_separado);
+                //console.log("Estructura del Objeto Producto", producto_pedido_separado, obj);
                 
                 return producto_pedido_separado;
 
@@ -257,7 +251,8 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                     //backdrop: true,
                     size: 1000,
                     backdropClick: true,
-                    dialogFade: false,
+                    backdrop :'static',
+                    dialogFade: true,
                     keyboard: true,
                     dialogClass:"editarproductomodal",
                     templateUrl: 'views/editarproducto.html',
@@ -294,7 +289,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                 for(var i in data){
                     var obj = data[i];
                     var producto = ProductoPedido.get(
-                        obj.codigo_producto, obj.descripcion_producto,0,0,0,
+                        obj.codigo_producto, obj.descripcion_producto,0,0,obj.cantidad_solicitada,
                         obj.cantidad_ingresada, obj.observacion_cambio
                     );
                     var lote = LoteProductoPedido.get(obj.lote, obj.fecha_vencimiento);

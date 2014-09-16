@@ -34,7 +34,6 @@ define(["angular", "js/controllers",'models/Cliente',
             $scope.cajas = [];
             $scope.seleccion_caja = "";
             $scope.numero_pedido = "";
-            $scope.filtro = {};
 
             
             $scope.cerrar = function(){
@@ -50,7 +49,7 @@ define(["angular", "js/controllers",'models/Cliente',
                 $scope.buscarDetalleDocumentoTemporal($scope.obtenerParametros(), false, 1, $scope.resultadoBusquedaDocumento);
                 $scope.cliente = $scope.DocumentoTemporal.pedido.cliente;
                 $scope.numero_pedido = $scope.DocumentoTemporal.pedido.numero_pedido;
-                
+                $scope.filtro.codigo_barras = true;
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -175,30 +174,27 @@ define(["angular", "js/controllers",'models/Cliente',
             };
             
            //eventos de widgets
-           $scope.onKeyDetalleDocumentoTemporalPress = function(ev, termino_busqueda) {
+           $scope.onKeyDetalleDocumentoTemporalPress = function(ev, termino_busqueda, buscarcodigodebarras) {
                 if(!$scope.esDocumentoBodegaValido($scope.DocumentoTemporal.bodegas_doc_id)) return;
-                if (ev.which == 13) {
+                    if (ev.which == 13) {  
+                        console.log("search with code "+buscarcodigodebarras);
+                        $scope.filtro.termino_busqueda  =  termino_busqueda;
+                        $scope.filtro.codigo_barras = buscarcodigodebarras;
+                        $scope.filtro.descripcion_producto = !buscarcodigodebarras;
 
-                     $scope.filtro = {
-                        codigo_barras : true,
-                        termino_busqueda: termino_busqueda
-                    };
-
-                    var obj = {
-                        session: $scope.session,
-                        data: {
-                            documento_temporal: {
-                                documento_temporal_id : $scope.DocumentoTemporal.documento_temporal_id,
-                                usuario_id: $scope.DocumentoTemporal.separador.usuario_id,
-                                filtro:$scope.filtro
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                documento_temporal: {
+                                    documento_temporal_id : $scope.DocumentoTemporal.documento_temporal_id,
+                                    usuario_id: $scope.DocumentoTemporal.separador.usuario_id,
+                                    filtro:$scope.filtro
+                                }
                             }
-                        }
-                    };
+                        };
 
-                   
-
-                    $scope.buscarProductosSeparadosEnDocumento(obj,function(){} );
-                   // renderDetalleDocumentoTemporal
+                    $scope.onKeyDocumentosSeparadosPress(ev, termino_busqueda, $scope.DocumentoTemporal, obj);
+                     
                 }
             };
 

@@ -22,6 +22,13 @@ define(["angular", "js/controllers",'models/Cliente',
                 auth_token: Usuario.token
             };
 
+            $scope.numerocaja = 0;
+
+            $scope.validacionlote = {valido:true};
+            $scope.validacionproducto = {
+                valido:true,
+                mensaje:"fppp"
+            };
 
            $modalInstance.opened.then(function() {
                var obj = {
@@ -128,13 +135,13 @@ define(["angular", "js/controllers",'models/Cliente',
             $scope.onCantidadIngresadaChange= function(row){
                 if(!row.entity.selected) return;
 
-                var validacion = $scope.esCantidadIngresadaValida(row.entity);
+                $scope.validacionlote = $scope.esCantidadIngresadaValida(row.entity);
 
-                if(validacion.valido){
-                    console.log("valido ", validacion)
+                if($scope.validacionlote.valido){
+                    console.log("valido ", $scope.validacionlote)
                     $scope.producto.cantidad_separada = Number(row.entity.cantidad_ingresada);
                 } else {
-                    console.log("validacion mala ", validacion);
+                    console.log("validacion mala ", $scope.validacionlote);
                 }
                 
             };
@@ -171,6 +178,8 @@ define(["angular", "js/controllers",'models/Cliente',
                     return obj;
                 }
 
+                
+
                 return obj;
             };
 
@@ -186,6 +195,30 @@ define(["angular", "js/controllers",'models/Cliente',
             };
 
             $scope.auditarPedido = function(){
+
+                if(typeof $scope.producto.cantidad_separada != "number" || $scope.producto.cantidad_separada == 0){
+
+                    $scope.validacionproducto.valido = false;
+                    $scope.validacionproducto.mensaje = "La cantidad separada no es valida";
+                    return;
+                }
+
+                if($scope.validacionlote.valido == false){
+                    console.log("validacion lote ", $scope.validacionlote)
+                    $scope.validacionproducto.valido = $scope.validacionlote.valido;
+                    $scope.validacionproducto.mensaje = $scope.validacionlote.mensaje;
+
+                    return;
+                }
+
+                if(typeof $scope.numerocaja != "number" || $scope.numerocaja == 0){
+                    $scope.validacionproducto.valido = false
+                    $scope.validacionproducto.mensaje = "Número de caja no es válido";
+
+                    return;
+                }
+
+                return;
    
                 var obj = {
                     session:$scope.session,
@@ -204,6 +237,10 @@ define(["angular", "js/controllers",'models/Cliente',
 
                     } 
                 });
+            };
+
+            $scope.cerrarModal = function(){
+                $modalInstance.close();
             };
 
         }]);

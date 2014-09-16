@@ -25,58 +25,33 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             //$scope.numero_pedido = "";
             //$scope.obj = {};
             $scope.listado_productos_farmacias = [];
+            $scope.listado_productos_farmacias2 = [];
             $scope.listado_productos_clientes = [];
+            $scope.listado_productos_clientes2 = [];
             
             $scope.lista_productos = {};
+            $scope.lista_productos_seleccionados = {};
             
             $scope.tipo_cliente = 1;
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
             
-            
-            $scope.lista_productos = {    
-                data: 'listado_productos_clientes',
-                enableColumnResize: true,
-                enableRowSelection: false,
-                enableCellSelection: true,
-                selectedItems: $scope.selectedRow,
-                multiSelect: false,
-                columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Código Producto'},
-                    {field: 'descripcion', displayName: 'Descripción'},
-                    {field: 'molecula', displayName: 'Molécula'},
-                    {field: 'existencia_bodega', displayName: 'Existencia Bodega'},
-                    {field: 'existencia_disponible', displayName: 'Disponible'},
-                    {field: 'existencia_reservada', displayName: 'Reservado'},
-                    {field: 'cantidad', displayName: 'Cantidad', enableCellEdit: true},
-                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
-                        cellTemplate: ' <div class="row">\n\
-                                            <button class="btn btn-success btn-xs" ng-click="onRowClick1(row)">\n\
-                                                <span class="glyphicon glyphicon-plus-sign">Incluir</span>\n\
-                                            </button>\n\
-                                            <button class="btn btn-danger btn-xs" ng-click="onRowClick2(row)">\n\
-                                                <span class="glyphicon glyphicon-minus-sign">Eliminar</span>\n\
-                                            </button>\n\
-                                        </div>'
-                    }
-                ]
-
-            };
-            
             $scope.cerrar = function(){
-                $scope.$emit('cerrarseleccionproductoCompleto', {animado:true});
+                $scope.$emit('cerrarseleccionproducto', {animado:true});
                
                 $scope.listado_productos_farmacias = [];
+                $scope.listado_productos_farmacias2 = [];
                 $scope.listado_productos_clientes = [];
+                $scope.listado_productos_clientes2 = [];
             };
             
-            $rootScope.$on("mostrarseleccionproductoCompleto", function(e, datos) {
+            $rootScope.$on("mostrarseleccionproducto", function(e, datos) {
                 //alert("TIPO CLIENTE - FUENTE: ");
                 //console.log("TIPO CLIENTE - FUENTE: ", datos);
                 
-                $scope.tipo_cliente = datos[1];
+                $scope.tipo_cliente = datos;
                 //alert("TIPO CLIENTE - COPIA: ");
-                console.log("TIPO CLIENTE - COPIA: ", $scope.tipo_cliente);
+                //console.log("TIPO CLIENTE - COPIA: ", $scope.tipo_cliente);
                 
                 $scope.buscarSeleccionProducto("");
             });
@@ -88,82 +63,47 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                     $scope.paginaactual = 1;
                 }
                 
-                for(i=0; i<10; i++)
+                for(var i=0; i<10; i++)
                 {
                     //var pedido = Pedido.get();
+                    if($scope.tipo_cliente === 1) {
                     
-                    obj1 = { 
-                            codigo_producto: '123456'+i,
-                            descripcion: 'LOBOTOMICINA X '+i,
-                            molecula: 'LOBOTONINA'+i,
-                            existencia_farmacia: '10'+i,
-                            existencia_bodega: '20'+i,
-                            existencia_disponible: '10'+i,
-                            existencia_reservada: '10'+i,
-                            existencia_x_farmacia: 20*i,
-                            cantidad: 0
+                        obj1 = {
+                                codigo_producto: '123456'+i,
+                                descripcion: 'LOBOTOMICINA X '+i,
+                                molecula: 'LOBOTONINA'+i,
+                                existencia_bodega: '20'+i,
+                                existencia_disponible: '10'+i,
+                                existencia_reservada: '10'+i,
+                                cantidad: 0
                         }
-                    
-                    $scope.listado_productos_farmacias.push(obj1);
-                    
-                    obj2 = {
-                            codigo_producto: '123456'+i,
-                            descripcion: 'LOBOTOMICINA X '+i,
-                            molecula: 'LOBOTONINA'+i,
-                            existencia_bodega: '20'+i,
-                            existencia_disponible: '10'+i,
-                            existencia_reservada: '10'+i,
-                            cantidad: 0
+
+                        $scope.listado_productos_clientes.push(obj1);
+                        $scope.listado_productos_clientes2.push(obj1);
                     }
-                    
-                    $scope.listado_productos_clientes.push(obj2);   
+                    else if($scope.tipo_cliente === 2) {
+                        obj2 = { 
+                                codigo_producto: '123456'+i,
+                                descripcion: 'LOBOTOMICINA X '+i,
+                                molecula: 'LOBOTONINA'+i,
+                                existencia_farmacia: '10'+i,
+                                existencia_bodega: '20'+i,
+                                existencia_disponible: '10'+i,
+                                existencia_reservada: '10'+i,
+                                existencia_x_farmacia: 20*i,
+                                cantidad: 0
+                            }
+
+                        $scope.listado_productos_farmacias.push(obj2);
+                        $scope.listado_productos_farmacias2.push(obj2);
+                    }
 
                 }
                 
                 /*  Construcción de Grid    */
                 
-                console.log("TIPO CLIENTE ANTES DE GRID = ",$scope.tipo_cliente);
+                //console.log("TIPO CLIENTE ANTES DE GRID = ",$scope.tipo_cliente);
                 
-                if($scope.tipo_cliente === 1) {
-
-                    //$scope.lista_productos_clientes = {
-                    
-                }
-                else if($scope.tipo_cliente === 2) {
-
-                    //$scope.lista_productos_farmacia = {
-                    $scope.lista_productos = {    
-                        data: 'listado_productos_farmacias',
-                        enableColumnResize: true,
-                        enableRowSelection: false,
-                        enableCellSelection: true,
-                        selectedItems: $scope.selectedRow,
-                        multiSelect: false,
-                        columnDefs: [
-                            {field: 'codigo_producto', displayName: 'Código Producto'},
-                            {field: 'descripcion', displayName: 'Descripción'},
-                            {field: 'molecula', displayName: 'Molécula'},
-                            {field: 'existencia_farmacia', displayName: 'Existencia Farmacia', width: "10%"},
-                            {field: 'existencia_bodega', displayName: 'Existencia Bodega'},
-                            {field: 'existencia_disponible', displayName: 'Disponible'},
-                            {field: 'existencia_reservada', displayName: 'Reservado'},
-                            {field: 'existencia_x_farmacia', displayName: 'Existencias Farmacias', width: "12%"},
-                            {field: 'cantidad', displayName: 'Cantidad', enableCellEdit: true},
-                            {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
-                                cellTemplate: ' <div class="row">\n\
-                                                    <button class="btn btn-success btn-xs" ng-click="onRowClick1(row)">\n\
-                                                        <span class="glyphicon glyphicon-plus-sign">Incluir</span>\n\
-                                                    </button>\n\
-                                                    <button class="btn btn-danger btn-xs" ng-click="onRowClick2(row)">\n\
-                                                        <span class="glyphicon glyphicon-minus-sign">Eliminar</span>\n\
-                                                    </button>\n\
-                                                </div>'
-                            }
-                        ]
-
-                    };
-                }
-
 
                 /***************************/
                 
@@ -194,6 +134,122 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
 //                });
 
             };
+            
+            /*  Construcción de Grid    */
+            
+            if($scope.tipo_cliente === 1) {
+
+                    //$scope.lista_productos_clientes = {
+                    $scope.lista_productos = {    
+                        data: 'listado_productos_clientes',
+                        enableColumnResize: true,
+                        enableRowSelection: false,
+                        enableCellSelection: true,
+                        //selectedItems: $scope.selectedRow,
+                        multiSelect: false,
+                        columnDefs: [
+                            {field: 'codigo_producto', displayName: 'Código Producto'},
+                            {field: 'descripcion', displayName: 'Descripción'},
+                            {field: 'molecula', displayName: 'Molécula'},
+                            {field: 'existencia_bodega', displayName: 'Existencia Bodega'},
+                            {field: 'existencia_disponible', displayName: 'Disponible'},
+                            {field: 'existencia_reservada', displayName: 'Reservado'},
+                            {field: 'cantidad', displayName: 'Cantidad', enableCellEdit: true},
+                            {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
+                                cellTemplate: ' <div class="row">\n\
+                                                    <button class="btn btn-success btn-xs" ng-click="onRowClick1(row)">\n\
+                                                        <span class="glyphicon glyphicon-plus-sign">Incluir</span>\n\
+                                                    </button>\n\
+                                                </div>'
+                            }
+                        ]
+
+                    };
+                    
+                    $scope.lista_productos_seleccionados = {    
+                        data: 'listado_productos_clientes2',
+                        enableColumnResize: true,
+                        enableRowSelection: false,
+                        //enableCellSelection: true,
+                        //selectedItems: $scope.selectedRow,
+                        multiSelect: false,
+                        columnDefs: [
+                            {field: 'codigo_producto', displayName: 'Código Producto'},
+                            {field: 'descripcion', displayName: 'Descripción'},
+                            {field: 'molecula', displayName: 'Molécula'},
+                            {field: 'existencia_bodega', displayName: 'Existencia Bodega'},
+                            {field: 'existencia_disponible', displayName: 'Disponible'},
+                            {field: 'existencia_reservada', displayName: 'Reservado'},
+                            {field: 'cantidad', displayName: 'Cantidad', enableCellEdit: true},
+                            {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
+                                cellTemplate: ' <div class="row">\n\
+                                                    <button class="btn btn-danger btn-xs" ng-click="onRowClick2(row)">\n\
+                                                        <span class="glyphicon glyphicon-minus-sign">Eliminar</span>\n\
+                                                    </button>\n\
+                                                </div>'
+                            }
+                        ]
+
+                    };
+                }
+                else if($scope.tipo_cliente === 2) {
+
+                    //$scope.lista_productos_farmacia = {
+                    $scope.lista_productos = {    
+                        data: 'listado_productos_farmacias',
+                        enableColumnResize: true,
+                        enableRowSelection: false,
+                        enableCellSelection: true,
+                        //selectedItems: $scope.selectedRow,
+                        multiSelect: false,
+                        columnDefs: [
+                            {field: 'codigo_producto', displayName: 'Código Producto'},
+                            {field: 'descripcion', displayName: 'Descripción'},
+                            {field: 'molecula', displayName: 'Molécula'},
+                            {field: 'existencia_farmacia', displayName: 'Existencia Farmacia', width: "10%"},
+                            {field: 'existencia_bodega', displayName: 'Existencia Bodega'},
+                            {field: 'existencia_disponible', displayName: 'Disponible'},
+                            {field: 'existencia_reservada', displayName: 'Reservado'},
+                            {field: 'existencia_x_farmacia', displayName: 'Existencias Farmacias', width: "12%"},
+                            {field: 'cantidad', displayName: 'Cantidad', enableCellEdit: true},
+                            {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
+                                cellTemplate: ' <div class="row">\n\
+                                                    <button class="btn btn-success btn-xs" ng-click="onRowClick1(row)">\n\
+                                                        <span class="glyphicon glyphicon-plus-sign">Incluir</span>\n\
+                                                    </button>\n\
+                                                </div>'
+                            }
+                        ]
+
+                    };
+                    
+                    $scope.lista_productos_seleccionados = {    
+                        data: 'listado_productos_farmacias2',
+                        enableColumnResize: true,
+                        enableRowSelection: false,
+                        //enableCellSelection: true,
+                        //selectedItems: $scope.selectedRow,
+                        multiSelect: false,
+                        columnDefs: [
+                            {field: 'codigo_producto', displayName: 'Código Producto'},
+                            {field: 'descripcion', displayName: 'Descripción'},
+                            {field: 'molecula', displayName: 'Molécula'},
+                            {field: 'existencia_farmacia', displayName: 'Existencia Farmacia', width: "10%"},
+                            {field: 'existencia_bodega', displayName: 'Existencia Bodega'},
+                            {field: 'existencia_disponible', displayName: 'Disponible'},
+                            {field: 'existencia_reservada', displayName: 'Reservado'},
+                            {field: 'existencia_x_farmacia', displayName: 'Existencias Farmacias', width: "12%"},
+                            {field: 'cantidad', displayName: 'Cantidad', enableCellEdit: true},
+                            {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
+                                cellTemplate: ' <div class="row">\n\
+                                                    <button class="btn btn-danger btn-xs" ng-click="onRowClick2(row)">\n\
+                                                        <span class="glyphicon glyphicon-minus-sign">Eliminar</span>\n\
+                                                    </button>\n\
+                                                </div>'
+                            }
+                        ]
+                    };
+                }
 
 //            $scope.renderPedidosSeparadosCliente = function(data, paginando) {
 //

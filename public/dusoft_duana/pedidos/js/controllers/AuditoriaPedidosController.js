@@ -21,6 +21,9 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             $scope.productosAuditados = [];
             $scope.notificacionclientes = 0;
             $scope.notificacionfarmacias = 0;
+            $scope.filtro = {
+                codigo_barras:false
+            };
 
             $scope.buscarPedidosSeparados = function(obj, tipo, paginando, callback) {
                 var url = API.DOCUMENTOS_TEMPORALES.LISTAR_DOCUMENTOS_TEMPORALES_CLIENTES;
@@ -143,29 +146,43 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                  Request.realizarRequest(url, "POST", obj, function(data) {
                      
                     if(data.status == 200) { 
-                        console.log("detalle ", data)
-                        return;
-                        if(data.obj.documento_temporal != undefined) {
-                            callback(data, paginando);
+
+                        if(data.obj.movimientos_bodegas != undefined) {
+                            callback(data);
                         }
                     }
                 });
             };
 
-            $scope.renderDetalleDocumentoTemporal = function(documento , data, paginando) {
+            $scope.renderDetalleDocumentoTemporal = function(documento , productos) {
                 //Vaciar el listado de Productos
+
                 documento.getPedido().vaciarProductos();
 
-                for (var i in data.lista_productos) {
+                for (var i in productos) {
 
-                    var obj = data.lista_productos[i];
+                    var obj = productos[i];
                     
                     var producto_pedido_separado = $scope.crearProductoPedidoDocumentoTemporal(obj);
                     
                     documento.getPedido().agregarProducto(producto_pedido_separado);
 
-                   // console.log("DOCUMENTO TEMPORAL CON PRODUCTOS DE PEDIDO INGRESADOS",documento);
+                    //console.log("DOCUMENTO TEMPORAL CON PRODUCTOS DE PEDIDO INGRESADOS",productos);
                 }
+            };
+
+
+            $scope.onKeyDocumentosSeparadosPress = function(ev, termino_busqueda, documento, params){
+                
+
+                $scope.buscarProductosSeparadosEnDocumento(params,function(data){
+                    if(data.status == 200){
+                        var productos = data.obj.movimientos_bodegas.lista_productos_auditados;
+                        console.log("productos encontrados ",productos);
+
+                        $scope.renderDetalleDocumentoTemporal(documento , productos);
+                    }
+                });
             };
 
             $scope.crearProductoPedidoDocumentoTemporal = function(obj) {
@@ -180,7 +197,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                 producto_pedido_separado.setLote(lote_pedido);
                 
                 
-                console.log("Estructura del Objeto Producto", producto_pedido_separado);
+                //console.log("Estructura del Objeto Producto", producto_pedido_separado, obj);
                 
                 return producto_pedido_separado;
 
@@ -234,7 +251,8 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                     //backdrop: true,
                     size: 1000,
                     backdropClick: true,
-                    dialogFade: false,
+                    backdrop :'static',
+                    dialogFade: true,
                     keyboard: true,
                     dialogClass:"editarproductomodal",
                     templateUrl: 'views/editarproducto.html',
@@ -271,7 +289,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                 for(var i in data){
                     var obj = data[i];
                     var producto = ProductoPedido.get(
-                        obj.codigo_producto, obj.descripcion_producto,0,0,0,
+                        obj.codigo_producto, obj.descripcion_producto,0,0,obj.cantidad_solicitada,
                         obj.cantidad_ingresada, obj.observacion_cambio
                     );
                     var lote = LoteProductoPedido.get(obj.lote, obj.fecha_vencimiento);

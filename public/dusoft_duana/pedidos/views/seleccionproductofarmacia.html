@@ -11,7 +11,7 @@
             <div class="panel panel-info marginBottom5">
 
                 <div class="panel-heading">
-                  <h4 class="h4MarginTopBottom" align="center">Buscar Producto</h4>
+                  <h4 class="h4MarginTopBottom" align="center">Selección de Producto para Farmacias</h4>
                 </div>
                 <div class="panel-body">
                     
@@ -23,7 +23,7 @@
                     </div>
                     
                 </div>
-                <div class="panel-body">
+                <div class="panel-body" ng-if="listado_productos.length > 0">
                     <div class="auditadosGrid" ng-grid="lista_productos"></div>
                 </div>
             </div>
@@ -35,7 +35,7 @@
         <br><br><br>
         <div class="fieldset" style ="border: 1px solid #ccc; padding: 10px; padding:10px;">
             <legend>Productos Seleccionados</legend>
-            <div class="row-fluid">                
+            <div class="row-fluid" ng-if="listado_productos_seleccionados.length > 0">                
                 <div class="auditadosGrid" ng-grid="lista_productos_seleccionados"></div>
             </div>
         </div>

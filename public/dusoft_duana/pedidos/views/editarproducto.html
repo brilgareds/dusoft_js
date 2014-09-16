@@ -51,7 +51,7 @@
                 <div class ="col-md-6"><label class="lbl_editar_producto">Numero Caja: </label><input type="text" ng-model="rootEditarProducto.caja.numero" class="input-mini" validacion-numero ng-change="onValidarCaja()"  ></div>
                 <div class ="col-md-3">
                     <label class="lbl_editar_producto">Cerrar Caja</label>
-                    <input-check ng-model="cerrar" />
+                    <input-check ng-model="cerrar" ng-click="onCerrarCaja()" />
                 </div>
                 <div class ="col-md-2 text-center" ng-switch on="cerrar">
                         <button class="btn btn-primary ng-binding btn-accion" ng-switch-when="true">Generar</button>

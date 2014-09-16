@@ -266,7 +266,7 @@ define(["angular", "js/controllers",'models/Cliente',
                         documento_temporal: {
                             documento_temporal_id: $scope.rootEditarProducto.documento.documento_temporal_id,
                             numero_caja: $scope.rootEditarProducto.caja.numero,
-                            numero_pedido: $scope.rootEditarProducto.pedido.numero,
+                            numero_pedido: $scope.rootEditarProducto.pedido.numero_pedido,
                             direccion_cliente: $scope.rootEditarProducto.pedido.cliente.direccion_cliente,
                             nombre_cliente:$scope.rootEditarProducto.pedido.cliente.nombre_tercero
                         }
@@ -276,7 +276,8 @@ define(["angular", "js/controllers",'models/Cliente',
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
                     if(data.status === 200){
-                       console.log(data)
+                        var obj = data.obj.documento_temporal;
+                        console.log(obj);
 
                     } 
                 });
@@ -290,3 +291,4 @@ define(["angular", "js/controllers",'models/Cliente',
 
 });
 
+///api/movBodegas/E008/generarRotuloCaja documento_temporal_id numero_caja

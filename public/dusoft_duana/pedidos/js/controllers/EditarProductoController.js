@@ -26,13 +26,13 @@ define(["angular", "js/controllers",'models/Cliente',
             };
 
             $scope.rootEditarProducto.caja  = {
-                numero:0
+                numero:0,
+                valida:false
             };
 
             $scope.rootEditarProducto.validacionlote = {valido:true};
             $scope.rootEditarProducto.validacionproducto = {
-                valido:true,
-                mensaje:"fppp"
+                valido:true
             };
 
            $modalInstance.opened.then(function() {
@@ -236,6 +236,12 @@ define(["angular", "js/controllers",'models/Cliente',
                     
                 }
 
+                if(!$scope.rootEditarProducto.caja.valida){
+                    $scope.rootEditarProducto.validacionproducto.valido = false
+                    $scope.rootEditarProducto.validacionproducto.mensaje = "La caja se encuentra cerrada";
+                    return;
+                }
+
                 return;
    
                 var obj = {
@@ -274,10 +280,37 @@ define(["angular", "js/controllers",'models/Cliente',
                 };
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
-
+                    console.log(data)
                     if(data.status === 200){
-                        var obj = data.obj.documento_temporal;
-                        console.log(obj);
+                        var obj = data.obj.movimientos_bodegas;
+                        
+                        if(!obj.caja_valida){
+                            $scope.rootEditarProducto.validacionproducto.valido = false;
+                            $scope.rootEditarProducto.validacionproducto.mensaje = "La caja se encuentra cerrada";
+                        } else {
+                            $scope.rootEditarProducto.validacionproducto.valido = true;
+                        }
+
+                    } 
+                });
+            };
+
+            $scope.onCerrarCaja = function(){
+                 var url = API.DOCUMENTOS_TEMPORALES.GENERAR_ROTULO;
+                var obj = {
+                    session:$scope.session,
+                    data:{
+                        documento_temporal: {
+                            documento_temporal_id: $scope.rootEditarProducto.documento.documento_temporal_id,
+                            numero_caja: $scope.rootEditarProducto.caja.numero
+                        }
+                    }
+                };
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    console.log(data)
+                    if(data.status === 200){
+                        
 
                     } 
                 });

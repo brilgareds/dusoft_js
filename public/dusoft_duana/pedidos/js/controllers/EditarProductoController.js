@@ -16,6 +16,7 @@ define(["angular", "js/controllers",'models/Cliente',
            $scope.rootEditarProducto = {}; 
            $scope.rootEditarProducto.producto = angular.copy(producto);
            $scope.rootEditarProducto.pedido   = angular.copy(documento.getPedido());
+           $scope.rootEditarProducto.documento = documento;
            $scope.rootEditarProducto.producto.lote.cantidad_ingresada = $scope.rootEditarProducto.producto.cantidad_separada;
            $scope.rootEditarProducto.lotes    = [];
 
@@ -198,6 +199,8 @@ define(["angular", "js/controllers",'models/Cliente',
             };
 
             $scope.auditarPedido = function(){
+                $scope.rootEditarProducto.validacionproducto.valido = true;
+                $scope.rootEditarProducto.producto.cantidad_solicitada = 40;
 
                 if(isNaN($scope.rootEditarProducto.producto.cantidad_separada) || $scope.rootEditarProducto.producto.cantidad_separada == 0){
 
@@ -222,6 +225,17 @@ define(["angular", "js/controllers",'models/Cliente',
                     return;
                 }
 
+                if($scope.rootEditarProducto.producto.cantidad_separada < 
+                    $scope.rootEditarProducto.producto.cantidad_solicitada){
+
+                    if($scope.rootEditarProducto.producto.lote.justificacion_auditor.length < 10){
+                        $scope.rootEditarProducto.validacionproducto.valido = false
+                        $scope.rootEditarProducto.validacionproducto.mensaje = "Favor ingresar la justificación";
+                        return;
+                    }
+                    
+                }
+
                 return;
    
                 var obj = {
@@ -243,6 +257,31 @@ define(["angular", "js/controllers",'models/Cliente',
                 });
             };
 
+            $scope.onValidarCaja = function(){
+                var url = API.DOCUMENTOS_TEMPORALES.VALIDAR_CAJA;
+
+                var obj = {
+                    session:$scope.session,
+                    data:{
+                        documento_temporal: {
+                            documento_temporal_id: $scope.rootEditarProducto.documento.documento_temporal_id,
+                            numero_caja: $scope.rootEditarProducto.caja.numero,
+                            numero_pedido: $scope.rootEditarProducto.pedido.numero,
+                            direccion_cliente: $scope.rootEditarProducto.pedido.cliente.direccion_cliente,
+                            nombre_cliente:$scope.rootEditarProducto.pedido.cliente.nombre_tercero
+                        }
+                    }
+                };
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+
+                    if(data.status === 200){
+                       console.log(data)
+
+                    } 
+                });
+            };
+
             $scope.cerrarModal = function(){
                 $modalInstance.close();
             };
@@ -251,46 +290,3 @@ define(["angular", "js/controllers",'models/Cliente',
 
 });
 
-
-/*public HashMap<String, Object> validarLote(){
-        HashMap<String, Object> obj = new HashMap<String, Object>();
-        int cantidad_ingresada = (cantidad.getText().toString().length() > 0)? Integer.parseInt(cantidad.getText().toString()):0;
-        
-        if(cantidad_ingresada == 0){
-            obj.put("valido", false );
-            obj.put("mensaje", "La cantidad ingresada, debe ser menor o igual a la cantidad solicitada!!.");
-            return obj;
-            
-        }
-        
-        
-        if(cantidad_ingresada > producto.getCantidadSolicitada()){
-            obj.put("valido", false );
-            obj.put("mensaje", "La cantidad ingresada, debe ser menor o igual a la cantidad solicitada!!.");
-            return obj;
-            
-        }
-        
-        if(cantidad_ingresada > producto.getCantidadpendiente()){
-            obj.put("valido", false );
-            obj.put("mensaje", "La cantidad ingresada, NO PUEDE SER MAYOR A la cantidad PENDIENTE!!.");
-            return obj;
-        }
-        
-        if(cantidad_ingresada > lote.getDisponible()){
-            obj.put("valido", false );
-            obj.put("mensaje", "La cantidad ingresada, NO PUEDE SER MAYOR A la Disponibilidad en BODEGA!!.");
-            return obj;
-        }
-        
-        if(cantidad_ingresada > lote.getCantidad()){
-            Log.d("response", "cantidad ingresada "+cantidad_ingresada + " cantidad del lote "+lote.getCantidad());
-            obj.put("valido", false );
-            obj.put("mensaje", "La cantidad ingresada, debe ser menor al stock de la bodega!!.");
-            return obj;
-        }
-        
-        obj.put("valido", true);
-        
-        return obj;
-    }*/

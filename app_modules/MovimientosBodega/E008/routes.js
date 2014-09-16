@@ -126,8 +126,6 @@ module.exports = function(app, di_container) {
         c_e008.auditarProductoDocumentoTemporal(req, res);
     });
 
-
-
     // Generar Documento Despacho Clientes
     app.post('/api/movBodegas/E008/generarDocumentoDespachoClientes', function(req, res) {
         c_e008.generarDocumentoDespachoClientes(req, res);

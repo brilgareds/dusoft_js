@@ -75,14 +75,13 @@ MovimientosBodegasModel.prototype.eliminar_producto_movimiento_bodega_temporal =
 };
 
 // Auditar Producto del Documento Temporal 0 = false ; 1 = true
-MovimientosBodegasModel.prototype.auditar_producto_movimiento_bodega_temporal = function(item_id, auditado, callback) {
+MovimientosBodegasModel.prototype.auditar_producto_movimiento_bodega_temporal = function(item_id, auditado, numero_caja, callback) {
 
     var sql = " UPDATE  inv_bodegas_movimiento_tmp_d SET auditado = $2 WHERE item_id = $1  ; ";
 
-    G.db.query(sql, [item_id, auditado ? 1 : 0 ], function(err, rows, result) {
+    G.db.query(sql, [item_id, auditado ? 1 : 0, numero_caja ], function(err, rows, result) {
         callback(err, rows, result);
     });
-
 };
 
 // Consultar detalle movimiento temporal 

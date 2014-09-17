@@ -173,7 +173,7 @@ DocuemntoBodegaE008.prototype.consultar_documentos_temporales_farmacias = functi
         }
         if (filtro.finalizados) {
             sql_aux = " AND a.estado IN ('1','2') ";
-        }       
+        }
     }
 
     var sql = " select \
@@ -481,6 +481,42 @@ DocuemntoBodegaE008.prototype.actualizar_estado_documento_temporal_farmacias = f
     var sql = " UPDATE inv_bodegas_movimiento_tmp_despachos_farmacias SET estado = $2 WHERE solicitud_prod_a_bod_ppal_id = $1 ;";
 
     G.db.query(sql, [numero_pedido, estado], function(err, rows, result) {
+
+        callback(err, rows, result);
+    });
+
+};
+
+
+DocuemntoBodegaE008.prototype.consultar_rotulo_caja = function(documento_id, numero_caja, callback) {
+
+    var sql = " select * from inv_rotulo_caja a where a.documento_id = $1 and numero_caja = $2; ";
+
+    G.db.query(sql, [documento_id, numero_caja], function(err, rows, result) {
+
+        callback(err, rows, result);
+    });
+};
+
+DocuemntoBodegaE008.prototype.generar_rotulo_caja = function(documento_id, numero_pedido, cliente, direccion, cantidad, ruta, contenido, numero_caja, usuario_id, callback) {
+    
+    var sql = " INSERT INTO inv_rotulo_caja (documento_id, solicitud_prod_a_bod_ppal_id, cliente, direccion, cantidad, ruta, contenido, usuario_registro, fecha_registro, numero_caja) \
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), $9 ) ;";
+  
+
+    G.db.query(sql, [documento_id,numero_pedido,cliente,direccion, cantidad, ruta, contenido, usuario_id,numero_caja ], function(err, rows, result) {
+
+        callback(err, rows, result);
+    });
+};
+
+
+DocuemntoBodegaE008.prototype.cerrar_caja = function(documento_id, numero_caja, callback) {
+
+    var sql = " UPDATE inv_rotulo_caja SET caja_cerrada='1' WHERE documento_id = $1 and numero_caja = $2; ";
+  
+
+    G.db.query(sql, [documento_id, numero_caja ], function(err, rows, result) {
 
         callback(err, rows, result);
     });

@@ -84,7 +84,7 @@
     <div class="row"> <!-- / begin payment details section -->
         <div class="col-sm-12 col-md-12">
             
-            <div class="span7"> <!-- / begin contact details -->
+            <div class="span7"> 
                 <div class="panel panel-info marginBottom5">
                     
                   <div class="panel-heading">
@@ -93,22 +93,22 @@
                     
                   <div class="panel-body" >
                     <div class="paddingRightZero">
-                         <div class="col-md-10">
-                            <label>Codigo de barras</label>
-                            <input-check ng-model="foo" ></input-check>
-                         </div>
-                        <div class="input-group navbar-form" ng-switch on="foo">
-                           
+                         
+                        <div class="input-group navbar-form" ng-switch on="filtro.codigo_barras">
+                            <span class="checkcodigobarrascontenedor">
+                                <label style="margin-right:3px;">Busquedad por codigo de barras</label>
+                                <input-check ng-model="filtro.codigo_barras" ></input-check>
+                            </span>
 
-
-                            <input type="text" ng-switch-when="true" class="form-control pull-right" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Código Barras" name="srch-term" id="srch-term">
+                            <input type="text" ng-switch-when="true" class="form-control pull-right" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda, true)" ng-model="termino_busqueda" placeholder="Código Barras" name="srch-term" id="srch-term" />
 
                             <div class="input-group-btn" ng-switch-when="true" >
-                                <button class="btn btn-default pull-right" type="submit" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ng-click="buscarDetalleDocumentoTemporal(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                                <button class="btn btn-default pull-right" type="submit" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ng-click="buscarDetalleDocumentoTemporal($event, termino_busqueda, true)"><i class="glyphicon glyphicon-search"></i></button>
                             </div>
-                            {{foo}}
-                            <div ng-switch-when="false">
-                                fddf
+                            <input type="text" ng-switch-when="false" class="form-control pull-right" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda, false)" ng-model="termino_busqueda" placeholder="Descripción Producto" name="srch-term" id="srch-term" />
+
+                            <div class="input-group-btn" ng-switch-when="false" >
+                                <button class="btn btn-default pull-right" type="submit" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ng-click="buscarDetalleDocumentoTemporal($event, termino_busqueda, false)"><i class="glyphicon glyphicon-search"></i></button>
                             </div>
 
                         </div>
@@ -123,8 +123,7 @@
     </div> <!-- / end payment details section -->
       
     <!-- End Código desplazado -->
-    <div class="row">
-        <div class="col-xs-12">
+        <div class="col-sm-12 col-md-12">
           
             <div class="panel panel-info marginBottom5"> <!-- / begin banking details -->
 
@@ -132,7 +131,7 @@
                   <h4 class="h4MarginTopBottom">Auditados</h4>
                 </div>
 
-                <div class="panel-body">
+                <div class="panel-body paddingRightZero">
 
 
                     <div class="auditadosGrid" ng-grid="lista_productos_auditados_clientes"></div>
@@ -141,12 +140,9 @@
             </div>
               
         </div>    
-    </div> <!-- / end class row --> 
 
     <div class="col-sm-12 row marginBottom5">
         <button type="submit" class="btn btn-accion btn-primary pull-right" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0">Generar Documento</button>    
     </div>
-
-    <br/><br/><br/><br/><br/>
 
 </div>

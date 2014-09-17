@@ -85,10 +85,19 @@
                   </div>
                     
                   <div class="panel-body">
-                    <div class="input-group navbar-form paddingRightZero">
-                        <input type="text" class="form-control pull-right" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Código Barras" name="srch-term" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" id="srch-term">
+                    <div class="input-group navbar-form paddingRightZero" ng-switch on="filtro.codigo_barras">
+                        <span class="checkcodigobarrascontenedor">
+                            <label style="margin-right:3px;">Busquedad por codigo de barras</label>
+                            <input-check ng-model="filtro.codigo_barras" ></input-check>
+                        </span>
+                        <input type="text" class="form-control pull-right" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda, true)" ng-model="termino_busqueda" placeholder="Código Barras" ng-switch-when="true" name="srch-term" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" id="srch-term" />
                         <div class="input-group-btn" >
-                            <button class="btn btn-default pull-right" type="submit" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ng-click="buscarDetalleDocumentoTemporal(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                            <button class="btn btn-default pull-right" ng-switch-when="true" type="submit" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ng-click="buscarDetalleDocumentoTemporal($event, termino_busqueda, true)"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                         <input type="text" ng-switch-when="false" class="form-control pull-right" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda, false)" ng-model="termino_busqueda" placeholder="Descripción Producto" name="srch-term" id="srch-term" />
+
+                        <div class="input-group-btn" ng-switch-when="false" >
+                            <button class="btn btn-default pull-right" type="submit" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ng-click="buscarDetalleDocumentoTemporal($event, termino_busqueda, false)"><i class="glyphicon glyphicon-search"></i></button>
                         </div>
                     </div>
                     

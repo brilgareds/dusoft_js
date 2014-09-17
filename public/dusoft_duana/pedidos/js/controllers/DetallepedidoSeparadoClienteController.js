@@ -34,7 +34,6 @@ define(["angular", "js/controllers",'models/Cliente',
             $scope.cajas = [];
             $scope.seleccion_caja = "";
             $scope.numero_pedido = "";
-            $scope.foo = true;
 
             
             $scope.cerrar = function(){
@@ -50,7 +49,7 @@ define(["angular", "js/controllers",'models/Cliente',
                 $scope.buscarDetalleDocumentoTemporal($scope.obtenerParametros(), false, 1, $scope.resultadoBusquedaDocumento);
                 $scope.cliente = $scope.DocumentoTemporal.pedido.cliente;
                 $scope.numero_pedido = $scope.DocumentoTemporal.pedido.numero_pedido;
-                
+                $scope.filtro.codigo_barras = true;
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -175,10 +174,13 @@ define(["angular", "js/controllers",'models/Cliente',
             };
             
            //eventos de widgets
-           $scope.onKeyDetalleDocumentoTemporalPress = function(ev, termino_busqueda) {
+           $scope.onKeyDetalleDocumentoTemporalPress = function(ev, termino_busqueda, buscarcodigodebarras) {
                 if(!$scope.esDocumentoBodegaValido($scope.DocumentoTemporal.bodegas_doc_id)) return;
-                    if (ev.which == 13) {   
+                    if (ev.which == 13) {  
+                        console.log("search with code "+buscarcodigodebarras);
                         $scope.filtro.termino_busqueda  =  termino_busqueda;
+                        $scope.filtro.codigo_barras = buscarcodigodebarras;
+                        $scope.filtro.descripcion_producto = !buscarcodigodebarras;
 
                         var obj = {
                             session: $scope.session,

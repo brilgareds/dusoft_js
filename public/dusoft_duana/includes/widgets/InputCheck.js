@@ -27,10 +27,11 @@ define(["angular","js/directive"], function(angular, directive){
                 //console.log("on click" ,!scope.checked )
                 scope.checked = !scope.checked;
                 directive.setClass(element, scope);
-                console.log("chnage model")
-                ngModel.$setViewValue(scope.checked);
-                //ngModel.$setModelValue(scope.checked);
-                
+               // ngModel.$setViewValue(scope.checked);
+                scope.$apply(function(){
+                  ngModel.$setViewValue(scope.checked);
+                  //ngModel.$render();
+                });                
             });
 
            //watch para revisar el cambio del modelo en tiempo real

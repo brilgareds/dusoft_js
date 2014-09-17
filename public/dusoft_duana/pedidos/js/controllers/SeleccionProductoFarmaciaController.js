@@ -28,6 +28,11 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             $scope.listado_productos_seleccionados = [];
             
             $scope.tipo_cliente = 1;
+            
+            $scope.$on('cargarGridSeleccionadoSlide', function(event, mass) {
+                //console.log("Recibimos la GRID del PADRE: ",mass)
+                $scope.listado_productos_seleccionados = mass;
+            });
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
             
@@ -37,7 +42,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                 $scope.listado_productos = [];
                 $scope.listado_productos_seleccionados = [];
             };
-            
+
             $rootScope.$on("mostrarseleccionproducto", function(e, datos) {
                 //alert("TIPO CLIENTE - FUENTE: ");
                 //console.log("TIPO CLIENTE - FUENTE: ", datos);
@@ -48,7 +53,11 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                 
                 $scope.buscarSeleccionProducto("");
             });
-
+            
+//            $scope.enviarDatosGridPrincipal = function(){
+//                $scope.$emit('cargarGridPrincipal', $scope.listado_productos_seleccionados);
+//            }
+            
             $scope.buscarSeleccionProducto = function(termino, paginando) {
 
                 //valida si cambio el termino de busqueda
@@ -65,8 +74,9 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                             existencia_farmacia: '10'+i,
                             existencia_bodega: '20'+i,
                             existencia_disponible: '10'+i,
-                            cantidad_solicitada: 0
-                        }
+                            cantidad_solicitada: 0,
+                            fila_activa: true
+                        };
 
                     $scope.listado_productos.push(obj);
 
@@ -125,25 +135,42 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                         }
                     ]
                 };
-                
             }
 
             $scope.onRowClick1 = function(row) {
                 
-                var obj_sel = { 
-                            codigo_producto: row.entity.codigo_producto,
-                            descripcion: row.entity.descripcion,
-                            cantidad_solicitada: row.entity.cantidad_solicitada,
-                            cantidad_pendiente: 0
-                        }
-                        
-                $scope.listado_productos_seleccionados.push(obj_sel);
+                if($scope.listado_productos[row.rowIndex].fila_activa !== false){
+                
+                    $scope.listado_productos[row.rowIndex].fila_activa = false; 
 
+//                    console.log("Info Arreglo: ",$scope.listado_productos[row.rowIndex]);
+//
+//                    console.log("onRowClick1: ", row);
+
+                    var obj_sel = { 
+                                codigo_producto: row.entity.codigo_producto,
+                                descripcion: row.entity.descripcion,
+                                cantidad_solicitada: row.entity.cantidad_solicitada,
+                                cantidad_pendiente: 0,
+                                sourceIndex: row.rowIndex
+                            }
+
+                    $scope.listado_productos_seleccionados.push(obj_sel);
+
+                    $scope.$emit('cargarGridPrincipal', $scope.listado_productos_seleccionados);
+
+                    // $scope.enviarDatosGridPrincipal();
+                }
             };
             
             $scope.onRowClick2 = function(row) {
                 
+                $scope.listado_productos[row.entity.sourceIndex].fila_activa = true;
+                
                 $scope.listado_productos_seleccionados.splice(row.rowIndex,1);
+                
+                $scope.$emit('cargarGridPrincipal', $scope.listado_productos_seleccionados);
+//                $scope.enviarDatosGridPrincipal();
                 
             };
             

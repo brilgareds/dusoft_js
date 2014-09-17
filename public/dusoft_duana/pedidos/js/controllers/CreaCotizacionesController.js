@@ -35,6 +35,11 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                                         {id: 5, nombre: 'Sofia Vergara'},
                                         {id: 6, nombre: 'Salma Hayec'}
                                         ];
+                                        
+            $scope.$on('cargarGridPrincipal', function(event, data) {
+                    //console.log("La Información Llega a la Grid ", data);
+                    $scope.listado_productos = data;
+                });
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
 
@@ -45,22 +50,23 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                     $scope.paginaactual = 1;
                 }
                 
-                for(i=0; i<10; i++)
-                {
-                    //var pedido = Pedido.get();
-                    
-                    obj = { 
-                            numero_producto: '123456'+i,
-                            nombre_producto: 'Riboflavina Intuitiva factor '+1,
-                            nombre_vendedor: 'Bladimir Ribolovlev'+i,
-                            fecha_cotizacion: '0'+i+'-09-2014',
-                            valor_cotizacion: i+'00.000',
-                            estado: 'Activo'
-                        }
-                    
-                    $scope.listado_productos.push(obj);
-                        
-                }
+//                for(i=0; i<10; i++)
+//                {
+//                    //var pedido = Pedido.get();
+//                    
+//                    obj = { 
+//                            codigo_producto: '123456'+i,
+//                            descripcion: 'TRIPARTYCINA X '+i,
+//                            cantidad_solicitada: 10*i,
+//                            iva: 16,
+//                            precio_venta: '60'+i,
+//                            total_sin_iva: 100, //cantidad*precio_venta
+//                            total_con_iva: 116 //cantidad*precio_venta + cantidad*precio_venta*iva
+//                        }
+//                    
+//                    $scope.listado_productos.push(obj);
+//                        
+//                }
 
                 
 //                var obj = {
@@ -143,23 +149,45 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
 //            };
 
             //definicion y delegados del Tabla de pedidos clientes
+            
+            $scope.lista_productos = {    
+                    data: 'listado_productos',
+                    enableColumnResize: true,
+                    enableRowSelection: false,
+                    //enableCellSelection: true,
+                    //selectedItems: $scope.selectedRow,
+                    multiSelect: false,
+                            
+                    columnDefs: [
+                        {field: 'codigo_producto', displayName: 'Código Producto'},
+                        {field: 'descripcion', displayName: 'Descripción'},
+                        {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada'},
+                        {field: 'iva', displayName: 'Iva'},
+                        {field: 'precio_venta', displayName: 'Precio Unitario'},
+                        {field: 'total_sin_iva', displayName: 'Total Sin Iva'},
+                        {field: 'total_con_iva', displayName: 'Total Con Iva'}
+                    ]
 
-            $scope.lista_productos = {
-                data: 'listado_productos',
-                enableColumnResize: true,
-                enableRowSelection: false,
-                columnDefs: [
-                    {field: 'numero_producto', displayName: 'Número Producto'},
-                    {field: 'nombre_producto', displayName: 'Nombre Producto'},
-                    {field: 'nombre_vendedor', displayName: 'Vendedor'},
-                    {field: 'fecha_cotizacion', displayName: 'Fecha'},
-                    {field: 'valor_cotizacion', displayName: 'Valor'},
-                    {field: 'estado', displayName: 'Estado'},
-                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Activar</span></button></div>'}
+                };
+/**************** Antigua Grid *********/
+//            $scope.lista_productos = {
+//                data: 'listado_productos',
+//                enableColumnResize: true,
+//                enableRowSelection: false,
+//                columnDefs: [
+//                    {field: 'numero_producto', displayName: 'Número Producto'},
+//                    {field: 'nombre_producto', displayName: 'Nombre Producto'},
+//                    {field: 'nombre_vendedor', displayName: 'Vendedor'},
+//                    {field: 'fecha_cotizacion', displayName: 'Fecha'},
+//                    {field: 'valor_cotizacion', displayName: 'Valor'},
+//                    {field: 'estado', displayName: 'Estado'},
+//                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Activar</span></button></div>'}
+//
+//                ]
+//
+//            };
+/**************** Antigua Grid *********/
 
-                ]
-
-            };
             
             $scope.abrirViewPedidosClientes = function()
             {
@@ -174,6 +202,8 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             $scope.onRowClickSelectProducto = function(tipo_cliente) {
                 $scope.slideurl = "views/seleccionproductocliente.html?time=" + new Date().getTime();
                 $scope.$emit('mostrarseleccionproducto', tipo_cliente);
+                
+                $scope.$broadcast('cargarGridSeleccionadoSlide', $scope.listado_productos);
             };
             
             //Método para liberar Memoria de todo lo construido en ésta clase

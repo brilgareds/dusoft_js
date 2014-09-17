@@ -22,7 +22,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
             $scope.paginaactual = 1;
-            $scope.bloquear = false; //Default True
+            $scope.bloquear = true; //Default True
             //$scope.numero_pedido = "";
             //$scope.obj = {};
             $scope.listado_productos = [];
@@ -67,6 +67,11 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                                                 {id: 3, nombre: 'BODEGA_3'},
                                                 {id: 4, nombre: 'BODEGA_4'}
                                                 ];
+                                                
+            $scope.$on('cargarGridPrincipal', function(event, data) {
+                    //console.log("La Información Llega a la Grid ", data);
+                    $scope.listado_productos = data;
+                });
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
 
@@ -77,24 +82,30 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                     $scope.paginaactual = 1;
                 }
                 
-                for(i=0; i<10; i++)
-                {
-                    //var pedido = Pedido.get();
-                    
-                    obj = { 
-                            codigo_producto: '123456'+i,
-                            descripcion: 'LOBOTOMICINA X '+i,
-                            molecula: 'LOBOTONINA'+i,
-                            existencia_farmacia: '10'+i,
-                            existencia_bodega: '20'+i,
-                            existencia_disponible: '10'+i,
-                            existencia_reservada: '10'+i,
-                            existencia_x_farmacia: 20*i
-                        }
-                    
-                    $scope.listado_productos.push(obj);
-                        
-                }
+//                for(i=0; i<10; i++)
+//                {
+//                    //var pedido = Pedido.get();
+//                    
+//                    obj = { 
+//                            /*codigo_producto: '123456'+i,
+//                            descripcion: 'LOBOTOMICINA X '+i,
+//                            molecula: 'LOBOTONINA'+i,
+//                            existencia_farmacia: '10'+i,
+//                            existencia_bodega: '20'+i,
+//                            existencia_disponible: '10'+i,
+//                            existencia_reservada: '10'+i,
+//                            existencia_x_farmacia: 20*i*/
+//                        
+//                            codigo_producto: '123456'+i,
+//                            descripcion: 'LOBOTOMICINA X '+i,
+//                            cantidad_solicitada: 150,
+//                            cantidad_pendiente: 0
+//                        
+//                        }
+//                    
+//                    $scope.listado_productos.push(obj);
+//                        
+//                }
                 
                 console.log("LISTADO COTIZACIONES: ", $scope.listado_cotizaciones);
                 
@@ -123,6 +134,12 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
 //                });
 
             };
+            
+           /* $scope.recibirDatosGridPrincipal = function(){
+                $scope.$on('cargarGridPrincipal', function(event, data) {
+                    console.log("La Información Llega a la Grid ", data);
+                });
+            }*/
 
 //            $scope.renderPedidosSeparadosCliente = function(data, paginando) {
 //
@@ -180,28 +197,46 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
 //            };
 
             //definicion y delegados del Tabla de pedidos clientes
-
-            $scope.lista_productos = {
-                data: 'listado_productos',
-                enableColumnResize: true,
-                enableRowSelection: false,
-                enableCellSelection: true,
-                selectedItems: $scope.selectedRow,
-                multiSelect: false,
-                columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Código Producto'},
-                    {field: 'descripcion', displayName: 'Descripción'},
-                    {field: 'molecula', displayName: 'Molécula'},
-                    {field: 'existencia_farmacia', displayName: 'Existencia Farmacia'},
-                    {field: 'existencia_bodega', displayName: 'Existencia Bodega'},
-                    {field: 'existencia_disponible', displayName: 'Disponible'},
-                    {field: 'existencia_reservada', displayName: 'Reservado'},
-                    {field: 'existencia_x_farmacia', displayName: 'Existencias Farmacias', width: "12%"},
-                    {field: 'cantidad', displayName: 'Cantidad'},
-                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Eliminar</span></button></div>'}
-                ]
-
-            };
+            
+            $scope.lista_productos = {    
+                    data: 'listado_productos',
+                    enableColumnResize: true,
+                    enableRowSelection: false,
+                    //enableCellSelection: true,
+                    //selectedItems: $scope.selectedRow,
+                    multiSelect: false,
+                    columnDefs: [
+                        {field: 'codigo_producto', displayName: 'Código Producto'},
+                        {field: 'descripcion', displayName: 'Descripción'},
+                        {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada'},
+                        {field: 'cantidad_pendiente', displayName: 'Cantidad Pendiente'}
+                    ]
+                };
+            
+            
+/********* Antigua Grid ***************************/
+//            $scope.lista_productos = {
+//                data: 'listado_productos',
+//                enableColumnResize: true,
+//                enableRowSelection: false,
+//                enableCellSelection: true,
+//                selectedItems: $scope.selectedRow,
+//                multiSelect: false,
+//                columnDefs: [
+//                    {field: 'codigo_producto', displayName: 'Código Producto'},
+//                    {field: 'descripcion', displayName: 'Descripción'},
+//                    {field: 'molecula', displayName: 'Molécula'},
+//                    {field: 'existencia_farmacia', displayName: 'Existencia Farmacia'},
+//                    {field: 'existencia_bodega', displayName: 'Existencia Bodega'},
+//                    {field: 'existencia_disponible', displayName: 'Disponible'},
+//                    {field: 'existencia_reservada', displayName: 'Reservado'},
+//                    {field: 'existencia_x_farmacia', displayName: 'Existencias Farmacias', width: "12%"},
+//                    {field: 'cantidad', displayName: 'Cantidad'},
+//                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Eliminar</span></button></div>'}
+//                ]
+//
+//            };
+/********* Antigua Grid ***************************/
             
 //            $scope.abrirViewCotizacion = function()
 //            {
@@ -216,6 +251,8 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             $scope.onRowClickSelectProducto = function(tipo_cliente) {
                 $scope.slideurl = "views/seleccionproductofarmacia.html?time=" + new Date().getTime();
                 $scope.$emit('mostrarseleccionproducto', tipo_cliente);
+                
+                $scope.$broadcast('cargarGridSeleccionadoSlide', $scope.listado_productos);
             };
             
             $scope.valorSeleccionado = function(tipo_seleccion) {

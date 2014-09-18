@@ -95,10 +95,12 @@ html, body{
 	width: 100%;
 }
 
-.checkseleccion{
-	padding-top: 9px;
-	text-align: center;
-
+.checkseleccion input[type=checkbox], input[type=radio]{
+	position: absolute;
+	margin: 0 auto!important;
+	top: 8px;
+	right: 0px;
+	left: 0px;
 }
 
 .defaultGrid {

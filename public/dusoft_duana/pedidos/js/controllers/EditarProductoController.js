@@ -294,8 +294,10 @@ define(["angular", "js/controllers",'models/Cliente',
                     return;
                 }
 
+                var cliente = (!$scope.rootEditarProducto.pedido.cliente)?$scope.rootEditarProducto.pedido.farmacia:$scope.rootEditarProducto.pedido.cliente;
+
                 var url = API.DOCUMENTOS_TEMPORALES.VALIDAR_CAJA;
-                console.log($scope.rootEditarProducto)
+                 console.log($scope.rootEditarProducto, " cliente ", cliente)
                 var obj = {
                     session:$scope.session,
                     data:{
@@ -304,7 +306,7 @@ define(["angular", "js/controllers",'models/Cliente',
                             numero_caja: $scope.rootEditarProducto.caja.numero,
                             numero_pedido: $scope.rootEditarProducto.pedido.numero_pedido,
                             direccion_cliente: $scope.rootEditarProducto.pedido.cliente.direccion_cliente,
-                            nombre_cliente:$scope.rootEditarProducto.pedido.cliente.nombre_tercero
+                            nombre_cliente:cliente.nombre_tercero || cliente.nombre_farmacia
                         }
                     }
                 };

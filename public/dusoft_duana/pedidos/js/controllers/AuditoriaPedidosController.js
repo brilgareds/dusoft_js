@@ -337,7 +337,5 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             });
 
 
-
-
         }]);
 });

@@ -103,12 +103,12 @@
                             <input type="text" ng-switch-when="true" class="form-control pull-right" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda, true)" ng-model="termino_busqueda" placeholder="Código Barras" name="srch-term" id="srch-term" />
 
                             <div class="input-group-btn" ng-switch-when="true" >
-                                <button class="btn btn-default pull-right" type="submit" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ng-click="buscarDetalleDocumentoTemporal($event, termino_busqueda, true)"><i class="glyphicon glyphicon-search"></i></button>
+                                <button class="btn btn-default pull-right" type="submit" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0"><i class="glyphicon glyphicon-search"></i></button>
                             </div>
                             <input type="text" ng-switch-when="false" class="form-control pull-right" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda, false)" ng-model="termino_busqueda" placeholder="Descripción Producto" name="srch-term" id="srch-term" />
 
                             <div class="input-group-btn" ng-switch-when="false" >
-                                <button class="btn btn-default pull-right" type="submit" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ng-click="buscarDetalleDocumentoTemporal($event, termino_busqueda, false)"><i class="glyphicon glyphicon-search"></i></button>
+                                <button class="btn btn-default pull-right" type="submit" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ><i class="glyphicon glyphicon-search"></i></button>
                             </div>
 
                         </div>

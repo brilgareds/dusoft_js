@@ -1,7 +1,9 @@
-requirejs.config({
+({
  
-    baseUrl: './',
- 
+   // baseUrl: '../../',
+    name: "app",
+    out: "dist/main.js",
+    removeCombined: true,
     paths: {
         app: 'js/app',
         angular: "../../javascripts/angular/angular",
@@ -10,18 +12,18 @@ requirejs.config({
         includes:"../includes/",
         models:"js/models",
         directive:"js/directive",
-        bootstrap:"../../../../javascripts/bootstrap/bootstrap",
+        bootstrap:"../../javascripts/bootstrap/bootstrap",
         facturacion: "../facturacion/js/models/",
-        nggrid:"../../../../javascripts/angular/ng-grid",
-        jquery:"../../../../javascripts/jquery",
+        nggrid:"../../javascripts/angular/ng-grid",
+        jquery:"../../javascripts/jquery",
         treemenu:"../includes/menu/myTree",
         tree:"../../../../javascripts/jstree",
-        select:"../../../../javascripts/select2",
-        loader:"../includes/loader/loader",
-        config:"../includes/config/Config",
-        socket:"/socket.io/socket.io",
+        select:"../../javascripts/select2",
+        loader:"includes/loader/loader",
+        config:"includes/config/Config",
+        socket:"socket.io/socket.io",
         socketservice:"../includes/socket/socket",
-        uiselect2:"../../../../javascripts/uiselect2",
+        uiselect2:"../../javascripts/uiselect2",
         storage:"../../javascripts/angular/storage",
         httpinterceptor:"../includes/http/HttpInterceptor"
     },
@@ -62,8 +64,5 @@ requirejs.config({
             deps:["angular"]
         }
     }
-});
+})
  
-requirejs([
-    "app"
-]);

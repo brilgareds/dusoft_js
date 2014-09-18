@@ -75,7 +75,9 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                             existencia_bodega: '20'+i,
                             existencia_disponible: '10'+i,
                             cantidad_solicitada: 0,
-                            fila_activa: true
+                            fila_activa: true,
+                            tipo_boton: 'success',
+                            etiqueta_boton: 'Incluir'
                         };
 
                     $scope.listado_productos.push(obj);
@@ -106,8 +108,8 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                         {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada', enableCellEdit: true},
                         {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
                             cellTemplate: ' <div class="row">\n\
-                                                <button class="btn btn-success btn-xs" ng-click="onRowClick1(row)">\n\
-                                                    <span class="glyphicon glyphicon-plus-sign">Incluir</span>\n\
+                                                <button class="btn btn-{{row.entity.tipo_boton}} btn-xs" ng-click="onRowClick1(row)">\n\
+                                                    <span class="glyphicon glyphicon-plus-sign">{{row.entity.etiqueta_boton}}</span>\n\
                                                 </button>\n\
                                             </div>'
                         }
@@ -141,11 +143,9 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                 
                 if($scope.listado_productos[row.rowIndex].fila_activa !== false){
                 
-                    $scope.listado_productos[row.rowIndex].fila_activa = false; 
-
-//                    console.log("Info Arreglo: ",$scope.listado_productos[row.rowIndex]);
-//
-//                    console.log("onRowClick1: ", row);
+                    $scope.listado_productos[row.rowIndex].fila_activa = false;
+                    $scope.listado_productos[row.rowIndex].tipo_boton = 'warning';
+                    $scope.listado_productos[row.rowIndex].etiqueta_boton = 'Listo';
 
                     var obj_sel = { 
                                 codigo_producto: row.entity.codigo_producto,
@@ -155,22 +155,23 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                                 sourceIndex: row.rowIndex
                             }
 
-                    $scope.listado_productos_seleccionados.push(obj_sel);
+                    //$scope.listado_productos_seleccionados.push(obj_sel);
+                    $scope.listado_productos_seleccionados.unshift(obj_sel);
 
                     $scope.$emit('cargarGridPrincipal', $scope.listado_productos_seleccionados);
 
-                    // $scope.enviarDatosGridPrincipal();
                 }
             };
             
             $scope.onRowClick2 = function(row) {
                 
                 $scope.listado_productos[row.entity.sourceIndex].fila_activa = true;
+                $scope.listado_productos[row.entity.sourceIndex].tipo_boton = 'success';
+                $scope.listado_productos[row.entity.sourceIndex].etiqueta_boton = 'Incluir';
                 
                 $scope.listado_productos_seleccionados.splice(row.rowIndex,1);
                 
                 $scope.$emit('cargarGridPrincipal', $scope.listado_productos_seleccionados);
-//                $scope.enviarDatosGridPrincipal();
                 
             };
             

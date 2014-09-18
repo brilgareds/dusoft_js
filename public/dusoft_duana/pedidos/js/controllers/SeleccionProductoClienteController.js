@@ -31,7 +31,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
 //            $scope.lista_productos_seleccionados = {};
             
             $scope.tipo_cliente = 1;
-            $scope.tipo_boton = "success";
+            //$scope.tipo_boton = "success";
             
             $scope.$on('cargarGridSeleccionadoSlide', function(event, mass) {
                 //console.log("Recibimos la GRID del PADRE: ",mass)
@@ -81,7 +81,9 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                                 existencia_bodega: '20'+i,
                                 cantidad_disponible: '10'+i,
                                 cantidad_solicitada: 0,
-                                fila_activa: true
+                                fila_activa: true,
+                                tipo_boton: 'success',
+                                etiqueta_boton: 'Incluir'
                         };
 
                         $scope.listado_productos.push(obj);
@@ -120,17 +122,19 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                         {field: 'cantidad_disponible', displayName: 'Disponible'},
                         {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada', enableCellEdit: true},
                         {field: 'fila_activa', displayName: 'visibilidad', visible: false},
+                        {field: 'tipo_boton', displayName: 'tipo boton', visible: false},
                         {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
                             cellTemplate: ' <div class="row">\n\
-                                                <button class="btn btn-{{tipo_boton}} btn-xs" ng-click="onRowClick1(row)">\n\
-                                                    <span class="glyphicon glyphicon-plus-sign">Incluir</span>\n\
+                                                <button class="btn btn-{{row.entity.tipo_boton}} btn-xs" ng-click="onRowClick1(row)">\n\
+                                                    <span class="glyphicon glyphicon-plus-sign">{{row.entity.etiqueta_boton}}</span>\n\
                                                 </button>\n\
                                             </div>'
                         }
                     ]/*,
                     beforeSelectionChange: function (row) {
-                        console.log("Evento en la Grid :",row.entity);
-                        return $scope.Disable(row.entity);
+                        //console.log("Evento en la Grid :",row.entity);
+                        //return $scope.Disable(row.entity);
+                        //$scope.tipo_boton = row.entity.tipo_boton;
                     }*/
                 };
 
@@ -168,14 +172,8 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                 if($scope.listado_productos[row.rowIndex].fila_activa !== false){
                 
                     $scope.listado_productos[row.rowIndex].fila_activa = false; 
-
-//                    console.log("Info Arreglo: ",$scope.listado_productos[row.rowIndex]);
-//
-                    console.log("onRowClick1: ", row);
-
-                    $scope.tipo_boton = "warning";
-                    
-                    console.log("onRowClick1 - Después cambio color: ", row);
+                    $scope.listado_productos[row.rowIndex].tipo_boton = 'warning';
+                    $scope.listado_productos[row.rowIndex].etiqueta_boton = 'Listo';
 
                     var obj_sel = {
                             codigo_producto: row.entity.codigo_producto,
@@ -188,17 +186,23 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                             sourceIndex: row.rowIndex
                     };
 
-                    $scope.listado_productos_seleccionados.push(obj_sel);
+                    //$scope.listado_productos_seleccionados.push(obj_sel); // adiciona al final
+                    //$scope.listado_productos_seleccionados.unshift(obj_sel); // adiciona al comienzo
+                    $scope.listado_productos_seleccionados.unshift(row.entity);
 
                     $scope.$emit('cargarGridPrincipal', $scope.listado_productos_seleccionados);
                 }
             };
             
             $scope.onRowClick2 = function(row) {
-                
-                $scope.tipo_boton = "success";
                     
-                $scope.listado_productos[row.entity.sourceIndex].fila_activa = true;
+//                $scope.listado_productos[row.entity.sourceIndex].fila_activa = true;
+//                $scope.listado_productos[row.entity.sourceIndex].tipo_boton = 'success';
+//                $scope.listado_productos[row.entity.sourceIndex].etiqueta_boton = 'Incluir';
+                
+                row.entity.fila_activa = true;
+                row.entity.tipo_boton = 'success';
+                row.entity.etiqueta_boton = 'incluir';
 
                 $scope.listado_productos_seleccionados.splice(row.rowIndex,1);
                 

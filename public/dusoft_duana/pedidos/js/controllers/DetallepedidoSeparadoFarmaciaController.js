@@ -49,7 +49,7 @@ define(["angular", "js/controllers",'models/Farmacia',
                  $scope.buscarDetalleDocumentoTemporal($scope.obtenerParametros(), false, 2,$scope.resultadoBusquedaDocumento);
                 $scope.farmacia = $scope.DocumentoTemporal.pedido.farmacia;
                 $scope.numero_pedido = $scope.DocumentoTemporal.pedido.numero_pedido;
-                
+                $scope.filtro.codigo_barras = true;
 
                 var obj = {
                     session: $scope.session,

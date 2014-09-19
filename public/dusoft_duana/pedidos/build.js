@@ -4,6 +4,8 @@
     name: "app",
     out: "dist/main.js",
     removeCombined: true,
+	findNestedDependencies: true,
+    //optimize:'none',
     paths: {
         app: 'js/app',
         angular: "../../javascripts/angular/angular",
@@ -17,11 +19,11 @@
         nggrid:"../../javascripts/angular/ng-grid",
         jquery:"../../javascripts/jquery",
         treemenu:"../includes/menu/myTree",
-        tree:"../../../../javascripts/jstree",
+        tree:"../../javascripts/jstree",
         select:"../../javascripts/select2",
-        loader:"includes/loader/loader",
-        config:"includes/config/Config",
-        socket:"socket.io/socket.io",
+        loader:"../includes/loader/loader",
+        config:"../includes/config/Config",
+        socket:"../includes/socket/socket.io/socket.io",
         socketservice:"../includes/socket/socket",
         uiselect2:"../../javascripts/uiselect2",
         storage:"../../javascripts/angular/storage",
@@ -29,7 +31,7 @@
     },
     shim: {
         "angular": {
-            deps:["jquery"],
+            deps:["jquery", "tree"],
             exports: "angular"
         },
         "route": {

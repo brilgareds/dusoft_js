@@ -16,9 +16,9 @@ define(["angular","js/directive"], function(angular, directive){
 
         };
 
-        directive.controller = function($scope){
+        directive.controller = ["$scope",function($scope){
             $scope.checked = false;
-        };
+        }];
 
         //cuando la etiqueta esta cargada en el dom
         directive.link = function(scope, element, attrs, ngModel){

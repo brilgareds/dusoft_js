@@ -1,7 +1,7 @@
 
 define(["angular", "js/models", "includes/classes/Pedido"], function(angular, models) {
 
-    models.factory('PedidoVenta', function(Pedido) {
+    models.factory('PedidoVenta', ["Pedido", function(Pedido) {
 
         function PedidoVenta() {
             Pedido.getClass().call(this);
@@ -38,5 +38,5 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         }
 
         return this;
-    });
+    }]);
 });

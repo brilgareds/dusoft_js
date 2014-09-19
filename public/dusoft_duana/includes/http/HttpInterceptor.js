@@ -1,5 +1,5 @@
 define(["angular","js/services"], function(angular, services){
-    services.factory('HttpInterceptor', function ($q) {
+    services.factory('HttpInterceptor', ["$q", function ($q) {
         return function (promise) {
             return promise.then(function (response) {
                 var auth = true;
@@ -23,6 +23,6 @@ define(["angular","js/services"], function(angular, services){
                 return $q.reject(response);
             });
         };
-    });
+    }]);
 
 });

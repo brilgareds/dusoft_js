@@ -15,7 +15,7 @@
           'services'
       ]);
 
-      loginapp.config(function($stateProvider, $urlRouterProvider){
+      loginapp.config(["$stateProvider", "$urlRouterProvider", function($stateProvider, $urlRouterProvider){
 
           // For any unmatched url, send to /route1
 
@@ -34,7 +34,7 @@
                 controller:"Logincontroller"
             })
 
-    });
+    }]);
 
     angular.bootstrap(document, ['loginapp']);
     return loginapp;

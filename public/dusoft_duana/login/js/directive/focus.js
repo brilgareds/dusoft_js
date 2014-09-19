@@ -1,6 +1,6 @@
 define(["angular","js/directive"], function(angular, directive){
 
-   directive.directive('xngFocus', function($timeout) {
+   directive.directive('xngFocus', ["$timeout", function($timeout) {
 	    return {
 	    	link:function(scope, element, attrs) {
 
@@ -18,6 +18,6 @@ define(["angular","js/directive"], function(angular, directive){
 		    	  
 		    }
 	    }   
-	});
+	}]);
 
 });

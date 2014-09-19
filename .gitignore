@@ -6,3 +6,4 @@ cliente3.js
 Queries.sql
 newrelic_agent.log
 package.sublime-workspace
+dist/

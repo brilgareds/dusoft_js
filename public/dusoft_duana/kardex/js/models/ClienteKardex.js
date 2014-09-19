@@ -1,7 +1,7 @@
 
 define(["angular","js/models","includes/classes/ClienteBase"], function(angular, models, ClienteBase){
 
-	models.factory('ClienteKardex', function(ClienteBase) {
+	models.factory('ClienteKardex', ["ClienteBase", function(ClienteBase) {
 
 		function ClienteKardex(nombre, direccion, tipo_id, id, telefono){
 			//constructor padre
@@ -17,5 +17,5 @@ define(["angular","js/models","includes/classes/ClienteBase"], function(angular,
 		}
 
 		return this;
-	});
+	}]);
 });

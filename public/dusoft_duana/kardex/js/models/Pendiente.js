@@ -1,7 +1,7 @@
 
 define(["angular", "js/models"], function(angular, models) {
 
-    models.factory('Pendiente',function($filter) {
+    models.factory('Pendiente',["$filter", function($filter) {
 
         function Pendiente(fecha_registro) {
             this.fecha_registro = $filter('date')(fecha_registro,'yyyy-MM-dd');
@@ -22,7 +22,7 @@ define(["angular", "js/models"], function(angular, models) {
 
         return this;
 
-    });
+    }]);
 
     
 });

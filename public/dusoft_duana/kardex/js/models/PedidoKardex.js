@@ -1,7 +1,7 @@
 
 define(["angular","js/models","includes/classes/Pedido"], function(angular, models, Pedido){
 
-	models.factory('PedidoKardex', function(Pedido) {
+	models.factory('PedidoKardex', ["Pedido", function(Pedido) {
 
 		function PedidoKardex(datos){
 			//constructor padre
@@ -20,5 +20,5 @@ define(["angular","js/models","includes/classes/Pedido"], function(angular, mode
 		}
 
 		return this;
-	});
+	}]);
 });

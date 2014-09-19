@@ -1,7 +1,7 @@
 
 define(["angular","js/models", "js/models/Detalle"], function(angular, models){
 
-	 models.factory('Movimiento', function(Detalle) {
+	 models.factory('Movimiento', ["Detalle", function(Detalle) {
 
 		function Movimiento(){
 		}
@@ -47,5 +47,5 @@ define(["angular","js/models", "js/models/Detalle"], function(angular, models){
 
 	    return this;
 
-	});
+	}]);
 });

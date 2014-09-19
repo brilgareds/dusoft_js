@@ -2,7 +2,7 @@ requirejs.config({
  
     baseUrl: './',
  
-    paths: {
+   paths: {
         app: 'js/app',
         angular: "../../javascripts/angular/angular",
         route: "../../javascripts/angular/angular-ui-router",

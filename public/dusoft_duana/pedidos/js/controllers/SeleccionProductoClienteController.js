@@ -45,9 +45,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             $scope.cerrar = function(){
                 $scope.$emit('cerrarseleccionproducto', {animado:true});
-               
-//                $scope.listado_productos = [];
-//                $scope.listado_productos_seleccionados = [];
 
                 $scope.rootSeleccionProductoCliente = {};
             };

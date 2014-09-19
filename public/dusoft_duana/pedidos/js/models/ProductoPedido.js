@@ -1,7 +1,7 @@
 
 define(["angular", "js/models", "includes/classes/Producto"], function(angular, models) {
 
-    models.factory('ProductoPedido', function(Producto) {
+    models.factory('ProductoPedido', ["Producto", function(Producto) {
 
         function ProductoPedido(codigo, nombre, existencia, precio, cantidad_solicitada, cantidad_ingresada, observacion_cambio) {
             Producto.getClass().call(this,codigo,nombre, existencia);
@@ -33,5 +33,5 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
         }
 
         return this;
-    });
+    }]);
 });

@@ -1,7 +1,7 @@
 
 define(["angular", "js/models","includes/classes/Tercero"], function(angular, models) {
 
-    models.factory('ClienteBase', function(Tercero) {
+    models.factory('ClienteBase', ["Tercero", function(Tercero) {
 
         function ClienteBase(nombre, direccion, tipo_id, id, telefono) {
             Tercero.getClass().call(this,nombre, tipo_id, id);
@@ -23,5 +23,5 @@ define(["angular", "js/models","includes/classes/Tercero"], function(angular, mo
 
         return this;
 
-    });
+    }]);
 });

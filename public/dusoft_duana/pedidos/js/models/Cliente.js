@@ -1,7 +1,7 @@
 
 define(["angular", "js/models", "../../../includes/classes/ClienteBase"], function(angular, models) {
 
-    models.factory('Cliente', function(ClienteBase) {
+    models.factory('Cliente', ["ClienteBase", function(ClienteBase) {
 
         function Cliente(nombre, direccion, tipo_id, id, telefono) {
             ClienteBase.getClass().call(this,nombre, direccion, tipo_id, id, telefono);
@@ -15,5 +15,5 @@ define(["angular", "js/models", "../../../includes/classes/ClienteBase"], functi
         
         return this;
 
-    });
+    }]);
 });

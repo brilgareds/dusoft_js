@@ -1,5 +1,5 @@
 define(["angular","js/services"], function(angular, services){
-    services.factory('socket', function ($rootScope) {
+    services.factory('socket', ["$rootScope", function ($rootScope) {
       var socket = io.connect();
       return {
         on: function (eventName, callback) {
@@ -25,6 +25,6 @@ define(["angular","js/services"], function(angular, services){
           })
         }
       };
-    });
+    }]);
 
 });

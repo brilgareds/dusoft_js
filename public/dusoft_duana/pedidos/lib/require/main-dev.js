@@ -19,7 +19,7 @@ requirejs.config({
         select:"../../../../javascripts/select2",
         loader:"../includes/loader/loader",
         config:"../includes/config/Config",
-        socket:"/socket.io/socket.io",
+        socket:"../includes/socket/socket.io/socket.io",
         socketservice:"../includes/socket/socket",
         uiselect2:"../../../../javascripts/uiselect2",
         storage:"../../javascripts/angular/storage",

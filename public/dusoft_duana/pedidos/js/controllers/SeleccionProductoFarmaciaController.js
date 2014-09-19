@@ -17,21 +17,41 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 //                usuario_id: Usuario.usuario_id,
 //                auth_token: Usuario.token
 //            };
-            $scope.paginas = 0;
-            $scope.items = 0;
-            $scope.termino_busqueda = "";
-            $scope.ultima_busqueda = "";
-            $scope.paginaactual = 1;
+            
+//            $scope.paginas = 0;
+//            $scope.items = 0;
+//            $scope.termino_busqueda = "";
+//            $scope.ultima_busqueda = "";
+//            $scope.paginaactual = 1;
+//            
             //$scope.numero_pedido = "";
             //$scope.obj = {};
-            $scope.listado_productos = [];
-            $scope.listado_productos_seleccionados = [];
             
-            $scope.tipo_cliente = 1;
+//            --$scope.listado_productos = [];
+//            --$scope.listado_productos_seleccionados = [];
+            
+//            --$scope.tipo_cliente = 1;
+
+            /*Ejemplo de angular.copy */
+            //$scope.rootEditarProducto.producto = angular.copy(producto);
+            /*Ejemplo de angular.copy */
+            
+            $scope.rootSeleccionProductoFarmacia = {};
+            
+//            $scope.rootSeleccionProductoFarmacia.paginas = 0;
+//            $scope.rootSeleccionProductoFarmacia.items = 0;
+            $scope.rootSeleccionProductoFarmacia.termino_busqueda = "";
+            $scope.rootSeleccionProductoFarmacia.ultima_busqueda = "";
+            $scope.rootSeleccionProductoFarmacia.paginaactual = 1;
+            
+            $scope.rootSeleccionProductoFarmacia.listado_productos = [];
+            $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados = [];
+            $scope.rootSeleccionProductoFarmacia.tipo_cliente = 1;
+            
             
             $scope.$on('cargarGridSeleccionadoSlide', function(event, mass) {
                 //console.log("Recibimos la GRID del PADRE: ",mass)
-                $scope.listado_productos_seleccionados = mass;
+                $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados = mass;
             });
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
@@ -39,30 +59,24 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.cerrar = function(){
                 $scope.$emit('cerrarseleccionproducto', {animado:true});
                
-                $scope.listado_productos = [];
-                $scope.listado_productos_seleccionados = [];
+//                $scope.listado_productos = [];
+//                $scope.listado_productos_seleccionados = [];
+
+                $scope.rootSeleccionProductoFarmacia = {};
             };
 
             $rootScope.$on("mostrarseleccionproducto", function(e, datos) {
-                //alert("TIPO CLIENTE - FUENTE: ");
-                //console.log("TIPO CLIENTE - FUENTE: ", datos);
                 
-                $scope.tipo_cliente = datos;
-                //alert("TIPO CLIENTE - COPIA: ");
-                //console.log("TIPO CLIENTE - COPIA: ", $scope.tipo_cliente);
+                $scope.rootSeleccionProductoFarmacia.tipo_cliente = datos;
                 
                 $scope.buscarSeleccionProducto("");
             });
             
-//            $scope.enviarDatosGridPrincipal = function(){
-//                $scope.$emit('cargarGridPrincipal', $scope.listado_productos_seleccionados);
-//            }
-            
             $scope.buscarSeleccionProducto = function(termino, paginando) {
 
                 //valida si cambio el termino de busqueda
-                if ($scope.ultima_busqueda != $scope.termino_busqueda) {
-                    $scope.paginaactual = 1;
+                if ($scope.rootSeleccionProductoFarmacia.ultima_busqueda != $scope.rootSeleccionProductoFarmacia.termino_busqueda) {
+                    $scope.rootSeleccionProductoFarmacia.paginaactual = 1;
                 }
                 
                 for(var i=0; i<10; i++)
@@ -80,7 +94,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                             etiqueta_boton: 'Incluir'
                         };
 
-                    $scope.listado_productos.push(obj);
+                    $scope.rootSeleccionProductoFarmacia.listado_productos.push(obj);
 
                 }
                 
@@ -92,7 +106,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.renderGrid = function() {
 
                 $scope.lista_productos = {    
-                    data: 'listado_productos',
+                    data: 'rootSeleccionProductoFarmacia.listado_productos',
                     enableColumnResize: true,
                     enableRowSelection: false,
                     enableCellSelection: true,
@@ -108,7 +122,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada', enableCellEdit: true},
                         {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
                             cellTemplate: ' <div class="row">\n\
-                                                <button class="btn btn-{{row.entity.tipo_boton}} btn-xs" ng-click="onRowClick1(row)">\n\
+                                                <button class="btn btn-{{row.entity.tipo_boton}} btn-xs" ng-click="onRowClick1(row)" ng-disabled="row.entity.cantidad_solicitada==0">\n\
                                                     <span class="glyphicon glyphicon-plus-sign">{{row.entity.etiqueta_boton}}</span>\n\
                                                 </button>\n\
                                             </div>'
@@ -117,7 +131,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 };
 
                 $scope.lista_productos_seleccionados = {    
-                    data: 'listado_productos_seleccionados',
+                    data: 'rootSeleccionProductoFarmacia.listado_productos_seleccionados',
                     enableColumnResize: true,
                     enableRowSelection: false,
                     //enableCellSelection: true,
@@ -141,11 +155,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
             $scope.onRowClick1 = function(row) {
                 
-                if($scope.listado_productos[row.rowIndex].fila_activa !== false){
+                if($scope.rootSeleccionProductoFarmacia.listado_productos[row.rowIndex].fila_activa !== false){
                 
-                    $scope.listado_productos[row.rowIndex].fila_activa = false;
-                    $scope.listado_productos[row.rowIndex].tipo_boton = 'warning';
-                    $scope.listado_productos[row.rowIndex].etiqueta_boton = 'Listo';
+                    $scope.rootSeleccionProductoFarmacia.listado_productos[row.rowIndex].fila_activa = false;
+                    $scope.rootSeleccionProductoFarmacia.listado_productos[row.rowIndex].tipo_boton = 'warning';
+                    $scope.rootSeleccionProductoFarmacia.listado_productos[row.rowIndex].etiqueta_boton = 'Listo';
 
                     var obj_sel = { 
                                 codigo_producto: row.entity.codigo_producto,
@@ -156,22 +170,22 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                             }
 
                     //$scope.listado_productos_seleccionados.push(obj_sel);
-                    $scope.listado_productos_seleccionados.unshift(obj_sel);
+                    $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.unshift(obj_sel);
 
-                    $scope.$emit('cargarGridPrincipal', $scope.listado_productos_seleccionados);
+                    $scope.$emit('cargarGridPrincipal', $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados);
 
                 }
             };
             
             $scope.onRowClick2 = function(row) {
                 
-                $scope.listado_productos[row.entity.sourceIndex].fila_activa = true;
-                $scope.listado_productos[row.entity.sourceIndex].tipo_boton = 'success';
-                $scope.listado_productos[row.entity.sourceIndex].etiqueta_boton = 'Incluir';
+                $scope.rootSeleccionProductoFarmacia.listado_productos[row.entity.sourceIndex].fila_activa = true;
+                $scope.rootSeleccionProductoFarmacia.listado_productos[row.entity.sourceIndex].tipo_boton = 'success';
+                $scope.rootSeleccionProductoFarmacia.listado_productos[row.entity.sourceIndex].etiqueta_boton = 'Incluir';
                 
-                $scope.listado_productos_seleccionados.splice(row.rowIndex,1);
+                $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.splice(row.rowIndex,1);
                 
-                $scope.$emit('cargarGridPrincipal', $scope.listado_productos_seleccionados);
+                $scope.$emit('cargarGridPrincipal', $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados);
                 
             };
             
@@ -181,8 +195,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 //Este evento no funciona para los Slides, así que toca liberar memoria con el emit al cerrar el slide
                 //Las siguientes líneas son efectivas si se usa la view sin el slide
 
-                $scope.listado_productos = [];
-                $scope.listado_productos_seleccionados = [];
+//                $scope.listado_productos = [];
+//                $scope.listado_productos_seleccionados = [];
+
+                $scope.rootSeleccionProductoFarmacia = {};
 
             });
             
@@ -196,13 +212,13 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
 
             $scope.paginaAnterior = function() {
-                 $scope.paginaactual--;
-                 $scope.buscarSeleccionProducto($scope.termino_busqueda, true);
+                 $scope.rootSeleccionProductoFarmacia.paginaactual--;
+                 $scope.buscarSeleccionProducto($scope.rootSeleccionProductoFarmacia.termino_busqueda, true);
             };
 
             $scope.paginaSiguiente = function() {
-                 $scope.paginaactual++;
-                 $scope.buscarSeleccionProducto($scope.termino_busqueda, true);
+                 $scope.rootSeleccionProductoFarmacia.paginaactual++;
+                 $scope.buscarSeleccionProducto($scope.rootSeleccionProductoFarmacia.termino_busqueda, true);
             };
 
             $scope.valorSeleccionado = function() {

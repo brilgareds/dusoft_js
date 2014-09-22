@@ -5,7 +5,7 @@ var client = require('request');
 var config = require('../lib/Settings').create();
 var fn = require('../lib/functions');
 var url_login = "/login";
-var url = "/api/movBodegas/E008/auditoriaProductosDocumentoTemporal";
+var url = "/api/movBodegas/E008/auditoriaProductosFarmacias";
 
 
 var that = this;
@@ -19,11 +19,11 @@ vows.describe('Consultar Productos Para Auditar').addBatch({
                 obj.session = body.obj.sesion;
                 obj.data = {
                     documento_temporal: {
-                        documento_temporal_id : 2306,
-                        usuario_id: 1350,
+                        numero_pedido : 65778,
                         filtro : {
-                            codigo_barras : true,
-                            termino_busqueda : '7707288820698'
+                            descripcion_producto : true,
+                            //codigo_barras: true,
+                            termino_busqueda : 'des'
                         }
                     }
                 };

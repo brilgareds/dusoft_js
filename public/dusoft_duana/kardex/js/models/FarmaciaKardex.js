@@ -1,7 +1,7 @@
 
 define(["angular","js/models","includes/classes/Farmacia"], function(angular, models, Farmacia){
 
-	models.factory('FarmaciaKardex', function(Farmacia) {
+	models.factory('FarmaciaKardex', ["Farmacia", function(Farmacia) {
 
 		function FarmaciaKardex(farmacia_id, bodega_id, nombre_farmacia, nombre_bodega){
 			//constructor padre
@@ -18,5 +18,5 @@ define(["angular","js/models","includes/classes/Farmacia"], function(angular, mo
 		}
 
 		return this;
-	});
+	}]);
 });

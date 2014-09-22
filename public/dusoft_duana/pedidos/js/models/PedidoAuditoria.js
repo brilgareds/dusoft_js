@@ -3,7 +3,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
 
 
     //declare usermodel wrapper 'factory'
-    models.factory('PedidoAuditoria', function(Pedido) {
+    models.factory('PedidoAuditoria', ["Pedido", function(Pedido) {
 
 
         //declare usermodel class
@@ -42,5 +42,5 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         //just return the factory wrapper
         return this;
 
-    });
+    }]);
 });

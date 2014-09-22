@@ -13,7 +13,7 @@ define(["angular","js/directive", "includes/slide/transition"], function(angular
             'closeCallback' : '=',
             'openCallback' : '='
           },
-          controller: function($scope, $element, $attrs) {
+          controller: ["$scope", "$element", "$attrs",function($scope, $element, $attrs) {
               
               if(($attrs.closeCallback === undefined || $attrs.closeCallback.length == 0) || 
                   ($attrs.openCallback === undefined || $attrs.openCallback.length == 0)){
@@ -72,7 +72,7 @@ define(["angular","js/directive", "includes/slide/transition"], function(angular
                       slide.cerrarslide($element, datos.animado, modalslide, $attrs);
                   });
               });  
-          },
+          }],
 
           configurarSlide : function($element, contenedor){
               var width = $(".contenidoPrincipal").width();

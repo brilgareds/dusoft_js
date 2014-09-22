@@ -198,6 +198,13 @@ define(["angular", "js/controllers",'models/Cliente',
                 }
             };
 
+
+            $rootScope.$on("productoAuditado", function(e, producto){
+                if($scope.DocumentoTemporal.getPedido() == undefined){ return }
+                $scope.DocumentoTemporal.getPedido().vaciarProductos();
+
+            });
+
             $scope.paginaAnterior = function() {
                 $scope.paginaactual--;
                 $scope.buscarDetalleDocumentoTemporal($scope.termino_busqueda, true);

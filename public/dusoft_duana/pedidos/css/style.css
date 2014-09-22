@@ -100,3 +100,13 @@ margin-bottom: 0px;
     right: 255px;
     top: 7px;
 }
+
+.textareajustificacion{
+    height: 70px;               
+    resize:none;
+}
+
+#editarproductomodal .input-sm{
+    width: inherit;
+    display: inline;
+}

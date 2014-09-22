@@ -1,7 +1,7 @@
 
 define(["angular", "js/models", "../../../includes/classes/EmpresaBase"], function(angular, models) {
 
-    models.factory('Empresa', function(EmpresaBase) {
+    models.factory('Empresa', ["EmpresaBase", function(EmpresaBase) {
 
         var Empresa =  Object.create(EmpresaBase.getClass().prototype);
         
@@ -95,5 +95,5 @@ define(["angular", "js/models", "../../../includes/classes/EmpresaBase"], functi
         
         return Empresa;
 
-    });
+    }]);
 });

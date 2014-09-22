@@ -10,23 +10,23 @@ requirejs.config({
         includes:"../includes/",
         models:"js/models",
         directive:"js/directive",
-        bootstrap:"../../../../javascripts/bootstrap/bootstrap",
+        bootstrap:"../../javascripts/bootstrap/bootstrap",
         facturacion: "../facturacion/js/models/",
-        nggrid:"../../../../javascripts/angular/ng-grid",
-        jquery:"../../../../javascripts/jquery",
+        nggrid:"../../javascripts/angular/ng-grid",
+        jquery:"../../javascripts/jquery",
         treemenu:"../includes/menu/myTree",
-        tree:"../../../../javascripts/jstree",
+        tree:"../../javascripts/jstree",
         config:"../includes/config/Config",
         loader:"../includes/loader/loader",
-        i18n:"../../../../javascripts/angular/es",
+        i18n:"../../javascripts/angular/es",
         httpinterceptor:"../includes/http/HttpInterceptor",
         storage:"../../javascripts/angular/storage",
-        socket:"/socket.io/socket.io",
+        socket:"../includes/socket/socket.io/socket.io",
         socketservice:"../includes/socket/socket"
     },
     shim: {
         "angular": {
-            deps:["jquery"],
+            deps:["jquery", "tree"],
             exports: "angular"
         },
         "route": {

@@ -30,7 +30,7 @@
 
       
 
-      Pedidos.config(function($stateProvider, $urlRouterProvider, $httpProvider){
+      Pedidos.config( ["$stateProvider", "$urlRouterProvider", "$httpProvider", function($stateProvider, $urlRouterProvider, $httpProvider){
 
           // For any unmatched url, send to /route1
           $httpProvider.responseInterceptors.push('HttpInterceptor');
@@ -70,14 +70,14 @@
                 templateUrl: "views/creapedidosfarmacias.html"
               })
 
-    }).run(function($rootScope,Usuario,localStorageService){
+    }]).run( ["$rootScope", "Usuario", "localStorageService", function($rootScope,Usuario,localStorageService){
         $rootScope.titulo_modulo = "pedidos";   
         console.log(Usuario) 
         var obj = localStorageService.get("session");
         if(!obj) return;
         Usuario.setToken(obj.auth_token);
         Usuario.setUsuarioId(obj.usuario_id);    
-    });
+    }]);
 
     angular.bootstrap(document, ['pedidos']);
     return Pedidos;

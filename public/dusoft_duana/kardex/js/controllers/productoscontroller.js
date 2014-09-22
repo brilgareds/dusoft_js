@@ -1,5 +1,5 @@
 
-define(["angular", "js/controllers", '../../../../includes/slide/slideContent', "controllers/MovimientoController"], function(angular, controllers) {
+define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers/MovimientoController"], function(angular, controllers) {
 
     var fo = controllers.controller('productoscontroller', [
         '$scope', '$rootScope', "Request",

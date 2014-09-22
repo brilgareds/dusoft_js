@@ -1,6 +1,6 @@
 
-<div class="modal-view">
-    <alert ng-show="rootEditarProducto.validacionproducto.valido == false">{{rootEditarProducto.validacionproducto.mensaje}}</alert>
+<div class="modal-view" id="editarproductomodal">
+    <alert ng-show="rootEditarProducto.validacionproducto.valido == false" type="danger">{{rootEditarProducto.validacionproducto.mensaje}}</alert>
     <div class="panel panel-info">
         <div class="panel-heading">
             <h5 class="panel-title">Información General</h5>
@@ -19,8 +19,8 @@
                 <div class ="col-md-3"><div class="lbl_editar_producto">Cant Solicitada</div>{{rootEditarProducto.producto.cantidad_solicitada}}</div>
                 <div class ="col-md-3"><div class="lbl_editar_producto">Cant Separada</div>{{rootEditarProducto.producto.cantidad_separada}}</div>
                 <div class ="col-md-3">
-                    <label class="lbl_editar_producto">Verificar Lotes</label>
-                    <input-check ng-model="modificarlotes" />
+                    <label class="lbl_editar_producto" for="modificarlotes">Verificar Lotes</label>
+                    <input-check ng-model="modificarlotes" id="modificarlotes" />
                 </div>
 
             </div>
@@ -42,16 +42,32 @@
 
     </div>
 
+    <div ng-switch on="rootEditarProducto.mostrarJustificacion">
+        <div class="panel panel-info" ng-switch-when="true">
+            <div class="panel-heading">
+                <h3 class="panel-title">Justificacion Auditor</h3>
+            </div>
+            <div class="panel-body">
+                <div class="span6">
+                    <textarea placeholder="Justificación por pendientes" ng-model="rootEditarProducto.producto.lote.justificacion_auditor" class="col-xs-12 textareajustificacion"></textarea>
+                </div>
+             </div>
+        </div>
+    </div>
+
     <div class="panel panel-info">
         <div class="panel-heading">
             <h3 class="panel-title">Información Caja</h3>
         </div>
         <div class="panel-body">
             <div class="row">
-                <div class ="col-md-6"><label class="lbl_editar_producto">Numero Caja: </label><input type="text" ng-model="rootEditarProducto.caja.numero" class="input-mini" validacion-numero ng-change="onValidarCaja()"  ></div>
-                <div class ="col-md-3">
-                    <label class="lbl_editar_producto">Cerrar Caja</label>
-                    <input-check ng-model="cerrar" ng-click="onCerrarCaja()" />
+                <div class ="col-md-6">
+                    <label class="lbl_editar_producto" for="numerocaja">Numero Caja: </label>
+                    <input type="text" id="numerocaja" ng-model="rootEditarProducto.caja.numero" class="input-mini input-sm form-control  grid-inline-input" validacion-numero ng-change="onValidarCaja()"  >
+                </div>
+                <div class ="col-md-3" ng-switch on="rootEditarProducto.caja.valida">
+                    <label class="lbl_editar_producto" ng-switch-when="true" for="cerrarcaja">Cerrar Caja</label>
+                    <input-check ng-model="cerrar" id="cerrarcaja" ng-switch-when="true" ng-click="onCerrarCaja()" />
                 </div>
                 <div class ="col-md-2 text-center" ng-switch on="cerrar">
                         <button class="btn btn-primary ng-binding btn-accion" ng-switch-when="true">Generar</button>
@@ -59,7 +75,6 @@
             </div>
          </div>
     </div>
-
 
 
     <!--div class="animate-switch-container"

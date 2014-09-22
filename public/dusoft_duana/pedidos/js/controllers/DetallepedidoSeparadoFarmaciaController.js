@@ -49,7 +49,7 @@ define(["angular", "js/controllers",'models/Farmacia',
                  $scope.buscarDetalleDocumentoTemporal($scope.obtenerParametros(), false, 2,$scope.resultadoBusquedaDocumento);
                 $scope.farmacia = $scope.DocumentoTemporal.pedido.farmacia;
                 $scope.numero_pedido = $scope.DocumentoTemporal.pedido.numero_pedido;
-                
+                $scope.filtro.codigo_barras = true;
 
                 var obj = {
                     session: $scope.session,
@@ -212,6 +212,12 @@ define(["angular", "js/controllers",'models/Farmacia',
                      
                 }
             };
+
+            $rootScope.$on("productoAuditado", function(e, producto){ 
+                 if($scope.DocumentoTemporal.getPedido() == undefined){ return }
+                 $scope.DocumentoTemporal.getPedido().vaciarProductos();
+
+            });
             
             $scope.valorSeleccionado = function() {
                 var obj = {

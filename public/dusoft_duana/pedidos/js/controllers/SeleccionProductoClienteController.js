@@ -1,6 +1,6 @@
 //Controlador de la View seleccionproducto.html asociado a Slide en cotizacioncliente.html y creapedidosfarmacias.html
 
-define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
+define(["angular", "js/controllers",'includes/slide/slideContent',
         'models/Cliente', 'models/PedidoVenta'], function(angular, controllers) {
 
     var fo = controllers.controller('SeleccionProductoClienteController', [
@@ -17,43 +17,41 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
 //                usuario_id: Usuario.usuario_id,
 //                auth_token: Usuario.token
 //            };
-            $scope.paginas = 0;
-            $scope.items = 0;
-            $scope.termino_busqueda = "";
-            $scope.ultima_busqueda = "";
-            $scope.paginaactual = 1;
+
+            $scope.rootSeleccionProductoCliente = {};
+
+            $scope.rootSeleccionProductoCliente.paginas = 0;
+            $scope.rootSeleccionProductoCliente.items = 0;
+            $scope.rootSeleccionProductoCliente.termino_busqueda = "";
+            $scope.rootSeleccionProductoCliente.ultima_busqueda = "";
+            $scope.rootSeleccionProductoCliente.paginaactual = 1;
             //$scope.numero_pedido = "";
             //$scope.obj = {};
-            $scope.listado_productos = [];
-            $scope.listado_productos_seleccionados = [];
+            $scope.rootSeleccionProductoCliente.listado_productos = [];
+            $scope.rootSeleccionProductoCliente.listado_productos_seleccionados = [];
 
 //            $scope.lista_productos = {};
 //            $scope.lista_productos_seleccionados = {};
             
-            $scope.tipo_cliente = 1;
-            $scope.tipo_boton = "success";
+            $scope.rootSeleccionProductoCliente.tipo_cliente = 1;
+            //$scope.tipo_boton = "success";
             
             $scope.$on('cargarGridSeleccionadoSlide', function(event, mass) {
                 //console.log("Recibimos la GRID del PADRE: ",mass)
-                $scope.listado_productos_seleccionados = mass;
+                $scope.rootSeleccionProductoCliente.listado_productos_seleccionados = mass;
             });
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
             
             $scope.cerrar = function(){
                 $scope.$emit('cerrarseleccionproducto', {animado:true});
-               
-                $scope.listado_productos = [];
-                $scope.listado_productos_seleccionados = [];
+
+                $scope.rootSeleccionProductoCliente = {};
             };
             
             $rootScope.$on("mostrarseleccionproducto", function(e, datos) {
-                //alert("TIPO CLIENTE - FUENTE: ");
-                //console.log("TIPO CLIENTE - FUENTE: ", datos);
                 
-                $scope.tipo_cliente = datos;
-                //alert("TIPO CLIENTE - COPIA: ");
-                //console.log("TIPO CLIENTE - COPIA: ", $scope.tipo_cliente);
+                $scope.rootSeleccionProductoCliente.tipo_cliente = datos;
                 
                 $scope.buscarSeleccionProducto("");
             });
@@ -61,32 +59,34 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             $scope.buscarSeleccionProducto = function(termino, paginando) {
 
                 //valida si cambio el termino de busqueda
-                if ($scope.ultima_busqueda != $scope.termino_busqueda) {
-                    $scope.paginaactual = 1;
+                if ($scope.rootSeleccionProductoCliente.ultima_busqueda != $scope.rootSeleccionProductoCliente.termino_busqueda) {
+                    $scope.rootSeleccionProductoCliente.paginaactual = 1;
                 }
                 
                 for(var i=0; i<10; i++)
                 {
                     //var pedido = Pedido.get();
-                    if($scope.tipo_cliente === 1) {
+                    //if($scope.rootSeleccionProductoCliente.tipo_cliente === 1) {
                     
-                        var obj = {
-                                codigo_producto: '123456'+i,
-                                descripcion: 'TRIPARTYCINA X '+i,
-                                cum: '102030'+i,
-                                codigo_invima: 'INV-321098'+i,
-                                iva: 16,
-                                precio_regulado: '50'+i,
-                                precio_venta: '60'+i,
-                                existencia_bodega: '20'+i,
-                                cantidad_disponible: '10'+i,
-                                cantidad_solicitada: 0,
-                                fila_activa: true
-                        };
+                    var obj = {
+                            codigo_producto: '123456'+i,
+                            descripcion: 'TRIPARTYCINA X '+i,
+                            cum: '102030'+i,
+                            codigo_invima: 'INV-321098'+i,
+                            iva: 16,
+                            precio_regulado: '50'+i,
+                            precio_venta: '60'+i,
+                            existencia_bodega: '20'+i,
+                            cantidad_disponible: '10'+i,
+                            cantidad_solicitada: 0,
+                            fila_activa: true,
+                            tipo_boton: 'success',
+                            etiqueta_boton: 'Incluir'
+                    };
 
-                        $scope.listado_productos.push(obj);
+                    $scope.rootSeleccionProductoCliente.listado_productos.push(obj);
 
-                    }
+                    //}
 
                 }
                 
@@ -102,7 +102,7 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             $scope.renderGrid = function() {
             
                 $scope.lista_productos = {    
-                    data: 'listado_productos',
+                    data: 'rootSeleccionProductoCliente.listado_productos',
                     enableColumnResize: true,
                     enableRowSelection: false,
                     enableCellSelection: true,
@@ -120,22 +120,24 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                         {field: 'cantidad_disponible', displayName: 'Disponible'},
                         {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada', enableCellEdit: true},
                         {field: 'fila_activa', displayName: 'visibilidad', visible: false},
+                        {field: 'tipo_boton', displayName: 'tipo boton', visible: false},
                         {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
                             cellTemplate: ' <div class="row">\n\
-                                                <button class="btn btn-{{tipo_boton}} btn-xs" ng-click="onRowClick1(row)">\n\
-                                                    <span class="glyphicon glyphicon-plus-sign">Incluir</span>\n\
+                                                <button class="btn btn-{{row.entity.tipo_boton}} btn-xs" ng-click="onRowClick1(row)" ng-disabled="row.entity.cantidad_solicitada==0">\n\
+                                                    <span class="glyphicon glyphicon-plus-sign">{{row.entity.etiqueta_boton}}</span>\n\
                                                 </button>\n\
                                             </div>'
                         }
                     ]/*,
                     beforeSelectionChange: function (row) {
-                        console.log("Evento en la Grid :",row.entity);
-                        return $scope.Disable(row.entity);
+                        //console.log("Evento en la Grid :",row.entity);
+                        //return $scope.Disable(row.entity);
+                        //$scope.tipo_boton = row.entity.tipo_boton;
                     }*/
                 };
 
                 $scope.lista_productos_seleccionados = {    
-                    data: 'listado_productos_seleccionados',
+                    data: 'rootSeleccionProductoCliente.listado_productos_seleccionados',
                     enableColumnResize: true,
                     enableRowSelection: false,
                     //enableCellSelection: true,
@@ -165,17 +167,11 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             $scope.onRowClick1 = function(row) {
                 
                 //console.log(row.entity);
-                if($scope.listado_productos[row.rowIndex].fila_activa !== false){
+                if($scope.rootSeleccionProductoCliente.listado_productos[row.rowIndex].fila_activa !== false){
                 
-                    $scope.listado_productos[row.rowIndex].fila_activa = false; 
-
-//                    console.log("Info Arreglo: ",$scope.listado_productos[row.rowIndex]);
-//
-                    console.log("onRowClick1: ", row);
-
-                    $scope.tipo_boton = "warning";
-                    
-                    console.log("onRowClick1 - Después cambio color: ", row);
+                    $scope.rootSeleccionProductoCliente.listado_productos[row.rowIndex].fila_activa = false; 
+                    $scope.rootSeleccionProductoCliente.listado_productos[row.rowIndex].tipo_boton = 'warning';
+                    $scope.rootSeleccionProductoCliente.listado_productos[row.rowIndex].etiqueta_boton = 'Listo';
 
                     var obj_sel = {
                             codigo_producto: row.entity.codigo_producto,
@@ -188,21 +184,27 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                             sourceIndex: row.rowIndex
                     };
 
-                    $scope.listado_productos_seleccionados.push(obj_sel);
+                    //$scope.listado_productos_seleccionados.push(obj_sel); // adiciona al final
+                    //$scope.listado_productos_seleccionados.unshift(obj_sel); // adiciona al comienzo
+                    $scope.rootSeleccionProductoCliente.listado_productos_seleccionados.unshift(row.entity);
 
-                    $scope.$emit('cargarGridPrincipal', $scope.listado_productos_seleccionados);
+                    $scope.$emit('cargarGridPrincipal', $scope.rootSeleccionProductoCliente.listado_productos_seleccionados);
                 }
             };
             
             $scope.onRowClick2 = function(row) {
-                
-                $scope.tipo_boton = "success";
                     
-                $scope.listado_productos[row.entity.sourceIndex].fila_activa = true;
-
-                $scope.listado_productos_seleccionados.splice(row.rowIndex,1);
+//                $scope.listado_productos[row.entity.sourceIndex].fila_activa = true;
+//                $scope.listado_productos[row.entity.sourceIndex].tipo_boton = 'success';
+//                $scope.listado_productos[row.entity.sourceIndex].etiqueta_boton = 'Incluir';
                 
-                $scope.$emit('cargarGridPrincipal', $scope.listado_productos_seleccionados);
+                row.entity.fila_activa = true;
+                row.entity.tipo_boton = 'success';
+                row.entity.etiqueta_boton = 'incluir';
+
+                $scope.rootSeleccionProductoCliente.listado_productos_seleccionados.splice(row.rowIndex,1);
+                
+                $scope.$emit('cargarGridPrincipal', $scope.rootSeleccionProductoCliente.listado_productos_seleccionados);
                 
             };
             
@@ -212,8 +214,9 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                 //Este evento no funciona para los Slides, así que toca liberar memoria con el emit al cerrar el slide
                 //Las siguientes líneas son efectivas si se usa la view sin el slide
 
-                $scope.listado_productos_farmacias = [];
-                $scope.listado_productos_clientes = [];
+//                $scope.listado_productos_farmacias = [];
+//                $scope.listado_productos_clientes = [];
+                $scope.rootSeleccionProductoCliente = {};
 
             });
             
@@ -227,13 +230,13 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
             };
 
             $scope.paginaAnterior = function() {
-                 $scope.paginaactual--;
-                 $scope.buscarSeleccionProducto($scope.termino_busqueda, true);
+                 $scope.rootSeleccionProductoCliente.paginaactual--;
+                 $scope.buscarSeleccionProducto($scope.rootSeleccionProductoCliente.termino_busqueda, true);
             };
 
             $scope.paginaSiguiente = function() {
-                 $scope.paginaactual++;
-                 $scope.buscarSeleccionProducto($scope.termino_busqueda, true);
+                 $scope.rootSeleccionProductoCliente.paginaactual++;
+                 $scope.buscarSeleccionProducto($scope.rootSeleccionProductoCliente.termino_busqueda, true);
             };
 
             $scope.valorSeleccionado = function() {

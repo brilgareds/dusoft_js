@@ -1,7 +1,7 @@
 
 define(["angular","js/models"], function(angular, models, Empleado){
 
-	 models.factory('', function(Empleado) {
+	 models.factory('', ["Empleado", function(Empleado) {
 
 		function Separador(nombre, id){
 			this.nombre_operario = nombre;
@@ -40,5 +40,5 @@ define(["angular","js/models"], function(angular, models, Empleado){
 
 	    return this;
 
-	});
+	}]);
 });

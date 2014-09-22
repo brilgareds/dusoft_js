@@ -39,7 +39,7 @@ define([
 
 
 
-    Parametrizacion.config(function($stateProvider, $urlRouterProvider,$httpProvider) {
+    Parametrizacion.config(["$stateProvider", "$urlRouterProvider", "$httpProvider", function($stateProvider, $urlRouterProvider,$httpProvider) {
 
         // For any unmatched url, send to /route1
 
@@ -55,13 +55,13 @@ define([
             controller: "OperariosBodegaController"
         });
 
-    }).run(function($rootScope,localStorageService, Usuario) {
+    }]).run(["$rootScope", "localStorageService", "Usuario", function($rootScope,localStorageService, Usuario) {
         $rootScope.name = "parametrizacion";
         var obj = localStorageService.get("session");
         if(!obj) return;
         Usuario.setToken(obj.auth_token);
         Usuario.setUsuarioId(obj.usuario_id);
-    });
+    }]);
 
     angular.bootstrap(document, ['parametrizacion']);
     return Parametrizacion;

@@ -19,7 +19,7 @@
           'LocalStorageModule'
       ]); 
 
-      Kardex.config(function($stateProvider, $urlRouterProvider,$httpProvider){
+      Kardex.config(["$stateProvider", "$urlRouterProvider", "$httpProvider", function($stateProvider, $urlRouterProvider,$httpProvider){
 
           // For any unmatched url, send to /route1
           //intercepta los http para validar el usuario
@@ -40,14 +40,14 @@
                 templateUrl: "views/route1.item.html"
             });
 
-    }).run(function($rootScope, localStorageService, Usuario){
+    }]).run(["$rootScope", "localStorageService", "Usuario", function($rootScope, localStorageService, Usuario){
         //se inicializa el usuario y la empresa para el modulo
          $rootScope.name = "Kardex";
         var obj = localStorageService.get("session");
         if(!obj) return;
         Usuario.setToken(obj.auth_token);
         Usuario.setUsuarioId(obj.usuario_id);
-    });
+    }]);
 
     angular.bootstrap(document, ['Kardex']);
     return Kardex;

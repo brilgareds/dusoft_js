@@ -15,10 +15,12 @@ define(["angular", "js/controllers",'models/Cliente',
             
            $scope.rootEditarProducto = {}; 
            $scope.rootEditarProducto.producto = angular.copy(producto);
+            $scope.rootEditarProducto.producto.cantidad_solicitada = 120;
            $scope.rootEditarProducto.pedido   = angular.copy(documento.getPedido());
            $scope.rootEditarProducto.documento = documento;
            $scope.rootEditarProducto.producto.lote.cantidad_ingresada = $scope.rootEditarProducto.producto.cantidad_separada;
            $scope.rootEditarProducto.lotes    = [];
+           $scope.rootEditarProducto.mostrarJustificacion = false;
 
             $scope.session = {
                 usuario_id: Usuario.usuario_id,
@@ -26,13 +28,13 @@ define(["angular", "js/controllers",'models/Cliente',
             };
 
             $scope.rootEditarProducto.caja  = {
-                numero:0
+                numero:0,
+                valida:false
             };
 
             $scope.rootEditarProducto.validacionlote = {valido:true};
             $scope.rootEditarProducto.validacionproducto = {
-                valido:true,
-                mensaje:"fppp"
+                valido:true
             };
 
            $modalInstance.opened.then(function() {
@@ -136,15 +138,15 @@ define(["angular", "js/controllers",'models/Cliente',
                 
             };
 
-            $scope.onCantidadIngresadaChange= function(row){
+            $scope.onCantidadIngresadaChange= function(row,e){
                 if(!row.entity.selected) return;
-
                 $scope.rootEditarProducto.validacionlote = $scope.esCantidadIngresadaValida(row.entity);
 
                 if($scope.rootEditarProducto.validacionlote.valido){
                     console.log("valido ", $scope.validacionlote)
                     $scope.rootEditarProducto.producto.cantidad_separada = Number(row.entity.cantidad_ingresada);
                 } else {
+                    $scope.rootEditarProducto.mostrarJustificacion = false;
                     console.log("validacion mala ", $scope.rootEditarProducto.validacionlote);
                 }
                 
@@ -200,7 +202,7 @@ define(["angular", "js/controllers",'models/Cliente',
 
             $scope.auditarPedido = function(){
                 $scope.rootEditarProducto.validacionproducto.valido = true;
-                $scope.rootEditarProducto.producto.cantidad_solicitada = 40;
+               
 
                 if(isNaN($scope.rootEditarProducto.producto.cantidad_separada) || $scope.rootEditarProducto.producto.cantidad_separada == 0){
 
@@ -217,25 +219,33 @@ define(["angular", "js/controllers",'models/Cliente',
                     return;
                 }
 
+
+                $scope.rootEditarProducto.mostrarJustificacion = $scope.esJustificacionNecesaria();
+
+                if($scope.rootEditarProducto.mostrarJustificacion){
+                    $scope.rootEditarProducto.validacionproducto.valido = false
+                    $scope.rootEditarProducto.validacionproducto.mensaje = "Se debe ingresar la justificación del auditor";
+                    return;
+                }
+                    
+
                 if(isNaN($scope.rootEditarProducto.caja.numero) || $scope.rootEditarProducto.caja.numero == 0){
                     console.log($scope.rootEditarProducto.caja.numero , " numero de caja ", isNaN($scope.rootEditarProducto.caja.numero), $scope)
                     $scope.rootEditarProducto.validacionproducto.valido = false
+                    $scope.rootEditarProducto.caja.valida = false;
                     $scope.rootEditarProducto.validacionproducto.mensaje = "Número de caja no es válido";
 
                     return;
                 }
 
-                if($scope.rootEditarProducto.producto.cantidad_separada < 
-                    $scope.rootEditarProducto.producto.cantidad_solicitada){
-
-                    if($scope.rootEditarProducto.producto.lote.justificacion_auditor.length < 10){
-                        $scope.rootEditarProducto.validacionproducto.valido = false
-                        $scope.rootEditarProducto.validacionproducto.mensaje = "Favor ingresar la justificación";
-                        return;
-                    }
-                    
+                if(!$scope.rootEditarProducto.caja.valida){
+                    $scope.rootEditarProducto.validacionproducto.valido = false
+                    $scope.rootEditarProducto.validacionproducto.mensaje = "La caja se encuentra cerrada";
+                    return;
                 }
 
+                $rootScope.$emit("productoAuditado", $scope.rootEditarProducto.producto);
+                $modalInstance.close();
                 return;
    
                 var obj = {
@@ -257,9 +267,37 @@ define(["angular", "js/controllers",'models/Cliente',
                 });
             };
 
-            $scope.onValidarCaja = function(){
-                var url = API.DOCUMENTOS_TEMPORALES.VALIDAR_CAJA;
+            $scope.esJustificacionNecesaria = function(){
+                if($scope.rootEditarProducto.producto == undefined) return;
 
+                console.log("separada ",$scope.rootEditarProducto.producto.cantidad_separada, " solicitada ",$scope.rootEditarProducto.producto.cantidad_solicitada
+                    , " lengt just",$scope.rootEditarProducto.producto.lote.justificacion_auditor.length)
+                if($scope.rootEditarProducto.producto.cantidad_separada < 
+                    $scope.rootEditarProducto.producto.cantidad_solicitada ){
+
+                        if($scope.rootEditarProducto.producto.lote.justificacion_auditor.length < 10){
+                            return true;
+                        }
+
+                }
+
+                return false;
+            };
+
+            $scope.onValidarCaja = function(){
+
+                if(isNaN($scope.rootEditarProducto.caja.numero) || $scope.rootEditarProducto.caja.numero == 0){
+                    $scope.rootEditarProducto.validacionproducto.valido = false
+                    $scope.rootEditarProducto.caja.valida = false;
+                    $scope.rootEditarProducto.validacionproducto.mensaje = "Número de caja no es válido";
+
+                    return;
+                }
+
+                var cliente = (!$scope.rootEditarProducto.pedido.cliente)?$scope.rootEditarProducto.pedido.farmacia:$scope.rootEditarProducto.pedido.cliente;
+
+                var url = API.DOCUMENTOS_TEMPORALES.VALIDAR_CAJA;
+                 console.log($scope.rootEditarProducto, " cliente ", cliente)
                 var obj = {
                     session:$scope.session,
                     data:{
@@ -268,18 +306,48 @@ define(["angular", "js/controllers",'models/Cliente',
                             numero_caja: $scope.rootEditarProducto.caja.numero,
                             numero_pedido: $scope.rootEditarProducto.pedido.numero_pedido,
                             direccion_cliente: $scope.rootEditarProducto.pedido.cliente.direccion_cliente,
-                            nombre_cliente:$scope.rootEditarProducto.pedido.cliente.nombre_tercero
+                            nombre_cliente:cliente.nombre_tercero || cliente.nombre_farmacia
                         }
                     }
                 };
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
-
+                   
                     if(data.status === 200){
-                        var obj = data.obj.documento_temporal;
-                        console.log(obj);
+                        var obj = data.obj.movimientos_bodegas;
+                         console.log("obj for box ",obj)
+                        $scope.rootEditarProducto.caja.valida = obj.caja_valida;
+                        if(!obj.caja_valida){
+                            $scope.rootEditarProducto.validacionproducto.valido = false;
+                            $scope.rootEditarProducto.validacionproducto.mensaje = "La caja se encuentra cerrada";
+                        } else {
+                            $scope.rootEditarProducto.validacionproducto.valido = true;
+                        }
 
                     } 
+                });
+            };
+
+            $scope.onCerrarCaja = function(){
+                 var url = API.DOCUMENTOS_TEMPORALES.GENERAR_ROTULO;
+                var obj = {
+                    session:$scope.session,
+                    data:{
+                        documento_temporal: {
+                            documento_temporal_id: $scope.rootEditarProducto.documento.documento_temporal_id,
+                            numero_caja: $scope.rootEditarProducto.caja.numero
+                        }
+                    }
+                };
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    console.log(data)
+                    if(data.status === 200){
+                        
+                        $scope.cerrar = true;
+                    } else {
+                        $scope.cerrar = false;
+                    }
                 });
             };
 

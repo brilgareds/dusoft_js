@@ -1,4 +1,4 @@
-define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
+define(["angular", "js/controllers",'includes/slide/slideContent',
         'models/Cliente', 'models/PedidoAuditoria', 'models/Separador', 'models/Auditor',
         'models/DocumentoTemporal', "controllers/AuditoriaPedidosClientesController","controllers/AuditoriaPedidosFarmaciasController",
         "controllers/EditarProductoController"], function(angular, controllers) {
@@ -335,8 +335,6 @@ define(["angular", "js/controllers",'../../../../includes/slide/slideContent',
                     }
                 }
             });
-
-
 
 
         }]);

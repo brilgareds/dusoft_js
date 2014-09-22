@@ -23,7 +23,7 @@
                     </div>
                     
                 </div>
-                <div class="panel-body" ng-if="listado_productos.length > 0">
+                <div class="panel-body" ng-if="rootSeleccionProductoCliente.listado_productos.length > 0">
                     <div class="auditadosGrid" ng-grid="lista_productos"></div>
                 </div>
             </div>
@@ -35,7 +35,7 @@
         <br><br><br>
         <div class="fieldset" style ="border: 1px solid #ccc; padding: 10px; padding:10px;">
             <legend>Productos Seleccionados</legend>
-            <div class="row-fluid" ng-if="listado_productos_seleccionados.length > 0">                
+            <div class="row-fluid" ng-if="rootSeleccionProductoCliente.listado_productos_seleccionados.length > 0">                
                 <div class="auditadosGrid" ng-grid="lista_productos_seleccionados"></div>
             </div>
         </div>

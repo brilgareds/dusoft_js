@@ -23,8 +23,6 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
             $scope.paginaactual = 1;
 
 
-    
-
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
 
 
@@ -129,11 +127,11 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
                 enableColumnResize: true,
                 enableRowSelection: false,
                 //enableSorting:false,
-                rowTemplate: '<div " style="height: 100%" ng-class="{red: !row.getProperty(\'isUploaded\')}" rel="{{row.entity.numero_pedido}}" ng-click="rowClicked($event, row)">' + 
-                 '<div ng-repeat="col in renderedColumns" ng-class="col.colIndex()" class="ngCell "  >' +
-                 '<div ng-cell ></div>' +
-                 '</div>' +
-                 '</div>', /*<input-check ng-model="row.entity.selected" ng-click="onEditarLote(row)"> />*/
+                //rowTemplate: '<div " style="height: 100%" ng-class="{red: !row.getProperty(\'isUploaded\')}" rel="{{row.entity.numero_pedido}}" ng-click="rowClicked($event, row)">' + 
+                // '<div ng-repeat="col in renderedColumns" ng-class="col.colIndex()" class="ngCell "  >' +
+                // '<div ng-cell ></div>' +
+                // '</div>' +
+                // '</div>', /*<input-check ng-model="row.entity.selected" ng-click="onEditarLote(row)"> />*/
                 columnDefs: [
                    /* {field: '', cellClass: "checkseleccion", width: "60",
                         cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)' ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 || row.entity.estado == 3 || row.entity.estado_separacion'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},*/
@@ -159,6 +157,11 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
 
             // Agregar Clase de acuerdo al estado del pedido
             $scope.agregarClase = function(estado) {
+
+                if(estado == 6){
+                    return estados[1];
+                }
+
                 return estados[estado];
             };
 
@@ -171,7 +174,6 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
 
                 return clase;
             };
-
 
 
             //fin delegado grid pedidos //

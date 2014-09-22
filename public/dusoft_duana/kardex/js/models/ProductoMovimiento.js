@@ -1,7 +1,7 @@
 
 define(["angular","js/models","includes/classes/Producto"], function(angular, models, Producto){
 
-	models.factory('ProductoMovimiento', function(Producto) {
+	models.factory('ProductoMovimiento', ["Producto", function(Producto) {
 
 		function ProductoMovimiento(codigo, nombre, existencia, precio, existencia_total, costo, costo_ultima_compra, porc_iva, descuadre){
 			//constructor padre
@@ -64,5 +64,5 @@ define(["angular","js/models","includes/classes/Producto"], function(angular, mo
 		}
 
 		return this;
-	});
+	}]);
 });

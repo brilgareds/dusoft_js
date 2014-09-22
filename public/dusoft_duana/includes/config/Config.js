@@ -19,7 +19,9 @@
             'AUDITAR_DOCUMENTO_TEMPORAL':BASE_URL+"/movBodegas/E008/auditarProductoDocumentoTemporal",
             'CONSULTAR_PRODUCTOS_AUDITADOS':BASE_URL+"/movBodegas/E008/consultarProductosAuditados",
             'VALIDAR_CAJA':BASE_URL+"/movBodegas/E008/validarCajaProducto",
-            'GENERAR_ROTULO':BASE_URL+'/movBodegas/E008/generarRotuloCaja'
+            'GENERAR_ROTULO':BASE_URL+'/movBodegas/E008/generarRotuloCaja',
+            'CONSULTAR_PRODUCTOS_AUDITADOS_CLIENTE':BASE_URL+'/movBodegas/E008/auditoriaProductosClientes',
+            'CONSULTAR_PRODUCTOS_AUDITADOS_FARMACIA':BASE_URL+'/movBodegas/E008/auditoriaProductosFarmacias'
 	    },
 	    'PEDIDOS' : {
 	    	'LISTAR_PEDIDOS': BASE_URL+'/PedidosClientes/listarPedidos',	

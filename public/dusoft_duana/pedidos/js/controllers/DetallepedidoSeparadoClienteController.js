@@ -193,7 +193,7 @@ define(["angular", "js/controllers",'models/Cliente',
                             }
                         };
 
-                    $scope.onKeyDocumentosSeparadosPress(ev, termino_busqueda, $scope.DocumentoTemporal, obj);
+                    $scope.onKeyDocumentosSeparadosPress(ev, termino_busqueda, $scope.DocumentoTemporal, obj, 1);
                      
                 }
             };

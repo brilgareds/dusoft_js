@@ -141,8 +141,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
             };
 
-            $scope.buscarProductosSeparadosEnDocumento = function(obj,callback){
-                var url = API.DOCUMENTOS_TEMPORALES.CONSULTAR_DOCUMENTO_TEMPORAL;
+            $scope.buscarProductosSeparadosEnDocumento = function(obj, tipo, callback){
+
+                var url = API.DOCUMENTOS_TEMPORALES.CONSULTAR_PRODUCTOS_AUDITADOS_CLIENTE;
+
+                if(tipo == 2){
+                    url = API.DOCUMENTOS_TEMPORALES.CONSULTAR_PRODUCTOS_AUDITADOS_FARMACIA;
+                }
+                
                  Request.realizarRequest(url, "POST", obj, function(data) {
                      
                     if(data.status == 200) { 
@@ -172,10 +178,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
 
 
-            $scope.onKeyDocumentosSeparadosPress = function(ev, termino_busqueda, documento, params){
+            $scope.onKeyDocumentosSeparadosPress = function(ev, termino_busqueda, documento, params, tipo){
                 
 
-                $scope.buscarProductosSeparadosEnDocumento(params,function(data){
+                $scope.buscarProductosSeparadosEnDocumento(params, tipo ,function(data){
                     if(data.status == 200){
                         var productos = data.obj.movimientos_bodegas.lista_productos_auditados;
                         console.log("productos encontrados ",productos);

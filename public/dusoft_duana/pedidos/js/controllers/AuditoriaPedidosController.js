@@ -194,6 +194,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.crearProductoPedidoDocumentoTemporal = function(obj) {
 
                 var lote_pedido = LoteProductoPedido.get(obj.lote, obj.fecha_vencimiento);
+                lote_pedido.justificacion_separador = obj.justificacion;
+                lote_pedido.justificacion_auditor = obj.justificacion_auditor;
                 lote_pedido.item_id = obj.item_id;
         
                 var producto_pedido_separado = ProductoPedido.get(  obj.codigo_producto, obj.descripcion_producto, "",

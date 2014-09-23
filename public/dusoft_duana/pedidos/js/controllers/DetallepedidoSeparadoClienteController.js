@@ -188,7 +188,8 @@ define(["angular", "js/controllers",'models/Cliente',
                                 documento_temporal: {
                                     documento_temporal_id : $scope.DocumentoTemporal.documento_temporal_id,
                                     usuario_id: $scope.DocumentoTemporal.separador.usuario_id,
-                                    filtro:$scope.filtro
+                                    filtro:$scope.filtro,
+                                    numero_pedido:$scope.DocumentoTemporal.getPedido().numero_pedido
                                 }
                             }
                         };

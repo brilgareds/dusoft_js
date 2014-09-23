@@ -75,11 +75,6 @@ module.exports = function(app, di_container) {
     app.post('/api/movBodegas/E008/justificacionPendientes', function(req, res) {
         c_e008.justificacionPendientes(req, res);
     });
-    
-    // Ingresar Justificacion de productos pendientes en despachos CLIENTES y FARMACIAS
-    app.post('/api/movBodegas/E008/justificacionPendientesAuditor', function(req, res) {
-        c_e008.justificacionPendientesAuditor(req, res);
-    });
 
     // Actualizar bodegas_doc_id en documento temporal Clientes.
     app.post('/api/movBodegas/E008/actualizarTipoDocumentoTemporalClientes', function(req, res) {
@@ -145,7 +140,7 @@ module.exports = function(app, di_container) {
     app.post('/api/movBodegas/E008/generarDocumentoDespachoFarmacias', function(req, res) {
         c_e008.generarDocumentoDespachoFarmacias(req, res);
     });
-
+    
     // ======== FIN Auditoria de Documento de Despacho ====================
 
     // ======== Events E008 ========

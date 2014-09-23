@@ -5,7 +5,7 @@ var client = require('request');
 var config = require('../lib/Settings').create();
 var fn = require('../lib/functions');
 var url_login = "/login";
-var url = "/api/movBodegas/E008/auditarProductoDocumentoTemporal";
+var url = "/api/movBodegas/E008/test_justificaciones";
 
 
 var that = this;
@@ -19,18 +19,12 @@ vows.describe('Test actualizarTipoDocumentoTemporalClientes').addBatch({
                 obj.session = body.obj.sesion;
                 obj.data = {
                     documento_temporal: {
-                        item_id: 1555725,
-                        auditado: true,
-                        numero_caja: 1,
-                        justificacion: {
-                            doc_tmp_id: 2308,
-                            codigo_producto: "132H0482480",
-                            cantidad_pendiente: 50,
-                            justificacion: "No Habia",
-                            justificacion_auditor: "Auditor Justifica que no y no y no ",
-                            existencia: 50,
-                            usuario_id : 1350
-                        }
+                        doc_tmp_id : 2308,
+                        codigo_producto: "132H0482480",
+                        cantidad_pendiente: 50,
+                        justificacion: "No Habia",                        
+                        justificacion_auditor: "Auditor Justifica que no",                        
+                        existencia: 50
                     }
                 };
 

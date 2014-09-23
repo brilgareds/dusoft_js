@@ -145,6 +145,10 @@ module.exports = function(app, di_container) {
     app.post('/api/movBodegas/E008/generarDocumentoDespachoFarmacias', function(req, res) {
         c_e008.generarDocumentoDespachoFarmacias(req, res);
     });
+    
+    app.post('/api/movBodegas/E008/test_justificaciones', function(req, res) {
+        c_e008.justificacionPendientes(req, res);
+    });
 
     // ======== FIN Auditoria de Documento de Despacho ====================
 

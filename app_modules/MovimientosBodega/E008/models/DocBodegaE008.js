@@ -435,14 +435,21 @@ DocuemntoBodegaE008.prototype.gestionar_justificaciones_pendientes = function(do
 
     that.consultar_justificaciones_pendientes(doc_tmp_id, usuario_id, codigo_producto, function(err, justificaciones) {
 
-
-        if (justificaciones.length > 0) {
-            // Modificar
-            that.actualizar_justificaciones_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, callback);
+        if (err) {
+            callback(err, justificaciones)
+            return;
         } else {
-            // Ingrsar
-            that.ingresar_justificaciones_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, justificacion, existencia, justificacion_auditor, callback);
+            if (justificaciones.length > 0) {
+                // Modificar
+                that.actualizar_justificaciones_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, callback);
+                return;
+            } else {
+                // Ingrsar
+                that.ingresar_justificaciones_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, justificacion, existencia, justificacion_auditor, callback);
+                return;
+            }
         }
+
     });
 };
 
@@ -464,24 +471,28 @@ DocuemntoBodegaE008.prototype.consultar_justificaciones_pendientes = function(do
 // Ingresar Justificacion de Productos Pendientes
 DocuemntoBodegaE008.prototype.ingresar_justificaciones_pendientes = function(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, justificacion, existencia, justificacion_auditor, callback) {
 
+    console.log('========= ingresar_justificaciones_pendientes =========');
+
     var sql = " INSERT INTO inv_bodegas_movimiento_tmp_justificaciones_pendientes ( doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, observacion, existencia, justificacion_auditor ) \
                 VALUES ($1, $2, $3, $4, $5, $6, $7 ); ";
 
     G.db.query(sql, [doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, justificacion, existencia, justificacion_auditor], function(err, rows, result) {
 
-        callback(err, rows);
+        callback(err, rows, result);
     });
 };
 
 // Actualizar Justificacion de Productos Pendientes
 DocuemntoBodegaE008.prototype.actualizar_justificaciones_pendientes = function(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, callback) {
 
-    var sql = " UPDATE inv_bodegas_movimiento_tmp_justificaciones_pendientes SET cantidad_pendiente = $4 , existencia = $5, justificacion = $6, justificacion_auditor = $7  \
-                WHERE a.doc_tmp_id = $1 and a.usuario_id = $2 and a.codigo_producto = $3 ; ";
+    console.log('========= actualizar_justificaciones_pendientes =========');
+
+    var sql = " UPDATE inv_bodegas_movimiento_tmp_justificaciones_pendientes SET cantidad_pendiente = $4 , existencia = $5, observacion = $6, justificacion_auditor = $7  \
+                WHERE doc_tmp_id = $1 and usuario_id = $2 and codigo_producto = $3 ; ";
 
     G.db.query(sql, [doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor], function(err, rows, result) {
 
-        callback(err, rows);
+        callback(err, rows, result);
     });
 };
 

@@ -668,8 +668,8 @@ E008Controller.prototype.justificacionPendientes = function(req, res) {
         return;
     }
 
-    if (args.documento_temporal.cantidad_pendiente === undefined || args.documento_temporal.justificacion === undefined || args.documento_temporal.existencia === undefined) {
-        res.send(G.utils.r(req.url, 'La cantidad_pendiente, justificacion o existencia no estan definidos', 404, {}));
+    if (args.documento_temporal.cantidad_pendiente === undefined || args.documento_temporal.justificacion === undefined || args.documento_temporal.existencia === undefined || args.documento_temporal.justificacion_auditor === undefined) {
+        res.send(G.utils.r(req.url, 'La cantidad_pendiente, justificacion, justificacion_auditor o existencia no estan definidos', 404, {}));
         return;
     }
 
@@ -693,23 +693,13 @@ E008Controller.prototype.justificacionPendientes = function(req, res) {
     var codigo_producto = args.documento_temporal.codigo_producto;
     var cantidad_pendiente = args.documento_temporal.cantidad_pendiente;
     var justificacion = args.documento_temporal.justificacion;
-    var justificacion_auditor = '';
+    var justificacion_auditor = args.documento_temporal.justificacion_auditor;
     var existencia = args.documento_temporal.existencia;
     var usuario_id = req.session.user.usuario_id;
-    
-    console.log('===========================');
-    console.log(doc_tmp_id);
-    console.log(codigo_producto);
-    console.log(cantidad_pendiente);
-    console.log(justificacion);
-    console.log(justificacion_auditor);
-    console.log(existencia);
-    console.log(usuario_id);
-    console.log('===========================');
-    return;
 
-    that.m_e008.ingresar_justificaciones_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, justificacion, existencia, justificacion_auditor, function(err, rows) {
-        if (err) {            
+    that.m_e008.gestionar_justificaciones_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, function(err, rows, result) {
+
+        if (err || result.rowCount === 0) {
             res.send(G.utils.r(req.url, 'Error ingresando la justificación', 500, {documento_temporal: {}}));
             return;
         } else {
@@ -929,7 +919,7 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
     var args = req.body.data;
 
     if (args.documento_temporal === undefined || args.documento_temporal.item_id === undefined || args.documento_temporal.auditado === undefined || args.documento_temporal.numero_caja === undefined) {
-        res.send(G.utils.r(req.url, 'El item_id o auditado No Estan Definidos', 404, {}));
+        res.send(G.utils.r(req.url, 'El item_id, numero_caja o auditado No Estan Definidos', 404, {}));
         return;
     }
     if (args.documento_temporal.item_id === '' || args.documento_temporal.item_id === "0" || args.documento_temporal.auditado === '' || args.documento_temporal.numero_caja === '' | args.documento_temporal.numero_caja === '0') {
@@ -942,27 +932,90 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
         return;
     }
 
+    // Datos requeridos para auditar con la justificacion
+    if (args.documento_temporal.justificacion !== undefined) {
+
+        if (args.documento_temporal.justificacion.documento_temporal_id === undefined || args.documento_temporal.justificacion.usuario_id === undefined || args.documento_temporal.justificacion.codigo_producto === undefined) {
+            res.send(G.utils.r(req.url, 'El documento_temporal_id, usuario_id o codigo_producto no estan definidos', 404, {}));
+            return;
+        }
+
+        if (args.documento_temporal.justificacion.cantidad_pendiente === undefined || args.documento_temporal.justificacion.justificacion === undefined || args.documento_temporal.justificacion.existencia === undefined || args.documento_temporal.justificacion.justificacion_auditor === undefined) {
+            res.send(G.utils.r(req.url, 'La cantidad_pendiente, justificacion, justificacion_auditor o existencia no estan definidos', 404, {}));
+            return;
+        }
+
+
+        if (args.documento_temporal.justificacion.documento_temporal_id === "" || args.documento_temporal.justificacion.usuario_id === '' || args.documento_temporal.justificacion.codigo_producto === "") {
+            res.send(G.utils.r(req.url, 'El doc_tmp_id, usuario_id o codigo_producto estan vacíos', 404, {}));
+            return;
+        }
+
+        if (args.documento_temporal.justificacion.cantidad_pendiente === "" || args.documento_temporal.justificacion.justificacion === "" || args.documento_temporal.justificacion.existencia === "" || args.documento_temporal.justificacion.justificacion_auditor === "") {
+            res.send(G.utils.r(req.url, 'La cantidad_pendiente, justificacion, justificacion_auditor o existencia estan vacíos', 404, {}));
+            return;
+        }
+
+        if (parseInt(args.documento_temporal.justificacion.cantidad_pendiente) <= 0) {
+            res.send(G.utils.r(req.url, 'La cantidad_pendiente debe ser mayor a cero', 404, {}));
+            return;
+        }
+
+    }
+
 
     var item_id = args.documento_temporal.item_id;
     var auditado = args.documento_temporal.auditado;
     var numero_caja = args.documento_temporal.numero_caja;
-    var justificacion_auditor = "";
 
-    that.m_movientos_bodegas.auditar_producto_movimiento_bodega_temporal(item_id, auditado, numero_caja, function(err, rows, result) {
+    if (args.documento_temporal.justificacion !== undefined) {
+        // Auditar con Justificacion.
+        var doc_tmp_id = args.documento_temporal.justificacion.documento_temporal_id;
+        var codigo_producto = args.documento_temporal.justificacion.codigo_producto;
+        var cantidad_pendiente = args.documento_temporal.justificacion.cantidad_pendiente;
+        var justificacion = args.documento_temporal.justificacion.justificacion;
+        var justificacion_auditor = args.documento_temporal.justificacion.justificacion_auditor;
+        var existencia = args.documento_temporal.justificacion.existencia;
+        var usuario_id = args.documento_temporal.justificacion.usuario_id;
 
-        if (err || result.rowCount === 0) {
-            res.send(G.utils.r(req.url, 'Error Auditando el Producto', 500, {movimientos_bodegas: {}}));
-            return;
-        } else {
+        that.m_e008.gestionar_justificaciones_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, function(err, rows, result) {
+            if (err || result.rowCount === 0) {
+                res.send(G.utils.r(req.url, 'Error ingresando la justificación', 500, {documento_temporal: {}}));
+                return;
+            } else {
+                that.m_movientos_bodegas.auditar_producto_movimiento_bodega_temporal(item_id, auditado, numero_caja, function(err, rows, result) {
 
-            var msj = " Producto Auditado Correctamente";
-            if (!auditado)
-                msj = " Producto ya NO esta auditado";
+                    if (err || result.rowCount === 0) {
+                        res.send(G.utils.r(req.url, 'Error Auditando el Producto', 500, {movimientos_bodegas: {}}));
+                        return;
+                    } else {
 
-            res.send(G.utils.r(req.url, msj, 200, {movimientos_bodegas: {}}));
-        }
-    });
+                        var msj = " Producto Auditado Correctamente";
+                        if (!auditado)
+                            msj = " Producto ya NO esta auditado";
 
+                        res.send(G.utils.r(req.url, msj, 200, {movimientos_bodegas: {}}));
+                    }
+                });
+            }
+        });
+    } else {
+        // Auditar sin Justificar.
+        that.m_movientos_bodegas.auditar_producto_movimiento_bodega_temporal(item_id, auditado, numero_caja, function(err, rows, result) {
+
+            if (err || result.rowCount === 0) {
+                res.send(G.utils.r(req.url, 'Error Auditando el Producto', 500, {movimientos_bodegas: {}}));
+                return;
+            } else {
+
+                var msj = " Producto Auditado Correctamente";
+                if (!auditado)
+                    msj = " Producto ya NO esta auditado";
+
+                res.send(G.utils.r(req.url, msj, 200, {movimientos_bodegas: {}}));
+            }
+        });
+    }
 };
 
 // Buscar productos para auditar de Clientes 
@@ -982,7 +1035,7 @@ E008Controller.prototype.auditoriaProductosClientes = function(req, res) {
         return;
     }
 
-    if (args.documento_temporal.numero_pedido === '' ) {
+    if (args.documento_temporal.numero_pedido === '') {
         res.send(G.utils.r(req.url, 'numero_pedido esta vacios', 404, {}));
         return;
     }
@@ -1031,36 +1084,49 @@ E008Controller.prototype.auditoriaProductosClientes = function(req, res) {
                     return;
                 }
 
+                var count = detalle_documento_temporal.length;
+
                 detalle_documento_temporal.forEach(function(detalle) {
 
-                    var producto = productos_pedidos.filter(function(value) {
-                        return detalle.codigo_producto === value.codigo_producto;
+                    // Consultar las justificaciones del producto
+                    that.m_e008.consultar_justificaciones_pendientes(documento.documento_temporal_id, documento.usuario_id, detalle.codigo_producto, function(err, justificaciones) {
+
+                        detalle.justificaciones = justificaciones;
+
+                        var producto = productos_pedidos.filter(function(value) {
+                            return detalle.codigo_producto === value.codigo_producto;
+                        });
+
+                        if (producto.length > 0) {
+                            producto = producto[0];
+                            detalle.cantidad_solicitada = producto.cantidad_solicitada;
+                            detalle.cantidad_pendiente = producto.cantidad_solicitada - detalle.cantidad_ingresada;
+                            //detalle.justificacion = producto.justificacion;
+                            //detalle.justificacion_auditor = producto.justificacion_auditor;
+                        }
+
+                        //Si filtro es por codigo de barras.
+                        if (filtro.codigo_barras) {
+                            if (detalle.auditado === '0' && detalle.codigo_barras === termino_busqueda)
+                                lista_productos.push(detalle);
+                        }
+
+                        //si filtro es por descripcion 
+                        if (filtro.descripcion_producto) {
+                            if (detalle.auditado === '0' && detalle.descripcion_producto.toLocaleLowerCase().substring(0, termino_busqueda.length) === termino_busqueda.toLowerCase())
+                                lista_productos.push(detalle);
+                        }
+
+                        if (--count === 0) {
+                            console.log(lista_productos);
+                            res.send(G.utils.r(req.url, 'Listado productos auditados', 200, {movimientos_bodegas: {lista_productos_auditados: lista_productos}}));
+                        }
+
                     });
-
-                    if (producto.length > 0) {
-                        producto = producto[0];
-                        detalle.cantidad_solicitada = producto.cantidad_solicitada;
-                        detalle.cantidad_pendiente = producto.cantidad_solicitada - detalle.cantidad_ingresada;
-                        detalle.justificacion = producto.justificacion;
-                        detalle.justificacion_auditor = producto.justificacion_auditor;
-                    }
-
-                    //Si filtro es por codigo de barras.
-                    if (filtro.codigo_barras) {
-                        if (detalle.auditado === '0' && detalle.codigo_barras === termino_busqueda)
-                            lista_productos.push(detalle);
-                    }
-
-                    //si filtro es por descripcion 
-                    if (filtro.descripcion_producto) {
-                        if (detalle.auditado === '0' && detalle.descripcion_producto.toLocaleLowerCase().substring(0, termino_busqueda.length) === termino_busqueda.toLowerCase())
-                            lista_productos.push(detalle);
-                    }
-
-
                 });
 
-                res.send(G.utils.r(req.url, 'Listado productos auditados', 200, {movimientos_bodegas: {lista_productos_auditados: lista_productos}}));
+                if (detalle_documento_temporal.length === 0)
+                    res.send(G.utils.r(req.url, 'Listado productos auditados', 200, {movimientos_bodegas: {lista_productos_auditados: lista_productos}}));
             });
         });
     });
@@ -1083,7 +1149,7 @@ E008Controller.prototype.auditoriaProductosFarmacias = function(req, res) {
         return;
     }
 
-    if (args.documento_temporal.numero_pedido === '' ) {
+    if (args.documento_temporal.numero_pedido === '') {
         res.send(G.utils.r(req.url, 'numero_pedido esta vacios', 404, {}));
         return;
     }
@@ -1119,7 +1185,7 @@ E008Controller.prototype.auditoriaProductosFarmacias = function(req, res) {
 
         // Consultamos los productos del pedido.
         that.m_pedidos_farmacias.consultar_detalle_pedido(documento.numero_pedido, function(err, productos_pedidos) {
-            
+
             if (err) {
                 res.send(G.utils.r(req.url, 'Se ha generado un error consultado el detalle del pedido', 500, {documento_temporal: []}));
                 return;
@@ -1158,7 +1224,7 @@ E008Controller.prototype.auditoriaProductosFarmacias = function(req, res) {
                             lista_productos.push(detalle);
                     }
                 });
-                
+
                 res.send(G.utils.r(req.url, 'Listado productos auditados', 200, {movimientos_bodegas: {lista_productos_auditados: lista_productos}}));
             });
         });
@@ -1324,7 +1390,7 @@ E008Controller.prototype.generarRotuloCaja = function(req, res) {
  * ==================================================================================================================================================================*/
 
 
-// Valida que loproductos con pendientes esten justificados
+// Valida que los productos con pendientes esten justificados
 // igualmente para los auditados
 function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento_temporal_id, usuario_id, callback) {
 

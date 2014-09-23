@@ -77,7 +77,7 @@ MovimientosBodegasModel.prototype.eliminar_producto_movimiento_bodega_temporal =
 // Auditar Producto del Documento Temporal 0 = false ; 1 = true
 MovimientosBodegasModel.prototype.auditar_producto_movimiento_bodega_temporal = function(item_id, auditado, numero_caja, callback) {
 
-    var sql = " UPDATE  inv_bodegas_movimiento_tmp_d SET auditado = $2 WHERE item_id = $1  ; ";
+    var sql = " UPDATE  inv_bodegas_movimiento_tmp_d SET auditado = $2, numero_caja = $3 WHERE item_id = $1  ; ";
 
     G.db.query(sql, [item_id, auditado ? 1 : 0, numero_caja ], function(err, rows, result) {
         callback(err, rows, result);
@@ -111,7 +111,8 @@ MovimientosBodegasModel.prototype.consultar_detalle_movimiento_bodega_temporal =
                 b.lote_devuelto,\
                 b.cantidad_sistema,\
                 b.auditado,\
-                c.codigo_barras\
+                c.codigo_barras,\
+                b.numero_caja \
                 from inv_bodegas_movimiento_tmp a \
                 inner join inv_bodegas_movimiento_tmp_d b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
                 inner join inventarios_productos c on b.codigo_producto = c.codigo_producto\

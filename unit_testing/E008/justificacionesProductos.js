@@ -19,12 +19,12 @@ vows.describe('Test actualizarTipoDocumentoTemporalClientes').addBatch({
                 obj.session = body.obj.sesion;
                 obj.data = {
                     documento_temporal: {
-                        doc_tmp_id : 0,
-                        codigo_producto: 0,
-                        cantidad_pendiente: 0,
-                        justificacion: 0,
-                        existencia: 0,
-                        doc_tmp_id: 0                        
+                        doc_tmp_id : 2308,
+                        codigo_producto: "132H0482480",
+                        cantidad_pendiente: 50,
+                        justificacion: "No Habia",                        
+                        justificacion_auditor: "Auditor Justifica que no",                        
+                        existencia: 50
                     }
                 };
 

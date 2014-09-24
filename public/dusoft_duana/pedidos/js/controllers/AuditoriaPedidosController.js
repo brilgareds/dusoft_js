@@ -25,6 +25,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 codigo_barras:false
             };
 
+            var that = this;
+
             $scope.buscarPedidosSeparados = function(obj, tipo, paginando, callback) {
                 var url = API.DOCUMENTOS_TEMPORALES.LISTAR_DOCUMENTOS_TEMPORALES_CLIENTES;
 
@@ -44,7 +46,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
 
 
-            $scope.crearDocumentoTemporal = function(obj, tipo) {
+            that.crearDocumentoTemporal = function(obj, tipo) {
                 //console.log("datos obj ",obj)
                 var documento_temporal = DocumentoTemporal.get();
                 documento_temporal.setDatos(obj);
@@ -109,7 +111,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                     var obj = data.documentos_temporales[i];
                     
-                    var documento_temporal = $scope.crearDocumentoTemporal(obj,tipo);
+                    var documento_temporal = that.crearDocumentoTemporal(obj,tipo);
                    // documento_temporal.esDocumentoNuevo = true;
                     $scope.Empresa.agregarDocumentoTemporal(documento_temporal, tipo);
                 }
@@ -141,7 +143,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
             };
 
-            $scope.buscarProductosSeparadosEnDocumento = function(obj, tipo, callback){
+            that.buscarProductosSeparadosEnDocumento = function(obj, tipo, callback){
 
                 var url = API.DOCUMENTOS_TEMPORALES.CONSULTAR_PRODUCTOS_AUDITADOS_CLIENTE;
 
@@ -160,7 +162,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 });
             };
 
-            $scope.renderDetalleDocumentoTemporal = function(documento , productos) {
+            that.renderDetalleDocumentoTemporal = function(documento , productos) {
                 //Vaciar el listado de Productos
 
                 documento.getPedido().vaciarProductos();
@@ -169,7 +171,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                     var obj = productos[i];
                     
-                    var producto_pedido_separado = $scope.crearProductoPedidoDocumentoTemporal(obj);
+                    var producto_pedido_separado = this.crearProductoPedidoDocumentoTemporal(obj);
                     
                     documento.getPedido().agregarProducto(producto_pedido_separado);
 
@@ -181,21 +183,21 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.onKeyDocumentosSeparadosPress = function(ev, termino_busqueda, documento, params, tipo){
                 
 
-                $scope.buscarProductosSeparadosEnDocumento(params, tipo ,function(data){
+                that.buscarProductosSeparadosEnDocumento(params, tipo ,function(data){
                     if(data.status == 200){
                         var productos = data.obj.movimientos_bodegas.lista_productos_auditados;
                         console.log("productos encontrados ",productos);
 
-                        $scope.renderDetalleDocumentoTemporal(documento , productos);
+                        that.renderDetalleDocumentoTemporal(documento , productos);
                     }
                 });
             };
 
-            $scope.crearProductoPedidoDocumentoTemporal = function(obj) {
+            that.crearProductoPedidoDocumentoTemporal = function(obj) {
 
                 var lote_pedido = LoteProductoPedido.get(obj.lote, obj.fecha_vencimiento);
-                lote_pedido.justificacion_separador = obj.justificacion;
-                lote_pedido.justificacion_auditor = obj.justificacion_auditor;
+                lote_pedido.justificacion_separador = obj.justificacion || "";
+                lote_pedido.justificacion_auditor = obj.justificacion_auditor || "";
                 lote_pedido.item_id = obj.item_id;
         
                 var producto_pedido_separado = ProductoPedido.get(  obj.codigo_producto, obj.descripcion_producto, "",
@@ -285,14 +287,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     
                     if(data.status == 200){
                         console.log(data, "productos auditados");
-                        $scope.renderProductosAuditados(data.obj.movimientos_bodegas.lista_productos_auditados);
+                        that.renderProductosAuditados(data.obj.movimientos_bodegas.lista_productos_auditados);
                     }
 
                 });
                 
             };
 
-            $scope.renderProductosAuditados = function(data){
+            that.renderProductosAuditados = function(data){
 
                 for(var i in data){
                     var obj = data[i];
@@ -322,7 +324,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     $scope.notificacionclientes++;
                     for(var i in data.obj.documento_temporal_clientes){
                         var obj = data.obj.documento_temporal_clientes[i];
-                        var documento_temporal = $scope.crearDocumentoTemporal(obj,1);
+                        var documento_temporal = that.crearDocumentoTemporal(obj,1);
                         documento_temporal.esDocumentoNuevo = true;
                         $scope.Empresa.agregarDocumentoTemporal(documento_temporal, 1);
                         console.log("object added client ",obj );
@@ -336,14 +338,13 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     $scope.notificacionfarmacias++;
                     for(var i in data.obj.documento_temporal_farmacias){
                         var obj = data.obj.documento_temporal_farmacias[i];
-                        var documento_temporal = $scope.crearDocumentoTemporal(obj,2);
+                        var documento_temporal = that.crearDocumentoTemporal(obj,2);
                         documento_temporal.esDocumentoNuevo = true;
                         $scope.Empresa.agregarDocumentoTemporal(documento_temporal, 2);
                          console.log("object added client ",obj );
                     }
                 }
             });
-
 
         }]);
 });

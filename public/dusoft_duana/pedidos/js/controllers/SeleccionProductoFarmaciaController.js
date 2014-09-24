@@ -36,17 +36,17 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             //$scope.rootEditarProducto.producto = angular.copy(producto);
             /*Ejemplo de angular.copy */
             
-            $scope.rootSeleccionProductoFarmacia = {};
+            /*$scope.rootSeleccionProductoFarmacia = {};*/
             
 //            $scope.rootSeleccionProductoFarmacia.paginas = 0;
 //            $scope.rootSeleccionProductoFarmacia.items = 0;
-            $scope.rootSeleccionProductoFarmacia.termino_busqueda = "";
+            /*$scope.rootSeleccionProductoFarmacia.termino_busqueda = "";
             $scope.rootSeleccionProductoFarmacia.ultima_busqueda = "";
             $scope.rootSeleccionProductoFarmacia.paginaactual = 1;
             
             $scope.rootSeleccionProductoFarmacia.listado_productos = [];
             $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados = [];
-            $scope.rootSeleccionProductoFarmacia.tipo_cliente = 1;
+            $scope.rootSeleccionProductoFarmacia.tipo_cliente = 1;*/
             
             
             $scope.$on('cargarGridSeleccionadoSlide', function(event, mass) {
@@ -64,7 +64,17 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
             $rootScope.$on("mostrarseleccionproducto", function(e, datos) {
                 
+                $scope.rootSeleccionProductoFarmacia = {};
                 $scope.rootSeleccionProductoFarmacia.tipo_cliente = datos;
+
+//                $scope.rootSeleccionProductoFarmacia.paginas = 0;
+//                $scope.rootSeleccionProductoFarmacia.items = 0;
+                $scope.rootSeleccionProductoFarmacia.termino_busqueda = "";
+                $scope.rootSeleccionProductoFarmacia.ultima_busqueda = "";
+                $scope.rootSeleccionProductoFarmacia.paginaactual = 1;
+
+                $scope.rootSeleccionProductoFarmacia.listado_productos = [];
+                $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados = [];
                 
                 $scope.buscarSeleccionProducto("");
             });
@@ -98,7 +108,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 $scope.renderGrid();
             };
             
-            /*  Construcción de Grid    */
+            /*  ConstrucciÃ³n de Grid    */
 
             $scope.renderGrid = function() {
 
@@ -110,9 +120,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     //selectedItems: $scope.selectedRow,
                     multiSelect: false,
                     columnDefs: [
-                        {field: 'codigo_producto', displayName: 'Código Producto'},
-                        {field: 'descripcion', displayName: 'Descripción'},
-                        {field: 'molecula', displayName: 'Molécula'},
+                        {field: 'codigo_producto', displayName: 'CÃ³digo Producto'},
+                        {field: 'descripcion', displayName: 'DescripciÃ³n'},
+                        {field: 'molecula', displayName: 'MolÃ©cula'},
                         {field: 'existencia_farmacia', displayName: 'Existencia Farmacia', width: "10%"},
                         {field: 'existencia_bodega', displayName: 'Existencia Bodega'},
                         {field: 'existencia_disponible', displayName: 'Disponible'},
@@ -135,8 +145,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     //selectedItems: $scope.selectedRow,
                     multiSelect: false,
                     columnDefs: [
-                        {field: 'codigo_producto', displayName: 'Código Producto'},
-                        {field: 'descripcion', displayName: 'Descripción'},
+                        {field: 'codigo_producto', displayName: 'CÃ³digo Producto'},
+                        {field: 'descripcion', displayName: 'DescripciÃ³n'},
                         {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada'},
                         {field: 'cantidad_pendiente', displayName: 'Cantidad Pendiente'},
                         {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
@@ -186,11 +196,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
             };
             
-            //Método para liberar Memoria de todo lo construido en ésta clase
+            //MÃ©todo para liberar Memoria de todo lo construido en Ã©sta clase
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
  
-                //Este evento no funciona para los Slides, así que toca liberar memoria con el emit al cerrar el slide
-                //Las siguientes líneas son efectivas si se usa la view sin el slide
+                //Este evento no funciona para los Slides, asÃ­ que toca liberar memoria con el emit al cerrar el slide
+                //Las siguientes lÃ­neas son efectivas si se usa la view sin el slide
 
 //                $scope.listado_productos = [];
 //                $scope.listado_productos_seleccionados = [];

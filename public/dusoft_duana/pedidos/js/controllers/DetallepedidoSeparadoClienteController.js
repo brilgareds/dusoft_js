@@ -34,7 +34,7 @@ define(["angular", "js/controllers",'models/Cliente',
             $scope.cajas = [];
             $scope.seleccion_caja = "";
             $scope.numero_pedido = "";
-
+            var that = this;
             
             $scope.cerrar = function(){
                $scope.$emit('cerrardetallecliente', {animado:true});
@@ -46,7 +46,7 @@ define(["angular", "js/controllers",'models/Cliente',
                 
                 //console.log("información Documento Temporal: ", datos[1]);
                 $scope.DocumentoTemporal = datos[1];
-                $scope.buscarDetalleDocumentoTemporal($scope.obtenerParametros(), false, 1, $scope.resultadoBusquedaDocumento);
+                $scope.buscarDetalleDocumentoTemporal(that.obtenerParametros(), false, 1, that.resultadoBusquedaDocumento);
                 $scope.cliente = $scope.DocumentoTemporal.pedido.cliente;
                 $scope.numero_pedido = $scope.DocumentoTemporal.pedido.numero_pedido;
                 $scope.filtro.codigo_barras = true;
@@ -62,7 +62,7 @@ define(["angular", "js/controllers",'models/Cliente',
                 };
 
 
-                $scope.traerListadoDocumentosUsuario(obj, $scope.resultasdoListadoDocumentosUsuario);
+                $scope.traerListadoDocumentosUsuario(obj, that.resultasdoListadoDocumentosUsuario);
 
                 var params ={
                     session:$scope.session,
@@ -80,7 +80,7 @@ define(["angular", "js/controllers",'models/Cliente',
 
             
 
-            $scope.resultadoBusquedaDocumento = function(data, paginando){
+            that.resultadoBusquedaDocumento = function(data, paginando){
                     data  = data.obj.documento_temporal[0];
                     $scope.items = data.lista_productos.length;
                     
@@ -102,7 +102,7 @@ define(["angular", "js/controllers",'models/Cliente',
                    $scope.usuario_id = data.usuario_id;
             };
             
-            $scope.obtenerParametros = function(){
+            that.obtenerParametros = function(){
                                 //valida si cambio el termino de busqueda
                 if ($scope.ultima_busqueda != $scope.termino_busqueda) {
                     $scope.paginaactual = 1;
@@ -121,7 +121,7 @@ define(["angular", "js/controllers",'models/Cliente',
                 return obj;
             };
 
-            $scope.resultasdoListadoDocumentosUsuario = function(data){
+            that.resultasdoListadoDocumentosUsuario = function(data){
                 //console.log("resultadod listado ", data)
                 if(data.obj.movimientos_bodegas != undefined){
                     $scope.documentos_usuarios = data.obj.movimientos_bodegas;

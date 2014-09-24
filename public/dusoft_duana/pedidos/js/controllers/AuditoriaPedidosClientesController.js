@@ -22,7 +22,8 @@ define(["angular", "js/controllers",
             $scope.paginaactual = 1;
             $scope.numero_pedido = "";
 
-            $scope.obtenerParametros = function(){
+            var that = this;
+            that.obtenerParametros = function(){
                  //valida si cambio el termino de busqueda
                 if ($scope.ultima_busqueda != $scope.termino_busqueda) {
                     $scope.paginaactual = 1;
@@ -90,7 +91,7 @@ define(["angular", "js/controllers",
             //eventos de widgets
             $scope.onKeySeparadosPress = function(ev, termino_busqueda) {
                 if (ev.which == 13) {
-                    $scope.buscarPedidosSeparados( $scope.obtenerParametros(),
+                    $scope.buscarPedidosSeparados( this.obtenerParametros(),
                                                    1,
                                                   false ,
                                                   $scope.renderPedidosSeparados );
@@ -99,18 +100,27 @@ define(["angular", "js/controllers",
 
             $scope.paginaAnterior = function() {
                 $scope.paginaactual--;
-                $scope.buscarPedidosSeparados($scope.obtenerParametros(), 1, true, $scope.renderPedidosSeparados);
+                $scope.buscarPedidosSeparados(this.obtenerParametros(), 1, true, $scope.renderPedidosSeparados);
             };
 
             $scope.paginaSiguiente = function() {
                 $scope.paginaactual++;
-                $scope.buscarPedidosSeparados($scope.obtenerParametros(),1, true, $scope.renderPedidosSeparados);
+                var that = this;
+                $scope.buscarPedidosSeparados(this.obtenerParametros(),1, true, $scope.renderPedidosSeparados);
             };
 
             //fin de eventos
 
             //se realiza el llamado a api para pedidos
-            $scope.buscarPedidosSeparados($scope.obtenerParametros(),1, false, $scope.renderPedidosSeparados);
+            $scope.buscarPedidosSeparados(this.obtenerParametros(),1, false, $scope.renderPedidosSeparados);
+
+
+
+             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
+                $scope.pedidosSeparadosSeleccionados = [];
+                $scope.$$watchers = null;
+            });
+
 
         }]);
 });

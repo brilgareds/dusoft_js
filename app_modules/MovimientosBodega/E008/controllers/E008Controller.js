@@ -247,6 +247,7 @@ E008Controller.prototype.detalleDocumentoTemporal = function(req, res) {
     var total_costo_pedido = args.documento_temporal.total_costo_pedido;
     var usuario_id = req.session.user.usuario_id;
 
+    //gestionar_detalle_movimiento_bodega();
 
     that.m_movientos_bodegas.ingresar_detalle_movimiento_bodega_temporal(empresa_id, centro_utilidad_id, bodega_id, doc_tmp_id, codigo_producto, cantidad_ingresada, lote, fecha_vencimiento, iva, valor_unitario, total_costo, total_costo_pedido, usuario_id, function(err, rows) {
         if (err) {
@@ -927,7 +928,7 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
         return;
     }
 
-    if (args.documento_temporal.numero_caja === '' | args.documento_temporal.numero_caja === '0') {
+    if (args.documento_temporal.numero_caja === '') {
         res.send(G.utils.r(req.url, 'El numero de caja esta vacio o es igual cero', 404, {}));
         return;
     }
@@ -1198,34 +1199,47 @@ E008Controller.prototype.auditoriaProductosFarmacias = function(req, res) {
                     return;
                 }
 
+                var count = detalle_documento_temporal.length;
+
                 detalle_documento_temporal.forEach(function(detalle) {
 
-                    var producto = productos_pedidos.filter(function(value) {
-                        return detalle.codigo_producto === value.codigo_producto;
+                    // Consultar las justificaciones del producto
+                    that.m_e008.consultar_justificaciones_pendientes(documento.documento_temporal_id, documento.usuario_id, detalle.codigo_producto, function(err, justificaciones) {
+
+                        detalle.justificaciones = justificaciones;
+
+                        var producto = productos_pedidos.filter(function(value) {
+                            return detalle.codigo_producto === value.codigo_producto;
+                        });
+
+                        if (producto.length > 0) {
+                            producto = producto[0];
+                            detalle.cantidad_solicitada = producto.cantidad_solicitada;
+                            detalle.cantidad_pendiente = producto.cantidad_solicitada - detalle.cantidad_ingresada;
+                            //detalle.justificacion = producto.justificacion;
+                            //detalle.justificacion_auditor = producto.justificacion_auditor;
+                        }
+
+                        //Si filtro es por codigo de barras.
+                        if (filtro.codigo_barras) {
+                            if (detalle.auditado === '0' && detalle.codigo_barras === termino_busqueda)
+                                lista_productos.push(detalle);
+                        }
+
+                        //si filtro es por descripcion 
+                        if (filtro.descripcion_producto) {
+                            if (detalle.auditado === '0' && detalle.descripcion_producto.toLocaleLowerCase().substring(0, termino_busqueda.length) === termino_busqueda.toLowerCase())
+                                lista_productos.push(detalle);
+                        }
+                        if (--count === 0) {
+                            console.log(lista_productos);
+                            res.send(G.utils.r(req.url, 'Listado productos auditados', 200, {movimientos_bodegas: {lista_productos_auditados: lista_productos}}));
+                        }
                     });
-
-                    if (producto.length > 0) {
-                        producto = producto[0];
-                        detalle.cantidad_solicitada = producto.cantidad_solicitada;
-                        detalle.cantidad_pendiente = producto.cantidad_solicitada - detalle.cantidad_ingresada;
-                        detalle.justificacion = producto.justificacion;
-                        detalle.justificacion_auditor = producto.justificacion_auditor;
-                    }
-
-                    //Si filtro es por codigo de barras.
-                    if (filtro.codigo_barras) {
-                        if (detalle.auditado === '0' && detalle.codigo_barras === termino_busqueda)
-                            lista_productos.push(detalle);
-                    }
-
-                    //si filtro es por descripcion 
-                    if (filtro.descripcion_producto) {
-                        if (detalle.auditado === '0' && detalle.descripcion_producto.toLocaleLowerCase().substring(0, termino_busqueda.length) === termino_busqueda.toLowerCase())
-                            lista_productos.push(detalle);
-                    }
                 });
 
-                res.send(G.utils.r(req.url, 'Listado productos auditados', 200, {movimientos_bodegas: {lista_productos_auditados: lista_productos}}));
+                if (detalle_documento_temporal.length === 0)
+                    res.send(G.utils.r(req.url, 'Listado productos auditados', 200, {movimientos_bodegas: {lista_productos_auditados: lista_productos}}));
             });
         });
     });
@@ -1257,8 +1271,6 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
     var documento_temporal_id = args.documento_temporal.documento_temporal_id;
     var usuario_id = args.documento_temporal.usuario_id;
 
-
-
     __validar_productos_pedidos_clientes(that, numero_pedido, documento_temporal_id, usuario_id, function(err, productos_no_auditados, productos_pendientes) {
 
         if (err) {
@@ -1266,10 +1278,32 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
             return;
         } else {
             if (productos_no_auditados || productos_pendientes) {
+
+                console.log('==== productos_no_auditados =====');
+                console.log(productos_no_auditados);
+                console.log('=== productos_pendientes ====');
+                console.log(productos_pendientes);
+
                 res.send(G.utils.r(req.url, 'Algunos productos no ha sido auditados o tienen pendientes la justificacion', 404, {movimientos_bodegas: {productos_no_auditados: productos_no_auditados, productos_pendientes: productos_pendientes}}));
                 return;
             }
 
+            __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, function(err, cajas_no_cerradas) {
+
+                if (err) {
+                    res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
+                    return;
+                } else {
+
+                    if (cajas_no_cerradas) {
+                        res.send(G.utils.r(req.url, 'Algunas cajas no se han cerrado', 404, {movimientos_bodegas: {cajas_no_cerradas: cajas_no_cerradas}}));
+                        return;
+                    }
+
+                    console.log('Listo Para Generar el Documento EFC Original');
+
+                }
+            });
         }
     });
 };
@@ -1323,8 +1357,6 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
             res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
             return;
         } else {
-
-
             if (rotulos_cajas.length > 0) {
                 var rotulo_caja = rotulos_cajas[0];
                 res.send(G.utils.r(req.url, 'Validacion caja producto', 200, {movimientos_bodegas: {caja_valida: (rotulo_caja.caja_cerrada === '0') ? true : false}}));
@@ -1409,19 +1441,25 @@ function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento
                     callback(err);
                     return;
                 } else {
+                    
                     var productos_pendientes = [];
                     var productos_no_auditados = [];
 
                     detalle_pedido.forEach(function(producto_pedido) {
 
+                        // Producto seleccionado por el operario de bodega
                         var producto_separado = detalle_documento_temporal.filter(function(value) {
                             return producto_pedido.codigo_producto === value.codigo_producto && value.auditado === '1';
                         });
 
                         // Verificar que los productos esten auditados
-                        if (producto_separado.length === 0)
-                            productos_no_auditados.push(producto_pedido);
-                        else {
+                        if (producto_separado.length === 0) {
+                            // Producto que no fue separado y le falta la justificacion del auditor
+                            if (producto_pedido.cantidad_pendiente > 0 && producto_pedido.justificacion_auditor === '')
+                                productos_pendientes.push(producto_pedido);
+                            else
+                                productos_no_auditados.push(producto_pedido);
+                        } else {
                             // Verificar que los productos con pendientes esten justificados po el auditor
                             if (producto_pedido.cantidad_pendiente > 0 && producto_pedido.justificacion_auditor === '')
                                 productos_pendientes.push(producto_pedido);
@@ -1442,8 +1480,34 @@ function __validar_productos_pedidos_farmacias() {
 }
 ;
 
-function __validar_rotulos_cajas() {
+function __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, callback) {
 
+
+    that.m_movientos_bodegas.consultar_detalle_movimiento_bodega_temporal(documento_temporal_id, usuario_id, function(err, detalle_documento_temporal) {
+
+        if (err) {
+            callback(err);
+            return;
+        } else {
+            var cajas_no_cerradas = [];
+
+            detalle_documento_temporal.forEach(function(detalle) {
+
+                that.m_e008.consultar_rotulo_caja(documento_temporal_id, detalle.numero_caja, function(err, caja_producto) {
+                    if (err) {
+                        callback(err);
+                        return;
+                    } else {
+                        caja_producto.forEach(function(caja) {
+                            if (caja.caja_cerrada === '0')
+                                cajas_no_cerradas.push(caja);
+                        });
+                        callback(err, cajas_no_cerradas);
+                    }
+                });
+            });
+        }
+    });
 }
 
 

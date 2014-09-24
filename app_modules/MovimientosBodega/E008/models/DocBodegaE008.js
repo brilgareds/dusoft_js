@@ -321,71 +321,40 @@ DocuemntoBodegaE008.prototype.eliminar_documento_temporal_clientes = function(do
 
         // Eliminar Detalle del Documento Temporal
         that.m_movientos_bodegas.eliminar_detalle_movimiento_bodega_temporal(doc_tmp_id, usuario_id, function(err) {
-
             if (err) {
-
                 callback(err);
-
                 return;
-
             } else {
-
                 //Eliminar Justificaciones
                 that.eliminar_justificaciones_pendientes(doc_tmp_id, usuario_id, function(err) {
-
                     if (err) {
-
                         callback(err);
-
                         return;
-
                     } else {
-
                         // Eliminar Cabecera Documento Temporal Clientes
                         var sql = " DELETE FROM inv_bodegas_movimiento_tmp_despachos_clientes WHERE  doc_tmp_id = $1 AND usuario_id = $2;";
-
                         G.db.transaction(sql, [doc_tmp_id, usuario_id], function(err, rows) {
-
                             if (err) {
-
                                 callback(err);
-
                                 return;
-
                             } else {
-
                                 // Eliminar Cabecera Documento Temporal
                                 that.m_movientos_bodegas.eliminar_movimiento_bodega_temporal(doc_tmp_id, usuario_id, function(err, rows) {
-
                                     if (err) {
-
                                         callback(err);
-
                                         return;
-
                                     } else {
                                         G.db.commit(function(err, rows) {
-
                                             callback(err, rows);
-
                                         });
-
                                     }
-
                                 });
-
                             }
-
                         });
-
                     }
-
                 });
-
             }
-
         });
-
     });
 };
 
@@ -449,7 +418,6 @@ DocuemntoBodegaE008.prototype.gestionar_justificaciones_pendientes = function(do
                 return;
             }
         }
-
     });
 };
 

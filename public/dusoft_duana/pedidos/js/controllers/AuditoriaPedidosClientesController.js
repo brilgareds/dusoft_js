@@ -114,5 +114,13 @@ define(["angular", "js/controllers",
             //se realiza el llamado a api para pedidos
             $scope.buscarPedidosSeparados(this.obtenerParametros(),1, false, $scope.renderPedidosSeparados);
 
+
+
+             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
+                $scope.pedidosSeparadosSeleccionados = [];
+                $scope.$$watchers = null;
+            });
+
+
         }]);
 });

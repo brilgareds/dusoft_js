@@ -137,7 +137,8 @@ define(["angular", "js/controllers",'models/Cliente',
 
             $scope.onCantidadFocus = function(row){
                 var cantidad_ingresada = row.entity.cantidad_ingresada;
-               // console.log("cantidad_ingresada ",cantidad_ingresada, row.entity )
+               //
+                console.log("cantidad_ingresada ",cantidad_ingresada, row.entity )
                 for(var i in $scope.rootEditarProducto.lotes){
                     var lote = $scope.rootEditarProducto.lotes[i];
                     lote.cantidad_ingresada = 0;
@@ -168,7 +169,7 @@ define(["angular", "js/controllers",'models/Cliente',
 
                 $scope.rootEditarProducto.producto.lote = lote;
                 $scope.rootEditarProducto.producto.cantidad_separada = Number(lote.cantidad_ingresada);
-
+                $scope.rootEditarProducto.mostrarJustificacion = that.esJustificacionNecesaria();
                 //$scope.producto.lote.selected = !row.entity.selected;
                 
                 for(var i in $scope.rootEditarProducto.lotes){
@@ -254,7 +255,7 @@ define(["angular", "js/controllers",'models/Cliente',
 
                 $scope.rootEditarProducto.mostrarJustificacion = that.esJustificacionNecesaria();
 
-                if($scope.rootEditarProducto.mostrarJustificacion){
+                if($scope.rootEditarProducto.mostrarJustificacion && $scope.rootEditarProducto.producto.lote.justificacion_auditor.length < 10){
                     $scope.rootEditarProducto.validacionproducto.valido = false
                     $scope.rootEditarProducto.validacionproducto.mensaje = "Se debe ingresar la justificación del auditor";
                     return;
@@ -318,9 +319,7 @@ define(["angular", "js/controllers",'models/Cliente',
                 if($scope.rootEditarProducto.producto.cantidad_separada < 
                     $scope.rootEditarProducto.producto.cantidad_solicitada ){
 
-                        if($scope.rootEditarProducto.producto.lote.justificacion_auditor.length < 10){
-                            return true;
-                        }
+                        return true;
 
                 }
 
@@ -401,5 +400,3 @@ define(["angular", "js/controllers",'models/Cliente',
         }]);
 
 });
-
-///api/movBodegas/E008/generarRotuloCaja documento_temporal_id numero_caja

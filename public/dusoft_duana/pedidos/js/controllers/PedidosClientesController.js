@@ -21,14 +21,14 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
             $scope.paginaactual = 1;
-
+            var that = this;
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
 
+            console.log("watcher here 1 ==== >",$scope.$$watchers)
 
-
-            $scope.buscarPedidosCliente = function(termino, paginando) {
-
+            that.buscarPedidosCliente = function(termino, paginando) {
+                console.log("watcher here 2 ==== >",$scope.$$watchers, $scope.$$watchers)
                 //valida si cambio el termino de busqueda
                 if ($scope.ultima_busqueda != $scope.termino_busqueda) {
                     $scope.paginaactual = 1;
@@ -52,13 +52,13 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
 
                 Request.realizarRequest(API.PEDIDOS.LISTAR_PEDIDOS, "POST", obj, function(data) {
                     $scope.ultima_busqueda = $scope.termino_busqueda;
-                    $scope.renderPedidosCliente(data.obj, paginando);
+                    that.renderPedidosCliente(data.obj, paginando);
                     //Mostrar data en consola
                     console.log("Información de la data: ", data);
                 });
             };
 
-            $scope.renderPedidosCliente = function(data, paginando) {
+            that.renderPedidosCliente = function(data, paginando) {
 
                 $scope.items = data.pedidos_clientes.length;
                 //se valida que hayan registros en una siguiente pagina
@@ -77,7 +77,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
 
                     var obj = data.pedidos_clientes[i];
                     //console.log(obj);
-                    var pedido = $scope.crearPedido(obj);
+                    var pedido = that.crearPedido(obj);
 
                     $scope.Empresa.agregarPedido(
                         pedido
@@ -88,7 +88,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
 
             };
 
-            $scope.crearPedido = function(obj) {
+            that.crearPedido = function(obj) {
                 var pedido = PedidoAuditoria.get();
                 pedido.setDatos(obj);
 
@@ -105,7 +105,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
                 return pedido;
             };
 
-            $scope.reemplazarPedidoEstado = function(pedido) {
+            that.reemplazarPedidoEstado = function(pedido) {
                 for (var i in $scope.Empresa.getPedidos()) {
                     var _pedido = $scope.Empresa.getPedidos()[i];
 
@@ -185,26 +185,27 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
 
                 row.selected = check;
                 if (check) {
-                    $scope.agregarPedido(row.entity);
+                    that.agregarPedido(row.entity);
                 } else {
 
-                    $scope.quitarPedido(row.entity);
+                    that.quitarPedido(row.entity);
                 }
 
                 console.log($scope.pedidosSeleccionados);
             };
 
 
-            $scope.quitarPedido = function(pedido) {
+            that.quitarPedido = function(pedido) {
                 for (var i in $scope.pedidosSeleccionados) {
                     var _pedido = $scope.pedidosSeleccionados[i];
                     if (_pedido.numero_pedido == pedido.numero_pedido) {
                         $scope.pedidosSeleccionados.splice(i, true);
+                        break;
                     }
                 }
             };
 
-            $scope.agregarPedido = function(pedido) {
+            that.agregarPedido = function(pedido) {
                 //valida que no exista el pedido en el array
                 for (var i in $scope.pedidosSeleccionados) {
                     var _pedido = $scope.pedidosSeleccionados[i];
@@ -274,10 +275,10 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
             socket.on("onListarPedidosClientes", function(datos) {
                 if (datos.status == 200) {
                     var obj = datos.obj.pedidos_clientes[0];
-                    var pedido = $scope.crearPedido(obj);
+                    var pedido = that.crearPedido(obj);
                     console.log("objecto del socket");
                     console.log(obj)
-                    $scope.reemplazarPedidoEstado(pedido);
+                    that.reemplazarPedidoEstado(pedido);
                     AlertService.mostrarMensaje("success", "pedido Asignado Correctamente!");
 
                 }
@@ -289,28 +290,31 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
             $scope.onKeyPress = function(ev, termino_busqueda) {
                 //Empresa.getPedidos()[0].numero_pedido = 0000;
                 if (ev.which == 13) {
-                    $scope.buscarPedidosCliente(termino_busqueda);
+                    that.buscarPedidosCliente(termino_busqueda);
                 }
             };
 
             $scope.paginaAnterior = function() {
                 $scope.paginaactual--;
-                $scope.buscarPedidosCliente($scope.termino_busqueda, true);
+                that.buscarPedidosCliente($scope.termino_busqueda, true);
             };
 
             $scope.paginaSiguiente = function() {
                 $scope.paginaactual++;
-                $scope.buscarPedidosCliente($scope.termino_busqueda, true);
+                that.buscarPedidosCliente($scope.termino_busqueda, true);
             };
 
 
             $scope.seleccionEstado = function(){
                 $scope.paginaactual = 1;
-                $scope.buscarPedidosCliente($scope.termino_busqueda, true);
+                that.buscarPedidosCliente($scope.termino_busqueda, true);
             };
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
                $scope.Empresa.vaciarPedidos();
+               console.log("watcher here 3 ==== >",$scope.$$watchers)
+               $scope.$$watchers = null;
+               console.log("watcher here 4 ==== >",$scope.$$watchers)
             });
 
 
@@ -318,7 +322,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
             //fin de eventos
 
             //se realiza el llamado a api para pedidos
-            $scope.buscarPedidosCliente("");
+            that.buscarPedidosCliente("");
 
         }]);
 });

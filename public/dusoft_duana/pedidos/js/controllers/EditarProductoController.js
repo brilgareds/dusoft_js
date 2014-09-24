@@ -20,7 +20,7 @@ define(["angular", "js/controllers",'models/Cliente',
            $scope.rootEditarProducto.documento = documento;
            $scope.rootEditarProducto.producto.lote.cantidad_ingresada = $scope.rootEditarProducto.producto.cantidad_separada;
            $scope.rootEditarProducto.lotes    = [];
-           $scope.rootEditarProducto.mostrarJustificacion = false;
+           
 
             $scope.session = {
                 usuario_id: Usuario.usuario_id,
@@ -54,6 +54,8 @@ define(["angular", "js/controllers",'models/Cliente',
                Request.realizarRequest(API.PEDIDOS.DISPONIBILIDAD, "POST", obj, function(data) {
 
                     if(data.status === 200){
+                        $scope.rootEditarProducto.mostrarJustificacion = ($scope.rootEditarProducto.producto.lote.justificacion_auditor.length > 0)?true:false;
+                        console.log("justificacion auditor ",$scope.rootEditarProducto.producto.lote.justificacion_auditor)
                        var lotes = data.obj.existencias_producto;
 
                        $scope.rootEditarProducto.producto.disponible = data.obj.disponibilidad_bodega;
@@ -77,6 +79,7 @@ define(["angular", "js/controllers",'models/Cliente',
                 if($scope.esLoteSeleccionado(lote)){
                     lote.selected = true;
                     lote.cantidad_ingresada = $scope.rootEditarProducto.producto.cantidad_separada;
+                    $scope.rootEditarProducto.producto.lote.existencia_actual = lote.existencia_actual;
 
                 }
 
@@ -243,10 +246,7 @@ define(["angular", "js/controllers",'models/Cliente',
                     $scope.rootEditarProducto.validacionproducto.mensaje = "La caja se encuentra cerrada";
                     return;
                 }
-
-                $rootScope.$emit("productoAuditado", $scope.rootEditarProducto.producto);
-                $modalInstance.close();
-                return;
+                
    
                 var obj = {
                     session:$scope.session,
@@ -258,11 +258,24 @@ define(["angular", "js/controllers",'models/Cliente',
                     }
                 };
 
+                if($scope.rootEditarProducto.producto.lote.justificacion_auditor.length >= 10){
+                    obj.data.documento_temporal.justificacion = {
+                        documento_temporal_id:$scope.rootEditarProducto.documento.documento_temporal_id,
+                        codigo_producto:$scope.rootEditarProducto.producto.codigo_producto,
+                        cantidad_pendiente:$scope.rootEditarProducto.producto.cantidad_separada - $scope.rootEditarProducto.producto.cantidad_solicitada,
+                        justificacion_auditor:$scope.rootEditarProducto.producto.lote.justificacion_auditor,
+                        existencia:$scope.rootEditarProducto.producto.lote.existencia_actual
+                    }
+                }
+                console.log("params to send ",obj);
+
+                return;
                Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.AUDITAR_DOCUMENTO_TEMPORAL, "POST", obj, function(data) {
 
                     if(data.status === 200){
                        console.log(data)
-
+                       $rootScope.$emit("productoAuditado", $scope.rootEditarProducto.producto);
+                       $modalInstance.close();
                     } 
                 });
             };
@@ -271,7 +284,7 @@ define(["angular", "js/controllers",'models/Cliente',
                 if($scope.rootEditarProducto.producto == undefined) return;
 
                 console.log("separada ",$scope.rootEditarProducto.producto.cantidad_separada, " solicitada ",$scope.rootEditarProducto.producto.cantidad_solicitada
-                    , " lengt just",$scope.rootEditarProducto.producto.lote.justificacion_auditor.length)
+                    , " lengt just",$scope.rootEditarProducto.producto.lote.justificacion_auditor.length, " justificacion auditor ",$scope.rootEditarProducto.producto.lote.justificacion_auditor)
                 if($scope.rootEditarProducto.producto.cantidad_separada < 
                     $scope.rootEditarProducto.producto.cantidad_solicitada ){
 

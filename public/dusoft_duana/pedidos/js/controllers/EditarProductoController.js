@@ -72,6 +72,7 @@ define(["angular", "js/controllers",'models/Cliente',
 
             $modalInstance.result.finally(function() {
                 $scope.rootEditarProducto = {};
+                $scope.$$watchers = null;
             });
             
 

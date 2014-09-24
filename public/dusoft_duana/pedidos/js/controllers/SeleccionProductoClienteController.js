@@ -18,7 +18,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 //                auth_token: Usuario.token
 //            };
 
-            $scope.rootSeleccionProductoCliente = {};
+            /*$scope.rootSeleccionProductoCliente = {};
 
             $scope.rootSeleccionProductoCliente.paginas = 0;
             $scope.rootSeleccionProductoCliente.items = 0;
@@ -28,17 +28,19 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             //$scope.numero_pedido = "";
             //$scope.obj = {};
             $scope.rootSeleccionProductoCliente.listado_productos = [];
-            $scope.rootSeleccionProductoCliente.listado_productos_seleccionados = [];
+            $scope.rootSeleccionProductoCliente.listado_productos_seleccionados = [];*/
 
 //            $scope.lista_productos = {};
 //            $scope.lista_productos_seleccionados = {};
             
-            $scope.rootSeleccionProductoCliente.tipo_cliente = 1;
+            /*$scope.rootSeleccionProductoCliente.tipo_cliente = 1;*/
             //$scope.tipo_boton = "success";
             
             $scope.$on('cargarGridSeleccionadoSlide', function(event, mass) {
-                //console.log("Recibimos la GRID del PADRE: ",mass)
+                console.log("Recibimos la GRID del PADRE: ",mass)
                 $scope.rootSeleccionProductoCliente.listado_productos_seleccionados = mass;
+                //$scope.rootSeleccionProductoCliente.listado_productos = [];
+                alert("Recibe Grid Padre");
             });
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
@@ -51,7 +53,24 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             $rootScope.$on("mostrarseleccionproducto", function(e, datos) {
                 
+                alert("Ingreso Tras llamado Slide");
+                
+                $scope.rootSeleccionProductoCliente = {};
+                
                 $scope.rootSeleccionProductoCliente.tipo_cliente = datos;
+
+                $scope.rootSeleccionProductoCliente.paginas = 0;
+                $scope.rootSeleccionProductoCliente.items = 0;
+                $scope.rootSeleccionProductoCliente.termino_busqueda = "";
+                $scope.rootSeleccionProductoCliente.ultima_busqueda = "";
+                $scope.rootSeleccionProductoCliente.paginaactual = 1;
+                //$scope.numero_pedido = "";
+                //$scope.obj = {};
+                $scope.rootSeleccionProductoCliente.listado_productos = [];
+                $scope.rootSeleccionProductoCliente.listado_productos_seleccionados = [];
+                
+                //Nueva Línea - Hay que construir de nuevo éste objeto destruido en último llamado.
+                //$scope.rootSeleccionProductoCliente.listado_productos = [];
                 
                 $scope.buscarSeleccionProducto("");
             });
@@ -62,6 +81,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 if ($scope.rootSeleccionProductoCliente.ultima_busqueda != $scope.rootSeleccionProductoCliente.termino_busqueda) {
                     $scope.rootSeleccionProductoCliente.paginaactual = 1;
                 }
+                
+                console.log("ListadoProductos Vacio",$scope.rootSeleccionProductoCliente.listado_productos);
                 
                 for(var i=0; i<10; i++)
                 {

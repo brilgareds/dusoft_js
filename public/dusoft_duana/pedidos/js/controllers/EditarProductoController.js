@@ -262,7 +262,6 @@ define(["angular", "js/controllers",'models/Cliente',
                     
 
                 if(isNaN($scope.rootEditarProducto.caja.numero) || $scope.rootEditarProducto.caja.numero == 0){
-                    console.log($scope.rootEditarProducto.caja.numero , " numero de caja ", isNaN($scope.rootEditarProducto.caja.numero), $scope)
                     $scope.rootEditarProducto.validacionproducto.valido = false
                     $scope.rootEditarProducto.caja.valida = false;
                     $scope.rootEditarProducto.validacionproducto.mensaje = "Número de caja no es válido";

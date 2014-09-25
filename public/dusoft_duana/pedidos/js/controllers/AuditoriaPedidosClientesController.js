@@ -91,7 +91,7 @@ define(["angular", "js/controllers",
             //eventos de widgets
             $scope.onKeySeparadosPress = function(ev, termino_busqueda) {
                 if (ev.which == 13) {
-                    $scope.buscarPedidosSeparados( this.obtenerParametros(),
+                    $scope.buscarPedidosSeparados( that.obtenerParametros(),
                                                    1,
                                                   false ,
                                                   $scope.renderPedidosSeparados );
@@ -100,19 +100,18 @@ define(["angular", "js/controllers",
 
             $scope.paginaAnterior = function() {
                 $scope.paginaactual--;
-                $scope.buscarPedidosSeparados(this.obtenerParametros(), 1, true, $scope.renderPedidosSeparados);
+                $scope.buscarPedidosSeparados(that.obtenerParametros(), 1, true, $scope.renderPedidosSeparados);
             };
 
             $scope.paginaSiguiente = function() {
                 $scope.paginaactual++;
-                var that = this;
-                $scope.buscarPedidosSeparados(this.obtenerParametros(),1, true, $scope.renderPedidosSeparados);
+                $scope.buscarPedidosSeparados(that.obtenerParametros(),1, true, $scope.renderPedidosSeparados);
             };
 
             //fin de eventos
 
             //se realiza el llamado a api para pedidos
-            $scope.buscarPedidosSeparados(this.obtenerParametros(),1, false, $scope.renderPedidosSeparados);
+            $scope.buscarPedidosSeparados(that.obtenerParametros(),1, false, $scope.renderPedidosSeparados);
 
 
 

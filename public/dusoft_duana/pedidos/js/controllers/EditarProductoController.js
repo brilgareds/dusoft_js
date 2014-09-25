@@ -90,7 +90,7 @@ define(["angular", "js/controllers",'models/Cliente',
                 $scope.rootEditarProducto.lotes.push(
                     lote
                 );
-           }
+           };
 
            $scope.lotes_producto = {
                 data: 'rootEditarProducto.lotes',
@@ -174,8 +174,7 @@ define(["angular", "js/controllers",'models/Cliente',
                 
                 for(var i in $scope.rootEditarProducto.lotes){
                     if(!that.esLoteSeleccionado($scope.rootEditarProducto.lotes[i])){
-                       /* console.log("no selected",$scope.lotes[i]);
-                        console.log("why",$scope.producto.lote, $scope.lotes[i])*/
+
                         $scope.rootEditarProducto.lotes[i].selected = false;
                         $scope.rootEditarProducto.lotes[i].editando = false;
                         $scope.rootEditarProducto.lotes[i].cantidad_ingresada = 0;

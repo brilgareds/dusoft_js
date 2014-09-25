@@ -33,6 +33,9 @@ requirejs.config({
         "route": {
             deps: ["angular"]
         },
+        "ngroute":{
+            deps: ["angular"]
+        },
         "bootstrap":{
             deps:["angular"]
         },

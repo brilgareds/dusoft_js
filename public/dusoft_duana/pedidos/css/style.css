@@ -94,6 +94,9 @@ margin-bottom: 0px;
     padding:2px;
 }
 
+.body.dragOver #file-drop{display:block;} /* Durante el drag */
+
+.body #file-drop{z-index:1000;position:fixed;top:0;left:0;width:100%;height:100%;display:none;} /* No drag */
 
 .checkcodigobarrascontenedor{
     position: absolute;

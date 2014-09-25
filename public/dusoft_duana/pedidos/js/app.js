@@ -1,6 +1,6 @@
 //main app module
  define([
-  "angular", "socketservice", "route", 
+  "angular", "socketservice", "route",
   "bootstrap","js/controllers", "js/models",
    "js/services",  "js/directive", "nggrid", "includes/validation/ValidacionNumero", "includes/widgets/InputCheck",
   "controllers/PedidosController","controllers/PedidosClientesController", "controllers/PedidosFarmaciasController",  "uiselect2", 
@@ -15,7 +15,7 @@
   ], function(angular){
   /* App Module and its dependencies */
 
-      var Pedidos = angular.module('pedidos', [
+      var pedidos = angular.module('pedidos', [
           'ui.router',
           'controllers',
           'models',
@@ -30,10 +30,11 @@
 
       
 
-      Pedidos.config( ["$stateProvider", "$urlRouterProvider", "$httpProvider", function($stateProvider, $urlRouterProvider, $httpProvider){
+      pedidos.config( ["$stateProvider", "$urlRouterProvider", "$httpProvider", function($stateProvider, $urlRouterProvider, $httpProvider){
 
           // For any unmatched url, send to /route1
-          $httpProvider.responseInterceptors.push('HttpInterceptor');
+          console.log($httpProvider, "http provider")
+          $httpProvider.interceptors.push('HttpInterceptor');
 
           $urlRouterProvider.otherwise("/AsignarPedidos");
           
@@ -80,5 +81,5 @@
     }]);
 
     angular.bootstrap(document, ['pedidos']);
-    return Pedidos;
+    return pedidos;
 });

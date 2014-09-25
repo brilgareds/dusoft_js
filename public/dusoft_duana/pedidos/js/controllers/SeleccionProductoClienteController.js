@@ -37,10 +37,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             //$scope.tipo_boton = "success";
             
             $scope.$on('cargarGridSeleccionadoSlide', function(event, mass) {
-                console.log("Recibimos la GRID del PADRE: ",mass)
+                //console.log("Recibimos la GRID del PADRE: ",mass)
                 $scope.rootSeleccionProductoCliente.listado_productos_seleccionados = mass;
                 //$scope.rootSeleccionProductoCliente.listado_productos = [];
-                alert("Recibe Grid Padre");
+                //alert("Recibe Grid Padre");
             });
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
@@ -193,6 +193,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     $scope.rootSeleccionProductoCliente.listado_productos[row.rowIndex].fila_activa = false; 
                     $scope.rootSeleccionProductoCliente.listado_productos[row.rowIndex].tipo_boton = 'warning';
                     $scope.rootSeleccionProductoCliente.listado_productos[row.rowIndex].etiqueta_boton = 'Listo';
+                    
+                    console.log("Row Listado Origen: ", row);
 
                     var obj_sel = {
                             codigo_producto: row.entity.codigo_producto,
@@ -218,6 +220,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 //                $scope.listado_productos[row.entity.sourceIndex].fila_activa = true;
 //                $scope.listado_productos[row.entity.sourceIndex].tipo_boton = 'success';
 //                $scope.listado_productos[row.entity.sourceIndex].etiqueta_boton = 'Incluir';
+                
+                console.log("Row de Seleccionados: ", row);
                 
                 row.entity.fila_activa = true;
                 row.entity.tipo_boton = 'success';

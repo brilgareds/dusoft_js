@@ -556,19 +556,24 @@ DocuemntoBodegaE008.prototype.cerrar_caja = function(documento_id, numero_caja, 
 
 
 /*********************************************************************************************************************************
- * ============= DOCUMENTOS DESPACHO =============
- /*********************************************************************************************************************************/
+* ============= DOCUMENTOS DESPACHO =============
+/*********************************************************************************************************************************/
 
 
-DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(documento_id, numero_caja, callback) {
+DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(documento_temporal_id, usuario_id, callback) {
 
     var that = this;
 
     // Iniciar Transacción
     G.db.begin(function() {
-        that.m_movientos_bodegas.crear_documento(empresa_id, documento_id, documento_temporal_id, usuario_id, function() {
+        
+        that.m_movientos_bodegas.crear_documento(documento_temporal_id, usuario_id, function() {
+            
+            return;
             __ingresar_documento_despacho_clientes(empresa_id, numero_pedido, prefijo_documento, numero_documento, tipo_id_tercero, tercero_id, ruta_viaje, observacion, usuario_id, function() {
+                
                 __ingresar_justificaciones_despachos(documento_temporal_id, usuario_id, function() {
+                    
                     // Finalizar Transacción
                     G.db.commit(callback);
                 });

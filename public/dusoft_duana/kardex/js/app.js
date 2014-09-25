@@ -23,7 +23,7 @@
 
           // For any unmatched url, send to /route1
           //intercepta los http para validar el usuario
-          $httpProvider.responseInterceptors.push('HttpInterceptor');
+          $httpProvider.interceptors.push('HttpInterceptor');
 
           $urlRouterProvider.otherwise("/listarproductos")
           

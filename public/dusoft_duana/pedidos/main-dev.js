@@ -23,7 +23,8 @@ requirejs.config({
         socketservice:"../includes/socket/socket",
         uiselect2:"../../javascripts/uiselect2",
         storage:"../../javascripts/angular/storage",
-        httpinterceptor:"../includes/http/HttpInterceptor"
+        httpinterceptor:"../includes/http/HttpInterceptor",
+        ngflow:"../../javascripts/flow/ng-flow"
     },
     shim: {
         "angular": {
@@ -62,6 +63,9 @@ requirejs.config({
             deps:["angular","select"]
         },
         "storage":{
+            deps:["angular"]
+        },
+        "ngflow":{
             deps:["angular"]
         }
     }

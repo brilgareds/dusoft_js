@@ -112,9 +112,11 @@
                             <span class="glyphicon glyphicon-cloud-upload"> </span><b> Cargar Archivo Plano </b>
                         </tab-heading>
                         
-                        <div id="file-drop" imagedrop on-image-drop="imageDropped()">
-                            Drop an image here to upload
-                        </div>
+                        <div flow-init="{target: '/upload'}">
+                            <div class="alert" flow-drop flow-drag-enter="class='alert-success'" flow-drag-leave="class=''" ng-class="class">
+                              Drag And Drop your file here
+                            </div>
+                       </div>
                         
                     </tab>
                     

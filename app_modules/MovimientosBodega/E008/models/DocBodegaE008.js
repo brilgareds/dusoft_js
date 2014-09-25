@@ -556,31 +556,56 @@ DocuemntoBodegaE008.prototype.cerrar_caja = function(documento_id, numero_caja, 
 
 
 /*********************************************************************************************************************************
- * ============= DOCUMENTOS DESPACHO =============
- /*********************************************************************************************************************************/
+* ============= DOCUMENTOS DESPACHO =============
+/*********************************************************************************************************************************/
 
 
-DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(documento_id, numero_caja, callback) {
+DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(documento_temporal_id, usuario_id, callback) {
 
+    var that = this;
 
-
+    // Iniciar Transacción
+    G.db.begin(function() {
+        
+        that.m_movientos_bodegas.crear_documento(documento_temporal_id, usuario_id, function() {
+            
+            return;
+            __ingresar_documento_despacho_clientes(empresa_id, numero_pedido, prefijo_documento, numero_documento, tipo_id_tercero, tercero_id, ruta_viaje, observacion, usuario_id, function() {
+                
+                __ingresar_justificaciones_despachos(documento_temporal_id, usuario_id, function() {
+                    
+                    // Finalizar Transacción
+                    G.db.commit(callback);
+                });
+            });
+        });
+    });
 };
 
-DocuemntoBodegaE008.prototype.ingresar_documento_despacho_clientes = function(empresa_id, numero_pedido, prefijo_documento, numero_documento, tipo_id_tercero, tercero_id, ruta_viaje, observacion, usuario_id, callback) {
+
+/*==================================================================================================================================================================
+ * 
+ *                                                          FUNCIONES PRIVADAS
+ * 
+ * ==================================================================================================================================================================*/
+
+
+// Ingresar cabecera docuemento despacho clientes
+function __ingresar_documento_despacho_clientes(empresa_id, numero_pedido, prefijo_documento, numero_documento, tipo_id_tercero, tercero_id, ruta_viaje, observacion, usuario_id, callback) {
 
     var sql = " INSERT INTO inv_bodegas_movimiento_despachos_clientes(empresa_id, prefijo, numero, tipo_id_tercero, tercero_id, pedido_cliente_id, rutaviaje_destinoempresa_id, observacion, fecha_registro, usuario_id )\
                 VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, NOW(), $9 ); ";
 
 
-    G.db.query(sql, [empresa_id, prefijo_documento, numero_documento, tipo_id_tercero, tercero_id, numero_pedido, ruta_viaje, observacion, usuario_id], function(err, rows, result) {
+    G.db.transaction(sql, [empresa_id, prefijo_documento, numero_documento, tipo_id_tercero, tercero_id, numero_pedido, ruta_viaje, observacion, usuario_id], function(err, rows, result) {
 
         callback(err, rows, result);
     });
-
-};
+}
+;
 
 // Ingresar Justificacion despacho
-DocuemntoBodegaE008.prototype.ingresar_justificaciones_despachos = function(documento_temporal_id, usuario_id, callback) {
+function __ingresar_justificaciones_despachos(documento_temporal_id, usuario_id, callback) {
 
     console.log('========= ingresar_justificaciones_despachos =========');
 
@@ -588,14 +613,15 @@ DocuemntoBodegaE008.prototype.ingresar_justificaciones_despachos = function(docu
                 SELECT '%empresa_id%' AS empresa_id, '%prefijo%' AS prefijo, %numero% AS numero, codigo_producto, cantidad_pendiente, observacion, existencia FROM inv_bodegas_movimiento_tmp_justificaciones_pendientes\n\
                 WHERE doc_tmp_id = $1 AND usuario_id = $2 ;  ";
 
-    G.db.query(sql, [documento_temporal_id, usuario_id], function(err, rows, result) {
+    G.db.transaction(sql, [documento_temporal_id, usuario_id], function(err, rows, result) {
 
         callback(err, rows, result);
     });
-};
+}
+;
 
 // Ingresar Autorizaciones despacho
-DocuemntoBodegaE008.prototype.ingresar_autorizaciones_despachos = function(documento_temporal_id, usuario_id, callback) {
+function __ingresar_autorizaciones_despachos(documento_temporal_id, usuario_id, callback) {
 
     console.log('========= ingresar_autorizaciones_despachos =========');
 
@@ -606,12 +632,12 @@ DocuemntoBodegaE008.prototype.ingresar_autorizaciones_despachos = function(docum
                     cantidad, porcentaje_gravamen, total_costo, fecha_registro, usuario_id_autorizador, observacion, fecha_autorizacion   \
                 FROM inv_bodegas_movimiento_tmp_autorizaciones_despachos WHERE TRUE  AND sw_autorizado = '1' AND doc_tmp_id = $1 AND usuario_id = $2 ; ";
 
-    G.db.query(sql, [documento_temporal_id, usuario_id], function(err, rows, result) {
+    G.db.transaction(sql, [documento_temporal_id, usuario_id], function(err, rows, result) {
 
         callback(err, rows, result);
     });
-};
-
+}
+;
 
 DocuemntoBodegaE008.$inject = ["m_movientos_bodegas"];
 

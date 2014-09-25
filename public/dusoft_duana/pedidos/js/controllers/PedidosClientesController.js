@@ -28,7 +28,6 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
             console.log("watcher here 1 ==== >",$scope.$$watchers)
 
             that.buscarPedidosCliente = function(termino, paginando) {
-                console.log("watcher here 2 ==== >",$scope.$$watchers, $scope.$$watchers)
                 //valida si cambio el termino de busqueda
                 if ($scope.ultima_busqueda != $scope.termino_busqueda) {
                     $scope.paginaactual = 1;
@@ -312,9 +311,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
                $scope.Empresa.vaciarPedidos();
-               console.log("watcher here 3 ==== >",$scope.$$watchers)
                $scope.$$watchers = null;
-               console.log("watcher here 4 ==== >",$scope.$$watchers)
             });
 
 

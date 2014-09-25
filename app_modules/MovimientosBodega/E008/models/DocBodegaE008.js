@@ -4,6 +4,10 @@ var DocuemntoBodegaE008 = function(movientos_bodegas) {
 
 };
 
+/*********************************************************************************************************************************
+ * ============= DOCUMENTOS TEMPORALES =============
+ /*********************************************************************************************************************************/
+
 // Insertar la cabecera temporal del despacho de un pedido de clientes
 DocuemntoBodegaE008.prototype.ingresar_despacho_clientes_temporal = function(bodegas_doc_id, numero_pedido, tipo_tercero_id, tercero_id, observacion, usuario_id, callback) {
 
@@ -326,7 +330,7 @@ DocuemntoBodegaE008.prototype.eliminar_documento_temporal_clientes = function(do
                 return;
             } else {
                 //Eliminar Justificaciones
-                that.eliminar_justificaciones_pendientes(doc_tmp_id, usuario_id, function(err) {
+                that.eliminar_justificaciones_temporales_pendientes(doc_tmp_id, usuario_id, function(err) {
                     if (err) {
                         callback(err);
                         return;
@@ -363,6 +367,7 @@ DocuemntoBodegaE008.prototype.eliminar_documento_temporal_farmacias = function(d
 
     var that = this;
 
+    // Inicia Transaccion.
     G.db.begin(function() {
         // Eliminar Detalle del Documento Temporal
         that.m_movientos_bodegas.eliminar_detalle_movimiento_bodega_temporal(doc_tmp_id, usuario_id, function(err) {
@@ -384,6 +389,7 @@ DocuemntoBodegaE008.prototype.eliminar_documento_temporal_farmacias = function(d
                                 callback(err);
                                 return;
                             } else {
+                                // Termina Transaccion.
                                 G.db.commit(function(err, rows) {
                                     callback(err, rows);
                                 });
@@ -398,11 +404,11 @@ DocuemntoBodegaE008.prototype.eliminar_documento_temporal_farmacias = function(d
 };
 
 // Consultar Justificacion de Productos Pendientes
-DocuemntoBodegaE008.prototype.gestionar_justificaciones_pendientes = function(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, callback) {
+DocuemntoBodegaE008.prototype.gestionar_justificaciones_temporales_pendientes = function(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, callback) {
 
     var that = this;
 
-    that.consultar_justificaciones_pendientes(doc_tmp_id, usuario_id, codigo_producto, function(err, justificaciones) {
+    that.consultar_justificaciones_temporales_pendientes(doc_tmp_id, usuario_id, codigo_producto, function(err, justificaciones) {
 
         if (err) {
             callback(err, justificaciones)
@@ -410,11 +416,11 @@ DocuemntoBodegaE008.prototype.gestionar_justificaciones_pendientes = function(do
         } else {
             if (justificaciones.length > 0) {
                 // Modificar
-                that.actualizar_justificaciones_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, callback);
+                that.actualizar_justificaciones_temporales_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, callback);
                 return;
             } else {
                 // Ingrsar
-                that.ingresar_justificaciones_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, justificacion, existencia, justificacion_auditor, callback);
+                that.ingresar_justificaciones_temporales_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, justificacion, existencia, justificacion_auditor, callback);
                 return;
             }
         }
@@ -422,9 +428,9 @@ DocuemntoBodegaE008.prototype.gestionar_justificaciones_pendientes = function(do
 };
 
 // Consultar Justificacion de Productos Pendientes
-DocuemntoBodegaE008.prototype.consultar_justificaciones_pendientes = function(doc_tmp_id, usuario_id, codigo_producto, callback) {
+DocuemntoBodegaE008.prototype.consultar_justificaciones_temporales_pendientes = function(doc_tmp_id, usuario_id, codigo_producto, callback) {
 
-    console.log('========= consultar_justificaciones_pendientes =========');
+    console.log('========= consultar_justificaciones_temporales_pendientes =========');
 
     var sql = " SELECT * FROM inv_bodegas_movimiento_tmp_justificaciones_pendientes a\
                 WHERE a.doc_tmp_id = $1 and a.usuario_id = $2 and a.codigo_producto = $3 ;";
@@ -437,9 +443,9 @@ DocuemntoBodegaE008.prototype.consultar_justificaciones_pendientes = function(do
 
 
 // Ingresar Justificacion de Productos Pendientes
-DocuemntoBodegaE008.prototype.ingresar_justificaciones_pendientes = function(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, justificacion, existencia, justificacion_auditor, callback) {
+DocuemntoBodegaE008.prototype.ingresar_justificaciones_temporales_pendientes = function(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, justificacion, existencia, justificacion_auditor, callback) {
 
-    console.log('========= ingresar_justificaciones_pendientes =========');
+    console.log('========= ingresar_justificaciones_temporales_pendientes =========');
 
     var sql = " INSERT INTO inv_bodegas_movimiento_tmp_justificaciones_pendientes ( doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, observacion, existencia, justificacion_auditor ) \
                 VALUES ($1, $2, $3, $4, $5, $6, $7 ); ";
@@ -451,9 +457,9 @@ DocuemntoBodegaE008.prototype.ingresar_justificaciones_pendientes = function(doc
 };
 
 // Actualizar Justificacion de Productos Pendientes
-DocuemntoBodegaE008.prototype.actualizar_justificaciones_pendientes = function(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, callback) {
+DocuemntoBodegaE008.prototype.actualizar_justificaciones_temporales_pendientes = function(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, callback) {
 
-    console.log('========= actualizar_justificaciones_pendientes =========');
+    console.log('========= actualizar_justificaciones_temporales_pendientes =========');
 
     var sql = " UPDATE inv_bodegas_movimiento_tmp_justificaciones_pendientes SET cantidad_pendiente = $4 , existencia = $5, observacion = $6, justificacion_auditor = $7  \
                 WHERE doc_tmp_id = $1 and usuario_id = $2 and codigo_producto = $3 ; ";
@@ -465,7 +471,7 @@ DocuemntoBodegaE008.prototype.actualizar_justificaciones_pendientes = function(d
 };
 
 // Eliminar Justificacion de Productos Pendientes
-DocuemntoBodegaE008.prototype.eliminar_justificaciones_pendientes = function(doc_tmp_id, usuario_id, callback) {
+DocuemntoBodegaE008.prototype.eliminar_justificaciones_temporales_pendientes = function(doc_tmp_id, usuario_id, callback) {
 
     var sql = "DELETE FROM inv_bodegas_movimiento_tmp_justificaciones_pendientes WHERE doc_tmp_id = $1 AND usuario_id = $2;";
 
@@ -476,7 +482,7 @@ DocuemntoBodegaE008.prototype.eliminar_justificaciones_pendientes = function(doc
 };
 
 // Eliminar Justificacion de Producto
-DocuemntoBodegaE008.prototype.eliminar_justificaciones_producto = function(doc_tmp_id, usuario_id, codigo_producto, callback) {
+DocuemntoBodegaE008.prototype.eliminar_justificaciones_temporales_producto = function(doc_tmp_id, usuario_id, codigo_producto, callback) {
 
     var sql = "DELETE FROM inv_bodegas_movimiento_tmp_justificaciones_pendientes WHERE doc_tmp_id = $1 AND usuario_id = $2 AND codigo_producto = $3;";
 
@@ -485,6 +491,7 @@ DocuemntoBodegaE008.prototype.eliminar_justificaciones_producto = function(doc_t
         callback(err, rows);
     });
 };
+
 
 // Actualizar estado documento temporal de clientes 0 = En Proceso separacion, 1 = Separacion Finalizada, 2 = En auditoria
 DocuemntoBodegaE008.prototype.actualizar_estado_documento_temporal_clientes = function(numero_pedido, estado, callback) {
@@ -510,7 +517,7 @@ DocuemntoBodegaE008.prototype.actualizar_estado_documento_temporal_farmacias = f
 
 };
 
-
+// Consultar el rotulo de una caja 
 DocuemntoBodegaE008.prototype.consultar_rotulo_caja = function(documento_id, numero_caja, callback) {
 
     var sql = " select * from inv_rotulo_caja a where a.documento_id = $1 and numero_caja = $2; ";
@@ -521,6 +528,7 @@ DocuemntoBodegaE008.prototype.consultar_rotulo_caja = function(documento_id, num
     });
 };
 
+// Inserta el rotulo de una caja
 DocuemntoBodegaE008.prototype.generar_rotulo_caja = function(documento_id, numero_pedido, cliente, direccion, cantidad, ruta, contenido, numero_caja, usuario_id, callback) {
 
     var sql = " INSERT INTO inv_rotulo_caja (documento_id, solicitud_prod_a_bod_ppal_id, cliente, direccion, cantidad, ruta, contenido, usuario_registro, fecha_registro, numero_caja) \
@@ -533,7 +541,7 @@ DocuemntoBodegaE008.prototype.generar_rotulo_caja = function(documento_id, numer
     });
 };
 
-
+// Cierra la caja
 DocuemntoBodegaE008.prototype.cerrar_caja = function(documento_id, numero_caja, callback) {
 
     var sql = " UPDATE inv_rotulo_caja SET caja_cerrada='1' WHERE documento_id = $1 and numero_caja = $2; ";
@@ -545,6 +553,65 @@ DocuemntoBodegaE008.prototype.cerrar_caja = function(documento_id, numero_caja, 
     });
 
 };
+
+
+/*********************************************************************************************************************************
+ * ============= DOCUMENTOS DESPACHO =============
+ /*********************************************************************************************************************************/
+
+
+DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(documento_id, numero_caja, callback) {
+
+
+
+};
+
+DocuemntoBodegaE008.prototype.ingresar_documento_despacho_clientes = function(empresa_id, numero_pedido, prefijo_documento, numero_documento, tipo_id_tercero, tercero_id, ruta_viaje, observacion, usuario_id, callback) {
+
+    var sql = " INSERT INTO inv_bodegas_movimiento_despachos_clientes(empresa_id, prefijo, numero, tipo_id_tercero, tercero_id, pedido_cliente_id, rutaviaje_destinoempresa_id, observacion, fecha_registro, usuario_id )\
+                VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, NOW(), $9 ); ";
+
+
+    G.db.query(sql, [empresa_id, prefijo_documento, numero_documento, tipo_id_tercero, tercero_id, numero_pedido, ruta_viaje, observacion, usuario_id], function(err, rows, result) {
+
+        callback(err, rows, result);
+    });
+
+};
+
+// Ingresar Justificacion despacho
+DocuemntoBodegaE008.prototype.ingresar_justificaciones_despachos = function(documento_temporal_id, usuario_id, callback) {
+
+    console.log('========= ingresar_justificaciones_despachos =========');
+
+    var sql = " INSERT INTO inv_bodegas_movimiento_justificaciones_pendientes ( empresa_id, prefijo, numero, codigo_producto, cantidad_pendiente, observacion, existencia ) \
+                SELECT '%empresa_id%' AS empresa_id, '%prefijo%' AS prefijo, %numero% AS numero, codigo_producto, cantidad_pendiente, observacion, existencia FROM inv_bodegas_movimiento_tmp_justificaciones_pendientes\n\
+                WHERE doc_tmp_id = $1 AND usuario_id = $2 ;  ";
+
+    G.db.query(sql, [documento_temporal_id, usuario_id], function(err, rows, result) {
+
+        callback(err, rows, result);
+    });
+};
+
+// Ingresar Autorizaciones despacho
+DocuemntoBodegaE008.prototype.ingresar_autorizaciones_despachos = function(documento_temporal_id, usuario_id, callback) {
+
+    console.log('========= ingresar_autorizaciones_despachos =========');
+
+    var sql = " INSERT INTO inv_bodegas_movimiento_autorizaciones_despachos \
+                    (empresa_id, prefijo, numero,centro_utilidad,bodega,codigo_producto, lote,fecha_vencimiento, cantidad,porcentaje_gravamen,total_costo,fecha_registro,usuario_id_autorizador,observacion,fecha_autorizacion)\
+                SELECT  \
+                    '%empresa_id%' AS empresa_id, '%prefijo%' AS prefijo, %numero% AS numero, centro_utilidad, bodega, codigo_producto, lote,fecha_vencimiento,\
+                    cantidad, porcentaje_gravamen, total_costo, fecha_registro, usuario_id_autorizador, observacion, fecha_autorizacion   \
+                FROM inv_bodegas_movimiento_tmp_autorizaciones_despachos WHERE TRUE  AND sw_autorizado = '1' AND doc_tmp_id = $1 AND usuario_id = $2 ; ";
+
+    G.db.query(sql, [documento_temporal_id, usuario_id], function(err, rows, result) {
+
+        callback(err, rows, result);
+    });
+};
+
 
 DocuemntoBodegaE008.$inject = ["m_movientos_bodegas"];
 

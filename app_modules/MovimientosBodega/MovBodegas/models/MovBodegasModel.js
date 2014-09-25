@@ -162,4 +162,78 @@ MovimientosBodegasModel.prototype.actualizar_tipo_documento_temporal = function(
     });
 };
 
+
+// Consultar numeracion del documento
+MovimientosBodegasModel.prototype.obtener_numeracion_documento = function(empresa_id, documento_id, callback) {
+
+    var sql = " LOCK TABLE documentos IN ROW EXCLUSIVE MODE; \
+                SELECT prefijo, numeracion FROM documentos WHERE  empresa_id = $1 AND documento_id = $2 ;  ";
+
+    G.db.query(sql, [empresa_id, documento_id], function(err, rows, result) {        
+        callback(err, rows);
+    });
+};
+
+// Crear documento 
+MovimientosBodegasModel.prototype.crear_documento = function(empresa_id, documento_id, callback) {
+
+    
+};
+
+MovimientosBodegasModel.prototype.ingresar_movimiento_bodega = function(empresa_id, documento_id, callback) {
+
+    var sql = " INSERT INTO inv_bodegas_movimiento (documento_id, empresa_id, centro_utilidad, bodega, prefijo, numero, observacion, sw_estado, usuario_id, fecha_registro, abreviatura ) \
+                VALUES ( $1, $2, $3, $4, $5, $6, $7, '1', $8, NOW(), NULL) ;  ";
+
+    G.db.query(sql, [empresa_id, documento_id], function(err, rows, result) {        
+        callback(err, rows);
+    });
+};
+
+
+MovimientosBodegasModel.prototype.ingresar_detalle_movimiento_bodega = function(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numeracion_documento, callback) {
+
+    var sql = " INSERT INTO inv_bodegas_movimiento_d ( \
+                    empresa_id, \
+                    prefijo, \
+                    numero, \
+                    centro_utilidad, \
+                    bodega, codigo_producto, \
+                    cantidad, \
+                    porcentaje_gravamen, \
+                    total_costo, \
+                    fecha_vencimiento, \
+                    lote, \
+                    observacion_cambio, \
+                    total_costo_pedido, \
+                    valor_unitario, \
+                    cantidad_sistema \
+                )\
+                    SELECT  \
+                    $3 AS empresa_id, \
+                    $4 AS prefijo, \
+                    $5 AS numeracion, \
+                    a.centro_utilidad, \
+                    a.bodega, \
+                    a.codigo_producto, \
+                    a.cantidad, \
+                    a.porcentaje_gravamen,\
+                    a.total_costo,\
+                    a.fecha_vencimiento, \
+                    a.lote, \
+                    a.observacion_cambio,\
+                    a.total_costo_pedido, \
+                    (a.total_costo/a.cantidad), \
+                    COALESCE(a.cantidad_sistema,0) AS cantidad_sistema \
+                    FROM inv_bodegas_movimiento_tmp_d a\
+                    inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
+                    inner join unidades c on b.unidad_id = c.unidad_id \
+                    WHERE a.doc_tmp_id = $1  AND a.usuario_id = $2; ";
+
+    G.db.query(sql, [documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numeracion_documento], function(err, rows, result) {        
+        callback(err, rows);
+    });
+};
+
+
 module.exports = MovimientosBodegasModel;

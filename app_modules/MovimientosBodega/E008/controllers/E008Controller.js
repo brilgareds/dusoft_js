@@ -549,7 +549,7 @@ E008Controller.prototype.eliminarProductoDocumentoTemporal = function(req, res) 
             return;
         } else {
 
-            that.m_e008.eliminar_justificaciones_producto(doc_tmp_id, usuario_id, codigo_producto, function(err, rows) {
+            that.m_e008.eliminar_justificaciones_temporales_producto(doc_tmp_id, usuario_id, codigo_producto, function(err, rows) {
                 if (err) {
                     res.send(G.utils.r(req.url, 'Error Eliminado la justificacon del Producto', 500, {}));
                     return;
@@ -698,7 +698,7 @@ E008Controller.prototype.justificacionPendientes = function(req, res) {
     var existencia = args.documento_temporal.existencia;
     var usuario_id = req.session.user.usuario_id;
 
-    that.m_e008.gestionar_justificaciones_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, function(err, rows, result) {
+    that.m_e008.gestionar_justificaciones_temporales_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, function(err, rows, result) {
 
         if (err || result.rowCount === 0) {
             res.send(G.utils.r(req.url, 'Error ingresando la justificación', 500, {documento_temporal: {}}));
@@ -979,7 +979,7 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
         var existencia = args.documento_temporal.justificacion.existencia;
         var usuario_id = args.documento_temporal.justificacion.usuario_id;
 
-        that.m_e008.gestionar_justificaciones_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, function(err, rows, result) {
+        that.m_e008.gestionar_justificaciones_temporales_pendientes(doc_tmp_id, usuario_id, codigo_producto, cantidad_pendiente, existencia, justificacion, justificacion_auditor, function(err, rows, result) {
             if (err || result.rowCount === 0) {
                 res.send(G.utils.r(req.url, 'Error ingresando la justificación', 500, {documento_temporal: {}}));
                 return;
@@ -1090,7 +1090,7 @@ E008Controller.prototype.auditoriaProductosClientes = function(req, res) {
                 detalle_documento_temporal.forEach(function(detalle) {
 
                     // Consultar las justificaciones del producto
-                    that.m_e008.consultar_justificaciones_pendientes(documento.documento_temporal_id, documento.usuario_id, detalle.codigo_producto, function(err, justificaciones) {
+                    that.m_e008.consultar_justificaciones_temporales_pendientes(documento.documento_temporal_id, documento.usuario_id, detalle.codigo_producto, function(err, justificaciones) {
 
                         detalle.justificaciones = justificaciones;
 
@@ -1204,7 +1204,7 @@ E008Controller.prototype.auditoriaProductosFarmacias = function(req, res) {
                 detalle_documento_temporal.forEach(function(detalle) {
 
                     // Consultar las justificaciones del producto
-                    that.m_e008.consultar_justificaciones_pendientes(documento.documento_temporal_id, documento.usuario_id, detalle.codigo_producto, function(err, justificaciones) {
+                    that.m_e008.consultar_justificaciones_temporales_pendientes(documento.documento_temporal_id, documento.usuario_id, detalle.codigo_producto, function(err, justificaciones) {
 
                         detalle.justificaciones = justificaciones;
 

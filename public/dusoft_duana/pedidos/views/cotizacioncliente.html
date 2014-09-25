@@ -83,18 +83,42 @@
                 <div class="panel-heading">
                   <h4 class="h4MarginTopBottom">Productos</h4>
                 </div>
-                <div class="panel-body">
-                    <button type="submit" class="btn btn-accion btn-primary pull-left" ng-click="onRowClickSelectProducto(1)">Incluir Producto</button>
-                    <div class="input-group navbar-form paddingRightZero">
-                        <input type="text" class="form-control pull-right" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">
-                        <div class="input-group-btn" >
-                            <button class="btn btn-default pull-right" type="submit" ng-click="buscarDetalleDocumentoTemporal(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                
+                <tabset  class="">
+                    
+                    <tab>
+                        
+                        <tab-heading>
+                            <span class="glyphicon glyphicon-pencil"> </span><b> Incluir Producto Manual</b>
+                        </tab-heading>
+                        
+                        <div class="panel-body">
+                            <button type="submit" class="btn btn-accion btn-primary pull-left" ng-click="onRowClickSelectProducto(1)">Incluir Producto</button>
+                            <div class="input-group navbar-form paddingRightZero">
+                                <input type="text" class="form-control pull-right" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">
+                                <div class="input-group-btn" >
+                                    <button class="btn btn-default pull-right" type="submit" ng-click="buscarDetalleDocumentoTemporal(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="panel-body">
-                    <div class="auditadosGrid" ng-grid="lista_productos"></div>
-                </div>
+                        <div class="panel-body">
+                            <div class="auditadosGrid" ng-grid="lista_productos"></div>
+                        </div>
+                        
+                    </tab>
+                    
+                    <tab>
+                        <tab-heading>
+                            <span class="glyphicon glyphicon-cloud-upload"> </span><b> Cargar Archivo Plano </b>
+                        </tab-heading>
+                        
+                        <div id="file-drop" imagedrop on-image-drop="imageDropped()">
+                            Drop an image here to upload
+                        </div>
+                        
+                    </tab>
+                    
+                </tabset>
             </div>
               
         </div>    

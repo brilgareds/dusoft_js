@@ -79,7 +79,7 @@ MovimientosBodegasModel.prototype.auditar_producto_movimiento_bodega_temporal = 
 
     var sql = " UPDATE  inv_bodegas_movimiento_tmp_d SET auditado = $2, numero_caja = $3 WHERE item_id = $1  ; ";
 
-    G.db.query(sql, [item_id, auditado ? 1 : 0, numero_caja ], function(err, rows, result) {
+    G.db.query(sql, [item_id, auditado ? 1 : 0, numero_caja], function(err, rows, result) {
         callback(err, rows, result);
     });
 };
@@ -157,41 +157,53 @@ MovimientosBodegasModel.prototype.actualizar_tipo_documento_temporal = function(
 
     var sql = " update inv_bodegas_movimiento_tmp set bodegas_doc_id = $3 where doc_tmp_id = $1  and usuario_id = $2 ";
 
-    G.db.query(sql, [documento_temporal_id, usuario_id, bodegas_doc_id, ], function(err, rows, result) {      
+    G.db.query(sql, [documento_temporal_id, usuario_id, bodegas_doc_id, ], function(err, rows, result) {
         callback(err, rows, result);
     });
 };
 
+// Crear documento 
+MovimientosBodegasModel.prototype.crear_documento = function(empresa_id, documento_id, documento_temporal_id, usuario_id, callback) {
+
+    __obtener_numeracion_documento(empresa_id, documento_id, function(err, rows, result) {
+        __ingresar_movimiento_bodega(empresa_id, documento_id, function(err, rows, result) {
+            __ingresar_detalle_movimiento_bodega(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numeracion_documento, callback);
+        });
+    });
+};
+
+/*==================================================================================================================================================================
+ * 
+ *                                                          FUNCIONES PRIVADAS
+ * 
+ * ==================================================================================================================================================================*/
 
 // Consultar numeracion del documento
-MovimientosBodegasModel.prototype.obtener_numeracion_documento = function(empresa_id, documento_id, callback) {
+function __obtener_numeracion_documento(empresa_id, documento_id, callback) {
 
     var sql = " LOCK TABLE documentos IN ROW EXCLUSIVE MODE; \
                 SELECT prefijo, numeracion FROM documentos WHERE  empresa_id = $1 AND documento_id = $2 ;  ";
 
-    G.db.query(sql, [empresa_id, documento_id], function(err, rows, result) {        
-        callback(err, rows);
+    G.db.query(sql, [empresa_id, documento_id], function(err, rows, result) {
+        callback(err, rows, result);
     });
-};
+}
+;
 
-// Crear documento 
-MovimientosBodegasModel.prototype.crear_documento = function(empresa_id, documento_id, callback) {
-
-    
-};
-
-MovimientosBodegasModel.prototype.ingresar_movimiento_bodega = function(empresa_id, documento_id, callback) {
+// Ingresar cabecera docuemento movimiento
+function __ingresar_movimiento_bodega(empresa_id, documento_id, callback) {
 
     var sql = " INSERT INTO inv_bodegas_movimiento (documento_id, empresa_id, centro_utilidad, bodega, prefijo, numero, observacion, sw_estado, usuario_id, fecha_registro, abreviatura ) \
                 VALUES ( $1, $2, $3, $4, $5, $6, $7, '1', $8, NOW(), NULL) ;  ";
 
-    G.db.query(sql, [empresa_id, documento_id], function(err, rows, result) {        
-        callback(err, rows);
+    G.db.transaction(sql, [empresa_id, documento_id], function(err, rows, result) {
+        callback(err, rows, result);
     });
-};
+}
+;
 
-
-MovimientosBodegasModel.prototype.ingresar_detalle_movimiento_bodega = function(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numeracion_documento, callback) {
+// Ingresar detalle docuemento movimiento
+function __ingresar_detalle_movimiento_bodega(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numeracion_documento, callback) {
 
     var sql = " INSERT INTO inv_bodegas_movimiento_d ( \
                     empresa_id, \
@@ -230,10 +242,10 @@ MovimientosBodegasModel.prototype.ingresar_detalle_movimiento_bodega = function(
                     inner join unidades c on b.unidad_id = c.unidad_id \
                     WHERE a.doc_tmp_id = $1  AND a.usuario_id = $2; ";
 
-    G.db.query(sql, [documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numeracion_documento], function(err, rows, result) {        
-        callback(err, rows);
+    G.db.transaction(sql, [documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numeracion_documento], function(err, rows, result) {
+        callback(err, rows, result);
     });
-};
-
+}
+;
 
 module.exports = MovimientosBodegasModel;

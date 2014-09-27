@@ -255,6 +255,17 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 $scope.$broadcast('cargarGridSeleccionadoSlide', $scope.listado_productos);
             };
             
+            $scope.$on('flow::fileAdded', function (event, $flow, flowFile) {
+                    event.preventDefault();//prevent file from uploading
+                    $scope.nombre_archivo = $flow.files[0];
+                    alert($flow.files[0]);
+                });
+            
+            $scope.onClickFile = function (data) {
+                alert("Botón Cargar Presionado");
+                console.log("Los datos del file son: ",data);
+            }
+            
             $scope.valorSeleccionado = function(tipo_seleccion) {
                 
                 if($scope.de_seleccion_empresa != 0 && $scope.de_seleccion_centro_utilidad != 0

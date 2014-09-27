@@ -1271,6 +1271,11 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
     var documento_temporal_id = args.documento_temporal.documento_temporal_id;
     var usuario_id = args.documento_temporal.usuario_id;
 
+    that.m_e008.generar_documento_despacho_clientes(documento_temporal_id, usuario_id, function(err, rows) {
+
+    });
+
+    return
     __validar_productos_pedidos_clientes(that, numero_pedido, documento_temporal_id, usuario_id, function(err, productos_no_auditados, productos_pendientes) {
 
         if (err) {
@@ -1301,7 +1306,10 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                     }
 
                     console.log('Listo Para Generar el Documento EFC Original');
+                    return
+                    that.m_e008.generar_documento_despacho_clientes(documento_temporal_id, usuario_id, function(err, rows) {
 
+                    });
                 }
             });
         }
@@ -1441,7 +1449,7 @@ function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento
                     callback(err);
                     return;
                 } else {
-                    
+
                     var productos_pendientes = [];
                     var productos_no_auditados = [];
 

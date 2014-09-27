@@ -567,10 +567,12 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(doc
     // Iniciar Transacción
     G.db.begin(function() {
         
-        that.m_movientos_bodegas.crear_documento(documento_temporal_id, usuario_id, function() {
+        that.m_movientos_bodegas.crear_documento(documento_temporal_id, usuario_id, function(err, empresa_id, prefijo_documento, numero_documento) {
+            
+            //actualizar el usuario_id con el id del auditor
             
             return;
-            __ingresar_documento_despacho_clientes(empresa_id, numero_pedido, prefijo_documento, numero_documento, tipo_id_tercero, tercero_id, ruta_viaje, observacion, usuario_id, function() {
+            __ingresar_documento_despacho_clientes(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento, function() {
                 
                 __ingresar_justificaciones_despachos(documento_temporal_id, usuario_id, function() {
                     
@@ -591,13 +593,15 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(doc
 
 
 // Ingresar cabecera docuemento despacho clientes
-function __ingresar_documento_despacho_clientes(empresa_id, numero_pedido, prefijo_documento, numero_documento, tipo_id_tercero, tercero_id, ruta_viaje, observacion, usuario_id, callback) {
+function __ingresar_documento_despacho_clientes(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento, callback) {
 
+    
     var sql = " INSERT INTO inv_bodegas_movimiento_despachos_clientes(empresa_id, prefijo, numero, tipo_id_tercero, tercero_id, pedido_cliente_id, rutaviaje_destinoempresa_id, observacion, fecha_registro, usuario_id )\
-                VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, NOW(), $9 ); ";
+                SELECT $3 as empresa_id, $4 as prefijo, $5 as numero, a.tipo_id_tercero, a.tercero_id, a.pedido_cliente_id, a.rutaviaje_destinoempresa_id, NOW() as fecha_registro,0 as usuario_id \
+                FROM inv_bodegas_movimiento_tmp_despachos_clientes a WHERE a.doc_tmp_id =$1 AND a.usuario_id =$2 ";
 
 
-    G.db.transaction(sql, [empresa_id, prefijo_documento, numero_documento, tipo_id_tercero, tercero_id, numero_pedido, ruta_viaje, observacion, usuario_id], function(err, rows, result) {
+    G.db.transaction(sql, [documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento ], function(err, rows, result) {
 
         callback(err, rows, result);
     });

@@ -92,7 +92,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
                         //cellTemplate: '<div  ng-class="agregarClase(row.entity.estado_actual_pedido)">{{row.entity.descripcion_estado_actual_pedido}}</div>'},
                         cellTemplate: "<button type='button' ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},                        
                     {field: 'numero_pedido', displayName: 'Numero Pedido'},
-                    {field: '', displayName: 'Zona'},
+                    {field: 'farmacia.nombre_farmacia', displayName: 'Zona'},
                     {field: 'farmacia.nombre_farmacia', displayName: 'Farmacia'},
                     {field: 'farmacia.nombre_bodega', displayName: 'Bodega'},
                     {field: 'fecha_registro', displayName: "Fecha Registro"}
@@ -102,6 +102,9 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
 
 
             $scope.agregarClase = function(estado) {
+                if(estado == 6){
+                    return estados[1];
+                }
                 return estados[estado];
             };
 

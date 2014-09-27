@@ -43,7 +43,7 @@ define([
 
         // For any unmatched url, send to /route1
 
-        $httpProvider.responseInterceptors.push('HttpInterceptor');
+        $httpProvider.interceptors.push('HttpInterceptor');
 
         $urlRouterProvider.otherwise("/OperariosBodega");
 

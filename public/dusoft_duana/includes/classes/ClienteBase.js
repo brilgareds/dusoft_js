@@ -5,8 +5,8 @@ define(["angular", "js/models","includes/classes/Tercero"], function(angular, mo
 
         function ClienteBase(nombre, direccion, tipo_id, id, telefono) {
             Tercero.getClass().call(this,nombre, tipo_id, id);
-            this.direccion_cliente = direccion || null;
-            this.telefono_cliente = telefono || null;
+            this.direccion_cliente = direccion || "";
+            this.telefono_cliente = telefono || "";
             
         };
 

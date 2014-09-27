@@ -10,7 +10,7 @@
   "controllers/VerPedidosFarmaciasController", "loader",  "models/Empresa",
   "includes/menu/menucontroller", "config", "includes/alert/Alert",
   "includes/header/HeaderController", 'storage', "httpinterceptor",
-  "includes/classes/Usuario", "includes/http/Request"
+  "includes/classes/Usuario", "includes/http/Request", "dragndropfile"
 
   ], function(angular){
   /* App Module and its dependencies */
@@ -25,7 +25,8 @@
           'Config',
           'services',
           'ui.select2',
-          'LocalStorageModule'
+          'LocalStorageModule',
+          'flow'
       ]);
 
       

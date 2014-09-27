@@ -24,7 +24,7 @@ requirejs.config({
         uiselect2:"../../javascripts/uiselect2",
         storage:"../../javascripts/angular/storage",
         httpinterceptor:"../includes/http/HttpInterceptor",
-        ngflow:"../../javascripts/flow/ng-flow"
+        dragndropfile:"../../javascripts/dragndropfile/ng-flow-standalone"
     },
     shim: {
         "angular": {
@@ -65,7 +65,7 @@ requirejs.config({
         "storage":{
             deps:["angular"]
         },
-        "ngflow":{
+        "dragndropfile":{
             deps:["angular"]
         }
     }

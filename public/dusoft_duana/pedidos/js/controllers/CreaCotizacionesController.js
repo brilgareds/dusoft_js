@@ -8,7 +8,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
         'Empresa', 'Cliente', 'PedidoVenta',
         'API', "socket", "AlertService",
         '$state',
-
         function($scope, $rootScope, Request, Empresa, Cliente, PedidoVenta, API, socket, AlertService, $state) {
 
             //$scope.Empresa = Empresa;
@@ -40,6 +39,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     //console.log("La Información Llega a la Grid ", data);
                     $scope.listado_productos = data;
                 });
+                
+//            $scope.$on('flow::fileAdded', function (event, $flow, flowFile) {
+//                    event.preventDefault();//prevent file from uploading
+//                });
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
 

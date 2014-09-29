@@ -25,6 +25,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             //$scope.obj = {};
             $scope.listado_productos = [];
             
+            $scope.ruta_upload = {target: '/subida'}; //ruta del servidor para subir el archivo
+            
             $scope.seleccion_vendedor = "";
             
             $scope.lista_vendedores = [ {id: 1, nombre: 'Oscar Huerta'},
@@ -208,6 +210,13 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
                 $scope.$broadcast('cargarGridSeleccionadoSlide', $scope.listado_productos);
             };
+            
+            $scope.$on('flow::fileAdded', function (event, $flow, flowFile) {
+                //event.preventDefault();//prevent file from uploading
+                //$scope.nombre_archivo = $flow.files[0];
+                //alert("Captura Evento Flow");
+                //console.log("Objeto Flow: ",$flow);
+            });
             
             //Método para liberar Memoria de todo lo construido en ésta clase
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 

@@ -27,6 +27,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             //$scope.obj = {};
             $scope.listado_productos = [];
             
+            $scope.ruta_upload = {target: '/subida'}; //ruta del servidor para subir el archivo
+            
             $scope.de_seleccion_empresa = 0;
             $scope.de_seleccion_centro_utilidad = 0;
             $scope.de_seleccion_bodega = 0;
@@ -34,7 +36,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.para_seleccion_empresa = 0;
             $scope.para_seleccion_centro_utilidad = 0;
             $scope.para_seleccion_bodega = 0;
-            
+
             $scope.de_lista_empresas = [    {id: 1, nombre: 'COSMITET'},
                                             {id: 2, nombre: 'DUANA'},
                                             {id: 3, nombre: 'DUMIAN'},
@@ -256,9 +258,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
             
             $scope.$on('flow::fileAdded', function (event, $flow, flowFile) {
-                    event.preventDefault();//prevent file from uploading
-                    $scope.nombre_archivo = $flow.files[0];
-                    alert($flow.files[0]);
+                    //event.preventDefault();//prevent file from uploading
+                    //$scope.nombre_archivo = $flow.files[0];
+                    //alert("Captura Evento Flow");
+                    //console.log("Objeto Flow: ",$flow);
                 });
             
             $scope.onClickFile = function (data) {

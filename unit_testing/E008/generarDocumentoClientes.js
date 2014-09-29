@@ -19,9 +19,9 @@ vows.describe('Generar Documento Final Clientes').addBatch({
                 obj.session = body.obj.sesion;
                 obj.data = {
                     documento_temporal: {
-                        documento_temporal_id : 2306,
+                        documento_temporal_id : 2362,
                         usuario_id: 1350,
-                        numero_pedido : 33896
+                        numero_pedido : 33906
                     }
                 };
 

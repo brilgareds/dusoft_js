@@ -165,18 +165,21 @@ MovimientosBodegasModel.prototype.crear_documento = function(documento_temporal_
 
                             var prefijo_documento = numeracion[0].prefijo;
                             var numeracion_documento = numeracion[0].numeracion;
+                            var observacion = documento_temporal.observacion;
 
                             // Ingresar Cabecera Documento temporal
-                            __ingresar_movimiento_bodega(documento_id, empresa_id, centro_utilidad, bodega, prefijo_documento, numeracion_documento, observacion, usuario_id, function(err, rows, result) {
-                                
-                                // Ingresar Detalle Documento temporal
-                                __ingresar_detalle_movimiento_bodega(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numeracion_documento, function() {
+                            __ingresar_movimiento_bodega(documento_id, empresa_id, centro_utilidad, bodega, prefijo_documento, numeracion_documento, observacion, usuario_id, function(err, result) {
 
+                                // Ingresar Detalle Documento temporal
+                                __ingresar_detalle_movimiento_bodega(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numeracion_documento, function(err, result) {
+                                    
+                                    callback(err, empresa_id, prefijo_documento, numeracion_documento);
+                                    
                                     // Eliminar Documento temporal
-                                    __eliminar_movimiento_bodega_temporal(documento_temporal_id, usuario_id, function(){
-                                        
-                                        callback(empresa_id, prefijo_documento, numeracion_documento);                                        
-                                    });
+                                    /*__eliminar_movimiento_bodega_temporal(documento_temporal_id, usuario_id, function() {
+
+                                        callback(err, empresa_id, prefijo_documento, numeracion_documento);
+                                    });*/
                                 });
                             });
                         }
@@ -204,14 +207,12 @@ function __obtener_numeracion_documento(empresa_id, documento_id, callback) {
 
         G.db.query(sql, [empresa_id, documento_id], function(err, rows, result) {
 
-            callback(err, rows);
+            sql = " UPDATE documentos SET numeracion = numeracion + 1 WHERE empresa_id = $1 AND  documento_id = $2 ; ";
 
-            /*sql = " UPDATE documentos SET numeracion = numeracion + 1 WHERE empresa_id = $1 AND  documento_id = $2 ; ";
-             
-             G.db.query(sql, [empresa_id, documento_id], function(_err, _rows, _result) {
-             
-             callback(err, rows, result);
-             });*/
+            G.db.query(sql, [empresa_id, documento_id], function(_err, _rows, _result) {
+
+                callback(err, rows, result);
+            });
         });
     });
 }
@@ -260,7 +261,7 @@ function __ingresar_detalle_movimiento_bodega(documento_temporal_id, usuario_id,
                     a.lote, \
                     a.observacion_cambio,\
                     a.total_costo_pedido, \
-                    (a.total_costo/a.cantidad), \
+                    (a.total_costo/a.cantidad) as valor_unitario, \
                     COALESCE(a.cantidad_sistema,0) AS cantidad_sistema \
                     FROM inv_bodegas_movimiento_tmp_d a\
                     inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\

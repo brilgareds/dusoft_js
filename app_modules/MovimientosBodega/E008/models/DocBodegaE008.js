@@ -375,7 +375,7 @@ DocuemntoBodegaE008.prototype.eliminar_documento_temporal_farmacias = function(d
                 callback(err);
                 return;
             } else {
-                // Eliminar Cabecera Documento Temporal Clientes
+                // Eliminar Cabecera Documento Temporal Farmacias
                 var sql = " DELETE FROM inv_bodegas_movimiento_tmp_despachos_farmacias WHERE  doc_tmp_id = $1 AND usuario_id = $2;";
 
                 G.db.transaction(sql, [doc_tmp_id, usuario_id], function(err, rows) {
@@ -471,11 +471,11 @@ DocuemntoBodegaE008.prototype.actualizar_justificaciones_temporales_pendientes =
 };
 
 // Eliminar Justificacion de Productos Pendientes
-DocuemntoBodegaE008.prototype.eliminar_justificaciones_temporales_pendientes = function(doc_tmp_id, usuario_id, callback) {
+DocuemntoBodegaE008.prototype.eliminar_justificaciones_temporales_pendientes = function(documento_temporal_id, usuario_id, callback) {
 
     var sql = "DELETE FROM inv_bodegas_movimiento_tmp_justificaciones_pendientes WHERE doc_tmp_id = $1 AND usuario_id = $2;";
 
-    G.db.transaction(sql, [doc_tmp_id, usuario_id], function(err, rows, result) {
+    G.db.transaction(sql, [documento_temporal_id, usuario_id], function(err, rows, result) {
 
         callback(err, rows);
     });
@@ -556,8 +556,8 @@ DocuemntoBodegaE008.prototype.cerrar_caja = function(documento_id, numero_caja, 
 
 
 /*********************************************************************************************************************************
-* ============= DOCUMENTOS DESPACHO =============
-/*********************************************************************************************************************************/
+ * ============= DOCUMENTOS DESPACHO =============
+ /*********************************************************************************************************************************/
 
 
 DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(documento_temporal_id, usuario_id, callback) {
@@ -566,18 +566,31 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(doc
 
     // Iniciar Transacción
     G.db.begin(function() {
-        
+
         that.m_movientos_bodegas.crear_documento(documento_temporal_id, usuario_id, function(err, empresa_id, prefijo_documento, numero_documento) {
-            
+
             //actualizar el usuario_id con el id del auditor
-            
-            return;
-            __ingresar_documento_despacho_clientes(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento, function() {
+            __asignar_responsable_despacho(documento_temporal_id, usuario_id,function(){
                 
+            });
+            return;
+
+            // Generar Cabecera Documento Despacho
+            __ingresar_documento_despacho_clientes(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento, function() {
+
+                // Generar Justificaciones Documento Despacho
                 __ingresar_justificaciones_despachos(documento_temporal_id, usuario_id, function() {
-                    
-                    // Finalizar Transacción
-                    G.db.commit(callback);
+
+                    // Eliminar Temporales Despachos Clientes
+                    __eliminar_documento_temporal_farmacias(documento_temporal_id, usuario_id, function() {
+
+                        // Eliminar Temporales Justificaciones
+                        that.eliminar_justificaciones_temporales_pendientes(documento_temporal_id, usuario_id, function() {
+
+                            // Finalizar Transacción
+                            G.db.commit(callback);
+                        });
+                    });
                 });
             });
         });
@@ -595,13 +608,13 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(doc
 // Ingresar cabecera docuemento despacho clientes
 function __ingresar_documento_despacho_clientes(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento, callback) {
 
-    
+
     var sql = " INSERT INTO inv_bodegas_movimiento_despachos_clientes(empresa_id, prefijo, numero, tipo_id_tercero, tercero_id, pedido_cliente_id, rutaviaje_destinoempresa_id, observacion, fecha_registro, usuario_id )\
                 SELECT $3 as empresa_id, $4 as prefijo, $5 as numero, a.tipo_id_tercero, a.tercero_id, a.pedido_cliente_id, a.rutaviaje_destinoempresa_id, NOW() as fecha_registro,0 as usuario_id \
                 FROM inv_bodegas_movimiento_tmp_despachos_clientes a WHERE a.doc_tmp_id =$1 AND a.usuario_id =$2 ";
 
 
-    G.db.transaction(sql, [documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento ], function(err, rows, result) {
+    G.db.transaction(sql, [documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento], function(err, rows, result) {
 
         callback(err, rows, result);
     });
@@ -639,6 +652,40 @@ function __ingresar_autorizaciones_despachos(documento_temporal_id, usuario_id, 
     G.db.transaction(sql, [documento_temporal_id, usuario_id], function(err, rows, result) {
 
         callback(err, rows, result);
+    });
+}
+;
+
+
+// Eliminar Documento Temporal Despacho Clientes
+function __eliminar_documento_temporal_clientes(documento_temporal_id, usuario_id, callback) {
+
+    var sql = " DELETE FROM inv_bodegas_movimiento_tmp_despachos_clientes WHERE  doc_tmp_id = $1 AND usuario_id = $2;";
+    G.db.transaction(sql, [documento_temporal_id, usuario_id], callback);
+}
+;
+
+// Eliminar Documento Temporal Despacho Farmacias
+function __eliminar_documento_temporal_farmacias(documento_temporal_id, usuario_id, callback) {
+
+    var sql = " DELETE FROM inv_bodegas_movimiento_tmp_despachos_farmacias WHERE  doc_tmp_id = $1 AND usuario_id = $2;";
+
+    G.db.transaction(sql, [documento_temporal_id, usuario_id], callback);
+}
+;
+
+// Asignar Auditor Como Responsable del Desapcho
+function __asignar_responsable_despacho(callback) {
+
+    var sql = " UPDATE CABECERA";
+
+    G.db.transaction(sql, [], function() {
+        
+        var sql = " UPDATE DETALLE";
+
+        G.db.transaction(sql, [], function() {
+
+        });
     });
 }
 ;

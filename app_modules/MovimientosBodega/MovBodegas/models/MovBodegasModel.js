@@ -42,14 +42,9 @@ MovimientosBodegasModel.prototype.ingresar_detalle_movimiento_bodega_temporal =
         };
 
 // Eliminar Todo el Documento Temporal 
-MovimientosBodegasModel.prototype.eliminar_movimiento_bodega_temporal = function(doc_tmp_id, usuario_id, callback) {
+MovimientosBodegasModel.prototype.eliminar_movimiento_bodega_temporal = function(documento_temporal_id, usuario_id, callback) {
 
-    var sql = " DELETE FROM inv_bodegas_movimiento_tmp WHERE doc_tmp_id = $1 AND usuario_id = $2 ; ";
-
-    G.db.transaction(sql, [doc_tmp_id, usuario_id], function(err, rows) {
-        callback(err, rows);
-    });
-
+    __eliminar_movimiento_bodega_temporal(documento_temporal_id, usuario_id, callback);
 };
 
 // Eliminar Todo el  Detalle del Documento Temporal 
@@ -148,7 +143,7 @@ MovimientosBodegasModel.prototype.crear_documento = function(documento_temporal_
         } else {
 
             var documento_id = documento_temporal.documento_id;
-            
+
             var empresa_id = documento_temporal.empresa_id;
             var centro_utilidad = documento_temporal.centro_utilidad;
             var bodega = documento_temporal.bodega;
@@ -160,7 +155,6 @@ MovimientosBodegasModel.prototype.crear_documento = function(documento_temporal_
                     console.log('Se ha generado un error o el documento está vacío...');
                     return;
                 } else {
-                    
                     // Consultar numeracion del documento    
                     __obtener_numeracion_documento(empresa_id, documento_id, function(err, numeracion) {
 
@@ -172,14 +166,19 @@ MovimientosBodegasModel.prototype.crear_documento = function(documento_temporal_
                             var prefijo_documento = numeracion[0].prefijo;
                             var numeracion_documento = numeracion[0].numeracion;
 
+                            // Ingresar Cabecera Documento temporal
                             __ingresar_movimiento_bodega(documento_id, empresa_id, centro_utilidad, bodega, prefijo_documento, numeracion_documento, observacion, usuario_id, function(err, rows, result) {
-
+                                
+                                // Ingresar Detalle Documento temporal
                                 __ingresar_detalle_movimiento_bodega(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numeracion_documento, function() {
 
-                                    callback(empresa_id, prefijo_documento, numeracion_documento);
+                                    // Eliminar Documento temporal
+                                    __eliminar_movimiento_bodega_temporal(documento_temporal_id, usuario_id, function(){
+                                        
+                                        callback(empresa_id, prefijo_documento, numeracion_documento);                                        
+                                    });
                                 });
                             });
-
                         }
                     });
                 }
@@ -337,6 +336,18 @@ function __consultar_detalle_movimiento_bodega_temporal(documento_temporal_id, u
 
         callback(err, rows);
     });
+}
+;
+
+// Eliminar Todo el Documento Temporal 
+function __eliminar_movimiento_bodega_temporal(documento_temporal_id, usuario_id, callback) {
+
+    var sql = " DELETE FROM inv_bodegas_movimiento_tmp WHERE doc_tmp_id = $1 AND usuario_id = $2 ; ";
+
+    G.db.transaction(sql, [documento_temporal_id, usuario_id], function(err, rows) {
+        callback(err, rows);
+    });
+
 }
 ;
 

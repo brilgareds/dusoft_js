@@ -123,7 +123,7 @@ define(["angular", "js/controllers",'models/Cliente',
 
             that.resultasdoListadoDocumentosUsuario = function(data){
                 //console.log("resultadod listado ", data)
-                if(data.obj.movimientos_bodegas != undefined){
+                if(data.obj.movimientos_bodegas !== undefined){
                     $scope.documentos_usuarios = data.obj.movimientos_bodegas;
                 }
             };

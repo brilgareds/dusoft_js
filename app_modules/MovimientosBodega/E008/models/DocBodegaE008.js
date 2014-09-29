@@ -375,7 +375,7 @@ DocuemntoBodegaE008.prototype.eliminar_documento_temporal_farmacias = function(d
                 callback(err);
                 return;
             } else {
-                // Eliminar Cabecera Documento Temporal Clientes
+                // Eliminar Cabecera Documento Temporal Farmacias
                 var sql = " DELETE FROM inv_bodegas_movimiento_tmp_despachos_farmacias WHERE  doc_tmp_id = $1 AND usuario_id = $2;";
 
                 G.db.transaction(sql, [doc_tmp_id, usuario_id], function(err, rows) {
@@ -411,7 +411,7 @@ DocuemntoBodegaE008.prototype.gestionar_justificaciones_temporales_pendientes = 
     that.consultar_justificaciones_temporales_pendientes(doc_tmp_id, usuario_id, codigo_producto, function(err, justificaciones) {
 
         if (err) {
-            callback(err, justificaciones)
+            callback(err, justificaciones);
             return;
         } else {
             if (justificaciones.length > 0) {
@@ -471,11 +471,11 @@ DocuemntoBodegaE008.prototype.actualizar_justificaciones_temporales_pendientes =
 };
 
 // Eliminar Justificacion de Productos Pendientes
-DocuemntoBodegaE008.prototype.eliminar_justificaciones_temporales_pendientes = function(doc_tmp_id, usuario_id, callback) {
+DocuemntoBodegaE008.prototype.eliminar_justificaciones_temporales_pendientes = function(documento_temporal_id, usuario_id, callback) {
 
     var sql = "DELETE FROM inv_bodegas_movimiento_tmp_justificaciones_pendientes WHERE doc_tmp_id = $1 AND usuario_id = $2;";
 
-    G.db.transaction(sql, [doc_tmp_id, usuario_id], function(err, rows, result) {
+    G.db.transaction(sql, [documento_temporal_id, usuario_id], function(err, rows, result) {
 
         callback(err, rows);
     });
@@ -556,28 +556,42 @@ DocuemntoBodegaE008.prototype.cerrar_caja = function(documento_id, numero_caja, 
 
 
 /*********************************************************************************************************************************
-* ============= DOCUMENTOS DESPACHO =============
-/*********************************************************************************************************************************/
+ * ============= DOCUMENTOS DESPACHO =============
+ /*********************************************************************************************************************************/
 
 
-DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(documento_temporal_id, usuario_id, callback) {
+DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(documento_temporal_id, usuario_id, auditor_id, callback) {
 
     var that = this;
 
     // Iniciar Transacción
     G.db.begin(function() {
-        
+
+        // Generar Documento de Despacho.
         that.m_movientos_bodegas.crear_documento(documento_temporal_id, usuario_id, function(err, empresa_id, prefijo_documento, numero_documento) {
-            
-            //actualizar el usuario_id con el id del auditor
-            
-            return;
-            __ingresar_documento_despacho_clientes(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento, function() {
-                
-                __ingresar_justificaciones_despachos(documento_temporal_id, usuario_id, function() {
-                    
-                    // Finalizar Transacción
-                    G.db.commit(callback);
+
+            // Asignar Auditor Como Responsable del Despacho.
+            __asignar_responsable_despacho(empresa_id, prefijo_documento, numero_documento, auditor_id, function(err, result) {
+
+                // Generar Cabecera Documento Despacho.
+                __ingresar_documento_despacho_clientes(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento, auditor_id, function(err, result) {
+
+                    // Generar Justificaciones Documento Despacho.
+                    __ingresar_justificaciones_despachos(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento, function(err, result) {
+
+                        // Eliminar Temporales Despachos Clientes.
+                        __eliminar_documento_temporal_clientes(documento_temporal_id, usuario_id, function(err, result) {
+
+                            // Eliminar Temporales Justificaciones.
+                            that.eliminar_justificaciones_temporales_pendientes(documento_temporal_id, usuario_id, function(err, result) {
+                                
+                                // Finalizar Transacción.
+                                G.db.commit(function(){
+                                    callback(err, empresa_id, prefijo_documento, numero_documento);
+                                });
+                            });
+                        });
+                    });
                 });
             });
         });
@@ -593,34 +607,27 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(doc
 
 
 // Ingresar cabecera docuemento despacho clientes
-function __ingresar_documento_despacho_clientes(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento, callback) {
+function __ingresar_documento_despacho_clientes(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento, auditor_id, callback) {
 
-    
+
     var sql = " INSERT INTO inv_bodegas_movimiento_despachos_clientes(empresa_id, prefijo, numero, tipo_id_tercero, tercero_id, pedido_cliente_id, rutaviaje_destinoempresa_id, observacion, fecha_registro, usuario_id )\
-                SELECT $3 as empresa_id, $4 as prefijo, $5 as numero, a.tipo_id_tercero, a.tercero_id, a.pedido_cliente_id, a.rutaviaje_destinoempresa_id, NOW() as fecha_registro,0 as usuario_id \
+                SELECT $3 as empresa_id, $4 as prefijo, $5 as numero, a.tipo_id_tercero, a.tercero_id, a.pedido_cliente_id, a.rutaviaje_destinoempresa_id, a.observacion, NOW() as fecha_registro,$6 as usuario_id \
                 FROM inv_bodegas_movimiento_tmp_despachos_clientes a WHERE a.doc_tmp_id =$1 AND a.usuario_id =$2 ";
 
-
-    G.db.transaction(sql, [documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento ], function(err, rows, result) {
-
-        callback(err, rows, result);
-    });
+    G.db.transaction(sql, [documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento, auditor_id], callback);
 }
 ;
 
 // Ingresar Justificacion despacho
-function __ingresar_justificaciones_despachos(documento_temporal_id, usuario_id, callback) {
+function __ingresar_justificaciones_despachos(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento, callback) {
 
     console.log('========= ingresar_justificaciones_despachos =========');
 
     var sql = " INSERT INTO inv_bodegas_movimiento_justificaciones_pendientes ( empresa_id, prefijo, numero, codigo_producto, cantidad_pendiente, observacion, existencia ) \
-                SELECT '%empresa_id%' AS empresa_id, '%prefijo%' AS prefijo, %numero% AS numero, codigo_producto, cantidad_pendiente, observacion, existencia FROM inv_bodegas_movimiento_tmp_justificaciones_pendientes\n\
+                SELECT $3 AS empresa_id, $4 AS prefijo, $5 AS numero, codigo_producto, cantidad_pendiente, observacion, existencia FROM inv_bodegas_movimiento_tmp_justificaciones_pendientes\
                 WHERE doc_tmp_id = $1 AND usuario_id = $2 ;  ";
 
-    G.db.transaction(sql, [documento_temporal_id, usuario_id], function(err, rows, result) {
-
-        callback(err, rows, result);
-    });
+    G.db.transaction(sql, [documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento], callback);
 }
 ;
 
@@ -640,6 +647,34 @@ function __ingresar_autorizaciones_despachos(documento_temporal_id, usuario_id, 
 
         callback(err, rows, result);
     });
+}
+;
+
+
+// Eliminar Documento Temporal Despacho Clientes
+function __eliminar_documento_temporal_clientes(documento_temporal_id, usuario_id, callback) {
+
+    var sql = " DELETE FROM inv_bodegas_movimiento_tmp_despachos_clientes WHERE  doc_tmp_id = $1 AND usuario_id = $2;";
+
+    G.db.transaction(sql, [documento_temporal_id, usuario_id], callback);
+}
+;
+
+// Eliminar Documento Temporal Despacho Farmacias
+function __eliminar_documento_temporal_farmacias(documento_temporal_id, usuario_id, callback) {
+
+    var sql = " DELETE FROM inv_bodegas_movimiento_tmp_despachos_farmacias WHERE  doc_tmp_id = $1 AND usuario_id = $2;";
+
+    G.db.transaction(sql, [documento_temporal_id, usuario_id], callback);
+}
+;
+
+// Asignar Auditor Como Responsable del Desapcho
+function __asignar_responsable_despacho(empresa_id, prefijo_documento, numero_documento, auditor_id, callback) {
+
+    var sql = " UPDATE inv_bodegas_movimiento SET usuario_id = $4 WHERE empresa_id = $1 AND prefijo = $2 AND numero = $3 ;";
+
+    G.db.transaction(sql, [empresa_id, prefijo_documento, numero_documento, auditor_id], callback);
 }
 ;
 

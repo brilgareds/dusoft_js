@@ -32,6 +32,8 @@ define(["angular", "js/controllers", 'models/Separador'], function(angular, cont
 
 
             $scope.valorSeleccionado = function(valor) {
+                console.log('=== valorSeleccionado ===');
+                console.log(valor);
                 $scope.noAsignar = false;
                 $scope.idAsignado = valor;
             };

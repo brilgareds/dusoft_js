@@ -298,7 +298,7 @@ define(["angular", "js/controllers",'models/Cliente',
                 }
                 console.log("params to send ",obj);
 
-                return;
+                //return;
                Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.AUDITAR_DOCUMENTO_TEMPORAL, "POST", obj, function(data) {
 
                     if(data.status === 200){

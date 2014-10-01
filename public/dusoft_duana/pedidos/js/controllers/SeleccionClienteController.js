@@ -26,11 +26,18 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 columnDefs: [
                         {field: 'nit', displayName: 'Nit'},
                         {field: 'razon_social', displayName: 'Razón Social'},
+                        {field: 'ciudad', displayName: 'Ciudad'},
                         {field: 'direccion', displayName: 'Dirección'},
                         {field: 'fecha_creacion', displayName: 'Fecha Creación'},
                         {field: 'telefono', displayName: 'Telefono'},
                         {field: 'email', displayName: 'E-Mail'},
-                        {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Activar</span></button></div>'}
+                        {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
+                            cellTemplate: ' <div>\n\
+                                                <button class="btn btn-default btn-xs" ng-click="onRowClick(row)">\n\
+                                                    <span class="glyphicon glyphicon-zoom-in">Activar</span>\n\
+                                                </button>\n\
+                                            </div>'
+                        }
 
                     ]
             };
@@ -61,6 +68,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     obj = { 
                             nit: '123456'+i+'-1',
                             razon_social: 'Drogueria la '+i,
+                            ciudad: 'Manizales'+i,
                             direccion: 'Cra 1 # 12 - '+i,
                             fecha_creacion: '0'+i+'-09-2014',
                             telefono: i+'251118',
@@ -75,7 +83,26 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
             
             $scope.onRowClick = function(row){
-                return
+                
+                var obj_sel = { 
+                                nit: row.entity.nit,
+                                nombre: row.entity.razon_social,
+                                direccion: row.entity.direccion,
+                                telefono: row.entity.telefono,
+                                ubicacion: row.entity.ciudad
+                            }
+
+                    //$scope.listado_productos_seleccionados.push(obj_sel);
+                    //--$scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.unshift(obj_sel);
+                    
+                    console.log("Antes: ",obj_sel);
+                    
+                    $scope.$emit('cargarClienteSlide', obj_sel);
+                    
+                    $scope.$emit('cerrarseleccioncliente', {animado:true});
+               
+                    $scope.listado_clientes = [];
+                //return
                 
             };
 

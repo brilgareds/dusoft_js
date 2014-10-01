@@ -3,7 +3,9 @@
 
             <div class="input-group navbar-form">
 
-                    <button type="submit" class="btn btn-accion btn-primary pull-left" ng-click="abrirViewCotizacion()">Crear Cotización</button>
+                <button type="button" class="btn btn-default btn-sm" ng-click="abrirViewCotizacion()">
+                    <span class="glyphicon glyphicon-plus"></span>  Crear Cotización
+                </button>
 
                 <input type="text" class="form-control pull-right" ng-keypress="onKeyCotizacionesPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
                 <div class="input-group-btn" >
@@ -11,9 +13,11 @@
                 </div>
 
             </div>
-            <div class="defaultGrid" ng-grid="lista_pedidos_clientes">
-
+        
+            <div>
+                <div class="defaultGrid" ng-grid="lista_pedidos_clientes"></div>
             </div>
+        
             <br/>
 
             <div class="row text-center">

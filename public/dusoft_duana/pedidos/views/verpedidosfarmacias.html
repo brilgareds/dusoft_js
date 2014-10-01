@@ -3,7 +3,9 @@
 
             <div class="input-group navbar-form">
 
-                    <button type="submit" class="btn btn-accion btn-primary pull-left" ng-click="abrirViewPedidoFarmacia()">Crear Pedido</button>
+                <button type="button" class="btn btn-default btn-sm" ng-click="abrirViewPedidoFarmacia()">
+                    <span class="glyphicon glyphicon-plus"></span> Crear Pedido
+                </button>
 
                 <input type="text" class="form-control pull-right" ng-keypress="onKeyVerPedidosFarmaciasPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
                 <div class="input-group-btn" >

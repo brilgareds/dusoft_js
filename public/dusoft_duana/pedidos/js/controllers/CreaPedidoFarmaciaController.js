@@ -27,6 +27,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             //$scope.obj = {};
             $scope.listado_productos = [];
             
+//            $scope.flujoArchivo = flowFactory.create({
+//                target: '/upload'
+//            });
+//            
+//            $scope.flujoArchivo.on('catchAll', function (event) {
+//                alert("Hola");
+//            });
+            
             //$scope.ruta_upload = {target: '/subida'}; //ruta del servidor para subir el archivo
             
             //$scope.existingFlowObject = flowFactory.create();
@@ -311,31 +319,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 {
                     $scope.bloquear = false;
                 }
-                
-//                if(tipo_seleccion=='DeEmpresa') {
-//                    alert("de_seleccion_empresa :"+$scope.de_seleccion_empresa);
-//                }
-//                
-//                if(tipo_seleccion=='DeCentro') {
-//                    alert("de_seleccion_centro_utilidad :"+$scope.de_seleccion_centro_utilidad);
-//                }
-//                
-//                if(tipo_seleccion=='DeBodega') {
-//                    alert("de_seleccion_bodega :"+$scope.de_seleccion_bodega);
-//                }
-//                
-//                if(tipo_seleccion=='ParaEmpresa') {
-//                    alert("para_seleccion_empresa :"+$scope.para_seleccion_empresa);
-//                }
-//                
-//                if(tipo_seleccion=='ParaCentro') {
-//                    alert("para_seleccion_centro_utilidad :"+$scope.para_seleccion_centro_utilidad);
-//                }
-//                
-//                if(tipo_seleccion=='ParaBodega') {
-//                    alert("para_seleccion_bodega :"+$scope.para_seleccion_bodega);
-//                    alert("Bloquear = "+$scope.bloquear);
-//                }
                 
             };
             

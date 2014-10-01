@@ -1,4 +1,4 @@
-<div flow-init flow-file-added="!!{txt:1,csv:1}[$file.getExtension()]">
+<div flow-init="{ target : '/upload'}" flow-file-added="!!{txt:1,csv:1}[$file.getExtension()]">
 <div style="padding:5px" ng-controller="CreaCotizacionesController">  
     
     <div class="row"> 
@@ -12,7 +12,10 @@
                     <div class="panel-body">
                         
                         <div class="row col-sm-6 col-md-12"> <!--Div Panel Superior-->
-                            <button type="submit" class="btn btn-accion btn-primary pull-left" ng-click="onRowClickSelectCliente()">Seleccionar Cliente</button>
+                            <!--class="btn btn-accion btn-primary pull-left"-->
+                            <button type="button" class="btn btn-default btn-sm" ng-click="onRowClickSelectCliente()">
+                                <span class="glyphicon glyphicon-user"></span> Seleccionar Cliente
+                            </button>
                             <div class="pull-right"><h3><font color="blue">Cotización N°: 123456</font></h3></div>
                         </div> <!--Div Panel Superior-->
                         
@@ -21,17 +24,17 @@
                                 
                                 <div class="col-md-4"> <!--Contenedor Izquierdo-->
                                     <h4 class="h4MarginTopBottom">Cliente:</h4></br>
-                                    Arnulfo Trujillo
+                                    {{datos_cliente.nombre}}
                                 </div> <!--/Contenedor Izq-->
                                 
                                 <div class="col-md-4"> <!--Contenedor Centro-->
-                                    <h4 class="h4MarginTopBottom">Dirección:</h4></br>
-                                    Calle 23A #12-13, Alambrados
+                                    <h4 class="h4MarginTopBottom">Nit:</h4></br>
+                                    {{datos_cliente.nit}}
                                 </div> <!--/Contenedor Centro-->
                                 
                                 <div class="col-md-4"> <!--Contenedor Derecho-->
-                                    <h4 class="h4MarginTopBottom">Teléfono:</h4></br>
-                                    320 12 00
+                                    <h4 class="h4MarginTopBottom">Dirección:</h4></br>
+                                    {{datos_cliente.direccion}}
                                 </div> <!--/Contenedor Der-->
                                 
                             </div>  <!--/Div Fila 1-->
@@ -47,11 +50,17 @@
                                         </select>
                                 </div> <!--/Contenedor Izquierdo-->
                                 
-                                <div class="col-md-4"> <!--Contenedor Derecho-->
+                                <div class="col-md-4"> <!--Contenedor Centro-->
                                     </br></br>
                                     <h4 class="h4MarginTopBottom">Ubicación:</h4></br>
-                                    320 12 00
-                                </div> <!--/Contenedor Derecho-->
+                                    {{datos_cliente.ubicacion}}
+                                </div> <!--/Contenedor Centro-->
+                                
+                                <div class="col-md-4"> <!--Contenedor Derecho-->
+                                    </br></br>
+                                    <h4 class="h4MarginTopBottom">Teléfono:</h4></br>
+                                    {{datos_cliente.telefono}}
+                                </div> <!--/Contenedor Der-->
                                 
                             </div> <!--/Div Fila 2-->
 
@@ -90,18 +99,20 @@
                 
                 <tabset  class="">
                     
-                    <tab>
+                    <tab disabled="bloquear">
                         
                         <tab-heading>
                             <b> Incluir Producto Manual</b>
                         </tab-heading>
                         
                         <div class="panel-body">
-                            <button type="submit" class="btn btn-accion btn-primary pull-left" ng-click="onRowClickSelectProducto(1)">Incluir Producto</button>
+                            <button type="button" class="btn btn-default btn-sm" ng-disabled="bloquear" ng-click="onRowClickSelectProducto(1)">
+                                <span class="glyphicon glyphicon-plus"></span> Incluir Producto
+                            </button>
                             <div class="input-group navbar-form paddingRightZero">
-                                <input type="text" class="form-control pull-right" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">
+                                <input type="text" class="form-control pull-right" ng-disabled="bloquear" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">
                                 <div class="input-group-btn" >
-                                    <button class="btn btn-default pull-right" type="submit" ng-click="buscarDetalleDocumentoTemporal(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                                    <button class="btn btn-default pull-right" type="submit" ng-disabled="bloquear" ng-click="buscarDetalleDocumentoTemporal(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -111,7 +122,7 @@
                         
                     </tab>
                     
-                    <tab>
+                    <tab disabled="bloquear">
                         <tab-heading>
                             <b> Cargar Archivo Plano </b>
                         </tab-heading>
@@ -176,7 +187,7 @@
     </div> <!-- / end class row --> 
     
     <div class="col-sm-12 btn-toolbar">
-        <button type="submit" class="btn btn-accion btn-success pull-right">Generar Cotización</button>
+        <button type="submit" ng-disabled="bloquear" class="btn btn-accion btn-success pull-right">Generar Cotización</button>
         <button type="submit" class="btn btn-accion btn-danger pull-right">Eliminar Cotización</button>
         <button type="submit" class="btn btn-accion btn-warning pull-right" ng-click="abrirViewPedidosClientes()">Cancelar Cotización</button>
     </div>

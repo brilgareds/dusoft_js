@@ -156,7 +156,9 @@
                         </tab-heading>
                         
                         <div class="panel-body">
-                            <button type="submit" class="btn btn-accion btn-primary pull-left" ng-disabled="bloquear" ng-click="onRowClickSelectProducto(2)">Incluir Producto</button>
+                            <button type="button" class="btn btn-default btn-sm" ng-disabled="bloquear" ng-click="onRowClickSelectProducto(2)">
+                                <span class="glyphicon glyphicon-plus"></span> Incluir Producto
+                            </button>
                             <div class="input-group navbar-form paddingRightZero">
                                 <input type="text" class="form-control pull-right" ng-disabled="bloquear" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">
                                 <div class="input-group-btn" >

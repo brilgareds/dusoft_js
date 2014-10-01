@@ -21,6 +21,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
             $scope.paginaactual = 1;
+            $scope.bloquear = true; //Default True
             //$scope.numero_pedido = "";
             //$scope.obj = {};
             $scope.listado_productos = [];
@@ -29,6 +30,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             $scope.seleccion_vendedor = "";
             
+            $scope.datos_cliente = {
+                nit: '',
+                nombre: '',
+                direccion: '',
+                telefono: '',
+                ubicacion: ''
+            };
+            
             $scope.lista_vendedores = [ {id: 1, nombre: 'Oscar Huerta'},
                                         {id: 2, nombre: 'Bruce Wayn'},
                                         {id: 3, nombre: 'John Malcovich'},
@@ -36,7 +45,20 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                         {id: 5, nombre: 'Sofia Vergara'},
                                         {id: 6, nombre: 'Salma Hayec'}
                                         ];
-                                        
+                   
+            $scope.$on('cargarClienteSlide', function(event, data) {
+                    //console.log("La Información Llega a la Grid ", data);
+                    console.log("Después: ", data);
+                    
+                    $scope.datos_cliente = data;
+                    
+                    if($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.seleccion_vendedor != 0)
+                    {
+                        $scope.bloquear = false;
+                    }
+                    
+                });
+            
             $scope.$on('cargarGridPrincipal', function(event, data) {
                     //console.log("La Información Llega a la Grid ", data);
                     $scope.listado_productos = data;
@@ -209,6 +231,15 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 $scope.$emit('mostrarseleccionproducto', tipo_cliente);
                 
                 $scope.$broadcast('cargarGridSeleccionadoSlide', $scope.listado_productos);
+            };
+            
+            $scope.valorSeleccionado = function() {
+                
+                if($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.seleccion_vendedor != 0)
+                {
+                    $scope.bloquear = false;
+                }
+                
             };
             
             $scope.$on('flow::fileAdded', function (event, $flow, flowFile) {

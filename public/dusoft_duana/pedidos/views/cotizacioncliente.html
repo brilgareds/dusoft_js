@@ -1,4 +1,4 @@
-
+<div flow-init flow-file-added="!!{txt:1,csv:1}[$file.getExtension()]">
 <div style="padding:5px" ng-controller="CreaCotizacionesController">  
     
     <div class="row"> 
@@ -84,12 +84,16 @@
                   <h4 class="h4MarginTopBottom">Productos</h4>
                 </div>
                 
+                <div>
+                    <br/><!--Espacio entre Tab Y título de Panel-->
+                </div>
+                
                 <tabset  class="">
                     
                     <tab>
                         
                         <tab-heading>
-                            <span class="glyphicon glyphicon-pencil"> </span><b> Incluir Producto Manual</b>
+                            <b> Incluir Producto Manual</b>
                         </tab-heading>
                         
                         <div class="panel-body">
@@ -109,22 +113,21 @@
                     
                     <tab>
                         <tab-heading>
-                            <span class="glyphicon glyphicon-cloud-upload"> </span><b> Cargar Archivo Plano </b>
+                            <b> Cargar Archivo Plano </b>
                         </tab-heading>
 
-                        <div flow-init ="ruta_upload">
-                            
-                            <h2>Transfers:</h2>
-                            
-                            <hr class="soften"/>
+                        <div> <!-- flow-init ="ruta_upload"-->
+
+                            <!--<hr class="soften"/>-->
+                            <br/>
                             
 <!--                            <div class="thumbnail" ng-hide="$flow.files.length">
                                 <img src="http://www.placehold.it/200x150/EFEFEF/AAAAAA&text=no+image" />
                             </div>-->
-                            <div class="thumbnail" ng-show="$flow.files.length">
-                                <!--<img flow-img="$flow.files[0]" />-->
+<!--                            <div class="thumbnail" ng-show="$flow.files.length">
+                                <img flow-img="$flow.files[0]" />
                                 El archivo a cargar es: {{$flow.files[0].name}}
-                            </div>
+                            </div>-->
                             
                             
                             <div flow-prevent-drop flow-drag-enter="style={border: '5px solid green'}" flow-drag-leave="style={}" ng-style="dropEnabled && style">
@@ -132,24 +135,30 @@
                                 <div class="span6">
 
                                     <!--<div class="btn-group">-->
-                                        <button class="btn btn-info" flow-btn><i class="icon icon-file"></i>Cargar Archivo</button>
+<!--                                        <button class="btn btn-info" flow-btn><i class="icon icon-file"></i>Cargar Archivo</button>
                                         <button class="btn btn-small btn-success" ng-show="$flow.files.length" ng-click="$flow.resume()">Subir Archivo</button>
-                                        <button class="btn btn-danger" ng-show="$flow.files.length" ng-click="$flow.cancel()">Remove</button>
+                                        <button class="btn btn-danger" ng-show="$flow.files.length" ng-click="$flow.cancel()">Remove</button>-->
                                         <!--<button class="btn btn-success" flow-btn flow-directory ng-show="$flow.supportDirectory"><i class="icon icon-folder-open"></i>Upload Folder</button>-->
                                     <!--</div>-->
                                 </div>
                                 
                                 <!--<div  class="alert alert-warning" flow-drop flow-drag-enter="class='alert alert-success'" flow-drag-leave="class='alert alert-warning'" ng-class="class" style="text-align: center; padding: 50px 0;">-->
                                   
-                                    <div class="alert alert-warning" ng-hide="$flow.files.length" flow-drop flow-drag-enter="class='alert alert-success'" flow-drag-leave="class='alert alert-warning'" ng-class="class" style="text-align: center; padding: 50px 0;">
-                                        Arrastre y suelte el archivo aquí ...</br></br>
-                                        <img src="../../../images/Cloud-Upload-Blue.png" />
+                                    <div class="alert" ng-hide="$flow.files.length" flow-drop flow-drag-enter="class='alert alert-success'" flow-drag-leave="class='alert'" ng-class="class" style="text-align: center; padding: 50px 0;">
+                                        <!--Arrastre y suelte el archivo en ésta área o use el botón ...</br></br>-->
+                                        <img src="../../../images/Cloud-Upload-Blue.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
+                                        <br/><br/>
+                                        Arrastre y suelte el archivo en ésta área o use el botón ...</br></br>
+                                        <button class="btn btn-info" flow-btn><i class="icon icon-file"></i>Buscar Archivo</button>
                                     </div>
                                     
-                                    <div class="alert alert-warning" ng-show="$flow.files.length" flow-drop flow-drag-enter="class='alert alert-success'" flow-drag-leave="class='alert alert-warning'" ng-class="class" style="text-align: center; padding: 50px 0;">
+                                    <div class="alert" ng-show="$flow.files.length" flow-drop flow-drag-enter="class='alert alert-success'" flow-drag-leave="class='alert'" ng-class="class" style="text-align: center; padding: 50px 0;">
                                         <!--<img flow-img="$flow.files[0]" />-->
                                         El archivo a cargar es: {{$flow.files[0].name}}</br></br>
-                                        <img src="../../../images/txt-icon.png" />
+                                        <img src="../../../images/txt-icon.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
+                                        <br/><br/>
+                                        <button class="btn btn-small btn-success" ng-show="$flow.files.length" ng-click="$flow.resume()">Subir Archivo</button>
+                                        <button class="btn btn-danger" ng-show="$flow.files.length" ng-click="$flow.cancel()">Eliminar</button>
                                     </div>
                                     
                                 <!--</div>-->
@@ -178,4 +187,6 @@
         <div ng-include src="slideurl"  ng-controller="SeleccionProductoClienteController" ></div>
     </div>
 
+</div>
+    
 </div>

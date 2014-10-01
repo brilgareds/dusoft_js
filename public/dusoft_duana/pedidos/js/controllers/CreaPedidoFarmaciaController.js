@@ -27,7 +27,17 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             //$scope.obj = {};
             $scope.listado_productos = [];
             
-            $scope.ruta_upload = {target: '/subida'}; //ruta del servidor para subir el archivo
+            //$scope.ruta_upload = {target: '/subida'}; //ruta del servidor para subir el archivo
+            
+            //$scope.existingFlowObject = flowFactory.create();
+            
+            //$scope.existingFlowObject.defaults = { target: '/subida', permanentErrors:[404, 500, 501], minFileSize: 0 };
+            
+//            $scope.existingFlowObject.on('catchAll', function (event) {
+//                
+//                alert("Acceso al Evento");
+//                
+//            });
             
             $scope.de_seleccion_empresa = 0;
             $scope.de_seleccion_centro_utilidad = 0;
@@ -259,10 +269,34 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             $scope.$on('flow::fileAdded', function (event, $flow, flowFile) {
                     //event.preventDefault();//prevent file from uploading
-                    //$scope.nombre_archivo = $flow.files[0];
-                    //alert("Captura Evento Flow");
-                    //console.log("Objeto Flow: ",$flow);
+                    //$scope.nombre_archivo = $flow;
+//                    console.log("El Evento es",event);
+//                    console.log("El Flow es",$flow);
+//                    console.log("El File Flow es",flowFile);
+                    var arreglo_nombre = flowFile.name.split(".");
+                    
+                    if(arreglo_nombre[1] !== 'txt' && arreglo_nombre[1] !== 'csv') {
+                        alert("El archivo debe ser TXT o CSV. Intente de nuevo ...");
+                        //flowFile = {};
+                    }
+
                 });
+                
+//            $scope.$on('flow::filesAdded', function (event, $flow, flowFile) {
+//
+//                    console.log("El Evento es",event);
+//                    console.log("El Flow es",$flow);
+//                    console.log("El File Flow es",flowFile);
+//                    
+//                    var arreglo_nombre = flowFile.name.split(".");
+//                    
+//                    if(arreglo_nombre[1] !== 'txt') {
+//                        alert("El tipo de archivo no es Valido. Debe ser TXT.");
+//                        flowFile.cancel();
+//                    }
+//
+//                });
+
             
             $scope.onClickFile = function (data) {
                 alert("Botón Cargar Presionado");

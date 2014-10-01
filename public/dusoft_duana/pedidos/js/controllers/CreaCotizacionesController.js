@@ -25,7 +25,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             //$scope.obj = {};
             $scope.listado_productos = [];
             
-            $scope.ruta_upload = {target: '/subida'}; //ruta del servidor para subir el archivo
+            //$scope.ruta_upload = {target: '/subida'}; //ruta del servidor para subir el archivo
             
             $scope.seleccion_vendedor = "";
             
@@ -212,10 +212,12 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
             
             $scope.$on('flow::fileAdded', function (event, $flow, flowFile) {
-                //event.preventDefault();//prevent file from uploading
-                //$scope.nombre_archivo = $flow.files[0];
-                //alert("Captura Evento Flow");
-                //console.log("Objeto Flow: ",$flow);
+                
+                var arreglo_nombre = flowFile.name.split(".");
+                    
+                    if(arreglo_nombre[1] !== 'txt' && arreglo_nombre[1] !== 'csv') {
+                        alert("El archivo debe ser TXT o CSV. Intente de nuevo ...");
+                    }
             });
             
             //Método para liberar Memoria de todo lo construido en ésta clase

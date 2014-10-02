@@ -23,6 +23,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.ultima_busqueda = "";
             $scope.paginaactual = 1;
             $scope.bloquear = true; //Default True
+            $scope.bloqueo_producto_incluido = false;
+            $scope.bloqueo_upload = true;
             //$scope.numero_pedido = "";
             //$scope.obj = {};
             $scope.listado_productos = [];
@@ -91,6 +93,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.$on('cargarGridPrincipal', function(event, data) {
                     //console.log("La Información Llega a la Grid ", data);
                     $scope.listado_productos = data;
+                    
+                    if($scope.listado_productos.length){
+                        $scope.bloqueo_producto_incluido = true;
+                    }
+                    else {
+                        $scope.bloqueo_producto_incluido = false;
+                    }
+                    
                 });
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];

@@ -25,7 +25,7 @@
                                             </br>
                                             <h4 class="h4MarginTopBottom">Empresa: </h4>
 
-                                            <select ui-select2="de_seleccionempresa"  class="form-control selectgeneral pull-left" ng-model="de_seleccion_empresa"  placeholder="Seleccionar Empresa" ng-change="valorSeleccionado('DeEmpresa')">
+                                            <select ui-select2="de_seleccionempresa"  class="form-control selectgeneral pull-left" ng-disabled="bloqueo_producto_incluido" ng-model="de_seleccion_empresa"  placeholder="Seleccionar Empresa" ng-change="valorSeleccionado('DeEmpresa')">
                                                 <option></option>
                                                 <option ng-repeat="empresa in  de_lista_empresas"  ng-value="empresa.id" >{{empresa.id}}-{{empresa.nombre}}</option>
                                             </select>
@@ -37,7 +37,7 @@
                                             </br>
                                             <h4 class="h4MarginTopBottom">Centro Utilidad: </h4>
 
-                                            <select ui-select2="de_seleccioncentroutilidad"  class="form-control selectgeneral pull-left" ng-model="de_seleccion_centro_utilidad"  placeholder="Seleccionar Centro" ng-change="valorSeleccionado('DeCentro')">
+                                            <select ui-select2="de_seleccioncentroutilidad"  class="form-control selectgeneral pull-left" ng-disabled="bloqueo_producto_incluido" ng-model="de_seleccion_centro_utilidad"  placeholder="Seleccionar Centro" ng-change="valorSeleccionado('DeCentro')">
                                                 <option></option>
                                                 <option ng-repeat="centro_utilidad in  de_lista_centro_utilidad"  ng-value="centro_utilidad.id" >{{centro_utilidad.id}}-{{centro_utilidad.nombre}}</option>
                                             </select>
@@ -49,7 +49,7 @@
                                             </br>
                                             <h4 class="h4MarginTopBottom">Bodega: </h4>
 
-                                            <select ui-select2="de_seleccionbodega"  class="form-control selectgeneral pull-left" ng-model="de_seleccion_bodega"  placeholder="Seleccionar Bodega" ng-change="valorSeleccionado('DeBodega')">
+                                            <select ui-select2="de_seleccionbodega"  class="form-control selectgeneral pull-left" ng-disabled="bloqueo_producto_incluido" ng-model="de_seleccion_bodega"  placeholder="Seleccionar Bodega" ng-change="valorSeleccionado('DeBodega')">
                                                 <option></option>
                                                 <option ng-repeat="bodega in  de_lista_bodegas"  ng-value="bodega.id" >{{bodega.id}}-{{bodega.nombre}}</option>
                                             </select>
@@ -81,7 +81,7 @@
                                             </br>
                                             <h4 class="h4MarginTopBottom">Empresa: </h4>
 
-                                            <select ui-select2="para_seleccionempresa"  class="form-control selectgeneral pull-left" ng-model="para_seleccion_empresa"  placeholder="Seleccionar Empresa" ng-change="valorSeleccionado('ParaEmpresa')">
+                                            <select ui-select2="para_seleccionempresa"  class="form-control selectgeneral pull-left" ng-disabled="bloqueo_producto_incluido" ng-model="para_seleccion_empresa"  placeholder="Seleccionar Empresa" ng-change="valorSeleccionado('ParaEmpresa')">
                                                 <option></option>
                                                 <option ng-repeat="empresa in  para_lista_empresas"  ng-value="empresa.id" >{{empresa.id}}-{{empresa.nombre}}</option>
                                             </select>
@@ -93,7 +93,7 @@
                                             </br>
                                             <h4 class="h4MarginTopBottom">Centro Utilidad: </h4>
 
-                                            <select ui-select2="para_seleccioncentroutilidad"  class="form-control selectgeneral pull-left" ng-model="para_seleccion_centro_utilidad"  placeholder="Seleccionar Centro" ng-change="valorSeleccionado('ParaCentro')">
+                                            <select ui-select2="para_seleccioncentroutilidad"  class="form-control selectgeneral pull-left" ng-disabled="bloqueo_producto_incluido" ng-model="para_seleccion_centro_utilidad"  placeholder="Seleccionar Centro" ng-change="valorSeleccionado('ParaCentro')">
                                                 <option></option>
                                                 <option ng-repeat="centro_utilidad in para_lista_centro_utilidad"  ng-value="centro_utilidad.id" >{{centro_utilidad.id}}-{{centro_utilidad.nombre}}</option>
                                             </select>
@@ -105,7 +105,7 @@
                                             </br>
                                             <h4 class="h4MarginTopBottom">Bodega: </h4>
 
-                                            <select ui-select2="para_seleccionbodega"  class="form-control selectgeneral pull-left" ng-model="para_seleccion_bodega"  placeholder="Seleccionar Bodega" ng-change="valorSeleccionado('ParaBodega')">
+                                            <select ui-select2="para_seleccionbodega"  class="form-control selectgeneral pull-left" ng-disabled="bloqueo_producto_incluido" ng-model="para_seleccion_bodega"  placeholder="Seleccionar Bodega" ng-change="valorSeleccionado('ParaBodega')">
                                                 <option></option>
                                                 <option ng-repeat="bodega in  para_lista_bodegas"  ng-value="bodega.id" >{{bodega.id}}-{{bodega.nombre}}</option>
                                             </select>
@@ -172,56 +172,36 @@
                         
                     </tab>
                     
-                    <tab disabled="bloquear">
+                    <tab disabled="bloqueo_producto_incluido">
                         <tab-heading>
                             <b> Cargar Archivo Plano </b>
                         </tab-heading>
                         
                         <div> <!-- flow-init flow-object="existingFlowObject" -->
                             
-                            <!--<hr class="soften"/>-->
+
                             <br/>
-                            
-<!--                            <div class="thumbnail" ng-hide="$flow.files.length">
-                                <img src="http://www.placehold.it/200x150/EFEFEF/AAAAAA&text=no+image" />
-                            </div>-->
-<!--                            <div class="thumbnail" ng-show="$flow.files.length">
-                                <img flow-img="$flow.files[0]" />
-                                El archivo a cargar es: {{$flow.files[0].name}}
-                            </div>-->
                             
                             <div flow-prevent-drop flow-drag-enter="style={border: '5px solid green'}" flow-drag-leave="style={}" ng-style="dropEnabled && style">
                             
                                 <div class="span6">
 
-                                    <!--<div class="btn-group">-->
-<!--                                        <button class="btn btn-info" flow-btn><i class="icon icon-file"></i>Cargar Archivo</button>
-                                        <button class="btn btn-small btn-success" ng-show="$flow.files.length" ng-click="$flow.resume()">Subir Archivo</button>
-                                        <button class="btn btn-danger" ng-show="$flow.files.length" ng-click="$flow.cancel()">Remove</button>-->
-                                        <!--<button class="btn btn-success" flow-btn flow-directory ng-show="$flow.supportDirectory"><i class="icon icon-folder-open"></i>Upload Folder</button>-->
-                                    <!--</div>-->
                                 </div>
-                                
-                                <!--<div  class="alert alert-warning" flow-drop flow-drag-enter="class='alert alert-success'" flow-drag-leave="class='alert alert-warning'" ng-class="class" style="text-align: center; padding: 50px 0;">-->
                                     
-                                    <div class="alert" ng-hide="$flow.files.length" flow-drop flow-drag-enter="class='alert alert-success'" flow-drag-leave="class='alert'" ng-class="class" style="text-align: center; padding: 50px 0;">
-                                        <!--Arrastre y suelte el archivo aquí ...</br></br>-->
-                                        <img src="../../../images/Cloud-Upload-Blue.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
-                                        <br/><br/>
-                                        Arrastre y suelte el archivo en ésta área o use el botón ...</br></br>
-                                        <button class="btn btn-info" flow-btn><i class="icon icon-file"></i>Buscar Archivo</button>
-                                    </div>
-                                    
-                                    <div class="alert" ng-show="$flow.files.length" flow-drop flow-drag-enter="class='alert alert-success'" flow-drag-leave="class='alert'" ng-class="class" style="text-align: center; padding: 50px 0;">
-                                        <!--<img flow-img="$flow.files[0]" />-->
-                                        El archivo a cargar es: {{$flow.files[0].name}}</br></br>
-                                        <img src="../../../images/txt-icon.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
-                                        <br/><br/>
-                                        <button class="btn btn-small btn-success" ng-show="$flow.files.length" ng-click="$flow.resume()">Subir Archivo</button>
-                                        <button class="btn btn-danger" ng-show="$flow.files.length" ng-click="$flow.cancel()">Eliminar</button>
-                                    </div>
-                                    
-                                <!--</div>-->
+                                <div class="alert" ng-hide="$flow.files.length" flow-drop flow-drag-enter="class='alert alert-success'" flow-drag-leave="class='alert'" ng-class="class" style="text-align: center; padding: 50px 0;">
+                                    <img src="../../../images/Cloud-Upload-Blue.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
+                                    <br/><br/>
+                                    Arrastre y suelte el archivo en ésta área o use el botón ...</br></br>
+                                    <button class="btn btn-info" flow-btn><i class="icon icon-file"></i>Buscar Archivo</button>
+                                </div>
+
+                                <div class="alert" ng-show="$flow.files.length" flow-drop flow-drag-enter="class='alert alert-success'" flow-drag-leave="class='alert'" ng-class="class" style="text-align: center; padding: 50px 0;">
+                                    El archivo a cargar es: {{$flow.files[0].name}}</br></br>
+                                    <img src="../../../images/txt-icon.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
+                                    <br/><br/>
+                                    <button class="btn btn-small btn-success" ng-show="$flow.files.length" ng-click="$flow.resume()">Subir Archivo</button>
+                                    <button class="btn btn-danger" ng-show="$flow.files.length" ng-click="$flow.cancel()">Eliminar</button>
+                                </div>
                                 
                             </div>
 
@@ -235,7 +215,7 @@
     </div>
     
     <div class="col-sm-12 btn-toolbar">
-        <button type="submit" ng-disabled="bloquear" class="btn btn-accion btn-success pull-right">Generar Pedido</button>
+        <button type="submit" ng-disabled="!bloqueo_producto_incluido" class="btn btn-accion btn-success pull-right">Generar Pedido</button>
         <button type="submit" class="btn btn-accion btn-warning pull-right" ng-click="abrirViewVerPedidosFarmacias()">Cancelar Pedido</button>
     </div>
 

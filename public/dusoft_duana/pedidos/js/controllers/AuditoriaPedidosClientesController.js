@@ -120,10 +120,6 @@ define(["angular", "js/controllers",
                 $scope.$$watchers = null;
             });
 
-            $scope.generarDocumento = function(tipo){
-                
-            };
-
 
         }]);
 });

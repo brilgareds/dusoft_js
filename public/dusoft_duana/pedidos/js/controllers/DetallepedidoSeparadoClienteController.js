@@ -30,7 +30,8 @@ define(["angular", "js/controllers",'models/Cliente',
             $scope.documentos_usuarios = [];
             $scope.documento_temporal_id = "";
             $scope.usuario_id = "";
-            $scope.seleccion = "";
+            $scope.seleccion = {};
+            $scope.seleccion2 = 154;
             $scope.cajas = [];
             $scope.seleccion_caja = "";
             $scope.numero_pedido = "";
@@ -82,8 +83,10 @@ define(["angular", "js/controllers",'models/Cliente',
 
             that.resultadoBusquedaDocumento = function(data, paginando){
                     data  = data.obj.documento_temporal[0];
+                    $scope.seleccion = {};
                     $scope.items = data.lista_productos.length;
                     
+                   //console.log("resultadoBusquedaDocumento ========================== ", $scope.DocumentoTemporal)
                     //se valida que hayan registros en una siguiente pagina
                     if (paginando && $scope.items == 0) {
                         if ($scope.paginaactual > 1) {
@@ -97,9 +100,12 @@ define(["angular", "js/controllers",'models/Cliente',
                    //$scope.renderDetalleDocumentoTemporal($scope.DocumentoTemporal, data, paginando);
                     
                    $scope.DocumentoTemporal.bodegas_doc_id = data.bodegas_doc_id;
-                   $scope.seleccion = $scope.DocumentoTemporal.bodegas_doc_id;
+                   $scope.seleccion.bodegas_doc_id = $scope.DocumentoTemporal.bodegas_doc_id;
+
+                   //$('#id').select2('val',$scope.seleccion.bodegas_doc_id );
                    $scope.documento_temporal_id = data.doc_tmp_id;
                    $scope.usuario_id = data.usuario_id;
+
             };
             
             that.obtenerParametros = function(){
@@ -122,7 +128,7 @@ define(["angular", "js/controllers",'models/Cliente',
             };
 
             that.resultasdoListadoDocumentosUsuario = function(data){
-                //console.log("resultadod listado ", data)
+                console.log("resultadod listado ******************", data)
                 if(data.obj.movimientos_bodegas !== undefined){
                     $scope.documentos_usuarios = data.obj.movimientos_bodegas;
                 }
@@ -216,14 +222,18 @@ define(["angular", "js/controllers",'models/Cliente',
                 $scope.buscarDetalleDocumentoTemporal($scope.termino_busqueda, true);
             };
             
-            $scope.valorSeleccionado = function() {
+            $scope.valorSeleccionado= function(manual) {
+
+                if(!manual){
+                    return;
+                }
                 var obj = {
                     session: $scope.session,
                     data: {
                         documento_temporal: {
                             documento_temporal_id: $scope.DocumentoTemporal.documento_temporal_id, 
                             usuario_id: $scope.usuario_id,
-                            bodegas_doc_id: $scope.seleccion,
+                            bodegas_doc_id: $scope.seleccion.bodegas_doc_id,
                             numero_pedido:$scope.numero_pedido
                         }
                     }
@@ -231,7 +241,7 @@ define(["angular", "js/controllers",'models/Cliente',
 
                 $scope.validarDocumentoUsuario(obj, 1, function(data){
                     if(data.status === 200){
-                        $scope.DocumentoTemporal.bodegas_doc_id = $scope.seleccion;
+                        $scope.DocumentoTemporal.bodegas_doc_id = $scope.seleccion.bodegas_doc_id;
                         AlertService.mostrarMensaje("success", data.msj);
                     } else {
                         AlertService.mostrarMensaje("warning", data.msj);

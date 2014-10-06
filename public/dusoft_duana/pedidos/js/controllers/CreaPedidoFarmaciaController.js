@@ -7,9 +7,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
         '$scope', '$rootScope', 'Request',
         'Empresa', 'Cliente', 'PedidoVenta',
         'API', "socket", "AlertService",
-        '$state','flowFactory',
+        '$state',
 
-        function($scope, $rootScope, Request, Empresa, Cliente, PedidoVenta, API, socket, AlertService, $state, flowFactory) {
+        function($scope, $rootScope, Request, Empresa, Cliente, PedidoVenta, API, socket, AlertService, $state) {
 
             //$scope.Empresa = Empresa;
             
@@ -25,7 +25,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.bloquear = true; //Default True
             $scope.bloqueo_producto_incluido = false;
             $scope.bloqueo_upload = true;
-            $scope.tab_estados = {static1: false, static2: true};
+            $scope.tab_estados = {tab1: true, tab2: false};
             
             //$scope.numero_pedido = "";
             //$scope.obj = {};
@@ -91,10 +91,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                                 {id: 3, nombre: 'BODEGA_3'},
                                                 {id: 4, nombre: 'BODEGA_4'}
                                                 ];
-                                                
-            $scope.farmaciaFlowObject = flowFactory.create({
-                target: '/upload'
-             });
+//                                                
+//            $scope.farmaciaFlowObject = flowFactory.create({
+//                target: '/upload'
+//             });
                                                 
             $scope.$on('cargarGridPrincipal', function(event, data) {
                     alert("Ingreso Carga Grid");
@@ -295,6 +295,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
             
             $scope.$on('flow::fileAdded', function (event, $flow, flowFile) {
+              //$scope.farmaciaFlowObject.fileAdded = function(event, $flow, flowFile) {
                     //event.preventDefault();//prevent file from uploading
                     //$scope.nombre_archivo = $flow;
 //                    console.log("El Evento es",event);
@@ -306,7 +307,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         alert("El archivo debe ser TXT o CSV. Intente de nuevo ...");
                         //flowFile = {};
                     }
-
+              //};
                 });
                 
 //            $scope.$on('flow::filesAdded', function (event, $flow, flowFile) {
@@ -333,7 +334,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 console.log("Ingreso Selects");
                 console.log($scope.de_seleccion_empresa);
-                console.log($scope.de_seleccion_empresa);
+                console.log($scope.de_seleccion_centro_utilidad);
+                console.log($scope.de_seleccion_bodega);
+                console.log($scope.para_seleccion_empresa);
+                console.log($scope.para_seleccion_centro_utilidad);
+                console.log($scope.para_seleccion_bodega);
                 
                 if($scope.de_seleccion_empresa != 0 && $scope.de_seleccion_centro_utilidad != 0
                     && $scope.de_seleccion_bodega != 0 && $scope.para_seleccion_empresa != 0
@@ -355,8 +360,18 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
             };
             
-            $scope.subir = function(){
-                $flow.resume();
+            $scope.setTabActivo = function(number){
+                
+                if(number == 1)
+                {
+                    $scope.tab_estados.tab1 = true;
+                }
+                    
+                if(number == 2)
+                {
+                    $scope.tab_estados.tab2 = true;    
+                }
+                
             };
             
             $scope.abrirViewVerPedidosFarmacias = function()

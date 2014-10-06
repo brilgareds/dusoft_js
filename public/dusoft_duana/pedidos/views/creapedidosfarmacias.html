@@ -1,6 +1,6 @@
-
+<div flow-init flow-file-added="!!{txt:1,csv:1}[$file.getExtension()]">
 <div style ="padding:5px" ng-controller="CreaPedidoFarmaciaController">    
-<div flow-object="farmaciaFlowObject" flow-init flow-file-added="!!{txt:1,csv:1}[$file.getExtension()]">
+
     <div class="row marginBottom5"> <!--Div Row Superior-->
         
         <div class="col-sm-12 col-md-12 marginBottom5">
@@ -150,13 +150,13 @@
                 
                 <tabset> <!--Grupo de Tabs-->
                     
-                    <tab disabled="bloquear" active="data.static1">
+                    <tab disabled="bloquear" active="tab_estados.tab1">
                         
                         <tab-heading>
                             <b> Incluir Producto Manual</b>
                         </tab-heading>
                         
-                        <button class="btn" ng-click="data.static2 = true">Select Static2 {{data.static2}}</button>
+                        <!--<button class="btn" ng-click="data.static2 = true">Select Static2 {{data.static2}}</button>-->
                         
                         <div class="panel-body">
                             <button type="button" class="btn btn-default btn-sm" ng-disabled="bloquear" ng-click="onRowClickSelectProducto(2)">
@@ -175,12 +175,12 @@
                         
                     </tab>
                     
-                    <tab disabled="bloqueo_upload" active="data.static2">
+                    <tab disabled="bloqueo_upload" active="tab_estados.tab2">
                         <tab-heading>
                             <b> Cargar Archivo Plano </b>
                         </tab-heading>
                         
-                        <button class="btn" ng-click="data.static1 = true">Select Static1 {{data.static1}}</button>
+                        <!--<button class="btn" ng-click="data.static1 = true">Select Static1 {{data.static1}}</button>-->
                         
                         <div> <!-- flow-init flow-object="existingFlowObject" -->
                             
@@ -204,8 +204,7 @@
                                     El archivo a cargar es: {{$flow.files[0].name}}</br></br>
                                     <img src="../../../images/txt-icon.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
                                     <br/><br/>
-                                    <!--<button class="btn btn-small btn-success" ng-show="$flow.files.length" ng-click="$flow.resume()">Subir Archivo</button>-->
-                                    <button class="btn btn-small btn-success" ng-show="$flow.files.length" ng-click="subir()">Subir Archivo</button>
+                                    <button class="btn btn-small btn-success" ng-show="$flow.files.length" ng-click="$flow.resume(); setTabActivo(1)">Subir Archivo</button>
                                     <button class="btn btn-danger" ng-show="$flow.files.length" ng-click="$flow.cancel()">Eliminar</button>
                                 </div>
                                 

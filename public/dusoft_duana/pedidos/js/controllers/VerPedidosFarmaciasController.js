@@ -7,16 +7,12 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
         '$scope', '$rootScope', 'Request',
         'Empresa', 'Cliente', 'PedidoVenta',
         'API', "socket", "AlertService",
-        '$state',
+        '$state', "Usuario",
 
-        function($scope, $rootScope, Request, Empresa, Cliente, PedidoVenta, API, socket, AlertService, $state) {
+        function($scope, $rootScope, Request, Empresa, Cliente, PedidoVenta, API, socket, AlertService, $state, Usuario) {
 
-            //$scope.Empresa = Empresa;
+            $scope.Empresa = Empresa;
             
-//            $scope.session = {
-//                usuario_id: Usuario.usuario_id,
-//                auth_token: Usuario.token
-//            };
             $scope.paginas = 0;
             $scope.items = 0;
             $scope.termino_busqueda = "";
@@ -25,6 +21,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             //$scope.numero_pedido = "";
             //$scope.obj = {};
             $scope.listado_pedidos = [];
+            
+            $scope.seleccion = "FD";
+            $scope.session = {
+                usuario_id:Usuario.usuario_id,
+                auth_token:Usuario.token
+            };
+            
+            $scope.empresas = [];
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
 
@@ -78,6 +82,72 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 //
 //                });
 
+            };
+            
+            /* Código añadido 1 - para revisar */
+            
+            $scope.buscarPedidosSeparados = function(obj, tipo, paginando, callback) {
+                var url = API.DOCUMENTOS_TEMPORALES.LISTAR_DOCUMENTOS_TEMPORALES_CLIENTES;
+
+                if(tipo == 2){
+                    url = API.DOCUMENTOS_TEMPORALES.LISTAR_DOCUMENTOS_TEMPORALES_FARMACIAS;
+                }
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    $scope.ultima_busqueda = $scope.termino_busqueda;
+                    
+                    if(data.obj.documentos_temporales != undefined) {
+                        callback(data.obj, paginando, tipo);
+                    }
+
+                });
+
+            };
+            
+            /* Código añadido 2 - para revisar */
+            $scope.obtenerParametros = function(){
+                $scope.ultima_busqueda.seleccion;
+                $scope.ultima_busqueda.termino_busqueda;
+
+                //valida si cambio el termino de busqueda
+                if($scope.ultima_busqueda.termino_busqueda != $scope.termino_busqueda
+                        || $scope.ultima_busqueda.seleccion != $scope.seleccion){
+                    $scope.paginaactual = 1;
+                }
+
+                var obj = {
+                    session:$scope.session,
+                    data:{
+                        documento_temporal:{
+                            termino_busqueda: $scope.termino_busqueda,
+                            empresa_id: $scope.seleccion,
+                            pagina_actual: $scope.paginaactual,
+                            filtro: {
+                                finalizados: true
+                            }
+                        }
+                    }
+                };
+
+
+                return obj;
+            }            
+            
+            $scope.listarEmpresas = function() {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {}
+                };
+
+                Request.realizarRequest(API.PEDIDOS.LISTAR_EMPRESAS, "POST", obj, function(data) {
+                    
+                    if (data.status == 200) {
+                        $scope.empresas = data.obj.empresas;
+                        //console.log(JSON.stringify($scope.empresas))
+                    }
+                    
+                });
             };
 
 //            $scope.renderPedidosSeparadosCliente = function(data, paginando) {
@@ -211,6 +281,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
             
             $scope.buscarVerPedidosFarmacias("");
+            $scope.listarEmpresas("");
 
         }]);
 });

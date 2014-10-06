@@ -13,6 +13,20 @@
                 </p>
             </div>
 
+            
+
+        </div>
+        
+        <div class="row">
+            
+            <div class="col-md-3">
+                <p class="input-group">
+                    <select ui-select2  class="pull-left" style="width:300px" ng-model="seleccion" data-placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
+                        <option ng-repeat="empresa in  empresas"  ng-value="empresa.empresa_id" >{{empresa.razon_social}}</option>
+                    </select>
+                </p>
+            </div>
+            
             <div class="col-md-2 pull-right">
                 <p class="input-group">
                     <input type="text" class="form-control pull-right" ng-keypress="onKeyVerPedidosFarmaciasPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
@@ -21,8 +35,9 @@
                     </span>
                 </p>    
             </div>
-
+            
         </div>
+        
         <div class="defaultGrid" ng-grid="lista_pedidos_farmacias"></div>
 
         <br/>

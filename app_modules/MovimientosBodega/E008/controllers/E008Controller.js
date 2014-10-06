@@ -1270,9 +1270,9 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
     var numero_pedido = args.documento_temporal.numero_pedido;
     var documento_temporal_id = args.documento_temporal.documento_temporal_id;
     var usuario_id = args.documento_temporal.usuario_id;
-    var auditor_id = 1350;//args.documento_temporal.auditor_id;
+    var auditor_id = args.documento_temporal.auditor_id;
 
-    that.m_e008.generar_documento_despacho_clientes(documento_temporal_id, usuario_id, auditor_id, function(err, empresa_id, prefijo_documento, numero_documento) {
+    /*that.m_e008.generar_documento_despacho_clientes(documento_temporal_id, usuario_id, auditor_id, function(err, empresa_id, prefijo_documento, numero_documento) {
         console.log('==== Supuestamente Grabo el Doc Despacho ========');
         console.log(err);
         console.log(empresa_id);
@@ -1280,7 +1280,7 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
         console.log(numero_documento);
     });
 
-    return;
+    return;*/
     __validar_productos_pedidos_clientes(that, numero_pedido, documento_temporal_id, usuario_id, function(err, productos_no_auditados, productos_pendientes) {
 
         if (err) {
@@ -1312,9 +1312,9 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
 
                     console.log('Listo Para Generar el Documento EFC Original');
                     return
-                    that.m_e008.generar_documento_despacho_clientes(documento_temporal_id, usuario_id, function(err, rows) {
+                    /*that.m_e008.generar_documento_despacho_clientes(documento_temporal_id, usuario_id, function(err, rows) {
 
-                    });
+                    });*/
                 }
             });
         }

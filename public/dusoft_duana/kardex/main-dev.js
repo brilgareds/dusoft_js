@@ -16,7 +16,7 @@ requirejs.config({
         jquery:"../../javascripts/jquery",
         treemenu:"../includes/menu/myTree",
         tree:"../../javascripts/jstree",
-        config:"../includes/config/Config",
+        url:"js/constants/Url",
         loader:"../includes/loader/loader",
         i18n:"../../javascripts/angular/es",
         httpinterceptor:"../includes/http/HttpInterceptor",
@@ -44,7 +44,7 @@ requirejs.config({
         "treemenu":{
             deps:["tree"]
         },
-        "config":{
+        "url":{
             deps:["angular"]
         },
         "i18n":{

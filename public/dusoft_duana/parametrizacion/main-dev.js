@@ -15,7 +15,7 @@ requirejs.config({
         tree: "../../javascripts/jstree",
         select: "../../javascripts/select2",
         loader: "../includes/loader/loader",
-        config: "../includes/config/Config",
+        url: "js/constants/Url",
         socket: "../includes/socket/socket.io/socket.io",
         socketservice: "../includes/socket/socket",
         uiselect2: "../../javascripts/uiselect2",
@@ -44,7 +44,7 @@ requirejs.config({
         "select": {
             deps: ["jquery"]
         },
-        "config": {
+        "url": {
             deps: ["angular"]
         },
         "socketservice": {

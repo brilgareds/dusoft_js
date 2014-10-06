@@ -1,5 +1,5 @@
    define(["angular"], function(angular){
-	var Config = angular.module('Config', []);
+	var Url = angular.module('Url', []);
 
 	var BASE_URL = "/api"; 
 
@@ -38,18 +38,14 @@
 	    },
 	    'USUARIOS':{
 	    	'LISTAR_USUARIOS':BASE_URL+"/Usuarios/listar"
-	    },
-	    'KARDEX':{
-	    	"LISTAR_PRODUCTOS":BASE_URL+"/Kardex/listarProductos",
-	    	"OBTENER_MOVIMIENTO":BASE_URL+"/Kardex/obtenerMovimientosProducto"
 	    }
 	  }
 	}
 
 	angular.forEach(data,function(key,value) {
-	  Config.constant(value,key);
+	  Url.constant(value,key);
 	});
 
 
-	return Config;
+	return Url;
 });

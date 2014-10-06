@@ -8,7 +8,7 @@
   "controllers/DetallepedidoSeparadoFarmaciaController", "controllers/CreaCotizacionesController","controllers/SeleccionClienteController",
   "controllers/SeleccionProductoClienteController", "controllers/SeleccionProductoFarmaciaController", "controllers/CreaPedidoFarmaciaController",
   "controllers/VerPedidosFarmaciasController", "loader",  "models/Empresa",
-  "includes/menu/menucontroller", "config", "includes/alert/Alert",
+  "includes/menu/menucontroller", "url", "includes/alert/Alert",
   "includes/header/HeaderController", 'storage', "httpinterceptor",
   "includes/classes/Usuario", "includes/http/Request", "dragndropfile"
 
@@ -22,7 +22,7 @@
           'ui.bootstrap',
           'ngGrid',
           'directive',
-          'Config',
+          'Url',
           'services',
           'ui.select2',
           'LocalStorageModule',

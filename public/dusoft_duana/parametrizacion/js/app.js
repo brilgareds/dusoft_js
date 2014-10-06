@@ -12,7 +12,7 @@ define([
     "uiselect2",
     "loader",
     "includes/menu/menucontroller",
-    "config",
+    "url",
     "controllers/OperariosBodega/OperariosBodegaController",
     "models/OperariosBodegaModel/Operario",
     "includes/alert/Alert",
@@ -31,7 +31,7 @@ define([
         'ui.bootstrap',
         'ngGrid',
         'directive',
-        'Config',
+        'Url',
         'services',
         'ui.select2',
         'LocalStorageModule'

@@ -2,7 +2,7 @@
  define(["angular", "route", "bootstrap","js/controllers",
   "js/services", "js/models", "nggrid",
   "js/directive", "controllers/productoscontroller","controllers/empresacontroller", 
-  "models/Empresa", "includes/menu/menucontroller",  "config", "includes/header/HeaderController",
+  "models/Empresa", "includes/menu/menucontroller",  "url", "includes/header/HeaderController",
   "loader","models/ProductoMovimiento",  "includes/alert/Alert", "i18n", "httpinterceptor", "storage",
   "includes/classes/Usuario", "socketservice", "includes/http/Request"
   ], function(angular,Agencia){
@@ -14,7 +14,7 @@
           'directive',
           'ui.bootstrap',
           'ngGrid',
-          'Config',
+          'Url',
           "services",
           'LocalStorageModule'
       ]); 

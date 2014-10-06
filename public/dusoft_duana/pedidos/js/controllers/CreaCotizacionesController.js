@@ -84,6 +84,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     }
                     
                     if($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.seleccion_vendedor != 0 && $scope.listado_productos.length == 0){
+                        
                         $scope.bloquear_upload = false;
                     }
                     else{
@@ -266,6 +267,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 //            }
             
             $scope.valorSeleccionado = function() {
+                
+                console.log("Valor Seleccionado: ", $scope.seleccion_vendedor);
                 
                 if($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.seleccion_vendedor != 0)
                 {

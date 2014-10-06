@@ -7,9 +7,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
         '$scope', '$rootScope', 'Request',
         'Empresa', 'Cliente', 'PedidoVenta',
         'API', "socket", "AlertService",
-        '$state',
+        '$state','flowFactory',
 
-        function($scope, $rootScope, Request, Empresa, Cliente, PedidoVenta, API, socket, AlertService, $state) {
+        function($scope, $rootScope, Request, Empresa, Cliente, PedidoVenta, API, socket, AlertService, $state, flowFactory) {
 
             //$scope.Empresa = Empresa;
             
@@ -25,6 +25,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.bloquear = true; //Default True
             $scope.bloqueo_producto_incluido = false;
             $scope.bloqueo_upload = true;
+            $scope.tab_estados = {static1: false, static2: true};
+            
             //$scope.numero_pedido = "";
             //$scope.obj = {};
             $scope.listado_productos = [];
@@ -90,8 +92,12 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                                 {id: 4, nombre: 'BODEGA_4'}
                                                 ];
                                                 
+            $scope.farmaciaFlowObject = flowFactory.create({
+                target: '/upload'
+             });
+                                                
             $scope.$on('cargarGridPrincipal', function(event, data) {
-                    //console.log("La Información Llega a la Grid ", data);
+                    alert("Ingreso Carga Grid");
                     $scope.listado_productos = data;
                     
                     if($scope.listado_productos.length){
@@ -99,6 +105,17 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     }
                     else {
                         $scope.bloqueo_producto_incluido = false;
+                    }
+                    
+                    if($scope.de_seleccion_empresa != 0 && $scope.de_seleccion_centro_utilidad != 0
+                    && $scope.de_seleccion_bodega != 0 && $scope.para_seleccion_empresa != 0
+                    && $scope.para_seleccion_centro_utilidad != 0 && $scope.para_seleccion_bodega != 0 && $scope.listado_productos.length == 0){
+                
+                        $scope.bloqueo_upload = false;
+                    }
+                    else{
+                        
+                        $scope.bloqueo_upload = true;
                     }
                     
                 });
@@ -137,8 +154,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 //                        
 //                }
                 
-                console.log("LISTADO COTIZACIONES: ", $scope.listado_cotizaciones);
-                
 
                 
 //                var obj = {
@@ -164,12 +179,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 //                });
 
             };
-            
-           /* $scope.recibirDatosGridPrincipal = function(){
-                $scope.$on('cargarGridPrincipal', function(event, data) {
-                    console.log("La Información Llega a la Grid ", data);
-                });
-            }*/
 
 //            $scope.renderPedidosSeparadosCliente = function(data, paginando) {
 //
@@ -316,12 +325,15 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 //                });
 
             
-            $scope.onClickFile = function (data) {
-                alert("Botón Cargar Presionado");
-                console.log("Los datos del file son: ",data);
-            }
+//            $scope.onClickFile = function (data) {
+//                alert("Botón Cargar Presionado");
+//            }
             
-            $scope.valorSeleccionado = function(tipo_seleccion) {
+            $scope.valorSeleccionado = function() {
+
+                console.log("Ingreso Selects");
+                console.log($scope.de_seleccion_empresa);
+                console.log($scope.de_seleccion_empresa);
                 
                 if($scope.de_seleccion_empresa != 0 && $scope.de_seleccion_centro_utilidad != 0
                     && $scope.de_seleccion_bodega != 0 && $scope.para_seleccion_empresa != 0
@@ -330,6 +342,21 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     $scope.bloquear = false;
                 }
                 
+                if($scope.de_seleccion_empresa != 0 && $scope.de_seleccion_centro_utilidad != 0
+                    && $scope.de_seleccion_bodega != 0 && $scope.para_seleccion_empresa != 0
+                    && $scope.para_seleccion_centro_utilidad != 0 && $scope.para_seleccion_bodega != 0 && $scope.listado_productos.length == 0){
+                    
+                    $scope.bloqueo_upload = false;
+                }
+                else{
+                    
+                    $scope.bloqueo_upload = true;
+                }
+                
+            };
+            
+            $scope.subir = function(){
+                $flow.resume();
             };
             
             $scope.abrirViewVerPedidosFarmacias = function()

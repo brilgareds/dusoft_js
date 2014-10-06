@@ -23,9 +23,31 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.ultima_busqueda = "";
             $scope.paginaactual = 1;
             $scope.bloquear = true; //Default True
+            $scope.bloqueo_producto_incluido = false;
+            $scope.bloqueo_upload = true;
             //$scope.numero_pedido = "";
             //$scope.obj = {};
             $scope.listado_productos = [];
+            
+//            $scope.flujoArchivo = flowFactory.create({
+//                target: '/upload'
+//            });
+//            
+//            $scope.flujoArchivo.on('catchAll', function (event) {
+//                alert("Hola");
+//            });
+            
+            //$scope.ruta_upload = {target: '/subida'}; //ruta del servidor para subir el archivo
+            
+            //$scope.existingFlowObject = flowFactory.create();
+            
+            //$scope.existingFlowObject.defaults = { target: '/subida', permanentErrors:[404, 500, 501], minFileSize: 0 };
+            
+//            $scope.existingFlowObject.on('catchAll', function (event) {
+//                
+//                alert("Acceso al Evento");
+//                
+//            });
             
             $scope.de_seleccion_empresa = 0;
             $scope.de_seleccion_centro_utilidad = 0;
@@ -34,7 +56,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.para_seleccion_empresa = 0;
             $scope.para_seleccion_centro_utilidad = 0;
             $scope.para_seleccion_bodega = 0;
-            
+
             $scope.de_lista_empresas = [    {id: 1, nombre: 'COSMITET'},
                                             {id: 2, nombre: 'DUANA'},
                                             {id: 3, nombre: 'DUMIAN'},
@@ -71,6 +93,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.$on('cargarGridPrincipal', function(event, data) {
                     //console.log("La Información Llega a la Grid ", data);
                     $scope.listado_productos = data;
+                    
+                    if($scope.listado_productos.length){
+                        $scope.bloqueo_producto_incluido = true;
+                    }
+                    else {
+                        $scope.bloqueo_producto_incluido = false;
+                    }
+                    
                 });
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
@@ -256,10 +286,35 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
             
             $scope.$on('flow::fileAdded', function (event, $flow, flowFile) {
-                    event.preventDefault();//prevent file from uploading
-                    $scope.nombre_archivo = $flow.files[0];
-                    alert($flow.files[0]);
+                    //event.preventDefault();//prevent file from uploading
+                    //$scope.nombre_archivo = $flow;
+//                    console.log("El Evento es",event);
+//                    console.log("El Flow es",$flow);
+//                    console.log("El File Flow es",flowFile);
+                    var arreglo_nombre = flowFile.name.split(".");
+                    
+                    if(arreglo_nombre[1] !== 'txt' && arreglo_nombre[1] !== 'csv') {
+                        alert("El archivo debe ser TXT o CSV. Intente de nuevo ...");
+                        //flowFile = {};
+                    }
+
                 });
+                
+//            $scope.$on('flow::filesAdded', function (event, $flow, flowFile) {
+//
+//                    console.log("El Evento es",event);
+//                    console.log("El Flow es",$flow);
+//                    console.log("El File Flow es",flowFile);
+//                    
+//                    var arreglo_nombre = flowFile.name.split(".");
+//                    
+//                    if(arreglo_nombre[1] !== 'txt') {
+//                        alert("El tipo de archivo no es Valido. Debe ser TXT.");
+//                        flowFile.cancel();
+//                    }
+//
+//                });
+
             
             $scope.onClickFile = function (data) {
                 alert("Botón Cargar Presionado");
@@ -274,31 +329,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 {
                     $scope.bloquear = false;
                 }
-                
-//                if(tipo_seleccion=='DeEmpresa') {
-//                    alert("de_seleccion_empresa :"+$scope.de_seleccion_empresa);
-//                }
-//                
-//                if(tipo_seleccion=='DeCentro') {
-//                    alert("de_seleccion_centro_utilidad :"+$scope.de_seleccion_centro_utilidad);
-//                }
-//                
-//                if(tipo_seleccion=='DeBodega') {
-//                    alert("de_seleccion_bodega :"+$scope.de_seleccion_bodega);
-//                }
-//                
-//                if(tipo_seleccion=='ParaEmpresa') {
-//                    alert("para_seleccion_empresa :"+$scope.para_seleccion_empresa);
-//                }
-//                
-//                if(tipo_seleccion=='ParaCentro') {
-//                    alert("para_seleccion_centro_utilidad :"+$scope.para_seleccion_centro_utilidad);
-//                }
-//                
-//                if(tipo_seleccion=='ParaBodega') {
-//                    alert("para_seleccion_bodega :"+$scope.para_seleccion_bodega);
-//                    alert("Bloquear = "+$scope.bloquear);
-//                }
                 
             };
             

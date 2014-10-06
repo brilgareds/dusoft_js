@@ -21,11 +21,26 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
             $scope.paginaactual = 1;
+            $scope.bloquear = true; //Default True
+            $scope.bloqueo_producto_incluido = false;
+            $scope.bloquear_upload = true;
+            //$scope.tab_activo = true;
+
             //$scope.numero_pedido = "";
             //$scope.obj = {};
             $scope.listado_productos = [];
             
-            $scope.seleccion_vendedor = "";
+            //$scope.ruta_upload = {target: '/subida'}; //ruta del servidor para subir el archivo
+            
+            $scope.seleccion_vendedor = 0;
+            
+            $scope.datos_cliente = {
+                nit: '',
+                nombre: '',
+                direccion: '',
+                telefono: '',
+                ubicacion: ''
+            };
             
             $scope.lista_vendedores = [ {id: 1, nombre: 'Oscar Huerta'},
                                         {id: 2, nombre: 'Bruce Wayn'},
@@ -34,10 +49,47 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                         {id: 5, nombre: 'Sofia Vergara'},
                                         {id: 6, nombre: 'Salma Hayec'}
                                         ];
-                                        
+                   
+            $scope.$on('cargarClienteSlide', function(event, data) {
+                    //console.log("La Información Llega a la Grid ", data);
+                    //console.log("Después: ", data);
+                    
+                    $scope.datos_cliente = data;
+                    
+                    if($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.seleccion_vendedor != 0)
+                    {
+                        $scope.bloquear = false;
+                    }
+                    
+                    if($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.seleccion_vendedor != 0 && $scope.listado_productos.length == 0){
+
+                        $scope.bloquear_upload = false;
+                    }
+                    else{
+                        
+                        $scope.bloquear_upload = true;
+                    }
+                    
+                });
+            
             $scope.$on('cargarGridPrincipal', function(event, data) {
                     //console.log("La Información Llega a la Grid ", data);
                     $scope.listado_productos = data;
+                    
+                    if($scope.listado_productos.length){                        
+                        $scope.bloqueo_producto_incluido = true;
+                    }
+                    else {
+                        $scope.bloqueo_producto_incluido = false;
+                    }
+                    
+                    if($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.seleccion_vendedor != 0 && $scope.listado_productos.length == 0){
+                        $scope.bloquear_upload = false;
+                    }
+                    else{
+                        $scope.bloquear_upload = true;
+                    }
+
                 });
                 
 //            $scope.$on('flow::fileAdded', function (event, $flow, flowFile) {
@@ -208,6 +260,35 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
                 $scope.$broadcast('cargarGridSeleccionadoSlide', $scope.listado_productos);
             };
+            
+//            $scope.onClickTab = function() {
+//                $scope.tab_activo = false;
+//            }
+            
+            $scope.valorSeleccionado = function() {
+                
+                if($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.seleccion_vendedor != 0)
+                {
+                    $scope.bloquear = false;
+                }
+                
+                if($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.seleccion_vendedor != 0 && $scope.listado_productos.length == 0){
+                    $scope.bloquear_upload = false;
+                }
+                else{
+                    $scope.bloquear_upload = true;
+                }
+                
+            };
+            
+            $scope.$on('flow::fileAdded', function (event, $flow, flowFile) {
+                
+                var arreglo_nombre = flowFile.name.split(".");
+    
+                if(arreglo_nombre[1] !== 'txt' && arreglo_nombre[1] !== 'csv') {
+                    alert("El archivo debe ser TXT o CSV. Intente de nuevo ...");
+                }
+            });
             
             //Método para liberar Memoria de todo lo construido en ésta clase
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 

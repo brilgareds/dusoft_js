@@ -1,31 +1,43 @@
 <div>
     <div ng-controller="CotizacionesController">
 
-            <div class="input-group navbar-form">
+        <div class="row">
 
-                    <button type="submit" class="btn btn-accion btn-primary pull-left" ng-click="abrirViewCotizacion()">Crear Cotización</button>
-
-                <input type="text" class="form-control pull-right" ng-keypress="onKeyCotizacionesPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
-                <div class="input-group-btn" >
-                    <button class="btn btn-default" type="submit" ng-click="buscarCotizaciones(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
-                </div>
-
-            </div>
-            <div class="defaultGrid" ng-grid="lista_pedidos_clientes">
-
-            </div>
-            <br/>
-
-            <div class="row text-center">
-                <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 0" ng-click="paginaAnterior()">
-                    <span class="glyphicon glyphicon-chevron-left" ></span>
-                </button>
-                <button type="button" class="btn btn-default btn-medium" ng-disabled="items == 0" ng-click="paginaSiguiente()">
-                    <span class="glyphicon glyphicon-chevron-right" ></span>
-                </button>
+            <div class="col-md-3">
+                <p class="input-group">
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default btn-sm" ng-click="abrirViewCotizacion()">
+                            <span class="glyphicon glyphicon-plus"></span>  Crear Cotización
+                        </button>
+                    </span>
+                </p>
             </div>
 
-    </br>
+            <div class="col-md-2 pull-right">
+                <p class="input-group">
+                    <input type="text" class="form-control" ng-keypress="onKeyCotizacionesPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
+                    <span class="input-group-btn" >
+                        <button class="btn btn-default" type="submit" ng-click="buscarCotizaciones(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                    </span>  
+                </p>    
+            </div>
+
+        </div>
+
+        <div class="defaultGrid" ng-grid="lista_pedidos_clientes"></div>
+
+        <br/>
+
+        <div class="row text-center">
+            <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 0" ng-click="paginaAnterior()">
+                <span class="glyphicon glyphicon-chevron-left" ></span>
+            </button>
+            <button type="button" class="btn btn-default btn-medium" ng-disabled="items == 0" ng-click="paginaSiguiente()">
+                <span class="glyphicon glyphicon-chevron-right" ></span>
+            </button>
+        </div>
+
+        </br>
     </div>
 
 </div>

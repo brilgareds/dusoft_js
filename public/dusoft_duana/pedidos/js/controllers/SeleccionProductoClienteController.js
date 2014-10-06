@@ -52,9 +52,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
             
             $rootScope.$on("mostrarseleccionproducto", function(e, datos) {
-                
-                alert("Ingreso Tras llamado Slide");
-                
+
                 $scope.rootSeleccionProductoCliente = {};
                 
                 $scope.rootSeleccionProductoCliente.tipo_cliente = datos;

@@ -76,14 +76,5 @@
         "icon": "glyphicon glyphicon-list-alt",
         "parentname": "pedidos",
         "state": "VerPedidosFarmacias"
-    },
-    {
-        "id": "16",
-        "parent": "13",
-        "text": "Cargar Archivo Plano",
-        "url": "CargarArchivoPlano",
-        "icon": "glyphicon glyphicon-cloud-upload",        
-        "parentname": "pedidos",
-        "state": "CargarArchivoPlano"
     }
 ]

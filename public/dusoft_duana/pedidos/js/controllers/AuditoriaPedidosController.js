@@ -112,7 +112,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     var obj = data.documentos_temporales[i];
                     
                     var documento_temporal = that.crearDocumentoTemporal(obj,tipo);
-                   // documento_temporal.esDocumentoNuevo = true;
+                   // documento_temporal.esDocumentoNuevo = true;  
                     $scope.Empresa.agregarDocumentoTemporal(documento_temporal, tipo);
                 }
             };
@@ -345,6 +345,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     }
                 }
             });
+
+            $scope.generarDocumento = function(tipo){
+                alert(tipo)    
+            };
 
         }]);
 });

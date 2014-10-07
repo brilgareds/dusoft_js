@@ -223,7 +223,7 @@ define(["angular", "js/controllers",'models/Cliente',
             };
             
             $scope.valorSeleccionado= function(manual) {
-
+                console.log("valor seleccionado  manual ", manual , " seleccion ",$scope.seleccion)
                 if(!manual){
                     return;
                 }

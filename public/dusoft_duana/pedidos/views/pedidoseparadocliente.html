@@ -16,7 +16,8 @@
                         <option ng-repeat="documento_usuario in  $parent.documentos_usuarios"  value="{{documento_usuario.bodegas_doc_id}}" >{{::documento_usuario.prefijo}}-{{::documento_usuario.descripcion}}</option>
                     </select>
                     
-<!--                    <select ui-select2="seleccioncliente" ng-model="$parent.seleccion" ng-options="documento_usuario.prefijo+' - '+documento_usuario.descripcion for documento_usuario in documentos_usuarios" ng-value="documento_usuario.bodegas_doc_id" placeholder="Seleccionar Documento" class="form-control selectgeneral pull-left">
+<!--                    <select ui-select2="seleccioncliente" ng-model="$parent.seleccion" ng-options="documento_usuario.prefijo+' - '+documento_usuario.descripcion for documento_usuario in documentos_usuarios" 
+ placeholder="Seleccionar Documento" class="form-control selectgeneral pull-left">
                         <option value=""></option>
                     </select>-->
 
@@ -122,26 +123,63 @@
     </div> <!-- / end payment details section -->
       
     <!-- End Código desplazado -->
-        <div class="col-sm-12 col-md-12">
+
+     <div class="col-sm-12 col-md-12" ng-if="productosNoAuditados.length > 0">
           
-            <div class="panel panel-info marginBottom5"> <!-- / begin banking details -->
+        <div class="panel panel-info marginBottom5"> <!-- / begin banking details -->
 
-                <div class="panel-heading">
-                  <h4 class="h4MarginTopBottom">Auditados</h4>
-                </div>
-
-                <div class="panel-body paddingRightZero">
-
-
-                    <div class="auditadosGrid" ng-grid="lista_productos_auditados_clientes"></div>
-
-                </div>
+            <div class="panel-heading">
+              <h4 class="h4MarginTopBottom">No auditados</h4>
             </div>
-              
-        </div>    
+
+            <div class="panel-body paddingRightZero">
+
+
+                <div class="auditadosGrid" ng-grid="lista_productos_no_auditados_clientes"></div>
+
+            </div>
+        </div>
+          
+    </div>   
+
+     <div class="col-sm-12 col-md-12" ng-if="productosPendientes.length > 0">
+          
+        <div class="panel panel-info marginBottom5"> <!-- / begin banking details -->
+
+            <div class="panel-heading">
+              <h4 class="h4MarginTopBottom">Pendientes</h4>
+            </div>
+
+            <div class="panel-body paddingRightZero">
+
+
+                <div class="auditadosGrid" ng-grid="lista_productos_pendientes_clientes"></div>
+
+            </div>
+        </div>
+          
+    </div> 
+
+    <div class="col-sm-12 col-md-12">
+      
+        <div class="panel panel-info marginBottom5"> <!-- / begin banking details -->
+
+            <div class="panel-heading">
+              <h4 class="h4MarginTopBottom">Auditados</h4>
+            </div>
+
+            <div class="panel-body paddingRightZero">
+
+
+                <div class="auditadosGrid" ng-grid="lista_productos_auditados_clientes"></div>
+
+            </div>
+        </div>
+          
+    </div>    
 
     <div class="col-sm-12 row marginBottom5">
-        <button type="submit" class="btn btn-accion btn-primary pull-right" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ng-click="generarDocumento(1)">Generar Documento</button>    
+        <button type="submit" class="btn btn-accion btn-primary pull-right" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ng-click="generarDocumento(DocumentoTemporal)">Generar Documento</button>    
     </div>
 
 </div>

@@ -17,7 +17,7 @@
                 <label>Login del Operario</label>            
             </div>
             <select class="input-medium" style="width:300px" ui-select2 data-placeholder="Seleccionar Login" ng-model="operario.usuario_id" ng-change="loginSeleccionado()"  >
-                <option ng-repeat="usuario in  usuarios"  ng-value="{{usuario.id}}">{{usuario.nombre_usuario}}-{{ usuario.usuario }}</option>
+                <option ng-repeat="usuario in  usuarios"  value="{{usuario.id}}">{{usuario.nombre_usuario}}-{{ usuario.usuario }}</option>
             </select>
 
             

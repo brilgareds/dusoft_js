@@ -11,10 +11,7 @@ define(["angular", "js/controllers",
 
             $scope.Empresa = Empresa;
             $scope.pedidosSeparadosSeleccionados = [];
-            $scope.session = {
-                usuario_id: Usuario.usuario_id,
-                auth_token: Usuario.token
-            };
+
             $scope.paginas = 0;
             $scope.items = 0;
             $scope.termino_busqueda = "";

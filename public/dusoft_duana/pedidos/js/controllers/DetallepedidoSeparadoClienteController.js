@@ -16,10 +16,7 @@ define(["angular", "js/controllers",'models/Cliente',
                     localStorageService, ProductoPedido, LoteProductoPedido, DocumentoTemporal) {
             
             $scope.detalle_pedido_separado = [];
-            $scope.session = {
-                usuario_id: Usuario.usuario_id,
-                auth_token: Usuario.token
-            };
+
             $scope.DocumentoTemporal = DocumentoTemporal.get();
             $scope.paginas = 0;
             $scope.items = 0;
@@ -134,6 +131,8 @@ define(["angular", "js/controllers",'models/Cliente',
                 }
             };
 
+
+            
             
             
             $scope.detalle_pedido_separado_cliente = {
@@ -161,8 +160,46 @@ define(["angular", "js/controllers",'models/Cliente',
             };
 
 
+
+
             $scope.lista_productos_auditados_clientes = {
                 data:'productosAuditados',
+                columnDefs: [                
+                    {field: 'codigo_producto', displayName: 'Código Producto'},
+                    {field: 'descripcion', displayName: 'Nombre Producto'},
+                    {field: 'cantidad_separada', displayName: "Cantidad Separada"},
+                    {field: 'lote.codigo_lote', displayName: 'Lote'},
+                    {field: 'lote.fecha_vencimiento', displayName: "Fecha Vencimiento"},
+                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
+                        cellTemplate: ' <div class="row">\n\
+                                            <button class="btn btn-default btn-xs" ng-click="onEliminarProductoAuditado(DocumentoTemporal, row)">\n\
+                                                <span class="glyphicon glyphicon-zoom-in">Eliminar</span>\n\
+                                            </button>\n\
+                                        </div>'
+                    }
+                ]
+            };
+
+             $scope.lista_productos_no_auditados_clientes = {
+                data:'productosNoAuditados',
+                columnDefs: [                
+                    {field: 'codigo_producto', displayName: 'Código Producto'},
+                    {field: 'descripcion', displayName: 'Nombre Producto'},
+                    {field: 'cantidad_separada', displayName: "Cantidad Separada"},
+                    {field: 'lote.codigo_lote', displayName: 'Lote'},
+                    {field: 'lote.fecha_vencimiento', displayName: "Fecha Vencimiento"},
+                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
+                        cellTemplate: ' <div class="row">\n\
+                                            <button class="btn btn-default btn-xs" ng-click="onEditarRow(DocumentoTemporal, row)">\n\
+                                                <span class="glyphicon glyphicon-zoom-in">Editar</span>\n\
+                                            </button>\n\
+                                        </div>'
+                    }
+                ]
+            };
+
+            $scope.lista_productos_pendientes_clientes = {
+                data:'productosPendientes',
                 columnDefs: [                
                     {field: 'codigo_producto', displayName: 'Código Producto'},
                     {field: 'descripcion', displayName: 'Nombre Producto'},
@@ -209,6 +246,18 @@ define(["angular", "js/controllers",'models/Cliente',
             $rootScope.$on("productoAuditado", function(e, producto){
                 if($scope.DocumentoTemporal.getPedido() == undefined){ return }
                 $scope.DocumentoTemporal.getPedido().vaciarProductos();
+
+                var params ={
+                    session:$scope.session,
+                    data : {
+                        documento_temporal:{
+                            documento_temporal_id:$scope.DocumentoTemporal.documento_temporal_id,
+                            usuario_id:$scope.DocumentoTemporal.separador.usuario_id
+                        }
+                    }
+                };
+                
+                $scope.traerProductosAuditatos(params);
 
             });
 

@@ -123,26 +123,63 @@
     </div> <!-- / end payment details section -->
       
     <!-- End Código desplazado -->
-        <div class="col-sm-12 col-md-12">
+
+     <div class="col-sm-12 col-md-12" ng-if="productosNoAuditados.length > 0">
           
-            <div class="panel panel-info marginBottom5"> <!-- / begin banking details -->
+        <div class="panel panel-info marginBottom5"> <!-- / begin banking details -->
 
-                <div class="panel-heading">
-                  <h4 class="h4MarginTopBottom">Auditados</h4>
-                </div>
-
-                <div class="panel-body paddingRightZero">
-
-
-                    <div class="auditadosGrid" ng-grid="lista_productos_auditados_clientes"></div>
-
-                </div>
+            <div class="panel-heading">
+              <h4 class="h4MarginTopBottom">No auditados</h4>
             </div>
-              
-        </div>    
+
+            <div class="panel-body paddingRightZero">
+
+
+                <div class="auditadosGrid" ng-grid="lista_productos_no_auditados_clientes"></div>
+
+            </div>
+        </div>
+          
+    </div>   
+
+     <div class="col-sm-12 col-md-12" ng-if="productosPendientes.length > 0">
+          
+        <div class="panel panel-info marginBottom5"> <!-- / begin banking details -->
+
+            <div class="panel-heading">
+              <h4 class="h4MarginTopBottom">Pendientes</h4>
+            </div>
+
+            <div class="panel-body paddingRightZero">
+
+
+                <div class="auditadosGrid" ng-grid="lista_productos_pendientes_clientes"></div>
+
+            </div>
+        </div>
+          
+    </div> 
+
+    <div class="col-sm-12 col-md-12">
+      
+        <div class="panel panel-info marginBottom5"> <!-- / begin banking details -->
+
+            <div class="panel-heading">
+              <h4 class="h4MarginTopBottom">Auditados</h4>
+            </div>
+
+            <div class="panel-body paddingRightZero">
+
+
+                <div class="auditadosGrid" ng-grid="lista_productos_auditados_clientes"></div>
+
+            </div>
+        </div>
+          
+    </div>    
 
     <div class="col-sm-12 row marginBottom5">
-        <button type="submit" class="btn btn-accion btn-primary pull-right" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ng-click="generarDocumento(1)">Generar Documento</button>    
+        <button type="submit" class="btn btn-accion btn-primary pull-right" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ng-click="generarDocumento(DocumentoTemporal)">Generar Documento</button>    
     </div>
 
 </div>

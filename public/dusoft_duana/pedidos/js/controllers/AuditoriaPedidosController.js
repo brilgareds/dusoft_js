@@ -8,17 +8,25 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
         'Empresa', 'Cliente', 'Farmacia', 'PedidoAuditoria',
         'Separador', 'DocumentoTemporal', 'API',
         "socket", "AlertService", "ProductoPedido", "LoteProductoPedido",
-        "$modal", 'Auditor',
+        "$modal", 'Auditor','Usuario',
         function($scope, $rootScope, Request, 
                  Empresa, Cliente, Farmacia, 
                  PedidoAuditoria, Separador, DocumentoTemporal,
                  API, socket, AlertService,
-                 ProductoPedido, LoteProductoPedido, $modal, Auditor) {
+                 ProductoPedido, LoteProductoPedido, $modal, Auditor, Usuario) {
 
             $scope.Empresa = Empresa;
+
+            $scope.session = {
+               usuario_id:Usuario.usuario_id,
+               auth_token:Usuario.token
+            };
+
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
             $scope.productosAuditados = [];
+            $scope.productosNoAuditados = [];
+            $scope.productosPendientes = [];
             $scope.notificacionclientes = 0;
             $scope.notificacionfarmacias = 0;
             $scope.filtro = {
@@ -287,14 +295,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     
                     if(data.status == 200){
                         console.log(data, "productos auditados");
-                        that.renderProductosAuditados(data.obj.movimientos_bodegas.lista_productos_auditados);
+                        that.renderProductosAuditados(data.obj.movimientos_bodegas.lista_productos_auditados, $scope.productosAuditados);
                     }
 
                 });
                 
             };
 
-            that.renderProductosAuditados = function(data){
+            that.renderProductosAuditados = function(data, arreglo){
 
                 for(var i in data){
                     var obj = data[i];
@@ -307,15 +315,132 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                     producto.setLote(lote);
 
-                    $scope.productosAuditados.push(producto);
+                    arreglo.push(producto);
                 }
 
-                console.log("productos auditados  ======", $scope.productosAuditados)
+                console.log("productos auditados  ======", arreglo)
 
             };
 
+
+            that.sacarProductoAuditados = function(_producto){
+                var count = 0;
+                for(var i in $scope.productosAuditados){
+                    var producto = $scope.productosAuditados[i];
+                    console.log("producto buscando ", producto , " cont ", _producto);
+                    if(producto.codigo_producto == _producto.codigo_producto){
+                        $scope.productosAuditados.splice(count,1);
+                        break;
+                    }
+                    count++;
+                }
+            };
+
+             that.sacarProductoNoAuditados = function(_producto){
+                var count = 0;
+                for(var i in $scope.productosNoAuditados){
+                    var producto = $scope.productosNoAuditados[i];
+                    console.log("producto buscando ", producto , " cont ", _producto);
+                    if(producto.codigo_producto == _producto.codigo_producto){
+                        $scope.productosNoAuditados.splice(count,1);
+                        break;
+                    }
+                    count++;
+                }
+            };
+
+             that.sacarProductoPendientes = function(_producto){
+                var count = 0;
+                for(var i in $scope.productosPendientes){
+                    var producto = $scope.productosPendientes[i];
+                    console.log("producto buscando ", producto , " cont ", _producto);
+                    if(producto.codigo_producto == _producto.codigo_producto){
+                        $scope.productosPendientes.splice(count,1);
+                        break;
+                    }
+                    count++;
+                }
+            };
+
+
+            $scope.onEliminarProductoAuditado = function(DocumentoTemporal, row){
+                var obj = {
+                    session:$scope.session,
+                    data:{
+                        documento_temporal: {
+                            item_id: row.entity.lote.item_id,
+                            auditado: false,
+                            numero_caja:0,
+                            documento_temporal_id:DocumentoTemporal.documento_temporal_id,
+                            codigo_producto:row.entity.codigo_producto,
+                            cantidad_pendiente:0,
+                            justificacion_auditor:"",
+                            existencia:""
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.AUDITAR_DOCUMENTO_TEMPORAL, "POST", obj, function(data) {
+
+                    if(data.status === 200){
+                       that.sacarProductoAuditados(row.entity); 
+                       AlertService.mostrarMensaje("success", data.msj);
+                       var params ={
+                            session:$scope.session,
+                            data : {
+                                documento_temporal:{
+                                    documento_temporal_id:DocumentoTemporal.documento_temporal_id,
+                                    usuario_id:DocumentoTemporal.separador.usuario_id
+                                }
+                            }
+                        };
+                        
+                        $scope.traerProductosAuditatos(params);
+
+                    } 
+                });
+
+            };
+
+            $scope.generarDocumento = function(documento){
+                
+                var url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO;
+
+                var obj = {
+                    session:$scope.session,
+                    data:{
+                        documento_temporal:{
+                            numero_pedido:documento.pedido.numero_pedido,
+                            documento_temporal_id:documento.documento_temporal_id,
+                            auditor_id:documento.auditor.operario_id,
+                            usuario_id:documento.separador.usuario_id
+                        }
+                    }
+                };
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    
+                    if(data.status == 200){
+                        console.log("respuesta al generar documento "+data); 
+                        AlertService.mostrarMensaje("success", data.msj);
+                    } else {
+                         AlertService.mostrarMensaje("warning", data.msj);
+                        var movimientos_bodegas = data.obj.movimientos_bodegas;
+                        $scope.productosNoAuditados = [];
+                        $scope.productosPendientes  = [];
+                        that.renderProductosAuditados(movimientos_bodegas.productos_no_auditados, $scope.productosNoAuditados);
+                        that.renderProductosAuditados(movimientos_bodegas.productos_pendientes, $scope.productosPendientes);
+                    }
+
+                });
+
+            };
+
+
             $scope.$on("onDetalleCerrado",function(){
                 $scope.productosAuditados = [];
+                $scope.productosNoAuditados = [];
+                $scope.productosPendientes = [];
             });
 
             socket.on("onListarDocumentosTemporalesClientes",function(data){
@@ -345,10 +470,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     }
                 }
             });
-
-            $scope.generarDocumento = function(tipo){
-                alert(tipo)    
-            };
 
         }]);
 });

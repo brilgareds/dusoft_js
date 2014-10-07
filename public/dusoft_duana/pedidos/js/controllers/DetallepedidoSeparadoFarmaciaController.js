@@ -16,10 +16,6 @@ define(["angular", "js/controllers",'models/Farmacia',
                     localStorageService, ProductoPedido, LoteProductoPedido, DocumentoTemporal) {
                         
             $scope.detalle_pedido_separado = [];
-            $scope.session = {
-                usuario_id: Usuario.usuario_id,
-                auth_token: Usuario.token
-            };
             $scope.DocumentoTemporal = DocumentoTemporal.get();
             $scope.paginas = 0;
             $scope.items = 0;

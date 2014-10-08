@@ -5,18 +5,18 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
     var fo = controllers.controller('VerPedidosFarmaciasController', [
         '$scope', '$rootScope', 'Request',
-        'Empresa', 'Cliente', 'PedidoVenta',
+        'Empresa', 'Farmacia', 'PedidoVenta',
         'API', "socket", "AlertService",
         '$state', "Usuario",
 
-        function($scope, $rootScope, Request, Empresa, Cliente, PedidoVenta, API, socket, AlertService, $state, Usuario) {
+        function($scope, $rootScope, Request, Empresa, Farmacia, PedidoVenta, API, socket, AlertService, $state, Usuario) {
 
             $scope.Empresa = Empresa;
             
             $scope.paginas = 0;
             $scope.items = 0;
             $scope.termino_busqueda = "";
-            $scope.ultima_busqueda = "";
+            $scope.ultima_busqueda = {};
             $scope.paginaactual = 1;
             //$scope.numero_pedido = "";
             //$scope.obj = {};
@@ -32,107 +32,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
 
-            $scope.buscarVerPedidosFarmacias = function(termino, paginando) {
 
-                //valida si cambio el termino de busqueda
-                if ($scope.ultima_busqueda != $scope.termino_busqueda) {
-                    $scope.paginaactual = 1;
-                }
-                
-                for(i=0; i<10; i++)
-                {
-                    //var pedido = Pedido.get();
-                    
-                    obj = { 
-                            numero_pedido: '123456'+i,
-                            nombre_farmacia: 'Farma Colombia',
-                            zona: 'Suroccidente'+i,
-                            fecha_pedido: '0'+i+'-09-2014',
-                            valor_pedido: i+'00.000',
-                            estado: 'Activo'
-                        }
-                    
-                    $scope.listado_pedidos.push(obj);
-                        
-                }
-                
-                console.log("LISTADO COTIZACIONES: ", $scope.listado_cotizaciones);
-                
-
-                
-//                var obj = {
-//                    session: $scope.session,
-//                    data: {
-//                        documento_temporal: {
-//                            termino_busqueda: termino,
-//                            pagina_actual: $scope.paginaactual,
-//                            filtro: {
-//                                finalizados: true
-//                            }
-//                        }
-//                    }
-//                };
-//
-//                Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.LISTAR_DOCUMENTOS_TEMPORALES_CLIENTES, "POST", obj, function(data) {
-//                    $scope.ultima_busqueda = $scope.termino_busqueda;
-//                    
-//                    if(data.obj.documentos_temporales != undefined) {
-//                        $scope.renderPedidosSeparadosCliente(data.obj, paginando);
-//                    }
-//
-//                });
-
-            };
-            
-            /* Código añadido 1 - para revisar */
-            
-            $scope.buscarPedidosSeparados = function(obj, tipo, paginando, callback) {
-                var url = API.DOCUMENTOS_TEMPORALES.LISTAR_DOCUMENTOS_TEMPORALES_CLIENTES;
-
-                if(tipo == 2){
-                    url = API.DOCUMENTOS_TEMPORALES.LISTAR_DOCUMENTOS_TEMPORALES_FARMACIAS;
-                }
-
-                Request.realizarRequest(url, "POST", obj, function(data) {
-                    $scope.ultima_busqueda = $scope.termino_busqueda;
-                    
-                    if(data.obj.documentos_temporales != undefined) {
-                        callback(data.obj, paginando, tipo);
-                    }
-
-                });
-
-            };
-            
-            /* Código añadido 2 - para revisar */
-            $scope.obtenerParametros = function(){
-                $scope.ultima_busqueda.seleccion;
-                $scope.ultima_busqueda.termino_busqueda;
-
-                //valida si cambio el termino de busqueda
-                if($scope.ultima_busqueda.termino_busqueda != $scope.termino_busqueda
-                        || $scope.ultima_busqueda.seleccion != $scope.seleccion){
-                    $scope.paginaactual = 1;
-                }
-
-                var obj = {
-                    session:$scope.session,
-                    data:{
-                        documento_temporal:{
-                            termino_busqueda: $scope.termino_busqueda,
-                            empresa_id: $scope.seleccion,
-                            pagina_actual: $scope.paginaactual,
-                            filtro: {
-                                finalizados: true
-                            }
-                        }
-                    }
-                };
-
-
-                return obj;
-            }            
-            
             $scope.listarEmpresas = function() {
 
                 var obj = {
@@ -149,61 +49,130 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     
                 });
             };
+            
+            /* Código añadido 2 - para revisar */
+            $scope.obtenerParametros = function(){
+                
+                $scope.ultima_busqueda.seleccion = "";
+                $scope.ultima_busqueda.termino_busqueda = "";
 
-//            $scope.renderPedidosSeparadosCliente = function(data, paginando) {
-//
-//                $scope.items = data.documentos_temporales.length;
-//                //se valida que hayan registros en una siguiente pagina
-//                if(paginando && $scope.items == 0){
-//                    if($scope.paginaactual > 1){
-//                        $scope.paginaactual--;
+                //valida si cambio el termino de busqueda
+                if($scope.ultima_busqueda.termino_busqueda != $scope.termino_busqueda
+                        || $scope.ultima_busqueda.seleccion != $scope.seleccion){
+                    $scope.paginaactual = 1;
+                }
+
+                var obj = {
+                    session:$scope.session,
+                    data:{
+                        pedidos_farmacias:{
+                            termino_busqueda: $scope.termino_busqueda,
+                            empresa_id: $scope.seleccion,
+                            pagina_actual: $scope.paginaactual,
+                            filtro:{}
+                        }
+                    }
+                };
+
+                return obj;
+            }               
+            
+            /* Código añadido 1 - para revisar */
+            
+            $scope.buscarPedidosFarmacias = function(obj, paginando) {
+                
+                var url = API.PEDIDOS.LISTAR_PEDIDOS_FARMACIAS;
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    
+                    console.log("Data: ",data);
+
+                    if(data.status == 200) {
+                        
+                        $scope.ultima_busqueda = {
+                                termino_busqueda: $scope.termino_busqueda,
+                                seleccion: $scope.seleccion
+                        }
+                        
+                        $scope.renderPedidosFarmacias(data.obj, paginando);
+                    }
+                    
+//                    if(data.obj.documentos_temporales != undefined) {
+//                        //callback(data.obj, paginando, tipo);
+//                        $scope.renderPedidosFarmacias(data.obj, paginando);
 //                    }
-//                    AlertService.mostrarMensaje("warning","No se encontraron mas registros");
-//                    return;
-//                }
-//
-//                $scope.Empresa.vaciarDocumentoTemporal("Cliente");
-//               
-//                for (var i in data.documentos_temporales) {
-//
-//                    var obj = data.documentos_temporales[i];
-//                    
-//                    var documento_temporal = $scope.crearDocumentoTemporal(obj);
-//
-//                    $scope.Empresa.agregarDocumentoTemporal(
-//                        documento_temporal, "Cliente"
-//                    );
-//
-//
-//                }
-//
-//            };
 
-//            $scope.crearDocumentoTemporal = function(obj) {
-//                var documento_temporal = DocumentoTemporal.get();
-//                documento_temporal.setDatos(obj);
-//
-//                var pedido = Pedido.get(obj);
-//                pedido.setDatos(obj);
-//                        
-//                var cliente = Cliente.get(
-//                        obj.nombre_cliente,
-//                        obj.direccion_cliente,
-//                        obj.tipo_id_cliente,
-//                        obj.identificacion_cliente,
-//                        obj.telefono_cliente
-//                        );
-//
-//                pedido.setCliente(cliente);
-//                
-//                documento_temporal.setPedido(pedido);
-//                
-//                var separador = Separador.get(obj.responsable_pedido, obj.responsable_id, 1);
-//                
-//                documento_temporal.setSeparador(separador);
-//                
-//                return documento_temporal;
-//            };
+                });
+
+            };
+            
+            $scope.onKeyPedidoFarmaciaPress = function(ev, termino_busqueda) {
+                
+                if (ev.which == 13) {
+                    $scope.buscarPedidosSeparados($scope.obtenerParametros(), 2, false, $scope.renderPedidosSeparados);
+                }
+            };
+
+            $scope.renderPedidosFarmacias = function(data, paginando) {
+
+                var items = data.pedidos_farmacias.length;
+                //se valida que hayan registros en una siguiente pagina
+                if(paginando && items == 0){
+                    if($scope.paginaactual > 1){
+                        $scope.paginaactual--;
+                    }
+                    AlertService.mostrarMensaje("warning","No se encontraron mas registros");
+                    return;
+                }
+
+                $scope.Empresa.vaciarPedidosFarmacia();
+               
+                for (var i in data.pedidos_farmacias) {
+
+                    var obj = data.pedidos_farmacias[i];
+                    
+                    var pedido = $scope.crearPedido(obj);
+
+                    $scope.Empresa.agregarPedidoFarmacia(pedido);
+
+                }
+
+            };
+
+            $scope.crearPedido = function(obj) {
+                var pedido = PedidoVenta.get();
+                
+                datos_pedido = {
+                    numero_pedido: obj.numero_pedido,
+                    fecha_registro: obj.fecha_registro,
+                    descripcion_estado_actual_pedido: obj.descripcion_estado_actual_pedido,
+                    estado_actual_pedido: obj.estado_actual_pedido,
+                    estado_separacion: obj.estado_separacion
+                };
+                
+                pedido.setDatos(datos_pedido); /* Aquí Voy : Se deben incluir productos de una vez? ... agregar Cliente*/
+
+                var pedido = Pedido.get(obj);
+                pedido.setDatos(obj);
+                        
+                var cliente = Cliente.get(
+                        obj.nombre_cliente,
+                        obj.direccion_cliente,
+                        obj.tipo_id_cliente,
+                        obj.identificacion_cliente,
+                        obj.telefono_cliente
+                        );
+
+                pedido.setCliente(cliente);
+                
+                documento_temporal.setPedido(pedido);
+                
+                var separador = Separador.get(obj.responsable_pedido, obj.responsable_id, 1);
+                
+                documento_temporal.setSeparador(separador);
+                
+                return pedido;
+            };
 
             //definicion y delegados del Tabla de pedidos clientes
 
@@ -280,7 +249,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
             };
             
-            $scope.buscarVerPedidosFarmacias("");
+            $scope.buscarPedidosFarmacias($scope.obtenerParametros(),"");
             $scope.listarEmpresas("");
 
         }]);

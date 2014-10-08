@@ -25,8 +25,6 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
 
-            console.log("watcher here 1 ==== >",$scope.$$watchers)
-
             that.buscarPedidosCliente = function(termino, paginando) {
                 //valida si cambio el termino de busqueda
                 if ($scope.ultima_busqueda != $scope.termino_busqueda) {

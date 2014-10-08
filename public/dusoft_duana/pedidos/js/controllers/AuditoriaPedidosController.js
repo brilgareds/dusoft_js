@@ -33,6 +33,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 codigo_barras:false
             };
 
+
             var that = this;
 
             $scope.buscarPedidosSeparados = function(obj, tipo, paginando, callback) {
@@ -330,32 +331,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     console.log("producto buscando ", producto , " cont ", _producto);
                     if(producto.codigo_producto == _producto.codigo_producto){
                         $scope.productosAuditados.splice(count,1);
-                        break;
-                    }
-                    count++;
-                }
-            };
-
-             that.sacarProductoNoAuditados = function(_producto){
-                var count = 0;
-                for(var i in $scope.productosNoAuditados){
-                    var producto = $scope.productosNoAuditados[i];
-                    console.log("producto buscando ", producto , " cont ", _producto);
-                    if(producto.codigo_producto == _producto.codigo_producto){
-                        $scope.productosNoAuditados.splice(count,1);
-                        break;
-                    }
-                    count++;
-                }
-            };
-
-             that.sacarProductoPendientes = function(_producto){
-                var count = 0;
-                for(var i in $scope.productosPendientes){
-                    var producto = $scope.productosPendientes[i];
-                    console.log("producto buscando ", producto , " cont ", _producto);
-                    if(producto.codigo_producto == _producto.codigo_producto){
-                        $scope.productosPendientes.splice(count,1);
                         break;
                     }
                     count++;

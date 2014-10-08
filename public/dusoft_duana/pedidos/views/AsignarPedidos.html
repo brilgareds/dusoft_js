@@ -8,7 +8,7 @@
             <div class="col-sm-12 col-md-3">
                 <select ui-select2="selectestados"  class="form-control selectgeneral"  ng-model="estadoseleccionado"  ng-change="seleccionEstado()">
                     <option></option>
-                    <option ng-repeat="estado_pedido in  estados_pedido"  ng-value="estado_pedido.estado" >{{estado_pedido.nombre}}</option>
+                    <option ng-repeat="estado_pedido in  estados_pedido"  value="{{estado_pedido.estado}}" >{{estado_pedido.nombre}}</option>
                 </select>
             </div>
             <div class="input-group navbar-form">
@@ -53,14 +53,14 @@
 
                 <div class="col-sm-12 col-md-3">
                     <select ui-select2  class="form-control selectgeneral"  ng-model="seleccion" data-placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
-                        <option ng-repeat="empresa in  empresas"  ng-value="empresa.empresa_id" >{{empresa.razon_social}}</option>
+                        <option ng-repeat="empresa in  empresas"  value="{{empresa.empresa_id}}" >{{empresa.razon_social}}</option>
                     </select>
                 </div>
 
                 <div class="col-sm-12 col-md-3">
                      <select ui-select2="selectestados"  class="form-control selectgeneral"  ng-model="estadoseleccionado"  ng-change="seleccionEstado()">
                         <option></option>
-                        <option ng-repeat="estado_pedido in  estados_pedido"  ng-value="estado_pedido.estado" >{{estado_pedido.nombre}}</option>
+                        <option ng-repeat="estado_pedido in  estados_pedido"  value="{{estado_pedido.estado}}" >{{estado_pedido.nombre}}</option>
                     </select>
                 </div>
 

@@ -131,10 +131,7 @@ define(["angular", "js/controllers",'models/Cliente',
                 }
             };
 
-
-            
-            
-            
+ 
             $scope.detalle_pedido_separado_cliente = {
                 data: 'DocumentoTemporal.getPedido().getProductos()',
                 enableColumnResize: true,

@@ -7,9 +7,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
         '$scope', '$rootScope', 'Request',
         'Empresa', 'Cliente', 'PedidoVenta',
         'API', "socket", "AlertService",
-        '$state',
+        '$state', '$stateParams',
 
-        function($scope, $rootScope, Request, Empresa, Cliente, PedidoVenta, API, socket, AlertService, $state) {
+        function($scope, $rootScope, Request, Empresa, Cliente, PedidoVenta, API, socket, AlertService, $state, $stateParams) {
 
             //$scope.Empresa = Empresa;
             
@@ -30,6 +30,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             //$scope.numero_pedido = "";
             //$scope.obj = {};
             $scope.listado_productos = [];
+            
+            console.log("state ============ state params",$stateParams);
+            console.log("state *************" , $state)
             
 //            $scope.flujoArchivo = flowFactory.create({
 //                target: '/upload'
@@ -92,7 +95,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                                 {id: 4, nombre: 'BODEGA_4'}
                                                 ];
                                                 
-            $scope.pedido = {numero_pedido: ""};
+            $scope.pedido = {numero_pedido: "123"};
 //                                                
 //            $scope.farmaciaFlowObject = flowFactory.create({
 //                target: '/upload'
@@ -122,15 +125,16 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     
                 });
                 
-            $scope.$on('pedidoSeleccionado', function(event, data) {
+            /*$rootScope.$on('pedidoSeleccionado', function(event, data) {
                     
-                    alert("Se carga Pedido");
+                    alert("Número Pedido: "+ data.tipo);
                     
-                    console.log("DATO CARGADO:",data);
+                    console.log("DATO CARGADO NUEVA VIEW:",data);
+                    console.log("DATO TIPO:",data.tipo);
                     
                     $scope.pedido.numero_pedido = data.numero_pedido;
 
-                });
+                });*/
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
 
@@ -395,6 +399,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
                
                //alert("En éste momento debo limpiar algo");
+               
                 $scope.listado_productos = [];
                
                 $scope.de_lista_empresas = [];
@@ -404,6 +409,23 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 $scope.para_lista_empresas = [];
                 $scope.para_lista_centro_utilidad = [];
                 $scope.para_lista_bodegas = [];
+
+            });
+            
+            $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){ 
+               console.log("view was changed ",$rootScope.pedidoseleccionado);
+               
+               console.log(localStorage.getItem("pedidoseleccionado"));
+               
+               if($rootScope.pedidoseleccionado == undefined){
+                   
+                   //localstorage
+                        if(!localStorage.getItem("pedidoseleccionado")){
+                            $state.go("VerPedidosFarmacias");
+                        }
+                   //
+                   
+               }
 
             });
             

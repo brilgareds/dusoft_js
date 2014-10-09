@@ -29,8 +29,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
             
             $scope.empresas = [];
+            
+            var that = this;
 
-            var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
+            $scope.estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
 
 
             $scope.listarEmpresas = function() {
@@ -140,6 +142,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
 
             $scope.crearPedido = function(obj) {
+                
                 var pedido = PedidoVenta.get();
                 
                 datos_pedido = {
@@ -150,53 +153,69 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     estado_separacion: obj.estado_separacion
                 };
                 
-                pedido.setDatos(datos_pedido); /* Aquí Voy : Se deben incluir productos de una vez? ... agregar Cliente*/
+                pedido.setDatos(datos_pedido);
+                pedido.setTipo(2);
 
-                var pedido = Pedido.get(obj);
-                pedido.setDatos(obj);
                         
-                var cliente = Cliente.get(
-                        obj.nombre_cliente,
-                        obj.direccion_cliente,
-                        obj.tipo_id_cliente,
-                        obj.identificacion_cliente,
-                        obj.telefono_cliente
+                var farmacia = Farmacia.get(
+                        obj.farmacia_id,
+                        obj.bodega_id,
+                        obj.nombre_farmacia,
+                        obj.nombre_bodega
                         );
 
-                pedido.setCliente(cliente);
-                
-                documento_temporal.setPedido(pedido);
-                
-                var separador = Separador.get(obj.responsable_pedido, obj.responsable_id, 1);
-                
-                documento_temporal.setSeparador(separador);
-                
+                pedido.setFarmacia(farmacia);
+
                 return pedido;
             };
 
             //definicion y delegados del Tabla de pedidos clientes
 
             $scope.lista_pedidos_farmacias = {
-                data: 'listado_pedidos',
+                data: 'Empresa.getPedidosFarmacia()',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
                     {field: 'numero_pedido', displayName: 'Número Pedido'},
-                    {field: 'nombre_farmacia', displayName: 'Farmacia'},
+                    {field: 'farmacia.nombre_farmacia', displayName: 'Farmacia'},
+                    {field: 'farmacia.nombre_bodega', displayName: 'Bodega'},
                     {field: 'zona', displayName: 'Zona'},
-                    {field: 'fecha_pedido', displayName: 'Fecha'},
-                    {field: 'valor_pedido', displayName: 'Valor'},
-                    {field: 'estado', displayName: 'Estado'},
-                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Activar</span></button></div>'}
+                    {field: 'fecha_registro', displayName: 'Fecha'},
+                    {field: 'estado_actual_pedido', displayName: 'EstadoId', visible: false},
+                    {field: 'descripcion_estado_actual_pedido', displayName: 'Estado', cellClass: "txt-center",
+                        cellTemplate: "<button ng-class='estados[row.entity.estado_actual_pedido]'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
+                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="editarPedidoFarmacia(row.entity)"><span class="glyphicon glyphicon-zoom-in">Activar</span></button></div>'}
 
                 ]
 
             };
  
-            $scope.abrirViewPedidoFarmacia = function()
-            {
+            // Agregar Restriccion de acuerdo al estado de asigancion del pedido
+            $scope.agregarRestriccion = function(estado_separacion) {
+
+                var clase = "";
+                if (estado_separacion)
+                    clase = "glyphicon glyphicon-lock";
+
+                return clase;
+            };
+            
+            $scope.abrirViewPedidoFarmacia = function(){
+
                 $state.go('CreaPedidosFarmacias');
             };
+            
+            $scope.editarPedidoFarmacia = function(data){
+                
+                $scope.creapedidosfarmacias = "views/creapedidosfarmacias.html";
+                
+                $scope.$broadcast('pedidoSeleccionado', data);
+                
+                //$scope.$broadcast('cargarGridSeleccionadoSlide', $scope.listado_productos);
+                
+                $state.go('CreaPedidosFarmacias');
+                
+            }
             
             //Método para liberar Memoria de todo lo construido en ésta clase
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 

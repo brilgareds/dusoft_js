@@ -91,13 +91,15 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                                 {id: 3, nombre: 'BODEGA_3'},
                                                 {id: 4, nombre: 'BODEGA_4'}
                                                 ];
+                                                
+            $scope.pedido = {numero_pedido: ""};
 //                                                
 //            $scope.farmaciaFlowObject = flowFactory.create({
 //                target: '/upload'
 //             });
                                                 
             $scope.$on('cargarGridPrincipal', function(event, data) {
-                    alert("Ingreso Carga Grid");
+                    //alert("Ingreso Carga Grid");
                     $scope.listado_productos = data;
                     
                     if($scope.listado_productos.length){
@@ -118,6 +120,16 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         $scope.bloqueo_upload = true;
                     }
                     
+                });
+                
+            $scope.$on('pedidoSeleccionado', function(event, data) {
+                    
+                    alert("Se carga Pedido");
+                    
+                    console.log("DATO CARGADO:",data);
+                    
+                    $scope.pedido.numero_pedido = data.numero_pedido;
+
                 });
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];

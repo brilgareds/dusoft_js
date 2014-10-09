@@ -304,7 +304,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 //            };
             
             $scope.onRowClickSelectProducto = function(tipo_cliente) {
-                $scope.slideurl = "views/seleccionproductofarmacia.html?time=" + new Date().getTime();
+                $scope.slideurl = "views/generarpedidos/seleccionproductofarmacia.html?time=" + new Date().getTime();
                 $scope.$emit('mostrarseleccionproducto', tipo_cliente);
                 
                 $scope.$broadcast('cargarGridSeleccionadoSlide', $scope.listado_productos);

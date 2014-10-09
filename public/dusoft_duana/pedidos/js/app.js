@@ -3,11 +3,11 @@
   "angular", "socketservice", "route",
   "bootstrap","js/controllers", "js/models",
    "js/services",  "js/directive", "nggrid", "includes/validation/ValidacionNumero", "includes/widgets/InputCheck",
-  "controllers/PedidosController","controllers/PedidosClientesController", "controllers/PedidosFarmaciasController",  "uiselect2", 
-  "controllers/AuditoriaPedidosController",  "controllers/DetallepedidoSeparadoClienteController", "controllers/CotizacionesController",
-  "controllers/DetallepedidoSeparadoFarmaciaController", "controllers/CreaCotizacionesController","controllers/SeleccionClienteController",
-  "controllers/SeleccionProductoClienteController", "controllers/SeleccionProductoFarmaciaController", "controllers/CreaPedidoFarmaciaController",
-  "controllers/VerPedidosFarmaciasController", "loader",  "models/Empresa",
+  "controllers/asignarpedidos/PedidosController","controllers/asignarpedidos/PedidosClientesController", "controllers/asignarpedidos/PedidosFarmaciasController",  "uiselect2", 
+  "controllers/auditoriapedidos/AuditoriaPedidosController",  "controllers/auditoriapedidos/DetallepedidoSeparadoClienteController", "controllers/generarpedidos/CotizacionesController",
+  "controllers/auditoriapedidos/DetallepedidoSeparadoFarmaciaController", "controllers/generarpedidos/CreaCotizacionesController","controllers/generarpedidos/SeleccionClienteController",
+  "controllers/generarpedidos/SeleccionProductoClienteController", "controllers/generarpedidos/SeleccionProductoFarmaciaController", "controllers/generarpedidos/CreaPedidoFarmaciaController",
+  "controllers/generarpedidos/VerPedidosFarmaciasController", "loader",  "models/Empresa",
   "includes/menu/menucontroller", "url", "includes/alert/Alert",
   "includes/header/HeaderController", 'storage', "httpinterceptor",
   "includes/classes/Usuario", "includes/http/Request", "dragndropfile"
@@ -43,34 +43,34 @@
             .state('AsignarPedidos', {
                 url: "/AsignarPedidos",
                 text:"Asignar Pedidos",
-                templateUrl: "views/AsignarPedidos.html"
+                templateUrl: "views/asignarpedidos/AsignarPedidos.html"
                 //controller:"pedidoscontroller"
             })
             .state('AuditarPedidos', {
                 url: "/AuditarPedidos",
                 text:"Auditar Pedidos",
-                templateUrl: "views/AuditoriaPedidos.html"
+                templateUrl: "views/auditoriapedidos/AuditoriaPedidos.html"
               })
             .state('PedidosClientes', {
                 url: "/PedidosClientes",
                 text:"Pedidos Clientes",
-                templateUrl: "views/pedidosclientes.html"
+                templateUrl: "views/generarpedidos/pedidosclientes.html"
               })
             .state('CotizacionCliente', {
                 url: "/CotizacionCliente",
                 text:"Cotización Clientes",
-                templateUrl: "views/cotizacioncliente.html"
+                templateUrl: "views/generarpedidos/cotizacioncliente.html"
               })
             .state('VerPedidosFarmacias', {
                 url: "/VerPedidosFarmacias",
                 text:"Pedidos Farmacias",
-                templateUrl: "views/verpedidosfarmacias.html"
+                templateUrl: "views/generarpedidos/verpedidosfarmacias.html"
               })
             .state('CreaPedidosFarmacias', {
                 url: "/CreaPedidosFarmacias",
                 text:"Crear/Editar Pedidos Farmacias",
-                templateUrl: "views/creapedidosfarmacias.html"
-              })
+                templateUrl: "views/generarpedidos/creapedidosfarmacias.html"
+              });
 
     }]).run( ["$rootScope", "Usuario", "localStorageService", function($rootScope,Usuario,localStorageService){
         $rootScope.titulo_modulo = "pedidos";   

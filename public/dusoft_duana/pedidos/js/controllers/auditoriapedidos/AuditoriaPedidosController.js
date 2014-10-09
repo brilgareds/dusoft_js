@@ -1,7 +1,7 @@
 define(["angular", "js/controllers",'includes/slide/slideContent',
         'models/Cliente', 'models/PedidoAuditoria', 'models/Separador', 'models/Auditor',
-        'models/DocumentoTemporal', "controllers/AuditoriaPedidosClientesController","controllers/AuditoriaPedidosFarmaciasController",
-        "controllers/EditarProductoController"], function(angular, controllers) {
+        'models/DocumentoTemporal', "controllers/auditoriapedidos/AuditoriaPedidosClientesController","controllers/auditoriapedidos/AuditoriaPedidosFarmaciasController",
+        "controllers/auditoriapedidos/EditarProductoController"], function(angular, controllers) {
 
     var fo = controllers.controller('AuditoriaPedidosController', [
         '$scope', '$rootScope', 'Request',
@@ -274,7 +274,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     dialogFade: true,
                     keyboard: true,
                     dialogClass:"editarproductomodal",
-                    templateUrl: 'views/editarproducto.html',
+                    templateUrl: 'views/auditoriapedidos/editarproducto.html',
                     controller: "EditarProductoController",
                     resolve :{
                           documento : function(){

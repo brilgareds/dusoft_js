@@ -1,5 +1,5 @@
 
-define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models/Farmacia', 'models/PedidoAuditoria'], function(angular, controllers) {
+define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontroller', 'models/Farmacia', 'models/PedidoAuditoria'], function(angular, controllers) {
 
     controllers.controller('PedidosFarmaciasController', [
         '$scope', '$rootScope', 'Request',
@@ -236,7 +236,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
                     backdropClick: true,
                     dialogFade: false,
                     keyboard: true,
-                    templateUrl: 'views/modal-asignacion.html',
+                    templateUrl: 'views/asignarpedidos/modal-asignacion.html',
                     controller: "asignacioncontroller",
                     resolve: {
                         pedidosSeleccionados: function() {

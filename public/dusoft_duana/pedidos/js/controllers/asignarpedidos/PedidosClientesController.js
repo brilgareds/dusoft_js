@@ -1,5 +1,5 @@
 
-define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models/Cliente', 'models/PedidoAuditoria'], function(angular, controllers) {
+define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontroller', 'models/Cliente', 'models/PedidoAuditoria'], function(angular, controllers) {
 
     var fo = controllers.controller('PedidosClientesController', [
         '$scope', '$rootScope', 'Request',
@@ -240,7 +240,7 @@ define(["angular", "js/controllers", 'controllers/asignacioncontroller', 'models
                     backdropClick: true,
                     dialogFade: false,
                     keyboard: true,
-                    templateUrl: 'views/modal-asignacion.html',
+                    templateUrl: 'views/asignarpedidos/modal-asignacion.html',
                     controller: "asignacioncontroller",
                     resolve: {
                         pedidosSeleccionados: function() {

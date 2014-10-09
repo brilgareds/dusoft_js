@@ -79,7 +79,7 @@ define(["angular", "js/controllers",
             $scope.onRowClick = function(row) {
                 row.entity.esDocumentoNuevo = false;
                 $scope.notificacionclientes--;
-                $scope.slideurl = "views/pedidoseparadocliente.html?time=" + new Date().getTime();
+                $scope.slideurl = "views/auditoriapedidos/pedidoseparadocliente.html?time=" + new Date().getTime();
                 $scope.$emit('mostrardetallecliente', row.entity);
             };
 

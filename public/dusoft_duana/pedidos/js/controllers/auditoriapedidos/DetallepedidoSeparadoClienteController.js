@@ -42,7 +42,7 @@ define(["angular", "js/controllers",'models/Cliente',
             
             $rootScope.$on("mostrardetalleclienteCompleto", function(e, datos) {
                 
-                //console.log("información Documento Temporal: ", datos[1]);
+                console.log("información Documento Temporal: ", datos[1]);
                 $scope.DocumentoTemporal = datos[1];
                 $scope.buscarDetalleDocumentoTemporal(that.obtenerParametros(), false, 1, that.resultadoBusquedaDocumento);
                 $scope.cliente = $scope.DocumentoTemporal.pedido.cliente;
@@ -74,6 +74,12 @@ define(["angular", "js/controllers",'models/Cliente',
                 
                 $scope.traerProductosAuditatos(params);
                 
+            });
+
+
+            $rootScope.$on("cerrardetalleclienteCompleto",function(e){
+                $scope.$$watchers = null;
+                $scope.detalle_pedido_separado_cliente.data = [];
             });
 
             

@@ -297,7 +297,10 @@ define(["angular", "js/controllers",'models/Cliente',
                         codigo_producto:$scope.rootEditarProducto.producto.codigo_producto,
                         cantidad_pendiente: $scope.rootEditarProducto.producto.cantidad_solicitada -$scope.rootEditarProducto.producto.cantidad_separada,
                         justificacion_auditor:$scope.rootEditarProducto.producto.lote.justificacion_auditor,
-                        existencia:$scope.rootEditarProducto.producto.lote.existencia_actual
+                        existencia:$scope.rootEditarProducto.producto.lote.existencia_actual,
+                        usuario_id:$scope.rootEditarProducto.documento.getSeparador().operario_id,
+                       // justificacion:$scope.rootEditarProducto.producto.lote.justificacion_separador
+                       justificacion:"gggggg"
                     }
                 }
                 console.log("params to send ",obj);

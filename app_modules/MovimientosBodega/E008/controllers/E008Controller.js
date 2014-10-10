@@ -935,6 +935,8 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
 
     // Datos requeridos para auditar con la justificacion
     if (args.documento_temporal.justificacion !== undefined) {
+        
+        console.log(args.documento_temporal.justificacion);
 
         if (args.documento_temporal.justificacion.documento_temporal_id === undefined || args.documento_temporal.justificacion.usuario_id === undefined || args.documento_temporal.justificacion.codigo_producto === undefined) {
             res.send(G.utils.r(req.url, 'El documento_temporal_id, usuario_id o codigo_producto no estan definidos', 404, {}));
@@ -952,8 +954,8 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
             return;
         }
 
-        if (args.documento_temporal.justificacion.cantidad_pendiente === "" || args.documento_temporal.justificacion.justificacion === "" || args.documento_temporal.justificacion.existencia === "" || args.documento_temporal.justificacion.justificacion_auditor === "") {
-            res.send(G.utils.r(req.url, 'La cantidad_pendiente, justificacion, justificacion_auditor o existencia estan vacíos', 404, {}));
+        if (args.documento_temporal.justificacion.cantidad_pendiente === "" || args.documento_temporal.justificacion.existencia === "" || args.documento_temporal.justificacion.justificacion_auditor === "") {
+            res.send(G.utils.r(req.url, 'La cantidad_pendiente, justificacion_auditor o existencia estan vacíos', 404, {}));
             return;
         }
 

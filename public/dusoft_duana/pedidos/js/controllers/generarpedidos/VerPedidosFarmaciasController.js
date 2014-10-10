@@ -201,7 +201,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
             
             $scope.abrirViewPedidoFarmacia = function(){
-
+                
+                $rootScope.pedidoseleccionado = {numero_pedido: " "}
                 $state.go('CreaPedidosFarmacias');
             };
             
@@ -210,6 +211,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 //$scope.creapedidosfarmacias = "views/creapedidosfarmacias.html";
                 localStorage.setItem("pedidoseleccionado", data.numero_pedido);
                 $rootScope.pedidoseleccionado = data;
+                
+                console.log("INFORMACION EN DATA: ",data);
+                
                 $state.go('CreaPedidosFarmacias');
                 
                 //$scope.$broadcast('pedidoSeleccionado', data);

@@ -95,7 +95,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                                 {id: 4, nombre: 'BODEGA_4'}
                                                 ];
                                                 
-            $scope.pedido = {numero_pedido: "123"};
+            $scope.pedido = {numero_pedido: ""};
 //                                                
 //            $scope.farmaciaFlowObject = flowFactory.create({
 //                target: '/upload'
@@ -413,19 +413,35 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             });
             
             $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){ 
-               console.log("view was changed ",$rootScope.pedidoseleccionado);
+                
+                console.log("LA VIEW HA CAMBIADO: ",$rootScope.pedidoseleccionado);
+                console.log("Longitud del Local Storage: ", localStorage.getItem("pedidoseleccionado").length)
                
-               console.log(localStorage.getItem("pedidoseleccionado"));
                
-               if($rootScope.pedidoseleccionado == undefined){
+                if($rootScope.pedidoseleccionado !== undefined){
+                    $scope.pedido.numero_pedido = $rootScope.pedidoseleccionado.numero_pedido;
+                }
+                else if(localStorage.getItem("pedidoseleccionado").length > 0 ){
+                    $scope.pedido.numero_pedido = localStorage.getItem("pedidoseleccionado");
+                }
+                else{
+                    $state.go("VerPedidosFarmacias");
+                }
+               
+                console.log("Asignación Local munero_pedido = ",$scope.pedido.numero_pedido);
+               
+                console.log(localStorage.getItem("pedidoseleccionado"));
+               
+                /*if($rootScope.pedidoseleccionado == undefined || $rootScope.pedidoseleccionado == '' || $rootScope.pedidoseleccionado == 0){
                    
                    //localstorage
+                        //$state.go("VerPedidosFarmacias");
                         if(!localStorage.getItem("pedidoseleccionado")){
                             $state.go("VerPedidosFarmacias");
                         }
                    //
                    
-               }
+                }*/
 
             });
             

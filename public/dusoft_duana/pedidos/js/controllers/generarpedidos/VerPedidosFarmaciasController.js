@@ -208,7 +208,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             $scope.editarPedidoFarmacia = function(data){
                 
-                //$scope.creapedidosfarmacias = "views/creapedidosfarmacias.html";
+               //$scope.creapedidosfarmacias = "views/generarpedidos/creapedidosfarmacias.html";
                 localStorage.setItem("pedidoseleccionado", data.numero_pedido);
                 $rootScope.pedidoseleccionado = data;
                 
@@ -222,6 +222,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
                 //$scope.$broadcast('cargarGridSeleccionadoSlide', $scope.listado_productos);
 
+            /*    $state.go('CreaPedidosFarmacias');
+                $scope.$broadcast('pedidoSeleccionado', data.numero_pedido);*/
                 
             }
             

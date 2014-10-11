@@ -10,7 +10,7 @@
   "controllers/generarpedidos/VerPedidosFarmaciasController", "loader",  "models/Empresa",
   "includes/menu/menucontroller", "url", "includes/alert/Alert",
   "includes/header/HeaderController", 'storage', "httpinterceptor",
-  "includes/classes/Usuario", "includes/http/Request", "dragndropfile"
+  "includes/classes/Usuario", "includes/http/Request", "dragndropfile", "controllers/generarpedidos/eventBridgeController"
 
   ], function(angular){
   /* App Module and its dependencies */
@@ -70,7 +70,13 @@
                 url: "/CreaPedidosFarmacias",
                 text:"Crear/Editar Pedidos Farmacias",
                 templateUrl: "views/generarpedidos/creapedidosfarmacias.html"
+              })
+              .state('eventBridgeView', {
+                url: "/eventBridgeView",
+                text:"Crear/Editar Pedidos Farmacias",
+                templateUrl: "views/generarpedidos/eventBridgeView.html"
               });
+
 
     }]).run( ["$rootScope", "Usuario", "localStorageService", function($rootScope,Usuario,localStorageService){
         $rootScope.titulo_modulo = "pedidos";   

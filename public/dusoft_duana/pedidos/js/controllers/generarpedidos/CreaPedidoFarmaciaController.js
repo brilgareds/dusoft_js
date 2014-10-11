@@ -96,6 +96,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                                 ];
                                                 
             $scope.pedido = {numero_pedido: ""};
+            
+            $scope.pedido.numero_pedido_temp = "";
 //                                                
 //            $scope.farmaciaFlowObject = flowFactory.create({
 //                target: '/upload'
@@ -133,6 +135,21 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     console.log("DATO TIPO:",data.tipo);
                     
                     $scope.pedido.numero_pedido = data.numero_pedido;
+
+                });*/
+            
+            /*$scope.$on('pedidoSeleccionado', function(event, data) {
+                    
+                    alert("Número Pedido: "+ data);
+                    
+                    console.log("DATO CARGADO NUEVA VIEW:",data);
+                    //console.log("DATO TIPO:",data.tipo);
+                    
+                    $scope.pedido.numero_pedido = data;
+                    
+                    $scope.pedidotemporal = data;
+                    
+                    console.log("Impresión Número Pedido:", $scope.pedido.numero_pedido);
 
                 });*/
 
@@ -412,19 +429,36 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
             });
             
+            /* Código de Prueba */
+            $rootScope.$on('recibeEventoBridge', function(event, data) {
+                    
+                    console.log("recibeBridgeView Crea Pedido data: ",data);
+                    
+                    $scope.pedido.numero_pedido_temp = data;
+
+                });
+            
             $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){ 
                 
                 console.log("LA VIEW HA CAMBIADO: ",$rootScope.pedidoseleccionado);
                 console.log("Longitud del Local Storage: ", localStorage.getItem("pedidoseleccionado").length)
                
-               
                 if($rootScope.pedidoseleccionado !== undefined){
                     $scope.pedido.numero_pedido = $rootScope.pedidoseleccionado.numero_pedido;
+                    //$rootScope.pedidoseleccionadoTmp = $rootScope.pedidoseleccionado;
+                    
+                    /* Código de Prueba */
+                    $rootScope.$emit("enviaEventoBridge", $scope.pedido.numero_pedido, "CreaPedidoFarmaciaController");
+                    $state.go('eventBridgeView');
                 }
-                else if(localStorage.getItem("pedidoseleccionado").length > 0 ){
-                    $scope.pedido.numero_pedido = localStorage.getItem("pedidoseleccionado");
+                //else if(localStorage.getItem("pedidoseleccionado").length > 0 ){
+                else if($scope.pedido.numero_pedido_temp > 0 ){
+
+                    $scope.pedido.numero_pedido = $scope.pedido.numero_pedido_temp;
+                    //$scope.pedido.numero_pedido = localStorage.getItem("pedidoseleccionado");
                 }
                 else{
+                    
                     $state.go("VerPedidosFarmacias");
                 }
                
@@ -432,16 +466,16 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                
                 console.log(localStorage.getItem("pedidoseleccionado"));
                
-                /*if($rootScope.pedidoseleccionado == undefined || $rootScope.pedidoseleccionado == '' || $rootScope.pedidoseleccionado == 0){
-                   
-                   //localstorage
-                        //$state.go("VerPedidosFarmacias");
-                        if(!localStorage.getItem("pedidoseleccionado")){
-                            $state.go("VerPedidosFarmacias");
-                        }
-                   //
-                   
-                }*/
+//                if($rootScope.pedidoseleccionado == undefined || $rootScope.pedidoseleccionado == '' || $rootScope.pedidoseleccionado == 0){
+//                   
+//                   //localstorage
+//                        //$state.go("VerPedidosFarmacias");
+//                        if(!localStorage.getItem("pedidoseleccionado")){
+//                            $state.go("VerPedidosFarmacias");
+//                        }
+//                   //
+//                   
+//                }
 
             });
             

@@ -42,8 +42,9 @@ define(["angular", "js/controllers",'models/Cliente',
             
             $rootScope.$on("mostrardetalleclienteCompleto", function(e, datos) {
                 
-                //console.log("información Documento Temporal: ", datos[1]);
+                
                 $scope.DocumentoTemporal = datos[1];
+                console.log("información Documento Temporal: ", $scope.DocumentoTemporal);
                 $scope.buscarDetalleDocumentoTemporal(that.obtenerParametros(), false, 1, that.resultadoBusquedaDocumento);
                 $scope.cliente = $scope.DocumentoTemporal.pedido.cliente;
                 $scope.numero_pedido = $scope.DocumentoTemporal.pedido.numero_pedido;
@@ -74,6 +75,12 @@ define(["angular", "js/controllers",'models/Cliente',
                 
                 $scope.traerProductosAuditatos(params);
                 
+            });
+
+
+            $rootScope.$on("cerrardetalleclienteCompleto",function(e){
+                $scope.$$watchers = null;
+                $scope.detalle_pedido_separado_cliente.data = [];
             });
 
             
@@ -239,24 +246,6 @@ define(["angular", "js/controllers",'models/Cliente',
                 }
             };
 
-
-            $rootScope.$on("productoAuditado", function(e, producto){
-                if($scope.DocumentoTemporal.getPedido() == undefined){ return }
-                $scope.DocumentoTemporal.getPedido().vaciarProductos();
-
-                var params ={
-                    session:$scope.session,
-                    data : {
-                        documento_temporal:{
-                            documento_temporal_id:$scope.DocumentoTemporal.documento_temporal_id,
-                            usuario_id:$scope.DocumentoTemporal.separador.usuario_id
-                        }
-                    }
-                };
-                
-                $scope.traerProductosAuditatos(params);
-
-            });
 
             $scope.paginaAnterior = function() {
                 $scope.paginaactual--;

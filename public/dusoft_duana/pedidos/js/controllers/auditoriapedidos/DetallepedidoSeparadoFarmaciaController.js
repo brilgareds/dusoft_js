@@ -74,6 +74,11 @@ define(["angular", "js/controllers",'models/Farmacia',
                 $scope.traerProductosAuditatos(params);
                 
             });
+
+            $rootScope.$on("cerrardetallefarmaciaCompleto",function(e){
+                $scope.$$watchers = null;
+                $scope.detalle_pedido_separado_farmacia.data = [];
+            });
             
             $scope.obtenerParametros = function(){
                                 //valida si cambio el termino de busqueda

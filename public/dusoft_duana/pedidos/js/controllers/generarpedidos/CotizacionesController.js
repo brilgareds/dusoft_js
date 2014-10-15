@@ -168,10 +168,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             });
             
             //eventos de widgets
-            $scope.onKeyCotizacionesPress = function(ev, termino_busqueda) {
+            $scope.onKeyCotizacionesPress = function(ev) {
                  //if(!$scope.buscarVerPedidosFarmacias($scope.DocumentoTemporal.bodegas_doc_id)) return;
 
                  if (ev.which == 13) {
+                     //Aquí no se usa el parámetro "termino_busqueda" porque ésta variable se usa en el scope y se actualiza sin necesidad de pasarla como parámetro
                      $scope.buscarCotizaciones(termino_busqueda);
                  }
             };

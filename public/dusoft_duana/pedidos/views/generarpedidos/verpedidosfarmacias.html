@@ -21,39 +21,37 @@
             
             <div class="col-md-3">
                 <p class="input-group">
-                    <select ui-select2  class="pull-left" style="width:300px" ng-model="seleccion" data-placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
-                        <option ng-repeat="empresa in  empresas"  ng-value="empresa.empresa_id" >{{empresa.razon_social}}</option>
+                    <select ui-select2  class="pull-left" style="width:300px" ng-model="rootVerPedidosFarmacias.seleccion" data-placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
+                        <option ng-repeat="empresa in  rootVerPedidosFarmacias.empresas"  ng-value="empresa.empresa_id" >{{empresa.razon_social}}</option>
                     </select>
                 </p>
             </div>
             
             <div class="col-md-2 pull-right">
                 <p class="input-group">
-                    <input type="text" class="form-control pull-right" ng-keypress="onKeyVerPedidosFarmaciasPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
+                    <input type="text" class="form-control pull-right" ng-keypress="onKeyVerPedidosFarmaciasPress($event)" ng-model="rootVerPedidosFarmacias.termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
                     <span class="input-group-btn" >
-                        <button class="btn btn-default" type="submit" ng-click="buscarVerPedidosFarmacias(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                        <button class="btn btn-default" type="submit" ng-click="buscarPedidosFarmacias(obtenerParametros())"><i class="glyphicon glyphicon-search"></i></button>
                     </span>
                 </p>    
             </div>
             
         </div>
         
-        <div class="defaultGrid" ng-grid="lista_pedidos_farmacias"></div>
+        <div class="defaultGrid" ng-grid="rootVerPedidosFarmacias.lista_pedidos_farmacias"></div>
 
         <br/>
 
         <div class="row text-center">
-            <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 0" ng-click="paginaAnterior()">
+            <button type="button" class="btn btn-default btn-medium" ng-disabled="rootVerPedidosFarmacias.paginaactual == 1" ng-click="paginaAnterior()">
                 <span class="glyphicon glyphicon-chevron-left" ></span>
             </button>
-            <button type="button" class="btn btn-default btn-medium" ng-disabled="items == 0" ng-click="paginaSiguiente()">
+            <button type="button" class="btn btn-default btn-medium" ng-disabled="rootVerPedidosFarmacias.items == 0" ng-click="paginaSiguiente()">
                 <span class="glyphicon glyphicon-chevron-right" ></span>
             </button>
         </div>
 
         </br>
-        
-        <!--<div ng-controller="CreaPedidoFarmaciaController" ></div>-->
         
     </div>
 

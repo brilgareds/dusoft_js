@@ -1,0 +1,21 @@
+{
+    "module": "Kardex",
+    "dependency": {
+        "controllers": [{
+                "empresas_controller": {
+                    "module": "Empresas",
+                    "controller": "EmpresasController",
+                    "alias": "c_empresas"
+                }
+            }],
+        "models": [{
+                "empresas_model": {
+                    "module": "Empresas",
+                    "model": "EmpresasModel",
+                    "alias": "m_empresas"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

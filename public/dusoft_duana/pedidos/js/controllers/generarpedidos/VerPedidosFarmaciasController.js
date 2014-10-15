@@ -11,7 +11,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
         function($scope, $rootScope, Request, Empresa, Farmacia, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService) {
 
-            $scope.Empresa = Empresa;
+            /*$scope.Empresa = Empresa;
             
             $scope.paginas = 0;
             $scope.items = 0;
@@ -22,30 +22,60 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             //$scope.obj = {};
             $scope.listado_pedidos = [];
             
+            $scope.ultima_busqueda.seleccion = "";
+            $scope.ultima_busqueda.termino_busqueda = "";
+            
             $scope.seleccion = "FD";
+            
             $scope.session = {
                 usuario_id:Usuario.usuario_id,
                 auth_token:Usuario.token
             };
             
             $scope.empresas = [];
-            
-            var that = this;
 
-            $scope.estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
+            $scope.estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];*/
+            
+            $scope.rootVerPedidosFarmacias = {};
+            
+            $scope.rootVerPedidosFarmacias.Empresa = Empresa;
+            
+            $scope.rootVerPedidosFarmacias.paginas = 0;
+            $scope.rootVerPedidosFarmacias.items = 0;
+            $scope.rootVerPedidosFarmacias.termino_busqueda = "";
+            $scope.rootVerPedidosFarmacias.ultima_busqueda = {};
+            $scope.rootVerPedidosFarmacias.paginaactual = 1;
+
+            $scope.rootVerPedidosFarmacias.listado_pedidos = [];
+            
+            $scope.rootVerPedidosFarmacias.ultima_busqueda.seleccion = "";
+            $scope.rootVerPedidosFarmacias.ultima_busqueda.termino_busqueda = "";
+            
+            $scope.rootVerPedidosFarmacias.seleccion = "FD";
+            
+            $scope.rootVerPedidosFarmacias.session = {
+                usuario_id:Usuario.usuario_id,
+                auth_token:Usuario.token
+            };
+            
+            $scope.rootVerPedidosFarmacias.empresas = [];
+
+            $scope.rootVerPedidosFarmacias.estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
+            
+            var that = this;            
 
 
             $scope.listarEmpresas = function() {
 
                 var obj = {
-                    session: $scope.session,
+                    session: $scope.rootVerPedidosFarmacias.session,
                     data: {}
                 };
 
                 Request.realizarRequest(API.PEDIDOS.LISTAR_EMPRESAS, "POST", obj, function(data) {
                     
                     if (data.status == 200) {
-                        $scope.empresas = data.obj.empresas;
+                        $scope.rootVerPedidosFarmacias.empresas = data.obj.empresas;
                         //console.log(JSON.stringify($scope.empresas))
                     }
                     
@@ -54,23 +84,20 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             /* Código añadido 2 - para revisar */
             $scope.obtenerParametros = function(){
-                
-                $scope.ultima_busqueda.seleccion = "";
-                $scope.ultima_busqueda.termino_busqueda = "";
 
                 //valida si cambio el termino de busqueda
-                if($scope.ultima_busqueda.termino_busqueda != $scope.termino_busqueda
-                        || $scope.ultima_busqueda.seleccion != $scope.seleccion){
-                    $scope.paginaactual = 1;
+                if($scope.rootVerPedidosFarmacias.ultima_busqueda.termino_busqueda != $scope.rootVerPedidosFarmacias.termino_busqueda
+                        || $scope.rootVerPedidosFarmacias.ultima_busqueda.seleccion != $scope.rootVerPedidosFarmacias.seleccion){
+                    $scope.rootVerPedidosFarmacias.paginaactual = 1;
                 }
 
                 var obj = {
-                    session:$scope.session,
+                    session:$scope.rootVerPedidosFarmacias.session,
                     data:{
                         pedidos_farmacias:{
-                            termino_busqueda: $scope.termino_busqueda,
-                            empresa_id: $scope.seleccion,
-                            pagina_actual: $scope.paginaactual,
+                            termino_busqueda: $scope.rootVerPedidosFarmacias.termino_busqueda,
+                            empresa_id: $scope.rootVerPedidosFarmacias.seleccion,
+                            pagina_actual: $scope.rootVerPedidosFarmacias.paginaactual,
                             filtro:{}
                         }
                     }
@@ -91,9 +118,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                     if(data.status == 200) {
                         
-                        $scope.ultima_busqueda = {
-                                termino_busqueda: $scope.termino_busqueda,
-                                seleccion: $scope.seleccion
+                        $scope.rootVerPedidosFarmacias.ultima_busqueda = {
+                                termino_busqueda: $scope.rootVerPedidosFarmacias.termino_busqueda,
+                                seleccion: $scope.rootVerPedidosFarmacias.seleccion
                         }
                         
                         $scope.renderPedidosFarmacias(data.obj, paginando);
@@ -107,27 +134,21 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 });
 
             };
-            
-            $scope.onKeyPedidoFarmaciaPress = function(ev, termino_busqueda) {
-                
-                if (ev.which == 13) {
-                    $scope.buscarPedidosSeparados($scope.obtenerParametros(), 2, false, $scope.renderPedidosSeparados);
-                }
-            };
 
             $scope.renderPedidosFarmacias = function(data, paginando) {
 
-                var items = data.pedidos_farmacias.length;
+                $scope.rootVerPedidosFarmacias.items = data.pedidos_farmacias.length;
+                
                 //se valida que hayan registros en una siguiente pagina
-                if(paginando && items == 0){
-                    if($scope.paginaactual > 1){
-                        $scope.paginaactual--;
+                if(paginando && $scope.rootVerPedidosFarmacias.items == 0){
+                    if($scope.rootVerPedidosFarmacias.paginaactual > 1){
+                        $scope.rootVerPedidosFarmacias.paginaactual--;
                     }
-                    AlertService.mostrarMensaje("warning","No se encontraron mas registros");
+                    AlertService.mostrarMensaje("warning","No se encontraron más registros");
                     return;
                 }
 
-                $scope.Empresa.vaciarPedidosFarmacia();
+                $scope.rootVerPedidosFarmacias.Empresa.vaciarPedidosFarmacia();
                
                 for (var i in data.pedidos_farmacias) {
 
@@ -135,7 +156,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     
                     var pedido = $scope.crearPedido(obj);
 
-                    $scope.Empresa.agregarPedidoFarmacia(pedido);
+                    $scope.rootVerPedidosFarmacias.Empresa.agregarPedidoFarmacia(pedido);
 
                 }
 
@@ -171,8 +192,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
             //definicion y delegados del Tabla de pedidos clientes
 
-            $scope.lista_pedidos_farmacias = {
-                data: 'Empresa.getPedidosFarmacia()',
+            $scope.rootVerPedidosFarmacias.lista_pedidos_farmacias = {
+                data: 'rootVerPedidosFarmacias.Empresa.getPedidosFarmacia()',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
@@ -183,7 +204,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     {field: 'fecha_registro', displayName: 'Fecha'},
                     {field: 'estado_actual_pedido', displayName: 'EstadoId', visible: false},
                     {field: 'descripcion_estado_actual_pedido', displayName: 'Estado', cellClass: "txt-center",
-                        cellTemplate: "<button ng-class='estados[row.entity.estado_actual_pedido]'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
+                        cellTemplate: "<button ng-class='rootVerPedidosFarmacias.estados[row.entity.estado_actual_pedido]'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="editarPedidoFarmacia(row.entity)"><span class="glyphicon glyphicon-zoom-in">Activar</span></button></div>'}
 
                 ]
@@ -202,7 +223,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             $scope.abrirViewPedidoFarmacia = function(){
                 
-                //$rootScope.pedidoseleccionado = {numero_pedido: " "}
                 $state.go('CreaPedidosFarmacias');
             };
             
@@ -214,56 +234,40 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             //Método para liberar Memoria de todo lo construido en ésta clase
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
-               
-               //alert("En éste momento debo limpiar algo");
-               $scope.listado_pedidos = [];
+
+               /*$scope.listado_pedidos = [];
+               $scope.empresas = [];
+               $scope.ultima_busqueda = {};
+               $scope.lista_pedidos_farmacias = {};
+               $scope.estados = [];*/
+                $scope.rootVerPedidosFarmacias = {};
 
             });
             
             //eventos de widgets
-            $scope.onKeyVerPedidosFarmaciasPress = function(ev, termino_busqueda) {
-                 //if(!$scope.buscarVerPedidosFarmacias($scope.DocumentoTemporal.bodegas_doc_id)) return;
+            $scope.onKeyVerPedidosFarmaciasPress = function(ev) {
 
                  if (ev.which == 13) {
-                     $scope.buscarVerPedidosFarmacias(termino_busqueda);
+                     $scope.buscarPedidosFarmacias($scope.obtenerParametros());
                  }
             };
-
+            
             $scope.paginaAnterior = function() {
-                 $scope.paginaactual--;
-                 $scope.buscarVerPedidosFarmacias($scope.termino_busqueda, true);
+                 $scope.rootVerPedidosFarmacias.paginaactual--;
+                 $scope.buscarPedidosFarmacias($scope.obtenerParametros(), true);
             };
 
             $scope.paginaSiguiente = function() {
-                 $scope.paginaactual++;
-                 $scope.buscarVerPedidosFarmacias($scope.termino_busqueda, true);
+                 $scope.rootVerPedidosFarmacias.paginaactual++;
+                 $scope.buscarPedidosFarmacias($scope.obtenerParametros(), true);
             };
 
             $scope.valorSeleccionado = function() {
-//                 var obj = {
-//                     session: $scope.session,
-//                     data: {
-//                         movimientos_bodegas: {
-//                             documento_temporal_id: $scope.documento_temporal_id, 
-//                             usuario_id: $scope.usuario_id,
-//                             bodegas_doc_id: $scope.seleccion,
-//                             numero_pedido:$scope.numero_pedido
-//                         }
-//                     }
-//                 };
-//
-//                $scope.validarDocumentoUsuario(obj, 2, function(data){
-//                    if(data.status === 200){
-//                        $scope.DocumentoTemporal.bodegas_doc_id = $scope.seleccion;
-//                        AlertService.mostrarMensaje("success", data.msj);
-//                    } else {
-//                        AlertService.mostrarMensaje("warning", data.msj);
-//                    }
-//                });
-
+                
+                $scope.buscarPedidosFarmacias($scope.obtenerParametros());
             };
             
-            $scope.buscarPedidosFarmacias($scope.obtenerParametros(),"");
+            $scope.buscarPedidosFarmacias($scope.obtenerParametros());
             $scope.listarEmpresas("");
 
         }]);

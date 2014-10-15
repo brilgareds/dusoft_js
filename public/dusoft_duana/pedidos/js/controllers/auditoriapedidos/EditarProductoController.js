@@ -298,9 +298,8 @@ define(["angular", "js/controllers",'models/Cliente',
                         cantidad_pendiente: $scope.rootEditarProducto.producto.cantidad_solicitada -$scope.rootEditarProducto.producto.cantidad_separada,
                         justificacion_auditor:$scope.rootEditarProducto.producto.lote.justificacion_auditor,
                         existencia:$scope.rootEditarProducto.producto.lote.existencia_actual,
-                        usuario_id:$scope.rootEditarProducto.documento.getSeparador().operario_id,
-                       // justificacion:$scope.rootEditarProducto.producto.lote.justificacion_separador
-                       justificacion:"gggggg"
+                        usuario_id:$scope.rootEditarProducto.documento.separador.usuario_id,
+                        justificacion:$scope.rootEditarProducto.producto.lote.justificacion_separador
                     }
                 }
                 console.log("params to send ",obj);
@@ -310,7 +309,7 @@ define(["angular", "js/controllers",'models/Cliente',
 
                     if(data.status === 200){
                        console.log(data)
-                       $rootScope.$emit("productoAuditado", $scope.rootEditarProducto.producto);
+                       $rootScope.$emit("productoAuditado", $scope.rootEditarProducto.producto, $scope.rootEditarProducto.documento);
                        $modalInstance.close();
                     } 
                 });
@@ -405,3 +404,5 @@ define(["angular", "js/controllers",'models/Cliente',
         }]);
 
 });
+
+

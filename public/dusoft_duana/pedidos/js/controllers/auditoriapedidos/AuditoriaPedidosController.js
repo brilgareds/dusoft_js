@@ -203,10 +203,12 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
 
             that.crearProductoPedidoDocumentoTemporal = function(obj) {
-
+                //console.log("=============================================== code 1 ",obj);
+                var justificaciones = obj.justificaciones[0] || {};
+                console.log("=============================================== code 1 ",obj);
                 var lote_pedido = LoteProductoPedido.get(obj.lote, obj.fecha_vencimiento);
-                lote_pedido.justificacion_separador = obj.justificacion || "";
-                lote_pedido.justificacion_auditor = obj.justificacion_auditor || "";
+                lote_pedido.justificacion_separador = justificaciones.observacion || "";
+                lote_pedido.justificacion_auditor = justificaciones.justificacion_auditor || "";
                 lote_pedido.item_id = obj.item_id;
         
                 var producto_pedido_separado = ProductoPedido.get(  obj.codigo_producto, obj.descripcion_producto, "",
@@ -360,7 +362,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     if(data.status === 200){
                        that.sacarProductoAuditados(row.entity); 
                        AlertService.mostrarMensaje("success", data.msj);
-                       var params ={
+                       /*var params ={
                             session:$scope.session,
                             data : {
                                 documento_temporal:{
@@ -370,7 +372,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                             }
                         };
                         
-                        $scope.traerProductosAuditatos(params);
+                        $scope.traerProductosAuditatos(params);*/
 
                     } 
                 });
@@ -410,6 +412,25 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 });
 
             };
+
+            $rootScope.$on("productoAuditado", function(e, producto, DocumentoTemporal){
+                if(DocumentoTemporal.getPedido() == undefined){ return }
+                DocumentoTemporal.getPedido().vaciarProductos();
+                $scope.productosAuditados = [];
+
+                var params ={
+                    session:$scope.session,
+                    data : {
+                        documento_temporal:{
+                            documento_temporal_id:DocumentoTemporal.documento_temporal_id,
+                            usuario_id:DocumentoTemporal.separador.usuario_id
+                        }
+                    }
+                };
+                
+                $scope.traerProductosAuditatos(params);
+
+            });
 
 
             $scope.$on("onDetalleCerrado",function(){

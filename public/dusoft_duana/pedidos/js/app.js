@@ -72,6 +72,7 @@
                 templateUrl: "views/generarpedidos/creapedidosfarmacias.html"
               });
 
+
     }]).run( ["$rootScope", "Usuario", "localStorageService", function($rootScope,Usuario,localStorageService){
         $rootScope.titulo_modulo = "pedidos";   
         console.log(Usuario) 

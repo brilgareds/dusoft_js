@@ -410,6 +410,12 @@ DocuemntoBodegaE008.prototype.gestionar_justificaciones_temporales_pendientes = 
 
     that.consultar_justificaciones_temporales_pendientes(doc_tmp_id, usuario_id, codigo_producto, function(err, justificaciones) {
 
+        console.log('==== justificaciones =======');
+        console.log(doc_tmp_id, usuario_id, codigo_producto);
+        console.log(justificaciones);
+        console.log('============================');
+        return;
+        
         if (err) {
             callback(err, justificaciones);
             return;

@@ -7,9 +7,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
         '$scope', '$rootScope', 'Request',
         'Empresa', 'Farmacia', 'PedidoVenta',
         'API', "socket", "AlertService",
-        '$state', "Usuario",
+        '$state', "Usuario", "localStorageService",
 
-        function($scope, $rootScope, Request, Empresa, Farmacia, PedidoVenta, API, socket, AlertService, $state, Usuario) {
+        function($scope, $rootScope, Request, Empresa, Farmacia, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService) {
 
             $scope.Empresa = Empresa;
             
@@ -202,29 +202,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             $scope.abrirViewPedidoFarmacia = function(){
                 
-                $rootScope.pedidoseleccionado = {numero_pedido: " "}
+                //$rootScope.pedidoseleccionado = {numero_pedido: " "}
                 $state.go('CreaPedidosFarmacias');
             };
             
             $scope.editarPedidoFarmacia = function(data){
                 
-               //$scope.creapedidosfarmacias = "views/generarpedidos/creapedidosfarmacias.html";
-                localStorage.setItem("pedidoseleccionado", data.numero_pedido);
                 $rootScope.pedidoseleccionado = data;
-                
-                console.log("INFORMACION EN DATA: ",data);
-                
-                $state.go('CreaPedidosFarmacias');
-                
-                //$scope.$broadcast('pedidoSeleccionado', data);
-                
-               // $rootScope.$emit('pedidoSeleccionado', data);
-                
-                //$scope.$broadcast('cargarGridSeleccionadoSlide', $scope.listado_productos);
-
-            /*    $state.go('CreaPedidosFarmacias');
-                $scope.$broadcast('pedidoSeleccionado', data.numero_pedido);*/
-                
+                $state.go('CreaPedidosFarmacias');                
             }
             
             //Método para liberar Memoria de todo lo construido en ésta clase

@@ -3,8 +3,7 @@
 <div style ="padding:5px">
     <div class="row paddingBottomtZero">
         <div class="panel-info col-sm-6 marginBottom5">
-            <div class="panel-body col-sm-12 marginBottom5">
-                <!--<button ng-click="cerrar()" class="pull-right btn btn-default btn-xs" style="margin-right:15px"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>-->   
+            <div class="panel-body col-sm-12 marginBottom5"> 
 
                 <div class="row marginBottom5">            
                     <h4>Tipo Documento: </h4>
@@ -15,11 +14,6 @@
                         <option></option>
                         <option ng-repeat="documento_usuario in  $parent.documentos_usuarios"  value="{{documento_usuario.bodegas_doc_id}}" >{{::documento_usuario.prefijo}}-{{::documento_usuario.descripcion}}</option>
                     </select>
-                    
-<!--                    <select ui-select2="seleccioncliente" ng-model="$parent.seleccion" ng-options="documento_usuario.prefijo+' - '+documento_usuario.descripcion for documento_usuario in documentos_usuarios" 
- placeholder="Seleccionar Documento" class="form-control selectgeneral pull-left">
-                        <option value=""></option>
-                    </select>-->
 
                 </div>
 

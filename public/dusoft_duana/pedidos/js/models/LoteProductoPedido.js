@@ -2,11 +2,9 @@
 define(["angular", "js/models", "includes/classes/Lote"], function(angular, models) {
 
 
-    //declare usermodel wrapper 'factory'
     models.factory('LoteProductoPedido', ["Lote", function(Lote) {
 
 
-        //declare usermodel class
         function LoteProductoPedido(codigo_lote, fecha_vencimiento) {
             Lote.getClass().call(this,codigo_lote, fecha_vencimiento);
             this.existencia_actual = 0;

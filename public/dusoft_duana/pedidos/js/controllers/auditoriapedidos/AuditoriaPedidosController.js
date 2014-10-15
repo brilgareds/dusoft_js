@@ -357,17 +357,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     if(data.status === 200){
                        that.sacarProductoAuditados(row.entity); 
                        AlertService.mostrarMensaje("success", data.msj);
-                       /*var params ={
-                            session:$scope.session,
-                            data : {
-                                documento_temporal:{
-                                    documento_temporal_id:DocumentoTemporal.documento_temporal_id,
-                                    usuario_id:DocumentoTemporal.separador.usuario_id
-                                }
-                            }
-                        };
-                        
-                        $scope.traerProductosAuditatos(params);*/
 
                     } 
                 });

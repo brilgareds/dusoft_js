@@ -291,11 +291,12 @@ define(["angular", "js/controllers",'models/Cliente',
                     }
                 };
 
-                if($scope.rootEditarProducto.producto.lote.justificacion_auditor.length >= 10){
+
+                if($scope.rootEditarProducto.producto.lote.justificacion_auditor.length >= 10 && $scope.rootEditarProducto.producto.lote.cantidad_pendiente > 0 ){
                     obj.data.documento_temporal.justificacion = {
                         documento_temporal_id:$scope.rootEditarProducto.documento.documento_temporal_id,
                         codigo_producto:$scope.rootEditarProducto.producto.codigo_producto,
-                        cantidad_pendiente: $scope.rootEditarProducto.producto.cantidad_solicitada -$scope.rootEditarProducto.producto.cantidad_separada,
+                        cantidad_pendiente:$scope.rootEditarProducto.producto.lote.cantidad_pendiente,
                         justificacion_auditor:$scope.rootEditarProducto.producto.lote.justificacion_auditor,
                         existencia:$scope.rootEditarProducto.producto.lote.existencia_actual,
                         usuario_id:$scope.rootEditarProducto.documento.separador.usuario_id,

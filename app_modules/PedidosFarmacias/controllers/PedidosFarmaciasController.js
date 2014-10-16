@@ -65,6 +65,78 @@ PedidosFarmacias.prototype.obtenerEmpresas = function(req, res) {
     });
 };
 
+PedidosFarmacias.prototype.listarFarmaciasUsuarios = function(req, res) {
+
+    var that = this;
+
+    var usuario_id = req.session.user.usuario_id;
+
+    that.m_pedidos_farmacias.listar_farmacias_usuario('1', usuario_id, null, null, function(err, lista_farmacias) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error listado las farmacias', 500, {lista_farmacias: {}}));
+        } else {
+            res.send(G.utils.r(req.url, 'Lista de Farmacias', 200, {lista_farmacias: lista_farmacias}));
+        }
+    });
+};
+
+PedidosFarmacias.prototype.listarCentrosUtilidadUsuarios = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.pedidos_farmacias === undefined || args.pedidos_farmacias.empresa_id === undefined) {
+        res.send(G.utils.r(req.url, 'el empresa_id no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_farmacias.empresa_id === '') {
+        res.send(G.utils.r(req.url, 'el empresa_id esta vacio', 404, {}));
+        return;
+    }
+
+    var usuario_id = req.session.user.usuario_id;
+    var empresa_id = args.pedidos_farmacias.empresa_id;
+
+    that.m_pedidos_farmacias.listar_farmacias_usuario('2', usuario_id, empresa_id, null, function(err, lista_centros_utilidad) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error listado las farmacias', 500, {lista_centros_utilidad: {}}));
+        } else {
+            res.send(G.utils.r(req.url, 'Lista de Farmacias', 200, {lista_centros_utilidad: lista_centros_utilidad}));
+        }
+    });
+};
+
+PedidosFarmacias.prototype.listarBodegasUsuarios = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.pedidos_farmacias === undefined || args.pedidos_farmacias.empresa_id === undefined || args.pedidos_farmacias.centro_utilidad_id === undefined) {
+        res.send(G.utils.r(req.url, 'el empresa_id o centro_utilidad_id no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_farmacias.empresa_id === '' || args.pedidos_farmacias.centro_utilidad_id === '') {
+        res.send(G.utils.r(req.url, 'el empresa_id o centro_utilidad_id esta vacio', 404, {}));
+        return;
+    }
+    
+    var usuario = req.session.user.usuario_id;
+    var empresa_id = args.pedidos_farmacias.empresa_id;
+    var centro_utilidad_id = args.pedidos_farmacias.centro_utilidad_id;
+
+    that.m_pedidos_farmacias.listar_farmacias_usuario('3', usuario, empresa_id, centro_utilidad_id, function(err, lista_bodegas) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error listado las farmacias', 500, {lista_bodegas: {}}));
+        } else {
+            res.send(G.utils.r(req.url, 'Lista de Farmacias', 200, {lista_bodegas: lista_bodegas}));
+        }
+    });
+};
+
 /**
  * @api {post} /api/PedidosFarmacias/listarPedidos Listar Pedidos
  * @apiName listaPedidos
@@ -240,10 +312,10 @@ PedidosFarmacias.prototype.asignarResponsablesPedido = function(req, res) {
             that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
 
             if (--i === 0) {
-                
+
                 // Notificar que al operario los pedidos  fueron reasignados
                 if (responsable_estado_pedido.length > 0) {
-                    
+
                     responsable_estado_pedido = responsable_estado_pedido[0];
 
                     if (responsable !== responsable_estado_pedido.responsable_id) {
@@ -377,7 +449,7 @@ PedidosFarmacias.prototype.listaPedidosOperariosBodega = function(req, res) {
             that.m_pedidos_farmacias.consultar_detalle_pedido(pedido.numero_pedido, function(err, detalle_pedido) {
                 pedido.lista_productos = detalle_pedido;
 
-                if (--i === 0) {                    
+                if (--i === 0) {
                     res.send(G.utils.r(req.url, 'Lista Pedidos Farmacias', 200, {pedidos_farmacias: lista_pedidos_farmacias, total_registros: total_registros}));
                 }
 

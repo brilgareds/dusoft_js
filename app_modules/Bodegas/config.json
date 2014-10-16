@@ -1,5 +1,5 @@
 {
-    "module": "Kardex",
+    "module": "Bodegas",
     "dependency": {
         "controllers": [{
                 "bodegas_controller": {

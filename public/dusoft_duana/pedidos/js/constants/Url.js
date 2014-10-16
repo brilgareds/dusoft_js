@@ -31,7 +31,12 @@
 	    	'ASIGNAR_RESPONSABLE_FARMACIA':BASE_URL+'/PedidosFarmacias/asignarResponsable',
 	    	'LISTAR_EMPRESAS':BASE_URL+'/PedidosFarmacias/obtenerEmpresas',
 	    	'DISPONIBILIDAD':BASE_URL+'/Pedidos/consultarDisponibilidad',
-                'LISTAR_EMPRESAS_DE':BASE_URL+'/Empresas/listarEmpresas'
+                'LISTAR_EMPRESAS_GRUPO':BASE_URL+'/Empresas/listarEmpresas',
+                'CENTROS_UTILIDAD_EMPRESAS_GRUPO':BASE_URL+'/CentrosUtilidad/listarCentrosUtilidadEmpresa',
+                'BODEGAS_EMPRESAS_GRUPO':BASE_URL+'/Bodegas/listarBodegasEmpresas',
+                'LISTAR_FARMACIAS':BASE_URL+'/PedidosFarmacias/listarFarmacias',
+                'CENTROS_UTILIDAD_FARMACIAS':BASE_URL+'/PedidosFarmacias/listarCentrosUtilidad',
+                'BODEGAS_FARMACIAS':BASE_URL+'/PedidosFarmacias/listarBodegas'
 	    },
 	    'TERCEROS':{
 	    	'LISTAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/listar",

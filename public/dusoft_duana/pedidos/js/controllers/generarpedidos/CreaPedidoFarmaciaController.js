@@ -64,12 +64,23 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.para_seleccion_bodega = 0;
             
             $scope.de_lista_empresas = [];
+            
+            $scope.de_lista_centro_utilidad = [];
+            
+            $scope.de_lista_bodegas = [];
+            
+            $scope.para_lista_empresas = [];
+            
+            $scope.para_lista_centro_utilidad = [];
+            
+            $scope.para_lista_bodegas = [];
+            
 
             /*$scope.de_lista_empresas = [    {id: 1, nombre: 'COSMITET'},
                                             {id: 2, nombre: 'DUANA'},
                                             {id: 3, nombre: 'DUMIAN'},
                                             {id: 4, nombre: 'DUCATI'}
-                                            ];*/
+                                            ];
                                             
             $scope.de_lista_centro_utilidad = [     {id: 1, nombre: 'CENTRO_1'},
                                                     {id: 2, nombre: 'CENTRO_2'},
@@ -80,9 +91,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                             {id: 2, nombre: 'BODEGA_2'},
                                             {id: 3, nombre: 'BODEGA_3'},
                                             {id: 4, nombre: 'BODEGA_4'}
-                                            ];
+                                            ];*/
             
-            $scope.para_lista_empresas = [      {id: 1, nombre: 'FARMASANITAS'},
+            /*$scope.para_lista_empresas = [      {id: 1, nombre: 'FARMASANITAS'},
                                                 {id: 2, nombre: 'FARMAGISTERIO'},
                                                 {id: 3, nombre: 'FARMDEFENSA'},
                                                 {id: 4, nombre: 'FARMACIA X'}
@@ -96,7 +107,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                                 {id: 2, nombre: 'BODEGA_2'},
                                                 {id: 3, nombre: 'BODEGA_3'},
                                                 {id: 4, nombre: 'BODEGA_4'}
-                                                ];
+                                                ];*/
                                                 
             $scope.pedido = {numero_pedido: ""};
             
@@ -105,7 +116,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 //            $scope.farmaciaFlowObject = flowFactory.create({
 //                target: '/upload'
 //             });
-                              
+            
+            
+            /******************** DE ***********************/
+            
             $scope.consultarEmpresasDe = function() {
 
                 var obj = {
@@ -113,16 +127,120 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     data: {}
                 };
 
-                Request.realizarRequest(API.PEDIDOS.LISTAR_EMPRESAS_DE, "POST", obj, function(data) {
-                    
-                    console.log("Empresas De: ",data);
+                Request.realizarRequest(API.PEDIDOS.LISTAR_EMPRESAS_GRUPO, "POST", obj, function(data) {
                     
                     if (data.status == 200) {
                         $scope.de_lista_empresas = data.obj.empresas;
                     }
                     
                 });
+                
             };
+            
+            $scope.consultarCentrosUtilidadDe = function() {
+                
+                var obj = {
+                    session: $scope.session,
+                    data: { 
+                         centro_utilidad : {
+                             empresa_id : $scope.de_seleccion_empresa
+                         }
+                     }
+                };
+
+                Request.realizarRequest(API.PEDIDOS.CENTROS_UTILIDAD_EMPRESAS_GRUPO, "POST", obj, function(data) {
+                    
+                    if (data.status == 200) {
+                        $scope.de_lista_centro_utilidad = data.obj.centros_utilidad;
+                    }
+                    
+                });
+            };
+            
+            $scope.consultarBodegaDe = function() {
+                
+                var obj = {
+                    session: $scope.session,
+                    data: { 
+                         bodegas : { empresa_id : $scope.de_seleccion_empresa,
+                                     centro_utilidad_id : $scope.de_seleccion_centro_utilidad
+                         }
+                     }
+                };
+
+                Request.realizarRequest(API.PEDIDOS.BODEGAS_EMPRESAS_GRUPO, "POST", obj, function(data) {
+                    
+                    console.log("Consulta de Bodegas: ",data);
+                    
+                    if (data.status == 200) {
+                        $scope.de_lista_bodegas = data.obj.bodegas;
+                    }
+                    
+                });
+            };
+            
+            /******************** PARA ***********************/
+            
+            $scope.consultarEmpresasPara = function() {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {}
+                };
+
+                Request.realizarRequest(API.PEDIDOS.LISTAR_FARMACIAS, "POST", obj, function(data) {
+                    
+                    if (data.status == 200) {
+                        $scope.para_lista_empresas = data.obj.empresas;
+                    }
+                    
+                });
+                
+            };
+            
+            $scope.consultarCentrosUtilidadPara = function() {
+                
+                var obj = {
+                    session: $scope.session,
+                    data: { 
+                         centro_utilidad : {
+                             empresa_id : $scope.para_seleccion_empresa
+                         }
+                     }
+                };
+
+                Request.realizarRequest(API.PEDIDOS.CENTROS_UTILIDAD_FARMACIAS, "POST", obj, function(data) {
+                    
+                    if (data.status == 200) {
+                        $scope.para_lista_centro_utilidad = data.obj.centros_utilidad;
+                    }
+                    
+                });
+            };
+            
+            $scope.consultarBodegaPara = function() {
+                
+                var obj = {
+                    session: $scope.session,
+                    data: { 
+                         bodegas : { empresa_id : $scope.para_seleccion_empresa,
+                                     centro_utilidad_id : $scope.para_seleccion_centro_utilidad
+                         }
+                     }
+                };
+
+                Request.realizarRequest(API.PEDIDOS.BODEGAS_FARMACIAS, "POST", obj, function(data) {
+                    
+                    console.log("Consulta de Bodegas: ",data);
+                    
+                    if (data.status == 200) {
+                        $scope.para_lista_bodegas = data.obj.bodegas;
+                    }
+                    
+                });
+            };
+            
+            /*************** EVENTO CARGA GRID **********************/
             
             $scope.$on('cargarGridPrincipal', function(event, data) {
                     //alert("Ingreso Carga Grid");
@@ -384,13 +502,55 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             $scope.valorSeleccionado = function() {
 
-                console.log("Ingreso Selects");
+                /*console.log("Ingreso Selects");
                 console.log($scope.de_seleccion_empresa);
                 console.log($scope.de_seleccion_centro_utilidad);
                 console.log($scope.de_seleccion_bodega);
                 console.log($scope.para_seleccion_empresa);
                 console.log($scope.para_seleccion_centro_utilidad);
-                console.log($scope.para_seleccion_bodega);
+                console.log($scope.para_seleccion_bodega);*/
+                
+                /* Verificación DropDown DE */
+                
+                console.log("Id Empresa en Valor Seleccionado: ",$scope.de_seleccion_empresa);
+                
+                if($scope.de_seleccion_empresa != 0)
+                {
+                    $scope.consultarCentrosUtilidadDe();
+                }
+                
+                if($scope.de_seleccion_centro_utilidad != 0)
+                {
+                    $scope.consultarBodegaDe();
+                }
+                
+                if($scope.de_seleccion_bodega != 0)
+                {
+                    console.log("La bodega seleccionada es: ",$scope.de_seleccion_bodega);
+                }
+                
+                /* Verificación DropDown PARA */
+                
+                console.log("Id Empresa en Valor Seleccionado PARA: ",$scope.de_seleccion_empresa);
+                
+                if($scope.para_seleccion_empresa != 0)
+                {
+                    $scope.consultarCentrosUtilidadPara();
+                }
+                
+                console.log("Id Centro Utilidad en Valor Seleccionado PARA: ",$scope.de_seleccion_empresa);
+                
+                if($scope.para_seleccion_centro_utilidad != 0)
+                {
+                    $scope.consultarBodegaPara();
+                }
+                
+                if($scope.para_seleccion_bodega != 0)
+                {
+                    console.log("La bodega seleccionada en PARA es: ",$scope.para_seleccion_bodega);
+                }
+
+                /**********************************************************************************************/
                 
                 if($scope.de_seleccion_empresa != 0 && $scope.de_seleccion_centro_utilidad != 0
                     && $scope.de_seleccion_bodega != 0 && $scope.para_seleccion_empresa != 0
@@ -465,6 +625,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             });
             
             $scope.consultarEmpresasDe();
+            $scope.consultarEmpresasPara();
             $scope.buscarCotizaciones("");
 
         }]);

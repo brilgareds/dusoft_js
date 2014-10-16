@@ -74,40 +74,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.para_lista_centro_utilidad = [];
             
             $scope.para_lista_bodegas = [];
-            
-
-            /*$scope.de_lista_empresas = [    {id: 1, nombre: 'COSMITET'},
-                                            {id: 2, nombre: 'DUANA'},
-                                            {id: 3, nombre: 'DUMIAN'},
-                                            {id: 4, nombre: 'DUCATI'}
-                                            ];
-                                            
-            $scope.de_lista_centro_utilidad = [     {id: 1, nombre: 'CENTRO_1'},
-                                                    {id: 2, nombre: 'CENTRO_2'},
-                                                    {id: 3, nombre: 'CENTRO_3'},
-                                                    {id: 4, nombre: 'CENTRO_4'}
-                                                    ];
-            $scope.de_lista_bodegas = [     {id: 1, nombre: 'BODEGA_1'},
-                                            {id: 2, nombre: 'BODEGA_2'},
-                                            {id: 3, nombre: 'BODEGA_3'},
-                                            {id: 4, nombre: 'BODEGA_4'}
-                                            ];*/
-            
-            /*$scope.para_lista_empresas = [      {id: 1, nombre: 'FARMASANITAS'},
-                                                {id: 2, nombre: 'FARMAGISTERIO'},
-                                                {id: 3, nombre: 'FARMDEFENSA'},
-                                                {id: 4, nombre: 'FARMACIA X'}
-                                                ];
-            $scope.para_lista_centro_utilidad = [       {id: 1, nombre: 'CENTRO_1'},
-                                                        {id: 2, nombre: 'CENTRO_2'},
-                                                        {id: 3, nombre: 'CENTRO_3'},
-                                                        {id: 4, nombre: 'CENTRO_4'}
-                                                        ];
-            $scope.para_lista_bodegas = [       {id: 1, nombre: 'BODEGA_1'},
-                                                {id: 2, nombre: 'BODEGA_2'},
-                                                {id: 3, nombre: 'BODEGA_3'},
-                                                {id: 4, nombre: 'BODEGA_4'}
-                                                ];*/
                                                 
             $scope.pedido = {numero_pedido: ""};
             
@@ -190,8 +156,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 Request.realizarRequest(API.PEDIDOS.LISTAR_FARMACIAS, "POST", obj, function(data) {
                     
+                    console.log("LISTA DE FARMACIAS: ",data);
+                    
                     if (data.status == 200) {
-                        $scope.para_lista_empresas = data.obj.empresas;
+                        $scope.para_lista_empresas = data.obj.lista_farmacias;
                     }
                     
                 });
@@ -200,10 +168,12 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             $scope.consultarCentrosUtilidadPara = function() {
                 
+                console.log("Farmacia Seleccionada: ", $scope.para_seleccion_empresa);
+                
                 var obj = {
                     session: $scope.session,
                     data: { 
-                         centro_utilidad : {
+                         pedidos_farmacias : {
                              empresa_id : $scope.para_seleccion_empresa
                          }
                      }
@@ -211,8 +181,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 Request.realizarRequest(API.PEDIDOS.CENTROS_UTILIDAD_FARMACIAS, "POST", obj, function(data) {
                     
+                    console.log("LISTA CENTROS UTILIDAD FARMACIAS: ",data);
+                    
                     if (data.status == 200) {
-                        $scope.para_lista_centro_utilidad = data.obj.centros_utilidad;
+                        $scope.para_lista_centro_utilidad = data.obj.lista_centros_utilidad;
                     }
                     
                 });
@@ -223,8 +195,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 var obj = {
                     session: $scope.session,
                     data: { 
-                         bodegas : { empresa_id : $scope.para_seleccion_empresa,
-                                     centro_utilidad_id : $scope.para_seleccion_centro_utilidad
+                         pedidos_farmacias : {
+                                empresa_id : $scope.para_seleccion_empresa,
+                                centro_utilidad_id : $scope.para_seleccion_centro_utilidad
                          }
                      }
                 };
@@ -234,7 +207,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     console.log("Consulta de Bodegas: ",data);
                     
                     if (data.status == 200) {
-                        $scope.para_lista_bodegas = data.obj.bodegas;
+                        $scope.para_lista_bodegas = data.obj.lista_bodegas;
                     }
                     
                 });

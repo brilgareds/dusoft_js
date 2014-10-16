@@ -84,7 +84,7 @@
 
                                             <select ui-select2="paraseleccionempresa"  class="form-control selectgeneral pull-left" ng-disabled="bloqueo_producto_incluido" ng-model="para_seleccion_empresa"  placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
                                                 <option></option>
-                                                <option ng-repeat="empresa in  para_lista_empresas"  ng-value="empresa.empresa_id" >{{empresa.razon_social}}</option>
+                                                <option ng-repeat="empresa in  para_lista_empresas"  ng-value="empresa.empresa_id" >{{empresa.nombre_empresa}}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -96,7 +96,7 @@
 
                                             <select ui-select2="paraseleccioncentroutilidad"  class="form-control selectgeneral pull-left" ng-disabled="bloqueo_producto_incluido" ng-model="para_seleccion_centro_utilidad"  placeholder="Seleccionar Centro" ng-change="valorSeleccionado()">
                                                 <option></option>
-                                                <option ng-repeat="centro_utilidad in para_lista_centro_utilidad"  ng-value="centro_utilidad.centro_utilidad_id" >{{centro_utilidad.descripcion}}</option>
+                                                <option ng-repeat="centro_utilidad in para_lista_centro_utilidad"  ng-value="centro_utilidad.centro_utilidad_id" >{{centro_utilidad.nombre_centro_utilidad}}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -108,7 +108,7 @@
 
                                             <select ui-select2="paraseleccionbodega"  class="form-control selectgeneral pull-left" ng-disabled="bloqueo_producto_incluido" ng-model="para_seleccion_bodega"  placeholder="Seleccionar Bodega" ng-change="valorSeleccionado()">
                                                 <option></option>
-                                                <option ng-repeat="bodega in  para_lista_bodegas"  ng-value="bodega.bodega_id" >{{bodega.descripcion}}</option>
+                                                <option ng-repeat="bodega in  para_lista_bodegas"  ng-value="bodega.bodega_id" >{{bodega.nombre_bodega}}</option>
                                             </select>
                                         </div>
                                     </div>

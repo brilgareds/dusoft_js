@@ -30,7 +30,8 @@
 	    	'ASIGNAR_RESPONSABLE_CLIENTE':BASE_URL+'/PedidosClientes/asignarResponsable',
 	    	'ASIGNAR_RESPONSABLE_FARMACIA':BASE_URL+'/PedidosFarmacias/asignarResponsable',
 	    	'LISTAR_EMPRESAS':BASE_URL+'/PedidosFarmacias/obtenerEmpresas',
-	    	'DISPONIBILIDAD':BASE_URL+'/Pedidos/consultarDisponibilidad'
+	    	'DISPONIBILIDAD':BASE_URL+'/Pedidos/consultarDisponibilidad',
+                'LISTAR_EMPRESAS_DE':BASE_URL+'/Empresas/listarEmpresas'
 	    },
 	    'TERCEROS':{
 	    	'LISTAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/listar",

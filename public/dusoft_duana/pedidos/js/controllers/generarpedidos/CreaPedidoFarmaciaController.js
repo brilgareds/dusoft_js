@@ -7,16 +7,17 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
         '$scope', '$rootScope', 'Request',
         'Empresa', 'Cliente', 'PedidoVenta',
         'API', "socket", "AlertService",
-        '$state', '$stateParams',"localStorageService",
+        '$state', '$stateParams', "Usuario", "localStorageService",
 
-        function($scope, $rootScope, Request, Empresa, Cliente, PedidoVenta, API, socket, AlertService, $state, $stateParams, localStorageService) {
+        function($scope, $rootScope, Request, Empresa, Cliente, PedidoVenta, API, socket, AlertService, $state, $stateParams, Usuario, localStorageService) {
 
             //$scope.Empresa = Empresa;
             
-//            $scope.session = {
-//                usuario_id: Usuario.usuario_id,
-//                auth_token: Usuario.token
-//            };
+            $scope.session = {
+                usuario_id: Usuario.usuario_id,
+                auth_token: Usuario.token
+            };
+            
             $scope.paginas = 0;
             $scope.items = 0;
             $scope.termino_busqueda = "";
@@ -32,7 +33,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.listado_productos = [];
             
             console.log("state ============ state params",$stateParams);
-            console.log("state *************" , $state)
+            console.log("state *************" , $state);
             
 //            $scope.flujoArchivo = flowFactory.create({
 //                target: '/upload'
@@ -61,12 +62,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.para_seleccion_empresa = 0;
             $scope.para_seleccion_centro_utilidad = 0;
             $scope.para_seleccion_bodega = 0;
+            
+            $scope.de_lista_empresas = [];
 
-            $scope.de_lista_empresas = [    {id: 1, nombre: 'COSMITET'},
+            /*$scope.de_lista_empresas = [    {id: 1, nombre: 'COSMITET'},
                                             {id: 2, nombre: 'DUANA'},
                                             {id: 3, nombre: 'DUMIAN'},
                                             {id: 4, nombre: 'DUCATI'}
-                                            ];
+                                            ];*/
                                             
             $scope.de_lista_centro_utilidad = [     {id: 1, nombre: 'CENTRO_1'},
                                                     {id: 2, nombre: 'CENTRO_2'},
@@ -97,12 +100,30 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                                 
             $scope.pedido = {numero_pedido: ""};
             
-            $scope.pedido.numero_pedido_temp = "";
+            //$scope.pedido.numero_pedido_temp = "";
 //                                                
 //            $scope.farmaciaFlowObject = flowFactory.create({
 //                target: '/upload'
 //             });
-                                                
+                              
+            $scope.consultarEmpresasDe = function() {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {}
+                };
+
+                Request.realizarRequest(API.PEDIDOS.LISTAR_EMPRESAS_DE, "POST", obj, function(data) {
+                    
+                    console.log("Empresas De: ",data);
+                    
+                    if (data.status == 200) {
+                        $scope.de_lista_empresas = data.obj.empresas;
+                    }
+                    
+                });
+            };
+            
             $scope.$on('cargarGridPrincipal', function(event, data) {
                     //alert("Ingreso Carga Grid");
                     $scope.listado_productos = data;
@@ -126,48 +147,23 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     }
                     
                 });
-                
-            /*$rootScope.$on('pedidoSeleccionado', function(event, data) {
-                    
-                    alert("Número Pedido: "+ data.tipo);
-                    
-                    console.log("DATO CARGADO NUEVA VIEW:",data);
-                    console.log("DATO TIPO:",data.tipo);
-                    
-                    $scope.pedido.numero_pedido = data.numero_pedido;
-
-                });*/
-            
-            /*$scope.$on('pedidoSeleccionado', function(event, data) {
-                    
-                    alert("Número Pedido: "+ data);
-                    
-                    console.log("DATO CARGADO NUEVA VIEW:",data);
-                    //console.log("DATO TIPO:",data.tipo);
-                    
-                    $scope.pedido.numero_pedido = data;
-                    
-                    $scope.pedidotemporal = data;
-                    
-                    console.log("Impresión Número Pedido:", $scope.pedido.numero_pedido);
-
-                });*/
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
 
             $scope.buscarCotizaciones = function(termino, paginando) {
 
+                //Prueba Impresión pedido
+                console.log("PedidoVenta.pedidoseleccionado = ",PedidoVenta.pedidoseleccionado);
+                
                 //valida si cambio el termino de busqueda
                 if ($scope.ultima_busqueda != $scope.termino_busqueda) {
                     $scope.paginaactual = 1;
                 }
-                
-                //$scope.pedido.numero_pedido = localStorageService.get("pedidoseleccionado");
-                
-                if($rootScope.pedidoseleccionado !== undefined){
-                    $scope.pedido.numero_pedido = $rootScope.pedidoseleccionado.numero_pedido;
-                    alert("Asigno Pedido Seleccionado");
-                    localStorageService.set("pedidoseleccionado", $rootScope.pedidoseleccionado.numero_pedido);
+
+                if(PedidoVenta.pedidoseleccionado !== ""){
+
+                    $scope.pedido.numero_pedido = PedidoVenta.pedidoseleccionado;
+                    localStorageService.set("pedidoseleccionado", PedidoVenta.pedidoseleccionado);
 
                 }
                 else if(localStorageService.get("pedidoseleccionado")){
@@ -468,6 +464,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
             });
             
+            $scope.consultarEmpresasDe();
             $scope.buscarCotizaciones("");
 
         }]);

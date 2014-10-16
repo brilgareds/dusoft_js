@@ -12,7 +12,7 @@
                 <div class="row marginBottom5 col-sm-6 col-md-6">
                     <select ui-select2="seleccionfarmacia"  class="form-control selectgeneral pull-left" ng-model="$parent.seleccion" placeholder="Seleccionar Documento" ng-change="valorSeleccionado()">
                         <option></option>
-                        <option ng-repeat="documento_usuario in  documentos_usuarios"  ng-value="documento_usuario.bodegas_doc_id" >{{documento_usuario.prefijo}}-{{documento_usuario.descripcion}}</option>
+                        <option ng-repeat="documento_usuario in  documentos_usuarios"  value="{{documento_usuario.bodegas_doc_id}}" >{{documento_usuario.prefijo}}-{{documento_usuario.descripcion}}</option>
                     </select>
                 </div>
 
@@ -63,10 +63,7 @@
                     <tr><th>Bodega: </th><td>{{farmacia.nombre_bodega}}</td></tr>
                     <tr><th>ID Bodega: </th><td>{{farmacia.bodega_id}}</td></tr>
                 </table>
-<!--              <p>
-                Dirección <br>
-                detalles <br>
-              </p>-->
+
             </div>
            </div>
         </div>

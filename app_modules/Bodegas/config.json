@@ -1,0 +1,21 @@
+{
+    "module": "Bodegas",
+    "dependency": {
+        "controllers": [{
+                "bodegas_controller": {
+                    "module": "Bodegas",
+                    "controller": "BodegasController",
+                    "alias": "c_bodegas"
+                }
+            }],
+        "models": [{
+                "bodegas_model": {
+                    "module": "Bodegas",
+                    "model": "BodegasModel",
+                    "alias": "m_bodegas"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

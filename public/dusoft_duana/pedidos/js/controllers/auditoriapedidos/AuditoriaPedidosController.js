@@ -137,8 +137,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     url = API.DOCUMENTOS_TEMPORALES.CONSULTAR_DOCUMENTO_TEMPORAL_FARMACIAS;
                 }
 
-                /* Fin Objeto a enviar*/
-                /* Inicio Request */
                 Request.realizarRequest(url, "POST", obj, function(data) {
                      
                     if(data.status == 200) { 
@@ -148,7 +146,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         }
                     }
                 });
-                /* Fin Request */
                 
             };
 
@@ -203,12 +200,12 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
 
             that.crearProductoPedidoDocumentoTemporal = function(obj) {
-                //console.log("=============================================== code 1 ",obj);
+               //console.log("=============================================== code 1 ",obj);
                 var justificaciones = obj.justificaciones[0] || {};
-                console.log("=============================================== code 1 ",obj);
                 var lote_pedido = LoteProductoPedido.get(obj.lote, obj.fecha_vencimiento);
                 lote_pedido.justificacion_separador = justificaciones.observacion || "";
                 lote_pedido.justificacion_auditor = justificaciones.justificacion_auditor || "";
+                lote_pedido.cantidad_pendiente = obj.cantidad_pendiente || 0;
                 lote_pedido.item_id = obj.item_id;
         
                 var producto_pedido_separado = ProductoPedido.get(  obj.codigo_producto, obj.descripcion_producto, "",
@@ -321,7 +318,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     arreglo.push(producto);
                 }
 
-                console.log("productos auditados  ======", arreglo)
 
             };
 
@@ -330,7 +326,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 var count = 0;
                 for(var i in $scope.productosAuditados){
                     var producto = $scope.productosAuditados[i];
-                    console.log("producto buscando ", producto , " cont ", _producto);
                     if(producto.codigo_producto == _producto.codigo_producto){
                         $scope.productosAuditados.splice(count,1);
                         break;
@@ -362,17 +357,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     if(data.status === 200){
                        that.sacarProductoAuditados(row.entity); 
                        AlertService.mostrarMensaje("success", data.msj);
-                       /*var params ={
-                            session:$scope.session,
-                            data : {
-                                documento_temporal:{
-                                    documento_temporal_id:DocumentoTemporal.documento_temporal_id,
-                                    usuario_id:DocumentoTemporal.separador.usuario_id
-                                }
-                            }
-                        };
-                        
-                        $scope.traerProductosAuditatos(params);*/
 
                     } 
                 });

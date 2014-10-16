@@ -191,14 +191,7 @@ define(["angular", "js/controllers",'models/Cliente',
                     {field: 'descripcion', displayName: 'Nombre Producto'},
                     {field: 'cantidad_separada', displayName: "Cantidad Separada"},
                     {field: 'lote.codigo_lote', displayName: 'Lote'},
-                    {field: 'lote.fecha_vencimiento', displayName: "Fecha Vencimiento"},
-                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
-                        cellTemplate: ' <div class="row">\n\
-                                            <button class="btn btn-default btn-xs" ng-click="onEditarRow(DocumentoTemporal, row)">\n\
-                                                <span class="glyphicon glyphicon-zoom-in">Editar</span>\n\
-                                            </button>\n\
-                                        </div>'
-                    }
+                    {field: 'lote.fecha_vencimiento', displayName: "Fecha Vencimiento"}
                 ]
             };
 
@@ -209,14 +202,7 @@ define(["angular", "js/controllers",'models/Cliente',
                     {field: 'descripcion', displayName: 'Nombre Producto'},
                     {field: 'cantidad_separada', displayName: "Cantidad Separada"},
                     {field: 'lote.codigo_lote', displayName: 'Lote'},
-                    {field: 'lote.fecha_vencimiento', displayName: "Fecha Vencimiento"},
-                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
-                        cellTemplate: ' <div class="row">\n\
-                                            <button class="btn btn-default btn-xs" ng-click="onEditarRow(DocumentoTemporal, row)">\n\
-                                                <span class="glyphicon glyphicon-zoom-in">Editar</span>\n\
-                                            </button>\n\
-                                        </div>'
-                    }
+                    {field: 'lote.fecha_vencimiento', displayName: "Fecha Vencimiento"}
                 ]
             };
             

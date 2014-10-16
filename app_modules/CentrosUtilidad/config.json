@@ -1,0 +1,21 @@
+{
+    "module": "CentrosUtilidad",
+    "dependency": {
+        "controllers": [{
+                "centros_utilidad_controller": {
+                    "module": "CentrosUtilidad",
+                    "controller": "CentrosUtilidadController",
+                    "alias": "c_centros_utilidad"
+                }
+            }],
+        "models": [{
+                "centros_utilidad_model": {
+                    "module": "CentrosUtilidad",
+                    "model": "CentrosUtilidadModel",
+                    "alias": "m_centros_utilidad"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

@@ -10,47 +10,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
         '$state',
 
         function($scope, $rootScope, Request, Empresa, Cliente, PedidoVenta, API, socket, AlertService, $state) {
-
-            //$scope.Empresa = Empresa;
-            
-//            $scope.session = {
-//                usuario_id: Usuario.usuario_id,
-//                auth_token: Usuario.token
-//            };
-            
-//            $scope.paginas = 0;
-//            $scope.items = 0;
-//            $scope.termino_busqueda = "";
-//            $scope.ultima_busqueda = "";
-//            $scope.paginaactual = 1;
-//            
-            //$scope.numero_pedido = "";
-            //$scope.obj = {};
-            
-//            --$scope.listado_productos = [];
-//            --$scope.listado_productos_seleccionados = [];
-            
-//            --$scope.tipo_cliente = 1;
-
-            /*Ejemplo de angular.copy */
-            //$scope.rootEditarProducto.producto = angular.copy(producto);
-            /*Ejemplo de angular.copy */
-            
-            /*$scope.rootSeleccionProductoFarmacia = {};*/
-            
-//            $scope.rootSeleccionProductoFarmacia.paginas = 0;
-//            $scope.rootSeleccionProductoFarmacia.items = 0;
-            /*$scope.rootSeleccionProductoFarmacia.termino_busqueda = "";
-            $scope.rootSeleccionProductoFarmacia.ultima_busqueda = "";
-            $scope.rootSeleccionProductoFarmacia.paginaactual = 1;
-            
-            $scope.rootSeleccionProductoFarmacia.listado_productos = [];
-            $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados = [];
-            $scope.rootSeleccionProductoFarmacia.tipo_cliente = 1;*/
-            
             
             $scope.$on('cargarGridSeleccionadoSlide', function(event, mass) {
-                //console.log("Recibimos la GRID del PADRE: ",mass)
+                //Recibimos la GRID del PADRE: -> mass
                 $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados = mass;
             });
 
@@ -108,7 +70,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 $scope.renderGrid();
             };
             
-            /*  ConstrucciÃ³n de Grid    */
+            /*  Construcción de Grid    */
 
             $scope.renderGrid = function() {
 
@@ -120,9 +82,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     //selectedItems: $scope.selectedRow,
                     multiSelect: false,
                     columnDefs: [
-                        {field: 'codigo_producto', displayName: 'CÃ³digo Producto'},
-                        {field: 'descripcion', displayName: 'DescripciÃ³n'},
-                        {field: 'molecula', displayName: 'MolÃ©cula'},
+                        {field: 'codigo_producto', displayName: 'Código Producto'},
+                        {field: 'descripcion', displayName: 'Descripción'},
+                        {field: 'molecula', displayName: 'Molécula'},
                         {field: 'existencia_farmacia', displayName: 'Existencia Farmacia', width: "10%"},
                         {field: 'existencia_bodega', displayName: 'Existencia Bodega'},
                         {field: 'existencia_disponible', displayName: 'Disponible'},
@@ -145,8 +107,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     //selectedItems: $scope.selectedRow,
                     multiSelect: false,
                     columnDefs: [
-                        {field: 'codigo_producto', displayName: 'CÃ³digo Producto'},
-                        {field: 'descripcion', displayName: 'DescripciÃ³n'},
+                        {field: 'codigo_producto', displayName: 'Código Producto'},
+                        {field: 'descripcion', displayName: 'Descripción'},
                         {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada'},
                         {field: 'cantidad_pendiente', displayName: 'Cantidad Pendiente'},
                         {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
@@ -177,7 +139,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                             }
 
                     //$scope.listado_productos_seleccionados.push(obj_sel);
-                    $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.unshift(obj_sel);
+
+                    $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.unshift(obj_sel); 
 
                     $scope.$emit('cargarGridPrincipal', $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados);
 

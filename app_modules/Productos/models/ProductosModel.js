@@ -3,14 +3,16 @@ var ProductosModel = function() {
 
 };
 
-ProductosModel.prototype.buscar_productos = function(termino_busqueda, pagina, callback) {
+ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad_id, bodega_id, termino_busqueda, pagina, callback) {
 
     var offset = G.settings.limit * pagina;
 
     var sql = " select\
                 a.empresa_id, \
                 a.centro_utilidad,\
-                a.bodega,\
+                a.bodega,\\n\
+                f.descripcion as descripcion_laboratorio,    \
+                e.descripcion as descripcion_molecula,\
                 b.codigo_producto, \
                 fc_descripcion_producto(b.codigo_producto) as nombre_producto,\
                 b.unidad_id,\
@@ -41,11 +43,14 @@ ProductosModel.prototype.buscar_productos = function(termino_busqueda, pagina, c
                 from existencias_bodegas a \
                 inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
                 inner join inventarios c on b.codigo_producto = c.codigo_producto and a.empresa_id = c.empresa_id\
-                where a.empresa_id='03' and a.centro_utilidad = '1 ' and a.bodega = '03'\
-                and ( b.codigo_producto ILIKE $1 or b.descripcion ILIKE $1 ) \
-                ORDER BY 5 DESC limit $2 offset $3 ";
+                inner join inv_tipo_producto d ON b.tipo_producto_id = d.tipo_producto_id\
+                inner join inv_subclases_inventarios e ON b.grupo_id = e.grupo_id and b.clase_id = e.clase_id and b.subclase_id = e.subclase_id\
+                inner join inv_clases_inventarios f ON e.grupo_id = f.grupo_id and e.clase_id = f.clase_id\
+                where a.empresa_id= $1 and a.centro_utilidad = $2 and a.bodega = $3 \
+                and ( b.codigo_producto ILIKE $4 or b.descripcion ILIKE $4 ) \
+                ORDER BY 5 DESC limit $5 offset $6 ";
 
-    G.db.query(sql, ["%" + termino_busqueda + "%", G.settings.limit, offset], function(err, rows, result) {
+    G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, "%" + termino_busqueda + "%", G.settings.limit, offset], function(err, rows, result) {
         callback(err, rows);
     });
 

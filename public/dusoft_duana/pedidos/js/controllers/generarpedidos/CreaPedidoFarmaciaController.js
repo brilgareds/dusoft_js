@@ -271,7 +271,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             $scope.onRowClickSelectProducto = function(tipo_cliente) {
                 $scope.slideurl = "views/generarpedidos/seleccionproductofarmacia.html?time=" + new Date().getTime();
-                $scope.$emit('mostrarseleccionproducto', tipo_cliente);
+                
+                datos_de = {
+                    empresa_id: $scope.rootCreaPedidoFarmacia.de_seleccion_empresa,
+                    centro_utilidad_id: $scope.rootCreaPedidoFarmacia.de_seleccion_centro_utilidad,
+                    bodega_id: $scope.rootCreaPedidoFarmacia.de_seleccion_bodega
+                };
+                
+                $scope.$emit('mostrarseleccionproducto', tipo_cliente, datos_de);
                 
                 $scope.$broadcast('cargarGridSeleccionadoSlide', $scope.rootCreaPedidoFarmacia.listado_productos);
             };
@@ -388,19 +395,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             //Método para liberar Memoria de todo lo construido en ésta clase
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
- 
-//                $scope.rootCreaPedidoFarmacia.listado_productos = [];
-//               
-//                $scope.rootCreaPedidoFarmacia.de_lista_empresas = [];
-//                $scope.rootCreaPedidoFarmacia.de_lista_centro_utilidad = [];
-//                $scope.rootCreaPedidoFarmacia.de_lista_bodegas = [];
-//
-//                $scope.rootCreaPedidoFarmacia.para_lista_empresas = [];
-//                $scope.rootCreaPedidoFarmacia.para_lista_centro_utilidad = [];
-//                $scope.rootCreaPedidoFarmacia.para_lista_bodegas = [];
                 
                 $scope.rootCreaPedidoFarmacia = {};
-                
+                $scope.$$watchers = null;
                 localStorageService.remove("pedidoseleccionado");
 
             });

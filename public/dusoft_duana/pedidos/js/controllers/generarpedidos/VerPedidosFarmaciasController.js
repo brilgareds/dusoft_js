@@ -231,6 +231,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
 
                 $scope.rootVerPedidosFarmacias = {};
+                $scope.$$watchers = null;
 
             });
             

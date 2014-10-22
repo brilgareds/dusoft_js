@@ -7,9 +7,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
         '$scope', '$rootScope', 'Request',
         'Empresa', 'Cliente', 'PedidoVenta',
         'API', "socket", "AlertService",
-        '$state',
+        '$state','Usuario', 'ProductoPedido',
 
-        function($scope, $rootScope, Request, Empresa, Cliente, PedidoVenta, API, socket, AlertService, $state) {
+        function($scope, $rootScope, Request, Empresa, Cliente, PedidoVenta, API, socket, AlertService, $state, Usuario, ProductoPedido) {
+            
+            that = this;
             
             $scope.$on('cargarGridSeleccionadoSlide', function(event, mass) {
                 //Recibimos la GRID del PADRE: -> mass
@@ -24,51 +26,181 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 $scope.rootSeleccionProductoFarmacia = {};
             };
 
-            $rootScope.$on("mostrarseleccionproducto", function(e, datos) {
+            $rootScope.$on("mostrarseleccionproducto", function(e, tipo_cliente, datos_de, pedido) {
+                
+                console.log("Pedido desde CrearPedidoFarmacia: ", pedido);
+                
+                /* Construcción del Pedido - Datos */
+                
+//                datos_pedido = {
+//                    numero_pedido: obj.numero_pedido,
+//                    fecha_registro: obj.fecha_registro,
+//                    descripcion_estado_actual_pedido: obj.descripcion_estado_actual_pedido,
+//                    estado_actual_pedido: obj.estado_actual_pedido,
+//                    estado_separacion: obj.estado_separacion
+//                };
+//                
+//                pedido.setDatos(datos_pedido);
+//                
+//                pedido.agregarProducto(producto); // Agrega producto al listado de productos
+                
+                /**/
                 
                 $scope.rootSeleccionProductoFarmacia = {};
-                $scope.rootSeleccionProductoFarmacia.tipo_cliente = datos;
+                
+                $scope.rootSeleccionProductoFarmacia.session = {
+                    usuario_id: Usuario.usuario_id,
+                    auth_token: Usuario.token
+                };
+                
+                $scope.rootSeleccionProductoFarmacia.tipo_cliente = tipo_cliente;
 
 //                $scope.rootSeleccionProductoFarmacia.paginas = 0;
-//                $scope.rootSeleccionProductoFarmacia.items = 0;
+                $scope.rootSeleccionProductoFarmacia.items = 0;
                 $scope.rootSeleccionProductoFarmacia.termino_busqueda = "";
                 $scope.rootSeleccionProductoFarmacia.ultima_busqueda = "";
                 $scope.rootSeleccionProductoFarmacia.paginaactual = 1;
+                
+                $scope.rootSeleccionProductoFarmacia.ultima_busqueda = {};
+                $scope.rootSeleccionProductoFarmacia.ultima_busqueda.termino_busqueda = "";
+                //$scope.rootSeleccionProductoFarmacia.ultima_busqueda.seleccion = "";
+                
+                $scope.rootSeleccionProductoFarmacia.de_empresa_id = datos_de.empresa_id;
+                $scope.rootSeleccionProductoFarmacia.de_centro_utilidad_id = datos_de.centro_utilidad_id;
+                $scope.rootSeleccionProductoFarmacia.de_bodega_id = datos_de.bodega_id;
+                
+//                console.log("ID Empresa: ",$scope.rootSeleccionProductoFarmacia.de_empresa_id);
+//                console.log("ID Centro Utilidad: ",$scope.rootSeleccionProductoFarmacia.de_centro_utilidad_id);
+//                console.log("ID Bodega: ",$scope.rootSeleccionProductoFarmacia.de_bodega_id);
 
                 $scope.rootSeleccionProductoFarmacia.listado_productos = [];
                 $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados = [];
+                $scope.rootSeleccionProductoFarmacia.pedido = pedido;
                 
-                $scope.buscarSeleccionProducto("");
+                $scope.buscarSeleccionProducto($scope.obtenerParametros(),"");
             });
             
-            $scope.buscarSeleccionProducto = function(termino, paginando) {
+            $scope.obtenerParametros = function(){
 
                 //valida si cambio el termino de busqueda
-                if ($scope.rootSeleccionProductoFarmacia.ultima_busqueda != $scope.rootSeleccionProductoFarmacia.termino_busqueda) {
+                if($scope.rootSeleccionProductoFarmacia.ultima_busqueda.termino_busqueda != $scope.rootSeleccionProductoFarmacia.termino_busqueda){
                     $scope.rootSeleccionProductoFarmacia.paginaactual = 1;
                 }
+
+                var obj = {
+                    session:$scope.rootSeleccionProductoFarmacia.session,
+                    data:{
+                        productos:{
+                            
+                            empresa_id: $scope.rootSeleccionProductoFarmacia.de_empresa_id,
+                            centro_utilidad_id: $scope.rootSeleccionProductoFarmacia.de_centro_utilidad_id,
+                            bodega_id: $scope.rootSeleccionProductoFarmacia.de_bodega_id,
+                            pagina_actual: $scope.rootSeleccionProductoFarmacia.paginaactual,
+                            termino_busqueda: $scope.rootSeleccionProductoFarmacia.termino_busqueda,
+                            filtro:{}
+                        }
+                    }
+                };
+
+                return obj;
+            }
+            
+            $scope.buscarSeleccionProducto = function(obj, paginando) {
+
+                //valida si cambio el termino de busqueda
+//                if ($scope.rootSeleccionProductoFarmacia.ultima_busqueda != $scope.rootSeleccionProductoFarmacia.termino_busqueda) {
+//                    $scope.rootSeleccionProductoFarmacia.paginaactual = 1;
+//                }
                 
-                for(var i=0; i<10; i++)
-                {
-                    var obj = { 
-                            codigo_producto: '123456'+i,
-                            descripcion: 'LOBOTOMICINA X '+i,
-                            molecula: 'LOBOTONINA'+i,
-                            existencia_farmacia: '10'+i,
-                            existencia_bodega: '20'+i,
-                            existencia_disponible: '10'+i,
-                            cantidad_solicitada: 0,
-                            fila_activa: true,
-                            tipo_boton: 'success',
-                            etiqueta_boton: 'Incluir'
-                        };
+//                for(var i=0; i<10; i++)
+//                {
+//                    var obj = { 
+//                            codigo_producto: '123456'+i,
+//                            descripcion: 'LOBOTOMICINA X '+i,
+//                            molecula: 'LOBOTONINA'+i,
+//                            existencia_farmacia: '10'+i,
+//                            existencia_bodega: '20'+i,
+//                            existencia_disponible: '10'+i,
+//                            cantidad_solicitada: 0,
+//                            fila_activa: true,
+//                            tipo_boton: 'success',
+//                            etiqueta_boton: 'Incluir'
+//                        };
+//
+//                    $scope.rootSeleccionProductoFarmacia.listado_productos.push(obj);
+//
+//                }
 
-                    $scope.rootSeleccionProductoFarmacia.listado_productos.push(obj);
+                var url = API.PEDIDOS.LISTAR_PRODUCTOS;
 
-                }
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    
+                    console.log("Datos Listado Productos: ",data);
+                    
+                    if(data.status == 200) {
+                        
+                        $scope.rootSeleccionProductoFarmacia.ultima_busqueda = {
+                                termino_busqueda: $scope.rootSeleccionProductoFarmacia.termino_busqueda,
+                                //seleccion: $scope.rootVerPedidosFarmacias.seleccion
+                        }
+                        
+                        that.renderProductosFarmacia(data.obj, paginando);
+                    }
+
+                });
                 
                 $scope.renderGrid();
             };
+            
+            that.renderProductosFarmacia = function(data, paginando) {
+
+                $scope.rootSeleccionProductoFarmacia.items = data.lista_productos.length;
+                
+                //se valida que hayan registros en una siguiente pagina
+                if(paginando && $scope.rootSeleccionProductoFarmacia.items == 0){
+                    if($scope.rootSeleccionProductoFarmacia.paginaactual > 1){
+                        $scope.rootSeleccionProductoFarmacia.paginaactual--;
+                    }
+                    AlertService.mostrarMensaje("warning","No se encontraron más registros");
+                    return;
+                }
+
+                //$scope.rootSeleccionProductoFarmacia.Empresa.vaciarPedidosFarmacia();
+                //--$scope.rootSeleccionProductoFarmacia.listado_productos = data.lista_productos;
+                $scope.rootSeleccionProductoFarmacia.listado_productos = [];
+               
+                for (var i in data.lista_productos) {
+
+                    var obj = data.lista_productos[i];
+                    
+                    var producto = that.crearProducto(obj);
+
+                    $scope.rootSeleccionProductoFarmacia.listado_productos.push(producto);
+
+                }
+
+            };
+
+            that.crearProducto = function(obj) {
+                
+                //var pedido = PedidoVenta.get();
+                
+                producto = {
+                    codigo_producto: obj.codigo_producto,
+                    descripcion: obj.nombre_producto,
+                    molecula: "",
+                    existencia_farmacia: 0,
+                    existencia_bodega: obj.existencia,
+                    existencia_disponible: 0,
+                    cantidad_solicitada: 0,
+                    fila_activa: true,
+                    tipo_boton: 'success',
+                    etiqueta_boton: 'Incluir'
+                };
+                
+                return producto;
+            };
+
             
             /*  Construcción de Grid    */
 
@@ -173,22 +305,23 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             });
             
             //eventos de widgets
-            $scope.onKeySeleccionProductoPress = function(ev, termino_busqueda) {
+            $scope.onKeySeleccionProductoPress = function(ev) {
                  //if(!$scope.buscarSeleccionProducto($scope.DocumentoTemporal.bodegas_doc_id)) return;
 
                  if (ev.which == 13) {
-                     $scope.buscarSeleccionProducto(termino_busqueda);
+                     console.log("Término Búsqueda: ",$scope.rootSeleccionProductoFarmacia.termino_busqueda);
+                     $scope.buscarSeleccionProducto($scope.obtenerParametros());
                  }
             };
 
             $scope.paginaAnterior = function() {
                  $scope.rootSeleccionProductoFarmacia.paginaactual--;
-                 $scope.buscarSeleccionProducto($scope.rootSeleccionProductoFarmacia.termino_busqueda, true);
+                 $scope.buscarSeleccionProducto($scope.obtenerParametros(), true);
             };
 
             $scope.paginaSiguiente = function() {
                  $scope.rootSeleccionProductoFarmacia.paginaactual++;
-                 $scope.buscarSeleccionProducto($scope.rootSeleccionProductoFarmacia.termino_busqueda, true);
+                 $scope.buscarSeleccionProducto($scope.obtenerParametros(), true);
             };
 
             $scope.valorSeleccionado = function() {

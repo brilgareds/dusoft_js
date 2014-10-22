@@ -58,6 +58,13 @@ margin-bottom: 0px;
     height: 150px;
 }
 
+.mediaPantallaGrid {
+    display: block;
+    border: 1px solid rgb(212,212,212);
+    width: 100%; 
+    height: 250px;
+}
+
 .backWhite{
     background-color: White;
 }

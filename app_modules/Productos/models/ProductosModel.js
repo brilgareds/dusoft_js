@@ -5,12 +5,10 @@ var ProductosModel = function() {
 
 ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad_id, bodega_id, termino_busqueda, pagina, callback) {
 
-    var offset = G.settings.limit * pagina;
-
     var sql = " select\
                 a.empresa_id, \
                 a.centro_utilidad,\
-                a.bodega,\\n\
+                a.bodega,\
                 f.descripcion as descripcion_laboratorio,    \
                 e.descripcion as descripcion_molecula,\
                 b.codigo_producto, \
@@ -48,9 +46,9 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
                 inner join inv_clases_inventarios f ON e.grupo_id = f.grupo_id and e.clase_id = f.clase_id\
                 where a.empresa_id= $1 and a.centro_utilidad = $2 and a.bodega = $3 \
                 and ( b.codigo_producto ILIKE $4 or b.descripcion ILIKE $4 ) \
-                ORDER BY 5 DESC limit $5 offset $6 ";
+                ORDER BY 7 DESC ";
 
-    G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, "%" + termino_busqueda + "%", G.settings.limit, offset], function(err, rows, result) {
+    G.db.pagination(sql, [empresa_id, centro_utilidad_id, bodega_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result) {
         callback(err, rows);
     });
 

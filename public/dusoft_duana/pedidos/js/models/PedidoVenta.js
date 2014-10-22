@@ -24,7 +24,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.lista_productos.push(producto);
         };
         
-        PedidoVenta.prototype.obtenerProductos = function(producto) {
+        PedidoVenta.prototype.obtenerProductos = function() {
             return this.lista_productos;
         };
         

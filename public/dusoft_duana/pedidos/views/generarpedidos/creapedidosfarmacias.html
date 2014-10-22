@@ -80,11 +80,11 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             </br>
-                                            <h4 class="h4MarginTopBottom">Empresa: </h4>
+                                            <h4 class="h4MarginTopBottom">Farmacia: </h4>
 
-                                            <select ui-select2="paraseleccionempresa"  class="form-control selectgeneral pull-left" ng-disabled="rootCreaPedidoFarmacia.bloqueo_producto_incluido" ng-model="rootCreaPedidoFarmacia.para_seleccion_empresa"  placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
+                                            <select ui-select2="paraseleccionempresa"  class="form-control selectgeneral pull-left" ng-disabled="rootCreaPedidoFarmacia.bloqueo_producto_incluido" ng-model="rootCreaPedidoFarmacia.para_seleccion_empresa"  placeholder="Seleccionar Farmacia" ng-change="valorSeleccionado()">
                                                 <option></option>
-                                                <option ng-repeat="empresa in  rootCreaPedidoFarmacia.para_lista_empresas"  ng-value="empresa.empresa_id" >{{empresa.nombre_empresa}}</option>
+                                                <option ng-repeat="empresa in  rootCreaPedidoFarmacia.para_lista_empresas"  ng-value="[empresa.empresa_id, empresa.nombre_empresa]" >{{empresa.nombre_empresa}}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -96,7 +96,7 @@
 
                                             <select ui-select2="paraseleccioncentroutilidad"  class="form-control selectgeneral pull-left" ng-disabled="rootCreaPedidoFarmacia.bloqueo_producto_incluido || rootCreaPedidoFarmacia.bloqueo_centro_utilidad_para" ng-model="rootCreaPedidoFarmacia.para_seleccion_centro_utilidad"  placeholder="Seleccionar Centro" ng-change="valorSeleccionado()">
                                                 <option></option>
-                                                <option ng-repeat="centro_utilidad in rootCreaPedidoFarmacia.para_lista_centro_utilidad"  ng-value="centro_utilidad.centro_utilidad_id" >{{centro_utilidad.nombre_centro_utilidad}}</option>
+                                                <option ng-repeat="centro_utilidad in rootCreaPedidoFarmacia.para_lista_centro_utilidad"  ng-value="[centro_utilidad.centro_utilidad_id, centro_utilidad.nombre_centro_utilidad]" >{{centro_utilidad.nombre_centro_utilidad}}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -108,7 +108,7 @@
 
                                             <select ui-select2="paraseleccionbodega"  class="form-control selectgeneral pull-left" ng-disabled="rootCreaPedidoFarmacia.bloqueo_producto_incluido || rootCreaPedidoFarmacia.bloqueo_bodega_para" ng-model="rootCreaPedidoFarmacia.para_seleccion_bodega"  placeholder="Seleccionar Bodega" ng-change="valorSeleccionado()">
                                                 <option></option>
-                                                <option ng-repeat="bodega in  rootCreaPedidoFarmacia.para_lista_bodegas"  ng-value="bodega.bodega_id" >{{bodega.nombre_bodega}}</option>
+                                                <option ng-repeat="bodega in  rootCreaPedidoFarmacia.para_lista_bodegas"  ng-value="[bodega.bodega_id, bodega.nombre_bodega]" >{{bodega.nombre_bodega}}</option>
                                             </select>
                                         </div>
                                     </div>

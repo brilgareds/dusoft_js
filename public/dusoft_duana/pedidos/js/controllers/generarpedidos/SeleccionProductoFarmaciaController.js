@@ -7,9 +7,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
         '$scope', '$rootScope', 'Request',
         'Empresa', 'Cliente', 'PedidoVenta',
         'API', "socket", "AlertService",
-        '$state','Usuario',
+        '$state','Usuario', 'ProductoPedido',
 
-        function($scope, $rootScope, Request, Empresa, Cliente, PedidoVenta, API, socket, AlertService, $state, Usuario) {
+        function($scope, $rootScope, Request, Empresa, Cliente, PedidoVenta, API, socket, AlertService, $state, Usuario, ProductoPedido) {
             
             that = this;
             
@@ -26,7 +26,25 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 $scope.rootSeleccionProductoFarmacia = {};
             };
 
-            $rootScope.$on("mostrarseleccionproducto", function(e, tipo_cliente, datos_de) {
+            $rootScope.$on("mostrarseleccionproducto", function(e, tipo_cliente, datos_de, pedido) {
+                
+                console.log("Pedido desde CrearPedidoFarmacia: ", pedido);
+                
+                /* Construcción del Pedido - Datos */
+                
+//                datos_pedido = {
+//                    numero_pedido: obj.numero_pedido,
+//                    fecha_registro: obj.fecha_registro,
+//                    descripcion_estado_actual_pedido: obj.descripcion_estado_actual_pedido,
+//                    estado_actual_pedido: obj.estado_actual_pedido,
+//                    estado_separacion: obj.estado_separacion
+//                };
+//                
+//                pedido.setDatos(datos_pedido);
+//                
+//                pedido.agregarProducto(producto); // Agrega producto al listado de productos
+                
+                /**/
                 
                 $scope.rootSeleccionProductoFarmacia = {};
                 
@@ -57,6 +75,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 $scope.rootSeleccionProductoFarmacia.listado_productos = [];
                 $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados = [];
+                $scope.rootSeleccionProductoFarmacia.pedido = pedido;
                 
                 $scope.buscarSeleccionProducto($scope.obtenerParametros(),"");
             });
@@ -290,6 +309,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                  //if(!$scope.buscarSeleccionProducto($scope.DocumentoTemporal.bodegas_doc_id)) return;
 
                  if (ev.which == 13) {
+                     console.log("Término Búsqueda: ",$scope.rootSeleccionProductoFarmacia.termino_busqueda);
                      $scope.buscarSeleccionProducto($scope.obtenerParametros());
                  }
             };

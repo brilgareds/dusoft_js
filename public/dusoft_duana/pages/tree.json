@@ -42,7 +42,6 @@
         "url": "OperariosBodega",
         "parentname": "parametrizacion"
     },
-
     {
         "id": "11",
         "parent": "8",
@@ -76,5 +75,20 @@
         "icon": "glyphicon glyphicon-list-alt",
         "parentname": "pedidos",
         "state": "VerPedidosFarmacias"
+    },
+    {
+        "id": "16",
+        "parent": "#",
+        "text": "Ordenes de Compra",
+        "url": "OrdenesCompra"
+    },
+    {
+        "id": "17",
+        "parent": "16",
+        "text": "Gestionar Orden de Compra",
+        "url": "ListarOrdenes",
+        "icon": "glyphicon glyphicon-list-alt",
+        "parentname": "OrdenesCompra",
+        "state": "ListarOrdenes"
     }
 ]

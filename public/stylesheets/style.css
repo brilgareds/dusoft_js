@@ -1,106 +1,106 @@
 
 @font-face {
-  font-family: 'Glyphicons Halflings';
-  src: url('../fonts/glyphicons-halflings-regular.eot');
-  src: url('../fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('../fonts/glyphicons-halflings-regular.woff') format('woff'), url('../fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('../fonts/glyphicons-halflings-regular.svg#glyphicons-halflingsregular') format('svg');
+    font-family: 'Glyphicons Halflings';
+    src: url('../fonts/glyphicons-halflings-regular.eot');
+    src: url('../fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('../fonts/glyphicons-halflings-regular.woff') format('woff'), url('../fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('../fonts/glyphicons-halflings-regular.svg#glyphicons-halflingsregular') format('svg');
 }
 a {
-  color: #00B7FF;
+    color: #00B7FF;
 }
 
 .alertcontenido{
-	max-width: 500px;
-	width: auto;
-	margin: 0 auto;
-	height: 30px;
-	line-height: 1px;
+    max-width: 500px;
+    width: auto;
+    margin: 0 auto;
+    height: 30px;
+    line-height: 1px;
 }
 
 .alertcontenido .modal-body {
-	max-height: 40px;
+    max-height: 40px;
 }
 
 body{
-	
+
 }
 
 
 .bodybg{
 
-	background-image:url(../images/lock.jpg);
-	background-size: cover;
-	background-repeat: no-repeat;
+    background-image:url(../images/lock.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 
 
 .botonmenu{
-	width: 22px;
-	height: 22px;
-	padding:4px;
-	background-color: #428bca!important;
+    width: 22px;
+    height: 22px;
+    padding:4px;
+    background-color: #428bca!important;
 }
 
 div.
 {
-	padding-top: 0px;
-	padding-bottom: 0px;	
+    padding-top: 0px;
+    padding-bottom: 0px;	
 }
 
 .contenedormenu .botonmenu{
-	display: none;
+    display: none;
 
 }
 
 .contenedormenu .navbar{
-	background-color: #e7f2fa;
+    background-color: #e7f2fa;
 }
 
 
 html body {
-  font: 13px "Lucida Grande", Helvetica, Arial, sans-serif;
-  /*font-size: 12px;*/
+    font: 13px "Lucida Grande", Helvetica, Arial, sans-serif;
+    /*font-size: 12px;*/
 }
 
 html, body{
-  height: 100%;
-  margin:0;
-  padding:0;
+    height: 100%;
+    margin:0;
+    padding:0;
 }
 
 .cellPedido{
-	background-color: black;
+    background-color: black;
 }
 
 .contenedor{
-	padding: 10px;
-	margin-top: 60px;
+    padding: 10px;
+    margin-top: 60px;
 }
 
 #contenedormodalslide{
-	height: 105%;
-	width: 100%;
-	z-index: 100;
-	position: absolute;
-	top: 0px;
-	display: none;
+    height: 105%;
+    width: 100%;
+    z-index: 100;
+    position: absolute;
+    top: 0px;
+    display: none;
 
 }
 
 .contenidoPrincipal{
-	height: 810px;
-	width: 100%;
+    height: 810px;
+    width: 100%;
 }
 
 .contenedorcontenido{
-	width: 100%;
+    width: 100%;
 }
 
 .checkseleccion input[type=checkbox], input[type=radio]{
-	position: absolute;
-	margin: 0 auto!important;
-	top: 8px;
-	right: 0px;
-	left: 0px;
+    position: absolute;
+    margin: 0 auto!important;
+    top: 8px;
+    right: 0px;
+    left: 0px;
 }
 
 .defaultGrid {
@@ -110,145 +110,145 @@ html, body{
 }
 
 .defaultcursor{
-	cursor:default;
+    cursor:default;
 }
 
 ul.dropdown-menu {
-	padding: 0px;
+    padding: 0px;
     overflow: hidden;
 }
 
 input.grid-inline-input{
-	height: 22px;
-	margin-top: 3px;
+    height: 22px;
+    margin-top: 3px;
 }
 
 html{
-	overflow-x: hidden; 
-	background-color: transparent;
-	height: 101%;
+    overflow-x: hidden; 
+    background-color: transparent;
+    height: 101%;
 }
 
 input.readonlyinput[readonly]{
-	cursor: default;
+    cursor: default;
 }
 
 .contenedormenu .jstree-hovered{
-	background-color: #beebff!important;
+    background-color: #beebff!important;
 }
 
 .kardex{
-	width: 100%;
-	height:auto;
-	top:-16px;
-	position: absolute;
-	background-color: rgba(248,248,248,0.9);
-	z-index: 4;
+    width: 100%;
+    height:auto;
+    top:-16px;
+    position: absolute;
+    background-color: rgba(248,248,248,0.9);
+    z-index: 4;
 }
 
 .lockScreen .text-muted{
-	font-size: 14px;
+    font-size: 14px;
 }
 
 .largeCell{
-	overflow-y:auto;
-	height: 250px;
+    overflow-y:auto;
+    height: 250px;
 }
 
 .loaderimg{
-	margin-right: 2px;
+    margin-right: 2px;
 }
 
 
 .loadingContent{
-	background-color: #E6E6E6;
-	bottom: 0px;
-	height: 30px;
-	margin: auto;
-	left: 0px;
-	padding-top: 2px;
-	position: absolute;
-	right: 0px;		
-	text-align: center;
-	top: 0px;
-	width: 200px;
-	-webkit-box-shadow: 0px 1px 11px 0px rgba(50, 50, 50, 0.75);
-	-moz-box-shadow:    0px 1px 11px 0px rgba(50, 50, 50, 0.75);
-	box-shadow:         0px 1px 11px 0px rgba(50, 50, 50, 0.75);
+    background-color: #E6E6E6;
+    bottom: 0px;
+    height: 30px;
+    margin: auto;
+    left: 0px;
+    padding-top: 2px;
+    position: absolute;
+    right: 0px;		
+    text-align: center;
+    top: 0px;
+    width: 200px;
+    -webkit-box-shadow: 0px 1px 11px 0px rgba(50, 50, 50, 0.75);
+    -moz-box-shadow:    0px 1px 11px 0px rgba(50, 50, 50, 0.75);
+    box-shadow:         0px 1px 11px 0px rgba(50, 50, 50, 0.75);
 }
 
 
 #loadingWidget{
-	bottom: 0px;
-	height: 100%;
-	position:absolute;
-	top:0px;
-	width: 100%;
-	z-index: 10000;
+    bottom: 0px;
+    height: 100%;
+    position:absolute;
+    top:0px;
+    width: 100%;
+    z-index: 10000;
 }
 
 .lockcontainer{
-	position: absolute;
-	top:23%;
-	right: 0px;
-	left:0px;
-	bottom: 0px;
+    position: absolute;
+    top:23%;
+    right: 0px;
+    left:0px;
+    bottom: 0px;
 }
 
 .vbody{
-	top: 21%;
+    top: 21%;
 }
 
 .lockScreen{
-	position: absolute;
-	top:0px;
-	right: 0px;
-	left:0px;
-	bottom: 0px;
-	background-color:rgba(0,0,0,0.6);
-	background-image:url(../images/lock.jpg);
-	background-size: 100% 100%;
-	z-index: 10000000;
+    position: absolute;
+    top:0px;
+    right: 0px;
+    left:0px;
+    bottom: 0px;
+    background-color:rgba(0,0,0,0.6);
+    background-image:url(../images/lock.jpg);
+    background-size: 100% 100%;
+    z-index: 10000000;
 }
 
 
 .logincontainer{
-	width: 100%;
+    width: 100%;
 }
 
 #loginform{
-	margin-bottom: 0px;
+    margin-bottom: 0px;
 }
 .menutitulo{
-	text-align: center;
+    text-align: center;
 }
 
 .modal-view{
-	overflow-y:hidden;
+    overflow-y:hidden;
 }
- nav.navbar-fixed-top{
-	background-color: #428bca;
-	border-color: #428bca;
+nav.navbar-fixed-top{
+    background-color: #428bca;
+    border-color: #428bca;
 }
 
 nav.navbar-default .navbar-nav>li>a, nav.navbar-default .navbar-brand {
-	color:white;
+    color:white;
 }
 
 
 nav.navbar-default .navbar-nav>li>a:hover{
-	color: white;
+    color: white;
 }
 
 .ngCanvas .ngRow.even{
-	background-color: #f9f9f9;
+    background-color: #f9f9f9;
 }
 
 .ngCanvas .ngRow.odd{
-	background-color: white;
+    background-color: white;
 }
 
- .navbar-content
+.navbar-content
 {
     width:320px;
     padding: 15px;
@@ -269,44 +269,44 @@ nav.navbar-default .navbar-nav>li>a:hover{
 
 
 .ngGrid  .ngRow:hover{
-	background-color:#eee;
+    background-color:#eee;
 }
 
 div.ngHeaderCell	{
-	padding-top:0px;
-	text-align: left;
+    padding-top:0px;
+    text-align: left;
 }
 
 #systemAlerlt{
-	position: fixed;
-	top: 5px;
-	display: none;
-	z-index: 2000;
-	height: 60px;
-	left: 0px;
-	right:0px;
-	bottom:0px;
-	text-align: center;
+    position: fixed;
+    top: 5px;
+    display: none;
+    z-index: 2000;
+    height: 60px;
+    left: 0px;
+    right:0px;
+    bottom:0px;
+    text-align: center;
 }
 
 .tabledisplay{
-	display: table;
-	height: 100%;
+    display: table;
+    height: 100%;
 }
 
 .tablecell{
-	display: table-cell;
-	float: none!important;
-	vertical-align: middle;
+    display: table-cell;
+    float: none!important;
+    vertical-align: middle;
 }
 
 .tabkardex .grupodefault{
-	padding-right: 0px;
+    padding-right: 0px;
 }
 
 .txt-center{
-	text-align: center;
-	padding-top: 4px;
+    text-align: center;
+    padding-top: 4px;
 }
 
 .vcenter {
@@ -320,45 +320,45 @@ div.ngHeaderCell	{
 /**media query*/
 
 @media screen and ( max-width: 1700px ) and (min-width: 769px) {
-	.contenedormenu .botonmenu{
-		display: inline;
-	}
+    .contenedormenu .botonmenu{
+        display: inline;
+    }
 
-  div.contenedormenu {
-    position: fixed;
-    z-index: 5;
-    width: 300px;
-    top:53px;
-    height: 760px;
-  }
+    div.contenedormenu {
+        position: fixed;
+        z-index: 5;
+        width: 300px;
+        top:53px;
+        height: 760px;
+    }
 
-  div.contenedormenu .navbar{
-  	/*border: 1px solid gray;*/
-  	background-color: rgba(231,242,250,0.9);
-  	-moz-box-shadow: 0 0 1px 1px #888;
-	-webkit-box-shadow: 0 0 1px 1px #888;
-	box-shadow: 0 0 1px 1px #888;
-  	height: 100%;
-  }
+    div.contenedormenu .navbar{
+        /*border: 1px solid gray;*/
+        background-color: rgba(231,242,250,0.9);
+        -moz-box-shadow: 0 0 1px 1px #888;
+        -webkit-box-shadow: 0 0 1px 1px #888;
+        box-shadow: 0 0 1px 1px #888;
+        height: 100%;
+    }
 
-  div.cerrarmenu{
-  	left: -261px;
-  }
+    div.cerrarmenu{
+        left: -261px;
+    }
 
 
 
-  div.mostrarmenu{
-  	left: -14px;
-  }
+    div.mostrarmenu{
+        left: -14px;
+    }
 
-  div.contenedorDerecho{
-  	width: 98%;
-  	margin-left:10px;
-  }
+    div.contenedorDerecho{
+        width: 98%;
+        margin-left:10px;
+    }
 
-  div.contenidoPrincipal{
-  	width: 100%;
-  }
+    div.contenidoPrincipal{
+        width: 100%;
+    }
 }
 
 
@@ -368,21 +368,21 @@ div.ngHeaderCell	{
     .btn-accion{
         width: 100%;
     }
-   
+
 }
 
 @font-face {
-  font-family: 'Glyphicons Halflings';
+    font-family: 'Glyphicons Halflings';
 }
 
 
 div.selectgeneral{
-	padding-right:0px;
-	padding-left:0px;
-	border:0px;
-	-webkit-box-shadow: none;
-	-moz-box-shadow: none;
-	box-shadow: none;
+    padding-right:0px;
+    padding-left:0px;
+    border:0px;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
 }
 
 .slide{
@@ -393,4 +393,16 @@ div.selectgeneral{
     z-index: 101;
     margin-bottom:5px;
     right: 5px;
+}
+
+.dropdown-button.ngCell{
+    overflow: visible;
+}
+ul.dropdown-options{
+    text-align: left;
+    left: -100px;
+}
+
+textarea { 
+    resize: none; 
 }

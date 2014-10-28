@@ -16,6 +16,29 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.$on('cargarGridSeleccionadoSlide', function(event, mass) {
                 //Recibimos la GRID del PADRE: -> mass
                 $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados = mass;
+                
+                console.log("EL CONTENIDO RECIBIDO ES: ", mass);
+                
+                /* Utilizar la siguiente información  para modificar los campos de la grid fuente. Se debe hacer búsqueda por id de producto */
+                
+                /*
+                    $scope.rootSeleccionProductoFarmacia.listado_productos[row.entity.sourceIndex].fila_activa = true;
+                    $scope.rootSeleccionProductoFarmacia.listado_productos[row.entity.sourceIndex].tipo_boton = 'success';
+                    $scope.rootSeleccionProductoFarmacia.listado_productos[row.entity.sourceIndex].etiqueta_boton = 'Incluir';
+                 
+                    object.each(function(index, value)){
+                        console.log(value);
+                    }
+                 
+                 */
+                if($scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados != undefined){
+                
+                    $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.each(function(index, value){
+                        console.log("Index: ", index);
+                        console.log("Value: ", value);
+                    });
+                }
+                
             });
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
@@ -185,7 +208,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
                 //var pedido = PedidoVenta.get();
                 
-                producto = {
+                var producto = {
                     codigo_producto: obj.codigo_producto,
                     descripcion: obj.nombre_producto,
                     molecula: "",
@@ -273,6 +296,22 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     //$scope.listado_productos_seleccionados.push(obj_sel);
 
                     $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.unshift(obj_sel); 
+                    
+                    /* Crear aquí el producto e insertarlo en lista de productos del pedido */
+                    
+                    var producto = ProductoPedido.get(
+                            row.entity.codigo_producto,
+                            row.entity.descripcion,
+                            parseInt(row.entity.existencia_bodega),
+                            0,
+                            parseInt(row.entity.cantidad_solicitada)
+                        );
+                    
+                    console.log("Producto creado: ", producto);
+                    
+                    $scope.rootSeleccionProductoFarmacia.pedido.agregarProducto(producto);
+
+                    /*************************************************************************/                    
 
                     $scope.$emit('cargarGridPrincipal', $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados);
 
@@ -286,6 +325,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 $scope.rootSeleccionProductoFarmacia.listado_productos[row.entity.sourceIndex].etiqueta_boton = 'Incluir';
                 
                 $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.splice(row.rowIndex,1);
+                $scope.rootSeleccionProductoFarmacia.pedido.eliminarProducto(row.rowIndex);
                 
                 $scope.$emit('cargarGridPrincipal', $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados);
                 

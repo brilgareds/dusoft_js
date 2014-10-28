@@ -46,7 +46,7 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
                 inner join inv_clases_inventarios f ON e.grupo_id = f.grupo_id and e.clase_id = f.clase_id\
                 where a.empresa_id= $1 and a.centro_utilidad = $2 and a.bodega = $3 \
                 and ( b.codigo_producto ILIKE $4 or b.descripcion ILIKE $4 ) \
-                ORDER BY 7 DESC ";
+                ORDER BY 7 ASC ";
 
     G.db.pagination(sql, [empresa_id, centro_utilidad_id, bodega_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result) {
         callback(err, rows);

@@ -1,5 +1,5 @@
 {
-    "module": "Kardex",
+    "module": "Empresas",
     "dependency": {
         "controllers": [{
                 "empresas_controller": {

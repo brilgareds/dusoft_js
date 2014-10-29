@@ -1,5 +1,5 @@
 {
-    "module": "Kardex",
+    "module": "CentrosUtilidad",
     "dependency": {
         "controllers": [{
                 "centros_utilidad_controller": {

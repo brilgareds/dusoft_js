@@ -26,9 +26,9 @@
                                             </br>
                                             <h4 class="h4MarginTopBottom">Empresa: </h4>
 
-                                            <select ui-select2="deseleccionempresa"  class="form-control selectgeneral pull-left" ng-disabled="bloqueo_producto_incluido" ng-model="de_seleccion_empresa"  placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
+                                            <select ui-select2="deseleccionempresa"  class="form-control selectgeneral pull-left" ng-disabled="rootCreaPedidoFarmacia.bloqueo_producto_incluido" ng-model="rootCreaPedidoFarmacia.de_seleccion_empresa"  placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
                                                 <option></option>
-                                                <option ng-repeat="empresa in  de_lista_empresas"  ng-value="empresa.id" >{{empresa.nombre}}</option>
+                                                <option ng-repeat="empresa in  rootCreaPedidoFarmacia.de_lista_empresas"  ng-value="empresa.empresa_id" >{{empresa.razon_social}}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -38,9 +38,9 @@
                                             </br>
                                             <h4 class="h4MarginTopBottom">Centro Utilidad: </h4>
 
-                                            <select ui-select2="deseleccioncentroutilidad"  class="form-control selectgeneral pull-left" ng-disabled="bloqueo_producto_incluido" ng-model="de_seleccion_centro_utilidad"  placeholder="Seleccionar Centro" ng-change="valorSeleccionado()">
+                                            <select ui-select2="deseleccioncentroutilidad"  class="form-control selectgeneral pull-left" ng-disabled="rootCreaPedidoFarmacia.bloqueo_producto_incluido || rootCreaPedidoFarmacia.bloqueo_centro_utilidad_de" ng-model="rootCreaPedidoFarmacia.de_seleccion_centro_utilidad"  placeholder="Seleccionar Centro" ng-change="valorSeleccionado()">
                                                 <option></option>
-                                                <option ng-repeat="centro_utilidad in  de_lista_centro_utilidad"  ng-value="centro_utilidad.id" >{{centro_utilidad.nombre}}</option>
+                                                <option ng-repeat="centro_utilidad in  rootCreaPedidoFarmacia.de_lista_centro_utilidad"  ng-value="centro_utilidad.centro_utilidad_id" >{{centro_utilidad.descripcion}}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -50,9 +50,9 @@
                                             </br>
                                             <h4 class="h4MarginTopBottom">Bodega: </h4>
 
-                                            <select ui-select2="deseleccionbodega"  class="form-control selectgeneral pull-left" ng-disabled="bloqueo_producto_incluido" ng-model="de_seleccion_bodega"  placeholder="Seleccionar Bodega" ng-change="valorSeleccionado()">
+                                            <select ui-select2="deseleccionbodega"  class="form-control selectgeneral pull-left" ng-disabled="rootCreaPedidoFarmacia.bloqueo_producto_incluido || rootCreaPedidoFarmacia.bloqueo_bodega_de" ng-model="rootCreaPedidoFarmacia.de_seleccion_bodega"  placeholder="Seleccionar Bodega" ng-change="valorSeleccionado()">
                                                 <option></option>
-                                                <option ng-repeat="bodega in  de_lista_bodegas"  ng-value="bodega.id" >{{bodega.nombre}}</option>
+                                                <option ng-repeat="bodega in  rootCreaPedidoFarmacia.de_lista_bodegas"  ng-value="bodega.bodega_id" >{{bodega.descripcion}}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -70,7 +70,7 @@
                                     </div> <!--/Div Izquierdo-->
 
                                     <div class="pull-right col-sm-12 col-md-6"> <!--Div Derecho-->
-                                        <h3 class="h4MarginTopBottom"><font color="blue">Pedido N°: {{pedido.numero_pedido}}</font></h3>
+                                        <h3 class="h4MarginTopBottom"><font color="blue">Pedido N°: {{rootCreaPedidoFarmacia.pedido.numero_pedido}}</font></h3>
                                     </div> <!--/Div Derecho-->
 
                                 </div> <!--/Div Encabezado-->
@@ -80,11 +80,11 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             </br>
-                                            <h4 class="h4MarginTopBottom">Empresa: </h4>
+                                            <h4 class="h4MarginTopBottom">Farmacia: </h4>
 
-                                            <select ui-select2="paraseleccionempresa"  class="form-control selectgeneral pull-left" ng-disabled="bloqueo_producto_incluido" ng-model="para_seleccion_empresa"  placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
+                                            <select ui-select2="paraseleccionempresa"  class="form-control selectgeneral pull-left" ng-disabled="rootCreaPedidoFarmacia.bloqueo_producto_incluido" ng-model="rootCreaPedidoFarmacia.para_seleccion_empresa"  placeholder="Seleccionar Farmacia" ng-change="valorSeleccionado()">
                                                 <option></option>
-                                                <option ng-repeat="empresa in  para_lista_empresas"  ng-value="empresa.id" >{{empresa.nombre}}</option>
+                                                <option ng-repeat="empresa in  rootCreaPedidoFarmacia.para_lista_empresas"  ng-value="[empresa.empresa_id, empresa.nombre_empresa]" >{{empresa.nombre_empresa}}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -94,9 +94,9 @@
                                             </br>
                                             <h4 class="h4MarginTopBottom">Centro Utilidad: </h4>
 
-                                            <select ui-select2="paraseleccioncentroutilidad"  class="form-control selectgeneral pull-left" ng-disabled="bloqueo_producto_incluido" ng-model="para_seleccion_centro_utilidad"  placeholder="Seleccionar Centro" ng-change="valorSeleccionado()">
+                                            <select ui-select2="paraseleccioncentroutilidad"  class="form-control selectgeneral pull-left" ng-disabled="rootCreaPedidoFarmacia.bloqueo_producto_incluido || rootCreaPedidoFarmacia.bloqueo_centro_utilidad_para" ng-model="rootCreaPedidoFarmacia.para_seleccion_centro_utilidad"  placeholder="Seleccionar Centro" ng-change="valorSeleccionado()">
                                                 <option></option>
-                                                <option ng-repeat="centro_utilidad in para_lista_centro_utilidad"  ng-value="centro_utilidad.id" >{{centro_utilidad.nombre}}</option>
+                                                <option ng-repeat="centro_utilidad in rootCreaPedidoFarmacia.para_lista_centro_utilidad"  ng-value="[centro_utilidad.centro_utilidad_id, centro_utilidad.nombre_centro_utilidad]" >{{centro_utilidad.nombre_centro_utilidad}}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -106,9 +106,9 @@
                                             </br>
                                             <h4 class="h4MarginTopBottom">Bodega: </h4>
 
-                                            <select ui-select2="paraseleccionbodega"  class="form-control selectgeneral pull-left" ng-disabled="bloqueo_producto_incluido" ng-model="para_seleccion_bodega"  placeholder="Seleccionar Bodega" ng-change="valorSeleccionado()">
+                                            <select ui-select2="paraseleccionbodega"  class="form-control selectgeneral pull-left" ng-disabled="rootCreaPedidoFarmacia.bloqueo_producto_incluido || rootCreaPedidoFarmacia.bloqueo_bodega_para" ng-model="rootCreaPedidoFarmacia.para_seleccion_bodega"  placeholder="Seleccionar Bodega" ng-change="valorSeleccionado()">
                                                 <option></option>
-                                                <option ng-repeat="bodega in  para_lista_bodegas"  ng-value="bodega.id" >{{bodega.nombre}}</option>
+                                                <option ng-repeat="bodega in  rootCreaPedidoFarmacia.para_lista_bodegas"  ng-value="[bodega.bodega_id, bodega.nombre_bodega]" >{{bodega.nombre_bodega}}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -150,7 +150,7 @@
                 
                 <tabset> <!--Grupo de Tabs-->
                     
-                    <tab disabled="bloquear" active="tab_estados.tab1">
+                    <tab disabled="rootCreaPedidoFarmacia.bloquear" active="rootCreaPedidoFarmacia.tab_estados.tab1">
                         
                         <tab-heading>
                             <b> Incluir Producto Manual</b>
@@ -159,23 +159,23 @@
                         <!--<button class="btn" ng-click="data.static2 = true">Select Static2 {{data.static2}}</button>-->
                         
                         <div class="panel-body">
-                            <button type="button" class="btn btn-default btn-sm" ng-disabled="bloquear" ng-click="onRowClickSelectProducto(2)">
+                            <button type="button" class="btn btn-default btn-sm" ng-disabled="rootCreaPedidoFarmacia.bloquear" ng-click="onRowClickSelectProducto(2)">
                                 <span class="glyphicon glyphicon-plus"></span> Incluir Producto
                             </button>
                             <div class="input-group navbar-form paddingRightZero">
-                                <input type="text" class="form-control pull-right" ng-disabled="bloquear" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">
+                                <input type="text" class="form-control pull-right" ng-disabled="rootCreaPedidoFarmacia.bloquear" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="rootCreaPedidoFarmacia.termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">
                                 <div class="input-group-btn" >
-                                    <button class="btn btn-default pull-right" type="submit" ng-disabled="bloquear" ng-click="buscarDetalleDocumentoTemporal(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                                    <button class="btn btn-default pull-right" type="submit" ng-disabled="rootCreaPedidoFarmacia.bloquear" ng-click="buscarDetalleDocumentoTemporal(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
                                 </div>
                             </div>
                         </div>
                         <div class="panel-body">
-                            <div class="auditadosGrid" ng-grid="lista_productos"></div>
+                            <div class="auditadosGrid" ng-grid="rootCreaPedidoFarmacia.lista_productos"></div>
                         </div>
                         
                     </tab>
                     
-                    <tab disabled="bloqueo_upload" active="tab_estados.tab2">
+                    <tab disabled="rootCreaPedidoFarmacia.bloqueo_upload" active="rootCreaPedidoFarmacia.tab_estados.tab2">
                         <tab-heading>
                             <b> Cargar Archivo Plano </b>
                         </tab-heading>
@@ -220,7 +220,7 @@
     </div>
     
     <div class="col-sm-12 btn-toolbar">
-        <button type="submit" ng-disabled="!bloqueo_producto_incluido" class="btn btn-accion btn-success pull-right">Generar Pedido</button>
+        <button type="submit" ng-disabled="!rootCreaPedidoFarmacia.bloqueo_producto_incluido" class="btn btn-accion btn-success pull-right">Generar Pedido</button>
         <button type="submit" class="btn btn-accion btn-warning pull-right" ng-click="abrirViewVerPedidosFarmacias()">Cancelar Pedido</button>
     </div>
 

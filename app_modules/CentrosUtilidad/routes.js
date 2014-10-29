@@ -1,9 +1,9 @@
 module.exports = function(app, di_container) {
 
   
-    var c_empresas = di_container.get("c_empresas");
+    var c_centros_utilidad = di_container.get("c_centros_utilidad");
     
-    app.post('/api/Kardex/listarProductos', function(req, res) {
-        c_empresas.listar_empresas(req, res);
+    app.post('/api/CentrosUtilidad/listarCentrosUtilidadEmpresa', function(req, res) {
+        c_centros_utilidad.listar_centros_utilidad_empresa(req, res);
     });
 };

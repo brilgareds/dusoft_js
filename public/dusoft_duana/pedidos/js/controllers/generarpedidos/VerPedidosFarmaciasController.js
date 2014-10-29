@@ -123,19 +123,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                 seleccion: $scope.rootVerPedidosFarmacias.seleccion
                         }
                         
-                        $scope.renderPedidosFarmacias(data.obj, paginando);
+                        that.renderPedidosFarmacias(data.obj, paginando);
                     }
-                    
-//                    if(data.obj.documentos_temporales != undefined) {
-//                        //callback(data.obj, paginando, tipo);
-//                        $scope.renderPedidosFarmacias(data.obj, paginando);
-//                    }
 
                 });
 
             };
 
-            $scope.renderPedidosFarmacias = function(data, paginando) {
+            that.renderPedidosFarmacias = function(data, paginando) {
 
                 $scope.rootVerPedidosFarmacias.items = data.pedidos_farmacias.length;
                 
@@ -154,7 +149,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                     var obj = data.pedidos_farmacias[i];
                     
-                    var pedido = $scope.crearPedido(obj);
+                    var pedido = that.crearPedido(obj);
 
                     $scope.rootVerPedidosFarmacias.Empresa.agregarPedidoFarmacia(pedido);
 
@@ -162,7 +157,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
             };
 
-            $scope.crearPedido = function(obj) {
+            that.crearPedido = function(obj) {
                 
                 var pedido = PedidoVenta.get();
                 
@@ -228,19 +223,15 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             $scope.editarPedidoFarmacia = function(data){
                 
-                $rootScope.pedidoseleccionado = data;
+                PedidoVenta.pedidoseleccionado = data.numero_pedido;
                 $state.go('CreaPedidosFarmacias');                
             }
             
             //Método para liberar Memoria de todo lo construido en ésta clase
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
 
-               /*$scope.listado_pedidos = [];
-               $scope.empresas = [];
-               $scope.ultima_busqueda = {};
-               $scope.lista_pedidos_farmacias = {};
-               $scope.estados = [];*/
                 $scope.rootVerPedidosFarmacias = {};
+                $scope.$$watchers = null;
 
             });
             

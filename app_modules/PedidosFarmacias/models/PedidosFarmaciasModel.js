@@ -15,10 +15,88 @@ PedidosFarmaciasModel.prototype.listar_empresas = function(usuario, callback) {
 
 };
 
+PedidosFarmaciasModel.prototype.listar_farmacias_usuario = function(tipo, usuario, empresa_id, centro_utilidad_id, callback) {
+
+    var sql = "";
+    var parametros = "";
+
+    if (tipo === '1') {
+
+        sql = " SELECT\
+                a.empresa_id,\
+                d.razon_social as nombre_empresa\
+                FROM userpermisos_pedidos_farmacia_a_bprincipal AS a\
+                JOIN bodegas as b ON (a.empresa_id = b.empresa_id) AND (a.centro_utilidad = b.centro_utilidad) AND (b.estado = '1')\
+                JOIN centros_utilidad as c ON (b.empresa_id = c.empresa_id) AND (b.centro_utilidad = c.centro_utilidad)\
+                JOIN empresas as d ON (c.empresa_id = d.empresa_id) AND (sw_activa = '1')\
+                WHERE a.usuario_id = $1 group by 1,2; ";
+
+        parametros = [usuario];
+    }
+
+    if (tipo === '2') {
+
+        sql = " SELECT\
+                a.centro_utilidad as centro_utilidad_id,\
+                c.descripcion as nombre_centro_utilidad\
+                FROM userpermisos_pedidos_farmacia_a_bprincipal AS a\
+                JOIN bodegas as b ON (a.empresa_id = b.empresa_id) AND (a.centro_utilidad = b.centro_utilidad) AND (b.estado = '1')\
+                JOIN centros_utilidad as c ON (b.empresa_id = c.empresa_id) AND (b.centro_utilidad = c.centro_utilidad)\
+                JOIN empresas as d ON (c.empresa_id = d.empresa_id) AND (sw_activa = '1')\
+                WHERE a.usuario_id = $1 and a.empresa_id = $2 group by 1,2 ";
+
+        parametros = [usuario, empresa_id];
+    }
+
+    if (tipo === '3') {
+
+        sql = " SELECT\
+                b.bodega as bodega_id,\
+                b.descripcion as nombre_bodega,\
+                a.sw_anular_pedido, a.sw_anular_reserva, a.sw_anular_reserva, a.sw_eliminar_productos, a.sw_modificar_pedido\
+                FROM userpermisos_pedidos_farmacia_a_bprincipal AS a\
+                JOIN bodegas as b ON (a.empresa_id = b.empresa_id) AND (a.centro_utilidad = b.centro_utilidad) AND (b.estado = '1')\
+                JOIN centros_utilidad as c ON (b.empresa_id = c.empresa_id) AND (b.centro_utilidad = c.centro_utilidad)\
+                JOIN empresas as d ON (c.empresa_id = d.empresa_id) AND (sw_activa = '1')\
+                WHERE a.usuario_id = $1 and a.empresa_id = $2 and a.centro_utilidad = $3;  ";
+
+        parametros = [usuario, empresa_id, centro_utilidad_id];
+    }
+
+
+    G.db.query(sql, parametros, function(err, rows, result) {
+        callback(err, rows, result);
+    });
+
+};
+
+PedidosFarmaciasModel.prototype.insertar_pedido_farmacia_temporal = function(empresa_id, centro_utilidad_id, bodega_id, empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id, observacion, usuario_id, callback) {
+
+    var sql = " INSERT INTO solicitud_Bodega_principal_aux ( farmacia_id, centro_utilidad, bodega, empresa_destino, centro_destino, bogega_destino, observacion, usuario_id )\
+                VALUES( $1,$2,$3,$4,$5,$6,$7, $8);";
+
+    G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id, observacion, usuario_id], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+
+};
+
+PedidosFarmaciasModel.prototype.insertar_detalle_pedido_farmacia_temporal = function(numero_pedido, empresa_id, centro_utilidad_id, bodega_id, codigo_producto, cantidad_solicitada,  tipo_producto, cantidad_pendiente, usuario_id, callback) {
+
+    var sql = " INSERT INTO solicitud_pro_a_bod_prpal_tmp ( soli_a_bod_prpal_tmp_id, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, cantidad_pendiente, usuario_id ) \
+                VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9 ) ;";
+
+    G.db.query(sql, [numero_pedido, empresa_id, centro_utilidad_id, bodega_id, codigo_producto, cantidad_solicitada,  tipo_producto, cantidad_pendiente, usuario_id], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+
+};
+
+
 
 // Listar todos los pedidos de farmacias
 PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, termino_busqueda, filtro, pagina, callback) {
-    
+
     /*=========================================================================*/
     // Se implementa este filtro, para poder filtrar los pedidos por el estado actual
     // 0 - No Asignado 
@@ -83,7 +161,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
                 inner join empresas as d ON c.empresa_id = d.empresa_id \
                 inner join system_usuarios as e ON a.usuario_id = e.usuario_id \
                 left join inv_bodegas_movimiento_tmp_despachos_farmacias f on a.solicitud_prod_a_bod_ppal_id = f.solicitud_prod_a_bod_ppal_id  \
-                where a.farmacia_id = $1 "+ sql_aux +"\
+                where a.farmacia_id = $1 " + sql_aux + "\
                 and ( a.solicitud_prod_a_bod_ppal_id ilike $2 \
                       or d.razon_social ilike $2 \
                       or b.descripcion ilike $2 \
@@ -243,7 +321,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                 ) order by f.fecha asc ";
 
     G.db.pagination(sql, [responsable, "%" + termino_busqueda + "%"], pagina, limite, function(err, rows, result, total_records) {
-       
+
         callback(err, rows, total_records);
     });
 };

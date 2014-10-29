@@ -11,6 +11,31 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosFarmacias/obtenerEmpresas', function(req, res) {
         c_pedidos_farmacias.obtenerEmpresas(req, res);
     });
+    
+    // Listar las farmacias a las que tiene acceso el usuario
+    app.post('/api/PedidosFarmacias/listarFarmacias', function(req, res) {
+        c_pedidos_farmacias.listarFarmaciasUsuarios(req, res);
+    });
+    
+    // Listar las Centros Utilidad a las que tiene acceso el usuario
+    app.post('/api/PedidosFarmacias/listarCentrosUtilidad', function(req, res) {
+        c_pedidos_farmacias.listarCentrosUtilidadUsuarios(req, res);
+    });    
+    
+    // Listar las Boedgas a las que tiene acceso el usuario
+    app.post('/api/PedidosFarmacias/listarBodegas', function(req, res) {
+        c_pedidos_farmacias.listarBodegasUsuarios(req, res);
+    });
+    
+    // Crear Pre-orden o Pedido Temporal
+    app.post('/api/PedidosFarmacias/crearPedidoTemporal', function(req, res) {
+        c_pedidos_farmacias.crearPedidoTemporal(req, res);
+    });
+    
+    // Insertar productos en Pre-orden o Pedido Temporal
+    app.post('/api/PedidosFarmacias/ingresarDetallePedidoTemporal', function(req, res) {
+        c_pedidos_farmacias.ingresarDetallePedidoTemporal(req, res);
+    });  
 
     // Listar Todos los pedidos de farmacia
     app.post('/api/PedidosFarmacias/listarPedidos', function(req, res) {

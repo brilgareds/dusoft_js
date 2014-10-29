@@ -20,12 +20,20 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
 //            this.valor_cotizacion = datos.valor_cotizacion;
 //        };
         
+//        PedidoVenta.prototype.agregarProducto = function(producto) {
+//            this.lista_productos.push(producto);
+//        };
+
         PedidoVenta.prototype.agregarProducto = function(producto) {
-            this.lista_productos.push(producto);
+            this.lista_productos.unshift(producto);
+        };
+
+        PedidoVenta.prototype.obtenerProductos = function() {
+            return this.lista_productos;
         };
         
-        PedidoVenta.prototype.obtenerProductos = function(producto) {
-            return this.lista_productos;
+        PedidoVenta.prototype.eliminarProducto = function(index) {
+            return this.lista_productos.splice(index,1);
         };
         
         PedidoVenta.prototype.vaciarProductos = function() {
@@ -43,7 +51,9 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         this.get = function() {
             return new PedidoVenta();
         };
-
+        
+        this.pedidoseleccionado = ""; //Tenerlo en cuenta para no usar rootScope y pasar valor de una vista a otra
+        
         return this;
     }]);
 });

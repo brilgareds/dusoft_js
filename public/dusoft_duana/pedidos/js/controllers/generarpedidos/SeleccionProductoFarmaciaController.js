@@ -155,8 +155,12 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 //                }
 
                 var url = API.PEDIDOS.LISTAR_PRODUCTOS;
+                
+                console.log("Antes de listar Productos ... ");
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
+                    
+                    console.log("Después de obtener Data ... ");
                     
                     console.log("Datos Listado Productos: ",data);
                     
@@ -211,7 +215,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 var producto = {
                     codigo_producto: obj.codigo_producto,
                     descripcion: obj.nombre_producto,
-                    molecula: "",
+                    molecula: obj.descripcion_molecula,
                     existencia_farmacia: 0,
                     existencia_bodega: obj.existencia,
                     existencia_disponible: 0,

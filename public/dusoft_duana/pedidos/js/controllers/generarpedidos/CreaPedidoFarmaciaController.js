@@ -357,6 +357,18 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     para_seleccion_bodega = $scope.rootCreaPedidoFarmacia.para_seleccion_bodega.split(',');
                 }
                 
+                /* Mostrar valores selección */
+
+                console.log("De Empresa: ",$scope.rootCreaPedidoFarmacia.de_seleccion_empresa);
+                console.log("De CentroUtil: ",$scope.rootCreaPedidoFarmacia.de_seleccion_centro_utilidad);
+                console.log("De Bodega: ",$scope.rootCreaPedidoFarmacia.de_seleccion_bodega);
+                
+                console.log("Para Empresa: ",para_seleccion_empresa);
+                console.log("Para CentroUtil: ",para_seleccion_centro_utilidad);
+                console.log("Para Bodega: ",para_seleccion_bodega);
+                
+                /****************************/
+                
                 /* Validaciones DropDown DE */
                 
                 if($scope.rootCreaPedidoFarmacia.de_seleccion_empresa != 0)

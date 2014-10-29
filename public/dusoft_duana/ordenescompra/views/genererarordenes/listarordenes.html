@@ -1,0 +1,39 @@
+<div ng-controller="ListarOrdenesController">
+
+    <div class="row">
+        <div class="col-md-3">
+            <p class="input-group">
+
+                <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-click="gestionarOrdenCompra()">
+                    <span class="glyphicon glyphicon-plus"></span> Generar Orden de Compra
+                </button>
+            </p>
+        </div>
+
+        <div class="col-md-3 pull-right">
+            <p class="input-group">
+
+                <input type="text" class="form-control" ng-keypress="" ng-model="termino_busqueda" placeholder="Buscar" name="" id="" />
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="submit" ng-click=""><i class="glyphicon glyphicon-search"></i></button>
+                </span>
+            </p>
+        </div>
+
+    </div>
+
+
+
+    <div class="defaultGrid" ng-grid="lista_ordenes_compras" > </div>
+
+    </br>
+
+    <div class="row text-center">
+        <button type="button" class="btn btn-default btn-medium">
+            <span class="glyphicon glyphicon-chevron-left" ></span>
+        </button>
+        <button type="button" class="btn btn-default btn-medium">
+            <span class="glyphicon glyphicon-chevron-right" ></span>
+        </button>
+    </div>    
+</div>

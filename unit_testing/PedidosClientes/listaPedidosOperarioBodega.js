@@ -53,7 +53,7 @@ vows.describe('Test Lista Pedidos Operarios Bodega - Pedidos Clientes').addBatch
                 var body = topic.body;
                 var obj = config.request_obj;
                 obj.session = body.obj.sesion;
-                obj.data = { pedidos_clientes : { operario_id: 19, pagina_actual : 1, limite : 20, termino_busqueda : 'biomed' }}
+                obj.data = { pedidos_clientes : { operario_id: 19, pagina_actual : 1, limite : 50, termino_busqueda : '' }}
 
                 client.post(config.api_url + url, {
                     json: obj

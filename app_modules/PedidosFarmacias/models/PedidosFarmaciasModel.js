@@ -483,5 +483,23 @@ PedidosFarmaciasModel.prototype.listar_pedidos_pendientes_by_producto = function
 };
 
 
+// Autor:      : Camilo Orozco 
+// Descripcion : Calcula la cantidad TOTAL pendiente de un producto en pedidos farmacia
+// Calls       : PedidosFarmacias -> PedidosFarmaciasController -> listar_productos();
+//               
+
+PedidosFarmaciasModel.prototype.calcular_cantidad_total_pendiente_producto = function(empresa_id, codigo_producto, callback) {
+    
+    var sql = " select b.codigo_producto, SUM( b.cantidad_pendiente) AS cantidad_total_pendiente\
+                from solicitud_productos_a_bodega_principal a \
+                inner join solicitud_productos_a_bodega_principal_detalle b ON a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id    \
+                where a.empresa_destino = $1 and b.codigo_producto = $2 and b.cantidad_pendiente > 0 \
+                group by 1";
+    
+    G.db.query(sql, [empresa_id, codigo_producto], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
 
 module.exports = PedidosFarmaciasModel;

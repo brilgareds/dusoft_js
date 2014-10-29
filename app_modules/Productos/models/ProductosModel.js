@@ -3,6 +3,12 @@ var ProductosModel = function() {
 
 };
 
+
+// Autor:      : Camilo Orozco 
+// Descripcion : Buscar producto
+// Calls       : PedidosFarmacias -> PedidosFarmaciasController -> listar_productos();
+//               
+
 ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad_id, bodega_id, termino_busqueda, pagina, callback) {
 
     var sql = " select\
@@ -20,7 +26,7 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
                 b.sw_control_fecha_vencimiento,\
                 a.existencia_minima,\
                 a.existencia_maxima,\
-                a.existencia,\
+                a.existencia::integer as existencia,\
                 c.existencia as existencia_total,\
                 c.costo_anterior,\
                 c.costo,\
@@ -54,10 +60,14 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
 
 };
 
-// Consultar stock producto
+// Autor:      : Camilo Orozco 
+// Descripcion : Consultar stock producto o existencias empresa de un producto
+// Calls       : Pedidos -> PedidosModel -> calcular_disponibilidad_producto();
+//               PedidosFarmacias -> PedidosFarmaciasController -> listar_productos();
+
 ProductosModel.prototype.consultar_stock_producto = function(empresa_id, codigo_producto, callback) {
 
-    var sql = " select a.existencia::integer from existencias_bodegas a\
+    var sql = " select SUM(a.existencia::integer) as existencia from existencias_bodegas a\
                 inner join inventarios b on a.codigo_producto = b.codigo_producto and a.empresa_id = b.empresa_id\
                 inner join inventarios_productos c on b.codigo_producto = c.codigo_producto\
                 where a.empresa_id = $1 and a.codigo_producto = $2 and a.estado = '1' and c.estado = '1'";

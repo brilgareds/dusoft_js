@@ -18,6 +18,16 @@
                     "module": "Terceros",
                     "model": "TercerosModel",
                     "alias": "m_terceros"
+                },
+                "productos_model": {
+                    "module": "Productos",
+                    "model": "ProductosModel",
+                    "alias": "m_productos"
+                },                
+                "pedidos_cliente_model": {
+                    "module": "PedidosClientes",
+                    "model": "PedidosClienteModel",
+                    "alias": "m_pedidos_clientes"
                 }
             }],
         "events": [{

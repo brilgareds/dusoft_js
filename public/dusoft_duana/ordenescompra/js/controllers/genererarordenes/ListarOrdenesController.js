@@ -30,7 +30,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li><a href="#">Modificar</a></li>\
+                                                <li><a href="#" ng-click="gestionarOrdenCompra()" >Modificar</a></li>\
                                                 <li><a href="#">Imprimir</a></li>\
                                                 <li><a href="#">Enviar Email</a></li>\
                                                 <li class="divider"></li>\

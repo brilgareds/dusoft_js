@@ -1,0 +1,58 @@
+<div class="modal-header">
+    <button type="button" class="close" ng-click="close()">&times;</button>
+    <h4 class="modal-title">Cálculo de Valores Unitarios por Presentación</h4>
+</div>
+<div class="modal-body">
+
+    <alert  type="'danger'" close="dialog = false" ng-show="dialog">{{msg}}</alert>
+
+    <h4>Producto.</h4>
+
+    <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">
+        <div class="list-group">
+
+        </div>
+    </div>
+
+    <h4>Iva %.</h4>
+
+    <div class="row">
+
+
+    </div>
+
+    <div class="row" style="padding-top: 15px;">
+        <div class="col-md-4">
+
+            <div class="form-group">
+                <label for="cantidad_ingresada">Cantidad.</label>
+                <input type="email" class="form-control" id="cantidad_ingresada" placeholder="">
+            </div>
+        </div>
+        <div class="col-md-4">
+
+            <div class="form-group">
+                <label for="numero_unidades">No. Unidades.</label>
+                <input type="email" class="form-control" id="numero_unidades" placeholder="">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                <label for="valor_presentacion">$ Valor Presentacón.</label>
+                <div class="input-group">
+                    <div class="input-group-addon">$</div>
+                    <input class="form-control" type="email" id="valor_presentacion" placeholder="">
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <div class="modal-footer">
+        <button class="btn btn-warning" ng-click="close()">Cancelar</button>
+        <button class="btn btn-primary" ng-click="" ng-disabled="" >Calcular</button>
+    </div>
+
+</div>

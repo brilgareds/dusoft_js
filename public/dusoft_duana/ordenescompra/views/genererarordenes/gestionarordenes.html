@@ -57,14 +57,16 @@
                         </div>
                     </div>   
                     <br>
+                    <br>
                     <div class="row">  
                         <div class="col-md-12">
 
                             <tabset>
                                 <tab heading="Incluir Productos Manual">
+                                    
                                     <br>
                                     <div class="row">  
-                                        <div class="col-md-12">
+                                        <div class="">
                                             <div class="col-md-3">
                                                 <p class="input-group">
 
@@ -72,6 +74,7 @@
                                                         <span class="glyphicon glyphicon-plus"></span> Buscar Productos
                                                     </button>
                                                 </p>
+
                                             </div>
 
                                             <div class="col-md-3 pull-right">
@@ -84,14 +87,48 @@
                                                 </p>
                                             </div>
                                         </div>
+
                                     </div>
+                                    <div class="" style="height: 300px" ng-grid="lista_productos" > </div>
+
+                                    </br>
+
+                                    <div class="row text-center">
+                                        <button type="button" class="btn btn-default btn-medium">
+                                            <span class="glyphicon glyphicon-chevron-left" ></span>
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-medium">
+                                            <span class="glyphicon glyphicon-chevron-right" ></span>
+                                        </button>
+                                    </div>   
                                 </tab>                        
                                 <tab select="alertMe()">
                                     <tab-heading>
-                                        <i class="glyphicon glyphicon-bell"></i> Cargar Archivo Plano
+                                        <i class="glyphicon glyphicon-cloud-upload"></i> Cargar Archivo Plano
                                     </tab-heading>
+<!--                                    <div flow-prevent-drop flow-drag-enter="style={border: '5px solid green'}" flow-drag-leave="style={}" ng-style="dropEnabled && style">
+
+                                        <div class="span6">
+
+                                        </div>
+
+                                        <div class="alert" ng-hide="$flow.files.length" flow-drop flow-drag-enter="class='alert alert-success'" flow-drag-leave="class='alert'" ng-class="class" style="text-align: center; padding: 50px 0;">
+                                            <img src="../../../images/Cloud-Upload-Blue.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
+                                            <br/><br/>
+                                            Arrastre y suelte el archivo en ésta área o use el botón ...</br></br>
+                                            <button class="btn btn-info" ng-disabled="bloqueo_upload" flow-btn><i class="icon icon-file"></i>Buscar Archivo</button>
+                                        </div>                                       
+                                    </div>-->
                                 </tab>
                             </tabset>
+
+                            <div class="modal-footer">
+                                <button class="btn btn-default" ng-click="">
+                                    <span class="glyphicon glyphicon-remove" ></span> Cancelar</button>
+                                <button class="btn btn-default" ng-click="" ng-disabled="" >
+                                    <span class="glyphicon glyphicon-ok" ></span> Generar Orden Compra
+                                </button>
+                            </div>                            
                         </div>
                     </div>   
                 </div>

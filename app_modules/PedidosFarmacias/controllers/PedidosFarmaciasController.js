@@ -468,39 +468,41 @@ PedidosFarmacias.prototype.listar_productos = function(req, res) {
 
     var that = this;
 
-    //var args = req.body.data;
+    var args = req.body.data;
 
-    /*if (args.productos === undefined || args.productos.termino_busqueda === undefined || args.productos.empresa_id === undefined || args.productos.centro_utilidad_id === undefined || args.productos.bodega_id === undefined || args.productos.termino_busqueda === undefined || args.productos.pagina_actual === undefined) {
-     res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id, bodega_id, termino_busqueda o  pagina_actual no estan definidos', 404, {}));
-     return;
-     }
+    if (args.productos === undefined || args.productos.termino_busqueda === undefined || args.productos.pagina_actual === undefined
+        || args.productos.empresa_id === undefined || args.productos.centro_utilidad_id === undefined || args.productos.bodega_id === undefined
+        || args.productos.empresa_destino_id === undefined || args.productos.centro_utilidad_destino_id === undefined || args.productos.bodega_destino_id === undefined
+        ) {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id, bodega_id, empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id, termino_busqueda o  pagina_actual no estan definidos', 404, {}));
+        return;
+    }
      
-     if (args.productos.empresa_id === '' || args.productos.centro_utilidad_id === '' || args.productos.bodega_id === '') {
-     res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacíos', 404, {}));
-     return;
-     }
+    if (args.productos.empresa_id === '' || args.productos.centro_utilidad_id === '' || args.productos.bodega_id === '') {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacíos', 404, {}));
+        return;
+    }
+    
+    if (args.productos.empresa_destino_id === '' || args.productos.centro_utilidad_destino_id === '' || args.productos.bodega_destino_id === '') {
+        res.send(G.utils.r(req.url, 'empresa_destino_id, centro_utilidad_destino_id o bodega_destino_id estan vacíos', 404, {}));
+        return;
+    }
      
      if (args.productos.pagina_actual === '') {
-     res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
-     return;
-     }
-     
-     var empresa_id = args.productos.empresa_id;
-     var centro_utilidad_id = args.productos.centro_utilidad_id;
-     var bodega_id = args.productos.bodega_id;
-     var termino_busqueda = args.productos.termino_busqueda;
-     var pagina_actual = args.productos.pagina_actual;*/
+        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
+        return;
+    }
 
-    var empresa_id = '03';
-    var centro_utilidad_id = '1 ';
-    var bodega_id = '03';
-    var termino_busqueda = '1108A0010050';
-    var pagina_actual = 1;
+    var termino_busqueda = args.productos.termino_busqueda;
+    var pagina_actual = args.productos.pagina_actual;
+    
+    var empresa_id = args.productos.empresa_id;
+    var centro_utilidad_id = args.productos.centro_utilidad_id;
+    var bodega_id = args.productos.bodega_id;
 
-    var empresa_destino_id = '02';
-    var centro_utilidad_destino_id = '02';
-    var bodega_destino_id = '1';
-
+    var empresa_destino_id = args.productos.empresa_destino_id;
+    var centro_utilidad_destino_id = args.productos.centro_utilidad_destino_id;
+    var bodega_destino_id = args.productos.bodega_destino_id;
 
 
     that.m_productos.buscar_productos(empresa_id, centro_utilidad_id, bodega_id, termino_busqueda, pagina_actual, function(err, lista_productos) {
@@ -534,8 +536,16 @@ PedidosFarmacias.prototype.listar_productos = function(req, res) {
 
 
                             if (--i === 0) {
-                                res.send(G.utils.r(req.url, 'Listado de Productos', 200, {lista_productos: lista_productos}));
-                                return;
+                                
+                                if (err) {
+                                    res.send(G.utils.r(req.url, 'Se ha Generado un Error en la consulta de Productos', 500, {}));
+                                    return;
+                                }
+                                else
+                                {
+                                    res.send(G.utils.r(req.url, 'Listado de Productos', 200, {lista_productos: lista_productos}));
+                                    return;
+                                }
                             }
 
                         });

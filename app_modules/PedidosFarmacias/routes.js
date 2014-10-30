@@ -58,9 +58,9 @@ module.exports = function(app, di_container) {
     });
     
     // Listar productos
-    app.get('/listarProductos', function(req, res) {
-        c_pedidos_farmacias.listar_productos(req, res);
-    });
+//    app.get('/listarProductos', function(req, res) {
+//        c_pedidos_farmacias.listar_productos(req, res);
+//    });
     
     
 

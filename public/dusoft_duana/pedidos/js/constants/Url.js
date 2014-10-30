@@ -37,7 +37,8 @@
                 'LISTAR_FARMACIAS':BASE_URL+'/PedidosFarmacias/listarFarmacias',
                 'CENTROS_UTILIDAD_FARMACIAS':BASE_URL+'/PedidosFarmacias/listarCentrosUtilidad',
                 'BODEGAS_FARMACIAS':BASE_URL+'/PedidosFarmacias/listarBodegas',
-                'LISTAR_PRODUCTOS' :BASE_URL+'/Productos/listarProductos'
+                'LISTAR_PRODUCTOS' :BASE_URL+'/Productos/listarProductos',
+                'LISTAR_PRODUCTOS_FARMACIAS' :BASE_URL+'/Productos/listarProductos',
 	    },
 	    'TERCEROS':{
 	    	'LISTAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/listar",

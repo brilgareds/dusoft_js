@@ -36,8 +36,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     console.log("Listado desde MASS: ", $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados);
                 
                     $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.forEach(function(valor){
-                        console.log("Index: ", valor.index);
-                        console.log("Value: ", valor.value);
+                        console.log("Código Producto: ", valor.codigo_producto);
+                        console.log("Cantidad Solicitada: ", valor.cantidad_solicitada);
                     });
                 }
                 
@@ -230,8 +230,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada', enableCellEdit: true},
                         {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
                             cellTemplate: ' <div class="row">\n\
-                                                <button class="btn btn-{{row.entity.tipo_boton}} btn-xs" ng-click="onRowClick1(row)" ng-disabled="row.entity.cantidad_solicitada==0">\n\
-                                                    <span class="glyphicon glyphicon-plus-sign">{{row.entity.etiqueta_boton}}</span>\n\
+                                                <button class="btn btn-default btn-xs" ng-click="onRowClick1(row)" ng-disabled="row.entity.cantidad_solicitada<=0 || row.entity.cantidad_solicitada==null">\n\
+                                                    <span class="glyphicon glyphicon-plus-sign">Incluir</span>\n\
                                                 </button>\n\
                                             </div>'
                         }
@@ -265,16 +265,16 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
                 if($scope.rootSeleccionProductoFarmacia.listado_productos[row.rowIndex].fila_activa !== false){
                 
-                    $scope.rootSeleccionProductoFarmacia.listado_productos[row.rowIndex].fila_activa = false;
-                    $scope.rootSeleccionProductoFarmacia.listado_productos[row.rowIndex].tipo_boton = 'warning';
-                    $scope.rootSeleccionProductoFarmacia.listado_productos[row.rowIndex].etiqueta_boton = 'Listo';
+//                    $scope.rootSeleccionProductoFarmacia.listado_productos[row.rowIndex].fila_activa = false;
+//                    $scope.rootSeleccionProductoFarmacia.listado_productos[row.rowIndex].tipo_boton = 'warning';
+//                    $scope.rootSeleccionProductoFarmacia.listado_productos[row.rowIndex].etiqueta_boton = 'Listo';
 
                     var obj_sel = { 
                                 codigo_producto: row.entity.codigo_producto,
                                 descripcion: row.entity.descripcion,
                                 cantidad_solicitada: row.entity.cantidad_solicitada,
                                 cantidad_pendiente: 0,
-                                sourceIndex: row.rowIndex
+                                //sourceIndex: row.rowIndex
                             }
 
                     //$scope.listado_productos_seleccionados.push(obj_sel);
@@ -304,9 +304,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             $scope.onRowClick2 = function(row) {
                 
-                $scope.rootSeleccionProductoFarmacia.listado_productos[row.entity.sourceIndex].fila_activa = true;
-                $scope.rootSeleccionProductoFarmacia.listado_productos[row.entity.sourceIndex].tipo_boton = 'success';
-                $scope.rootSeleccionProductoFarmacia.listado_productos[row.entity.sourceIndex].etiqueta_boton = 'Incluir';
+//                $scope.rootSeleccionProductoFarmacia.listado_productos[row.entity.sourceIndex].fila_activa = true;
+//                $scope.rootSeleccionProductoFarmacia.listado_productos[row.entity.sourceIndex].tipo_boton = 'success';
+//                $scope.rootSeleccionProductoFarmacia.listado_productos[row.entity.sourceIndex].etiqueta_boton = 'Incluir';
                 
                 $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.splice(row.rowIndex,1);
                 $scope.rootSeleccionProductoFarmacia.pedido.eliminarProducto(row.rowIndex);

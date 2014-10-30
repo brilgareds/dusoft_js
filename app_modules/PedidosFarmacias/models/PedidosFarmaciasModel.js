@@ -112,7 +112,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
     if (filtro !== undefined) {
 
         if (filtro.no_asignados) {
-            sql_aux = " AND a.estado = '0' ";
+            sql_aux = " AND a.estado = '0'";
         }
 
         if (filtro.asignados) {
@@ -219,7 +219,7 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                 fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
                 a.cantidad_solic::integer as cantidad_solicitada,\
                 ABS((a.cantidad_solic - a.cantidad_pendiente - COALESCE(b.cantidad_temporalmente_separada,0))::integer) as cantidad_despachada,\
-                a.cantidad_pendiente::integer - ABS((a.cantidad_solic - a.cantidad_pendiente - COALESCE(b.cantidad_temporalmente_separada,0))::integer) as cantidad_pendiente,\
+                (a.cantidad_solic - ABS((a.cantidad_solic - a.cantidad_pendiente - COALESCE(b.cantidad_temporalmente_separada,0))::integer))::integer as cantidad_pendiente,\
                 COALESCE(b.justificacion, '') as justificacion, \
                 COALESCE(b.justificacion_auditor, '') as justificacion_auditor \
                 from solicitud_productos_a_bodega_principal_detalle a\
@@ -312,13 +312,16 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                 left join inv_bodegas_movimiento_tmp_despachos_farmacias h on a.solicitud_prod_a_bod_ppal_id = h.solicitud_prod_a_bod_ppal_id \
                 left join inv_bodegas_movimiento_tmp i on h.doc_tmp_id = i.doc_tmp_id and h.usuario_id = i.usuario_id \
                 where g.usuario_id = $1 " + sql_aux + " \
-                and a.estado = '1' \
+                and a.estado = '1' AND a.sw_despacho = 0 \
                 and (\
                     a.solicitud_prod_a_bod_ppal_id ilike $2 or\
                     d.razon_social ilike  $2 or\
                     b.descripcion ilike $2 or\
                     e.nombre  ilike $2 \
                 ) order by f.fecha asc ";
+    
+    //La clausula AND a.sw_despacho = 0 en la consulta SQL, se agrega temporalemente mientras se corrgigen los estados de los pedidos
+    //esta clausula permite determinar si un pedido esta pendiente por despachaar (0) o despachado (1)
 
     G.db.pagination(sql, [responsable, "%" + termino_busqueda + "%"], pagina, limite, function(err, rows, result, total_records) {
 
@@ -482,6 +485,24 @@ PedidosFarmaciasModel.prototype.listar_pedidos_pendientes_by_producto = function
 
 };
 
+
+// Autor:      : Camilo Orozco 
+// Descripcion : Calcula la cantidad TOTAL pendiente de un producto en pedidos farmacia
+// Calls       : PedidosFarmacias -> PedidosFarmaciasController -> listar_productos();
+//               
+
+PedidosFarmaciasModel.prototype.calcular_cantidad_total_pendiente_producto = function(empresa_id, codigo_producto, callback) {
+    
+    var sql = " select b.codigo_producto, SUM( b.cantidad_pendiente) AS cantidad_total_pendiente\
+                from solicitud_productos_a_bodega_principal a \
+                inner join solicitud_productos_a_bodega_principal_detalle b ON a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id    \
+                where a.empresa_destino = $1 and b.codigo_producto = $2 and b.cantidad_pendiente > 0 \
+                group by 1";
+    
+    G.db.query(sql, [empresa_id, codigo_producto], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
 
 
 module.exports = PedidosFarmaciasModel;

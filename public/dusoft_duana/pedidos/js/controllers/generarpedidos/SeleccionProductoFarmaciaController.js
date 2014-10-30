@@ -49,7 +49,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 $scope.rootSeleccionProductoFarmacia = {};
             };
 
-            $rootScope.$on("mostrarseleccionproducto", function(e, tipo_cliente, datos_de, pedido) {
+            $rootScope.$on("mostrarseleccionproducto", function(e, tipo_cliente, datos_de, datos_para, pedido) {
                 
                 console.log("Pedido desde CrearPedidoFarmacia: ", pedido);
                 
@@ -92,9 +92,13 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 $scope.rootSeleccionProductoFarmacia.de_centro_utilidad_id = datos_de.centro_utilidad_id;
                 $scope.rootSeleccionProductoFarmacia.de_bodega_id = datos_de.bodega_id;
                 
-//                console.log("ID Empresa: ",$scope.rootSeleccionProductoFarmacia.de_empresa_id);
-//                console.log("ID Centro Utilidad: ",$scope.rootSeleccionProductoFarmacia.de_centro_utilidad_id);
-//                console.log("ID Bodega: ",$scope.rootSeleccionProductoFarmacia.de_bodega_id);
+                $scope.rootSeleccionProductoFarmacia.de_empresa_destino_id = datos_para.empresa_destino_id;
+                $scope.rootSeleccionProductoFarmacia.de_centro_utilidad_destino_id = datos_para.centro_utilidad_destino_id;
+                $scope.rootSeleccionProductoFarmacia.de_bodega_destino_id = datos_para.bodega_destino_id;
+                
+//                console.log("ID Empresa Destino: ",$scope.rootSeleccionProductoFarmacia.de_empresa_destino_id);
+//                console.log("ID Centro Utilidad Destino: ",$scope.rootSeleccionProductoFarmacia.de_centro_utilidad_destino_id);
+//                console.log("ID Bodega Destino: ",$scope.rootSeleccionProductoFarmacia.de_bodega_destino_id);
 
                 $scope.rootSeleccionProductoFarmacia.listado_productos = [];
                 $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados = [];
@@ -114,12 +118,15 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     session:$scope.rootSeleccionProductoFarmacia.session,
                     data:{
                         productos:{
-                            
+                            termino_busqueda: $scope.rootSeleccionProductoFarmacia.termino_busqueda,
+                            pagina_actual: $scope.rootSeleccionProductoFarmacia.paginaactual,
                             empresa_id: $scope.rootSeleccionProductoFarmacia.de_empresa_id,
                             centro_utilidad_id: $scope.rootSeleccionProductoFarmacia.de_centro_utilidad_id,
                             bodega_id: $scope.rootSeleccionProductoFarmacia.de_bodega_id,
-                            pagina_actual: $scope.rootSeleccionProductoFarmacia.paginaactual,
-                            termino_busqueda: $scope.rootSeleccionProductoFarmacia.termino_busqueda,
+                            empresa_destino_id: $scope.rootSeleccionProductoFarmacia.de_empresa_destino_id,
+                            centro_utilidad_destino_id: $scope.rootSeleccionProductoFarmacia.de_centro_utilidad_destino_id,
+                            bodega_destino_id: $scope.rootSeleccionProductoFarmacia.de_bodega_destino_id,
+                            
                             filtro:{}
                         }
                     }
@@ -216,9 +223,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     codigo_producto: obj.codigo_producto,
                     descripcion: obj.nombre_producto,
                     molecula: obj.descripcion_molecula,
-                    existencia_farmacia: 0,
+                    existencia_farmacia: obj.existencias_farmacias,
                     existencia_bodega: obj.existencia,
-                    existencia_disponible: 0,
+                    existencia_disponible: obj.disponibilidad_bodega,
+                    total_existencias_farmacias: obj.total_existencias_farmacias,
                     cantidad_solicitada: 0,
                     fila_activa: true,
                     tipo_boton: 'success',
@@ -246,6 +254,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         {field: 'molecula', displayName: 'Molécula'},
                         {field: 'existencia_farmacia', displayName: 'Existencia Farmacia', width: "10%"},
                         {field: 'existencia_bodega', displayName: 'Existencia Bodega'},
+                        {field: 'total_existencias_farmacias', displayName: 'Total Existencias Farmacia', width: "15%"},
                         {field: 'existencia_disponible', displayName: 'Disponible'},
                         {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada', enableCellEdit: true},
                         {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",

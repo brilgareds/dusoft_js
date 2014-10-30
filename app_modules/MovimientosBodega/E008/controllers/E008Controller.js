@@ -593,10 +593,10 @@ E008Controller.prototype.eliminarDocumentoTemporalClientes = function(req, res) 
 
             var documento = documento_temporal[0];
 
-            var doc_tmp_id = documento.doc_tmp_id;
+            var documento_temporal_id = documento.documento_temporal_id;
             var usuario_id = documento.usuario_id;
-
-            that.m_e008.eliminar_documento_temporal_clientes(doc_tmp_id, usuario_id, function(err, rows) {
+           
+            that.m_e008.eliminar_documento_temporal_clientes(documento_temporal_id, usuario_id, function(err, rows) {
                 if (err) {
                     res.send(G.utils.r(req.url, 'Error Eliminado el Documento Temporal Clientes', 500, {}));
                     return;
@@ -641,10 +641,10 @@ E008Controller.prototype.eliminarDocumentoTemporalFarmacias = function(req, res)
 
             var documento = documento_temporal[0];
 
-            var doc_tmp_id = documento.doc_tmp_id;
+            var documento_temporal_id = documento.documento_temporal_id;
             var usuario_id = documento.usuario_id;
 
-            that.m_e008.eliminar_documento_temporal_farmacias(doc_tmp_id, usuario_id, function(err, rows) {
+            that.m_e008.eliminar_documento_temporal_farmacias(documento_temporal_id, usuario_id, function(err, rows) {
                 if (err) {
                     res.send(G.utils.r(req.url, 'Error Eliminado el Documento Temporal Farmacias', 500, {}));
                     return;

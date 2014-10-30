@@ -52,7 +52,7 @@ vows.describe('Test Lista Pedidos Operarios Bodega - Pedidos Farmacias').addBatc
                 var body = topic.body;
                 var obj = config.request_obj;
                 obj.session = body.obj.sesion;
-                obj.data = { pedidos_farmacias : { operario_id: 19 }}
+                obj.data = { pedidos_farmacias : { operario_id: 19, pagina_actual : 1, limite : 50, termino_busqueda : '', filtro : { asignados : true} }}
 
                 client.post(config.api_url + url, {
                     json: obj
@@ -64,7 +64,12 @@ vows.describe('Test Lista Pedidos Operarios Bodega - Pedidos Farmacias').addBatc
             'Debe Responder con Lista Pedidos Farmacias': fn.assertMsj('Lista Pedidos Farmacias'),
             'Debe Responder con Status 200': fn.assertStatus(200),
             'Debe Responder con Array Datos (obj)': fn.assertArrayObj('pedidos_farmacias'),
-            'log': fn.log()
+            'log': function(e, r, b){
+                b.obj.pedidos_farmacias.forEach(function(pedido){
+                    console.log(pedido);
+                });
+                console.log( b.obj.pedidos_farmacias.length);
+            }
         }
     }
 }).export(module);

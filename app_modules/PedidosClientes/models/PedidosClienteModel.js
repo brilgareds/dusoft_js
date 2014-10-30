@@ -598,6 +598,27 @@ PedidosClienteModel.prototype.actualizar_estado_actual_pedido = function(numero_
 };
 
 
+// Autor:      : Camilo Orozco 
+// Descripcion : Calcula la cantidad TOTAL pendiente de un producto en pedidos clientes
+// Calls       : PedidosFarmacias -> PedidosFarmaciasController -> listar_productos();
+//               
+
+PedidosClienteModel.prototype.calcular_cantidad_total_pendiente_producto = function(empresa_id, codigo_producto, callback) {
+    
+    var sql = " SELECT\
+                b.codigo_producto,\
+                SUM((b.numero_unidades - b.cantidad_despachada)) as cantidad_total_pendiente\
+                FROM ventas_ordenes_pedidos a\
+                inner join ventas_ordenes_pedidos_d b ON a.pedido_cliente_id = b.pedido_cliente_id\
+                where a.empresa_id = $1 and b.codigo_producto = $2 and b.numero_unidades <> b.cantidad_despachada and a.estado = '1'  \
+                GROUP BY 1";
+    
+    G.db.query(sql, [empresa_id, codigo_producto], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+
 // lista todos los responsables del pedido
 PedidosClienteModel.prototype.obtener_responsables_del_pedido = function(numero_pedido, callback) {
 

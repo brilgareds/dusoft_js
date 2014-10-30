@@ -513,7 +513,7 @@ PedidosFarmacias.prototype.listar_productos = function(req, res) {
 
             that.m_productos.consultar_stock_producto(empresa_destino_id, producto.codigo_producto, function(err, total_existencias_farmacias) {
 
-                producto.total_existencias_farmacias = (total_existencias_farmacias.length > 0) ? total_existencias_farmacias[0].existencia : 0;
+                producto.total_existencias_farmacias = (total_existencias_farmacias.length > 0 && total_existencias_farmacias[0].existencia != null) ? total_existencias_farmacias[0].existencia : 0;
 
                 that.m_productos.buscar_productos(empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id, producto.codigo_producto, pagina_actual, function(err, existencias_farmacia) {
 

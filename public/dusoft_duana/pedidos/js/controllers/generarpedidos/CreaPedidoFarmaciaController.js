@@ -210,7 +210,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                     $scope.rootCreaPedidoFarmacia.listado_productos = data;
                     
-                    console.log("El pedido devuelto de Selección Producto: ",that.pedido);
+                    //console.log("El pedido devuelto de Selección Producto: ",that.pedido);
                     
                     if($scope.rootCreaPedidoFarmacia.listado_productos.length){
                         $scope.rootCreaPedidoFarmacia.bloqueo_producto_incluido = true;

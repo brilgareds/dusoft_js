@@ -31,11 +31,13 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     }
                  
                  */
-                if($scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados != undefined){
+                if($scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados){
+                    
+                    console.log("Listado desde MASS: ", $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados);
                 
-                    $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.each(function(index, value){
-                        console.log("Index: ", index);
-                        console.log("Value: ", value);
+                    $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.forEach(function(valor){
+                        console.log("Código Producto: ", valor.codigo_producto);
+                        console.log("Cantidad Solicitada: ", valor.cantidad_solicitada);
                     });
                 }
                 
@@ -53,22 +55,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
                 console.log("Pedido desde CrearPedidoFarmacia: ", pedido);
                 
-                /* Construcción del Pedido - Datos */
-                
-//                datos_pedido = {
-//                    numero_pedido: obj.numero_pedido,
-//                    fecha_registro: obj.fecha_registro,
-//                    descripcion_estado_actual_pedido: obj.descripcion_estado_actual_pedido,
-//                    estado_actual_pedido: obj.estado_actual_pedido,
-//                    estado_separacion: obj.estado_separacion
-//                };
-//                
-//                pedido.setDatos(datos_pedido);
-//                
-//                pedido.agregarProducto(producto); // Agrega producto al listado de productos
-                
-                /**/
-                
                 $scope.rootSeleccionProductoFarmacia = {};
                 
                 $scope.rootSeleccionProductoFarmacia.session = {
@@ -78,7 +64,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
                 $scope.rootSeleccionProductoFarmacia.tipo_cliente = tipo_cliente;
 
-//                $scope.rootSeleccionProductoFarmacia.paginas = 0;
                 $scope.rootSeleccionProductoFarmacia.items = 0;
                 $scope.rootSeleccionProductoFarmacia.termino_busqueda = "";
                 $scope.rootSeleccionProductoFarmacia.ultima_busqueda = "";
@@ -86,7 +71,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
                 $scope.rootSeleccionProductoFarmacia.ultima_busqueda = {};
                 $scope.rootSeleccionProductoFarmacia.ultima_busqueda.termino_busqueda = "";
-                //$scope.rootSeleccionProductoFarmacia.ultima_busqueda.seleccion = "";
                 
                 $scope.rootSeleccionProductoFarmacia.de_empresa_id = datos_de.empresa_id;
                 $scope.rootSeleccionProductoFarmacia.de_centro_utilidad_id = datos_de.centro_utilidad_id;
@@ -96,9 +80,18 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 $scope.rootSeleccionProductoFarmacia.de_centro_utilidad_destino_id = datos_para.centro_utilidad_destino_id;
                 $scope.rootSeleccionProductoFarmacia.de_bodega_destino_id = datos_para.bodega_destino_id;
                 
-//                console.log("ID Empresa Destino: ",$scope.rootSeleccionProductoFarmacia.de_empresa_destino_id);
-//                console.log("ID Centro Utilidad Destino: ",$scope.rootSeleccionProductoFarmacia.de_centro_utilidad_destino_id);
-//                console.log("ID Bodega Destino: ",$scope.rootSeleccionProductoFarmacia.de_bodega_destino_id);
+                console.log("------------------------------- Datos a enviar -------------------------------------");
+                  
+                console.log("Termino Búsqueda: ",$scope.rootSeleccionProductoFarmacia.termino_busqueda);
+                console.log("Página Actual: ",$scope.rootSeleccionProductoFarmacia.paginaactual);
+                
+                console.log("ID Empresa Origen: ",$scope.rootSeleccionProductoFarmacia.de_empresa_id);
+                console.log("ID Centro Utilidad Origen: ",$scope.rootSeleccionProductoFarmacia.de_centro_utilidad_id);
+                console.log("ID Bodega Origen: ",$scope.rootSeleccionProductoFarmacia.de_bodega_id);            
+                
+                console.log("ID Empresa Destino: ",$scope.rootSeleccionProductoFarmacia.de_empresa_destino_id);
+                console.log("ID Centro Utilidad Destino: ",$scope.rootSeleccionProductoFarmacia.de_centro_utilidad_destino_id);
+                console.log("ID Bodega Destino: ",$scope.rootSeleccionProductoFarmacia.de_bodega_destino_id);
 
                 $scope.rootSeleccionProductoFarmacia.listado_productos = [];
                 $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados = [];
@@ -137,31 +130,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             $scope.buscarSeleccionProducto = function(obj, paginando) {
 
-                //valida si cambio el termino de busqueda
-//                if ($scope.rootSeleccionProductoFarmacia.ultima_busqueda != $scope.rootSeleccionProductoFarmacia.termino_busqueda) {
-//                    $scope.rootSeleccionProductoFarmacia.paginaactual = 1;
-//                }
-                
-//                for(var i=0; i<10; i++)
-//                {
-//                    var obj = { 
-//                            codigo_producto: '123456'+i,
-//                            descripcion: 'LOBOTOMICINA X '+i,
-//                            molecula: 'LOBOTONINA'+i,
-//                            existencia_farmacia: '10'+i,
-//                            existencia_bodega: '20'+i,
-//                            existencia_disponible: '10'+i,
-//                            cantidad_solicitada: 0,
-//                            fila_activa: true,
-//                            tipo_boton: 'success',
-//                            etiqueta_boton: 'Incluir'
-//                        };
-//
-//                    $scope.rootSeleccionProductoFarmacia.listado_productos.push(obj);
-//
-//                }
-
-                var url = API.PEDIDOS.LISTAR_PRODUCTOS;
+                var url = API.PEDIDOS.LISTAR_PRODUCTOS_FARMACIAS;
                 
                 console.log("Antes de listar Productos ... ");
 
@@ -200,10 +169,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 }
 
                 //$scope.rootSeleccionProductoFarmacia.Empresa.vaciarPedidosFarmacia();
-                //--$scope.rootSeleccionProductoFarmacia.listado_productos = data.lista_productos;
-                $scope.rootSeleccionProductoFarmacia.listado_productos = [];
+                $scope.rootSeleccionProductoFarmacia.listado_productos = data.lista_productos;
+                //$scope.rootSeleccionProductoFarmacia.listado_productos = [];
                
-                for (var i in data.lista_productos) {
+                /*for (var i in data.lista_productos) {
 
                     var obj = data.lista_productos[i];
                     
@@ -211,10 +180,12 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                     $scope.rootSeleccionProductoFarmacia.listado_productos.push(producto);
 
-                }
+                }*/
 
             };
-
+            
+            /* Por el momento se dascarta ésta función */
+            
             that.crearProducto = function(obj) {
                 
                 //var pedido = PedidoVenta.get();
@@ -223,10 +194,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     codigo_producto: obj.codigo_producto,
                     descripcion: obj.nombre_producto,
                     molecula: obj.descripcion_molecula,
-                    existencia_farmacia: obj.existencias_farmacias,
+                    existencia_farmacia: obj.existencias_farmacia,
                     existencia_bodega: obj.existencia,
-                    existencia_disponible: obj.disponibilidad_bodega,
                     total_existencias_farmacias: obj.total_existencias_farmacias,
+                    existencia_disponible: obj.disponibilidad_bodega,
                     cantidad_solicitada: 0,
                     fila_activa: true,
                     tipo_boton: 'success',
@@ -250,17 +221,17 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     multiSelect: false,
                     columnDefs: [
                         {field: 'codigo_producto', displayName: 'Código Producto'},
-                        {field: 'descripcion', displayName: 'Descripción'},
-                        {field: 'molecula', displayName: 'Molécula'},
-                        {field: 'existencia_farmacia', displayName: 'Existencia Farmacia', width: "10%"},
-                        {field: 'existencia_bodega', displayName: 'Existencia Bodega'},
+                        {field: 'nombre_producto', displayName: 'Descripción'},
+                        {field: 'descripcion_molecula', displayName: 'Molécula'},
+                        {field: 'existencias_farmacia', displayName: 'Existencia Farmacia', width: "10%"},
+                        {field: 'existencia', displayName: 'Existencia Bodega'},
                         {field: 'total_existencias_farmacias', displayName: 'Total Existencias Farmacia', width: "15%"},
-                        {field: 'existencia_disponible', displayName: 'Disponible'},
+                        {field: 'disponibilidad_bodega', displayName: 'Disponible'},
                         {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada', enableCellEdit: true},
                         {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
                             cellTemplate: ' <div class="row">\n\
-                                                <button class="btn btn-{{row.entity.tipo_boton}} btn-xs" ng-click="onRowClick1(row)" ng-disabled="row.entity.cantidad_solicitada==0">\n\
-                                                    <span class="glyphicon glyphicon-plus-sign">{{row.entity.etiqueta_boton}}</span>\n\
+                                                <button class="btn btn-default btn-xs" ng-click="onRowClick1(row)" ng-disabled="row.entity.cantidad_solicitada<=0 || row.entity.cantidad_solicitada==null">\n\
+                                                    <span class="glyphicon glyphicon-plus-sign">Incluir</span>\n\
                                                 </button>\n\
                                             </div>'
                         }
@@ -294,16 +265,16 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
                 if($scope.rootSeleccionProductoFarmacia.listado_productos[row.rowIndex].fila_activa !== false){
                 
-                    $scope.rootSeleccionProductoFarmacia.listado_productos[row.rowIndex].fila_activa = false;
-                    $scope.rootSeleccionProductoFarmacia.listado_productos[row.rowIndex].tipo_boton = 'warning';
-                    $scope.rootSeleccionProductoFarmacia.listado_productos[row.rowIndex].etiqueta_boton = 'Listo';
+//                    $scope.rootSeleccionProductoFarmacia.listado_productos[row.rowIndex].fila_activa = false;
+//                    $scope.rootSeleccionProductoFarmacia.listado_productos[row.rowIndex].tipo_boton = 'warning';
+//                    $scope.rootSeleccionProductoFarmacia.listado_productos[row.rowIndex].etiqueta_boton = 'Listo';
 
                     var obj_sel = { 
                                 codigo_producto: row.entity.codigo_producto,
                                 descripcion: row.entity.descripcion,
                                 cantidad_solicitada: row.entity.cantidad_solicitada,
                                 cantidad_pendiente: 0,
-                                sourceIndex: row.rowIndex
+                                //sourceIndex: row.rowIndex
                             }
 
                     //$scope.listado_productos_seleccionados.push(obj_sel);
@@ -333,9 +304,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             $scope.onRowClick2 = function(row) {
                 
-                $scope.rootSeleccionProductoFarmacia.listado_productos[row.entity.sourceIndex].fila_activa = true;
-                $scope.rootSeleccionProductoFarmacia.listado_productos[row.entity.sourceIndex].tipo_boton = 'success';
-                $scope.rootSeleccionProductoFarmacia.listado_productos[row.entity.sourceIndex].etiqueta_boton = 'Incluir';
+//                $scope.rootSeleccionProductoFarmacia.listado_productos[row.entity.sourceIndex].fila_activa = true;
+//                $scope.rootSeleccionProductoFarmacia.listado_productos[row.entity.sourceIndex].tipo_boton = 'success';
+//                $scope.rootSeleccionProductoFarmacia.listado_productos[row.entity.sourceIndex].etiqueta_boton = 'Incluir';
                 
                 $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.splice(row.rowIndex,1);
                 $scope.rootSeleccionProductoFarmacia.pedido.eliminarProducto(row.rowIndex);

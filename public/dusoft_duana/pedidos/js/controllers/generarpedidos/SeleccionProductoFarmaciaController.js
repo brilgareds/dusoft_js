@@ -11,6 +11,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
         function($scope, $rootScope, Request, Empresa, Cliente, PedidoVenta, API, socket, AlertService, $state, Usuario, ProductoPedido) {
             
+            $scope.expreg = new RegExp("^[0-9]*$");
+            
             that = this;
             
             $scope.$on('cargarGridSeleccionadoSlide', function(event, mass) {
@@ -55,12 +57,22 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
                 console.log("Pedido desde CrearPedidoFarmacia: ", pedido);
                 
+//                if(expreg.test("4a5")){
+//                    alert("La expresión es Válida");
+//                }
+//                else
+//                    {
+//                        alert("La expresión está chafa!");
+//                    }
+                
                 $scope.rootSeleccionProductoFarmacia = {};
                 
                 $scope.rootSeleccionProductoFarmacia.session = {
                     usuario_id: Usuario.usuario_id,
                     auth_token: Usuario.token
                 };
+                
+                $scope.rootSeleccionProductoFarmacia.no_incluir_producto = false;
                 
                 $scope.rootSeleccionProductoFarmacia.tipo_cliente = tipo_cliente;
 
@@ -80,18 +92,18 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 $scope.rootSeleccionProductoFarmacia.de_centro_utilidad_destino_id = datos_para.centro_utilidad_destino_id;
                 $scope.rootSeleccionProductoFarmacia.de_bodega_destino_id = datos_para.bodega_destino_id;
                 
-                console.log("------------------------------- Datos a enviar -------------------------------------");
-                  
-                console.log("Termino Búsqueda: ",$scope.rootSeleccionProductoFarmacia.termino_busqueda);
-                console.log("Página Actual: ",$scope.rootSeleccionProductoFarmacia.paginaactual);
-                
-                console.log("ID Empresa Origen: ",$scope.rootSeleccionProductoFarmacia.de_empresa_id);
-                console.log("ID Centro Utilidad Origen: ",$scope.rootSeleccionProductoFarmacia.de_centro_utilidad_id);
-                console.log("ID Bodega Origen: ",$scope.rootSeleccionProductoFarmacia.de_bodega_id);            
-                
-                console.log("ID Empresa Destino: ",$scope.rootSeleccionProductoFarmacia.de_empresa_destino_id);
-                console.log("ID Centro Utilidad Destino: ",$scope.rootSeleccionProductoFarmacia.de_centro_utilidad_destino_id);
-                console.log("ID Bodega Destino: ",$scope.rootSeleccionProductoFarmacia.de_bodega_destino_id);
+//                console.log("------------------------------- Datos a enviar -------------------------------------");
+//                  
+//                console.log("Termino Búsqueda: ",$scope.rootSeleccionProductoFarmacia.termino_busqueda);
+//                console.log("Página Actual: ",$scope.rootSeleccionProductoFarmacia.paginaactual);
+//                
+//                console.log("ID Empresa Origen: ",$scope.rootSeleccionProductoFarmacia.de_empresa_id);
+//                console.log("ID Centro Utilidad Origen: ",$scope.rootSeleccionProductoFarmacia.de_centro_utilidad_id);
+//                console.log("ID Bodega Origen: ",$scope.rootSeleccionProductoFarmacia.de_bodega_id);            
+//                
+//                console.log("ID Empresa Destino: ",$scope.rootSeleccionProductoFarmacia.de_empresa_destino_id);
+//                console.log("ID Centro Utilidad Destino: ",$scope.rootSeleccionProductoFarmacia.de_centro_utilidad_destino_id);
+//                console.log("ID Bodega Destino: ",$scope.rootSeleccionProductoFarmacia.de_bodega_destino_id);
 
                 $scope.rootSeleccionProductoFarmacia.listado_productos = [];
                 $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados = [];
@@ -207,7 +219,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 return producto;
             };
 
-            
             /*  Construcción de Grid    */
 
             $scope.renderGrid = function() {
@@ -220,17 +231,17 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     //selectedItems: $scope.selectedRow,
                     multiSelect: false,
                     columnDefs: [
-                        {field: 'codigo_producto', displayName: 'Código Producto'},
-                        {field: 'nombre_producto', displayName: 'Descripción'},
-                        {field: 'descripcion_molecula', displayName: 'Molécula'},
+                        {field: 'codigo_producto', displayName: 'Código Producto', width: "9%"},
+                        {field: 'nombre_producto', displayName: 'Descripción', width: "37%"},
+                        //{field: 'descripcion_molecula', displayName: 'Molécula'},
                         {field: 'existencias_farmacia', displayName: 'Existencia Farmacia', width: "10%"},
-                        {field: 'existencia', displayName: 'Existencia Bodega'},
-                        {field: 'total_existencias_farmacias', displayName: 'Total Existencias Farmacia', width: "15%"},
-                        {field: 'disponibilidad_bodega', displayName: 'Disponible'},
-                        {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada', enableCellEdit: true},
-                        {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
+                        {field: 'existencia', displayName: 'Existencia Bodega', width: "10%"},
+                        {field: 'total_existencias_farmacias', displayName: 'Total Exist. Farmacia', width: "11%"},
+                        {field: 'disponibilidad_bodega', displayName: 'Disponible', width: "6%"},
+                        {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada', enableCellEdit: true, width: "10%"},
+                        {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "6%",
                             cellTemplate: ' <div class="row">\n\
-                                                <button class="btn btn-default btn-xs" ng-click="onRowClick1(row)" ng-disabled="row.entity.cantidad_solicitada<=0 || row.entity.cantidad_solicitada==null">\n\
+                                                <button class="btn btn-default btn-xs" ng-click="onRowClick1(row)" ng-disabled="row.entity.cantidad_solicitada<=0 || row.entity.cantidad_solicitada==null || !expreg.test(row.entity.cantidad_solicitada)">\n\
                                                     <span class="glyphicon glyphicon-plus-sign">Incluir</span>\n\
                                                 </button>\n\
                                             </div>'
@@ -246,8 +257,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     //selectedItems: $scope.selectedRow,
                     multiSelect: false,
                     columnDefs: [
-                        {field: 'codigo_producto', displayName: 'Código Producto'},
-                        {field: 'descripcion', displayName: 'Descripción'},
+                        {field: 'codigo_producto', displayName: 'Código Producto', width: "9%"},
+                        {field: 'descripcion', displayName: 'Descripción', width: "37%"},
                         {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada'},
                         {field: 'cantidad_pendiente', displayName: 'Cantidad Pendiente'},
                         {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
@@ -263,43 +274,56 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
             $scope.onRowClick1 = function(row) {
                 
-                if($scope.rootSeleccionProductoFarmacia.listado_productos[row.rowIndex].fila_activa !== false){
+                //if($scope.rootSeleccionProductoFarmacia.listado_productos[row.rowIndex].fila_activa !== false){
+                
+                    $scope.rootSeleccionProductoFarmacia.no_incluir_producto = false;
                 
 //                    $scope.rootSeleccionProductoFarmacia.listado_productos[row.rowIndex].fila_activa = false;
 //                    $scope.rootSeleccionProductoFarmacia.listado_productos[row.rowIndex].tipo_boton = 'warning';
 //                    $scope.rootSeleccionProductoFarmacia.listado_productos[row.rowIndex].etiqueta_boton = 'Listo';
 
-                    var obj_sel = { 
-                                codigo_producto: row.entity.codigo_producto,
-                                descripcion: row.entity.descripcion,
-                                cantidad_solicitada: row.entity.cantidad_solicitada,
-                                cantidad_pendiente: 0,
-                                //sourceIndex: row.rowIndex
-                            }
-
-                    //$scope.listado_productos_seleccionados.push(obj_sel);
-
-                    $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.unshift(obj_sel); 
+                    $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.forEach(function(valor){
+                        if(valor.codigo_producto === row.entity.codigo_producto){
+                            $scope.rootSeleccionProductoFarmacia.no_incluir_producto = true;
+                            return;
+                        }
+                    });
                     
-                    /* Crear aquí el producto e insertarlo en lista de productos del pedido */
-                    
-                    var producto = ProductoPedido.get(
-                            row.entity.codigo_producto,
-                            row.entity.descripcion,
-                            parseInt(row.entity.existencia_bodega),
-                            0,
-                            parseInt(row.entity.cantidad_solicitada)
-                        );
-                    
-                    console.log("Producto creado: ", producto);
-                    
-                    $scope.rootSeleccionProductoFarmacia.pedido.agregarProducto(producto);
+                    if($scope.rootSeleccionProductoFarmacia.no_incluir_producto === false)
+                    {
+                        var cantidad_pendiente = row.entity.cantidad_solicitada - row.entity.disponibilidad_bodega;
 
-                    /*************************************************************************/                    
+                        var obj_sel = { 
+                                    codigo_producto: row.entity.codigo_producto,
+                                    descripcion: row.entity.nombre_producto,
+                                    cantidad_solicitada: row.entity.cantidad_solicitada,
+                                    cantidad_pendiente: (cantidad_pendiente < 0) ? 0 : cantidad_pendiente,
+                                    //sourceIndex: row.rowIndex
+                                }
 
-                    $scope.$emit('cargarGridPrincipal', $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados);
+                        //$scope.listado_productos_seleccionados.push(obj_sel);
 
-                }
+                        $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.unshift(obj_sel); 
+
+                        /* Crear aquí el producto e insertarlo en lista de productos del pedido */
+
+                        var producto = ProductoPedido.get(
+                                row.entity.codigo_producto,
+                                row.entity.descripcion,
+                                parseInt(row.entity.existencia_bodega),
+                                0,
+                                parseInt(row.entity.cantidad_solicitada)
+                            );
+
+                        console.log("Producto creado: ", producto);
+
+                        $scope.rootSeleccionProductoFarmacia.pedido.agregarProducto(producto);
+
+                        /*************************************************************************/                    
+
+                        $scope.$emit('cargarGridPrincipal', $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados);
+                    }
+                //}
             };
             
             $scope.onRowClick2 = function(row) {
@@ -307,6 +331,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 //                $scope.rootSeleccionProductoFarmacia.listado_productos[row.entity.sourceIndex].fila_activa = true;
 //                $scope.rootSeleccionProductoFarmacia.listado_productos[row.entity.sourceIndex].tipo_boton = 'success';
 //                $scope.rootSeleccionProductoFarmacia.listado_productos[row.entity.sourceIndex].etiqueta_boton = 'Incluir';
+
+                $scope.rootSeleccionProductoFarmacia.no_incluir_producto = false;
                 
                 $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.splice(row.rowIndex,1);
                 $scope.rootSeleccionProductoFarmacia.pedido.eliminarProducto(row.rowIndex);

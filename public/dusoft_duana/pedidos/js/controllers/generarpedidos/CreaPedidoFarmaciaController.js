@@ -269,8 +269,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     //selectedItems: $scope.selectedRow,
                     multiSelect: false,
                     columnDefs: [
-                        {field: 'codigo_producto', displayName: 'Código Producto'},
-                        {field: 'descripcion', displayName: 'Descripción'},
+                        {field: 'codigo_producto', displayName: 'Código Producto', width: "9%"},
+                        {field: 'descripcion', displayName: 'Descripción', width: "37%"},
                         {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada'},
                         {field: 'cantidad_pendiente', displayName: 'Cantidad Pendiente'}
                     ]

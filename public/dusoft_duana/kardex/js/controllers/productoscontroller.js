@@ -145,6 +145,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                         function(data) {
                             if (data.status == 200) {
                                 if (data.obj.movimientos_producto.length > 0) {
+                                    
+                                    /*console.log('===== data.obj ======');
+                                    console.log(data.obj);*/
+                                    
                                     $scope.$emit('mostrardetallekardex', row.entity, data.obj);
                                 } else {
                                     AlertService.mostrarMensaje("warning", "El producto no tiene movimientos");

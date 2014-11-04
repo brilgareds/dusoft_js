@@ -1,5 +1,5 @@
 
-define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontroller', 'models/Cliente', 'models/PedidoAuditoria'], function(angular, controllers) {
+define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontroller', 'models/ClientePedido', 'models/PedidoAuditoria'], function(angular, controllers) {
 
     var fo = controllers.controller('PedidosClientesController', [
         '$scope', '$rootScope', 'Request',

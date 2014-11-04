@@ -29,7 +29,7 @@ OrdenesCompra.prototype.listarOrdenesCompra = function(req, res) {
         return;
     }
 
-    if (args.ordenes_compras.pagina_actual === '' || args.ordenes_compras.pagina_actual === 0) {
+    if (args.ordenes_compras.pagina_actual === '' || args.ordenes_compras.pagina_actual === 0 || args.ordenes_compras.pagina_actual === '0') {
         res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
         return;
     }

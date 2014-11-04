@@ -19,8 +19,10 @@ vows.describe('Test Consultar Existencia Producto').addBatch({
                 obj.session = body.obj.sesion;
 
                 obj.data.ordenes_compras = {
-                    fecha_inicial: '',
-                    fecha_final: ''
+                    fecha_inicial: '2014-01-01',
+                    fecha_final: '2014-10-31',
+                    termino_busqueda: '',
+                    pagina_actual: '1'
                 };
 
                 client.post(config.api_url + url, {

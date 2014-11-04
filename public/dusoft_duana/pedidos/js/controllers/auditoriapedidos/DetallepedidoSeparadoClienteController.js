@@ -1,4 +1,4 @@
-define(["angular", "js/controllers",'models/Cliente',
+define(["angular", "js/controllers",'models/ClientePedido',
         'models/Separador', 'models/DocumentoTemporal',
         'models/ProductoPedido', 'models/LoteProductoPedido'], function(angular, controllers) {
 

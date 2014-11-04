@@ -1,11 +1,11 @@
 //Controlador de la View creapedidosfarmacias.html
 
 define(["angular", "js/controllers",'includes/slide/slideContent',
-        'models/Cliente', 'models/PedidoVenta'], function(angular, controllers) {
+        'models/ClientePedido', 'models/PedidoVenta'], function(angular, controllers) {
 
     var fo = controllers.controller('CreaPedidoFarmaciaController', [
         '$scope', '$rootScope', 'Request',
-        'Empresa', 'Farmacia', 'PedidoVenta',
+        'EmpresaPedido', 'Farmacia', 'PedidoVenta',
         'API', "socket", "AlertService",
         '$state', "Usuario", "localStorageService",
 

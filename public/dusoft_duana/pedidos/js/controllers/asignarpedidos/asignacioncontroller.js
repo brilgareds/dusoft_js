@@ -3,7 +3,7 @@ define(["angular", "js/controllers", 'models/Separador'], function(angular, cont
     controllers.controller('asignacioncontroller', [
         '$scope', '$rootScope', 'API', 
         '$modalInstance', "pedidosSeleccionados", "url",
-        "Request", "Separador", "Empresa",
+        "Request", "Separador", "EmpresaPedido",
         "Usuario",
 
         function($scope, $rootScope, API, $modalInstance, pedidosSeleccionados, url, Request, Separador, Empresa,Usuario) {

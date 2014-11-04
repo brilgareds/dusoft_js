@@ -4,7 +4,7 @@ define(["angular", "js/controllers",'models/Farmacia',
 
     var fo = controllers.controller('DetallepedidoSeparadoFarmaciaController', [
         '$scope', '$rootScope', 'Request', 
-        '$modal', 'Empresa','Farmacia',
+        '$modal', 'EmpresaPedido','Farmacia',
          'API',"socket", "$timeout", 
          "AlertService","Usuario", "localStorageService",
          "ProductoPedido", "LoteProductoPedido", "DocumentoTemporal",

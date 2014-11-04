@@ -3,7 +3,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
 
     controllers.controller('PedidosFarmaciasController', [
         '$scope', '$rootScope', 'Request',
-        '$modal', 'Empresa', 'Farmacia',
+        '$modal', 'EmpresaPedido', 'Farmacia',
         'PedidoAuditoria', 'API', 'socket',
         'AlertService', "Usuario",
         function($scope, $rootScope, Request, $modal, Empresa, Farmacia, PedidoAuditoria, API, socket, AlertService, Usuario) {

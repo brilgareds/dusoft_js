@@ -4,7 +4,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
     var fo = controllers.controller('EditarProductoController', [
         '$scope', '$rootScope', 'Request', 
-        '$modalInstance', 'Empresa','Cliente',
+        '$modalInstance', 'EmpresaPedido','Cliente',
          'PedidoAuditoria', 'API',"socket", "AlertService",
          "producto", "Usuario", "documento","LoteProductoPedido",
 

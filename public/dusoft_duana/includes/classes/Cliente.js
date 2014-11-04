@@ -1,24 +1,24 @@
 
 define(["angular", "js/models","includes/classes/Tercero"], function(angular, models) {
 
-    models.factory('ClienteBase', ["Tercero", function(Tercero) {
+    models.factory('Cliente', ["Tercero", function(Tercero) {
 
-        function ClienteBase(nombre, direccion, tipo_id, id, telefono) {
-            Tercero.getClass().call(this,nombre, tipo_id, id);
-            this.direccion_cliente = direccion || "";
-            this.telefono_cliente = telefono || "";
+        function Cliente(nombre, direccion, tipo_id, id, telefono) {
+            Tercero.getClass().call(this,nombre, tipo_id, id, direccion, telefono);
+            //this.direccion_cliente = direccion || "";
+            //this.telefono_cliente = telefono || "";
             
         };
 
         this.get = function(nombre, direccion, tipo_id, id, telefono) {
-            return new ClienteBase(nombre, direccion, tipo_id, id, telefono);
+            return new Cliente(nombre, direccion, tipo_id, id, telefono);
         };
 
 
-        ClienteBase.prototype = Object.create(Tercero.getClass().prototype)
+        Cliente.prototype = Object.create(Tercero.getClass().prototype)
 
         this.getClass = function(){
-            return ClienteBase;
+            return Cliente;
         };
 
         return this;

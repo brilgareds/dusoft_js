@@ -5,7 +5,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
     var fo = controllers.controller('CotizacionesController', [
         '$scope', '$rootScope', 'Request',
-        'Empresa', 'Cliente', 'PedidoVenta',
+        'EmpresaPedido', 'Cliente', 'PedidoVenta',
         'API', "socket", "AlertService",
         '$state',
 

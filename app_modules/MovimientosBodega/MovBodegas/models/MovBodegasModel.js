@@ -152,6 +152,7 @@ MovimientosBodegasModel.prototype.crear_documento = function(documento_temporal_
 
         if (err || documento_temporal === null) {
             console.log('Se ha generado un error o el docuemnto está vacío.');
+            callback(err);
             return;
         } else {
 
@@ -166,6 +167,7 @@ MovimientosBodegasModel.prototype.crear_documento = function(documento_temporal_
 
                 if (err || detalle_documento_temporal.length === 0) {
                     console.log('Se ha generado un error o el documento está vacío...');
+                    callback(err);
                     return;
                 } else {
                     // Consultar numeracion del documento    
@@ -173,6 +175,7 @@ MovimientosBodegasModel.prototype.crear_documento = function(documento_temporal_
 
                         if (err || numeracion.length === 0) {
                             console.log('Se ha generado un error o no se pudo tener la numeracion del documento');
+                            callback(err);
                             return;
                         } else {
 

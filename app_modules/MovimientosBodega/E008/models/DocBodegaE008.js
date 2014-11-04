@@ -575,7 +575,7 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(doc
 
         // Generar Documento de Despacho.
         that.m_movientos_bodegas.crear_documento(documento_temporal_id, usuario_id, function(err, empresa_id, prefijo_documento, numero_documento) {
-
+            
             // Asignar Auditor Como Responsable del Despacho.
             __asignar_responsable_despacho(empresa_id, prefijo_documento, numero_documento, auditor_id, function(err, result) {
 
@@ -611,6 +611,12 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(doc
  * 
  * ==================================================================================================================================================================*/
 
+
+function __errorGenerandoDocumento(err, callback){
+    if(err){
+        callback(err);
+    }
+}
 
 // Ingresar cabecera docuemento despacho clientes
 function __ingresar_documento_despacho_clientes(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento, auditor_id, callback) {

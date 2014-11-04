@@ -22,7 +22,7 @@ vows.describe('Test actualizarTipoDocumentoTemporalClientes').addBatch({
                         item_id: 1555515,
                         cantidad_ingresada: 25,
                         fecha_vencimiento:"2014-10-30",
-                        lote:'DU1201',
+                        lote:'1512',
                         valor_unitario:2
                     }
                 };

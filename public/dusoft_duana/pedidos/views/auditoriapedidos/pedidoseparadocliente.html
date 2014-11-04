@@ -137,7 +137,7 @@
 
      <div class="col-sm-12 col-md-12" ng-if="productosPendientes.length > 0">
           
-        <div class="panel panel-info marginBottom5"> <!-- / begin banking details -->
+        <div class="panel panel-info marginBottom5"> 
 
             <div class="panel-heading">
               <h4 class="h4MarginTopBottom">Pendientes</h4>
@@ -147,6 +147,24 @@
 
 
                 <div class="auditadosGrid" ng-grid="lista_productos_pendientes_clientes"></div>
+
+            </div>
+        </div>
+          
+    </div> 
+    
+     <div class="col-sm-12 col-md-12" ng-if="cajasSinCerrar.length > 0">
+          
+        <div class="panel panel-info marginBottom5"> 
+
+            <div class="panel-heading">
+              <h4 class="h4MarginTopBottom">Cajas sin cerrar</h4>
+            </div>
+
+            <div class="panel-body paddingRightZero">
+
+
+                <div class="auditadosGrid" ng-grid="lista_cajas_no_cerradas_clientes"></div>
 
             </div>
         </div>

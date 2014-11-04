@@ -1330,7 +1330,9 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined || args.documento_temporal.documento_temporal_id === undefined || args.documento_temporal.usuario_id === undefined) {
+    if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined || args.documento_temporal.documento_temporal_id === undefined
+        || args.documento_temporal.usuario_id === undefined) {
+    
         res.send(G.utils.r(req.url, 'documento_temporal_id,  usuario_id o numero_pedido No Estan Definidos', 404, {}));
         return;
     }
@@ -1353,14 +1355,14 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
         console.log(numero_documento);
     });
 
-    return;*/
+    return;*/ 
     __validar_productos_pedidos_clientes(that, numero_pedido, documento_temporal_id, usuario_id, function(err, productos_no_auditados, productos_pendientes) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
             return;
         } else {
-            if (productos_no_auditados || productos_pendientes) {
+            if (productos_no_auditados.length > 0 || productos_pendientes.length > 0) {
 
                 console.log('==== productos_no_auditados =====');
                 console.log(productos_no_auditados);
@@ -1384,10 +1386,11 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                     }
 
                     console.log('Listo Para Generar el Documento EFC Original');
-                    return
-                    /*that.m_e008.generar_documento_despacho_clientes(documento_temporal_id, usuario_id, function(err, rows) {
-
-                    });*/
+                    that.m_e008.generar_documento_despacho_clientes(documento_temporal_id, usuario_id, function(err, rows) {
+                        console.log("========================================== generar documento despacho clientes ============================"); 
+                        console.log(err);
+                        console.log(rows);
+                    });
                 }
             });
         }

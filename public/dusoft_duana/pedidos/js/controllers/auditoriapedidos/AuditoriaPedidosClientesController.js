@@ -40,7 +40,7 @@ define(["angular", "js/controllers",
                 };
 
                 return obj;
-            }
+            };
 
             //definicion y delegados del Tabla de pedidos clientes
 
@@ -62,6 +62,22 @@ define(["angular", "js/controllers",
                 ]
 
             };
+            
+            $scope.lista_cajas_no_cerradas_clientes = {
+                data: 'cajasSinCerrar',
+                enableColumnResize: true,
+                enableRowSelection: false,
+                columnDefs: [
+
+                    {field: 'numero_caja', displayName: 'Número de caja'},
+                    {field: 'cliente', displayName: 'Cliente'},
+                    {field: 'direccion', displayName: 'Direccion'},
+                    {field: 'movimiento', displayName: "Opciones", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onCerrarCaja(row.entity)"><span class="glyphicon glyphicon-ok">Cerrar</span></button></div>'}
+
+                ]
+
+            };
+            
 
             $scope.$on("onPedidosSeparadosRenderCliente",function(e,items){
     

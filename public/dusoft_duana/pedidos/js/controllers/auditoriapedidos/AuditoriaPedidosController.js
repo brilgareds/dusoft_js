@@ -27,6 +27,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.productosAuditados = [];
             $scope.productosNoAuditados = [];
             $scope.productosPendientes = [];
+            $scope.cajasSinCerrar = [];
             $scope.notificacionclientes = 0;
             $scope.notificacionfarmacias = 0;
             $scope.filtro = {
@@ -209,7 +210,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 lote_pedido.item_id = obj.item_id;
         
                 var producto_pedido_separado = ProductoPedido.get(  obj.codigo_producto, obj.descripcion_producto, "",
-                                                                    "", obj.cantidad_solicitada, obj.cantidad_ingresada,
+                                                                    obj.valor_unitario, obj.cantidad_solicitada, obj.cantidad_ingresada,
                                                                     obj.observacion_cambio);
                                                                     
                 producto_pedido_separado.setLote(lote_pedido);
@@ -362,6 +363,41 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 });
 
             };
+            
+             $scope.onCerrarCaja = function(caja){
+                 console.log(caja)
+                var url = API.DOCUMENTOS_TEMPORALES.GENERAR_ROTULO;
+                var obj = {
+                    session:$scope.session,
+                    data:{
+                        documento_temporal: {
+                            documento_temporal_id: caja.documento_id,
+                            numero_caja: caja.numero_caja
+                        }
+                    }
+                };
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    console.log(data);
+                    if(data.status === 200){
+                        that.sacarCaja(caja);
+                    } else {
+                        AlertService.mostrarMensaje("warning", "Se genero un error al cerrar la caja");
+                    }
+                });
+            };
+            
+            that.sacarCaja = function(caja){
+               for(var i in $scope.cajasSinCerrar){
+                   var _caja = $scope.cajasSinCerrar[i];
+                   
+                   if(_caja.numero_caja === caja.numero_caja && caja.documento_id === _caja.ddocumento_id){
+                       console.log("caja a borrar ",_caja);
+                       $scope.cajasSinCerrar.splice(i,1);
+                       break;
+                   }
+               }
+            };
 
             $scope.generarDocumento = function(documento){
                 
@@ -389,8 +425,13 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         var movimientos_bodegas = data.obj.movimientos_bodegas;
                         $scope.productosNoAuditados = [];
                         $scope.productosPendientes  = [];
+                        $scope.cajasSinCerrar = [];
                         that.renderProductosAuditados(movimientos_bodegas.productos_no_auditados, $scope.productosNoAuditados);
                         that.renderProductosAuditados(movimientos_bodegas.productos_pendientes, $scope.productosPendientes);
+                        
+                        if(movimientos_bodegas.cajas_no_cerradas){
+                            $scope.cajasSinCerrar = movimientos_bodegas.cajas_no_cerradas;
+                        }
                     }
 
                 });
@@ -421,6 +462,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 $scope.productosAuditados = [];
                 $scope.productosNoAuditados = [];
                 $scope.productosPendientes = [];
+                $scope.cajasSinCerrar = [];
             });
 
             socket.on("onListarDocumentosTemporalesClientes",function(data){

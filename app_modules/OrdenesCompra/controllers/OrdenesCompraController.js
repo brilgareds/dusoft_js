@@ -6,6 +6,8 @@ var OrdenesCompra = function(ordenes_compras) {
     this.m_ordenes_compra = ordenes_compras;
 };
 
+
+// Listar las ordenes de compra
 OrdenesCompra.prototype.listarOrdenesCompra = function(req, res) {
 
     var that = this;
@@ -40,10 +42,176 @@ OrdenesCompra.prototype.listarOrdenesCompra = function(req, res) {
     that.m_ordenes_compra.listar_ordenes_compra(fecha_inicial, fecha_final, termino_busqueda, pagina_actual, function(err, lista_ordenes_compras) {
 
         if (err) {
-            res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras : []}));
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
             return;
         } else {
-            res.send(G.utils.r(req.url, 'Lista Ordenes Compras', 200, {ordenes_compras : lista_ordenes_compras}));
+            res.send(G.utils.r(req.url, 'Lista Ordenes Compras', 200, {ordenes_compras: lista_ordenes_compras}));
+            return;
+        }
+    });
+};
+
+
+// Insertar una orden de compra 
+OrdenesCompra.prototype.insertarOrdenCompra = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.unidad_negocio === undefined || args.ordenes_compras.codigo_proveedor === undefined || args.ordenes_compras.empresa_id === undefined) {
+        res.send(G.utils.r(req.url, 'unidad_negocio, codigo_proveedor, empresa_id no estan definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.observacion === undefined) {
+        res.send(G.utils.r(req.url, 'observacion no estan definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.unidad_negocio === '' || args.ordenes_compras.codigo_proveedor === '' || args.ordenes_compras.empresa_id === '') {
+        res.send(G.utils.r(req.url, 'unidad_negocio, codigo_proveedor o empresa_id  estan vacias', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.observacion === '') {
+        res.send(G.utils.r(req.url, 'observacion esta vacia', 404, {}));
+        return;
+    }
+
+
+    var unidad_negocio = args.ordenes_compras.unidad_negocio;
+    var proveedor = args.ordenes_compras.codigo_proveedor;
+    var empresa_id = args.ordenes_compras.empresa_id;
+    var observacion = args.ordenes_compras.observacion;
+    var usuario_id = req.session.user.usuario_id;
+
+    that.m_ordenes_compra.insertar_orden_compra(unidad_negocio, proveedor, empresa_id, observacion, usuario_id, function(err, rows, result) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Orden de Compra regitrada correctamente', 200, {ordenes_compras: lista_ordenes_compras}));
+            return;
+        }
+    });
+};
+
+// Insertar Detalle una orden de compra 
+OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.numero_orden === undefined || args.ordenes_compras.codigo_producto === undefined) {
+        res.send(G.utils.r(req.url, 'numero_orden o codigo_producto no estan definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.cantidad_solicitada === undefined || args.ordenes_compras.valor === undefined || args.ordenes_compras.iva === undefined) {
+        res.send(G.utils.r(req.url, 'cantidad_solicitada, valor o iva no estan definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.numero_orden === '' || args.ordenes_compras.codigo_producto === '') {
+        res.send(G.utils.r(req.url, 'numero_orden o codigo_producto  estan vacias', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.cantidad_solicitada === '' || args.ordenes_compras.valor === '' || args.ordenes_compras.iva === '') {
+        res.send(G.utils.r(req.url, 'cantidad_solicitada, valor o iva esta vacia', 404, {}));
+        return;
+    }
+
+
+    var numero_orden = args.ordenes_compras.numero_orden;
+    var codigo_producto = args.ordenes_compras.codigo_producto;
+    var cantidad_solicitada = args.ordenes_compras.cantidad_solicitada;
+    var valor = args.ordenes_compras.valor;
+    var iva = args.ordenes_compras.iva;
+
+    that.m_ordenes_compra.insertar_detalle_orden_compra(numero_orden, codigo_producto, cantidad_solicitada, valor, iva, function(err, rows, result) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Orden de Compra regitrada correctamente', 200, {ordenes_compras: lista_ordenes_compras}));
+            return;
+        }
+    });
+};
+
+
+// Eliminar una orden de compra 
+OrdenesCompra.prototype.eliminarOrdenCompra = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.numero_orden === undefined) {
+        res.send(G.utils.r(req.url, 'numero_orden  no esta definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.numero_orden === '') {
+        res.send(G.utils.r(req.url, 'numero_orden esta vacias', 404, {}));
+        return;
+    }
+
+    var numero_orden = args.ordenes_compras.numero_orden;
+
+
+    that.m_ordenes_compra.eliminar_detalle_orden_compra(numero_orden, function(err, rows, result) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
+            return;
+        } else {
+            that.m_ordenes_compra.eliminar_orden_compra(numero_orden, function(err, rows, result) {
+
+                if (err) {
+                    res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
+                    return;
+                } else {
+                    res.send(G.utils.r(req.url, 'Orden de Compra eliminada correctamente', 200, {ordenes_compras: []}));
+                    return;
+                }
+            });
+        }
+    });
+};
+
+
+// Eliminar una orden de compra 
+OrdenesCompra.prototype.eliminarProductoOrdenCompra = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.numero_orden === undefined || args.ordenes_compras.codigo_producto === undefined) {
+        res.send(G.utils.r(req.url, 'numero_orden o codigo_producto no estan definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.numero_orden === '' || args.ordenes_compras.codigo_producto === '') {
+        res.send(G.utils.r(req.url, 'numero_orden o codigo_producto estan vacias', 404, {}));
+        return;
+    }
+
+    var numero_orden = args.ordenes_compras.numero_orden;
+    var codigo_producto = args.ordenes_compras.codigo_producto;
+
+
+    that.m_ordenes_compra.eliminar_producto_orden_compra(numero_orden, codigo_producto, function(err, rows, result) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Producto eliminado correctamente', 200, {ordenes_compras: []}));
             return;
         }
     });

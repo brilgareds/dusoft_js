@@ -263,6 +263,77 @@ E008Controller.prototype.detalleDocumentoTemporal = function(req, res) {
     });
 };
 
+
+E008Controller.prototype.modificarDetalleDocumentoTemporal = function(req, res){
+    var that = this;
+
+    var args = req.body.data;
+    
+    
+    
+    if (args.documento_temporal === undefined || args.documento_temporal.item_id === undefined) {
+        res.send(G.utils.r(req.url, 'El documento o id no Estan Definidos', 404, {}));
+        return;
+    }
+
+    if (args.documento_temporal.cantidad_ingresada === undefined) {
+        res.send(G.utils.r(req.url, 'La cantidad ingresada no están definidas', 404, {}));
+        return;
+    }
+
+    if (args.documento_temporal.lote === undefined || args.documento_temporal.fecha_vencimiento === undefined) {
+        res.send(G.utils.r(req.url, 'El lote o la fecha de vencimiento no están definidas', 404, {}));
+        return;
+    }
+
+    if ( args.documento_temporal.valor_unitario === undefined) {
+        res.send(G.utils.r(req.url, 'El vlr Unitario no están definidas', 404, {}));
+        return;
+    }
+
+
+
+
+    if (args.documento_temporal.cantidad_ingresada === '' || args.documento_temporal.cantidad_ingresada === 0) {
+        res.send(G.utils.r(req.url, 'La cantidad ingresada es igual a 0', 404, {}));
+        return;
+    }
+
+    if (args.documento_temporal.lote === '' || args.documento_temporal.fecha_vencimiento === '') {
+        res.send(G.utils.r(req.url, 'El lote o la fecha de vencimiento están vacias', 404, {}));
+        return;
+    }
+
+    if ( args.documento_temporal.valor_unitario === '') {
+        res.send(G.utils.r(req.url, 'El vlr Unitario están Vacíos', 404, {}));
+        return;
+    }
+
+
+
+    var item_id = args.documento_temporal.item_id;
+    var lote = args.documento_temporal.lote;
+    var fecha_vencimiento = args.documento_temporal.fecha_vencimiento;
+    var cantidad_ingresada = args.documento_temporal.cantidad_ingresada;
+    var valor_unitario = args.documento_temporal.valor_unitario;
+    var usuario_id = req.session.user.usuario_id;
+    
+    
+    that.m_movientos_bodegas.modificar_detalle_movimiento_bodega_temporal(item_id, valor_unitario, cantidad_ingresada, lote, fecha_vencimiento, function(err, rows){
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Creando Modificando el Producto en el documento', 500, {documento_temporal: {item_id: 0}}));
+            return;
+        } else {
+
+            var item_id = (rows.length > 0) ? rows[0].item_id : 0;
+
+            res.send(G.utils.r(req.url, 'Producto modificado correctamente en el documento temporal', 200, {documento_temporal: {item_id: item_id}}));
+            return;
+        }
+    });
+} ;
+
+
 // Consultar TODOS los documentos temporales de despacho clientes 
 E008Controller.prototype.consultarDocumentosTemporalesClientes = function(req, res) {
 

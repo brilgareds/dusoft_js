@@ -15,12 +15,25 @@
                 </div>
                 <div class="panel-body">
                     
-                    <div class="input-group navbar-form paddingRightZero">
-                        <input type="text" class="form-control pull-right" ng-keypress="onKeySeleccionProductoPress($event)" ng-model="rootSeleccionProductoFarmacia.termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">
-                        <div class="input-group-btn" >
-                            <button class="btn btn-default pull-right" type="submit" ng-click="buscarSeleccionProducto(obtenerParametros())"><i class="glyphicon glyphicon-search"></i></button>
+                    <!--<div class="input-group navbar-form paddingRightZero">-->
+                        
+                        <div class="col-sm-12 col-md-12 col-lg-12">
+                            <div class="col-sm-12 col-md-6 col-lg-6 pull-left">
+                                <alert ng-show="rootSeleccionProductoFarmacia.no_incluir_producto == true" type="danger">El Producto que intenta Incluir ya fue INGRESADO. Elimínelo primero de los Productos Seleccionados.</alert>
+                            </div>
+
+                            <div class="col-sm-12 col-md-6 col-lg-3 pull-right input-group">
+
+                                <input type="text" class="form-control pull-right" ng-keypress="onKeySeleccionProductoPress($event)" ng-model="rootSeleccionProductoFarmacia.termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">
+
+                                <div class="input-group-btn" >
+                                    <button class="btn btn-default pull-right" type="submit" ng-click="buscarSeleccionProducto(obtenerParametros())"><i class="glyphicon glyphicon-search"></i></button>
+                                </div>
+
+                            </div>
                         </div>
-                    </div>
+                        
+                    <!--</div>-->
                     
                 </div>
                 <div class="panel-body" ng-if="rootSeleccionProductoFarmacia.listado_productos.length > 0">

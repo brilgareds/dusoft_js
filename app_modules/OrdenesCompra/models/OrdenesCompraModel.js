@@ -106,24 +106,14 @@ OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_or
 };
 
 // Ingresar Cabecera Orden de Compra
-OrdenesCompraModel.prototype.insertar_orden_compra = function(numero_orden, callback) {
+OrdenesCompraModel.prototype.insertar_orden_compra = function(unidad_negocio, codigo_proveedor, empresa_id, observacion, usuario_id, callback) {
 
    
-    var sql = "  ";
+    var sql = " INSERT INTO compras_ordenes_pedidos ( codigo_unidad_negocio, codigo_proveedor_id, empresa_id, observacion, usuario_id, estado, fecha_orden ) \
+                VALUES( $1, $2, $3, $4, '1', NOW() ) RETURNING orden_pedido_id; ";
 
-    G.db.query(sql, [numero_orden], function(err, rows, result, total_records) {
-        callback(err, rows);
-    });
-};
-
-// Ingresar Detalle Orden de Compra
-OrdenesCompraModel.prototype.insertar_detalle_orden_compra = function(numero_orden, callback) {
-
-   
-    var sql = "  ";
-
-    G.db.query(sql, [numero_orden], function(err, rows, result, total_records) {
-        callback(err, rows);
+    G.db.query(sql, [unidad_negocio, codigo_proveedor, empresa_id, observacion, usuario_id], function(err, rows, result, total_records) {
+        callback(err, rows, result);
     });
 };
 
@@ -138,6 +128,30 @@ OrdenesCompraModel.prototype.modificar_orden_compra = function(numero_orden, cal
     });
 };
 
+// Eliminar Orden de Compra
+OrdenesCompraModel.prototype.eliminar_orden_compra = function(numero_orden, callback) {
+
+   
+    var sql = " DELETE FROM compras_ordenes_pedidos WHERE orden_pedido_id = $1  ";
+
+    G.db.query(sql, [numero_orden], function(err, rows, result, total_records) {
+        callback(err, rows);
+    });
+};
+
+// Ingresar Detalle Orden de Compra
+OrdenesCompraModel.prototype.insertar_detalle_orden_compra = function(numero_orden, codigo_producto, cantidad_solicitada ,valor, iva ,estado, callback) {
+
+   
+    var sql = " INSERT INTO compras_ordenes_pedidos_detalle ( orden_pedido_id,codigo_producto,numero_unidades,valor,porc_iva,estado)\
+                VALUES ( $1, $2, $3, $4, $5, 1 );";
+
+    G.db.query(sql, [numero_orden, codigo_producto, cantidad_solicitada ,valor, iva ,estado], function(err, rows, result, total_records) {
+        callback(err, rows);
+    });
+};
+
+
 // Modificar Detalle Orden de Compra
 OrdenesCompraModel.prototype.modificar_detalle_orden_compra = function(numero_orden, callback) {
 
@@ -145,6 +159,28 @@ OrdenesCompraModel.prototype.modificar_detalle_orden_compra = function(numero_or
     var sql = "  ";
 
     G.db.query(sql, [numero_orden], function(err, rows, result, total_records) {
+        callback(err, rows);
+    });
+};
+
+// Eliminar Detalle Orden de Compra
+OrdenesCompraModel.prototype.eliminar_detalle_orden_compra = function(numero_orden, callback) {
+
+   
+    var sql = "  DELETE FROM compras_ordenes_pedidos_detalle WHERE orden_pedido_id = $1 ";
+
+    G.db.query(sql, [numero_orden], function(err, rows, result, total_records) {
+        callback(err, rows);
+    });
+};
+
+// Eliminar producto Orden de Compra
+OrdenesCompraModel.prototype.eliminar_producto_orden_compra = function(numero_orden, codigo_producto, callback) {
+
+   
+    var sql = "  DELETE FROM compras_ordenes_pedidos_detalle WHERE orden_pedido_id= $1 AND codigo_producto=$2 ";
+
+    G.db.query(sql, [numero_orden, codigo_producto], function(err, rows, result, total_records) {
         callback(err, rows);
     });
 };

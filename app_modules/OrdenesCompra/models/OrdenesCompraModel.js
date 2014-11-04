@@ -24,7 +24,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
                 a.observacion,\
                 f.codigo_unidad_negocio,\
                 f.imagen,\
-                f.descripcion,\
+                f.descripcion as descripcion_unidad_negocio,\
                 a.usuario_id,\
                 e.nombre as nombre_usuario,\
                 To_char(a.fecha_orden,'dd-mm-yyyy') as fecha_registro\
@@ -40,7 +40,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
                     d.razon_social ilike $3 or\
                     c.tercero_id ilike $3 or \
                     c.nombre_tercero ilike $3 \
-                ) and a.sw_unificada='0' order by 1 ";
+                ) and a.sw_unificada='0' order by 1 DESC ";
 
     G.db.pagination(sql, [fecha_inicial, fecha_final, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
         callback(err, rows);

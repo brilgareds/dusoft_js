@@ -6,8 +6,8 @@ define(["angular", "js/models"], function(angular, models) {
         function Empresa() {
             this.nombre = "";
             this.codigo = "";
-            this.clientes = []; 
-            this.proveedores = [];
+            //this.clientes = []; 
+            //this.proveedores = [];
         };
 
         Empresa.prototype.setNombre = function(nombre) {

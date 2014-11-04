@@ -107,7 +107,7 @@ module.exports = function(app, di_container) {
 
     // Modificar detalle Documento Temporal
     app.post('/api/movBodegas/E008/modificarDetalleDocumentoTemporal', function(req, res) {
-
+        c_e008.modificarDetalleDocumentoTemporal(req,res);
     });
 
     // Validar que el numero de caja sea valido 

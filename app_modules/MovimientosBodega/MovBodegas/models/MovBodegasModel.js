@@ -41,6 +41,19 @@ MovimientosBodegasModel.prototype.ingresar_detalle_movimiento_bodega_temporal =
             });
         };
 
+MovimientosBodegasModel.prototype.modificar_detalle_movimiento_bodega_temporal = function(item_id, valor_unitario, cantidad, lote, fecha_vencimiento, callback){
+    
+    var total_costo = valor_unitario * cantidad;
+    
+    var sql = " UPDATE inv_bodegas_movimiento_tmp_d SET  cantidad = $2, lote = $3, fecha_vencimiento = $4, total_costo = $5   \
+                       WHERE item_id = $1 RETURNING item_id; ";
+    
+     G.db.query(sql, [item_id, cantidad, lote, fecha_vencimiento, total_costo], function(err, rows, result) {
+
+         callback(err, rows);
+     });
+};
+
 // Eliminar Todo el Documento Temporal 
 MovimientosBodegasModel.prototype.eliminar_movimiento_bodega_temporal = function(documento_temporal_id, usuario_id, callback) {
 

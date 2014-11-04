@@ -84,9 +84,11 @@ define(["angular", "js/controllers",'models/Cliente',
                 var lote = LoteProductoPedido.get(data.lote, data.fecha_vencimiento);
                 lote.existencia_actual = data.existencia_actual;
                 lote.disponible = $scope.rootEditarProducto.producto.disponible;
+                lote.item_id = $scope.rootEditarProducto.producto.lote.item_id;
                 if(that.esLoteSeleccionado(lote)){
                     //lote.selected = true;
                     lote.cantidad_ingresada = $scope.rootEditarProducto.producto.cantidad_separada;
+
                     $scope.rootEditarProducto.producto.lote.existencia_actual = lote.existencia_actual;
 
                 }
@@ -185,6 +187,32 @@ define(["angular", "js/controllers",'models/Cliente',
                         
                     }
                 }
+
+                
+
+
+                 var obj = {
+                    session:$scope.session,
+                    data:{
+                        documento_temporal: {
+                            item_id: $scope.rootEditarProducto.producto.lote.item_id,
+                            cantidad_ingresada: $scope.rootEditarProducto.producto.lote.cantidad_ingresada,
+                            fecha_vencimiento:$scope.rootEditarProducto.producto.lote.fecha_vencimiento,
+                            lote:$scope.rootEditarProducto.producto.lote.codigo_lote,
+                            valor_unitario:$scope.rootEditarProducto.producto.valor_unitario
+                        }
+                    }
+                };
+
+                console.log("params to send ",obj);
+
+               return;
+               Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.MODIFICAR_DETALLE_TEMPORAL, "POST", obj, function(data) {
+
+                    console.log("respuesta al modificar lote "+data);
+                });
+
+                console.log("modificar cantidad")
 
             };
 

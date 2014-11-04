@@ -14,7 +14,7 @@ OrdenesCompra.prototype.listarOrdenesCompra = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.ordenes_compras === undefined || args.ordenes_compras.fecha_inicial === undefined || args.ordenes_compras.fecha_final === undefined || args.ordenes_compras.termino_busqueda === undefined || args.ordenes_compras.pagina_actual === undefined) {
+    if (args.ordenes_compras === undefined || args.ordenes_compras.fecha_inicial === undefined || args.ordenes_compras.fecha_final === undefined) {
         res.send(G.utils.r(req.url, 'fecha_inicial, fecha_final no estan definidas', 404, {}));
         return;
     }

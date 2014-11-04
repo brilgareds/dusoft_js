@@ -1,11 +1,11 @@
 
-define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontroller', 'models/Cliente', 'models/PedidoAuditoria'], function(angular, controllers) {
+define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontroller', 'models/ClientePedido', 'models/PedidoAuditoria'], function(angular, controllers) {
 
     var fo = controllers.controller('PedidosClientesController', [
         '$scope', '$rootScope', 'Request',
-        '$modal', 'Empresa', 'Cliente',
+        '$modal', 'EmpresaPedido', 'ClientePedido',
         'PedidoAuditoria', 'API', "socket", "$timeout",
-        "AlertService", "Usuario", "localStorageService","$state",
+        "AlertService", "Usuario", "localStorageService", "$state",
         function($scope, $rootScope, Request, $modal, Empresa, Cliente, PedidoAuditoria, API, socket, $timeout, AlertService, Usuario, localStorageService, $state) {
             console.log("cliente controller ======")
             $scope.Empresa = Empresa;
@@ -42,7 +42,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                     }
                 };
 
-                if($scope.estadoseleccionado != ""){
+                if ($scope.estadoseleccionado != "") {
                     obj.data.pedidos_clientes.filtro[$scope.estadoseleccionado] = true;
                 }
 
@@ -77,8 +77,8 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                     var pedido = that.crearPedido(obj);
 
                     $scope.Empresa.agregarPedido(
-                        pedido
-                    );
+                            pedido
+                            );
 
 
                 }
@@ -110,7 +110,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                         _pedido.descripcion_estado_actual_pedido = pedido.descripcion_estado_actual_pedido;
                         _pedido.estado_actual_pedido = pedido.estado_actual_pedido;
                         _pedido.estado_separacion = pedido.estado_separacion;
-                        
+
                         break;
                     }
                 }
@@ -130,13 +130,12 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                 // '</div>' +
                 // '</div>', /*<input-check ng-model="row.entity.selected" ng-click="onEditarLote(row)"> />*/
                 columnDefs: [
-                   /* {field: '', cellClass: "checkseleccion", width: "60",
-                        cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)' ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 || row.entity.estado == 3 || row.entity.estado_separacion'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},*/
-                   {field: '', cellClass: "checkseleccion", width: "60",
-                        cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)'"+
-                                     " ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 || row.entity.estado == 3 || "+
-                                     "row.entity.estado_separacion'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
-
+                    /* {field: '', cellClass: "checkseleccion", width: "60",
+                     cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)' ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 || row.entity.estado == 3 || row.entity.estado_separacion'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},*/
+                    {field: '', cellClass: "checkseleccion", width: "60",
+                        cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)'" +
+                                " ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 || row.entity.estado == 3 || " +
+                                "row.entity.estado_separacion'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
                     {field: 'descripcion_estado_actual_pedido', displayName: "Estado Actual", cellClass: "txt-center",
                         //cellTemplate: '<div ng-class="agregarClase(row.entity.estado_actual_pedido)" >{{row.entity.descripcion_estado_actual_pedido}}</div>'},
                         cellTemplate: "<button type='button' ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
@@ -155,7 +154,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
             // Agregar Clase de acuerdo al estado del pedido
             $scope.agregarClase = function(estado) {
 
-                if(estado == 6){
+                if (estado == 6) {
                     return estados[1];
                 }
 
@@ -164,7 +163,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
 
             // Agregar Restriccion de acuerdo al estado de asigancion del pedido
             $scope.agregarRestriccion = function(estado_separacion) {
-                
+
                 var clase = "";
                 if (estado_separacion)
                     clase = "glyphicon glyphicon-lock";
@@ -302,14 +301,14 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
             };
 
 
-            $scope.seleccionEstado = function(){
+            $scope.seleccionEstado = function() {
                 $scope.paginaactual = 1;
                 that.buscarPedidosCliente($scope.termino_busqueda, true);
             };
 
-            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
-               $scope.Empresa.vaciarPedidos();
-               $scope.$$watchers = null;
+            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+                $scope.Empresa.vaciarPedidos();
+                $scope.$$watchers = null;
             });
 
 

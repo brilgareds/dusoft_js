@@ -1,11 +1,11 @@
 define(["angular", "js/controllers",'includes/slide/slideContent',
-        'models/Cliente', 'models/PedidoAuditoria', 'models/Separador', 'models/Auditor',
+        'models/ClientePedido', 'models/PedidoAuditoria', 'models/Separador', 'models/Auditor',
         'models/DocumentoTemporal', "controllers/auditoriapedidos/AuditoriaPedidosClientesController","controllers/auditoriapedidos/AuditoriaPedidosFarmaciasController",
         "controllers/auditoriapedidos/EditarProductoController"], function(angular, controllers) {
 
     var fo = controllers.controller('AuditoriaPedidosController', [
         '$scope', '$rootScope', 'Request',
-        'Empresa', 'Cliente', 'Farmacia', 'PedidoAuditoria',
+        'EmpresaPedido', 'Cliente', 'Farmacia', 'PedidoAuditoria',
         'Separador', 'DocumentoTemporal', 'API',
         "socket", "AlertService", "ProductoPedido", "LoteProductoPedido",
         "$modal", 'Auditor','Usuario',

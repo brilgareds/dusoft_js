@@ -191,9 +191,10 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_pendientes_by_producto = func
 
    
     var sql = " select \
+                a.codigo_proveedor_id,\
                 a.orden_pedido_id as numero_orden_compra,\
-                b.numero_unidades as cantidad_solicitada, \
-                ((b.numero_unidades)-COALESCE(b.numero_unidades_recibidas,0)) as cantidad_pendiente,\
+                b.numero_unidades::integer as cantidad_solicitada, \
+                ((b.numero_unidades)-COALESCE(b.numero_unidades_recibidas,0))::integer as cantidad_pendiente,\
                 d.tipo_id_tercero,\
                 d.tercero_id,\
                 d.nombre_tercero,\

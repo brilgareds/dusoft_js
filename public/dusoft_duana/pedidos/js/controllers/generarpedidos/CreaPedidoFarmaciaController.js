@@ -1,11 +1,11 @@
 //Controlador de la View creapedidosfarmacias.html
 
 define(["angular", "js/controllers",'includes/slide/slideContent',
-        'models/Cliente', 'models/PedidoVenta'], function(angular, controllers) {
+        'models/ClientePedido', 'models/PedidoVenta'], function(angular, controllers) {
 
     var fo = controllers.controller('CreaPedidoFarmaciaController', [
         '$scope', '$rootScope', 'Request',
-        'Empresa', 'Farmacia', 'PedidoVenta',
+        'EmpresaPedido', 'Farmacia', 'PedidoVenta',
         'API', "socket", "AlertService",
         '$state', "Usuario", "localStorageService",
 
@@ -269,8 +269,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     //selectedItems: $scope.selectedRow,
                     multiSelect: false,
                     columnDefs: [
-                        {field: 'codigo_producto', displayName: 'Código Producto'},
-                        {field: 'descripcion', displayName: 'Descripción'},
+                        {field: 'codigo_producto', displayName: 'Código Producto', width: "9%"},
+                        {field: 'descripcion', displayName: 'Descripción', width: "37%"},
                         {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada'},
                         {field: 'cantidad_pendiente', displayName: 'Cantidad Pendiente'}
                     ]

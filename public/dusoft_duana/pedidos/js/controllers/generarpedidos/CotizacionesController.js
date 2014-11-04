@@ -1,11 +1,11 @@
 //Controlador de la View pedidosclientes.html
 
 define(["angular", "js/controllers",'includes/slide/slideContent',
-        'models/Cliente', 'models/PedidoVenta'], function(angular, controllers) {
+        'models/ClientePedido', 'models/PedidoVenta'], function(angular, controllers) {
 
     var fo = controllers.controller('CotizacionesController', [
         '$scope', '$rootScope', 'Request',
-        'Empresa', 'Cliente', 'PedidoVenta',
+        'EmpresaPedido', 'Cliente', 'PedidoVenta',
         'API', "socket", "AlertService",
         '$state',
 

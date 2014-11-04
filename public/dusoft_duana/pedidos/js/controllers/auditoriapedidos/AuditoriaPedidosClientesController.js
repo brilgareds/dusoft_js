@@ -1,10 +1,10 @@
 define(["angular", "js/controllers",
-        'models/Cliente', 'models/PedidoAuditoria', 'models/Separador',
+        'models/ClientePedido', 'models/PedidoAuditoria', 'models/Separador',
         'models/DocumentoTemporal'], function(angular, controllers) {
 
     var fo = controllers.controller('AuditoriaPedidosClientesController', [
         '$scope', '$rootScope', 'Request',
-        'Empresa', 'Cliente', 'PedidoAuditoria',
+        'EmpresaPedido', 'Cliente', 'PedidoAuditoria',
         'Separador', 'DocumentoTemporal', 'API',
         "socket", "AlertService", "Usuario",
         function($scope, $rootScope, Request, Empresa, Cliente, PedidoAuditoria, Separador, DocumentoTemporal, API, socket, AlertService, Usuario) {

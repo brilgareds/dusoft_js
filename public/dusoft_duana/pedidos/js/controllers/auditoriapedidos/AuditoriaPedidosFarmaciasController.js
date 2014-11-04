@@ -4,7 +4,7 @@ define(["angular", "js/controllers",
 
     var fo = controllers.controller('AuditoriaPedidosFarmaciasController', [
         '$scope', '$rootScope', 'Request', 
-        'Empresa', 'Farmacia', 'PedidoAuditoria',
+        'EmpresaPedido', 'Farmacia', 'PedidoAuditoria',
         'Separador', 'DocumentoTemporal', 'API',
         "socket", "AlertService", "Usuario", 
         function($scope, $rootScope, Request, Empresa, Farmacia, PedidoAuditoria, Separador, DocumentoTemporal, API, socket, AlertService,Usuario) {

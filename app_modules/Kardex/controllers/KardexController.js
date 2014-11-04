@@ -86,7 +86,7 @@ Kardex.prototype.obtener_movimientos_producto = function(req, res) {
                         else {
                             // Seleccionar las Ordenes de Compras que estan Pendientes con ese producto
                             that.m_ordenes_compra.listar_ordenes_compra_pendientes_by_producto(empresa_id, codigo_producto, function(err, pendientes_ordenes_compra) {
-
+                              
                                 if (err)
                                     res.send(G.utils.r(req.url, 'Error Seleccionado Las Ordenes de Compra Pendientes', 500, {movimientos_producto: {}, pendientes_farmacias: {}, pendientes_clientes: {}, pendientes_ordenes_compra: {}}));
                                 else {

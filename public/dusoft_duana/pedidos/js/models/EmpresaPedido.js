@@ -1,55 +1,55 @@
 
-define(["angular", "js/models", "../../../includes/classes/EmpresaBase"], function(angular, models) {
+define(["angular", "js/models", "includes/classes/Empresa"], function(angular, models) {
 
-    models.factory('Empresa', ["EmpresaBase", function(EmpresaBase) {
+    models.factory('EmpresaPedido', ["Empresa", function(Empresa) {
 
-        var Empresa =  Object.create(EmpresaBase.getClass().prototype);
+        var EmpresaPedido =  Object.create(Empresa.getClass().prototype);
         
-        Empresa.pedidos = [];
-        Empresa.pedidosFarmacias = [];
-        Empresa.separadores = [];
-        Empresa.documentosTemporalesClientes = [];
-        Empresa.documentosTemporalesFarmacias = [];
+        EmpresaPedido.pedidos = [];
+        EmpresaPedido.pedidosFarmacias = [];
+        EmpresaPedido.separadores = [];
+        EmpresaPedido.documentosTemporalesClientes = [];
+        EmpresaPedido.documentosTemporalesFarmacias = [];
 
-        Empresa.agregarPedido = function(pedido) {
+        EmpresaPedido.agregarPedido = function(pedido) {
             this.pedidos.push(pedido);
         }
 
-        Empresa.getPedidos = function() {
+        EmpresaPedido.getPedidos = function() {
             return this.pedidos;
         }
 
-        Empresa.vaciarPedidos = function() {
+        EmpresaPedido.vaciarPedidos = function() {
             this.pedidos = [];
         }
         
         // Pedidos Farmacias
-        Empresa.agregarPedidoFarmacia = function(pedido) {
+        EmpresaPedido.agregarPedidoFarmacia = function(pedido) {
             this.pedidosFarmacias.push(pedido);
         };
 
-        Empresa.getPedidosFarmacia = function() {
+        EmpresaPedido.getPedidosFarmacia = function() {
             return this.pedidosFarmacias;
         };
 
-        Empresa.vaciarPedidosFarmacia = function() {
+        EmpresaPedido.vaciarPedidosFarmacia = function() {
             this.pedidosFarmacias = [];
         };
 
         
-        Empresa.agregarSeparador = function(separador) {
+        EmpresaPedido.agregarSeparador = function(separador) {
             this.separadores.push(separador);
         }
 
-        Empresa.getSeparadores = function() {
+        EmpresaPedido.getSeparadores = function() {
             return this.separadores;
         }
 
-        Empresa.vaciarSeparadores = function() {
+        EmpresaPedido.vaciarSeparadores = function() {
             this.separadores = [];
         }
 
-        Empresa.obtenerSeparadorPorId = function(id) {
+        EmpresaPedido.obtenerSeparadorPorId = function(id) {
             for (var i in this.separadores) {
                 var separador = this.separadores[i];
 
@@ -60,7 +60,7 @@ define(["angular", "js/models", "../../../includes/classes/EmpresaBase"], functi
         }
 
         //Documentos Temporales
-        Empresa.agregarDocumentoTemporal = function(documento_temporal, tipo) {
+        EmpresaPedido.agregarDocumentoTemporal = function(documento_temporal, tipo) {
             
             if (tipo == 1) {
                 this.documentosTemporalesClientes.push(documento_temporal);
@@ -71,7 +71,7 @@ define(["angular", "js/models", "../../../includes/classes/EmpresaBase"], functi
             }
         }
 
-        Empresa.getDocumentoTemporal = function(tipo) {
+        EmpresaPedido.getDocumentoTemporal = function(tipo) {
             
             if (tipo == 1) {
                 return this.documentosTemporalesClientes;
@@ -82,7 +82,7 @@ define(["angular", "js/models", "../../../includes/classes/EmpresaBase"], functi
             }
         }
 
-        Empresa.vaciarDocumentoTemporal = function(tipo) {
+        EmpresaPedido.vaciarDocumentoTemporal = function(tipo) {
             
             if (tipo == 1) {
                 this.documentosTemporalesClientes = [];
@@ -93,7 +93,7 @@ define(["angular", "js/models", "../../../includes/classes/EmpresaBase"], functi
             }
         }    
         
-        return Empresa;
+        return EmpresaPedido;
 
     }]);
 });

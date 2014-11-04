@@ -1,10 +1,10 @@
-define(["angular", "js/controllers",'models/Cliente',
+define(["angular", "js/controllers",'models/ClientePedido',
         'models/PedidoAuditoria', 'models/Separador', 'models/DocumentoTemporal',
         'models/ProductoPedido', 'models/LoteProductoPedido'], function(angular, controllers) {
 
     var fo = controllers.controller('EditarProductoController', [
         '$scope', '$rootScope', 'Request', 
-        '$modalInstance', 'Empresa','Cliente',
+        '$modalInstance', 'EmpresaPedido','Cliente',
          'PedidoAuditoria', 'API',"socket", "AlertService",
          "producto", "Usuario", "documento","LoteProductoPedido",
 

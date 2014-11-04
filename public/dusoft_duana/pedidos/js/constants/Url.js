@@ -10,20 +10,20 @@
          'DOCUMENTOS_TEMPORALES' : {
 	    	'LISTAR_DOCUMENTOS_TEMPORALES_CLIENTES': BASE_URL+'/movBodegas/E008/consultarDocumentosTemporalesClientes',	
 	    	'LISTAR_DOCUMENTOS_TEMPORALES_FARMACIAS': BASE_URL+'/movBodegas/E008/consultarDocumentosTemporalesFarmacias',
-            'CONSULTAR_DOCUMENTO_TEMPORAL_CLIENTES': BASE_URL+'/movBodegas/E008/consultarDocumentoTemporalClientes',
-            'CONSULTAR_DOCUMENTO_TEMPORAL_FARMACIAS': BASE_URL+'/movBodegas/E008/consultarDocumentoTemporalFarmacias',
-            'CONSULTAR_DOCUMENTO_TEMPORAL':BASE_URL+'/movBodegas/E008/auditoriaProductosDocumentoTemporal',
-            'CONSULTAR_DOCUMENTOS_USUARIOS': BASE_URL+'/movBodegas/consultarDocumentosUsuario',
-            'ACTUALIZAR_TIPO_DOCUMENTO_TEMPORAL_CLIENTES': BASE_URL+"/movBodegas/E008/actualizarTipoDocumentoTemporalClientes",
-            'ACTUALIZAR_TIPO_DOCUMENTO_TEMPORAL_FARMACIAS': BASE_URL+"/movBodegas/E008/actualizarTipoDocumentoTemporalFarmacias",
-            'AUDITAR_DOCUMENTO_TEMPORAL':BASE_URL+"/movBodegas/E008/auditarProductoDocumentoTemporal",
-            'CONSULTAR_PRODUCTOS_AUDITADOS':BASE_URL+"/movBodegas/E008/consultarProductosAuditados",
-            'VALIDAR_CAJA':BASE_URL+"/movBodegas/E008/validarCajaProducto",
-            'GENERAR_ROTULO':BASE_URL+'/movBodegas/E008/generarRotuloCaja',
-            'CONSULTAR_PRODUCTOS_AUDITADOS_CLIENTE':BASE_URL+'/movBodegas/E008/auditoriaProductosClientes',
-            'CONSULTAR_PRODUCTOS_AUDITADOS_FARMACIA':BASE_URL+'/movBodegas/E008/auditoriaProductosFarmacias',
-            'GENERAR_DESPACHO':BASE_URL+'/movBodegas/E008/generarDocumentoDespachoClientes',
-            'MODIFICAR_DETALLE_TEMPORAL':BASE_URL+'/movBodegas/E008/modificarDetalleDocumentoTemporal'
+                'CONSULTAR_DOCUMENTO_TEMPORAL_CLIENTES': BASE_URL+'/movBodegas/E008/consultarDocumentoTemporalClientes',
+                'CONSULTAR_DOCUMENTO_TEMPORAL_FARMACIAS': BASE_URL+'/movBodegas/E008/consultarDocumentoTemporalFarmacias',
+                'CONSULTAR_DOCUMENTO_TEMPORAL':BASE_URL+'/movBodegas/E008/auditoriaProductosDocumentoTemporal',
+                'CONSULTAR_DOCUMENTOS_USUARIOS': BASE_URL+'/movBodegas/consultarDocumentosUsuario',
+                'ACTUALIZAR_TIPO_DOCUMENTO_TEMPORAL_CLIENTES': BASE_URL+"/movBodegas/E008/actualizarTipoDocumentoTemporalClientes",
+                'ACTUALIZAR_TIPO_DOCUMENTO_TEMPORAL_FARMACIAS': BASE_URL+"/movBodegas/E008/actualizarTipoDocumentoTemporalFarmacias",
+                'AUDITAR_DOCUMENTO_TEMPORAL':BASE_URL+"/movBodegas/E008/auditarProductoDocumentoTemporal",
+                'CONSULTAR_PRODUCTOS_AUDITADOS':BASE_URL+"/movBodegas/E008/consultarProductosAuditados",
+                'VALIDAR_CAJA':BASE_URL+"/movBodegas/E008/validarCajaProducto",
+                'GENERAR_ROTULO':BASE_URL+'/movBodegas/E008/generarRotuloCaja',
+                'CONSULTAR_PRODUCTOS_AUDITADOS_CLIENTE':BASE_URL+'/movBodegas/E008/auditoriaProductosClientes',
+                'CONSULTAR_PRODUCTOS_AUDITADOS_FARMACIA':BASE_URL+'/movBodegas/E008/auditoriaProductosFarmacias',
+                'GENERAR_DESPACHO':BASE_URL+'/movBodegas/E008/generarDocumentoDespachoClientes',
+                'MODIFICAR_DETALLE_TEMPORAL':BASE_URL+'/movBodegas/E008/modificarDetalleDocumentoTemporal'
 	    },
 	    'PEDIDOS' : {
 	    	'LISTAR_PEDIDOS': BASE_URL+'/PedidosClientes/listarPedidos',	
@@ -40,6 +40,8 @@
                 'BODEGAS_FARMACIAS':BASE_URL+'/PedidosFarmacias/listarBodegas',
                 'LISTAR_PRODUCTOS' :BASE_URL+'/Productos/listarProductos',
                 'LISTAR_PRODUCTOS_FARMACIAS' :BASE_URL+'/PedidosFarmacias/listarProductos',
+                'CREAR_PEDIDO_TEMPORAL' :BASE_URL+'/PedidosFarmacias/crearPedidoTemporal',
+                'INGRESAR_DETALLE_PEDIDO_TEMPORAL':BASE_URL+'/PedidosFarmacias/ingresarDetallePedidoTemporal'
 	    },
 	    'TERCEROS':{
 	    	'LISTAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/listar",

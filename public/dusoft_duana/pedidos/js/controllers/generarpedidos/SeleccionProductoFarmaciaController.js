@@ -274,13 +274,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
             $scope.onRowClick1 = function(row) {
                 
-                //if($scope.rootSeleccionProductoFarmacia.listado_productos[row.rowIndex].fila_activa !== false){
-                
                     $scope.rootSeleccionProductoFarmacia.no_incluir_producto = false;
-                
-//                    $scope.rootSeleccionProductoFarmacia.listado_productos[row.rowIndex].fila_activa = false;
-//                    $scope.rootSeleccionProductoFarmacia.listado_productos[row.rowIndex].tipo_boton = 'warning';
-//                    $scope.rootSeleccionProductoFarmacia.listado_productos[row.rowIndex].etiqueta_boton = 'Listo';
 
                     $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.forEach(function(valor){
                         if(valor.codigo_producto === row.entity.codigo_producto){
@@ -298,10 +292,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                     descripcion: row.entity.nombre_producto,
                                     cantidad_solicitada: row.entity.cantidad_solicitada,
                                     cantidad_pendiente: (cantidad_pendiente < 0) ? 0 : cantidad_pendiente,
-                                    //sourceIndex: row.rowIndex
+
                                 }
 
-                        //$scope.listado_productos_seleccionados.push(obj_sel);
 
                         $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.unshift(obj_sel); 
 
@@ -322,8 +315,40 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         /*************************************************************************/                    
 
                         $scope.$emit('cargarGridPrincipal', $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados);
+                        
+                        /***/
+                        
+                        
+                        /*
+                         * 
+                         *  var empresa_id = args.pedidos_farmacias.empresa_id;
+                            var centro_utilidad_id = args.pedidos_farmacias.centro_utilidad_id;
+                            var bodega_id = args.pedidos_farmacias.bodega_id;
+                            var empresa_destino_id = args.pedidos_farmacias.empresa_destino_id;
+                            var centro_utilidad_destino_id = args.pedidos_farmacias.centro_utilidad_destino_id;
+                            var bodega_destino_id = args.pedidos_farmacias.bodega_destino_id;
+                            var usuario_id = req.session.user.usuario_id; 
+                         * 
+                         * 
+                         */
+                        
+                        var obj_encabezado = {
+                            session:$scope.rootSeleccionProductoFarmacia.session,
+                            data:{
+                                pedidos_farmacias:{
+                                    empresa_id: row.entity.,
+                                    centro_utilidad_id: $scope.rootSeleccionProductoFarmacia.paginaactual,
+                                    bodega_id: $scope.rootSeleccionProductoFarmacia.de_empresa_id,
+                                    empresa_destino_id: $scope.rootSeleccionProductoFarmacia.de_centro_utilidad_id,
+                                    centro_utilidad_destino_id: $scope.rootSeleccionProductoFarmacia.de_bodega_id,
+                                    bodega_destino_id: $scope.rootSeleccionProductoFarmacia.de_empresa_destino_id,
+                                }
+                            }
+                        };
+                        
+                        /***/
+                        
                     }
-                //}
             };
             
             $scope.onRowClick2 = function(row) {

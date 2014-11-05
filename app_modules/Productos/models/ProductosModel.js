@@ -43,7 +43,8 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
                 b.grupo_id,\
                 b.clase_id,\
                 b.subclase_id,\
-                b.porc_iva\
+                b.porc_iva,\
+                b.tipo_producto_id\
                 from existencias_bodegas a \
                 inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
                 inner join inventarios c on b.codigo_producto = c.codigo_producto and a.empresa_id = c.empresa_id\

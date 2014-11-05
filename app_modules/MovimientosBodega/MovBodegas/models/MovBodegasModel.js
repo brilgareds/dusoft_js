@@ -164,24 +164,26 @@ MovimientosBodegasModel.prototype.crear_documento = function(documento_temporal_
 
             // Consultar detalle del docuemnto temporal
             __consultar_detalle_movimiento_bodega_temporal(documento_temporal_id, usuario_id, function(err, detalle_documento_temporal) {
-
+                console.log("__consultar_detalle_movimiento_bodega_temporal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
                 if (err || detalle_documento_temporal.length === 0) {
                     console.log('Se ha generado un error o el documento está vacío...');
                     callback(err);
                     return;
                 } else {
                     // Consultar numeracion del documento    
-                    __obtener_numeracion_documento(empresa_id, documento_id, function(err, numeracion) {
+                    __obtener_numeracion_documento(empresa_id, documento_id, function(err, numeracion, result) {
 
                         if (err || numeracion.length === 0) {
                             console.log('Se ha generado un error o no se pudo tener la numeracion del documento');
                             callback(err);
                             return;
                         } else {
-
-                            var prefijo_documento = numeracion[0].prefijo;
-                            var numeracion_documento = numeracion[0].numeracion;
+                            
+                            var prefijo_documento = numeracion.rows[0].prefijo;
+                            var numeracion_documento = numeracion.rows[0].numeracion;
                             var observacion = documento_temporal.observacion;
+                            
+                            console.log("resultado de numetacion ",numeracion.rows, result);
 
                             // Ingresar Cabecera Documento temporal
                             __ingresar_movimiento_bodega(documento_id, empresa_id, centro_utilidad, bodega, prefijo_documento, numeracion_documento, observacion, usuario_id, function(err, result) {
@@ -214,18 +216,18 @@ MovimientosBodegasModel.prototype.crear_documento = function(documento_temporal_
 
 // Consultar numeracion del documento
 function __obtener_numeracion_documento(empresa_id, documento_id, callback) {
+    console.log("__obtener_numeracion_documento ===============================>>>>>>");
+    var sql = " LOCK TABLE documentos IN ROW EXCLUSIVE MODE;";
 
-    var sql = " LOCK TABLE documentos IN ROW EXCLUSIVE MODE;"
-
-    G.db.query(sql, [], function(err, rows, result) {
+    G.db.transaction(sql, [], function(err, rows, result) {
 
         sql = " SELECT prefijo, numeracion FROM documentos WHERE  empresa_id = $1 AND documento_id = $2 ;  ";
 
-        G.db.query(sql, [empresa_id, documento_id], function(err, rows, result) {
+        G.db.transaction(sql, [empresa_id, documento_id], function(err, rows, result) {
 
             sql = " UPDATE documentos SET numeracion = numeracion + 1 WHERE empresa_id = $1 AND  documento_id = $2 ; ";
 
-            G.db.query(sql, [empresa_id, documento_id], function(_err, _rows, _result) {
+            G.db.transaction(sql, [empresa_id, documento_id], function(_err, _rows, _result) {
 
                 callback(err, rows, result);
             });

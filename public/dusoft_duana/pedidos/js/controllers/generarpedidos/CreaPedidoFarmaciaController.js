@@ -286,9 +286,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 };
                 
                 var datos_para = {
-                    empresa_destino_id: $scope.rootCreaPedidoFarmacia.para_seleccion_empresa.split(",")[0],
-                    centro_utilidad_destino_id: $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad.split(",")[0],
-                    bodega_destino_id: $scope.rootCreaPedidoFarmacia.para_seleccion_bodega.split(",")[0]
+                    empresa_id: $scope.rootCreaPedidoFarmacia.para_seleccion_empresa.split(",")[0],
+                    centro_utilidad_id: $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad.split(",")[0],
+                    bodega_id: $scope.rootCreaPedidoFarmacia.para_seleccion_bodega.split(",")[0]
                 };
                 
                 var farmacia = Farmacia.get(

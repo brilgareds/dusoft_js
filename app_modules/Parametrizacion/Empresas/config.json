@@ -3,14 +3,14 @@
     "dependency": {
         "controllers": [{
                 "empresas_controller": {
-                    "module": "Empresas",
+                    "module": "Parametrizacion/Empresas",
                     "controller": "EmpresasController",
                     "alias": "c_empresas"
                 }
             }],
         "models": [{
                 "empresas_model": {
-                    "module": "Empresas",
+                    "module": "Parametrizacion/Empresas",
                     "model": "EmpresasModel",
                     "alias": "m_empresas"
                 }

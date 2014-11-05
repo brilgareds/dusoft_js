@@ -3,14 +3,14 @@
     "dependency": {
         "controllers": [{
                 "bodegas_controller": {
-                    "module": "Bodegas",
+                    "module": "Parametrizacion/Bodegas",
                     "controller": "BodegasController",
                     "alias": "c_bodegas"
                 }
             }],
         "models": [{
                 "bodegas_model": {
-                    "module": "Bodegas",
+                    "module": "Parametrizacion/Bodegas",
                     "model": "BodegasModel",
                     "alias": "m_bodegas"
                 }

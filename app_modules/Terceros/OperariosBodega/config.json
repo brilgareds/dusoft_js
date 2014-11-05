@@ -1,18 +1,18 @@
 {
-    "module": "Terceros",
+    "module": "OperariosBodega",
     "dependency": {
         "controllers": [{
-                "terceros_controller": {
-                    "module": "Terceros",
-                    "controller": "TercerosController",
-                    "alias": "c_terceros"
+                "operarios_controller": {
+                    "module": "Terceros/OperariosBodega",
+                    "controller": "OperariosBodegaController",
+                    "alias": "c_operarios"
                 }
             }],
         "models": [{
-                "terceros_model": {
-                    "module": "Terceros",
-                    "model": "TercerosModel",
-                    "alias": "m_terceros"
+                "operarios_model": {
+                    "module": "Terceros/OperariosBodega",
+                    "model": "OperariosBodegaModel",
+                    "alias": "m_operarios"
                 },
                 "pedidos_clientes_model": {
                     "module": "PedidosClientes",

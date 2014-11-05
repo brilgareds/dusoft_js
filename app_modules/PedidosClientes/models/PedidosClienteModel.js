@@ -131,7 +131,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
                 when a.estado_pedido = 5 then 'Despachado con Pendientes' \
                 when a.estado_pedido = 6 then 'En Auditoria' end as descripcion_estado_actual_pedido, \
                 d.estado as estado_separacion, \
-                a.fecha_registro \
+                to_char(a.fecha_registro, 'dd-mm-yyyy') as fecha_registro \
                 from ventas_ordenes_pedidos a \
                 inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id \
                 inner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id \

@@ -80,7 +80,7 @@
         "id": "16",
         "parent": "#",
         "text": "Compras",
-        "url": "OrdenesCompra"
+        "url": "ordenescompra"
     },
     {
         "id": "17",
@@ -88,7 +88,7 @@
         "text": "Gestionar Orden de Compra",
         "url": "ListarOrdenes",
         "icon": "glyphicon glyphicon-list-alt",
-        "parentname": "OrdenesCompra",
+        "parentname": "ordenescompra",
         "state": "ListarOrdenes"
     }
 ]

@@ -39,7 +39,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         }
                     }
                 };
-                
+
                 Request.realizarRequest(API.PROVEEDORES.LISTAR_PROVEEDORES, "POST", obj, function(data) {
 
                     if (data.status === 200) {
@@ -48,10 +48,27 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     }
                 });
             };
-            
+
             $scope.buscar_unidades_negocio = function(termino) {
 
+                var termino = termino || "";
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        unidades_negocio: {
+                            termino_busqueda: termino
+                        }
+                    }
+                };
                 
+                Request.realizarRequest(API.UNIDADES_NEGOCIO.LISTAR_UNIDADES_NEGOCIO, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+
+                        that.render_unidades_negocio(data.obj.unidades_negocio);
+                    }
+                });
             };
 
             that.render_proveedores = function(proveedores) {
@@ -63,6 +80,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     var proveedor = Proveedor.get(data.tipo_id_tercero, data.tercero_id, data.codigo_proveedor_id, data.nombre_proveedor, data.direccion, data.telefono);
 
                     $scope.Empresa.set_proveedores(proveedor);
+                });
+            };
+
+            that.render_unidades_negocio = function(unidades_negocios) {
+
+                $scope.Empresa.limpiar_unidades_negocios();
+
+                unidades_negocios.forEach(function(data) {
+
+                    var unidad_negocio = UnidadNegocio.get(data.codigo_unidad_negocio, data.descripcion, data.imagen);
+
+                    $scope.Empresa.set_unidades_negocios(unidad_negocio);
                 });
             };
 
@@ -105,6 +134,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
 
             $scope.buscar_proveedores();
+            $scope.buscar_unidades_negocio();
 
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {

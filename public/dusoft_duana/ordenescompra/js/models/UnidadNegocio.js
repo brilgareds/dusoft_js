@@ -12,6 +12,13 @@ define(["angular", "js/models"], function(angular, models) {
                 return new UnidadNegocio(codigo, descripcion, imagen);
             };
 
+            UnidadNegocio.prototype.get_nombre = function() {
+
+                var descripcion = this.codigo + ' - ' + this.descripcion;
+
+                return descripcion;
+            };
+
             return this;
         }]);
 });

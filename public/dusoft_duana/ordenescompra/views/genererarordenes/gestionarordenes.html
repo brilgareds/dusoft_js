@@ -8,7 +8,7 @@
                         <h3 class="text-center"><strong>Logo</strong></h3>
                     </div>
                     <div class="pull-right">
-                        <h3 class="text-center"><strong>OC # 123456</strong></h3>
+                        <h3 class="text-center"><strong>OC # 00000</strong></h3>
                     </div>
                 </div>
                 <div class="panel-body">
@@ -21,7 +21,8 @@
                                 <div class="row">
                                     <div class="col-md-7">  
                                         <select ui-select2=""  class="form-control selectgeneral pull-left" ng-model="X"  placeholder="Seleccionar unidad de negocio" ng-change="">
-                                            <option></option>                            
+                                            <option></option>    
+                                            <option ng-repeat="unidad_negocio in  Empresa.get_unidades_negocios()"  value="{{unidad_negocio.codigo}}">{{ unidad_negocio.get_nombre() }}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -32,7 +33,7 @@
                                 <legend>Proveedor</legend> 
                                 <div class="row">
                                     <div class="col-md-7">  
-                                        <select ui-select2="{minimumInputLength: 3}"  class="form-control selectgeneral pull-left" ng-model="X"  placeholder="Seleccionar proveedor" ng-change="">
+                                        <select ui-select2="{minimumInputLength: 3}"  class="form-control selectgeneral pull-left" ng-model="Y"  placeholder="Seleccionar proveedor" ng-change="">
                                             <option></option> 
                                             <option ng-repeat="proveedor in  Empresa.get_proveedores()"  value="{{proveedor.codigo_proveedor_id}}">{{ proveedor.get_nombre() }}</option>
                                         </select>

@@ -1,30 +1,73 @@
 
 define(["angular", "js/controllers",
-    "models/OrdenCompraPedido",
     "models/EmpresaOrdenCompra",
-    "models/ProveedorOrdenCompra",
-    "models/UnidadNegocio",
-    "models/UsuarioOrdenCompra"], function(angular, controllers) {
+    "models/Laboratorio"], function(angular, controllers) {
 
     controllers.controller('GestionarProductosController', [
         '$scope', '$rootScope', 'Request',
         '$modal', 'API', "socket", "$timeout",
         "AlertService", "localStorageService", "$state",
-        "OrdenCompraPedido",
         "EmpresaOrdenCompra",
-        "ProveedorOrdenCompra",
-        "UnidadNegocio",
-        "UsuarioOrdenCompra",
+        "Laboratorio",
         "Usuario",
-        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state,OrdenCompra, Empresa, Proveedor, UnidadNegocio, Usuario, Sesion) {
+        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, Empresa, Laboratorio, Sesion) {
 
             var that = this;
 
             $scope.Empresa = Empresa;
-            
-            console.log('== Empresa ==');
-            console.log($scope.Empresa);
-            return
+
+            // Variables de Sesion
+            $scope.session = {
+                usuario_id: Sesion.usuario_id,
+                auth_token: Sesion.token
+            };
+
+
+            $rootScope.$on('gestionar_productosCompleto', function() {
+
+                that.buscar_laboratorios();
+            });
+
+
+            that.buscar_laboratorios = function(termino) {
+
+                var termino = termino || "";
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        laboratorios: {
+                            termino_busqueda: termino
+                        }
+                    }
+                };
+
+                console.log('=== Obj Laboratorios ====');
+                console.log(obj);
+
+                Request.realizarRequest(API.LABORATORIOS.LISTAR_LABORATORIOS, "POST", obj, function(data) {
+
+                    console.log('=== Resultado Laboratorios ====');
+                    console.log(data);                    
+
+                    if (data.status === 200) {
+                        that.render_laboratorios(data.obj.laboratorios);
+                    }
+                });
+            };
+
+
+            that.render_laboratorios = function(laboratorios) {
+
+                $scope.Empresa.limpiar_laboratorios();
+
+                laboratorios.forEach(function(data) {
+
+                    var laboratorio = Laboratorio.get(data.laboratorio_id, data.tercero_id, data.descripcion_laboratorio);
+
+                    $scope.Empresa.set_proveedores(laboratorio);
+                });
+            };
 
             $scope.Productos = [];
 
@@ -62,7 +105,6 @@ define(["angular", "js/controllers",
                 };
 
                 var modalInstance = $modal.open($scope.opts);
-
             };
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {

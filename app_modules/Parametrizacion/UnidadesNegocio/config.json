@@ -1,0 +1,21 @@
+{
+    "module": "UnidadesNegocio",
+    "dependency": {
+        "controllers": [{
+                "unidades_negocio_controller": {
+                    "module": "Parametrizacion/UnidadesNegocio",
+                    "controller": "UnidadesNegocioController",
+                    "alias": "c_unidades_negocio"
+                }
+            }],
+        "models": [{
+                "unidades_negocio_model": {
+                    "module": "Parametrizacion/UnidadesNegocio",
+                    "model": "UnidadesNegocioModel",
+                    "alias": "m_unidades_negocio"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

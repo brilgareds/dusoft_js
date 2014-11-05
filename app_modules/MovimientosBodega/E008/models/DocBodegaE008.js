@@ -576,21 +576,44 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(doc
         // Generar Documento de Despacho.
         that.m_movientos_bodegas.crear_documento(documento_temporal_id, usuario_id, function(err, empresa_id, prefijo_documento, numero_documento) {
             
+            if(err){
+                callback(err);
+                return;
+            }
+            
             // Asignar Auditor Como Responsable del Despacho.
             __asignar_responsable_despacho(empresa_id, prefijo_documento, numero_documento, auditor_id, function(err, result) {
+                
+                if(err){
+                    callback(err);
+                    return;
+                }
 
                 // Generar Cabecera Documento Despacho.
                 __ingresar_documento_despacho_clientes(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento, auditor_id, function(err, result) {
-
+                    
+                    if(err){
+                        callback(err);
+                        return;
+                    }
                     // Generar Justificaciones Documento Despacho.
                     __ingresar_justificaciones_despachos(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento, function(err, result) {
-
+                        if(err){
+                            callback(err);
+                            return;
+                        }
                         // Eliminar Temporales Despachos Clientes.
                         __eliminar_documento_temporal_clientes(documento_temporal_id, usuario_id, function(err, result) {
-
+                            if(err){
+                                callback(err);
+                                return;
+                            }
                             // Eliminar Temporales Justificaciones.
                             that.eliminar_justificaciones_temporales_pendientes(documento_temporal_id, usuario_id, function(err, result) {
-                                
+                                if(err){
+                                    callback(err);
+                                    return;
+                                }
                                 // Finalizar Transacción.
                                 G.db.commit(function(){
                                     callback(err, empresa_id, prefijo_documento, numero_documento);
@@ -685,7 +708,9 @@ function __eliminar_documento_temporal_farmacias(documento_temporal_id, usuario_
 function __asignar_responsable_despacho(empresa_id, prefijo_documento, numero_documento, auditor_id, callback) {
 
     var sql = " UPDATE inv_bodegas_movimiento SET usuario_id = $4 WHERE empresa_id = $1 AND prefijo = $2 AND numero = $3 ;";
-
+    
+    //console.log("usuario id ", auditor_id, " empresa id ", empresa_id, " prefijo ", prefijo_documento, " numero ", numero_documento , " ");
+    
     G.db.transaction(sql, [empresa_id, prefijo_documento, numero_documento, auditor_id], callback);
 }
 ;

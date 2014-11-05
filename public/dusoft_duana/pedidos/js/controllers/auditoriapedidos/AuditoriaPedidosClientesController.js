@@ -103,7 +103,7 @@ define(["angular", "js/controllers",
 
             //eventos de widgets
             $scope.onKeySeparadosPress = function(ev, termino_busqueda) {
-                if (ev.which == 13) {
+                if (ev.which === 13) {
                     $scope.buscarPedidosSeparados( that.obtenerParametros(),
                                                    1,
                                                   false ,
@@ -122,16 +122,18 @@ define(["angular", "js/controllers",
             };
 
             //fin de eventos
-
-            //se realiza el llamado a api para pedidos
-            $scope.buscarPedidosSeparados(that.obtenerParametros(),1, false, $scope.renderPedidosSeparados);
-
-
-
              $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
                 $scope.pedidosSeparadosSeleccionados = [];
                 $scope.$$watchers = null;
             });
+            
+            $scope.$on("onRefrescarListadoPedidos",function(){
+                 $scope.buscarPedidosSeparados(that.obtenerParametros(),1, false, $scope.renderPedidosSeparados);
+            });
+            
+            
+            //se realiza el llamado a api para pedidos
+            $scope.buscarPedidosSeparados(that.obtenerParametros(),1, false, $scope.renderPedidosSeparados);
 
         }]);
 });

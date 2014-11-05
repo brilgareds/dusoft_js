@@ -1380,16 +1380,24 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                     return;
                 } else {
 
-                    if (cajas_no_cerradas) {
+                    if (cajas_no_cerradas.length > 0) {
                         res.send(G.utils.r(req.url, 'Algunas cajas no se han cerrado', 404, {movimientos_bodegas: {cajas_no_cerradas: cajas_no_cerradas}}));
                         return;
                     }
 
                     console.log('Listo Para Generar el Documento EFC Original');
-                    that.m_e008.generar_documento_despacho_clientes(documento_temporal_id, usuario_id, function(err, rows) {
-                        console.log("========================================== generar documento despacho clientes ============================"); 
-                        console.log(err);
-                        console.log(rows);
+                    that.m_e008.generar_documento_despacho_clientes(documento_temporal_id, usuario_id, auditor_id, function(err, rows) {
+                        
+                        if (err) {
+                            console.log("========================================== generar documento despacho clientes error generado ============================"); 
+                            console.log(err);
+                            res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
+                            return;
+                        } else {
+                            console.log("========================================== generar documento despacho clientes satisfactorio ============================"); 
+                            res.send(G.utils.r(req.url, 'Se ha generado el documento', 200, {movimientos_bodegas: {}}));
+                        }
+                        
                     });
                 }
             });

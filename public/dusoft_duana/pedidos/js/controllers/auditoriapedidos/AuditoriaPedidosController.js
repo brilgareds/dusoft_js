@@ -40,14 +40,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.buscarPedidosSeparados = function(obj, tipo, paginando, callback) {
                 var url = API.DOCUMENTOS_TEMPORALES.LISTAR_DOCUMENTOS_TEMPORALES_CLIENTES;
 
-                if(tipo == 2){
+                if(tipo === 2){
                     url = API.DOCUMENTOS_TEMPORALES.LISTAR_DOCUMENTOS_TEMPORALES_FARMACIAS;
                 }
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     $scope.ultima_busqueda = $scope.termino_busqueda;
                     
-                    if(data.obj.documentos_temporales != undefined) {
+                    if(data.obj.documentos_temporales !== undefined) {
                         callback(data.obj, paginando, tipo);
                     }
 
@@ -65,7 +65,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 pedido.setDatos(obj);
                 pedido.setTipo(tipo);
                 
-                if(tipo == 1){
+                if(tipo === 1){
                     var cliente = Cliente.get(
                         obj.nombre_cliente,
                         obj.direccion_cliente,
@@ -105,12 +105,12 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.renderPedidosSeparados = function(data, paginando, tipo) {
                 
                 var items = data.documentos_temporales.length;
-                var evento = (tipo == 1)?"Cliente":"Farmacia";
+                var evento = (tipo === 1)?"Cliente":"Farmacia";
                 
                 $scope.$broadcast("onPedidosSeparadosRender"+evento, items);
 
                 //se valida que hayan registros en una siguiente pagina
-                if (paginando && items == 0) {
+                if (paginando && items === 0) {
                     $scope.$broadcast("onPedidosSeparadosNoEncotrados"+evento, items);
                     return;
                 }
@@ -134,15 +134,15 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.buscarDetalleDocumentoTemporal = function(obj, paginando,tipo, callback){
                 var url = API.DOCUMENTOS_TEMPORALES.CONSULTAR_DOCUMENTO_TEMPORAL_CLIENTES;
 
-                if(tipo == 2){
+                if(tipo === 2){
                     url = API.DOCUMENTOS_TEMPORALES.CONSULTAR_DOCUMENTO_TEMPORAL_FARMACIAS;
                 }
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
                      
-                    if(data.status == 200) { 
+                    if(data.status === 200) { 
                         //console.log("detalle ", data)
-                        if(data.obj.documento_temporal != undefined) {
+                        if(data.obj.documento_temporal !== undefined) {
                             callback(data, paginando);
                         }
                     }
@@ -154,15 +154,15 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 var url = API.DOCUMENTOS_TEMPORALES.CONSULTAR_PRODUCTOS_AUDITADOS_CLIENTE;
 
-                if(tipo == 2){
+                if(tipo === 2){
                     url = API.DOCUMENTOS_TEMPORALES.CONSULTAR_PRODUCTOS_AUDITADOS_FARMACIA;
                 }
                 
                  Request.realizarRequest(url, "POST", obj, function(data) {
                      
-                    if(data.status == 200) { 
+                    if(data.status === 200) { 
 
-                        if(data.obj.movimientos_bodegas != undefined) {
+                        if(data.obj.movimientos_bodegas !== undefined) {
                             callback(data);
                         }
                     }
@@ -191,7 +191,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
 
                 that.buscarProductosSeparadosEnDocumento(params, tipo ,function(data){
-                    if(data.status == 200){
+                    if(data.status === 200){
                         var productos = data.obj.movimientos_bodegas.lista_productos_auditados;
                         console.log("productos encontrados ",productos);
 
@@ -229,7 +229,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
                 Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.CONSULTAR_DOCUMENTOS_USUARIOS, "POST", obj, function(data) {
                     
-                    if(data.status == 200){
+                    if(data.status === 200){
                         callback(data);
                     }
 
@@ -241,7 +241,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.validarDocumentoUsuario = function(obj, tipo, callback) {
                 var url = API.DOCUMENTOS_TEMPORALES.ACTUALIZAR_TIPO_DOCUMENTO_TEMPORAL_CLIENTES;
 
-                if(tipo == 2){
+                if(tipo === 2){
                     url = API.DOCUMENTOS_TEMPORALES.ACTUALIZAR_TIPO_DOCUMENTO_TEMPORAL_FARMACIAS;
                 }
 
@@ -259,7 +259,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
 
             $scope.esDocumentoBodegaValido = function(bodega_id){
-                return (!bodega_id > 0)?false:true
+                return (!bodega_id > 0)?false:true;
             };
 
 
@@ -294,7 +294,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.CONSULTAR_PRODUCTOS_AUDITADOS, "POST", obj, function(data) {
                     
-                    if(data.status == 200){
+                    if(data.status === 200){
                         console.log(data, "productos auditados");
                         that.renderProductosAuditados(data.obj.movimientos_bodegas.lista_productos_auditados, $scope.productosAuditados);
                     }
@@ -365,7 +365,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
             
              $scope.onCerrarCaja = function(caja){
-                 console.log(caja)
                 var url = API.DOCUMENTOS_TEMPORALES.GENERAR_ROTULO;
                 var obj = {
                     session:$scope.session,
@@ -378,7 +377,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 };
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
-                    console.log(data);
+                    console.log(data.status , " tipo de estado ", typeof data.status);
                     if(data.status === 200){
                         that.sacarCaja(caja);
                     } else {
@@ -390,8 +389,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             that.sacarCaja = function(caja){
                for(var i in $scope.cajasSinCerrar){
                    var _caja = $scope.cajasSinCerrar[i];
-                   
-                   if(_caja.numero_caja === caja.numero_caja && caja.documento_id === _caja.ddocumento_id){
+                  // console.log("caja a borrar ",_caja, " buscando con caja ", caja);
+                   if(_caja.numero_caja === caja.numero_caja && caja.documento_id === _caja.documento_id){
                        console.log("caja a borrar ",_caja);
                        $scope.cajasSinCerrar.splice(i,1);
                        break;
@@ -417,8 +416,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     
-                    if(data.status == 200){
+                    if(data.status === 200){
                         console.log("respuesta al generar documento "+data); 
+                        $scope.$on("onRefrescarListadoPedidos");
                         AlertService.mostrarMensaje("success", data.msj);
                     } else {
                          AlertService.mostrarMensaje("warning", data.msj);
@@ -439,7 +439,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
 
             $rootScope.$on("productoAuditado", function(e, producto, DocumentoTemporal){
-                if(DocumentoTemporal.getPedido() == undefined){ return }
+                if(DocumentoTemporal.getPedido() === undefined){ return; }
                 DocumentoTemporal.getPedido().vaciarProductos();
                 $scope.productosAuditados = [];
 
@@ -467,7 +467,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
             socket.on("onListarDocumentosTemporalesClientes",function(data){
                 console.log("onListarDocumentosTemporalesClientes", data);
-                if(data.status == 200){
+                if(data.status === 200){
                     $scope.notificacionclientes++;
                     for(var i in data.obj.documento_temporal_clientes){
                         var obj = data.obj.documento_temporal_clientes[i];
@@ -481,7 +481,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
              socket.on("onListarDocumentosTemporalesFarmacias",function(data){
                 console.log("onListarDocumentosTemporalesFarmacias", data);
-                if(data.status == 200){
+                if(data.status === 200){
                     $scope.notificacionfarmacias++;
                     for(var i in data.obj.documento_temporal_farmacias){
                         var obj = data.obj.documento_temporal_farmacias[i];

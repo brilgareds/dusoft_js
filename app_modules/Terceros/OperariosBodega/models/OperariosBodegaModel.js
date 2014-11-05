@@ -1,4 +1,4 @@
-var TercerosModel = function() {
+var OperariosBodegaModel = function() {
 
 };
 
@@ -22,7 +22,7 @@ var TercerosModel = function() {
  * @apiSuccessExample SQL.
  *      INSERT INTO operarios_bodega (nombre, usuario_id, estado) VALUES ( $1, $2, $3 );
  */ 
-TercerosModel.prototype.crear_operarios_bodega = function(nombre_operario, usuario_id, estado, callback) {
+OperariosBodegaModel.prototype.crear_operarios_bodega = function(nombre_operario, usuario_id, estado, callback) {
 
     var sql = "INSERT INTO operarios_bodega (nombre, usuario_id, estado) VALUES ( $1, $2, $3 );";
 
@@ -51,7 +51,7 @@ TercerosModel.prototype.crear_operarios_bodega = function(nombre_operario, usuar
  *      UPDATE operarios_bodega SET nombre= $2, usuario_id=$3, estado=$4 WHERE operario_id = $1 ;
  */ 
 
-TercerosModel.prototype.modificar_operarios_bodega = function(operario_id, nombre_operario, usuario_id, estado, callback) {
+OperariosBodegaModel.prototype.modificar_operarios_bodega = function(operario_id, nombre_operario, usuario_id, estado, callback) {
 
     var sql = "UPDATE operarios_bodega SET nombre= $2, usuario_id=$3, estado=$4 WHERE operario_id = $1 ;";
 
@@ -87,7 +87,7 @@ TercerosModel.prototype.modificar_operarios_bodega = function(operario_id, nombr
         left join system_usuarios b on a.usuario_id = b.usuario_id 
         where a.nombre ilike $1 and a.estado = $2 order by 2
  */ 
-TercerosModel.prototype.listar_operarios_bodega = function(termino_busqueda, estado_registro, callback) {
+OperariosBodegaModel.prototype.listar_operarios_bodega = function(termino_busqueda, estado_registro, callback) {
 
     var sql_aux = "";
     if (estado_registro !== '') {
@@ -131,7 +131,7 @@ TercerosModel.prototype.listar_operarios_bodega = function(termino_busqueda, est
  *     estado 
  *     from operarios_bodega where operario_id = $1
  */                            
-TercerosModel.prototype.seleccionar_operario_bodega = function(operario_id, callback) {
+OperariosBodegaModel.prototype.seleccionar_operario_bodega = function(operario_id, callback) {
 
     var sql = "select operario_id, nombre as nombre_operario, usuario_id, estado from operarios_bodega where operario_id = $1";
 
@@ -141,7 +141,7 @@ TercerosModel.prototype.seleccionar_operario_bodega = function(operario_id, call
 
 };
 
-TercerosModel.prototype.seleccionar_operario_por_usuario_id = function(usuario_id, callback) {
+OperariosBodegaModel.prototype.seleccionar_operario_por_usuario_id = function(usuario_id, callback) {
 
     var sql = "select operario_id, nombre as nombre_operario, usuario_id, estado from operarios_bodega where usuario_id = $1";
 
@@ -152,4 +152,4 @@ TercerosModel.prototype.seleccionar_operario_por_usuario_id = function(usuario_i
 };
 
 
-module.exports = TercerosModel;
+module.exports = OperariosBodegaModel;

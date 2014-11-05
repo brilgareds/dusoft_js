@@ -23,7 +23,10 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
 
             EmpresaOrdenCompra.ordenes_compras = [];
             EmpresaOrdenCompra.proveedores = [];
+            EmpresaOrdenCompra.unidades_negocios = [];
 
+
+            // Ordenes de Compra
             EmpresaOrdenCompra.set_ordenes_compras = function(orden_compra) {
                 this.ordenes_compras.push(orden_compra);
             };
@@ -36,6 +39,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
                 this.ordenes_compras = [];
             };
 
+            // Proveedores
             EmpresaOrdenCompra.set_proveedores = function(proveedor) {
                 this.proveedores.push(proveedor);
             };
@@ -46,6 +50,32 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
 
             EmpresaOrdenCompra.limpiar_proveedores = function() {
                 this.proveedores = [];
+            };
+
+            // Unidades de Negocios
+            EmpresaOrdenCompra.set_unidades_negocios = function(unidad_negocio) {
+                this.unidades_negocios.push(unidad_negocio);
+            };
+
+            EmpresaOrdenCompra.get_unidades_negocios = function() {
+                return this.unidades_negocios;
+            };
+
+            EmpresaOrdenCompra.limpiar_unidades_negocios = function() {
+                this.unidades_negocios = [];
+            };
+            
+            // Unidades de Negocios
+            EmpresaOrdenCompra.set_laboratorios = function(unidad_negocio) {
+                this.unidades_negocios.push(unidad_negocio);
+            };
+
+            EmpresaOrdenCompra.get_laboratorios = function() {
+                return this.unidades_negocios;
+            };
+
+            EmpresaOrdenCompra.limpiar_laboratorios = function() {
+                this.unidades_negocios = [];
             };
 
             return EmpresaOrdenCompra;

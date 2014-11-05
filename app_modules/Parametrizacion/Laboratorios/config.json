@@ -1,0 +1,21 @@
+{
+    "module": "Laboratorios",
+    "dependency": {
+        "controllers": [{
+                "laboratorios_controller": {
+                    "module": "Parametrizacion/Laboratorios",
+                    "controller": "LaboratoriosController",
+                    "alias": "c_laboratorios"
+                }
+            }],
+        "models": [{
+                "laboratorios_model": {
+                    "module": "Parametrizacion/Laboratorios",
+                    "model": "LaboratoriosModel",
+                    "alias": "m_laboratorios"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

@@ -12,6 +12,12 @@ define(["angular"], function(angular) {
             },
             'PROVEEDORES': {
                 'LISTAR_PROVEEDORES': BASE_URL + '/Terceros/Proveedores/listar'
+            },
+            'UNIDADES_NEGOCIO': {
+                'LISTAR_UNIDADES_NEGOCIO': BASE_URL + '/UnidadesNegocio/listarUnidadesNegocio'
+            },
+            'LABORATORIOS': {
+                'LISTAR_LABORATORIOS': BASE_URL + '/Laboratorios/listarLaboratorios'
             }
         }
     };

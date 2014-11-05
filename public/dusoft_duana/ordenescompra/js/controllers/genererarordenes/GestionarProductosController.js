@@ -1,15 +1,30 @@
 
-define(["angular", "js/controllers"], function(angular, controllers) {
+define(["angular", "js/controllers",
+    "models/OrdenCompraPedido",
+    "models/EmpresaOrdenCompra",
+    "models/ProveedorOrdenCompra",
+    "models/UnidadNegocio",
+    "models/UsuarioOrdenCompra"], function(angular, controllers) {
 
     controllers.controller('GestionarProductosController', [
         '$scope', '$rootScope', 'Request',
         '$modal', 'API', "socket", "$timeout",
         "AlertService", "localStorageService", "$state",
-        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state) {
+        "OrdenCompraPedido",
+        "EmpresaOrdenCompra",
+        "ProveedorOrdenCompra",
+        "UnidadNegocio",
+        "UsuarioOrdenCompra",
+        "Usuario",
+        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state,OrdenCompra, Empresa, Proveedor, UnidadNegocio, Usuario, Sesion) {
 
             var that = this;
 
-
+            $scope.Empresa = Empresa;
+            
+            console.log('== Empresa ==');
+            console.log($scope.Empresa);
+            return
 
             $scope.Productos = [];
 
@@ -37,15 +52,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
             $scope.calcular_valores_producto = function() {
 
-                console.log('==== calcular_valores_producto ====');
-                
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
                     dialogFade: false,
                     keyboard: true,
                     templateUrl: 'views/genererarordenes/calcularvaloresproducto.html',
-                    controller: "CalcularValoresProductoController"                    
+                    controller: "CalcularValoresProductoController"
                 };
 
                 var modalInstance = $modal.open($scope.opts);

@@ -378,7 +378,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 };
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
-                    console.log(data);
+                    console.log(data.status , " tipo de estado ", typeof data.status);
                     if(data.status === 200){
                         that.sacarCaja(caja);
                     } else {
@@ -390,8 +390,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             that.sacarCaja = function(caja){
                for(var i in $scope.cajasSinCerrar){
                    var _caja = $scope.cajasSinCerrar[i];
-                   
-                   if(_caja.numero_caja === caja.numero_caja && caja.documento_id === _caja.ddocumento_id){
+                  // console.log("caja a borrar ",_caja, " buscando con caja ", caja);
+                   if(_caja.numero_caja === caja.numero_caja && caja.documento_id === _caja.documento_id){
                        console.log("caja a borrar ",_caja);
                        $scope.cajasSinCerrar.splice(i,1);
                        break;

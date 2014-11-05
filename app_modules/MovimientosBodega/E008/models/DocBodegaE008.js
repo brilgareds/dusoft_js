@@ -144,8 +144,8 @@ DocuemntoBodegaE008.prototype.consultar_documentos_temporales_clientes = functio
                 case when a.estado = '0' then 'Separacion en Proceso' \
                      when a.estado = '1' then 'Separacion Finalizada' \
                      when a.estado = '2' then 'En Auditoria' end as descripcion_estado_separacion,     \
-                c.fecha_registro,    \
-                b.fecha_registro as fecha_separacion_pedido \
+                to_char(c.fecha_registro, 'dd-mm-yyyy') as fecha_registro,    \
+                to_char(b.fecha_registro, 'dd-mm-yyyy') as fecha_separacion_pedido \
                 from inv_bodegas_movimiento_tmp_despachos_clientes a\
                 inner join inv_bodegas_movimiento_tmp b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
                 inner join ventas_ordenes_pedidos c on a.pedido_cliente_id = c.pedido_cliente_id\
@@ -204,8 +204,8 @@ DocuemntoBodegaE008.prototype.consultar_documentos_temporales_farmacias = functi
                 case when a.estado = '0' then 'Separacion en Proceso' \
                      when a.estado = '1' then 'Separacion Finalizada' \
                      when a.estado = '2' then 'En Auditoria' end as descripcion_estado_separacion,   \
-                c.fecha_registro,\
-                b.fecha_registro as fecha_separacion_pedido\
+                to_char(c.fecha_registro, 'dd-mm-yyyy') as fecha_registro,\
+                to_char(b.fecha_registro, 'dd-mm-yyyy') as fecha_separacion_pedido\
                 from inv_bodegas_movimiento_tmp_despachos_farmacias a\
                 inner join inv_bodegas_movimiento_tmp b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
                 inner join solicitud_productos_a_bodega_principal c on a.solicitud_prod_a_bod_ppal_id = c.solicitud_prod_a_bod_ppal_id\

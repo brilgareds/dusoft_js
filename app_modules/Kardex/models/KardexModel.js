@@ -55,7 +55,7 @@ KardexModel.prototype.buscar_productos = function(termino_busqueda, pagina, call
 KardexModel.prototype.obtener_existencia_inicial = function(empresa_id, centro_utilidad_id, bodega_id, codigo_producto, fecha_cierre, callback) {
 
     var d = new Date(fecha_cierre);
-    var lapso = d.addMonths(-1).toFormat('YYYYMM');    
+    var lapso = d.addMonths(-1).toFormat('YYYYMM');
 
     var sql = "SELECT existencia_final as existencia_inicial FROM inv_bodegas_movimiento_cierres_por_lapso WHERE lapso =$5 AND empresa_id = $1 AND centro_utilidad =$2 AND bodega =$3 AND codigo_producto =$4 ;";
 
@@ -69,7 +69,7 @@ KardexModel.prototype.obtener_existencia_inicial = function(empresa_id, centro_u
 KardexModel.prototype.obtener_movimientos_productos = function(empresa_id, centro_utilidad_id, bodega_id, codigo_producto, fecha_inicial, fecha_final, callback) {
 
     // sql para la bd de pruebas
-    var sql_ = " SELECT *  \n" +
+    var sql_pruebas = " SELECT *  \n" +
             " FROM  " +
             " ( " +
             "   ( " +
@@ -220,7 +220,7 @@ KardexModel.prototype.obtener_movimientos_productos = function(empresa_id, centr
 
 
     // sql para la bd de produccion
-    var sql = " SELECT *  \n" +
+    var sql_produccion = " SELECT *  \n" +
             " FROM  " +
             " ( " +
             "   ( " +
@@ -366,7 +366,8 @@ KardexModel.prototype.obtener_movimientos_productos = function(empresa_id, centr
             "   ) " +
             " ) AS DATOS ORDER BY DATOS.fecha ;";
 
-    //G.log.trace(__dirname+'/logs.txt', sql);
+
+    var sql = (G.settings.env === 'prod') ? sql_produccion : sql_pruebas;
 
     G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, codigo_producto, fecha_inicial, fecha_final], function(err, rows, result) {
         callback(err, rows);

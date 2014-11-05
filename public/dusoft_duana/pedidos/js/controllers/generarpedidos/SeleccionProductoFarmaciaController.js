@@ -270,7 +270,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         }
                     ]
                 };
-            }
+            };
 
             $scope.onRowClick1 = function(row) {
                 
@@ -332,19 +332,19 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                          * 
                          */
                         
-                        var obj_encabezado = {
-                            session:$scope.rootSeleccionProductoFarmacia.session,
-                            data:{
-                                pedidos_farmacias:{
-                                    empresa_id: row.entity.,
-                                    centro_utilidad_id: $scope.rootSeleccionProductoFarmacia.paginaactual,
-                                    bodega_id: $scope.rootSeleccionProductoFarmacia.de_empresa_id,
-                                    empresa_destino_id: $scope.rootSeleccionProductoFarmacia.de_centro_utilidad_id,
-                                    centro_utilidad_destino_id: $scope.rootSeleccionProductoFarmacia.de_bodega_id,
-                                    bodega_destino_id: $scope.rootSeleccionProductoFarmacia.de_empresa_destino_id,
-                                }
-                            }
-                        };
+//                        var obj_encabezado = {
+//                            session:$scope.rootSeleccionProductoFarmacia.session,
+//                            data:{
+//                                pedidos_farmacias:{
+//                                    empresa_id: row.entity.,
+//                                    centro_utilidad_id: $scope.rootSeleccionProductoFarmacia.paginaactual,
+//                                    bodega_id: $scope.rootSeleccionProductoFarmacia.de_empresa_id,
+//                                    empresa_destino_id: $scope.rootSeleccionProductoFarmacia.de_centro_utilidad_id,
+//                                    centro_utilidad_destino_id: $scope.rootSeleccionProductoFarmacia.de_bodega_id,
+//                                    bodega_destino_id: $scope.rootSeleccionProductoFarmacia.de_empresa_destino_id
+//                                }
+//                            }
+//                        };
                         
                         /***/
                         

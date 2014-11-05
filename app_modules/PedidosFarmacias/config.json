@@ -15,8 +15,8 @@
                     "alias": "m_pedidos_farmacias"
                 },
                 "terceros_model": {
-                    "module": "Terceros",
-                    "model": "TercerosModel",
+                    "module": "Terceros/OperariosBodega",
+                    "model": "OperariosBodegaModel",
                     "alias": "m_terceros"
                 },
                 "productos_model": {

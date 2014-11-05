@@ -21,7 +21,7 @@ define(["angular", "js/controllers",
 
             var that = this;
 
-            $scope.Empresa = Empresa.get();
+            $scope.Empresa = Empresa;
 
             // Variables de Sesion
             $scope.session = {
@@ -62,9 +62,6 @@ define(["angular", "js/controllers",
                     }
                 };
 
-                console.log('=== Request ===');
-                console.log(obj);
-
                 Request.realizarRequest(API.ORDENES_COMPRA.LISTAR_ORDENES_COMPRAS, "POST", obj, function(data) {
 
                     $scope.ultima_busqueda = $scope.termino_busqueda;
@@ -81,16 +78,12 @@ define(["angular", "js/controllers",
                             return;
                         }
 
-
                         that.render_ordenes_compras(data.obj.ordenes_compras);
                     }
                 });
             };
 
             that.render_ordenes_compras = function(ordenes_compras) {
-
-                console.log('====== Resultado Request ======');
-                console.log(ordenes_compras);
 
                 $scope.Empresa.limpiar_ordenes_compras();
 
@@ -107,10 +100,6 @@ define(["angular", "js/controllers",
                     $scope.Empresa.set_ordenes_compras(orden_compra);
 
                 });
-
-                console.log('======= Objetos OC ========');
-                console.log($scope.Empresa);
-
             };
 
             $scope.buscador_ordenes_compras = function(ev, termino_busqueda) {
@@ -124,12 +113,12 @@ define(["angular", "js/controllers",
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
-                    {field: 'numero_orden_compra', displayName: '# Orden', width: "7%"},
-                    {field: 'proveedor.nombre_tercero', displayName: 'Proveedor'},
-                    {field: 'proveedor.direccion', displayName: 'Ubicacion', width: "20%"},
-                    {field: 'proveedor.telefono', displayName: 'Telefono', width: "10%"},
+                    {field: 'numero_orden_compra', displayName: '# Orden', width: "5%"},
+                    {field: 'proveedor.get_nombre()', displayName: 'Proveedor', width: "50%"},
+                    {field: 'proveedor.direccion', displayName: 'Ubicacion', width: "23%"},
+                    {field: 'proveedor.telefono', displayName: 'Telefono', width: "7%"},
                     {field: 'fecha_registro', displayName: "F. Registro", width: "7%"},
-                    {displayName: "Opciones", cellClass: "txt-center dropdown-button", width: "7%",
+                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
@@ -160,7 +149,6 @@ define(["angular", "js/controllers",
                 $event.preventDefault();
                 $event.stopPropagation();
 
-                console.log($scope.fecha_inicial)
             };
 
             $scope.gestionar_orden_compra = function() {

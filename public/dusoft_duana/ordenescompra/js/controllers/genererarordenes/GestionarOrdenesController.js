@@ -7,21 +7,74 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
     controllers.controller('GestionarOrdenesController', [
         '$scope', '$rootScope', 'Request',
         '$modal', 'API', "socket", "$timeout",
-        "AlertService", "localStorageService", "$state",
-        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state) {
+        "AlertService", "localStorageService", "$state", "$filter",
+        "OrdenCompraPedido",
+        "EmpresaOrdenCompra",
+        "ProveedorOrdenCompra",
+        "UnidadNegocio",
+        "UsuarioOrdenCompra",
+        "Usuario",
+        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, OrdenCompra, Empresa, Proveedor, UnidadNegocio, Usuario, Sesion) {
 
             var that = this;
 
+            $scope.Empresa = Empresa;
+
+            // Variables de Sesion
+            $scope.session = {
+                usuario_id: Sesion.usuario_id,
+                auth_token: Sesion.token
+            };
+
+
+            $scope.buscar_proveedores = function(termino) {
+
+                var termino = termino || "";
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        proveedores: {
+                            termino_busqueda: termino
+                        }
+                    }
+                };
+                
+                Request.realizarRequest(API.PROVEEDORES.LISTAR_PROVEEDORES, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+
+                        that.render_proveedores(data.obj.proveedores);
+                    }
+                });
+            };
+            
+            $scope.buscar_unidades_negocio = function(termino) {
+
+                
+            };
+
+            that.render_proveedores = function(proveedores) {
+
+                $scope.Empresa.limpiar_proveedores();
+
+                proveedores.forEach(function(data) {
+
+                    var proveedor = Proveedor.get(data.tipo_id_tercero, data.tercero_id, data.codigo_proveedor_id, data.nombre_proveedor, data.direccion, data.telefono);
+
+                    $scope.Empresa.set_proveedores(proveedor);
+                });
+            };
 
             $scope.buscar_productos = function() {
-                console.log('========buscar_productos=======');
+
                 $scope.slideurl = "views/genererarordenes/gestionarproductos.html?time=" + new Date().getTime();
 
                 $scope.$emit('gestionar_productos');
             };
 
             $scope.cerrar = function() {
-                console.log('===== Cerrar =====');
+
                 $scope.$emit('cerrar_gestion_productos', {animado: true});
             };
 
@@ -30,19 +83,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             for (var i = 0; i <= 1000; i++) {
                 $scope.Productos.push({codido_producto: i, descripcion_producto: 'descripcion_producto ' + i, direccion: i, telefono: i, fecha_registro: i});
             }
-
-//            $scope.getTotal = function(col) {
-//                $scope.total = 0;
-//                angular.forEach($scope.lista_productos, function(row) {
-//                    return getSumCol(row.codido_producto);
-//                });
-//                return $scope.total;
-//            };
-//            function getSumCol(score) {
-//                $scope.total += score;
-//            }
-
-
 
             $scope.lista_productos = {
                 data: 'Productos',
@@ -62,6 +102,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                         </div>'}
                 ]
             };
+
+
+            $scope.buscar_proveedores();
 
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {

@@ -685,7 +685,9 @@ function __eliminar_documento_temporal_farmacias(documento_temporal_id, usuario_
 function __asignar_responsable_despacho(empresa_id, prefijo_documento, numero_documento, auditor_id, callback) {
 
     var sql = " UPDATE inv_bodegas_movimiento SET usuario_id = $4 WHERE empresa_id = $1 AND prefijo = $2 AND numero = $3 ;";
-
+    
+    //console.log("usuario id ", auditor_id, " empresa id ", empresa_id, " prefijo ", prefijo_documento, " numero ", numero_documento , " ");
+    
     G.db.transaction(sql, [empresa_id, prefijo_documento, numero_documento, auditor_id], callback);
 }
 ;

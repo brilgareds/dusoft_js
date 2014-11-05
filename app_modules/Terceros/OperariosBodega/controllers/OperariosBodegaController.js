@@ -1,15 +1,15 @@
 
-var Terceros = function(terceros, pedidos_clientes, pedidos_farmacias) {
+var OperariosBodega = function(operarios, pedidos_clientes, pedidos_farmacias) {
 
     console.log("Modulo Terceros  Cargado ");
 
-    this.m_terceros = terceros;
+    this.m_operarios = operarios;
     this.m_pedidos_clientes = pedidos_clientes;
     this.m_pedidos_farmacias = pedidos_farmacias;
 
 };
 
-Terceros.prototype.listarOperariosBodega = function(req, res) {
+OperariosBodega.prototype.listarOperariosBodega = function(req, res) {
     var that = this;
 
     var args = req.body.data;
@@ -24,7 +24,7 @@ Terceros.prototype.listarOperariosBodega = function(req, res) {
     var total_pedidos_clientes = 0;
     var total_pedidos_farmacias = 0;
 
-    this.m_terceros.listar_operarios_bodega(termino_busqueda, estado_registro, function(err, lista_operarios) {
+    this.m_operarios.listar_operarios_bodega(termino_busqueda, estado_registro, function(err, lista_operarios) {
         if (err)
             res.send(G.utils.r(req.url, 'Error Listado Los Operarios de Bodega', 500, {}));
         else {
@@ -63,7 +63,7 @@ Terceros.prototype.listarOperariosBodega = function(req, res) {
     });
 };
 
-Terceros.prototype.crearOperariosBodega = function(req, res) {
+OperariosBodega.prototype.crearOperariosBodega = function(req, res) {
 
     var that = this;
 
@@ -81,7 +81,7 @@ Terceros.prototype.crearOperariosBodega = function(req, res) {
 
     var operario = args.operario;
 
-    this.m_terceros.crear_operarios_bodega(operario.nombre_operario, operario.usuario_id, operario.estado, function(err, rows) {
+    this.m_operarios.crear_operarios_bodega(operario.nombre_operario, operario.usuario_id, operario.estado, function(err, rows) {
         if (err)
             res.send(G.utils.r(req.url, 'Error Registrando el Operario', 500, {}));
         else
@@ -90,7 +90,7 @@ Terceros.prototype.crearOperariosBodega = function(req, res) {
     });
 };
 
-Terceros.prototype.modificarOperariosBodega = function(req, res) {
+OperariosBodega.prototype.modificarOperariosBodega = function(req, res) {
 
     var that = this;
 
@@ -108,7 +108,7 @@ Terceros.prototype.modificarOperariosBodega = function(req, res) {
 
     var operario = args.operario;
 
-    this.m_terceros.modificar_operarios_bodega(operario.operario_id, operario.nombre_operario, operario.usuario_id, operario.estado, function(err, rows) {
+    this.m_operarios.modificar_operarios_bodega(operario.operario_id, operario.nombre_operario, operario.usuario_id, operario.estado, function(err, rows) {
         if (err)
             res.send(G.utils.r(req.url, 'Error Modificando el Operario', 500, {}));
         else
@@ -117,6 +117,6 @@ Terceros.prototype.modificarOperariosBodega = function(req, res) {
 };
 
 
-Terceros.$inject = ["m_terceros", "m_pedidos_clientes", "m_pedidos_farmacias"];
+OperariosBodega.$inject = ["m_operarios", "m_pedidos_clientes", "m_pedidos_farmacias"];
 
-module.exports = Terceros;
+module.exports = OperariosBodega;

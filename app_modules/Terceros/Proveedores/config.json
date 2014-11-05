@@ -1,0 +1,21 @@
+{
+    "module": "Proveedores",
+    "dependency": {
+        "controllers": [{
+                "proveedores_controller": {
+                    "module": "Terceros/Proveedores",
+                    "controller": "ProveedoresController",
+                    "alias": "c_proveedores"
+                }
+            }],
+        "models": [{
+                "proveedores_model": {
+                    "module": "Terceros/Proveedores",
+                    "model": "ProveedoresModel",
+                    "alias": "m_proveedores"
+                }                
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

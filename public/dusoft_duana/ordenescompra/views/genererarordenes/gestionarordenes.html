@@ -13,8 +13,6 @@
                 </div>
                 <div class="panel-body">
                     <div class="row">
-
-
                         <div class="col-md-6">
 
                             <fieldset>
@@ -34,8 +32,9 @@
                                 <legend>Proveedor</legend> 
                                 <div class="row">
                                     <div class="col-md-7">  
-                                        <select ui-select2=""  class="form-control selectgeneral pull-left" ng-model="X"  placeholder="Seleccionar proveedor" ng-change="">
-                                            <option></option>                            
+                                        <select ui-select2="{minimumInputLength: 3}"  class="form-control selectgeneral pull-left" ng-model="X"  placeholder="Seleccionar proveedor" ng-change="">
+                                            <option></option> 
+                                            <option ng-repeat="proveedor in  Empresa.get_proveedores()"  value="{{proveedor.codigo_proveedor_id}}">{{ proveedor.get_nombre() }}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -63,7 +62,7 @@
 
                             <tabset>
                                 <tab heading="Incluir Productos Manual">
-                                    
+
                                     <br>
                                     <div class="row">  
                                         <div class="">
@@ -106,19 +105,19 @@
                                     <tab-heading>
                                         <i class="glyphicon glyphicon-cloud-upload"></i> Cargar Archivo Plano
                                     </tab-heading>
-<!--                                    <div flow-prevent-drop flow-drag-enter="style={border: '5px solid green'}" flow-drag-leave="style={}" ng-style="dropEnabled && style">
-
-                                        <div class="span6">
-
-                                        </div>
-
-                                        <div class="alert" ng-hide="$flow.files.length" flow-drop flow-drag-enter="class='alert alert-success'" flow-drag-leave="class='alert'" ng-class="class" style="text-align: center; padding: 50px 0;">
-                                            <img src="../../../images/Cloud-Upload-Blue.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
-                                            <br/><br/>
-                                            Arrastre y suelte el archivo en ésta área o use el botón ...</br></br>
-                                            <button class="btn btn-info" ng-disabled="bloqueo_upload" flow-btn><i class="icon icon-file"></i>Buscar Archivo</button>
-                                        </div>                                       
-                                    </div>-->
+                                    <!--                                    <div flow-prevent-drop flow-drag-enter="style={border: '5px solid green'}" flow-drag-leave="style={}" ng-style="dropEnabled && style">
+                                    
+                                                                            <div class="span6">
+                                    
+                                                                            </div>
+                                    
+                                                                            <div class="alert" ng-hide="$flow.files.length" flow-drop flow-drag-enter="class='alert alert-success'" flow-drag-leave="class='alert'" ng-class="class" style="text-align: center; padding: 50px 0;">
+                                                                                <img src="../../../images/Cloud-Upload-Blue.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
+                                                                                <br/><br/>
+                                                                                Arrastre y suelte el archivo en ésta área o use el botón ...</br></br>
+                                                                                <button class="btn btn-info" ng-disabled="bloqueo_upload" flow-btn><i class="icon icon-file"></i>Buscar Archivo</button>
+                                                                            </div>                                       
+                                                                        </div>-->
                                 </tab>
                             </tabset>
 

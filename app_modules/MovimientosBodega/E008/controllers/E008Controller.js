@@ -1395,6 +1395,7 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                             return;
                         } else {
                             console.log("========================================== generar documento despacho clientes satisfactorio ============================"); 
+                            res.send(G.utils.r(req.url, 'Se ha generado el documento', 200, {movimientos_bodegas: {}}));
                         }
                         
                     });

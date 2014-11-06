@@ -73,8 +73,8 @@ Autenticacion.prototype.loginUsuario = function(req, res) {
 
     var nombre_usuario = args.login.usuario;
     var contrasenia = args.login.contrasenia;
+    var device = (args.login.device === undefined) ? '' : args.login.device;
     var socket = args.login.socket;
-
 
 
     G.auth.login(nombre_usuario, contrasenia, function(err, usuario) {
@@ -87,6 +87,7 @@ Autenticacion.prototype.loginUsuario = function(req, res) {
 
                 usuario = usuario[0];
                 usuario.socket = socket;
+                usuario.device = device;
 
                 G.auth.set(usuario, function(err, sesion_usuario) {
                     if (err) {
@@ -117,6 +118,25 @@ Autenticacion.prototype.lockScreen = function(req, res) {
     });
 };
 
+Autenticacion.prototype.sessions = function(req, res) {
+
+    var that = this;
+
+    var usuario = req.session.user;
+
+    G.auth.getSessionsUser(usuario.usuario_id, function(err, sessions) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Erros listando sesiones del usuario', 200, { sessions : []}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Lista de sesiones', 200, { sessions : sessions}));
+            return;
+        }
+
+    });
+};
+
 Autenticacion.prototype.unLockScreen = function(req, res) {
 
     var that = this;
@@ -138,7 +158,7 @@ Autenticacion.prototype.unLockScreen = function(req, res) {
     G.auth.get(usuario.usuario_id, usuario.auth_token, function(err, session) {
 
         session.forEach(function(value) {
-            
+
             G.auth.login(value.usuario, args.login.contrasenia, function(err, usuario) {
                 if (err)
                     res.send(G.utils.r(req.url, 'Error Interno', 500, {}));

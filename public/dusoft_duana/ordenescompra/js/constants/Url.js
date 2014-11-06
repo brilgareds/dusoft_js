@@ -9,6 +9,7 @@ define(["angular"], function(angular) {
             'BASE_URL': BASE_URL,
             'ORDENES_COMPRA': {
                 'LISTAR_ORDENES_COMPRAS': BASE_URL + '/OrdenesCompra/listarOrdenesCompra',
+                'LISTAR_PRODUCTOS': BASE_URL + '/OrdenesCompra/listarProductos',
             },
             'PROVEEDORES': {
                 'LISTAR_PROVEEDORES': BASE_URL + '/Terceros/Proveedores/listar'

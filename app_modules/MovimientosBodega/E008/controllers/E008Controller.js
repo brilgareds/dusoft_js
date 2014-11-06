@@ -264,13 +264,13 @@ E008Controller.prototype.detalleDocumentoTemporal = function(req, res) {
 };
 
 
-E008Controller.prototype.modificarDetalleDocumentoTemporal = function(req, res){
+E008Controller.prototype.modificarDetalleDocumentoTemporal = function(req, res) {
     var that = this;
 
     var args = req.body.data;
-    
-    
-    
+
+
+
     if (args.documento_temporal === undefined || args.documento_temporal.item_id === undefined) {
         res.send(G.utils.r(req.url, 'El documento o id no Estan Definidos', 404, {}));
         return;
@@ -286,7 +286,7 @@ E008Controller.prototype.modificarDetalleDocumentoTemporal = function(req, res){
         return;
     }
 
-    if ( args.documento_temporal.valor_unitario === undefined) {
+    if (args.documento_temporal.valor_unitario === undefined) {
         res.send(G.utils.r(req.url, 'El vlr Unitario no están definidas', 404, {}));
         return;
     }
@@ -304,7 +304,7 @@ E008Controller.prototype.modificarDetalleDocumentoTemporal = function(req, res){
         return;
     }
 
-    if ( args.documento_temporal.valor_unitario === '') {
+    if (args.documento_temporal.valor_unitario === '') {
         res.send(G.utils.r(req.url, 'El vlr Unitario están Vacíos', 404, {}));
         return;
     }
@@ -317,9 +317,9 @@ E008Controller.prototype.modificarDetalleDocumentoTemporal = function(req, res){
     var cantidad_ingresada = args.documento_temporal.cantidad_ingresada;
     var valor_unitario = args.documento_temporal.valor_unitario;
     var usuario_id = req.session.user.usuario_id;
-    
-    
-    that.m_movientos_bodegas.modificar_detalle_movimiento_bodega_temporal(item_id, valor_unitario, cantidad_ingresada, lote, fecha_vencimiento, function(err, rows){
+
+
+    that.m_movientos_bodegas.modificar_detalle_movimiento_bodega_temporal(item_id, valor_unitario, cantidad_ingresada, lote, fecha_vencimiento, function(err, rows) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error Creando Modificando el Producto en el documento', 500, {documento_temporal: {item_id: 0}}));
             return;
@@ -331,7 +331,7 @@ E008Controller.prototype.modificarDetalleDocumentoTemporal = function(req, res){
             return;
         }
     });
-} ;
+};
 
 
 // Consultar TODOS los documentos temporales de despacho clientes 
@@ -666,7 +666,7 @@ E008Controller.prototype.eliminarDocumentoTemporalClientes = function(req, res) 
 
             var documento_temporal_id = documento.documento_temporal_id;
             var usuario_id = documento.usuario_id;
-           
+
             that.m_e008.eliminar_documento_temporal_clientes(documento_temporal_id, usuario_id, function(err, rows) {
                 if (err) {
                     res.send(G.utils.r(req.url, 'Error Eliminado el Documento Temporal Clientes', 500, {}));
@@ -1006,7 +1006,7 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
 
     // Datos requeridos para auditar con la justificacion
     if (args.documento_temporal.justificacion !== undefined) {
-        
+
         console.log(args.documento_temporal.justificacion);
 
         if (args.documento_temporal.justificacion.documento_temporal_id === undefined || args.documento_temporal.justificacion.usuario_id === undefined || args.documento_temporal.justificacion.codigo_producto === undefined) {
@@ -1331,8 +1331,8 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
     var args = req.body.data;
 
     if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined || args.documento_temporal.documento_temporal_id === undefined
-        || args.documento_temporal.usuario_id === undefined) {
-    
+            || args.documento_temporal.usuario_id === undefined) {
+
         res.send(G.utils.r(req.url, 'documento_temporal_id,  usuario_id o numero_pedido No Estan Definidos', 404, {}));
         return;
     }
@@ -1348,14 +1348,14 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
     var auditor_id = args.documento_temporal.auditor_id;
 
     /*that.m_e008.generar_documento_despacho_clientes(documento_temporal_id, usuario_id, auditor_id, function(err, empresa_id, prefijo_documento, numero_documento) {
-        console.log('==== Supuestamente Grabo el Doc Despacho ========');
-        console.log(err);
-        console.log(empresa_id);
-        console.log(prefijo_documento);
-        console.log(numero_documento);
-    });
-
-    return;*/ 
+     console.log('==== Supuestamente Grabo el Doc Despacho ========');
+     console.log(err);
+     console.log(empresa_id);
+     console.log(prefijo_documento);
+     console.log(numero_documento);
+     });
+     
+     return;*/
     __validar_productos_pedidos_clientes(that, numero_pedido, documento_temporal_id, usuario_id, function(err, productos_no_auditados, productos_pendientes) {
 
         if (err) {
@@ -1385,19 +1385,19 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                         return;
                     }
 
-                    console.log('Listo Para Generar el Documento EFC Original');
+
                     that.m_e008.generar_documento_despacho_clientes(documento_temporal_id, usuario_id, auditor_id, function(err, rows) {
-                        
+
                         if (err) {
-                            console.log("========================================== generar documento despacho clientes error generado ============================"); 
+                            console.log("========================================== generar documento despacho clientes error generado ============================");
                             console.log(err);
                             res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
                             return;
                         } else {
-                            console.log("========================================== generar documento despacho clientes satisfactorio ============================"); 
+                            console.log("========================================== generar documento despacho clientes satisfactorio ============================");
                             res.send(G.utils.r(req.url, 'Se ha generado el documento', 200, {movimientos_bodegas: {}}));
                         }
-                        
+
                     });
                 }
             });
@@ -1588,6 +1588,8 @@ function __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, callba
         } else {
             var cajas_no_cerradas = [];
 
+            var i = detalle_documento_temporal.length;
+
             detalle_documento_temporal.forEach(function(detalle) {
 
                 that.m_e008.consultar_rotulo_caja(documento_temporal_id, detalle.numero_caja, function(err, caja_producto) {
@@ -1599,7 +1601,10 @@ function __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, callba
                             if (caja.caja_cerrada === '0')
                                 cajas_no_cerradas.push(caja);
                         });
-                        callback(err, cajas_no_cerradas);
+
+                        if (--i === 0) {
+                            callback(err, cajas_no_cerradas);
+                        }
                     }
                 });
             });

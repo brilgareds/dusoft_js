@@ -1,37 +1,35 @@
 
-define(["angular","js/models"], function(angular, models){
+define(["angular", "js/models"], function(angular, models) {
 
-	 models.factory('Producto', function() {
+    models.factory('Producto', function() {
 
-		function Producto(codigo_producto, descripcion, existencia){
-			this.codigo_producto = codigo_producto || "";
-			this.descripcion = descripcion || "";
-			this.existencia  = existencia || 0;
-		}
+        function Producto(codigo_producto, descripcion, existencia) {
+            this.codigo_producto = codigo_producto || "";
+            this.descripcion = descripcion || "";
+            this.existencia = existencia || 0;
+        }
 
-		Producto.prototype.setCodigoProducto = function(codigo) {
-			this.codigo_producto = codigo;
-		};
+        Producto.prototype.setCodigoProducto = function(codigo) {
+            this.codigo_producto = codigo;
+        };
 
-		Producto.prototype.setDescripcion = function(descripcion) {
-			this.descripcion = descripcion;
-		};
+        Producto.prototype.setDescripcion = function(descripcion) {
+            this.descripcion = descripcion;
+        };
 
-		Producto.prototype.getCodigoProducto = function() {
-			return this.codigo_producto;
-		};
+        Producto.prototype.getCodigoProducto = function() {
+            return this.codigo_producto;
+        };
 
-		Producto.prototype.getDescripcion = function(id) {
-			return descripcion;
-		};
-
-
-		this.getClass = function(){
-			return Producto;
-		}
+        Producto.prototype.getDescripcion = function() {
+            return this.descripcion;
+        };
 
 
-	    return this;
+        this.getClass = function() {
+            return Producto;
+        };
 
-	});
+        return this;
+    });
 });

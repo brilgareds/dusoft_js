@@ -1,6 +1,6 @@
 define(["angular", "js/models", "includes/classes/Empresa"], function(angular, models) {
 
-    models.factory('EmpresaOrdenCompra', ["Empresa", function(Empresa) {
+    models.factory('EmpresaOrdenCompra', ["Empresa" , "$filter", function(Empresa, $filter) {
 
             var EmpresaOrdenCompra = Object.create(Empresa.getClass().prototype)
 
@@ -32,6 +32,15 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             EmpresaOrdenCompra.get_proveedores = function() {
                 return this.proveedores;
             };
+            
+            EmpresaOrdenCompra.get_proveedor = function(codigo_proveedor_id) {
+                
+                //console.log(this.get_proveedores());
+                
+                var proveedor = $filter('filter')(this.get_proveedores(), {codigo_proveedor_id: codigo_proveedor_id}, true);
+                
+                return (proveedor.length > 0) ? proveedor[0] : {};
+            };
 
             EmpresaOrdenCompra.limpiar_proveedores = function() {
                 this.proveedores = [];
@@ -44,6 +53,13 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
 
             EmpresaOrdenCompra.get_unidades_negocios = function() {
                 return this.unidades_negocios;
+            };
+            
+            EmpresaOrdenCompra.get_unidad_negocio = function(codigo) {
+                
+                var unidad_negocio = $filter('filter')(this.get_unidades_negocios(), {codigo: codigo}, true);
+                
+                return (unidad_negocio.length > 0) ? unidad_negocio[0] : {};
             };
 
             EmpresaOrdenCompra.limpiar_unidades_negocios = function() {

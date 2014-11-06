@@ -23,7 +23,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     data: {
                         login: {
                             usuario: $scope.usuario,
-                            contrasenia: $scope.clave
+                            contrasenia: $scope.clave,
+                            device:"web"
                         }
                     }
                 };

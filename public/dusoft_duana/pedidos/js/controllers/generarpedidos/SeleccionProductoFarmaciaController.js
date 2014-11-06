@@ -276,6 +276,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
             $scope.onRowClick1 = function(row) {
                 
+                    var permitir_ingresar_encabezado = false;
+                    var permitir_ingresar_detalle = false;
+                
                     $scope.rootSeleccionProductoFarmacia.no_incluir_producto = false;
 
                     $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.forEach(function(valor){
@@ -287,40 +290,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     
                     if($scope.rootSeleccionProductoFarmacia.no_incluir_producto === false)
                     {
-                        var cantidad_pendiente = row.entity.cantidad_solicitada - row.entity.disponibilidad_bodega;
-
-                        var obj_sel = { 
-                                    codigo_producto: row.entity.codigo_producto,
-                                    descripcion: row.entity.nombre_producto,
-                                    cantidad_solicitada: row.entity.cantidad_solicitada,
-                                    cantidad_pendiente: (cantidad_pendiente < 0) ? 0 : cantidad_pendiente,
-
-                                }
-
-
-                        $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.unshift(obj_sel); 
-
-                        /* Crear aquí el producto e insertarlo en lista de productos del pedido */
-
-                        var producto = ProductoPedido.get(
-                                row.entity.codigo_producto,
-                                row.entity.descripcion,
-                                parseInt(row.entity.existencia_bodega),
-                                0,
-                                parseInt(row.entity.cantidad_solicitada)
-                            );
-
-                        console.log("Producto creado: ", producto);
-                        //console.log("ROW Tipo Producto Id: ", row.entity.tipo_producto_id);
-
-                        $scope.rootSeleccionProductoFarmacia.pedido.agregarProducto(producto);
-
-                        /*************************************************************************/                    
-
-                        $scope.$emit('cargarGridPrincipal', $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados);
                         
-                        /*************** Encabezado ***************/
-                        
+                        /* Inicio - Objeto para inserción de Encabezado*/
                         var obj_encabezado = {
                             session:$scope.rootSeleccionProductoFarmacia.session,
                             data:{
@@ -337,10 +308,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                 }
                             }
                         };
+                        /* Fin - Objeto para inserción de Encabezado*/
                         
-                        //console.log("Información para insert ENCABEZADO: ",obj_encabezado);
+                        /* Inicio - Validar Existencia de encabezado */
                         
-                        //REQUEST para validar existencia previa del registro
                         var url_registros_encabezado = API.PEDIDOS.NUMERO_REGISTROS_PEDIDO_TEMPORAL;
                         
                         Request.realizarRequest(url_registros_encabezado, "POST", obj_encabezado, function(data) {
@@ -348,38 +319,48 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                             //console.log("Resultado INSERT Pedido: ",data);
 
                             if(data.status == 200) {
-
-                                //that.renderProductosFarmacia(data.obj, paginando);
-                                console.log("Número de Registros: ", data);
+                                console.log("ENCABEZADO: data.obj.numero_registros[0].count = ",data.obj.numero_registros[0].count)
+                                if(data.obj.numero_registros[0].count > 0){
+                                    permitir_ingresar_encabezado = false;
+                                    console.log("Ya existe éste registro en el encabezado");
+                                }
+                                else{
+                                    permitir_ingresar_encabezado = true;    
+                                }
                             }
                             else{
-                                console.log("Error en la Consulta: ",data);
+                                console.log(data.msj);
                             }
 
                         });
+                        /* Fin - Validar Existencia de encabezado */
                         
-                        var url_encabezado = API.PEDIDOS.CREAR_PEDIDO_TEMPORAL;
-
-                        Request.realizarRequest(url_encabezado, "POST", obj_encabezado, function(data) {
-
-                            //console.log("Resultado INSERT Pedido: ",data);
-
-                            if(data.status == 200) {
-
-                                //that.renderProductosFarmacia(data.obj, paginando);
-                                console.log("Registro Insertado Exitosamente en Encabezado");
-                            }
-                            else{
-                                console.log("Error en la Inserción de encabezado: ",data);
-                            }
-
-                        });
+                        /* Inicio - Insertar Encabezado si no existe */
                         
-                        /****************************************/
+                        if(permitir_ingresar_encabezado){
+                            
+                            /* Inicio - Inserción del Encabezado */
+
+                            var url_encabezado = API.PEDIDOS.CREAR_PEDIDO_TEMPORAL;
+
+                            Request.realizarRequest(url_encabezado, "POST", obj_encabezado, function(data) {
+
+                                if(data.status == 200) {
+                                    console.log("Registro Insertado Exitosamente en Encabezado");
+                                }
+                                else{
+                                    console.log(data.msj);
+                                }
+
+                            });
+
+                            /* Fin - Inserción del Encabezado */                            
+                        }
                         
-                        /******** Detalle *********/
+                        /* Fin - Insertar Encabezado si no existe */
                         
-                        var obj_detalle = {
+                        /* Inicio - Objeto para Inserción Detalle */
+                            var obj_detalle = {
                             session:$scope.rootSeleccionProductoFarmacia.session,
                             data:{
                                 detalle_pedidos_farmacias:{
@@ -396,45 +377,83 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                 }
                             }
                         };
+                        /* Fin - Objeto para Inserción Detalle */
                         
-                        //console.log("Información para insert DETALLE: ",obj_detalle);
+                        /* Inicio - Validar existencia de producto en Detalle Pedido */
                         
-                        //REQUEST para validar existencia previa del registro en el detalle
                         var url_registros_detalle = API.PEDIDOS.NUMERO_REGISTROS_DETALLE_PEDIDO_TEMPORAL;
                         
-                        Request.realizarRequest(url_registros_detalle, "POST", obj_encabezado, function(data) {
+                        Request.realizarRequest(url_registros_detalle, "POST", obj_detalle, function(data) {
 
                             //console.log("Resultado INSERT Pedido: ",data);
 
                             if(data.status == 200) {
-
-                                //that.renderProductosFarmacia(data.obj, paginando);
-                                console.log("Número de Registros en Detalle: ", data);
+                                console.log("DETALLE: data.obj.numero_registros[0].count = ",data.obj.numero_registros[0].count)
+                                if(data.obj.numero_registros[0].count > 0){
+                                    permitir_ingresar_detalle = false;
+                                    console.log("Ya existe éste producto en el detalle");
+                                }
+                                else{
+                                    permitir_ingresar_detalle = true;    
+                                }
                             }
                             else{
-                                console.log("Error en la Consulta: ",data);
+                                console.log(data.msj);
                             }
 
                         });
                         
-                        var url_detalle = API.PEDIDOS.CREAR_DETALLE_PEDIDO_TEMPORAL;
-
-                        Request.realizarRequest(url_detalle, "POST", obj_detalle, function(data) {
-
-                            //console.log("Resultado INSERT Detalle Pedido: ",data);
-
-                            if(data.status == 200) {
-
-                                //that.renderProductosFarmacia(data.obj, paginando);
-                                console.log("Registro Insertado Exitosamente en Detalle");
-                            }
-                            else{
-                                console.log("Error en la inserción del Detalle: ",data);
-                            }
-
-                        });
+                        /* Fin - Validar existencia de producto en Detalle Pedido */
                         
-                        /**************************/
+                        if(permitir_ingresar_detalle){
+                            console.log("Ingresando el detalle");
+                            var cantidad_pendiente = row.entity.cantidad_solicitada - row.entity.disponibilidad_bodega;
+
+                            var obj_sel = { 
+                                        codigo_producto: row.entity.codigo_producto,
+                                        descripcion: row.entity.nombre_producto,
+                                        cantidad_solicitada: row.entity.cantidad_solicitada,
+                                        cantidad_pendiente: (cantidad_pendiente < 0) ? 0 : cantidad_pendiente
+                                    }
+
+
+                            $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.unshift(obj_sel); 
+
+                            /* Inicio - Objeto producto para insertarlo en lista de productos del pedido */
+
+                            var producto = ProductoPedido.get(
+                                    row.entity.codigo_producto,
+                                    row.entity.descripcion,
+                                    parseInt(row.entity.existencia_bodega),
+                                    0,
+                                    parseInt(row.entity.cantidad_solicitada)
+                                );
+
+                            /* Fin - Objeto producto para insertarlo en lista de productos del pedido */  
+                            
+                            //Se inserta el producto al objeto pedido
+                            $scope.rootSeleccionProductoFarmacia.pedido.agregarProducto(producto);                  
+
+                            $scope.$emit('cargarGridPrincipal', $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados);    
+                            
+                            /* Inicio - Inserción del Detalle */
+                        
+                            var url_detalle = API.PEDIDOS.CREAR_DETALLE_PEDIDO_TEMPORAL;
+
+                            Request.realizarRequest(url_detalle, "POST", obj_detalle, function(data) {
+
+                                if(data.status == 200) {
+                                    console.log("Registro Insertado Exitosamente en Detalle");
+                                }
+                                else{
+                                    console.log(data.msj);
+                                }
+
+                            });
+
+                            /* Fin - Inserción del Detalle */
+                            
+                        }
                         
                     }
             };

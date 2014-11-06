@@ -7,7 +7,7 @@ var OrdenesCompraModel = function() {
 // Listar las Ordenes de Compra 
 OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fecha_final, termino_busqueda, pagina, callback) {
 
-   
+
     var sql = " SELECT \
                 a.orden_pedido_id as numero_orden,\
                 a.empresa_id,\
@@ -48,10 +48,57 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
 };
 
 
+// Listar Producto para orden de compra 
+OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_proveedor_id, termino_busqueda, laboratorio_id, pagina, callback) {
+
+    var sql_aux = " ";
+    if (laboratorio_id)
+        sql_aux = " AND a.clase_id = $4 ";
+
+    var sql = " SELECT \
+                e.descripcion as descripcion_grupo,\
+                d.descripcion as descripcion_clase,\
+                c.descripcion as descripcion_subclase,\
+                a.codigo_producto,\
+                fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
+                a.porc_iva as iva,\
+                e.sw_medicamento,\
+                CASE WHEN COALESCE (aa.valor_pactado,0)=0 then round((b.costo_ultima_compra)/((COALESCE(a.porc_iva,0)/100)+1),2) else aa.valor_pactado end as costo_ultima_compra,\
+                CASE WHEN COALESCE (aa.valor_pactado,0)=0 then 0 else 1 end as tiene_valor_pactado,\
+                a.cantidad,\
+                f.descripcion as presentacion\
+                FROM  inventarios_productos a\
+                INNER JOIN inventarios b ON a.codigo_producto = b.codigo_producto\
+                INNER JOIN inv_subclases_inventarios c ON a.subclase_id = c.subclase_id AND a.clase_id = c.clase_id AND a.grupo_id = c.grupo_id\
+                INNER JOIN inv_clases_inventarios d ON c.clase_id = d.clase_id AND c.grupo_id = d.grupo_id\
+                INNER JOIN inv_grupos_inventarios e ON d.grupo_id = e.grupo_id\
+                LEFT JOIN inv_presentacioncomercial f ON a.presentacioncomercial_id = f.presentacioncomercial_id\
+                LEFT JOIN (\
+                    SELECT b.codigo_producto, b.valor_pactado \
+                    FROM contratacion_produc_proveedor a \
+                    INNER JOIN contratacion_produc_prov_detalle b on a.contratacion_prod_id = b.contratacion_prod_id\
+                    WHERE a.empresa_id= $1 AND a.codigo_proveedor_id = $2 \
+                ) as aa on a.codigo_producto = aa.codigo_producto\
+                WHERE b.empresa_id = $1 AND a.estado = '1' " + sql_aux + "AND \
+                (\
+                    a.descripcion ILIKE $3 or\
+                    a.codigo_producto ILIKE $3 or\
+                    a.contenido_unidad_venta ILIKE $3 or\
+                    c.descripcion ILIKE $3 \
+                )";
+    
+    var parametros = (laboratorio_id) ? [empresa_id, codigo_proveedor_id, "%" + termino_busqueda + "%", laboratorio_id] : [empresa_id, codigo_proveedor_id, "%" + termino_busqueda + "%"];
+   
+    G.db.pagination(sql, parametros, pagina, G.settings.limit, function(err, rows, result, total_records) {
+        callback(err, rows);
+    });
+};
+
+
 // Consultar Ordenes de Compra  por numero de orden
 OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, callback) {
 
-   
+
     var sql = " SELECT \
                 a.orden_pedido_id as numero_orden,\
                 a.empresa_id,\
@@ -88,7 +135,7 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
 // Consultar Detalle Ordene de Compra  por numero de orden
 OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_orden, callback) {
 
-   
+
     var sql = " select\
                 a.orden_pedido_id as numero_orden,\
                 a.codigo_producto,\
@@ -108,7 +155,7 @@ OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_or
 // Ingresar Cabecera Orden de Compra
 OrdenesCompraModel.prototype.insertar_orden_compra = function(unidad_negocio, codigo_proveedor, empresa_id, observacion, usuario_id, callback) {
 
-   
+
     var sql = " INSERT INTO compras_ordenes_pedidos ( codigo_unidad_negocio, codigo_proveedor_id, empresa_id, observacion, usuario_id, estado, fecha_orden ) \
                 VALUES( $1, $2, $3, $4, '1', NOW() ) RETURNING orden_pedido_id; ";
 
@@ -120,7 +167,7 @@ OrdenesCompraModel.prototype.insertar_orden_compra = function(unidad_negocio, co
 // Modificar Orden de Compra
 OrdenesCompraModel.prototype.modificar_orden_compra = function(numero_orden, callback) {
 
-   
+
     var sql = "  ";
 
     G.db.query(sql, [numero_orden], function(err, rows, result, total_records) {
@@ -131,7 +178,7 @@ OrdenesCompraModel.prototype.modificar_orden_compra = function(numero_orden, cal
 // Eliminar Orden de Compra
 OrdenesCompraModel.prototype.eliminar_orden_compra = function(numero_orden, callback) {
 
-   
+
     var sql = " DELETE FROM compras_ordenes_pedidos WHERE orden_pedido_id = $1  ";
 
     G.db.query(sql, [numero_orden], function(err, rows, result, total_records) {
@@ -140,13 +187,13 @@ OrdenesCompraModel.prototype.eliminar_orden_compra = function(numero_orden, call
 };
 
 // Ingresar Detalle Orden de Compra
-OrdenesCompraModel.prototype.insertar_detalle_orden_compra = function(numero_orden, codigo_producto, cantidad_solicitada ,valor, iva ,estado, callback) {
+OrdenesCompraModel.prototype.insertar_detalle_orden_compra = function(numero_orden, codigo_producto, cantidad_solicitada, valor, iva, estado, callback) {
 
-   
+
     var sql = " INSERT INTO compras_ordenes_pedidos_detalle ( orden_pedido_id,codigo_producto,numero_unidades,valor,porc_iva,estado)\
                 VALUES ( $1, $2, $3, $4, $5, 1 );";
 
-    G.db.query(sql, [numero_orden, codigo_producto, cantidad_solicitada ,valor, iva ,estado], function(err, rows, result, total_records) {
+    G.db.query(sql, [numero_orden, codigo_producto, cantidad_solicitada, valor, iva, estado], function(err, rows, result, total_records) {
         callback(err, rows);
     });
 };
@@ -155,7 +202,7 @@ OrdenesCompraModel.prototype.insertar_detalle_orden_compra = function(numero_ord
 // Modificar Detalle Orden de Compra
 OrdenesCompraModel.prototype.modificar_detalle_orden_compra = function(numero_orden, callback) {
 
-   
+
     var sql = "  ";
 
     G.db.query(sql, [numero_orden], function(err, rows, result, total_records) {
@@ -166,7 +213,7 @@ OrdenesCompraModel.prototype.modificar_detalle_orden_compra = function(numero_or
 // Eliminar Detalle Orden de Compra
 OrdenesCompraModel.prototype.eliminar_detalle_orden_compra = function(numero_orden, callback) {
 
-   
+
     var sql = "  DELETE FROM compras_ordenes_pedidos_detalle WHERE orden_pedido_id = $1 ";
 
     G.db.query(sql, [numero_orden], function(err, rows, result, total_records) {
@@ -177,7 +224,7 @@ OrdenesCompraModel.prototype.eliminar_detalle_orden_compra = function(numero_ord
 // Eliminar producto Orden de Compra
 OrdenesCompraModel.prototype.eliminar_producto_orden_compra = function(numero_orden, codigo_producto, callback) {
 
-   
+
     var sql = "  DELETE FROM compras_ordenes_pedidos_detalle WHERE orden_pedido_id= $1 AND codigo_producto=$2 ";
 
     G.db.query(sql, [numero_orden, codigo_producto], function(err, rows, result, total_records) {
@@ -189,7 +236,7 @@ OrdenesCompraModel.prototype.eliminar_producto_orden_compra = function(numero_or
 // Listar Las Ordenes de Compra Pendientes con ese producto
 OrdenesCompraModel.prototype.listar_ordenes_compra_pendientes_by_producto = function(empresa_id, codigo_producto, callback) {
 
-   
+
     var sql = " select \
                 a.codigo_proveedor_id,\
                 a.orden_pedido_id as numero_orden_compra,\
@@ -208,7 +255,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_pendientes_by_producto = func
                 where a.empresa_id = $1 and b.codigo_producto = $2 and b.numero_unidades <> COALESCE(b.numero_unidades_recibidas,0)\
                 and a.estado = '1' ; ";
 
-    G.db.query(sql, [empresa_id, codigo_producto], function(err, rows, result) {              
+    G.db.query(sql, [empresa_id, codigo_producto], function(err, rows, result) {
         callback(err, rows);
     });
 };

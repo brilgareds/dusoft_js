@@ -52,6 +52,58 @@ OrdenesCompra.prototype.listarOrdenesCompra = function(req, res) {
 };
 
 
+// Listar productos para ordenes de compra
+OrdenesCompra.prototype.listarProductos = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.empresa_id === undefined || args.ordenes_compras.codigo_proveedor_id === undefined) {
+        res.send(G.utils.r(req.url, 'empresa_id, codigo_proveedor_id no estan definidas', 404, {}));
+        return;
+    }
+    
+    if (args.ordenes_compras.laboratorio_id === undefined) {
+        res.send(G.utils.r(req.url, 'laboratorio_id no estan definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.termino_busqueda === undefined || args.ordenes_compras.pagina_actual === undefined) {
+        res.send(G.utils.r(req.url, 'termino_busqueda, pagina_actual no estan definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.empresa_id === '' || args.ordenes_compras.codigo_proveedor_id === '') {
+        res.send(G.utils.r(req.url, 'empresa_id, codigo_proveedor_id estan vacias', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.pagina_actual === '' || args.ordenes_compras.pagina_actual === 0 || args.ordenes_compras.pagina_actual === '0') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
+        return;
+    }
+
+    var empresa_id = args.ordenes_compras.empresa_id;
+    var codigo_proveedor_id = args.ordenes_compras.codigo_proveedor_id;
+    var laboratorio_id = args.ordenes_compras.laboratorio_id;
+    
+    var termino_busqueda = args.ordenes_compras.termino_busqueda;
+    var pagina_actual = args.ordenes_compras.pagina_actual;
+
+    that.m_ordenes_compra.listar_productos(empresa_id, codigo_proveedor_id, termino_busqueda, laboratorio_id, pagina_actual, function(err, lista_productos) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {lista_productos: []}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Lista Productos', 200, {lista_productos: lista_productos}));
+            return;
+        }
+    });
+};
+
+
 // Insertar una orden de compra 
 OrdenesCompra.prototype.insertarOrdenCompra = function(req, res) {
 

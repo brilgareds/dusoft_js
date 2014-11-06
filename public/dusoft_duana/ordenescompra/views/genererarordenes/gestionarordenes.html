@@ -33,7 +33,7 @@
                                 <legend>Proveedor</legend> 
                                 <div class="row">
                                     <div class="col-md-7">  
-                                        <select ui-select2="{minimumInputLength: 3}"  class="form-control selectgeneral pull-left" ng-model="Y"  placeholder="Seleccionar proveedor" ng-change="">
+                                        <select ui-select2="{minimumInputLength: 3}"  class="form-control selectgeneral pull-left" ng-model="codigo_proveedor_id"  placeholder="Seleccionar proveedor" ng-change="">
                                             <option></option> 
                                             <option ng-repeat="proveedor in  Empresa.get_proveedores()"  value="{{proveedor.codigo_proveedor_id}}">{{ proveedor.get_nombre() }}</option>
                                         </select>

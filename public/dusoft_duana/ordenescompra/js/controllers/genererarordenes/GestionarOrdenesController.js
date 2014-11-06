@@ -25,6 +25,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 usuario_id: Sesion.usuario_id,
                 auth_token: Sesion.token
             };
+            
+            // Variables
+            $scope.codigo_proveedor_id = '';
 
 
             $scope.buscar_proveedores = function(termino) {
@@ -99,9 +102,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 $scope.slideurl = "views/genererarordenes/gestionarproductos.html?time=" + new Date().getTime();
 
-                $scope.$emit('gestionar_productos');
+                $scope.$emit('gestionar_productos', { codigo_proveedor_id : $scope.codigo_proveedor_id});
             };
-
+            
+            
             $scope.cerrar = function() {
 
                 $scope.$emit('cerrar_gestion_productos', {animado: true});

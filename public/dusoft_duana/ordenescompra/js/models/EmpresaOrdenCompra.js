@@ -1,29 +1,14 @@
 define(["angular", "js/models", "includes/classes/Empresa"], function(angular, models) {
 
-
-    //declare usermodel wrapper 'factory'
     models.factory('EmpresaOrdenCompra', ["Empresa", function(Empresa) {
 
             var EmpresaOrdenCompra = Object.create(Empresa.getClass().prototype)
 
-            /*function EmpresaOrdenCompra(empresa_id, tipo_id, identificacion, nombre_empresa) {
-             
-             this.empresa_id = empresa_id;
-             this.tipo_id = tipo_id;
-             this.identificacion = identificacion;
-             this.nombre = nombre_empresa;
-             
-             this.ordenes_compras = [];
-             this.proveedores = [];
-             }
-             
-             this.get = function(empresa_id, tipo_id, identificacion, nombre_empresa) {
-             return new EmpresaOrdenCompra(empresa_id, tipo_id, identificacion, nombre_empresa);
-             };*/
-
             EmpresaOrdenCompra.ordenes_compras = [];
             EmpresaOrdenCompra.proveedores = [];
             EmpresaOrdenCompra.unidades_negocios = [];
+            EmpresaOrdenCompra.laboratorios = [];
+            EmpresaOrdenCompra.productos = [];
 
 
             // Ordenes de Compra
@@ -65,17 +50,30 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
                 this.unidades_negocios = [];
             };
             
-            // Unidades de Negocios
-            EmpresaOrdenCompra.set_laboratorios = function(unidad_negocio) {
-                this.unidades_negocios.push(unidad_negocio);
+            // Laboratorios
+            EmpresaOrdenCompra.set_laboratorios = function(laboratorio) {
+                this.laboratorios.push(laboratorio);
             };
 
             EmpresaOrdenCompra.get_laboratorios = function() {
-                return this.unidades_negocios;
+                return this.laboratorios;
             };
 
             EmpresaOrdenCompra.limpiar_laboratorios = function() {
-                this.unidades_negocios = [];
+                this.laboratorios = [];
+            };
+            
+            // Productos
+            EmpresaOrdenCompra.set_productos = function(producto) {
+                this.productos.push(producto);
+            };
+
+            EmpresaOrdenCompra.get_productos = function() {
+                return this.productos;
+            };
+
+            EmpresaOrdenCompra.limpiar_productos = function() {
+                this.productos = [];
             };
 
             return EmpresaOrdenCompra;

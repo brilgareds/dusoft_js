@@ -1,6 +1,7 @@
 
 define(["angular", "js/controllers",
     "models/EmpresaOrdenCompra",
+    "models/OrdenCompraPedido",
     "models/ProductoOrdenCompra",
     "models/Laboratorio"], function(angular, controllers) {
 
@@ -9,10 +10,11 @@ define(["angular", "js/controllers",
         '$modal', 'API', "socket", "$timeout",
         "AlertService", "localStorageService", "$state",
         "EmpresaOrdenCompra",
+        "OrdenCompraPedido",
         "ProductoOrdenCompra",
         "Laboratorio",
         "Usuario",
-        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, Empresa, Producto, Laboratorio, Sesion) {
+        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, Empresa, OrdenCompra, Producto, Laboratorio, Sesion) {
 
             var that = this;
 
@@ -38,7 +40,20 @@ define(["angular", "js/controllers",
 
             $rootScope.$on('gestionar_productosCompleto', function(e, parametros) {
 
+                $scope.numero_orden = parametros[1].numero_orden;
+                $scope.unidad_negocio_id = parametros[1].unidad_negocio_id;
                 $scope.codigo_proveedor_id = parametros[1].codigo_proveedor_id;
+                $scope.observacion = parametros[1].observacion;
+                
+                
+                $scope.orden_compra = OrdenCompra.get($scope.numero_orden, 1, $scope.observacion, new Date());
+                $scope.orden_compra.set_unidad_negocio($scope.Empresa.get_unidad_negocio($scope.unidad_negocio_id));
+                $scope.orden_compra.set_proveedor($scope.Empresa.get_proveedor($scope.codigo_proveedor_id));
+                
+                
+                console.log('=========== ORDEN COMPRA ==============');
+                console.log($scope.orden_compra);
+                
 
                 that.buscar_laboratorios();
                 that.buscar_productos();
@@ -107,6 +122,19 @@ define(["angular", "js/controllers",
                     }
                 });
             };
+            
+            
+            that.crear_orden_compra = function(cabecera, detalle){
+                
+            };
+            
+            that.generar_cabercera_orden_compra = function(cabecera){
+                
+            };
+            
+            that.generar_detalle_orden_compra = function(detalle){
+                
+            };
 
 
             that.render_laboratorios = function(laboratorios) {
@@ -151,8 +179,8 @@ define(["angular", "js/controllers",
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Codigo Producto', width: "20%"},
                     {field: 'descripcion', displayName: 'Descripcion'},
-                    {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "15%"},
-                    {field: 'cantidad', width: "7%", displayName: "Cantidad", enableCellEdit: true},
+                    {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "15%", cellFilter: "currency:'$ '"},
+                    {field: 'cantidad', width: "7%", displayName: "Cantidad", enableCellEdit: true, cellFilter: "number"},
                     {width: "7%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs" ng-click="calcular_valores_producto()" ><span class="glyphicon glyphicon-zoom-in"></span></button>\
@@ -160,6 +188,14 @@ define(["angular", "js/controllers",
                 ]
             };
 
+            
+            $scope.$on('ngGridEventEndCellEdit', function(event) {
+
+                var producto = event.targetScope.row.entity;
+                producto.set_cantidad_seleccionada(event.targetScope.row.entity[event.targetScope.col.field]);
+                
+            });
+            
 
             $scope.pagina_anterior = function() {
                 $scope.pagina_actual--;

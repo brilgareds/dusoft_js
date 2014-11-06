@@ -11,36 +11,35 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
                 OrdenCompra.getClass().call(this, numero_orden, estado, observacion, fecha_registro);
             }
 
-            OrdenCompraPedido.prototype.setEmpresa = function(empresa) {
+            OrdenCompraPedido.prototype.set_empresa = function(empresa) {
                 this.empresa = empresa;
             };
             
-            OrdenCompraPedido.prototype.getEmpresa = function() {
+            OrdenCompraPedido.prototype.get_empresa = function() {
                 return this.empresa;
             };
             
-            OrdenCompraPedido.prototype.setProveedor = function(proveedor) {
+            OrdenCompraPedido.prototype.set_proveedor = function(proveedor) {
                 this.proveedor = proveedor;
             };
             
-            OrdenCompraPedido.prototype.getProveedor = function() {
+            OrdenCompraPedido.prototype.get_proveedor = function() {
                 return this.proveedor;
             };
             
-            OrdenCompraPedido.prototype.setUnidadNegocio = function(unidad_negocio) {
+            OrdenCompraPedido.prototype.set_unidad_negocio = function(unidad_negocio) {
                 this.unidad_negocio = unidad_negocio;
             };
             
-            OrdenCompraPedido.prototype.getUnidadNegocio = function() {
+            OrdenCompraPedido.prototype.get_unidad_negocio = function() {
                 return this.unidad_negocio;
             };
-            
-            
-            OrdenCompraPedido.prototype.setUsuario = function(usuario) {
+                        
+            OrdenCompraPedido.prototype.set_usuario = function(usuario) {
                 this.usuario = usuario;
             };
             
-            OrdenCompraPedido.prototype.getUsuario = function() {
+            OrdenCompraPedido.prototype.get_usuario = function() {
                 return this.usuario;
             };
 

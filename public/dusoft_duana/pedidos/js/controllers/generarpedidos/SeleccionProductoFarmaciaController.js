@@ -53,7 +53,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 $scope.rootSeleccionProductoFarmacia = {};
             };
 
-            $rootScope.$on("mostrarseleccionproducto", function(e, tipo_cliente, datos_de, datos_para, pedido) {
+            $rootScope.$on("mostrarseleccionproducto", function(e, tipo_cliente, datos_de, datos_para, observacion, pedido) {
                 
                 console.log("Pedido desde CrearPedidoFarmacia: ", pedido);
                 
@@ -107,6 +107,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 $scope.rootSeleccionProductoFarmacia.listado_productos = [];
                 $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados = [];
+                
+                $scope.rootSeleccionProductoFarmacia.observacion_encabezado = observacion;
                 $scope.rootSeleccionProductoFarmacia.pedido = pedido;
                 
                 $scope.buscarSeleccionProducto($scope.obtenerParametros(),"");
@@ -317,7 +319,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                         $scope.$emit('cargarGridPrincipal', $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados);
                         
-                        /***/
+                        /*************** Encabezado ***************/
                         
                         var obj_encabezado = {
                             session:$scope.rootSeleccionProductoFarmacia.session,
@@ -326,19 +328,41 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                     empresa_id: $scope.rootSeleccionProductoFarmacia.para_empresa_id,
                                     centro_utilidad_id: $scope.rootSeleccionProductoFarmacia.para_centro_utilidad_id,
                                     bodega_id: $scope.rootSeleccionProductoFarmacia.para_bodega_id,
-                                    
+
                                     empresa_destino_id: $scope.rootSeleccionProductoFarmacia.de_empresa_id,
                                     centro_utilidad_destino_id: $scope.rootSeleccionProductoFarmacia.de_centro_utilidad_id,
-                                    bodega_destino_id: $scope.rootSeleccionProductoFarmacia.de_bodega_id
+                                    bodega_destino_id: $scope.rootSeleccionProductoFarmacia.de_bodega_id,
+                                    
+                                    observacion: $scope.rootSeleccionProductoFarmacia.observacion_encabezado
                                 }
                             }
                         };
+                        
+                        //console.log("Información para insert ENCABEZADO: ",obj_encabezado);
+                        
+                        //REQUEST para validar existencia previa del registro
+                        var url_registros_encabezado = API.PEDIDOS.NUMERO_REGISTROS_PEDIDO_TEMPORAL;
+                        
+                        Request.realizarRequest(url_registros_encabezado, "POST", obj_encabezado, function(data) {
+
+                            //console.log("Resultado INSERT Pedido: ",data);
+
+                            if(data.status == 200) {
+
+                                //that.renderProductosFarmacia(data.obj, paginando);
+                                console.log("Número de Registros: ", data);
+                            }
+                            else{
+                                console.log("Error en la Consulta: ",data);
+                            }
+
+                        });
                         
                         var url_encabezado = API.PEDIDOS.CREAR_PEDIDO_TEMPORAL;
 
                         Request.realizarRequest(url_encabezado, "POST", obj_encabezado, function(data) {
 
-                            console.log("Resultado INSERT Pedido: ",data);
+                            //console.log("Resultado INSERT Pedido: ",data);
 
                             if(data.status == 200) {
 
@@ -351,7 +375,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                         });
                         
-                        /***/
+                        /****************************************/
                         
                         /******** Detalle *********/
                         
@@ -359,7 +383,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                             session:$scope.rootSeleccionProductoFarmacia.session,
                             data:{
                                 detalle_pedidos_farmacias:{
-                                    numero_pedido: $scope.rootSeleccionProductoFarmacia.para_empresa_id + $scope.rootSeleccionProductoFarmacia.para_centro_utilidad_id + row.entity.codigo_producto,
+                                    numero_pedido: $scope.rootSeleccionProductoFarmacia.para_empresa_id.trim() + $scope.rootSeleccionProductoFarmacia.para_centro_utilidad_id.trim() + row.entity.codigo_producto.trim(),
                                     
                                     empresa_id: $scope.rootSeleccionProductoFarmacia.para_empresa_id,
                                     centro_utilidad_id: $scope.rootSeleccionProductoFarmacia.para_centro_utilidad_id,
@@ -373,11 +397,31 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                             }
                         };
                         
+                        //console.log("Información para insert DETALLE: ",obj_detalle);
+                        
+                        //REQUEST para validar existencia previa del registro en el detalle
+                        var url_registros_detalle = API.PEDIDOS.NUMERO_REGISTROS_DETALLE_PEDIDO_TEMPORAL;
+                        
+                        Request.realizarRequest(url_registros_detalle, "POST", obj_encabezado, function(data) {
+
+                            //console.log("Resultado INSERT Pedido: ",data);
+
+                            if(data.status == 200) {
+
+                                //that.renderProductosFarmacia(data.obj, paginando);
+                                console.log("Número de Registros en Detalle: ", data);
+                            }
+                            else{
+                                console.log("Error en la Consulta: ",data);
+                            }
+
+                        });
+                        
                         var url_detalle = API.PEDIDOS.CREAR_DETALLE_PEDIDO_TEMPORAL;
 
                         Request.realizarRequest(url_detalle, "POST", obj_detalle, function(data) {
 
-                            console.log("Resultado INSERT Detalle Pedido: ",data);
+                            //console.log("Resultado INSERT Detalle Pedido: ",data);
 
                             if(data.status == 200) {
 

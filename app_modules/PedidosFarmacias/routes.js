@@ -57,6 +57,16 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.listar_productos(req, res);
     });
     
+    // Cuenta el número de registros en el encabezado del pedido por empresa, centro de utilidad, bodega y usuario
+    app.post('/api/PedidosFarmacias/countRegistrosEncabezadoTemporal', function(req, res) {
+        c_pedidos_farmacias.countRegistrosEncabezadoTemporal(req, res);
+    });
+    
+    // Cuenta el número de registros en el detalle del pedido por empresa, centro de utilidad, bodega, codigo de producto y usuario
+    app.post('/api/PedidosFarmacias/countRegistrosDetalleTemporal', function(req, res) {
+        c_pedidos_farmacias.countRegistrosDetalleTemporal(req, res);
+    });    
+    
     // Listar productos
 //    app.get('/listarProductos', function(req, res) {
 //        c_pedidos_farmacias.listar_productos(req, res);

@@ -52,6 +52,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.rootCreaPedidoFarmacia.para_lista_empresas = [];
             $scope.rootCreaPedidoFarmacia.para_lista_centro_utilidad = [];
             $scope.rootCreaPedidoFarmacia.para_lista_bodegas = [];
+            
+            $scope.rootCreaPedidoFarmacia.observacion = "";
                                                 
             $scope.rootCreaPedidoFarmacia.pedido = {numero_pedido: ""};
             
@@ -291,6 +293,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     bodega_id: $scope.rootCreaPedidoFarmacia.para_seleccion_bodega.split(",")[0]
                 };
                 
+                var observacion = $scope.rootCreaPedidoFarmacia.observacion;
+                
                 var farmacia = Farmacia.get(
                         parseInt($scope.rootCreaPedidoFarmacia.para_seleccion_empresa.split(",")[0]), //obj.farmacia_id,
                         parseInt($scope.rootCreaPedidoFarmacia.para_seleccion_bodega.split(",")[0]), //obj.bodega_id,
@@ -301,7 +305,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 that.pedido.setFarmacia(farmacia);
                 that.pedido.setTipo(2);
                 
-                $scope.$emit('mostrarseleccionproducto', tipo_cliente, datos_de, datos_para, that.pedido);
+                $scope.$emit('mostrarseleccionproducto', tipo_cliente, datos_de, datos_para, observacion, that.pedido);
                 
                 $scope.$broadcast('cargarGridSeleccionadoSlide', $scope.rootCreaPedidoFarmacia.listado_productos);
             };

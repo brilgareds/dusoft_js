@@ -42,7 +42,9 @@ define(["angular"], function(angular) {
                 'LISTAR_PRODUCTOS' :BASE_URL+'/Productos/listarProductos',
                 'LISTAR_PRODUCTOS_FARMACIAS' :BASE_URL+'/PedidosFarmacias/listarProductos',
                 'CREAR_PEDIDO_TEMPORAL' :BASE_URL+'/PedidosFarmacias/crearPedidoTemporal',
-                'CREAR_DETALLE_PEDIDO_TEMPORAL':BASE_URL+'/PedidosFarmacias/ingresarDetallePedidoTemporal'
+                'CREAR_DETALLE_PEDIDO_TEMPORAL':BASE_URL+'/PedidosFarmacias/ingresarDetallePedidoTemporal',
+                'NUMERO_REGISTROS_PEDIDO_TEMPORAL':BASE_URL+'/PedidosFarmacias/countRegistrosEncabezadoTemporal',
+                'NUMERO_REGISTROS_DETALLE_PEDIDO_TEMPORAL':BASE_URL+'/PedidosFarmacias/countRegistrosDetalleTemporal'
 	    },
 	    'TERCEROS':{
 	    	'LISTAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/listar",

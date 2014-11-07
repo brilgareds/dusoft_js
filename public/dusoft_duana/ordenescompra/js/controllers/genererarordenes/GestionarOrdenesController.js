@@ -26,6 +26,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 auth_token: Sesion.token
             };
 
+            // Variables
+            $scope.numero_orden = 0;
+            $scope.codigo_proveedor_id = '';
+            $scope.unidad_negocio_id = '';
+            $scope.observacion = '';
+
+
+
 
             $scope.buscar_proveedores = function(termino) {
 
@@ -61,7 +69,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         }
                     }
                 };
-                
+
                 Request.realizarRequest(API.UNIDADES_NEGOCIO.LISTAR_UNIDADES_NEGOCIO, "POST", obj, function(data) {
 
                     if (data.status === 200) {
@@ -99,8 +107,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 $scope.slideurl = "views/genererarordenes/gestionarproductos.html?time=" + new Date().getTime();
 
-                $scope.$emit('gestionar_productos');
+                $scope.$emit('gestionar_productos', {numero_orden: $scope.numero_orden, codigo_proveedor_id: $scope.codigo_proveedor_id, unidad_negocio_id: $scope.unidad_negocio_id, observacion: $scope.observacion});
             };
+
 
             $scope.cerrar = function() {
 
@@ -132,9 +141,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 ]
             };
 
-
             $scope.buscar_proveedores();
             $scope.buscar_unidades_negocio();
+
+
+
+
 
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {

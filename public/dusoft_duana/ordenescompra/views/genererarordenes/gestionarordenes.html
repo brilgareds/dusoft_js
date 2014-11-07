@@ -20,7 +20,7 @@
 
                                 <div class="row">
                                     <div class="col-md-7">  
-                                        <select ui-select2=""  class="form-control selectgeneral pull-left" ng-model="X"  placeholder="Seleccionar unidad de negocio" ng-change="">
+                                        <select ui-select2=""  class="form-control selectgeneral pull-left" ng-model="unidad_negocio_id"  placeholder="Seleccionar unidad de negocio" ng-change="">
                                             <option></option>    
                                             <option ng-repeat="unidad_negocio in  Empresa.get_unidades_negocios()"  value="{{unidad_negocio.codigo}}">{{ unidad_negocio.get_nombre() }}</option>
                                         </select>
@@ -33,7 +33,7 @@
                                 <legend>Proveedor</legend> 
                                 <div class="row">
                                     <div class="col-md-7">  
-                                        <select ui-select2="{minimumInputLength: 3}"  class="form-control selectgeneral pull-left" ng-model="Y"  placeholder="Seleccionar proveedor" ng-change="">
+                                        <select ui-select2="{minimumInputLength: 3}"  class="form-control selectgeneral pull-left" ng-model="codigo_proveedor_id"  placeholder="Seleccionar proveedor" ng-change="">
                                             <option></option> 
                                             <option ng-repeat="proveedor in  Empresa.get_proveedores()"  value="{{proveedor.codigo_proveedor_id}}">{{ proveedor.get_nombre() }}</option>
                                         </select>
@@ -50,7 +50,7 @@
                                 <legend>Observación</legend> 
                                 <div class="row">  
                                     <div class="col-md-12">  
-                                        <textarea  class="col-lg-12 col-md-12 col-sm-12" name="" placeholder="Ingresar Observación"></textarea>
+                                        <textarea  class="col-lg-12 col-md-12 col-sm-12" rows="4" ng-model='observacion' name="" placeholder="Ingresar Observación"></textarea>
                                     </div>
                                 </div>
                             </fieldset>
@@ -70,7 +70,7 @@
                                             <div class="col-md-3">
                                                 <p class="input-group">
 
-                                                    <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-click="buscar_productos()">
+                                                    <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="codigo_proveedor_id == '' && unidad_negocio_id == '' " ng-click="buscar_productos()">
                                                         <span class="glyphicon glyphicon-plus"></span> Buscar Productos
                                                     </button>
                                                 </p>

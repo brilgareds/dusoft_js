@@ -70,7 +70,7 @@ PedidosFarmaciasModel.prototype.listar_farmacias_usuario = function(tipo, usuari
 
 };
 
-PedidosFarmaciasModel.prototype.count_registros_encabezado_temporal = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback)
+PedidosFarmaciasModel.prototype.existe_registro_encabezado_temporal = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback)
 {
     var sql = "SELECT COUNT(*) FROM solicitud_Bodega_principal_aux WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and usuario_id = $4";
 
@@ -79,11 +79,20 @@ PedidosFarmaciasModel.prototype.count_registros_encabezado_temporal = function(e
     });
 };
 
-PedidosFarmaciasModel.prototype.count_registros_detalle_temporal = function(empresa_id, centro_utilidad_id, bodega_id, codigo_producto, usuario_id, callback)
+PedidosFarmaciasModel.prototype.existe_registro_detalle_temporal = function(empresa_id, centro_utilidad_id, bodega_id, codigo_producto, usuario_id, callback)
 {
     var sql = "SELECT COUNT(*) FROM solicitud_pro_a_bod_prpal_tmp WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and codigo_producto = $4 and usuario_id = $5";
 
     G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, codigo_producto, usuario_id], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+PedidosFarmaciasModel.prototype.listar_detalle_pedido_temporal = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback)
+{
+    var sql = "SELECT codigo_producto, fc_descripcion_producto(codigo_producto) as descripcion, cantidad_solic::integer as cantidad_solicitada, cantidad_pendiente FROM solicitud_pro_a_bod_prpal_tmp WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and usuario_id = $4";
+
+    G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, usuario_id], function(err, rows, result) {
         callback(err, rows);
     });
 };

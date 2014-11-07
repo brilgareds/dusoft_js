@@ -52,6 +52,71 @@ OrdenesCompra.prototype.listarOrdenesCompra = function(req, res) {
 };
 
 
+// Consultar Orden de Compra por numero de orden
+OrdenesCompra.prototype.consultarOrdenCompra = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.numero_orden === undefined) {
+        res.send(G.utils.r(req.url, 'numero_orden no esta definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.numero_orden === '' || args.ordenes_compras.numero_orden === 0 || args.ordenes_compras.numero_orden === '0') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero_orden', 404, {}));
+        return;
+    }
+
+    var numero_orden = args.ordenes_compras.numero_orden;
+    
+    that.m_ordenes_compra.consultar_orden_compra(numero_orden, function(err, orden_compra) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {orden_compra: []}));
+            return;
+        } else {
+            
+            res.send(G.utils.r(req.url, 'Orden de Compra', 200, {orden_compra: orden_compra}));
+            return;
+        }
+    });
+};
+
+// Consultar Orden de Compra por numero de orden
+OrdenesCompra.prototype.consultarDetalleOrdenCompra = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.numero_orden === undefined) {
+        res.send(G.utils.r(req.url, 'numero_orden no esta definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.numero_orden === '' || args.ordenes_compras.numero_orden === 0 || args.ordenes_compras.numero_orden === '0') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero_orden', 404, {}));
+        return;
+    }
+
+    var numero_orden = args.ordenes_compras.numero_orden;
+    
+    that.m_ordenes_compra.consultar_detalle_orden_compra(numero_orden, function(err, lista_productos) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {lista_productos: []}));
+            return;
+        } else {
+            
+            res.send(G.utils.r(req.url, 'Orden de Compra', 200, {lista_productos: lista_productos}));
+            return;
+        }
+    });
+};
+
+
 // Listar productos para ordenes de compra
 OrdenesCompra.prototype.listarProductos = function(req, res) {
 
@@ -63,7 +128,7 @@ OrdenesCompra.prototype.listarProductos = function(req, res) {
         res.send(G.utils.r(req.url, 'empresa_id, codigo_proveedor_id no estan definidas', 404, {}));
         return;
     }
-    
+
     if (args.ordenes_compras.laboratorio_id === undefined) {
         res.send(G.utils.r(req.url, 'laboratorio_id no estan definidas', 404, {}));
         return;
@@ -87,7 +152,7 @@ OrdenesCompra.prototype.listarProductos = function(req, res) {
     var empresa_id = args.ordenes_compras.empresa_id;
     var codigo_proveedor_id = args.ordenes_compras.codigo_proveedor_id;
     var laboratorio_id = args.ordenes_compras.laboratorio_id;
-    
+
     var termino_busqueda = args.ordenes_compras.termino_busqueda;
     var pagina_actual = args.ordenes_compras.pagina_actual;
 
@@ -138,13 +203,26 @@ OrdenesCompra.prototype.insertarOrdenCompra = function(req, res) {
     var observacion = args.ordenes_compras.observacion;
     var usuario_id = req.session.user.usuario_id;
 
+
+    /*console.log('==== Parametros =========');
+     console.log(unidad_negocio);
+     console.log(proveedor);
+     console.log(empresa_id);
+     console.log(observacion);
+     console.log(usuario_id);
+     console.log('==========================');
+     return;*/
+
     that.m_ordenes_compra.insertar_orden_compra(unidad_negocio, proveedor, empresa_id, observacion, usuario_id, function(err, rows, result) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
             return;
         } else {
-            res.send(G.utils.r(req.url, 'Orden de Compra regitrada correctamente', 200, {ordenes_compras: lista_ordenes_compras}));
+
+            var numero_orden = (rows.length > 0) ? rows[0].orden_pedido_id : 0;
+
+            res.send(G.utils.r(req.url, 'Orden de Compra regitrada correctamente', 200, {numero_orden: numero_orden}));
             return;
         }
     });
@@ -184,13 +262,23 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
     var valor = args.ordenes_compras.valor;
     var iva = args.ordenes_compras.iva;
 
-    that.m_ordenes_compra.insertar_detalle_orden_compra(numero_orden, codigo_producto, cantidad_solicitada, valor, iva, function(err, rows, result) {
 
-        if (err) {
+    /*console.log('==== Parametros =========');
+    console.log(numero_orden);
+    console.log(codigo_producto);
+    console.log(cantidad_solicitada);
+    console.log(valor);
+    console.log(iva);
+    console.log('==========================');
+    return;*/
+
+    that.m_ordenes_compra.insertar_detalle_orden_compra(numero_orden, codigo_producto, cantidad_solicitada, valor, iva, function(err, rows, result) {
+        
+        if (err || result.rowCount === 0) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
             return;
         } else {
-            res.send(G.utils.r(req.url, 'Orden de Compra regitrada correctamente', 200, {ordenes_compras: lista_ordenes_compras}));
+            res.send(G.utils.r(req.url, 'Producto regitrado correctamente', 200, {ordenes_compras: {}}));
             return;
         }
     });

@@ -34,8 +34,13 @@ module.exports = function(app, di_container) {
     });
         
     // Consultar Orden de Compra por numero de orden
-    app.post('/api/OrdenesCompra/consultarOrdenesCompra', function(req, res) {
-        c_ordenes_compra.consultarOrdenesCompra(req, res);
+    app.post('/api/OrdenesCompra/consultarOrdenCompra', function(req, res) {
+        c_ordenes_compra.consultarOrdenCompra(req, res);
+    });
+    
+    // Consultar Detalle Orden de Compra por numero de orden
+    app.post('/api/OrdenesCompra/consultarDetalleOrdenCompra', function(req, res) {
+        c_ordenes_compra.consultarDetalleOrdenCompra(req, res);
     });
 
 };

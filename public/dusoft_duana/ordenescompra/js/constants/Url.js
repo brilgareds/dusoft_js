@@ -10,6 +10,10 @@ define(["angular"], function(angular) {
             'ORDENES_COMPRA': {
                 'LISTAR_ORDENES_COMPRAS': BASE_URL + '/OrdenesCompra/listarOrdenesCompra',
                 'LISTAR_PRODUCTOS': BASE_URL + '/OrdenesCompra/listarProductos',
+                'CREAR_ORDEN_COMPRA': BASE_URL + '/OrdenesCompra/insertarOrdenCompra',
+                'CREAR_DETALLE_ORDEN_COMPRA': BASE_URL + '/OrdenesCompra/insertarDetalleOrdenCompra',
+                'CONSULTAR_ORDEN_COMPRA': BASE_URL + '/OrdenesCompra/consultarOrdenCompra',
+                'CONSULTAR_DETALLE_ORDEN_COMPRA': BASE_URL + '/OrdenesCompra/consultarDetalleOrdenCompra',
             },
             'PROVEEDORES': {
                 'LISTAR_PROVEEDORES': BASE_URL + '/Terceros/Proveedores/listar'

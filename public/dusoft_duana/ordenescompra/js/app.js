@@ -40,8 +40,8 @@ define([
                 url: "/ListarOrdenes",
                 text: "Administración Ordenes de Compra",
                 templateUrl: "views/genererarordenes/listarordenes.html"
-            }).state('GestionarOrdenCompra', {
-                url: "/GestionarOrdenCompra",
+            }).state('OrdenCompra', {
+                url: "/OrdenCompra",
                 text: "Administración Ordenes de Compra",
                 templateUrl: "views/genererarordenes/gestionarordenes.html"
             });

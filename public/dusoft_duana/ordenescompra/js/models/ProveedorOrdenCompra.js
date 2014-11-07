@@ -17,6 +17,11 @@ define(["angular", "js/models", "includes/classes/Proveedor"], function(angular,
                 return new ProveedorOrdenCompra(tipo_id, id, codigo_proveedor_id, nombre, direccion, telefono);
             };
             
+            ProveedorOrdenCompra.prototype.get_codigo_proveedor = function() {
+               
+               return this.codigo_proveedor_id;
+            };
+            
             ProveedorOrdenCompra.prototype.get_nombre = function() {
                
                var nombre_proveedor = this.tipo_id_tercero +' '+ this.id + ' - ' + this.nombre_tercero;

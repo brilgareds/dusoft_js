@@ -35,9 +35,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             
             EmpresaOrdenCompra.get_proveedor = function(codigo_proveedor_id) {
                 
-                //console.log(this.get_proveedores());
-                
-                var proveedor = $filter('filter')(this.get_proveedores(), {codigo_proveedor_id: codigo_proveedor_id}, true);
+                var proveedor = $filter('filter')(this.get_proveedores(), {codigo_proveedor_id: parseInt(codigo_proveedor_id)}, true);
                 
                 return (proveedor.length > 0) ? proveedor[0] : {};
             };

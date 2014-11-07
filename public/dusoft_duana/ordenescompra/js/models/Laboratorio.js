@@ -11,6 +11,10 @@ define(["angular", "js/models"], function(angular, models) {
                 return new Laboratorio(id, descripcion);
             };
 
+            Laboratorio.prototype.get_id = function() {
+                return this.id;
+            };
+            
             Laboratorio.prototype.get_nombre = function() {
                 return this.descripcion;
             };

@@ -124,12 +124,12 @@ define(["angular", "js/controllers",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li><a href="#" ng-click="gestionar_orden_compra()" >Modificar</a></li>\
-                                                <li><a href="#">Imprimir</a></li>\
-                                                <li><a href="#">Enviar Email</a></li>\
+                                                <li><a href="javascript:void()" ng-click="modificar_orden_compra(row.entity)" >Modificar</a></li>\
+                                                <li><a href="javascript:void()">Imprimir</a></li>\
+                                                <li><a href="javascript:void()">Enviar Email</a></li>\
                                                 <li class="divider"></li>\
-                                                <li><a href="#">Inactivar</a></li>\
-                                                <li><a href="#">Eliminar</a></li>\
+                                                <li><a href="javascript:void()">Inactivar</a></li>\
+                                                <li><a href="javascript:void()" ng-click="eliminar_orden_compra(row.entity)">Eliminar</a></li>\
                                             </ul>\
                                         </div>'
                     }
@@ -153,8 +153,24 @@ define(["angular", "js/controllers",
 
             };
 
-            $scope.gestionar_orden_compra = function() {
-                $state.go('GestionarOrdenCompra');
+            $scope.crear_orden_compra = function() {
+                localStorageService.add("numero_orden", 0);
+                $state.go('OrdenCompra');
+            };
+            
+            $scope.modificar_orden_compra = function(orden_compra) {
+                
+                localStorageService.add("numero_orden", orden_compra.get_numero_orden());
+               
+                
+                $state.go('OrdenCompra');
+            };
+            
+            $scope.eliminar_orden_compra = function(orden_compra) {
+                
+                console.log('========== eliminar_orden_compra =========== ');
+                console.log(orden_compra);
+                
             };
 
             $scope.buscar_ordenes_compras();

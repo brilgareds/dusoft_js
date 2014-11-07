@@ -28,11 +28,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
             // Variables
-            $scope.numero_orden = 0;
+            $scope.numero_orden = localStorageService.get("numero_orden") || 0;
             $scope.codigo_proveedor_id = '';
             $scope.unidad_negocio_id = '';
             $scope.observacion = '';
 
+            console.log($scope.numero_orden);
 
             $scope.gestionar_consultas = function() {
 
@@ -68,9 +69,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     if (data.status === 200 && data.obj.orden_compra.length > 0) {
 
                         var datos = data.obj.orden_compra[0];
-
+                      
                         $scope.orden_compra = OrdenCompra.get(datos.numero_orden, datos.estado, datos.observacion, datos.fecha_registro);
-                        $scope.orden_compra.set_unidad_negocio($scope.Empresa.get_unidad_negocio(datos.codigo_unidad_negocio));
+                        
+                        var unidad_negocio = ($scope.Empresa.get_unidad_negocio(datos.codigo_unidad_negocio).length > 0) ? $scope.Empresa.get_unidad_negocio(datos.codigo_unidad_negocio) : UnidadNegocio.get(datos.codigo_unidad_negocio, datos.descripcion)
+                        
+                        //$scope.orden_compra.set_unidad_negocio($scope.Empresa.get_unidad_negocio(datos.codigo_unidad_negocio));
+                        $scope.orden_compra.set_unidad_negocio(unidad_negocio);
+                        
+                        
                         $scope.orden_compra.set_proveedor($scope.Empresa.get_proveedor(datos.codigo_proveedor_id));
                         $scope.orden_compra.set_usuario(Usuario.get(datos.usuario_id, datos.nombre_usuario));
 
@@ -198,7 +205,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
 
             $scope.seleccionar_unidad_negocio = function() {
-
+                
+                console.log($scope.unidad_negocio_id);
+                console.log($scope.codigo_proveedor_id);
+                
                 if ($scope.numero_orden > 0) {
                     // Actualizar unidad de negocio
                 }
@@ -226,6 +236,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 if ($scope.numero_orden > 0) {
                     $scope.buscar_detalle_orden_compra();
                 }
+            };
+            
+            $scope.cancelar_orden_compra = function() {
+
+                $state.go('ListarOrdenes');
             };
 
             $scope.lista_productos = {

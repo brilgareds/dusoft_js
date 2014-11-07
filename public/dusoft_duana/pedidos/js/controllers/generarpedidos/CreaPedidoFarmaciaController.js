@@ -415,13 +415,61 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 /******************************** Validaciones bloqueos ****************************************/
                 
-                if($scope.rootCreaPedidoFarmacia.de_seleccion_empresa != 0 && $scope.rootCreaPedidoFarmacia.de_seleccion_centro_utilidad != 0
-                    && $scope.rootCreaPedidoFarmacia.de_seleccion_bodega != 0 && para_seleccion_empresa[0] != 0
-                    && para_seleccion_centro_utilidad[0] != 0 && para_seleccion_bodega[0] != 0)
+                if($scope.rootCreaPedidoFarmacia.de_seleccion_empresa !== 0 && $scope.rootCreaPedidoFarmacia.de_seleccion_centro_utilidad !== 0
+                    && $scope.rootCreaPedidoFarmacia.de_seleccion_bodega !== 0 && para_seleccion_empresa[0] !== 0
+                    && para_seleccion_centro_utilidad[0] !== 0 && para_seleccion_bodega[0] !== 0)
                 {
                     $scope.rootCreaPedidoFarmacia.bloquear = false;
+                    
+                    /* Ejecutar la acción de Consultar los productos del pedido temporal */
+                    var obj_detalle = {
+                        session:$scope.rootCreaPedidoFarmacia.session,
+                        data:{
+                            pedidos_farmacias:{
+                                empresa_id: para_seleccion_empresa[0],
+                                centro_utilidad_id: para_seleccion_centro_utilidad[0],
+                                bodega_id: para_seleccion_bodega[0]
+                            }
+                        }
+                    };
+                    /* Fin - Objeto para Inserción Detalle */
+
+                    /* Inicio - Validar existencia de producto en Detalle Pedido */
+
+                    var url_productos_detalle = API.PEDIDOS.LISTAR_DETALLE_PEDIDO_TEMPORAL;
+
+                    Request.realizarRequest(url_productos_detalle, "POST", obj_detalle, function(data) {
+
+                        if(data.status == 200) {
+                            
+                            if(data){
+
+                                console.log("Productos en BD: ", data.obj);
+                                $scope.rootCreaPedidoFarmacia.listado_productos = data.obj.listado_productos;
+                                
+                                //Desabilitar carga de archivo plano si hay producto en la grid cuando hay pedido almacenado en BD
+                                if($scope.rootCreaPedidoFarmacia.de_seleccion_empresa != 0 && $scope.rootCreaPedidoFarmacia.de_seleccion_centro_utilidad != 0
+                                    && $scope.rootCreaPedidoFarmacia.de_seleccion_bodega != 0 && para_seleccion_empresa[0] != 0
+                                    && para_seleccion_centro_utilidad[0] != 0 && para_seleccion_bodega[0] != 0
+                                    && $scope.rootCreaPedidoFarmacia.listado_productos.length == 0)
+                                {
+
+                                    $scope.rootCreaPedidoFarmacia.bloqueo_upload = false;
+                                }
+                                else{
+
+                                    $scope.rootCreaPedidoFarmacia.bloqueo_upload = true;
+                                }
+                            }
+                            else{
+
+                            }
+                        }
+                    });
+                    /*********************************************************************/
                 }
                 
+                //Desabilitar carga de archivo plano si hay producto en la grid cuando no un pedido temporal almacenado en BD
                 if($scope.rootCreaPedidoFarmacia.de_seleccion_empresa != 0 && $scope.rootCreaPedidoFarmacia.de_seleccion_centro_utilidad != 0
                     && $scope.rootCreaPedidoFarmacia.de_seleccion_bodega != 0 && para_seleccion_empresa[0] != 0
                     && para_seleccion_centro_utilidad[0] != 0 && para_seleccion_bodega[0] != 0

@@ -58,14 +58,19 @@ module.exports = function(app, di_container) {
     });
     
     // Cuenta el número de registros en el encabezado del pedido por empresa, centro de utilidad, bodega y usuario
-    app.post('/api/PedidosFarmacias/countRegistrosEncabezadoTemporal', function(req, res) {
-        c_pedidos_farmacias.countRegistrosEncabezadoTemporal(req, res);
+    app.post('/api/PedidosFarmacias/existeRegistroEncabezadoTemporal', function(req, res) {
+        c_pedidos_farmacias.existeRegistroEncabezadoTemporal(req, res);
     });
     
     // Cuenta el número de registros en el detalle del pedido por empresa, centro de utilidad, bodega, codigo de producto y usuario
-    app.post('/api/PedidosFarmacias/countRegistrosDetalleTemporal', function(req, res) {
-        c_pedidos_farmacias.countRegistrosDetalleTemporal(req, res);
+    app.post('/api/PedidosFarmacias/existeRegistroDetalleTemporal', function(req, res) {
+        c_pedidos_farmacias.existeRegistroDetalleTemporal(req, res);
     });    
+    
+    // Trae listado de productos de pedido temporal
+    app.post('/api/PedidosFarmacias/listarProductosDetalleTemporal', function(req, res) {
+        c_pedidos_farmacias.listarProductosDetalleTemporal(req, res);
+    });  
     
     // Listar productos
 //    app.get('/listarProductos', function(req, res) {

@@ -157,9 +157,9 @@ OrdenesCompraModel.prototype.insertar_orden_compra = function(unidad_negocio, co
 
 
     var sql = " INSERT INTO compras_ordenes_pedidos ( codigo_unidad_negocio, codigo_proveedor_id, empresa_id, observacion, usuario_id, estado, fecha_orden ) \
-                VALUES( $1, $2, $3, $4, '1', NOW() ) RETURNING orden_pedido_id; ";
+                VALUES( $1, $2, $3, $4, $5, '1', NOW() ) RETURNING orden_pedido_id; ";
 
-    G.db.query(sql, [unidad_negocio, codigo_proveedor, empresa_id, observacion, usuario_id], function(err, rows, result, total_records) {
+    G.db.query(sql, [unidad_negocio, codigo_proveedor, empresa_id, observacion, usuario_id], function(err, rows, result) {
         callback(err, rows, result);
     });
 };
@@ -187,14 +187,14 @@ OrdenesCompraModel.prototype.eliminar_orden_compra = function(numero_orden, call
 };
 
 // Ingresar Detalle Orden de Compra
-OrdenesCompraModel.prototype.insertar_detalle_orden_compra = function(numero_orden, codigo_producto, cantidad_solicitada, valor, iva, estado, callback) {
+OrdenesCompraModel.prototype.insertar_detalle_orden_compra = function(numero_orden, codigo_producto, cantidad_solicitada, valor, iva, callback) {
 
 
     var sql = " INSERT INTO compras_ordenes_pedidos_detalle ( orden_pedido_id,codigo_producto,numero_unidades,valor,porc_iva,estado)\
                 VALUES ( $1, $2, $3, $4, $5, 1 );";
 
-    G.db.query(sql, [numero_orden, codigo_producto, cantidad_solicitada, valor, iva, estado], function(err, rows, result, total_records) {
-        callback(err, rows);
+    G.db.query(sql, [numero_orden, codigo_producto, cantidad_solicitada, valor, iva], function(err, rows, result) {
+        callback(err, rows, result);
     });
 };
 

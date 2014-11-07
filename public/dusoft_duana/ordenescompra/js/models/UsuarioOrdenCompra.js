@@ -4,7 +4,7 @@ define(["angular", "js/models"], function(angular, models) {
 
             function UsuarioOrdenCompra(id, nombre) {
                 this.id = id;
-                this.nombre = nombre;
+                this.nombre = nombre || "";
             }
 
             this.get = function(id, nombre) {

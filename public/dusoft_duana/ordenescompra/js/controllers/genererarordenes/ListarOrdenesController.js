@@ -4,6 +4,7 @@ define(["angular", "js/controllers",
     "models/EmpresaOrdenCompra",
     "models/ProveedorOrdenCompra",
     "models/UnidadNegocio",
+    "models/ProductoOrdenCompra",
     "models/UsuarioOrdenCompra",
 ], function(angular, controllers) {
 
@@ -15,9 +16,10 @@ define(["angular", "js/controllers",
         "EmpresaOrdenCompra",
         "ProveedorOrdenCompra",
         "UnidadNegocio",
+        "ProductoOrdenCompra",
         "UsuarioOrdenCompra",
         "Usuario",
-        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, OrdenCompra, Empresa, Proveedor, UnidadNegocio, Usuario, Sesion) {
+        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, OrdenCompra, Empresa, Proveedor, UnidadNegocio, Producto, Usuario, Sesion) {
 
             var that = this;
 
@@ -91,11 +93,11 @@ define(["angular", "js/controllers",
 
                     var orden_compra = OrdenCompra.get(orden.numero_orden, orden.estado, orden.observacion, orden.fecha_registro);
 
-                    orden_compra.setProveedor(Proveedor.get(orden.tipo_id_proveedor, orden.nit_proveedor, orden.codigo_proveedor_id, orden.nombre_proveedor, orden.direccion_proveedor, orden.telefono_proveedor));
+                    orden_compra.set_proveedor(Proveedor.get(orden.tipo_id_proveedor, orden.nit_proveedor, orden.codigo_proveedor_id, orden.nombre_proveedor, orden.direccion_proveedor, orden.telefono_proveedor));
 
-                    orden_compra.setUnidadNegocio(UnidadNegocio.get(orden.codigo_unidad_negocio, orden.descripcion_unidad_negocio, orden.imagen));
+                    orden_compra.set_unidad_negocio(UnidadNegocio.get(orden.codigo_unidad_negocio, orden.descripcion_unidad_negocio, orden.imagen));
 
-                    orden_compra.setUsuario(Usuario.get(orden.usuario_id, orden.nombre_usuario));
+                    orden_compra.set_usuario(Usuario.get(orden.usuario_id, orden.nombre_usuario));
 
                     $scope.Empresa.set_ordenes_compras(orden_compra);
 

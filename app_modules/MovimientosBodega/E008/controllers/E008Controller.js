@@ -1151,8 +1151,11 @@ E008Controller.prototype.auditoriaProductosClientes = function(req, res) {
                 return;
             }
             // Consultar los productos asociados al documento temporal    
-            that.m_movientos_bodegas.consultar_detalle_movimiento_bodega_temporal(documento.documento_temporal_id, documento.usuario_id, function(err, detalle_documento_temporal) {
-
+            that.m_movientos_bodegas.consultar_detalle_movimiento_bodega_temporal_por_termino(documento.documento_temporal_id, documento.usuario_id,filtro, function(err, detalle_documento_temporal) {
+                
+                console.log("consultar_detalle_movimiento_bodega_temporal_por_termino");
+                console.log(detalle_documento_temporal);
+                // res.send(G.utils.r(req.url, 'Listado productos auditados', 500, {movimientos_bodegas: {}}));
                 if (err) {
                     res.send(G.utils.r(req.url, 'Se ha generado un error consultado el detall del documento temporal', 500, {documento_temporal: []}));
                     return;
@@ -1164,9 +1167,11 @@ E008Controller.prototype.auditoriaProductosClientes = function(req, res) {
 
                     // Consultar las justificaciones del producto
                     that.m_e008.consultar_justificaciones_temporales_pendientes(documento.documento_temporal_id, documento.usuario_id, detalle.codigo_producto, function(err, justificaciones) {
-
+                        
+                       /* console.log("consultar_justificaciones_temporales_pendientes >>>>>>>>>>>>>>>>>>>>>");
+                        console.log(justificaciones);*/
                         detalle.justificaciones = justificaciones;
-
+                    
                         var producto = productos_pedidos.filter(function(value) {
                             return detalle.codigo_producto === value.codigo_producto;
                         });
@@ -1178,19 +1183,20 @@ E008Controller.prototype.auditoriaProductosClientes = function(req, res) {
                             //detalle.justificacion = producto.justificacion;
                             //detalle.justificacion_auditor = producto.justificacion_auditor;
                         }
-
+                        
+                        lista_productos.push(detalle);
                         //Si filtro es por codigo de barras.
-                        if (filtro.codigo_barras) {
+                        /*if (filtro.codigo_barras) {
                             if (detalle.auditado === '0' && detalle.codigo_barras === termino_busqueda)
                                 lista_productos.push(detalle);
                         }
 
                         //si filtro es por descripcion 
                         if (filtro.descripcion_producto) {
-                            console.log("buscando detalle ",detalle);
+                            console.log("buscando detalle ",detalle)
                             if (detalle.auditado === '0' && detalle.descripcion_producto.toLocaleLowerCase().substring(0, termino_busqueda.length) === termino_busqueda.toLowerCase())
                                 lista_productos.push(detalle);
-                        }
+                        }*/
 
                         if (--count === 0) {
                             console.log(lista_productos);

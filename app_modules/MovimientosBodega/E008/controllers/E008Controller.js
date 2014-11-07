@@ -1187,6 +1187,7 @@ E008Controller.prototype.auditoriaProductosClientes = function(req, res) {
 
                         //si filtro es por descripcion 
                         if (filtro.descripcion_producto) {
+                            console.log("buscando detalle ",detalle);
                             if (detalle.auditado === '0' && detalle.descripcion_producto.toLocaleLowerCase().substring(0, termino_busqueda.length) === termino_busqueda.toLowerCase())
                                 lista_productos.push(detalle);
                         }

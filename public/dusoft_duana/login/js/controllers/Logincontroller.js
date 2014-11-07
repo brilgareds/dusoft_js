@@ -11,7 +11,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
             $scope.autenticar = function() {
                 if ($scope.loginform.$invalid) {
-                    console.log("invalido")
                     return;
                 }
 
@@ -28,9 +27,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         }
                     }
                 };
-                console.log(localStorageService.get("session"))
                 Request.realizarRequest("/login", "POST", obj, function(datos) {
-                    if (datos.status == 200) {
+                    if (datos.status === 200) {
                         localStorageService.add("session", JSON.stringify(datos.obj.sesion));
                         window.location = "../kardex/";
                     } else {
@@ -43,7 +41,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
             $scope.recuperarContrasenia = function() {
                 if ($scope.forgoutform.$invalid) {
-                    console.log("invalido")
                     return;
                 }
 
@@ -61,7 +58,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                 Request.realizarRequest("/forgout", "POST", obj, function(datos) {
                     
-                    if (datos.status == 200) {
+                    if (datos.status === 200) {
                         $scope.mostrarmensaje = false;
                         $scope.ocultar_formulario = false;
                         $scope.usuario="";

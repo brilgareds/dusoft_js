@@ -49,11 +49,14 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
 
 
 // Listar Producto para orden de compra 
-OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_proveedor_id, termino_busqueda, laboratorio_id, pagina, callback) {
+OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_proveedor_id, numero_orden, termino_busqueda, laboratorio_id, pagina, callback) {
 
     var sql_aux = " ";
     if (laboratorio_id)
         sql_aux = " AND a.clase_id = $4 ";
+    
+    if(numero_orden > 0)
+        sql_aux += " AND a.codigo_producto not in ( select a.codigo_producto from compras_ordenes_pedidos_detalle a where a.orden_pedido_id = " + numero_orden + " ) ";
 
     var sql = " SELECT \
                 e.descripcion as descripcion_grupo,\
@@ -79,7 +82,7 @@ OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_prov
                     INNER JOIN contratacion_produc_prov_detalle b on a.contratacion_prod_id = b.contratacion_prod_id\
                     WHERE a.empresa_id= $1 AND a.codigo_proveedor_id = $2 \
                 ) as aa on a.codigo_producto = aa.codigo_producto\
-                WHERE b.empresa_id = $1 AND a.estado = '1' " + sql_aux + "AND \
+                WHERE b.empresa_id = $1 AND a.estado = '1' " + sql_aux + " AND \
                 (\
                     a.descripcion ILIKE $3 or\
                     a.codigo_producto ILIKE $3 or\
@@ -228,7 +231,7 @@ OrdenesCompraModel.prototype.eliminar_producto_orden_compra = function(numero_or
     var sql = "  DELETE FROM compras_ordenes_pedidos_detalle WHERE orden_pedido_id= $1 AND codigo_producto=$2 ";
 
     G.db.query(sql, [numero_orden, codigo_producto], function(err, rows, result, total_records) {
-        callback(err, rows);
+        callback(err, rows, result);
     });
 };
 

@@ -129,6 +129,11 @@ OrdenesCompra.prototype.listarProductos = function(req, res) {
         return;
     }
 
+    if (args.ordenes_compras.numero_orden === undefined) {
+        res.send(G.utils.r(req.url, 'numero_pedido no estan definidas', 404, {}));
+        return;
+    }
+    
     if (args.ordenes_compras.laboratorio_id === undefined) {
         res.send(G.utils.r(req.url, 'laboratorio_id no estan definidas', 404, {}));
         return;
@@ -143,12 +148,18 @@ OrdenesCompra.prototype.listarProductos = function(req, res) {
         res.send(G.utils.r(req.url, 'empresa_id, codigo_proveedor_id estan vacias', 404, {}));
         return;
     }
+    
+    if (args.ordenes_compras.numero_orden === '') {
+        res.send(G.utils.r(req.url, 'numero_pedido no esta vacio', 404, {}));
+        return;
+    }
 
     if (args.ordenes_compras.pagina_actual === '' || args.ordenes_compras.pagina_actual === 0 || args.ordenes_compras.pagina_actual === '0') {
         res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
         return;
     }
 
+    var numero_orden = args.ordenes_compras.numero_orden;
     var empresa_id = args.ordenes_compras.empresa_id;
     var codigo_proveedor_id = args.ordenes_compras.codigo_proveedor_id;
     var laboratorio_id = args.ordenes_compras.laboratorio_id;
@@ -156,7 +167,7 @@ OrdenesCompra.prototype.listarProductos = function(req, res) {
     var termino_busqueda = args.ordenes_compras.termino_busqueda;
     var pagina_actual = args.ordenes_compras.pagina_actual;
 
-    that.m_ordenes_compra.listar_productos(empresa_id, codigo_proveedor_id, termino_busqueda, laboratorio_id, pagina_actual, function(err, lista_productos) {
+    that.m_ordenes_compra.listar_productos(empresa_id, codigo_proveedor_id, numero_orden, termino_busqueda, laboratorio_id, pagina_actual, function(err, lista_productos) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {lista_productos: []}));
@@ -345,10 +356,14 @@ OrdenesCompra.prototype.eliminarProductoOrdenCompra = function(req, res) {
     var numero_orden = args.ordenes_compras.numero_orden;
     var codigo_producto = args.ordenes_compras.codigo_producto;
 
-
     that.m_ordenes_compra.eliminar_producto_orden_compra(numero_orden, codigo_producto, function(err, rows, result) {
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
+        
+        console.log('====== resultado ========');
+        console.log(err, rows, result);
+        console.log('=========================');
+        
+        if (err || result.rowCount === 0) {
+            res.send(G.utils.r(req.url, 'Error Eliminado el producto', 500, {ordenes_compras: []}));
             return;
         } else {
             res.send(G.utils.r(req.url, 'Producto eliminado correctamente', 200, {ordenes_compras: []}));

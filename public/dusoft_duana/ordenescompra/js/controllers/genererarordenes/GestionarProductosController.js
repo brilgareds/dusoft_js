@@ -40,18 +40,18 @@ define(["angular", "js/controllers",
 
 
                 /*console.log(parametros[1]);
-                console.log($scope.orden_compra);
-                return
-                var numero_orden = parametros[1].numero_orden;
-                var unidad_negocio_id = parametros[1].unidad_negocio_id;
-                var codigo_proveedor_id = parametros[1].codigo_proveedor_id;
-                var observacion = parametros[1].observacion;
+                 console.log($scope.orden_compra);
+                 return
+                 var numero_orden = parametros[1].numero_orden;
+                 var unidad_negocio_id = parametros[1].unidad_negocio_id;
+                 var codigo_proveedor_id = parametros[1].codigo_proveedor_id;
+                 var observacion = parametros[1].observacion;
+                 
+                 $scope.orden_compra = OrdenCompra.get(numero_orden, 1, observacion, new Date());
+                 $scope.orden_compra.set_unidad_negocio($scope.Empresa.get_unidad_negocio(unidad_negocio_id));
+                 $scope.orden_compra.set_proveedor($scope.Empresa.get_proveedor(codigo_proveedor_id));
+                 $scope.orden_compra.set_usuario(Usuario.get(Sesion.usuario_id));*/
 
-                $scope.orden_compra = OrdenCompra.get(numero_orden, 1, observacion, new Date());
-                $scope.orden_compra.set_unidad_negocio($scope.Empresa.get_unidad_negocio(unidad_negocio_id));
-                $scope.orden_compra.set_proveedor($scope.Empresa.get_proveedor(codigo_proveedor_id));
-                $scope.orden_compra.set_usuario(Usuario.get(Sesion.usuario_id));*/
-                
 
                 that.buscar_laboratorios();
                 that.buscar_productos();
@@ -90,6 +90,7 @@ define(["angular", "js/controllers",
                     session: $scope.session,
                     data: {
                         ordenes_compras: {
+                            numero_orden: $scope.orden_compra.get_numero_orden(),
                             empresa_id: '03',
                             codigo_proveedor_id: $scope.orden_compra.get_proveedor().get_codigo_proveedor(),
                             laboratorio_id: $scope.laboratorio_id,
@@ -119,18 +120,22 @@ define(["angular", "js/controllers",
             };
 
 
-            that.gestionar_orden_compra = function() {
+            that.gestionar_orden_compra = function(callback) {
 
                 if ($scope.orden_compra.get_numero_orden() === 0) {
                     //Crear Orden de Compra y Agregar Productos
                     that.insertar_cabercera_orden_compra(function(continuar) {
                         if (continuar) {
-                            that.insertar_detalle_orden_compra();
+                            that.insertar_detalle_orden_compra(function(resultado) {
+                                callback(resultado)
+                            });
                         }
                     });
                 } else {
                     // Agregar Productos a Orden de Compra
-                    that.insertar_detalle_orden_compra();
+                    that.insertar_detalle_orden_compra(function(resultado) {
+                        callback(resultado)
+                    });
                 }
 
             };
@@ -166,7 +171,7 @@ define(["angular", "js/controllers",
             };
 
 
-            that.insertar_detalle_orden_compra = function() {
+            that.insertar_detalle_orden_compra = function(callback) {
 
                 var obj = {
                     session: $scope.session,
@@ -185,6 +190,12 @@ define(["angular", "js/controllers",
                 Request.realizarRequest(API.ORDENES_COMPRA.CREAR_DETALLE_ORDEN_COMPRA, "POST", obj, function(data) {
 
                     AlertService.mostrarMensaje("warning", data.msj);
+
+                    if (data.status === 200) {
+                        callback(true);
+                    } else {
+                        callback(false);
+                    }
                 });
             };
 
@@ -235,7 +246,7 @@ define(["angular", "js/controllers",
                     {width: "7%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-toolbar">\
                                             <button class="btn btn-default btn-xs" ng-click="calcular_valores_producto(row.entity)" ><span class="glyphicon glyphicon-zoom-in"></span></button>\
-                                            <button class="btn btn-default btn-xs" ng-click="solicitar_producto(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
+                                            <button class="btn btn-default btn-xs" ng-click="solicitar_producto(row)" ><span class="glyphicon glyphicon-ok"></span></button>\
                                         </div>'}
                 ]
             };
@@ -247,18 +258,28 @@ define(["angular", "js/controllers",
                 //producto.set_cantidad_seleccionada(event.targetScope.row.entity[event.targetScope.col.field]);
             });
 
-            $scope.solicitar_producto = function(producto) {
+            $scope.solicitar_producto = function(row) {
 
+                var producto = row.entity;
+                
                 producto.set_cantidad_seleccionada(producto.cantidad);
 
                 $scope.producto_seleccionado = producto;
 
                 $scope.orden_compra.set_productos(producto);
 
-                that.gestionar_orden_compra();
+                that.gestionar_orden_compra(function(resultado){
+                    
+                    if(resultado){
+                        // Remover producto seleccionado
+                        var index = row.rowIndex;
+                        $scope.lista_productos.selectItem(index, false);
+                        $scope.Empresa.get_productos().splice(index, 1);
+                    }
+                });
             };
 
-
+           
             $scope.pagina_anterior = function() {
                 $scope.pagina_actual--;
                 that.buscar_productos($scope.termino_busqueda, true);
@@ -294,10 +315,10 @@ define(["angular", "js/controllers",
 
 
             /*$scope.cerrar = function() {
-
-                $scope.$emit('cerrar_gestion_productos', {animado: true});
-
-            };*/
+             
+             $scope.$emit('cerrar_gestion_productos', {animado: true});
+             
+             };*/
 
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {

@@ -449,6 +449,38 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
                 $scope.$emit('cargarGridPrincipal', $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados);
                 
+                /* Inicio - Objeto para Eliminar Registro del Detalle */
+                var obj_detalle = {
+                    session:$scope.rootSeleccionProductoFarmacia.session,
+                    data:{
+                        detalle_pedidos_farmacias:{
+
+                            empresa_id: $scope.rootSeleccionProductoFarmacia.para_empresa_id,
+                            centro_utilidad_id: $scope.rootSeleccionProductoFarmacia.para_centro_utilidad_id,
+                            bodega_id: $scope.rootSeleccionProductoFarmacia.para_bodega_id,
+                            codigo_producto: row.entity.codigo_producto,
+                        }
+                    }
+                };
+                /* Fin - Objeto para Eliminar Registro del Detalle */
+
+                /* Inicio - Borrado de registro en Detalle Pedido */
+
+                var url_eliminar_detalle = API.PEDIDOS.ELIMINAR_REGISTRO_DETALLE_PEDIDO_TEMPORAL;
+
+                Request.realizarRequest(url_eliminar_detalle, "POST", obj_detalle, function(data) {
+
+                    if(data.status == 200) {
+                        console.log("Resultado Exitoso: ", data.msj);
+                        
+                        /* Para desarrollar aquí: Si la grid está vacia, eliminar el encabezado */
+                    }
+                    else
+                    {
+                        console.log("Resultado Fallido: ", data.msj);
+                    }
+                });
+                
             };
             
             //MÃ©todo para liberar Memoria de todo lo construido en Ã©sta clase

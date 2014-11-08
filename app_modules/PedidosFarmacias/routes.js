@@ -57,12 +57,12 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.listar_productos(req, res);
     });
     
-    // Cuenta el número de registros en el encabezado del pedido por empresa, centro de utilidad, bodega y usuario
+    // Retorna 1 si el registro existe y 0 si no existe en el encabezado del pedido. Se filtra pedido por empresa, centro de utilidad, bodega y usuario
     app.post('/api/PedidosFarmacias/existeRegistroEncabezadoTemporal', function(req, res) {
         c_pedidos_farmacias.existeRegistroEncabezadoTemporal(req, res);
     });
     
-    // Cuenta el número de registros en el detalle del pedido por empresa, centro de utilidad, bodega, codigo de producto y usuario
+    // Retorna 1 si el registro existe y 0 si no existe en el detalle del pedido. Se filtra por empresa, centro de utilidad, bodega, codigo de producto y usuario
     app.post('/api/PedidosFarmacias/existeRegistroDetalleTemporal', function(req, res) {
         c_pedidos_farmacias.existeRegistroDetalleTemporal(req, res);
     });    
@@ -70,6 +70,16 @@ module.exports = function(app, di_container) {
     // Trae listado de productos de pedido temporal
     app.post('/api/PedidosFarmacias/listarProductosDetalleTemporal', function(req, res) {
         c_pedidos_farmacias.listarProductosDetalleTemporal(req, res);
+    });
+    
+    // Elimina el registro del encabezado del pedido por empresa, centro de utilidad, bodega y usuario
+    app.post('/api/PedidosFarmacias/quitarRegistroEncabezadoTemporal', function(req, res) {
+        c_pedidos_farmacias.quitarRegistroEncabezadoTemporal(req, res);
+    });
+    
+    // Elimina el registro del detalle del pedido por empresa, centro de utilidad, bodega, codigo de producto y usuario
+    app.post('/api/PedidosFarmacias/quitarRegistroDetalleTemporal', function(req, res) {
+        c_pedidos_farmacias.quitarRegistroDetalleTemporal(req, res);
     });  
     
     // Listar productos

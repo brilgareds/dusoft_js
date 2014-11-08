@@ -45,7 +45,9 @@ define(["angular"], function(angular) {
                 'CREAR_DETALLE_PEDIDO_TEMPORAL':BASE_URL+'/PedidosFarmacias/ingresarDetallePedidoTemporal',
                 'EXISTE_REGISTRO_PEDIDO_TEMPORAL':BASE_URL+'/PedidosFarmacias/existeRegistroEncabezadoTemporal',
                 'EXISTE_REGISTRO_DETALLE_PEDIDO_TEMPORAL':BASE_URL+'/PedidosFarmacias/existeRegistroDetalleTemporal',
-                'LISTAR_DETALLE_PEDIDO_TEMPORAL':BASE_URL+'/PedidosFarmacias/listarProductosDetalleTemporal'
+                'LISTAR_DETALLE_PEDIDO_TEMPORAL':BASE_URL+'/PedidosFarmacias/listarProductosDetalleTemporal',
+                'ELIMINAR_REGISTRO_PEDIDO_TEMPORAL':BASE_URL+'/PedidosFarmacias/quitarRegistroEncabezadoTemporal',
+                'ELIMINAR_REGISTRO_DETALLE_PEDIDO_TEMPORAL':BASE_URL+'/PedidosFarmacias/quitarRegistroDetalleTemporal',
 	    },
 	    'TERCEROS':{
 	    	'LISTAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/listar",

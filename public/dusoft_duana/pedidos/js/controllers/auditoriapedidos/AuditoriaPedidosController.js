@@ -169,7 +169,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 });
             };
 
-            that.renderDetalleDocumentoTemporal = function(documento , productos) {
+            that.renderDetalleDocumentoTemporal = function(documento , productos, tipo) {
                 //Vaciar el listado de Productos
 
                 documento.getPedido().vaciarProductos();
@@ -178,7 +178,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                     var obj = productos[i];
                     
-                    var producto_pedido_separado = this.crearProductoPedidoDocumentoTemporal(obj);
+                    var producto_pedido_separado = this.crearProductoPedidoDocumentoTemporal(obj, tipo);
                     
                     documento.getPedido().agregarProducto(producto_pedido_separado);
 
@@ -195,17 +195,23 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         var productos = data.obj.movimientos_bodegas.lista_productos_auditados;
                         console.log("productos encontrados ",productos);
 
-                        that.renderDetalleDocumentoTemporal(documento , productos);
+                        that.renderDetalleDocumentoTemporal(documento , productos, 1);
                     }
                 });
             };
 
-            that.crearProductoPedidoDocumentoTemporal = function(obj) {
+            that.crearProductoPedidoDocumentoTemporal = function(obj, tipo) {
                //console.log("=============================================== code 1 ",obj);
-                var justificaciones = obj.justificaciones[0] || {};
+               
                 var lote_pedido = LoteProductoPedido.get(obj.lote, obj.fecha_vencimiento);
-                lote_pedido.justificacion_separador = justificaciones.observacion || "";
-                lote_pedido.justificacion_auditor = justificaciones.justificacion_auditor || "";
+                 
+                if(tipo === 1){
+                    var justificaciones = obj.justificaciones[0] || {};
+                    lote_pedido.justificacion_separador = justificaciones.observacion || "";
+                    lote_pedido.justificacion_auditor = justificaciones.justificacion_auditor || "";
+                }
+                
+                
                 lote_pedido.cantidad_pendiente = obj.cantidad_pendiente || 0;
                 lote_pedido.item_id = obj.item_id;
         
@@ -426,8 +432,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         $scope.productosNoAuditados = [];
                         $scope.productosPendientes  = [];
                         $scope.cajasSinCerrar = [];
-                        that.renderProductosAuditados(movimientos_bodegas.productos_no_auditados, $scope.productosNoAuditados);
-                        that.renderProductosAuditados(movimientos_bodegas.productos_pendientes, $scope.productosPendientes);
+                        that.renderDetalleDocumentoTemporal(documento,movimientos_bodegas.productos_no_auditados, 2);
+                        that.renderDetalleDocumentoTemporal(documento,movimientos_bodegas.productos_pendientes, 3);
+                       /* that.renderProductosAuditados(movimientos_bodegas.productos_no_auditados, $scope.productosAuditados);
+                        that.renderProductosAuditados(movimientos_bodegas.productos_pendientes, $scope.productosAuditados);*/
                         
                         if(movimientos_bodegas.cajas_no_cerradas){
                             $scope.cajasSinCerrar = movimientos_bodegas.cajas_no_cerradas;

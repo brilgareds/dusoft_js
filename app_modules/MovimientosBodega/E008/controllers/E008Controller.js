@@ -1564,7 +1564,7 @@ function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento
                             else
                                 productos_no_auditados.push(producto_pedido);
                         } else {
-                            // Verificar que los productos con pendientes esten justificados po el auditor
+                            // Verificar que los productos con pendientes esten justificados po el auditor/
                             if (producto_pedido.cantidad_pendiente > 0 && producto_pedido.justificacion_auditor === '')
                                 productos_pendientes.push(producto_pedido);
                         }

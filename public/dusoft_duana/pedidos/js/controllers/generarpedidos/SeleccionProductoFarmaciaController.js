@@ -471,13 +471,41 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 Request.realizarRequest(url_eliminar_detalle, "POST", obj_detalle, function(data) {
 
                     if(data.status == 200) {
-                        console.log("Resultado Exitoso: ", data.msj);
+                        console.log("Eliminación de detalle Exitosa: ", data.msj);
                         
                         /* Para desarrollar aquí: Si la grid está vacia, eliminar el encabezado */
+                        console.log("Longitud Grid Seleccionados", $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.length);
+                        
+                        if($scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.length === 0)
+                        {
+                            var obj_encabezado = {
+                                session:$scope.rootSeleccionProductoFarmacia.session,
+                                data:{
+                                    pedidos_farmacias:{
+                                        empresa_id: $scope.rootSeleccionProductoFarmacia.para_empresa_id,
+                                        centro_utilidad_id: $scope.rootSeleccionProductoFarmacia.para_centro_utilidad_id,
+                                        bodega_id: $scope.rootSeleccionProductoFarmacia.para_bodega_id,
+                                    }
+                                }
+                            };
+                            var url_eliminar_encabezado = API.PEDIDOS.ELIMINAR_REGISTRO_PEDIDO_TEMPORAL;
+
+                            Request.realizarRequest(url_eliminar_encabezado, "POST", obj_encabezado, function(data) {
+
+                                if(data.status == 200) {
+                                    console.log("Eliminación de encabezado Exitosa: ", data.msj);
+                                }
+                                else
+                                {
+                                    console.log("Eliminación de encabezado Fallida: ", data.msj);
+                                }
+                            });
+                            
+                        }
                     }
                     else
                     {
-                        console.log("Resultado Fallido: ", data.msj);
+                        console.log("Eliminación Detalle Fallida: ", data.msj);
                     }
                 });
                 

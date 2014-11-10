@@ -191,8 +191,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                     }
                 }
 
-                
-
+                 
 
                  var obj = {
                     session:$scope.session,
@@ -202,12 +201,23 @@ define(["angular", "js/controllers",'models/ClientePedido',
                             cantidad_ingresada: $scope.rootEditarProducto.producto.lote.cantidad_ingresada,
                             fecha_vencimiento:$scope.rootEditarProducto.producto.lote.fecha_vencimiento,
                             lote:$scope.rootEditarProducto.producto.lote.codigo_lote,
-                            valor_unitario:$scope.rootEditarProducto.producto.precio
+                            valor_unitario:$scope.rootEditarProducto.producto.precio,
+                            empresa_id:$scope.rootEditarProducto.documento.empresa_id,
+                            centro_utilidad_id:$scope.rootEditarProducto.documento.centro_utilidad,
+                            bodega_id:$scope.rootEditarProducto.documento.bodega_id,
+                            doc_tmp_id:$scope.rootEditarProducto.documento.documento_temporal_id,
+                            usuario_id:$scope.rootEditarProducto.documento.usuario_id,
+                            codigo_producto:$scope.rootEditarProducto.producto.codigo_producto,
+                            iva:$scope.rootEditarProducto.producto.porcentaje_gravament
+                            
+                            
                         }
                     }
                 };
 
                 console.log("params to send ",obj);
+                
+                //return;
 
                Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.MODIFICAR_DETALLE_TEMPORAL, "POST", obj, function(data) {
 

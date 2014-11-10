@@ -15,6 +15,9 @@ define(["angular", "js/models"], function(angular, models) {
             this.auditor;
             this.esDocumentoNuevo = false;
             this.usuario_id = 0;
+            this.empresa_id = 0;
+            this.centro_utilidad = 0;
+            this.bodega_id = 0;
             //this.detalle_documento_temporal = [];
         }
 

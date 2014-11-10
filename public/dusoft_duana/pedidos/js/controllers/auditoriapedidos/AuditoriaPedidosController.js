@@ -65,6 +65,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 pedido.setDatos(obj);
                 pedido.setTipo(tipo);
                 
+                documento_temporal.empresa_id = obj.empresa_id;
+                documento_temporal.centro_utilidad = obj.centro_utilidad || '1';
+                documento_temporal.bodega_id = obj.bodega_id || '03';
+                
+                
                 if(tipo === 1){
                     var cliente = Cliente.get(
                         obj.nombre_cliente,
@@ -73,8 +78,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         obj.identificacion_cliente,
                         obj.telefono_cliente
                     );
-
+                    
                     pedido.setCliente(cliente);
+                    
                 } else {
                     var farmacia = Farmacia.get(
                         obj.farmacia_id,
@@ -97,6 +103,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
                 documento_temporal.setSeparador(separador);
                 documento_temporal.setAuditor(auditor);
+                
+                //console.log("documento >>>>>>>>>>>>>>", documento_temporal)
                 return documento_temporal;
             };
 
@@ -210,6 +218,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     var justificaciones = obj.justificaciones[0] || {};
                     lote_pedido.justificacion_separador = justificaciones.observacion || "";
                     lote_pedido.justificacion_auditor = justificaciones.justificacion_auditor || "";
+                } else {
+                    lote_pedido.justificacion_separador = obj.justificacion || "";
+                    lote_pedido.justificacion_auditor = obj.justificacion_auditor || "";
                 }
                 
                 
@@ -220,8 +231,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                                                     obj.valor_unitario, obj.cantidad_solicitada, obj.cantidad_ingresada,
                                                                     obj.observacion_cambio);
                                                                     
-                console.log("producto >>>>>>>>>>>>>>>>>>");
-                console.log(producto_pedido_separado);                                                      
+                producto_pedido_separado.porcentaje_gravament = obj.porcentaje_iva || 0;
+                                                                    
+                //console.log("producto >>>>>>>>>>>>>>>>>>");
+              //  console.log(producto_pedido_separado);                                                      
                                                                     
                 producto_pedido_separado.setLote(lote_pedido);
                 
@@ -436,8 +449,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         $scope.productosNoAuditados = [];
                         $scope.productosPendientes  = [];
                         $scope.cajasSinCerrar = [];
-                        that.renderDetalleDocumentoTemporal(documento,movimientos_bodegas.productos_no_auditados, 2);
-                        that.renderDetalleDocumentoTemporal(documento,movimientos_bodegas.productos_pendientes, 3);
+                        that.renderDetalleDocumentoTemporal(documento,movimientos_bodegas.productos_no_auditados.concat(movimientos_bodegas.productos_pendientes), 2);
+                       // that.renderDetalleDocumentoTemporal(documento,movimientos_bodegas.productos_pendientes, 3);
                        /* that.renderProductosAuditados(movimientos_bodegas.productos_no_auditados, $scope.productosAuditados);
                         that.renderProductosAuditados(movimientos_bodegas.productos_pendientes, $scope.productosAuditados);*/
                         

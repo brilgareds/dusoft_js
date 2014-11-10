@@ -145,7 +145,8 @@ DocuemntoBodegaE008.prototype.consultar_documentos_temporales_clientes = functio
                      when a.estado = '1' then 'Separacion Finalizada' \
                      when a.estado = '2' then 'En Auditoria' end as descripcion_estado_separacion,     \
                 to_char(c.fecha_registro, 'dd-mm-yyyy') as fecha_registro,    \
-                to_char(b.fecha_registro, 'dd-mm-yyyy') as fecha_separacion_pedido \
+                to_char(b.fecha_registro, 'dd-mm-yyyy') as fecha_separacion_pedido, \
+                c.empresa_id\
                 from inv_bodegas_movimiento_tmp_despachos_clientes a\
                 inner join inv_bodegas_movimiento_tmp b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
                 inner join ventas_ordenes_pedidos c on a.pedido_cliente_id = c.pedido_cliente_id\

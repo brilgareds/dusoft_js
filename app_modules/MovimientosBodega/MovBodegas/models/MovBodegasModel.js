@@ -41,18 +41,44 @@ MovimientosBodegasModel.prototype.ingresar_detalle_movimiento_bodega_temporal =
             });
         };
 
-MovimientosBodegasModel.prototype.modificar_detalle_movimiento_bodega_temporal = function(item_id, valor_unitario, cantidad, lote, fecha_vencimiento, callback){
+MovimientosBodegasModel.prototype.modificar_detalle_movimiento_bodega_temporal = function(item_id, valor_unitario, cantidad, lote, fecha_vencimiento, usuario_id,empresa_id,
+                                                                                          centro_utilidad_id, bodega_id, doc_tmp_id, codigo_producto, iva, callback){
     
     var total_costo = valor_unitario * cantidad;
+    var total_costo_pedido = valor_unitario;
     
-    var sql = " UPDATE inv_bodegas_movimiento_tmp_d SET  cantidad = $2, lote = $3, fecha_vencimiento = $4, total_costo = $5   \
+    __consultar_detalle_movimiento_bodega_temporal(doc_tmp_id, usuario_id, function(err, detalle_documento_temporal) {
+        
+        if(detalle_documento_temporal.length > 0){
+            var sql = " UPDATE inv_bodegas_movimiento_tmp_d SET  cantidad = $2, lote = $3, fecha_vencimiento = $4, total_costo = $5   \
                        WHERE item_id = $1 RETURNING item_id; ";
     
-     G.db.query(sql, [item_id, cantidad, lote, fecha_vencimiento, total_costo], function(err, rows, result) {
+            G.db.query(sql, [item_id, cantidad, lote, fecha_vencimiento, total_costo], function(err, rows, result) {
 
-         callback(err, rows);
-     });
+                callback(err, rows);
+            });
+        } else {
+            ingresar_detalle_movimiento_bodega_temporal(empresa_id, centro_utilidad_id, bodega_id, doc_tmp_id, codigo_producto, cantidad, lote, fecha_vencimiento, iva,
+                                                        valor_unitario, total_costo, total_costo_pedido, usuario_id, callback);
+        }
+        
+    });
+    
+    
 };
+
+MovimientosBodegasModel.prototype.gestionar_detalle_movimiento_bodega_temporal = function(empresa_id, centro_utilidad_id, bodega_id, doc_tmp_id, codigo_producto, cantidad, lote, fecha_vencimiento, iva, valor_unitario, total_costo, total_costo_pedido, usuario_id, callback){
+    
+    __consultar_detalle_movimiento_bodega_temporal(doc_tmp_id, usuario_id, function(err, detalle_documento_temporal) {
+        
+        if(detalle_documento_temporal.length > 0){
+            
+        }
+        
+    });
+    
+};
+
 
 // Eliminar Todo el Documento Temporal 
 MovimientosBodegasModel.prototype.eliminar_movimiento_bodega_temporal = function(documento_temporal_id, usuario_id, callback) {
@@ -467,7 +493,8 @@ function __consultar_detalle_movimiento_bodega_temporal(documento_temporal_id, u
                 b.cantidad_sistema,\
                 b.auditado,\
                 c.codigo_barras,\
-                b.numero_caja \
+                b.numero_caja, \
+                c.porc_iva as porcentaje_gravament\
                 from inv_bodegas_movimiento_tmp a \
                 inner join inv_bodegas_movimiento_tmp_d b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
                 inner join inventarios_productos c on b.codigo_producto = c.codigo_producto\

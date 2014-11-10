@@ -21,19 +21,26 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
                 c.direccion as direccion_proveedor,\
                 c.telefono as telefono_proveedor,\
                 a.estado,\
+                CASE WHEN a.estado = 0 THEN 'Recibida' \
+                     WHEN a.estado = 1 THEN 'Activa' \
+                     WHEN a.estado = 2 THEN 'Anulado' END as descripcion_estado, \
                 a.observacion,\
                 f.codigo_unidad_negocio,\
                 f.imagen,\
                 f.descripcion as descripcion_unidad_negocio,\
                 a.usuario_id,\
                 e.nombre as nombre_usuario,\
-                To_char(a.fecha_orden,'dd-mm-yyyy') as fecha_registro\
+                To_char(a.fecha_orden,'dd-mm-yyyy') as fecha_registro,\
+                CASE WHEN COALESCE (g.orden_pedido_id,0)=0 then 0 else 1 end as tiene_ingreso_temporal \
                 FROM compras_ordenes_pedidos a\
                 inner join terceros_proveedores b on a.codigo_proveedor_id = b.codigo_proveedor_id\
                 inner join terceros c on  b.tipo_id_tercero = c.tipo_id_tercero and b.tercero_id=c.tercero_id \
                 inner join empresas d on a.empresa_id = d.empresa_id\
                 inner join system_usuarios e on a.usuario_id = e.usuario_id\
                 left join unidades_negocio f on a.codigo_unidad_negocio = f.codigo_unidad_negocio \
+                left join (\
+                    select aa.orden_pedido_id from inv_bodegas_movimiento_tmp_ordenes_compra aa\
+                ) as g on a.orden_pedido_id = g.orden_pedido_id\
                 WHERE a.fecha_orden between $1 and $2 and \
                 (\
                     a.orden_pedido_id ilike $3 or\
@@ -54,8 +61,8 @@ OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_prov
     var sql_aux = " ";
     if (laboratorio_id)
         sql_aux = " AND a.clase_id = $4 ";
-    
-    if(numero_orden > 0)
+
+    if (numero_orden > 0)
         sql_aux += " AND a.codigo_producto not in ( select a.codigo_producto from compras_ordenes_pedidos_detalle a where a.orden_pedido_id = " + numero_orden + " ) ";
 
     var sql = " SELECT \
@@ -89,9 +96,9 @@ OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_prov
                     a.contenido_unidad_venta ILIKE $3 or\
                     c.descripcion ILIKE $3 \
                 )";
-    
+
     var parametros = (laboratorio_id) ? [empresa_id, codigo_proveedor_id, "%" + termino_busqueda + "%", laboratorio_id] : [empresa_id, codigo_proveedor_id, "%" + termino_busqueda + "%"];
-   
+
     G.db.pagination(sql, parametros, pagina, G.settings.limit, function(err, rows, result, total_records) {
         callback(err, rows);
     });
@@ -121,13 +128,17 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
                 f.descripcion,\
                 a.usuario_id,\
                 e.nombre as nombre_usuario,\
-                To_char(a.fecha_orden,'dd-mm-yyyy') as fecha_registro\
+                To_char(a.fecha_orden,'dd-mm-yyyy') as fecha_registro, \
+                CASE WHEN COALESCE (g.orden_pedido_id,0)=0 then 0 else 1 end as tiene_ingreso_temporal \
                 FROM compras_ordenes_pedidos a\
                 inner join terceros_proveedores b on a.codigo_proveedor_id = b.codigo_proveedor_id\
                 inner join terceros c on  b.tipo_id_tercero = c.tipo_id_tercero and b.tercero_id=c.tercero_id \
                 inner join empresas d on a.empresa_id = d.empresa_id\
                 inner join system_usuarios e on a.usuario_id = e.usuario_id\
                 left join unidades_negocio f on a.codigo_unidad_negocio = f.codigo_unidad_negocio \
+                left join (\
+                    select aa.orden_pedido_id from inv_bodegas_movimiento_tmp_ordenes_compra aa\
+                ) as g on a.orden_pedido_id = g.orden_pedido_id\
                 WHERE a.orden_pedido_id = $1 ";
 
     G.db.query(sql, [numero_orden], function(err, rows, result, total_records) {
@@ -136,21 +147,36 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
 };
 
 // Consultar Detalle Ordene de Compra  por numero de orden
-OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_orden, callback) {
+OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_orden, termino_busqueda, pagina, callback) {
 
 
-    var sql = " select\
-                a.orden_pedido_id as numero_orden,\
-                a.codigo_producto,\
-                fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
-                a.numero_unidades::integer as cantidad_solicitada,\
-                a.valor,\
-                a.porc_iva,\
-                a.estado \
-                from compras_ordenes_pedidos_detalle as a\
-                where a.orden_pedido_id = $1 and a.estado = '1' ; ";
+    /* var sql = " select\
+     a.orden_pedido_id as numero_orden,\
+     a.codigo_producto,\
+     fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
+     a.numero_unidades::integer as cantidad_solicitada,\
+     a.valor,\
+     a.porc_iva,\
+     a.estado \
+     from compras_ordenes_pedidos_detalle as a\
+     where a.orden_pedido_id = $1 and a.estado = '1' ; ";
+     G.db.query(sql, [numero_orden], function(err, rows, result, total_records) {
+     callback(err, rows);
+     });*/
 
-    G.db.query(sql, [numero_orden], function(err, rows, result, total_records) {
+    var sql = " select * from (\
+                    select\
+                    a.orden_pedido_id as numero_orden,\
+                    a.codigo_producto,\
+                    fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
+                    a.numero_unidades::integer as cantidad_solicitada,\
+                    a.valor,\
+                    a.porc_iva,\
+                    a.estado \
+                    from compras_ordenes_pedidos_detalle as a\
+                ) AS a where a.numero_orden = $1 and a.estado = '1' and ( a.codigo_producto ilike $2 or  a.descripcion_producto ilike $2 ) ";
+
+    G.db.pagination(sql, [numero_orden, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
         callback(err, rows);
     });
 };
@@ -175,6 +201,17 @@ OrdenesCompraModel.prototype.modificar_orden_compra = function(numero_orden, cal
 
     G.db.query(sql, [numero_orden], function(err, rows, result, total_records) {
         callback(err, rows);
+    });
+};
+
+// Modificar unidad de negocio de una Orden de Compra
+OrdenesCompraModel.prototype.modificar_unidad_negocio = function(numero_orden, unidad_negocio, callback) {
+
+
+    var sql = "  update compras_ordenes_pedidos set codigo_unidad_negocio = $2 where orden_pedido_id = $1 and estado='1' ";
+
+    G.db.query(sql, [numero_orden, unidad_negocio], function(err, rows, result) {
+        callback(err, rows, result);
     });
 };
 

@@ -70,14 +70,14 @@ OrdenesCompra.prototype.consultarOrdenCompra = function(req, res) {
     }
 
     var numero_orden = args.ordenes_compras.numero_orden;
-    
+
     that.m_ordenes_compra.consultar_orden_compra(numero_orden, function(err, orden_compra) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {orden_compra: []}));
             return;
         } else {
-            
+
             res.send(G.utils.r(req.url, 'Orden de Compra', 200, {orden_compra: orden_compra}));
             return;
         }
@@ -95,21 +95,33 @@ OrdenesCompra.prototype.consultarDetalleOrdenCompra = function(req, res) {
         res.send(G.utils.r(req.url, 'numero_orden no esta definidas', 404, {}));
         return;
     }
+    
+    if (args.ordenes_compras.termino_busqueda === undefined || args.ordenes_compras.pagina_actual === undefined) {
+        res.send(G.utils.r(req.url, 'termino_busqueda, pagina_actual no estan definidas', 404, {}));
+        return;
+    }
 
     if (args.ordenes_compras.numero_orden === '' || args.ordenes_compras.numero_orden === 0 || args.ordenes_compras.numero_orden === '0') {
         res.send(G.utils.r(req.url, 'Se requiere el numero_orden', 404, {}));
         return;
     }
+    
+    if (args.ordenes_compras.pagina_actual === '' || args.ordenes_compras.pagina_actual === 0 || args.ordenes_compras.pagina_actual === '0') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
+        return;
+    }
 
     var numero_orden = args.ordenes_compras.numero_orden;
-    
-    that.m_ordenes_compra.consultar_detalle_orden_compra(numero_orden, function(err, lista_productos) {
+    var termino_busqueda = args.ordenes_compras.termino_busqueda;
+    var pagina_actual = args.ordenes_compras.pagina_actual;
+
+    that.m_ordenes_compra.consultar_detalle_orden_compra(numero_orden, termino_busqueda, pagina_actual, function(err, lista_productos) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {lista_productos: []}));
             return;
         } else {
-            
+
             res.send(G.utils.r(req.url, 'Orden de Compra', 200, {lista_productos: lista_productos}));
             return;
         }
@@ -133,7 +145,7 @@ OrdenesCompra.prototype.listarProductos = function(req, res) {
         res.send(G.utils.r(req.url, 'numero_pedido no estan definidas', 404, {}));
         return;
     }
-    
+
     if (args.ordenes_compras.laboratorio_id === undefined) {
         res.send(G.utils.r(req.url, 'laboratorio_id no estan definidas', 404, {}));
         return;
@@ -148,7 +160,7 @@ OrdenesCompra.prototype.listarProductos = function(req, res) {
         res.send(G.utils.r(req.url, 'empresa_id, codigo_proveedor_id estan vacias', 404, {}));
         return;
     }
-    
+
     if (args.ordenes_compras.numero_orden === '') {
         res.send(G.utils.r(req.url, 'numero_pedido no esta vacio', 404, {}));
         return;
@@ -239,6 +251,65 @@ OrdenesCompra.prototype.insertarOrdenCompra = function(req, res) {
     });
 };
 
+
+// Modificar la unidad de negocio de una orden de compra 
+OrdenesCompra.prototype.modificarUnidadNegocio = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.numero_orden === undefined || args.ordenes_compras.unidad_negocio === undefined) {
+        res.send(G.utils.r(req.url, 'numero_orden no esta definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.numero_orden === '' || args.ordenes_compras.numero_orden === 0 || args.ordenes_compras.numero_orden === '0') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero_orden', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.unidad_negocio === '') {
+        res.send(G.utils.r(req.url, 'Se requiere la unidad de negocio', 404, {}));
+        return;
+    }
+
+    var numero_orden = args.ordenes_compras.numero_orden;
+    var unidad_negocio = args.ordenes_compras.unidad_negocio;
+
+
+    //validar que la OC no tenga NINGUN ingreso temporal.
+    that.m_ordenes_compra.consultar_orden_compra(numero_orden, function(err, orden_compra) {
+
+        if (err || orden_compra.length === 0) {
+            res.send(G.utils.r(req.url, 'La orden de compra no existe', 500, {orden_compra: []}));
+            return;
+        } else {
+
+            orden_compra = orden_compra[0];
+
+            if (orden_compra.tiene_ingreso_temporal === 0) {
+
+                that.m_ordenes_compra.modificar_unidad_negocio(numero_orden, unidad_negocio, function(err, rows, result) {
+
+                    if (err || result.rowCount === 0) {
+                        res.send(G.utils.r(req.url, 'No se pudo actualizar la unidad de negocio', 500, {orden_compra: []}));
+                        return;
+                    } else {
+
+                        res.send(G.utils.r(req.url, 'Unidad de negocio actualizada correctamente', 200, {orden_compra: []}));
+                        return;
+                    }
+                });
+
+            } else {
+                res.send(G.utils.r(req.url, 'No se pudo actualizar, la orde de compra esta siendo ingresada.', 403, {orden_compra: []}));
+                return;
+            }
+        }
+
+    });
+};
 // Insertar Detalle una orden de compra 
 OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
 
@@ -275,16 +346,16 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
 
 
     /*console.log('==== Parametros =========');
-    console.log(numero_orden);
-    console.log(codigo_producto);
-    console.log(cantidad_solicitada);
-    console.log(valor);
-    console.log(iva);
-    console.log('==========================');
-    return;*/
+     console.log(numero_orden);
+     console.log(codigo_producto);
+     console.log(cantidad_solicitada);
+     console.log(valor);
+     console.log(iva);
+     console.log('==========================');
+     return;*/
 
     that.m_ordenes_compra.insertar_detalle_orden_compra(numero_orden, codigo_producto, cantidad_solicitada, valor, iva, function(err, rows, result) {
-        
+
         if (err || result.rowCount === 0) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
             return;
@@ -357,11 +428,11 @@ OrdenesCompra.prototype.eliminarProductoOrdenCompra = function(req, res) {
     var codigo_producto = args.ordenes_compras.codigo_producto;
 
     that.m_ordenes_compra.eliminar_producto_orden_compra(numero_orden, codigo_producto, function(err, rows, result) {
-        
+
         console.log('====== resultado ========');
         console.log(err, rows, result);
         console.log('=========================');
-        
+
         if (err || result.rowCount === 0) {
             res.send(G.utils.r(req.url, 'Error Eliminado el producto', 500, {ordenes_compras: []}));
             return;

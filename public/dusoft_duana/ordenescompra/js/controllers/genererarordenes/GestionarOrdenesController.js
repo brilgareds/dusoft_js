@@ -34,6 +34,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.observacion = '';
             $scope.producto_eliminar = '';
 
+            // Variable para paginacion
+            $scope.paginas = 0;
+            $scope.cantidad_items = 0;
+            $scope.termino_busqueda = "";
+            $scope.ultima_busqueda = "";
+            $scope.pagina_actual = 1;
+
 
             that.gestionar_consultas = function() {
 
@@ -54,7 +61,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     $scope.buscar_orden_compra(function(continuar) {
 
                         if (continuar) {
-                            that.buscar_detalle_orden_compra();
+                            $scope.buscar_detalle_orden_compra();
                         }
                     });
                 }
@@ -92,15 +99,35 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 });
             };
 
-            that.buscar_detalle_orden_compra = function() {
+            $scope.buscar_detalle_orden_compra = function(termino, paginando) {
 
-                var obj = {session: $scope.session, data: {ordenes_compras: {numero_orden: $scope.numero_orden}}};
+                var termino = termino || "";
+
+                if ($scope.ultima_busqueda != $scope.termino_busqueda) {
+                    $scope.pagina_actual = 1;
+                }
+                
+
+                var obj = {session: $scope.session, data: {ordenes_compras: {numero_orden: $scope.numero_orden, termino_busqueda: termino, pagina_actual: $scope.pagina_actual}}};
 
                 Request.realizarRequest(API.ORDENES_COMPRA.CONSULTAR_DETALLE_ORDEN_COMPRA, "POST", obj, function(data) {
 
+                    $scope.ultima_busqueda = $scope.termino_busqueda;
+
                     if (data.status === 200) {
 
+
                         var lista_productos = data.obj.lista_productos;
+
+                        $scope.cantidad_items = lista_productos.length;
+                        if (paginando && $scope.cantidad_items === 0) {
+                            if ($scope.pagina_actual > 0) {
+                                $scope.pagina_actual--;
+                            }
+                            AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
+                            return;
+                        }
+
 
                         $scope.orden_compra.limpiar_productos();
 
@@ -170,20 +197,47 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     }
                 };
 
-                console.log('===== Producto a eliminar ==========');
-                console.log(obj);
-                //return;
                 Request.realizarRequest(API.ORDENES_COMPRA.ELIMINAR_PRODUCTO_ORDEN_COMPRA, "POST", obj, function(data) {
-
-                    console.log('===== Resultado de eliminar ==========');
-                    console.log(data);
 
                     AlertService.mostrarMensaje("warning", data.msj);
 
                     if (data.status === 200) {
-                        that.buscar_detalle_orden_compra();
+                        $scope.buscar_detalle_orden_compra();
                     }
                 });
+            };
+
+            that.modificar_unidad_negocio = function() {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        ordenes_compras: {
+                            numero_orden: $scope.orden_compra.get_numero_orden(),
+                            unidad_negocio: $scope.unidad_negocio_id
+                        }
+                    }
+                };
+
+              
+                Request.realizarRequest(API.ORDENES_COMPRA.MODIFICAR_UNIDAD_NEGOCIO, "POST", obj, function(data) {
+
+                   
+
+                    AlertService.mostrarMensaje("warning", data.msj);
+
+                    if (data.status === 200) {
+
+                        $scope.orden_compra.set_unidad_negocio($scope.Empresa.get_unidad_negocio($scope.unidad_negocio_id));                       
+                    }
+                });
+            };
+
+
+            $scope.buscador_productos_orden_compra = function(ev, termino_busqueda) {
+                if (ev.which == 13) {
+                    $scope.buscar_detalle_orden_compra(termino_busqueda);
+                }
             };
 
             that.render_proveedores = function(proveedores) {
@@ -232,6 +286,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 if ($scope.numero_orden > 0) {
                     // Actualizar unidad de negocio
+                    that.modificar_unidad_negocio();
                 }
             };
 
@@ -252,7 +307,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 //Consultar detalle de Orden de Compra
                 if ($scope.numero_orden > 0) {
-                    that.buscar_detalle_orden_compra();
+                    $scope.buscar_detalle_orden_compra();
                 }
             };
 
@@ -308,17 +363,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                 </div>',
                     scope: $scope,
                     controller: function($scope, $modalInstance) {
-                        console.log('========= Scope =========');
-                        console.log($scope.producto_eliminar);
-
-                        $scope.confirmar = function() {
-                            console.log('=========== Click confirmar ==========');
+                        
+                        $scope.confirmar = function() {                            
                             $scope.eliminar_producto();
                             $modalInstance.close();
                         };
 
-                        $scope.close = function() {
-                            console.log('=========== close confirmar ==========');
+                        $scope.close = function() {                            
                             $modalInstance.close();
                         };
 
@@ -333,10 +384,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             };
 
+            $scope.pagina_anterior = function() {
+                $scope.pagina_actual--;
+                $scope.buscar_detalle_orden_compra($scope.termino_busqueda, true);
+            };
 
-            //that.buscar_proveedores();
-            //that.buscar_unidades_negocio();
-            //that.gestionar_orden_compra();
+
+            $scope.pagina_siguiente = function() {
+                $scope.pagina_actual++;
+                $scope.buscar_detalle_orden_compra($scope.termino_busqueda, true);
+            };
+
+
             that.gestionar_consultas();
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {

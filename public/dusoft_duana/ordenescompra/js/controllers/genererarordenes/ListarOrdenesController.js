@@ -35,6 +35,7 @@ define(["angular", "js/controllers",
             var fecha_actual = new Date()
             $scope.fecha_inicial = $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd");
             $scope.fecha_final = $filter('date')(fecha_actual, "yyyy-MM-dd");
+            $scope.mensaje_sistema = "";
 
             // Variable para paginacion
             $scope.paginas = 0;
@@ -93,11 +94,16 @@ define(["angular", "js/controllers",
 
                     var orden_compra = OrdenCompra.get(orden.numero_orden, orden.estado, orden.observacion, orden.fecha_registro);
 
+
                     orden_compra.set_proveedor(Proveedor.get(orden.tipo_id_proveedor, orden.nit_proveedor, orden.codigo_proveedor_id, orden.nombre_proveedor, orden.direccion_proveedor, orden.telefono_proveedor));
 
                     orden_compra.set_unidad_negocio(UnidadNegocio.get(orden.codigo_unidad_negocio, orden.descripcion_unidad_negocio, orden.imagen));
 
                     orden_compra.set_usuario(Usuario.get(orden.usuario_id, orden.nombre_usuario));
+
+                    orden_compra.set_descripcion_estado(orden.descripcion_estado);
+
+                    orden_compra.set_ingreso_temporal(orden.tiene_ingreso_temporal);
 
                     $scope.Empresa.set_ordenes_compras(orden_compra);
 
@@ -116,20 +122,19 @@ define(["angular", "js/controllers",
                 enableRowSelection: false,
                 columnDefs: [
                     {field: 'numero_orden_compra', displayName: '# Orden', width: "5%"},
-                    {field: 'proveedor.get_nombre()', displayName: 'Proveedor', width: "50%"},
-                    {field: 'proveedor.direccion', displayName: 'Ubicacion', width: "23%"},
-                    {field: 'proveedor.telefono', displayName: 'Telefono', width: "7%"},
-                    {field: 'fecha_registro', displayName: "F. Registro", width: "7%"},
+                    {field: 'proveedor.get_nombre()', displayName: 'Proveedor', width: "35%"},
+                    {field: 'proveedor.direccion', displayName: 'Ubicacion', width: "30%"},
+                    {field: 'proveedor.telefono', displayName: 'Telefono', width: "5%"},
+                    {field: 'fecha_registro', displayName: "F. Registro", width: "5%"},
+                    {field: 'descripcion_estado', displayName: "Estado"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li><a href="javascript:void()" ng-click="modificar_orden_compra(row.entity)" >Modificar</a></li>\
-                                                <li><a href="javascript:void()">Imprimir</a></li>\
-                                                <li><a href="javascript:void()">Enviar Email</a></li>\
+                                                <li><a href="javascript:void(0);" ng-click="" >Vista Previa</a></li>\
+                                                <li><a href="javascript:void(0);" ng-click="modificar_orden_compra(row.entity)" >Modificar</a></li>\
                                                 <li class="divider"></li>\
-                                                <li><a href="javascript:void()">Inactivar</a></li>\
-                                                <li><a href="javascript:void()" ng-click="eliminar_orden_compra(row.entity)">Eliminar</a></li>\
+                                                <li><a href="javascript:void(0);" ng-click="eliminar_orden_compra(row.entity)">Anular OC</a></li>\
                                             </ul>\
                                         </div>'
                     }
@@ -157,20 +162,58 @@ define(["angular", "js/controllers",
                 localStorageService.add("numero_orden", 0);
                 $state.go('OrdenCompra');
             };
-            
+
             $scope.modificar_orden_compra = function(orden_compra) {
-                
-                localStorageService.add("numero_orden", orden_compra.get_numero_orden());
-               
-                
-                $state.go('OrdenCompra');
+
+
+                if (orden_compra.estado === '0' || orden_compra.get_ingreso_temporal()) {
+
+                    $scope.mensaje_sistema = "La Orden de Compra [ OC #" + orden_compra.get_numero_orden() + " ] ya fue Ingresada en bodega";
+                    if (orden_compra.get_ingreso_temporal())
+                        $scope.mensaje_sistema = "La Orden de Compra [ OC #" + orden_compra.get_numero_orden() + " ] esta siendo Ingresa en Bodega";
+
+                    $scope.opts = {
+                        backdrop: true,
+                        backdropClick: true,
+                        dialogFade: false,
+                        keyboard: true,
+                        template: ' <div class="modal-header">\
+                                        <button type="button" class="close" ng-click="close()">&times;</button>\
+                                        <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                    </div>\
+                                    <div class="modal-body">\
+                                        <h4> {{ mensaje_sistema }} </h4>\
+                                    </div>\
+                                    <div class="modal-footer">\
+                                        <button class="btn btn-primary" ng-click="close()">Aceptar</button>\
+                                    </div>',
+                        scope: $scope,
+                        controller: function($scope, $modalInstance) {
+
+                            $scope.close = function() {
+                                $modalInstance.close();
+                            };
+                        },
+                        resolve: {
+                            mensaje_sistema: function() {
+                                return $scope.mensaje_sistema;
+                            }
+                        }
+                    };
+                    var modalInstance = $modal.open($scope.opts);
+
+                } else {
+
+                    localStorageService.add("numero_orden", orden_compra.get_numero_orden());
+                    $state.go('OrdenCompra');
+                }
             };
-            
+
             $scope.eliminar_orden_compra = function(orden_compra) {
-                
+
                 console.log('========== eliminar_orden_compra =========== ');
                 console.log(orden_compra);
-                
+
             };
 
             $scope.buscar_ordenes_compras();

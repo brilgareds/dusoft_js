@@ -630,6 +630,7 @@ PedidosClienteModel.prototype.calcular_cantidad_total_pendiente_producto = funct
 // lista todos los responsables del pedido
 PedidosClienteModel.prototype.obtener_responsables_del_pedido = function(numero_pedido, callback) {
 
+
     var sql = " select \
                 a.pedido_cliente_id as numero_pedido,  \
                 a.estado,\
@@ -642,6 +643,7 @@ PedidosClienteModel.prototype.obtener_responsables_del_pedido = function(numero_
                      when a.estado=6 then 'En Auditoria' end as descripcion_estado,\
                 b.operario_id,\
                 b.nombre as nombre_responsable,\
+                b.usuario_id as usuario_id_responsable,\
                 a.usuario_id,\
                 c.nombre as nombre_usuario,\
                 a.fecha as fecha_asignacion,\

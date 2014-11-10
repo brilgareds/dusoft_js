@@ -42,21 +42,32 @@ E008Controller.prototype.documentoTemporalClientes = function(req, res) {
     var observacion = args.documento_temporal.observacion;
     var usuario_id = req.session.user.usuario_id;
 
-    that.m_e008.ingresar_despacho_clientes_temporal(bodegas_doc_id, numero_pedido, tipo_tercero_id, tercero_id, observacion, usuario_id, function(err, doc_tmp_id) {
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error Creando el Documento Temporal Clientes', 500, {documento_temporal: {}}));
-            return;
+    //Validar que el usuario que crea el documento temporal, sea el mismo responsable del pedido
+    __validar_responsable_pedidos_clientes(that, numero_pedido, usuario_id, '1', function(err, continuar) {
+
+        if (continuar) {
+            that.m_e008.ingresar_despacho_clientes_temporal(bodegas_doc_id, numero_pedido, tipo_tercero_id, tercero_id, observacion, usuario_id, function(err, doc_tmp_id) {
+                if (err) {
+                    res.send(G.utils.r(req.url, 'Error Creando el Documento Temporal Clientes', 500, {documento_temporal: {}}));
+                    return;
+                } else {
+                    /* ===============================================*/
+                    // Emitir Evento para restringir:
+                    // - La modificacion del pedido
+                    // - La reasignacion.
+                    /* ===============================================*/
+                    that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+                    res.send(G.utils.r(req.url, 'Documento Temporal Cliente Creado Correctamente', 200, {documento_temporal: {doc_tmp_id: doc_tmp_id}}));
+                    return;
+                }
+            });
         } else {
-            /* ===============================================*/
-            // Emitir Evento para restringir:
-            // - La modificacion del pedido
-            // - La reasignacion.
-            /* ===============================================*/
-            that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
-            res.send(G.utils.r(req.url, 'Documento Temporal Cliente Creado Correctamente', 200, {documento_temporal: {doc_tmp_id: doc_tmp_id}}));
+            res.send(G.utils.r(req.url, '!Advertencia!, El pedido esta asignado a otro usuario', 403, {documento_temporal: {}}));
             return;
         }
     });
+
+
 };
 
 // Finalizar Documento Temporal Clientes
@@ -118,25 +129,34 @@ E008Controller.prototype.documentoTemporalFarmacias = function(req, res) {
     var observacion = args.documento_temporal.observacion;
     var usuario_id = req.session.user.usuario_id;
 
-    that.m_e008.ingresar_despacho_farmacias_temporal(bodegas_doc_id, empresa_id, numero_pedido, observacion, usuario_id, function(err, doc_tmp_id, resultado) {
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error Creando el Documento Temporal Farmacias', 500, {documento_temporal: {}}));
-            return;
+    //Validar que el usuario que crea el documento temporal, sea el mismo responsable del pedido
+    __validar_responsable_pedidos_farmacias(that, numero_pedido, usuario_id, '1', function(err, continuar) {
+
+        if (continuar) {
+            
+            that.m_e008.ingresar_despacho_farmacias_temporal(bodegas_doc_id, empresa_id, numero_pedido, observacion, usuario_id, function(err, doc_tmp_id, resultado) {
+                if (err) {
+                    res.send(G.utils.r(req.url, 'Error Creando el Documento Temporal Farmacias', 500, {documento_temporal: {}}));
+                    return;
+                } else {
+
+                    /* ===============================================*/
+                    // Emitir Evento para restringir:
+                    // - La modificacion del pedido
+                    // - La reasignacion.
+                    /* ===============================================*/
+
+                    that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+
+                    res.send(G.utils.r(req.url, 'Documento Temporal Farmacias Creado Correctamente', 200, {documento_temporal: {doc_tmp_id: doc_tmp_id}}));
+                    return;
+                }
+            });
         } else {
-
-            /* ===============================================*/
-            // Emitir Evento para restringir:
-            // - La modificacion del pedido
-            // - La reasignacion.
-            /* ===============================================*/
-
-            that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
-
-            res.send(G.utils.r(req.url, 'Documento Temporal Farmacias Creado Correctamente', 200, {documento_temporal: {doc_tmp_id: doc_tmp_id}}));
+            res.send(G.utils.r(req.url, '!Advertencia!, El pedido esta asignado a otro usuario', 403, {documento_temporal: {}}));
             return;
         }
     });
-
 
 };
 
@@ -1151,8 +1171,8 @@ E008Controller.prototype.auditoriaProductosClientes = function(req, res) {
                 return;
             }
             // Consultar los productos asociados al documento temporal    
-            that.m_movientos_bodegas.consultar_detalle_movimiento_bodega_temporal_por_termino(documento.documento_temporal_id, documento.usuario_id,filtro, function(err, detalle_documento_temporal) {
-                
+            that.m_movientos_bodegas.consultar_detalle_movimiento_bodega_temporal_por_termino(documento.documento_temporal_id, documento.usuario_id, filtro, function(err, detalle_documento_temporal) {
+
                 console.log("consultar_detalle_movimiento_bodega_temporal_por_termino");
                 console.log(detalle_documento_temporal);
                 // res.send(G.utils.r(req.url, 'Listado productos auditados', 500, {movimientos_bodegas: {}}));
@@ -1167,11 +1187,11 @@ E008Controller.prototype.auditoriaProductosClientes = function(req, res) {
 
                     // Consultar las justificaciones del producto
                     that.m_e008.consultar_justificaciones_temporales_pendientes(documento.documento_temporal_id, documento.usuario_id, detalle.codigo_producto, function(err, justificaciones) {
-                        
-                       /* console.log("consultar_justificaciones_temporales_pendientes >>>>>>>>>>>>>>>>>>>>>");
-                        console.log(justificaciones);*/
+
+                        /* console.log("consultar_justificaciones_temporales_pendientes >>>>>>>>>>>>>>>>>>>>>");
+                         console.log(justificaciones);*/
                         detalle.justificaciones = justificaciones;
-                    
+
                         var producto = productos_pedidos.filter(function(value) {
                             return detalle.codigo_producto === value.codigo_producto;
                         });
@@ -1183,20 +1203,20 @@ E008Controller.prototype.auditoriaProductosClientes = function(req, res) {
                             //detalle.justificacion = producto.justificacion;
                             //detalle.justificacion_auditor = producto.justificacion_auditor;
                         }
-                        
+
                         lista_productos.push(detalle);
                         //Si filtro es por codigo de barras.
                         /*if (filtro.codigo_barras) {
-                            if (detalle.auditado === '0' && detalle.codigo_barras === termino_busqueda)
-                                lista_productos.push(detalle);
-                        }
-
-                        //si filtro es por descripcion 
-                        if (filtro.descripcion_producto) {
-                            console.log("buscando detalle ",detalle)
-                            if (detalle.auditado === '0' && detalle.descripcion_producto.toLocaleLowerCase().substring(0, termino_busqueda.length) === termino_busqueda.toLowerCase())
-                                lista_productos.push(detalle);
-                        }*/
+                         if (detalle.auditado === '0' && detalle.codigo_barras === termino_busqueda)
+                         lista_productos.push(detalle);
+                         }
+                         
+                         //si filtro es por descripcion 
+                         if (filtro.descripcion_producto) {
+                         console.log("buscando detalle ",detalle)
+                         if (detalle.auditado === '0' && detalle.descripcion_producto.toLocaleLowerCase().substring(0, termino_busqueda.length) === termino_busqueda.toLowerCase())
+                         lista_productos.push(detalle);
+                         }*/
 
                         if (--count === 0) {
                             console.log(lista_productos);
@@ -1615,6 +1635,67 @@ function __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, callba
                     }
                 });
             });
+        }
+    });
+}
+
+
+
+//Validar que el usuario que crea el documento temporal, sea el mismo responsable del pedido clientes
+function __validar_responsable_pedidos_clientes(contexto, numero_pedido, responsable_pedido, estado_pedido, callback) {
+
+
+    var that = contexto;
+    var continuar = false;
+
+
+    that.m_pedidos_clientes.obtener_responsables_del_pedido(numero_pedido, function(err, responsables) {
+
+        if (err) {
+            callback(err, continuar);
+        } else {
+
+            var responsable = responsables.filter(function(responsable) {
+                return responsable.usuario_id_responsable === responsable_pedido && responsable.estado === estado_pedido;
+            });
+
+            if (responsable.length > 0) {
+
+                continuar = true;
+                callback(err, continuar);
+
+            } else {
+                callback(err, continuar);
+            }
+        }
+    });
+}
+
+//Validar que el usuario que crea el documento temporal, sea el mismo responsable del pedido farmacias
+function __validar_responsable_pedidos_farmacias(contexto, numero_pedido, responsable_pedido, estado_pedido, callback) {
+
+
+    var that = contexto;
+    var continuar = false;
+
+    that.m_pedidos_farmacias.obtener_responsables_del_pedido(numero_pedido, function(err, responsables) {
+
+        if (err) {
+            callback(err, continuar);
+        } else {
+
+            var responsable = responsables.filter(function(responsable) {
+                return responsable.usuario_id_responsable === responsable_pedido && responsable.estado === estado_pedido;
+            });
+
+            if (responsable.length > 0) {
+
+                continuar = true;
+                callback(err, continuar);
+
+            } else {
+                callback(err, continuar);
+            }
         }
     });
 }

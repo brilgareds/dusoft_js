@@ -65,6 +65,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 pedido.setDatos(obj);
                 pedido.setTipo(tipo);
                 
+                documento_temporal.empresa_id = obj.empresa_id;
+                documento_temporal.centro_utilidad = obj.centro_utilidad || '1';
+                documento_temporal.bodega_id = obj.bodega_id || '03';
+                
+                
                 if(tipo === 1){
                     var cliente = Cliente.get(
                         obj.nombre_cliente,
@@ -73,8 +78,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         obj.identificacion_cliente,
                         obj.telefono_cliente
                     );
-
+                    
                     pedido.setCliente(cliente);
+                    
                 } else {
                     var farmacia = Farmacia.get(
                         obj.farmacia_id,
@@ -97,6 +103,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
                 documento_temporal.setSeparador(separador);
                 documento_temporal.setAuditor(auditor);
+                
+                //console.log("documento >>>>>>>>>>>>>>", documento_temporal)
                 return documento_temporal;
             };
 
@@ -169,7 +177,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 });
             };
 
-            that.renderDetalleDocumentoTemporal = function(documento , productos) {
+            that.renderDetalleDocumentoTemporal = function(documento , productos, tipo) {
                 //Vaciar el listado de Productos
 
                 documento.getPedido().vaciarProductos();
@@ -178,7 +186,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                     var obj = productos[i];
                     
-                    var producto_pedido_separado = this.crearProductoPedidoDocumentoTemporal(obj);
+                    var producto_pedido_separado = this.crearProductoPedidoDocumentoTemporal(obj, tipo);
                     
                     documento.getPedido().agregarProducto(producto_pedido_separado);
 
@@ -195,23 +203,38 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         var productos = data.obj.movimientos_bodegas.lista_productos_auditados;
                         console.log("productos encontrados ",productos);
 
-                        that.renderDetalleDocumentoTemporal(documento , productos);
+                        that.renderDetalleDocumentoTemporal(documento , productos, 1);
                     }
                 });
             };
 
-            that.crearProductoPedidoDocumentoTemporal = function(obj) {
+            that.crearProductoPedidoDocumentoTemporal = function(obj, tipo) {
                //console.log("=============================================== code 1 ",obj);
-                var justificaciones = obj.justificaciones[0] || {};
+               
                 var lote_pedido = LoteProductoPedido.get(obj.lote, obj.fecha_vencimiento);
-                lote_pedido.justificacion_separador = justificaciones.observacion || "";
-                lote_pedido.justificacion_auditor = justificaciones.justificacion_auditor || "";
+                
+                 
+                if(tipo === 1){
+                    var justificaciones = obj.justificaciones[0] || {};
+                    lote_pedido.justificacion_separador = justificaciones.observacion || "";
+                    lote_pedido.justificacion_auditor = justificaciones.justificacion_auditor || "";
+                } else {
+                    lote_pedido.justificacion_separador = obj.justificacion || "";
+                    lote_pedido.justificacion_auditor = obj.justificacion_auditor || "";
+                }
+                
+                
                 lote_pedido.cantidad_pendiente = obj.cantidad_pendiente || 0;
                 lote_pedido.item_id = obj.item_id;
         
                 var producto_pedido_separado = ProductoPedido.get(  obj.codigo_producto, obj.descripcion_producto, "",
                                                                     obj.valor_unitario, obj.cantidad_solicitada, obj.cantidad_ingresada,
                                                                     obj.observacion_cambio);
+                                                                    
+                producto_pedido_separado.porcentaje_gravament = obj.porcentaje_iva || 0;
+                                                                    
+                //console.log("producto >>>>>>>>>>>>>>>>>>");
+              //  console.log(producto_pedido_separado);                                                      
                                                                     
                 producto_pedido_separado.setLote(lote_pedido);
                 
@@ -426,8 +449,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         $scope.productosNoAuditados = [];
                         $scope.productosPendientes  = [];
                         $scope.cajasSinCerrar = [];
-                        that.renderProductosAuditados(movimientos_bodegas.productos_no_auditados, $scope.productosNoAuditados);
-                        that.renderProductosAuditados(movimientos_bodegas.productos_pendientes, $scope.productosPendientes);
+                        that.renderDetalleDocumentoTemporal(documento,movimientos_bodegas.productos_no_auditados.concat(movimientos_bodegas.productos_pendientes), 2);
+                       // that.renderDetalleDocumentoTemporal(documento,movimientos_bodegas.productos_pendientes, 3);
+                       /* that.renderProductosAuditados(movimientos_bodegas.productos_no_auditados, $scope.productosAuditados);
+                        that.renderProductosAuditados(movimientos_bodegas.productos_pendientes, $scope.productosAuditados);*/
                         
                         if(movimientos_bodegas.cajas_no_cerradas){
                             $scope.cajasSinCerrar = movimientos_bodegas.cajas_no_cerradas;

@@ -14,6 +14,7 @@ define(["angular"], function(angular) {
                 'CREAR_DETALLE_ORDEN_COMPRA': BASE_URL + '/OrdenesCompra/insertarDetalleOrdenCompra',
                 'CONSULTAR_ORDEN_COMPRA': BASE_URL + '/OrdenesCompra/consultarOrdenCompra',
                 'CONSULTAR_DETALLE_ORDEN_COMPRA': BASE_URL + '/OrdenesCompra/consultarDetalleOrdenCompra',
+                'ELIMINAR_PRODUCTO_ORDEN_COMPRA': BASE_URL + '/OrdenesCompra/eliminarProductoOrdenCompra',
             },
             'PROVEEDORES': {
                 'LISTAR_PROVEEDORES': BASE_URL + '/Terceros/Proveedores/listar'

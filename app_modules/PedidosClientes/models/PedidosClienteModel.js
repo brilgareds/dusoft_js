@@ -283,24 +283,32 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
                 (a.valor_unitario+(a.valor_unitario*(a.porc_iva/100)))as valor_unitario_con_iva,\
                 (a.numero_unidades*(a.valor_unitario*(a.porc_iva/100))) as valor_iva,\
                 COALESCE(b.justificacion, '') as justificacion, \
-                COALESCE(b.justificacion_auditor, '') as justificacion_auditor \
+                COALESCE(b.justificacion_auditor, '') as justificacion_auditor, \
+                COALESCE(b.lote, '') as lote,\
+                b.fecha_vencimiento,\
+                b.item_id,\
+                b.tipo_estado_auditoria\
                 from ventas_ordenes_pedidos_d a \
                 inner join inventarios_productos c on a.codigo_producto = c.codigo_producto \
                 inner join inv_subclases_inventarios d on c.grupo_id = d.grupo_id and c.clase_id = d.clase_id and c.subclase_id = d.subclase_id \
                 inner join inv_clases_inventarios e on d.grupo_id = e.grupo_id and d.clase_id = e.clase_id \
                 left join (\
-                    select a.numero_pedido, a.codigo_producto, a.justificacion, a.justificacion_auditor, sum(a.cantidad_temporalmente_separada) as cantidad_temporalmente_separada \
+                    select a.numero_pedido, a.codigo_producto, a.justificacion, a.justificacion_auditor, sum(a.cantidad_temporalmente_separada) as cantidad_temporalmente_separada,\
+                    a.lote, a.fecha_vencimiento, a.item_id, a.tipo_estado_auditoria\
                     from (\
-                            select a.pedido_cliente_id as numero_pedido,  b.codigo_producto,  c.observacion as justificacion, c.justificacion_auditor, SUM(b.cantidad) as cantidad_temporalmente_separada\
+                            select a.pedido_cliente_id as numero_pedido,  b.codigo_producto,  c.observacion as justificacion, c.justificacion_auditor, SUM(b.cantidad) as cantidad_temporalmente_separada, b.lote, b.fecha_vencimiento, b.item_id, '2' as tipo_estado_auditoria\
                             from inv_bodegas_movimiento_tmp_despachos_clientes a \
                             inner join inv_bodegas_movimiento_tmp_d b on a.usuario_id = b.usuario_id and a.doc_tmp_id = b.doc_tmp_id\
                             left join inv_bodegas_movimiento_tmp_justificaciones_pendientes c on b.doc_tmp_id = c.doc_tmp_id and b.usuario_id = c.usuario_id and b.codigo_producto = c.codigo_producto\
-                            group by 1,2,3,4\
+                            group by 1,2,3,4,6, 7, 8, 9\
                             union \
-                            select a.pedido_cliente_id  as numero_pedido, b.codigo_producto, b.observacion as justificacion, b.justificacion_auditor, 0 as cantidad_temporalmente_separada\
+                            select a.pedido_cliente_id  as numero_pedido, b.codigo_producto, b.observacion as justificacion, b.justificacion_auditor, 0 as cantidad_temporalmente_separada, '' as lote, null as fecha_vencimiento, 0 as item_id, '3' as tipo_estado_auditoria\
                             from inv_bodegas_movimiento_tmp_despachos_clientes a \
                             left join inv_bodegas_movimiento_tmp_justificaciones_pendientes b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
-                    ) a group by 1,2,3,4 \
+                            and b.codigo_producto not in(\
+                                  select aa.codigo_producto from inv_bodegas_movimiento_tmp_d aa where aa.doc_tmp_id = b.doc_tmp_id and aa.usuario_id = b.usuario_id\
+                            )\
+                    ) a group by 1,2,3,4,6, 7, 8, 9 \
                 ) as b on a.pedido_cliente_id = b.numero_pedido and a.codigo_producto = b.codigo_producto\
                 where a.pedido_cliente_id = $1 order by e.descripcion ;";
 
@@ -622,6 +630,7 @@ PedidosClienteModel.prototype.calcular_cantidad_total_pendiente_producto = funct
 // lista todos los responsables del pedido
 PedidosClienteModel.prototype.obtener_responsables_del_pedido = function(numero_pedido, callback) {
 
+
     var sql = " select \
                 a.pedido_cliente_id as numero_pedido,  \
                 a.estado,\
@@ -634,6 +643,7 @@ PedidosClienteModel.prototype.obtener_responsables_del_pedido = function(numero_
                      when a.estado=6 then 'En Auditoria' end as descripcion_estado,\
                 b.operario_id,\
                 b.nombre as nombre_responsable,\
+                b.usuario_id as usuario_id_responsable,\
                 a.usuario_id,\
                 c.nombre as nombre_usuario,\
                 a.fecha as fecha_asignacion,\

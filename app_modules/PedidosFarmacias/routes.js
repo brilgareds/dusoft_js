@@ -73,14 +73,24 @@ module.exports = function(app, di_container) {
     });
     
     // Elimina el registro del encabezado del pedido por empresa, centro de utilidad, bodega y usuario
-    app.post('/api/PedidosFarmacias/quitarRegistroEncabezadoTemporal', function(req, res) {
-        c_pedidos_farmacias.quitarRegistroEncabezadoTemporal(req, res);
+    app.post('/api/PedidosFarmacias/eliminarRegistroEncabezadoTemporal', function(req, res) {
+        c_pedidos_farmacias.eliminarRegistroEncabezadoTemporal(req, res);
     });
     
     // Elimina el registro del detalle del pedido por empresa, centro de utilidad, bodega, codigo de producto y usuario
-    app.post('/api/PedidosFarmacias/quitarRegistroDetalleTemporal', function(req, res) {
-        c_pedidos_farmacias.quitarRegistroDetalleTemporal(req, res);
-    });  
+    app.post('/api/PedidosFarmacias/eliminarRegistroDetalleTemporal', function(req, res) {
+        c_pedidos_farmacias.eliminarRegistroDetalleTemporal(req, res);
+    }); 
+    
+    // Inserta el encabezado del pedido definitivo
+    app.post('/api/PedidosFarmacias/insertarPedidoFarmaciaDefinitivo', function(req, res) {
+        c_pedidos_farmacias.insertarPedidoFarmaciaDefinitivo(req, res);
+    });
+    
+    // Inserta el detalle del pedido definitivo
+    app.post('/api/PedidosFarmacias/insertarDetallePedidoFarmaciaDefinitivo', function(req, res) {
+        c_pedidos_farmacias.insertarDetallePedidoFarmaciaDefinitivo(req, res);
+    });     
     
     // Listar productos
 //    app.get('/listarProductos', function(req, res) {

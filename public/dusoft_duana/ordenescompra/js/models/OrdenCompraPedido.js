@@ -13,7 +13,7 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
                 this.productos = [];
             }
             
-            
+            // Numero de Orden
             OrdenCompraPedido.prototype.set_numero_orden = function(numero_orden) {
                 this.numero_orden_compra = numero_orden ;
             };
@@ -23,6 +23,7 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
             };
             
 
+            // Empresa
             OrdenCompraPedido.prototype.set_empresa = function(empresa) {
                 this.empresa = empresa;
             };
@@ -31,6 +32,7 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
                 return this.empresa;
             };
 
+            // Proveedor
             OrdenCompraPedido.prototype.set_proveedor = function(proveedor) {
                 this.proveedor = proveedor;
             };
@@ -39,6 +41,7 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
                 return this.proveedor;
             };
 
+            // Unidad de Negocio
             OrdenCompraPedido.prototype.set_unidad_negocio = function(unidad_negocio) {
                 this.unidad_negocio = unidad_negocio;
             };
@@ -47,6 +50,7 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
                 return this.unidad_negocio;
             };
 
+            // Usuario
             OrdenCompraPedido.prototype.set_usuario = function(usuario) {
                 this.usuario = usuario;
             };
@@ -55,14 +59,34 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
                 return this.usuario;
             };
             
+            // Observacion
             OrdenCompraPedido.prototype.get_observacion = function() {
                 return this.observacion;
             };
+            
+            // Descripcion estado
+            OrdenCompraPedido.prototype.set_descripcion_estado = function(descripcion_estado) {
+                this.descripcion_estado = descripcion_estado;
+            };
+            
+            OrdenCompraPedido.prototype.get_descripcion_estado = function() {
+                return this.descripcion_estado;
+            };
+            
+            // Tiene Ingreso Temporal 0 => false (No tiene) , 1 => true (si tiene)
+            OrdenCompraPedido.prototype.set_ingreso_temporal = function(tiene_ingreso_temporal) {
+                this.tiene_ingreso_temporal = tiene_ingreso_temporal;
+            };
+            
+            OrdenCompraPedido.prototype.get_ingreso_temporal = function() {
+                return (this.tiene_ingreso_temporal === 0) ? false : true ;
+            };
 
+            // Productos
             OrdenCompraPedido.prototype.set_productos = function(producto) {
                 this.productos.push(producto);
             };
-
+            
             OrdenCompraPedido.prototype.get_producto = function(codigo_producto) {
                 var producto = $filter('filter')(this.get_productos(), {codigo_producto: codigo_producto}, true);
 
@@ -77,7 +101,7 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
                 this.productos = [];
             };
 
-
+            // Instancia
             this.get = function(numero_orden, estado, observacion, fecha_registro) {
                 return new OrdenCompraPedido(numero_orden, estado, observacion, fecha_registro);
             };

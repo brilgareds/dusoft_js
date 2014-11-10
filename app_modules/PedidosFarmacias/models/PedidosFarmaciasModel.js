@@ -119,7 +119,7 @@ PedidosFarmaciasModel.prototype.insertar_detalle_pedido_farmacia_temporal = func
 
 };
 
-PedidosFarmaciasModel.prototype.quitar_registro_encabezado_temporal = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback)
+PedidosFarmaciasModel.prototype.eliminar_registro_encabezado_temporal = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback)
 {
     var sql = "DELETE FROM solicitud_Bodega_principal_aux WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and usuario_id = $4";
 
@@ -128,13 +128,38 @@ PedidosFarmaciasModel.prototype.quitar_registro_encabezado_temporal = function(e
     });
 };
 
-PedidosFarmaciasModel.prototype.quitar_registro_detalle_temporal = function(empresa_id, centro_utilidad_id, bodega_id, codigo_producto, usuario_id, callback)
+PedidosFarmaciasModel.prototype.eliminar_registro_detalle_temporal = function(empresa_id, centro_utilidad_id, bodega_id, codigo_producto, usuario_id, callback)
 {
     var sql = "DELETE FROM solicitud_pro_a_bod_prpal_tmp WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and codigo_producto = $4 and usuario_id = $5";
 
     G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, codigo_producto, usuario_id], function(err, rows, result) {
         callback(err, rows);
     });
+};
+
+PedidosFarmaciasModel.prototype.insertar_pedido_farmacia_definitivo = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion, tipo_pedido, callback) {
+    
+    var sql = "INSERT INTO solicitud_productos_a_bodega_principal(farmacia_id, centro_utilidad, bodega, observacion, usuario_id, fecha_registro, empresa_destino, sw_despacho, estado, tipo_pedido) \
+                SELECT farmacia_id, centro_utilidad, bodega, $5, usuario_id, CURRENT_TIMESTAMP, empresa_destino, 0, 0, $6 from solicitud_Bodega_principal_aux \
+                WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and usuario_id = $4 \
+                RETURNING solicitud_prod_a_bod_ppal_id";
+
+    G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion, tipo_pedido], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+
+};
+
+PedidosFarmaciasModel.prototype.insertar_detalle_pedido_farmacia_definitivo = function(numero_pedido, empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback) {
+    
+    var sql = "INSERT INTO solicitud_productos_a_bodega_principal_detalle(solicitud_prod_a_bod_ppal_id, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, usuario_id, fecha_registro, sw_pendiente, cantidad_pendiente) \
+                SELECT $1, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, usuario_id, CURRENT_TIMESTAMP, 0, cantidad_pendiente from solicitud_pro_a_bod_prpal_tmp \
+                WHERE farmacia_id = $2 and centro_utilidad = $3 and bodega = $4 and usuario_id = $5";
+
+    G.db.query(sql, [numero_pedido, empresa_id, centro_utilidad_id, bodega_id, usuario_id], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+
 };
 
 

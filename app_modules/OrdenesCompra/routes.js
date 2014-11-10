@@ -18,6 +18,11 @@ module.exports = function(app, di_container) {
         c_ordenes_compra.insertarOrdenCompra(req, res);
     });
     
+    // Modificar la unidad de negocio de una orden de compra 
+    app.post('/api/OrdenesCompra/modificarUnidadNegocio', function(req, res) {
+        c_ordenes_compra.modificarUnidadNegocio(req, res);
+    });
+    
     // Insertar Detalle Ordene de Compras
     app.post('/api/OrdenesCompra/insertarDetalleOrdenCompra', function(req, res) {
         c_ordenes_compra.insertarDetalleOrdenCompra(req, res);

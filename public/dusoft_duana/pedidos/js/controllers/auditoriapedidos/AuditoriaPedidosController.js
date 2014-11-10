@@ -204,6 +204,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                //console.log("=============================================== code 1 ",obj);
                
                 var lote_pedido = LoteProductoPedido.get(obj.lote, obj.fecha_vencimiento);
+                
                  
                 if(tipo === 1){
                     var justificaciones = obj.justificaciones[0] || {};
@@ -218,6 +219,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 var producto_pedido_separado = ProductoPedido.get(  obj.codigo_producto, obj.descripcion_producto, "",
                                                                     obj.valor_unitario, obj.cantidad_solicitada, obj.cantidad_ingresada,
                                                                     obj.observacion_cambio);
+                                                                    
+                console.log("producto >>>>>>>>>>>>>>>>>>");
+                console.log(producto_pedido_separado);                                                      
                                                                     
                 producto_pedido_separado.setLote(lote_pedido);
                 

@@ -211,7 +211,8 @@ MovimientosBodegasModel.prototype.consultar_detalle_movimiento_bodega_temporal_p
             b.cantidad_sistema,\
             b.auditado,\
             c.codigo_barras,\
-            b.numero_caja\
+            b.numero_caja,\
+            '1' as tipo_estado_auditoria\
             from inv_bodegas_movimiento_tmp a\
             inner join inv_bodegas_movimiento_tmp_d b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
             inner join inventarios_productos c on b.codigo_producto = c.codigo_producto\

@@ -1147,9 +1147,10 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
                 res.send(G.utils.r(req.url, 'Error ingresando la justificación', 500, {documento_temporal: {}}));
                 return;
             } else {
+                
                 that.m_movientos_bodegas.auditar_producto_movimiento_bodega_temporal(item_id, auditado, numero_caja, function(err, rows, result) {
 
-                    if (err || result.rowCount === 0) {
+                    if (err /*|| result.rowCount === 0*/) {
                         res.send(G.utils.r(req.url, 'Error Auditando el Producto', 500, {movimientos_bodegas: {}}));
                         return;
                     } else {
@@ -1645,13 +1646,18 @@ function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento
                         var producto_separado = detalle_documento_temporal.filter(function(value) {
                             return producto_pedido.codigo_producto === value.codigo_producto && value.auditado === '1';
                         });
-
+                        
+                        console.log("productos para auditar >>>>>>>>>>>>>>>>>");
+                        console.log(producto_pedido);
+                        console.log("producto separado >>>>>>>>>>>>>>>>>>>>>>>");
+                        console.log(producto_separado);
+                        
                         // Verificar que los productos esten auditados
                         if (producto_separado.length === 0) {
                             // Producto que no fue separado y le falta la justificacion del auditor
                             if (producto_pedido.cantidad_pendiente > 0 && producto_pedido.justificacion_auditor === '')
                                 productos_pendientes.push(producto_pedido);
-                            else
+                            else if(producto_pedido.item_id > 0)
                                 productos_no_auditados.push(producto_pedido);
                         } else {
                             // Verificar que los productos con pendientes esten justificados po el auditor/

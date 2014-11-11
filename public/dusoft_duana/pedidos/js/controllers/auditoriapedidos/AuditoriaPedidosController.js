@@ -289,8 +289,24 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
 
             $scope.onEditarRow = function(documento, row){
-                console.log("ediar producto ", row.entity);
+                
+                
+                //almacenar lotes del mismo producto
+                var productos = [];
                 var producto =  row.entity;
+                
+                for(var i in documento.getPedido().getProductos()){
+                    
+                    var _producto = documento.getPedido().getProductos()[i];
+                    
+                    if(_producto.codigo_producto === producto.codigo_producto){
+                        //console.log(_producto, "productos en la lista ");
+                        productos.push(_producto);
+                    }
+                    
+                }
+                
+                
                 $scope.opts = {
                     //backdrop: true,
                     size: 1000,
@@ -307,6 +323,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                           },
                           producto : function(){
                               return producto;
+                          }, 
+                          productos : function(){
+                              return  productos;
                           }
                     }
                 };

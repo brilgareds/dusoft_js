@@ -11,38 +11,37 @@
                 <div class ="col-md-3"><div class="lbl_editar_producto">Codigo</div>{{::rootEditarProducto.producto.codigo_producto}}</div>
                 <div class ="col-md-9"><div class="lbl_editar_producto">Descripcion</div>{{::rootEditarProducto.producto.descripcion}}</div>
             </div>
-            <div class="row">
+            <!-- div class="row">
                 <div class ="col-md-3"><div class="lbl_editar_producto">Lote</div>{{rootEditarProducto.producto.lote.codigo_lote}}</div>
                 <div class ="col-md-9"><div class="lbl_editar_producto">Fecha_vencimiento</div>{{rootEditarProducto.producto.lote.fecha_vencimiento}}</div>
-            </div>
+            </div -->
             <div class="row">
                 <div class ="col-md-3"><div class="lbl_editar_producto">Cant Solicitada</div>{{rootEditarProducto.producto.cantidad_solicitada}}</div>
-                <div class ="col-md-3"><div class="lbl_editar_producto">Cant Separada</div>{{rootEditarProducto.producto.cantidad_separada}}</div>
-                <div class ="col-md-3">
+                <!--div class ="col-md-3"><div class="lbl_editar_producto">Cant Separada</div>{{rootEditarProducto.producto.cantidad_separada}}</div-->
+                <!--div class ="col-md-3">
                     <label class="lbl_editar_producto" for="modificarlotes">Verificar Lotes</label>
                     <input-check ng-model="modificarlotes" id="modificarlotes" />
-                </div>
+                </div-->
+                <div class ="col-md-3"><div class="lbl_editar_producto">Justificación  Separador</div>{{rootEditarProducto.producto.lote.justificacion_separador}}</div>
 
             </div>
-            <div class="row">
+            <!--div class="row">
                 <div class ="col-md-3"><div class="lbl_editar_producto">Justificación  Separador</div>{{rootEditarProducto.producto.lote.justificacion_separador}}</div>
-            </div>
+            </div-->
          </div>
     </div>
 
-    <div class="animate-switch-container" ng-switch on="modificarlotes">
 
-        <div class="panel panel-info" ng-switch-when="true">
-            <div class="panel-heading">
-                 <h5 class="panel-title">Lotes Del Producto</h5>
-            </div>
-            <div class="panel-body">
-                <div class="auditarGrid" ng-grid="lotes_producto"></div>
-            </div>
-
+    <div class="panel panel-info">
+        <div class="panel-heading">
+             <h5 class="panel-title">Lotes Del Producto</h5>
+        </div>
+        <div class="panel-body">
+            <div class="auditarGrid" ng-grid="lotes_producto"></div>
         </div>
 
     </div>
+
 
     <div ng-switch on="rootEditarProducto.mostrarJustificacion">
         <div class="panel panel-info" ng-switch-when="true">

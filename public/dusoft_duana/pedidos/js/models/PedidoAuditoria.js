@@ -28,7 +28,12 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         
         PedidoAuditoria.prototype.getProductos = function() {
             return this.productos;
-        }
+        };
+        
+        
+        PedidoAuditoria.prototype.setProductos = function(productos) {
+            this.productos = productos;
+        };
         
         PedidoAuditoria.prototype.vaciarProductos = function() {
             this.productos = [];

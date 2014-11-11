@@ -179,7 +179,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
             that.renderDetalleDocumentoTemporal = function(documento , productos, tipo) {
                 //Vaciar el listado de Productos
-
+                
                 documento.getPedido().vaciarProductos();
 
                 for (var i in productos) {
@@ -190,12 +190,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     
                     documento.getPedido().agregarProducto(producto_pedido_separado);
 
-                    //console.log("DOCUMENTO TEMPORAL CON PRODUCTOS DE PEDIDO INGRESADOS",productos);
                 }
-                if(!$scope.$$phase) {
-                    $scope.$apply();
-                }
-                
+
                 console.log("productos creados >>>>>>>>>>>>>");
                 console.log(documento.getPedido().getProductos())
             };
@@ -464,7 +460,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         if(documento,movimientos_bodegas.productos_no_auditados !== undefined){
                             that.renderDetalleDocumentoTemporal(documento,movimientos_bodegas.productos_no_auditados.concat(movimientos_bodegas.productos_pendientes), 2);
                         }
-                        
                         
                         
                        // that.renderDetalleDocumentoTemporal(documento,movimientos_bodegas.productos_pendientes, 3);

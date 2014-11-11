@@ -23,7 +23,6 @@ define(["angular", "js/controllers",'models/ClientePedido',
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = {};
             $scope.paginaactual = 1;
-            $scope.detalle_pedido_separado_cliente = {};
             $scope.documentos_usuarios = [];
             $scope.documento_temporal_id = "";
             $scope.usuario_id = "";
@@ -37,7 +36,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
             $scope.cerrar = function(){
                $scope.$emit('cerrardetallecliente', {animado:true});
                $scope.$emit('onDetalleCerrado');
-               $scope.DocumentoTemporal  = {};
+              // $scope.DocumentoTemporal  = {};
             };
             
             $rootScope.$on("mostrardetalleclienteCompleto", function(e, datos) {
@@ -76,11 +75,23 @@ define(["angular", "js/controllers",'models/ClientePedido',
                 $scope.traerProductosAuditatos(params);
                 
             });
+            
+           /* $scope.$on("refrescarProductosDocumento",function(e,productos){
+                $scope.DocumentoTemporal.getPedido().vaciarProductos();
+                console.log("=======================");
+                console.log(productos)
+                $scope.DocumentoTemporal.getPedido().setProductos(productos);
+            });*/
 
 
             $rootScope.$on("cerrardetalleclienteCompleto",function(e){
+                $scope.DocumentoTemporal.getPedido().vaciarProductos();
+                 console.log("cerrardetalleclienteCompleto ________________________");
+                console.log($scope.DocumentoTemporal)
                 $scope.$$watchers = null;
-                $scope.detalle_pedido_separado_cliente.data = [];
+               // $scope.DocumentoTemporal.getPedido().vaciarProductos();
+                //$scope.detalle_pedido_separado_cliente.data = [];
+               
             });
 
             
@@ -141,8 +152,6 @@ define(["angular", "js/controllers",'models/ClientePedido',
  
             $scope.detalle_pedido_separado_cliente = {
                 data: 'DocumentoTemporal.getPedido().getProductos()',
-                enableColumnResize: true,
-                enableRowSelection:false,
                 columnDefs: [                
                     {field: 'codigo_producto', displayName: 'Código Producto'},
                     {field: 'descripcion', displayName: 'Nombre Producto'},

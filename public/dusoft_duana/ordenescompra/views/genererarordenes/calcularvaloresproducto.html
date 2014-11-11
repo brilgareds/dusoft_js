@@ -7,8 +7,8 @@
     <alert  type="'danger'" close="dialog = false" ng-show="dialog">{{msg}}</alert>
 
     <h4>Producto.</h4>
-    <h5> {{ Producto.getCodigoProducto() }} </h5>
-    <h5> {{ Producto.getDescripcion() }} </h5>
+    <h5> {{ producto_seleccionado.getCodigoProducto() }} </h5>
+    <h5> {{ producto_seleccionado.getDescripcion() }} </h5>
 
     <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">
         <div class="list-group">
@@ -17,48 +17,55 @@
     </div>
 
     <h4>Iva %.</h4>
-    <h5>{{ Producto.get_iva() }}</h5>
-    
-
-    <div class="row">
-
-
-    </div>
+    <h5>{{ producto_seleccionado.get_iva() }}</h5>
 
     <div class="row" style="padding-top: 15px;">
         <div class="col-md-4">
 
             <div class="form-group">
                 <label for="cantidad_ingresada">Cantidad.</label>
-                <input type="email" class="form-control" id="cantidad_ingresada" placeholder="" ng-value="Producto.get_cantidad_seleccionada()">
+                <input type="text" class="form-control" id="cantidad_ingresada" placeholder="" ng-model="$parent.cantidad">
             </div>
         </div>
         <div class="col-md-4">
             <div class="form-group">
-                <label for="valor_presentacion">No. Unidades.</label>
+                <label for="valor_presentacion">Presentacion.</label>
                 <div class="input-group">
-                    <div class="input-group-addon">{{ Producto.get_presentacion() }}</div>
-                    <input class="form-control" type="email" id="numero_unidades" placeholder="">
+                    <div class="input-group-addon">{{ producto_seleccionado.get_presentacion() }}</div>
+                    <input class="form-control" type="text" id="numero_unidades" placeholder="" ng-model="$parent.presentacion">
                 </div>
             </div>
         </div>
         <div class="col-md-4">
             <div class="form-group">
-                <label for="valor_presentacion">$ Valor Presentacón.</label>
+                <label for="valor_presentacion">Vlr. Presentación.</label>
                 <div class="input-group">
                     <div class="input-group-addon">$</div>
-                    <input class="form-control" type="email" id="valor_presentacion" placeholder="">
+                    <input class="form-control" type="text" id="valor_presentacion" placeholder="" ng-model="$parent.valor">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" ng-click="calcular_precio_compra()" ng-disabled="cantidad==0 || cantidad=='' || presentacion=='' || valor==''" ><i class="glyphicon glyphicon-ok"></i></button>
+                    </span>
                 </div>
             </div>
         </div>
-
     </div>
 
+    <div class="row">
+
+        <div class="col-md-6">
+            <h4>No. Unidades</h4>
+            <h5> {{ unidades }}</h5>
+        </div>
+        <div class="col-md-6">
+            <h4>Precio Compra</h4>
+            <h5>$ {{ precio_compra }} </h5>
+        </div>
+    </div>
 
 
     <div class="modal-footer">
         <button class="btn btn-warning" ng-click="close()">Cancelar</button>
-        <button class="btn btn-primary" ng-click="" ng-disabled="" >Calcular</button>
+        <button class="btn btn-primary" ng-click="aceptar()" ng-disabled="unidades=='' || precio_compra=='' || isNaN(unidades) || isNaN(precio_compra) " >Aceptar</button>
     </div>
 
 </div>

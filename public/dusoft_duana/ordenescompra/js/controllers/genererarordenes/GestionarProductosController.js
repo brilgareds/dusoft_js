@@ -36,14 +36,24 @@ define(["angular", "js/controllers",
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
             $scope.pagina_actual = 1;
-            
+
             $rootScope.$on('gestionar_productosCompleto', function(e, parametros) {
 
                 //console.log('=============== Iniciando Slider =============');
                 //console.log($scope.orden_compra);
 
-                that.buscar_laboratorios();
                 that.buscar_productos();
+                that.buscar_laboratorios();
+            });
+            
+            $rootScope.$on('cerrar_gestion_productosCompleto', function(e, parametros) {
+
+                console.log('============= cerrar_gestion_productosCompleto ==============');
+                
+                 $scope.Empresa.limpiar_productos();
+                 $scope.Empresa.limpiar_laboratorios();
+                 
+                 $scope.$$watchers = null;                
             });
 
             that.buscar_laboratorios = function(termino) {
@@ -90,7 +100,10 @@ define(["angular", "js/controllers",
                 };
 
                 Request.realizarRequest(API.ORDENES_COMPRA.LISTAR_PRODUCTOS, "POST", obj, function(data) {
-
+                    
+                    console.log('======== RESPUESTA SERVER ==========');
+                    console.log(data.obj.lista_productos);
+                    
                     $scope.ultima_busqueda = $scope.termino_busqueda;
                     if (data.status === 200) {
 
@@ -109,7 +122,7 @@ define(["angular", "js/controllers",
             };
 
 
-            that.gestionar_orden_compra = function(callback) {
+            $scope.gestionar_orden_compra = function(callback) {
 
                 if ($scope.orden_compra.get_numero_orden() === 0) {
                     //Crear Orden de Compra y Agregar Productos
@@ -205,7 +218,7 @@ define(["angular", "js/controllers",
 
                 $scope.Empresa.limpiar_productos();
                 productos.forEach(function(data) {
-                    var producto = Producto.get(data.codigo_producto, data.descripcion_producto, data.cantidad, data.iva, data.costo_ultima_compra, data.tiene_valor_pactado, data.presentacion);
+                    var producto = Producto.get(data.codigo_producto, data.descripcion_producto, '', data.iva, data.costo_ultima_compra, data.tiene_valor_pactado, data.presentacion, data.cantidad);
                     $scope.Empresa.set_productos(producto);
                 });
             };
@@ -228,14 +241,15 @@ define(["angular", "js/controllers",
                 enableColumnResize: true,
                 enableRowSelection: false,
                 enableCellSelection: true,
+                enableCellEditOnFocus: true,
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Codigo Producto', width: "20%"},
-                    {field: 'descripcion', displayName: 'Descripcion'},
-                    {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "15%", cellFilter: "currency:'$ '"},
+                    {field: 'codigo_producto', displayName: 'Codigo Producto', width: "20%", enableCellEdit: false},
+                    {field: 'descripcion', displayName: 'Descripcion', enableCellEdit: false},
+                    {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "15%", cellFilter: "currency:'$ '", enableCellEdit: false},
                     {field: 'cantidad', width: "7%", displayName: "Cantidad", enableCellEdit: true, cellFilter: "number"},
                     {width: "7%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-toolbar">\
-                                            <button class="btn btn-default btn-xs" ng-click="calcular_valores_producto(row.entity)" ><span class="glyphicon glyphicon-zoom-in"></span></button>\
+                                            <button class="btn btn-default btn-xs" ng-click="calcular_valores_producto(row)" ><span class="glyphicon glyphicon-zoom-in"></span></button>\
                                             <button class="btn btn-default btn-xs" ng-click="solicitar_producto(row)" ><span class="glyphicon glyphicon-ok"></span></button>\
                                         </div>'}
                 ]
@@ -251,16 +265,16 @@ define(["angular", "js/controllers",
             $scope.solicitar_producto = function(row) {
 
                 var producto = row.entity;
-                
+
                 producto.set_cantidad_seleccionada(producto.cantidad);
 
                 $scope.producto_seleccionado = producto;
 
                 $scope.orden_compra.set_productos(producto);
 
-                that.gestionar_orden_compra(function(resultado){
-                    
-                    if(resultado){
+                $scope.gestionar_orden_compra(function(resultado) {
+
+                    if (resultado) {
                         // Remover producto seleccionado
                         var index = row.rowIndex;
                         $scope.lista_productos.selectItem(index, false);
@@ -269,7 +283,7 @@ define(["angular", "js/controllers",
                 });
             };
 
-           
+
             $scope.pagina_anterior = function() {
                 $scope.pagina_actual--;
                 that.buscar_productos($scope.termino_busqueda, true);
@@ -282,10 +296,13 @@ define(["angular", "js/controllers",
             };
 
 
-            $scope.calcular_valores_producto = function(producto) {
+            $scope.calcular_valores_producto = function(row) {
 
-
+                var producto = row.entity;
+                var index = row.rowIndex;
                 producto.set_cantidad_seleccionada(producto.cantidad);
+
+                $scope.producto_seleccionado = producto;
 
                 $scope.opts = {
                     backdrop: true,
@@ -294,9 +311,10 @@ define(["angular", "js/controllers",
                     keyboard: true,
                     templateUrl: 'views/genererarordenes/calcularvaloresproducto.html',
                     controller: "CalcularValoresProductoController",
-                    resolve: {
-                        producto_seleccionado: function() {
-                            return producto;
+                    scope: $scope,
+                    resolve: {                        
+                        index: function() {
+                            return index;
                         }
                     }
                 };

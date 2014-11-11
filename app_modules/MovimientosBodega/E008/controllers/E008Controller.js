@@ -1689,13 +1689,13 @@ function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento
                             return producto_pedido.codigo_producto === value.codigo_producto && value.auditado === '1';
                         });
                         
-                        console.log("productos para auditar >>>>>>>>>>>>>>>>>");
+                       /* console.log("productos para auditar >>>>>>>>>>>>>>>>>");
                         console.log(producto_pedido);
                         console.log("producto separado >>>>>>>>>>>>>>>>>>>>>>>");
-                        console.log(producto_separado);
+                        console.log(producto_separado);*/
                         
                         // Verificar que los productos esten auditados
-                        if (producto_separado.length === 0) {
+                        if (producto_separado.length === 0) {               
                             // Producto que no fue separado y le falta la justificacion del auditor
                             if (producto_pedido.cantidad_pendiente > 0 && producto_pedido.justificacion_auditor === '')
                                 productos_pendientes.push(producto_pedido);
@@ -1707,7 +1707,12 @@ function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento
                                 productos_pendientes.push(producto_pedido);
                         }
                     });
-
+                    
+                    console.log("productos no auditatos  >>>>>>>>>>>>>>>>>>");
+                    console.log(productos_no_auditados);
+                    console.log("productos pendientes <>>>>>>>>>>>>>")
+                    console.log(productos_pendientes);
+                    
                     callback(err, productos_no_auditados, productos_pendientes);
                     return;
                 }

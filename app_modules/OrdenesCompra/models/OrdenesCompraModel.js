@@ -122,6 +122,9 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
                 c.direccion as direccion_proveedor,\
                 c.telefono as telefono_proveedor,\
                 a.estado,\
+                CASE WHEN a.estado = 0 THEN 'Recibida' \
+                     WHEN a.estado = 1 THEN 'Activa' \
+                     WHEN a.estado = 2 THEN 'Anulado' END as descripcion_estado, \
                 a.observacion,\
                 f.codigo_unidad_negocio,\
                 f.imagen,\
@@ -215,11 +218,22 @@ OrdenesCompraModel.prototype.modificar_unidad_negocio = function(numero_orden, u
     });
 };
 
+// Modificar unidad de negocio de una Orden de Compra
+OrdenesCompraModel.prototype.modificar_observacion = function(numero_orden, observacion, callback) {
+
+
+    var sql = "  update compras_ordenes_pedidos set observacion = $2 where orden_pedido_id = $1 and estado='1' ";
+
+    G.db.query(sql, [numero_orden, observacion], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
 // Eliminar Orden de Compra
-OrdenesCompraModel.prototype.eliminar_orden_compra = function(numero_orden, callback) {
+OrdenesCompraModel.prototype.anular_orden_compra = function(numero_orden, callback) {
 
 
-    var sql = " DELETE FROM compras_ordenes_pedidos WHERE orden_pedido_id = $1  ";
+    var sql = " UPDATE compras_ordenes_pedidos SET estado = '2' WHERE orden_pedido_id = $1  ";
 
     G.db.query(sql, [numero_orden], function(err, rows, result, total_records) {
         callback(err, rows);

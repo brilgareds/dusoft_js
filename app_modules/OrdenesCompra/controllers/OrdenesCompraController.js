@@ -95,7 +95,7 @@ OrdenesCompra.prototype.consultarDetalleOrdenCompra = function(req, res) {
         res.send(G.utils.r(req.url, 'numero_orden no esta definidas', 404, {}));
         return;
     }
-    
+
     if (args.ordenes_compras.termino_busqueda === undefined || args.ordenes_compras.pagina_actual === undefined) {
         res.send(G.utils.r(req.url, 'termino_busqueda, pagina_actual no estan definidas', 404, {}));
         return;
@@ -105,7 +105,7 @@ OrdenesCompra.prototype.consultarDetalleOrdenCompra = function(req, res) {
         res.send(G.utils.r(req.url, 'Se requiere el numero_orden', 404, {}));
         return;
     }
-    
+
     if (args.ordenes_compras.pagina_actual === '' || args.ordenes_compras.pagina_actual === 0 || args.ordenes_compras.pagina_actual === '0') {
         res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
         return;
@@ -278,7 +278,7 @@ OrdenesCompra.prototype.modificarUnidadNegocio = function(req, res) {
     var unidad_negocio = args.ordenes_compras.unidad_negocio;
 
 
-    //validar que la OC no tenga NINGUN ingreso temporal.
+    //validar que la OC no tenga NINGUN ingreso temporal y este Activa.
     that.m_ordenes_compra.consultar_orden_compra(numero_orden, function(err, orden_compra) {
 
         if (err || orden_compra.length === 0) {
@@ -288,7 +288,7 @@ OrdenesCompra.prototype.modificarUnidadNegocio = function(req, res) {
 
             orden_compra = orden_compra[0];
 
-            if (orden_compra.tiene_ingreso_temporal === 0) {
+            if (orden_compra.tiene_ingreso_temporal === 0 && orden_compra.estado === '1') {
 
                 that.m_ordenes_compra.modificar_unidad_negocio(numero_orden, unidad_negocio, function(err, rows, result) {
 
@@ -310,6 +310,68 @@ OrdenesCompra.prototype.modificarUnidadNegocio = function(req, res) {
 
     });
 };
+
+// Modificar Observacion de una orden de compra 
+OrdenesCompra.prototype.modificarObservacion = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.numero_orden === undefined || args.ordenes_compras.observacion === undefined) {
+        res.send(G.utils.r(req.url, 'numero_orden no esta definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.numero_orden === '' || args.ordenes_compras.numero_orden === 0 || args.ordenes_compras.numero_orden === '0') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero_orden', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.observacion === '') {
+        res.send(G.utils.r(req.url, 'Se requiere la observacion', 404, {}));
+        return;
+    }
+
+    var numero_orden = args.ordenes_compras.numero_orden;
+    var observacion = args.ordenes_compras.observacion;
+
+
+    //validar que la OC no tenga NINGUN ingreso temporal y este Activa.
+    that.m_ordenes_compra.consultar_orden_compra(numero_orden, function(err, orden_compra) {
+
+        if (err || orden_compra.length === 0) {
+            res.send(G.utils.r(req.url, 'La orden de compra no existe', 500, {orden_compra: []}));
+            return;
+        } else {
+
+            orden_compra = orden_compra[0];
+
+            if (orden_compra.tiene_ingreso_temporal === 0 && orden_compra.estado === '1') {
+
+                that.m_ordenes_compra.modificar_observacion(numero_orden, observacion, function(err, rows, result) {
+
+                    if (err || result.rowCount === 0) {
+                        res.send(G.utils.r(req.url, 'No se pudo actualizar la observacion', 500, {orden_compra: []}));
+                        return;
+                    } else {
+
+                        res.send(G.utils.r(req.url, 'Observacion actualizada correctamente', 200, {orden_compra: []}));
+                        return;
+                    }
+                });
+
+            } else {
+                res.send(G.utils.r(req.url, 'No se pudo actualizar, la orde de compra esta siendo ingresada.', 403, {orden_compra: []}));
+                return;
+            }
+        }
+
+    });
+};
+
+
+
 // Insertar Detalle una orden de compra 
 OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
 
@@ -368,7 +430,7 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
 
 
 // Eliminar una orden de compra 
-OrdenesCompra.prototype.eliminarOrdenCompra = function(req, res) {
+OrdenesCompra.prototype.anularOrdenCompra = function(req, res) {
 
     var that = this;
 
@@ -387,21 +449,32 @@ OrdenesCompra.prototype.eliminarOrdenCompra = function(req, res) {
     var numero_orden = args.ordenes_compras.numero_orden;
 
 
-    that.m_ordenes_compra.eliminar_detalle_orden_compra(numero_orden, function(err, rows, result) {
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
+    //validar que la OC no tenga NINGUN ingreso temporal.
+    that.m_ordenes_compra.consultar_orden_compra(numero_orden, function(err, orden_compra) {
+
+        if (err || orden_compra.length === 0) {
+            res.send(G.utils.r(req.url, 'La orden de compra no existe', 500, {orden_compra: []}));
             return;
         } else {
-            that.m_ordenes_compra.eliminar_orden_compra(numero_orden, function(err, rows, result) {
 
-                if (err) {
-                    res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
-                    return;
-                } else {
-                    res.send(G.utils.r(req.url, 'Orden de Compra eliminada correctamente', 200, {ordenes_compras: []}));
-                    return;
-                }
-            });
+            orden_compra = orden_compra[0];
+
+            if (orden_compra.tiene_ingreso_temporal === 0 && orden_compra.estado === '1') {
+
+                that.m_ordenes_compra.anular_orden_compra(numero_orden, function(err, rows, result) {
+
+                    if (err) {
+                        res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
+                        return;
+                    } else {
+                        res.send(G.utils.r(req.url, 'Orden de Compra anulada correctamente', 200, {ordenes_compras: []}));
+                        return;
+                    }
+                });
+            } else {
+                res.send(G.utils.r(req.url, 'No se pudo actualizar, la orden de compra esta siendo o ya fue ingresada.', 403, {orden_compra: []}));
+                return;
+            }
         }
     });
 };

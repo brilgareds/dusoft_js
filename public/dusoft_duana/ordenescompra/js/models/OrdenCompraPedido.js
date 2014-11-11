@@ -60,8 +60,20 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
             };
             
             // Observacion
+            OrdenCompraPedido.prototype.set_observacion = function(observacion) {
+                this.observacion = observacion;
+            };
+            
             OrdenCompraPedido.prototype.get_observacion = function() {
                 return this.observacion;
+            };
+            
+            //Estado
+            OrdenCompraPedido.prototype.set_estado = function(estado) {
+                this.estado = estado;
+            };
+            OrdenCompraPedido.prototype.get_estado = function() {
+                return this.estado;
             };
             
             // Descripcion estado

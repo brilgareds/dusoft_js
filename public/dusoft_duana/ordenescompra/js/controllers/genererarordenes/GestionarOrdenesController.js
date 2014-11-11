@@ -37,7 +37,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.descripcion_estado = '';
             $scope.producto_eliminar = '';
             $scope.cantidad_productos_orden_compra = 0;
-            
+
 
             // Variable para paginacion
             $scope.paginas = 0;
@@ -147,8 +147,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             var producto = Producto.get(data.codigo_producto, data.descripcion_producto, '', data.porc_iva, data.valor);
                             producto.set_cantidad_seleccionada(data.cantidad_solicitada);
                             $scope.orden_compra.set_productos(producto);
+                            $scope.orden_compra.set_productos(producto);
+                            $scope.orden_compra.set_productos(producto);
+                            $scope.orden_compra.set_productos(producto);
+                            $scope.orden_compra.set_productos(producto);
+                            $scope.orden_compra.set_productos(producto);
+                            $scope.orden_compra.set_productos(producto);
+                            $scope.orden_compra.set_productos(producto);
+                            $scope.orden_compra.set_productos(producto);
+                            $scope.orden_compra.set_productos(producto);
+                            $scope.orden_compra.set_productos(producto);
                         });
-                        
+
                         $scope.cantidad_productos_orden_compra = $scope.orden_compra.get_productos().length;
                     }
                 });
@@ -305,7 +315,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.buscar_productos = function() {
 
                 if ($scope.numero_orden === 0) {
-                    
+
                     $scope.orden_compra = OrdenCompra.get($scope.numero_orden, 1, $scope.observacion, new Date());
                     $scope.orden_compra.set_unidad_negocio($scope.Empresa.get_unidad_negocio($scope.unidad_negocio_id));
                     $scope.orden_compra.set_proveedor($scope.Empresa.get_proveedor($scope.codigo_proveedor_id));
@@ -372,7 +382,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 //Consultar detalle de Orden de Compra
                 if ($scope.numero_orden > 0) {
-                    $scope.buscar_detalle_orden_compra();                    
+                    $scope.buscar_detalle_orden_compra();
                 }
             };
 
@@ -387,7 +397,26 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 enableRowSelection: false,
                 enableCellSelection: true,
                 showFooter: true,
-                //footerTemplate: '<div style="width: 200px; display: inline-block;">{{getTotal(0)}}</div><div style="width: 200px; display: inline-block;">{{total2}}</div><div style="width: 200px; display: inline-block;">{{total3}}</div>',
+                footerTemplate: '   <div class="row col-md-12">\
+                                        <div class="col-md-3 pull-right">\
+                                            <table class="table table-clear">\
+                                                    <tbody>\
+                                                            <tr>\
+                                                                    <td class="left"><strong>Subtotal</strong></td>\
+                                                                    <td class="right">$8.497,00</td>    \
+                                                            </tr>\
+                                                            <tr>\
+                                                                    <td class="left"><strong>I.V.A</strong></td>\
+                                                                    <td class="right">$1,699,40</td>                                        \
+                                                            </tr>\
+                                                            <tr>\
+                                                                    <td class="left"><strong>Total</strong></td>\
+                                                                    <td class="right">$679,76</td>                                        \
+                                                            </tr>\
+                                                    </tbody>\
+                                            </table>\
+                                        </div>\
+                                    </div>',
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Codigo Producto', width: "20%"},
                     {field: 'descripcion', displayName: 'Descripcion'},

@@ -18,6 +18,7 @@ define(["angular"], function(angular) {
                 'MODIFICAR_OBSERVACION': BASE_URL + '/OrdenesCompra/modificarObservacion',
                 'ELIMINAR_PRODUCTO_ORDEN_COMPRA': BASE_URL + '/OrdenesCompra/eliminarProductoOrdenCompra',
                 'ANULAR_ORDEN_COMPRA': BASE_URL + '/OrdenesCompra/anularOrdenCompra',
+                'FINALIZAR_ORDEN_COMPRA': BASE_URL + '/OrdenesCompra/finalizarOrdenCompra',
             },
             'PROVEEDORES': {
                 'LISTAR_PROVEEDORES': BASE_URL + '/Terceros/Proveedores/listar'

@@ -52,5 +52,10 @@ module.exports = function(app, di_container) {
     app.post('/api/OrdenesCompra/consultarDetalleOrdenCompra', function(req, res) {
         c_ordenes_compra.consultarDetalleOrdenCompra(req, res);
     });
+    
+    // Generar Orden de Compra
+    app.post('/api/OrdenesCompra/finalizarOrdenCompra', function(req, res) {
+        c_ordenes_compra.finalizarOrdenCompra(req, res);
+    });
 
 };

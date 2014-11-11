@@ -28,7 +28,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
             // Variables
-            $scope.numero_orden = localStorageService.get("numero_orden") || 0;            
+            $scope.numero_orden = parseInt(localStorageService.get("numero_orden")) || 0;
             $scope.vista_previa = (localStorageService.get("vista_previa") === '1') ? true : false;
 
             $scope.codigo_proveedor_id = '';
@@ -36,6 +36,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.observacion = '';
             $scope.descripcion_estado = '';
             $scope.producto_eliminar = '';
+            $scope.cantidad_productos_orden_compra = 0;
+            
 
             // Variable para paginacion
             $scope.paginas = 0;
@@ -65,6 +67,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                         if (continuar) {
                             $scope.buscar_detalle_orden_compra();
+
+                            if (!$scope.vista_previa)
+                                $scope.finalizar_orden_compra(false);
                         }
                     });
                 }
@@ -143,6 +148,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             producto.set_cantidad_seleccionada(data.cantidad_solicitada);
                             $scope.orden_compra.set_productos(producto);
                         });
+                        
+                        $scope.cantidad_productos_orden_compra = $scope.orden_compra.get_productos().length;
                     }
                 });
             };
@@ -240,6 +247,31 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
 
+            $scope.finalizar_orden_compra = function(finalizar_orden_compra) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        ordenes_compras: {
+                            numero_orden: $scope.orden_compra.get_numero_orden(),
+                            finalizar_orden_compra: finalizar_orden_compra
+                        }
+                    }
+                };
+
+
+                Request.realizarRequest(API.ORDENES_COMPRA.FINALIZAR_ORDEN_COMPRA, "POST", obj, function(data) {
+
+                    AlertService.mostrarMensaje("warning", data.msj);
+
+                    if (data.status === 200) {
+                        if (finalizar_orden_compra)
+                            $scope.cancelar_orden_compra();
+                    }
+                });
+            };
+
+
             $scope.buscador_productos_orden_compra = function(ev, termino_busqueda) {
                 if (ev.which == 13) {
                     $scope.buscar_detalle_orden_compra(termino_busqueda);
@@ -273,7 +305,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.buscar_productos = function() {
 
                 if ($scope.numero_orden === 0) {
-
+                    
                     $scope.orden_compra = OrdenCompra.get($scope.numero_orden, 1, $scope.observacion, new Date());
                     $scope.orden_compra.set_unidad_negocio($scope.Empresa.get_unidad_negocio($scope.unidad_negocio_id));
                     $scope.orden_compra.set_proveedor($scope.Empresa.get_proveedor($scope.codigo_proveedor_id));
@@ -340,7 +372,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 //Consultar detalle de Orden de Compra
                 if ($scope.numero_orden > 0) {
-                    $scope.buscar_detalle_orden_compra();
+                    $scope.buscar_detalle_orden_compra();                    
                 }
             };
 
@@ -374,7 +406,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 var producto = row.entity;
                 $scope.producto_eliminar = producto;
 
-                //that.eliminar_producto();
+
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
@@ -430,6 +462,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
 
             that.gestionar_consultas();
+
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;

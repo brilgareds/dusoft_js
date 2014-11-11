@@ -24,6 +24,8 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
                 CASE WHEN a.estado = 0 THEN 'Recibida' \
                      WHEN a.estado = 1 THEN 'Activa' \
                      WHEN a.estado = 2 THEN 'Anulado' END as descripcion_estado, \
+                CASE WHEN a.sw_orden_compra_finalizada = '0' THEN 'En Proceso ...' \
+                     WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion, \
                 a.observacion,\
                 f.codigo_unidad_negocio,\
                 f.imagen,\
@@ -125,6 +127,8 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
                 CASE WHEN a.estado = 0 THEN 'Recibida' \
                      WHEN a.estado = 1 THEN 'Activa' \
                      WHEN a.estado = 2 THEN 'Anulado' END as descripcion_estado, \
+                CASE WHEN a.sw_orden_compra_finalizada = '0' THEN 'En Proceso ...' \
+                WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion, \
                 a.observacion,\
                 f.codigo_unidad_negocio,\
                 f.imagen,\
@@ -151,21 +155,6 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
 
 // Consultar Detalle Ordene de Compra  por numero de orden
 OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_orden, termino_busqueda, pagina, callback) {
-
-
-    /* var sql = " select\
-     a.orden_pedido_id as numero_orden,\
-     a.codigo_producto,\
-     fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
-     a.numero_unidades::integer as cantidad_solicitada,\
-     a.valor,\
-     a.porc_iva,\
-     a.estado \
-     from compras_ordenes_pedidos_detalle as a\
-     where a.orden_pedido_id = $1 and a.estado = '1' ; ";
-     G.db.query(sql, [numero_orden], function(err, rows, result, total_records) {
-     callback(err, rows);
-     });*/
 
     var sql = " select * from (\
                     select\
@@ -311,6 +300,18 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_pendientes_by_producto = func
 
     G.db.query(sql, [empresa_id, codigo_producto], function(err, rows, result) {
         callback(err, rows);
+    });
+};
+
+
+// Finaliza la Orden de Compra
+OrdenesCompraModel.prototype.finalizar_orden_compra = function(numero_orden, orden_compra_finalizada, callback) {
+
+
+    var sql = "  update compras_ordenes_pedidos set sw_orden_compra_finalizada = $2 where orden_pedido_id = $1 and estado='1' ";
+
+    G.db.query(sql, [numero_orden, orden_compra_finalizada], function(err, rows, result) {
+        callback(err, rows, result);
     });
 };
 

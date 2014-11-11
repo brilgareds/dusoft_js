@@ -30,7 +30,14 @@ define(["angular", "js/controllers",
                 usuario_id: Sesion.usuario_id,
                 auth_token: Sesion.token
             };
-
+            
+            
+            // numero de orden compra
+            localStorageService.add("numero_orden", 0);
+            
+            // Vista Previa 
+            localStorageService.add("vista_previa", '0'); //false
+            
             // Variables
             var fecha_actual = new Date()
             $scope.fecha_inicial = $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd");
@@ -47,8 +54,7 @@ define(["angular", "js/controllers",
             $scope.pagina_actual = 1;
 
 
-            // Vista Previa 
-            localStorageService.add("vista_previa", '0'); //false
+            
 
             $scope.buscar_ordenes_compras = function(termino, paginando) {
 
@@ -137,6 +143,8 @@ define(["angular", "js/controllers",
                     orden_compra.set_descripcion_estado(orden.descripcion_estado);
 
                     orden_compra.set_ingreso_temporal(orden.tiene_ingreso_temporal);
+                    
+                    orden_compra.set_estado_digitacion(orden.estado_digitacion);
 
                     $scope.Empresa.set_ordenes_compras(orden_compra);
 
@@ -155,11 +163,12 @@ define(["angular", "js/controllers",
                 enableRowSelection: false,
                 columnDefs: [
                     {field: 'numero_orden_compra', displayName: '# Orden', width: "5%"},
-                    {field: 'proveedor.get_nombre()', displayName: 'Proveedor', width: "35%"},
+                    {field: 'proveedor.get_nombre()', displayName: 'Proveedor', width: "30%"},
                     {field: 'proveedor.direccion', displayName: 'Ubicacion', width: "30%"},
                     {field: 'proveedor.telefono', displayName: 'Telefono', width: "5%"},
                     {field: 'fecha_registro', displayName: "F. Registro", width: "5%"},
                     {field: 'descripcion_estado', displayName: "Estado"},
+                    {field: 'estado_digitacion', displayName: "Digitacion"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\

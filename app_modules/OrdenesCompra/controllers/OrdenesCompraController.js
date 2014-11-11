@@ -517,6 +517,65 @@ OrdenesCompra.prototype.eliminarProductoOrdenCompra = function(req, res) {
 };
 
 
+// Generar Finalizar Orden de Compra
+OrdenesCompra.prototype.finalizarOrdenCompra = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.numero_orden === undefined || args.ordenes_compras.finalizar_orden_compra === undefined ) {
+        res.send(G.utils.r(req.url, 'numero_orden no esta definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.numero_orden === '' || args.ordenes_compras.numero_orden === 0 || args.ordenes_compras.numero_orden === '0') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero_orden', 404, {}));
+        return;
+    }
+
+
+    var numero_orden = args.ordenes_compras.numero_orden;
+    var finalizar_orden_compra = (args.ordenes_compras.finalizar_orden_compra) ? '1' : '0';
+
+
+    //validar que la OC no tenga NINGUN ingreso temporal y este Activa.
+    that.m_ordenes_compra.consultar_orden_compra(numero_orden, function(err, orden_compra) {
+
+        if (err || orden_compra.length === 0) {
+            res.send(G.utils.r(req.url, 'La orden de compra no existe', 500, {orden_compra: []}));
+            return;
+        } else {
+
+            orden_compra = orden_compra[0];
+
+            if (orden_compra.tiene_ingreso_temporal === 0 && orden_compra.estado === '1') {
+
+                that.m_ordenes_compra.finalizar_orden_compra(numero_orden, finalizar_orden_compra, function(err, rows, result) {
+
+                    if (err || result.rowCount === 0) {
+                        res.send(G.utils.r(req.url, 'Error Interno', 500, {orden_compra: []}));
+                        return;
+                    } else {
+                        var msj = " Orden de Compra Finalizada Correctamente"
+                        if(finalizar_orden_compra === '0')
+                            msj = ' Orden de Compra en proceso de modificacion';
+                        
+                        res.send(G.utils.r(req.url, msj, 200, {orden_compra: []}));
+                        return;
+                    }
+                });
+
+            } else {
+                res.send(G.utils.r(req.url, 'No se pudo actualizar, la orde de compra esta siendo ingresada.', 403, {orden_compra: []}));
+                return;
+            }
+        }
+
+    });
+};
+
+
 OrdenesCompra.$inject = ["m_ordenes_compra"];
 
 module.exports = OrdenesCompra;

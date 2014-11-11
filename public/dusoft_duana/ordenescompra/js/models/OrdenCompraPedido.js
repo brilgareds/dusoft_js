@@ -93,6 +93,15 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
             OrdenCompraPedido.prototype.get_ingreso_temporal = function() {
                 return (this.tiene_ingreso_temporal === 0) ? false : true ;
             };
+            
+            // Estado de Digitacion Orden Compra
+            OrdenCompraPedido.prototype.set_estado_digitacion = function(estado_digitacion) {
+                this.estado_digitacion = estado_digitacion;
+            };
+            
+            OrdenCompraPedido.prototype.get_estado_digitacion = function() {
+                return this.estado_digitacion ;
+            };
 
             // Productos
             OrdenCompraPedido.prototype.set_productos = function(producto) {

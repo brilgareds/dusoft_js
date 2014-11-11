@@ -6,12 +6,12 @@ define(["angular", "js/controllers",'models/ClientePedido',
         '$scope', '$rootScope', 'Request', 
         '$modalInstance', 'EmpresaPedido','Cliente',
          'PedidoAuditoria', 'API',"socket", "AlertService",
-         "producto", "Usuario", "documento","LoteProductoPedido",
+         "producto", "Usuario", "documento","LoteProductoPedido","productos",
 
         function(   $scope, $rootScope, Request,
                     $modalInstance, Empresa, Cliente,
                     PedidoAuditoria, API, socket, AlertService, 
-                    producto, Usuario, documento, LoteProductoPedido) {
+                    producto, Usuario, documento, LoteProductoPedido, productos) {
             
            $scope.rootEditarProducto = {}; 
            $scope.rootEditarProducto.producto = angular.copy(producto);
@@ -88,9 +88,10 @@ define(["angular", "js/controllers",'models/ClientePedido',
                 if(that.esLoteSeleccionado(lote)){
                     //lote.selected = true;
                     //console.log("cantidad ingresada >>>>>>>>>>>>>>>>>",$scope.rootEditarProducto.producto.cantidad_separada)
-                    lote.cantidad_ingresada = $scope.rootEditarProducto.producto.cantidad_separada;
+                   // lote.cantidad_ingresada = $scope.rootEditarProducto.producto.cantidad_separada;
 
-                    $scope.rootEditarProducto.producto.lote.existencia_actual = lote.existencia_actual;
+                    //$scope.rootEditarProducto.producto.lote.existencia_actual = lote.existencia_actual;
+                    lote.selected = true;
 
                 }
 
@@ -111,7 +112,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                     {field:'cantidad_ingresada', displayName:'Cantidad', cellTemplate:'<div class="col-xs-12"><input type="text"  ng-focus="onCantidadFocus(row)" ng-value="row.entity.cantidad_ingresada" validacion-numero class="form-control grid-inline-input"  ng-change="onCantidadIngresadaChange(row)"'+
                              'ng-model="row.entity.cantidad_ingresada" /></div>'},
                     {field: 'opciones', displayName: "Cambiar", cellClass: "txt-center", width: "10%",
-                        cellTemplate: ' <input-check ng-model="row.entity.selected" ng-click="onEditarLote(row)" ng-disabled="row.entity.cantidad_ingresada == 0"> />'
+                        cellTemplate: ' <input-check ng-model="row.entity.selected" ng-click="onEditarLote(row)" > />'
                     }
                 ]
 
@@ -149,16 +150,16 @@ define(["angular", "js/controllers",'models/ClientePedido',
                 var cantidad_ingresada = row.entity.cantidad_ingresada;
                //
                 console.log("cantidad_ingresada ",cantidad_ingresada, row.entity )
-                for(var i in $scope.rootEditarProducto.lotes){
+               /* for(var i in $scope.rootEditarProducto.lotes){
                     var lote = $scope.rootEditarProducto.lotes[i];
                     lote.cantidad_ingresada = 0;
                     lote.selected = false;
-                }
+                }*/
 
                 if(cantidad_ingresada > 0){
                     row.entity.cantidad_ingresada = cantidad_ingresada;
                 } else {
-                    row.entity.cantidad_ingresada = "";
+                    row.entity.cantidad_ingresada = 0;
                 }
                 
                      
@@ -177,6 +178,13 @@ define(["angular", "js/controllers",'models/ClientePedido',
             $scope.onEditarLote = function(row){
                 var lote = row.entity;
                 
+                if(lote.cantidad_ingresada === 0 || lote.cantidad_ingresada === ''){
+                    
+                    lote.selected = !lote.selected;
+                    return;
+                }
+                
+                return;
                 lote.justificacion_separador = $scope.rootEditarProducto.producto.lote.justificacion_separador;
                 $scope.rootEditarProducto.producto.lote = lote;
                 $scope.rootEditarProducto.producto.cantidad_separada = Number(lote.cantidad_ingresada);
@@ -187,9 +195,9 @@ define(["angular", "js/controllers",'models/ClientePedido',
                 for(var i in $scope.rootEditarProducto.lotes){
                     if(!that.esLoteSeleccionado($scope.rootEditarProducto.lotes[i])){
 
-                        $scope.rootEditarProducto.lotes[i].selected = false;
-                        $scope.rootEditarProducto.lotes[i].editando = false;
-                        $scope.rootEditarProducto.lotes[i].cantidad_ingresada = 0;
+                       // $scope.rootEditarProducto.lotes[i].selected = false;
+                       // $scope.rootEditarProducto.lotes[i].editando = false;
+                       // $scope.rootEditarProducto.lotes[i].cantidad_ingresada = 0;
                         
                     }
                 }
@@ -272,11 +280,22 @@ define(["angular", "js/controllers",'models/ClientePedido',
                 //console.log("es lote seleccionado ", lote, " validando cno  " )
                 //console.log("es lote seleccionado",$scope.rootEditarProducto.producto.lote)
                 
-                 if(lote.codigo_lote === $scope.rootEditarProducto.producto.lote.codigo_lote 
+                /* if(lote.codigo_lote === $scope.rootEditarProducto.producto.lote.codigo_lote 
                         && lote.fecha_vencimiento === $scope.rootEditarProducto.producto.lote.fecha_vencimiento){
                     
                     return true;
-                 } 
+                 } */
+                
+                for(var i in productos){
+                    var _lote = productos[i].lote;
+                    
+                    if(lote.codigo_lote === _lote.codigo_lote 
+                        && lote.fecha_vencimiento === _lote.fecha_vencimiento){
+                        console.log("lote encontrado ", _lote)
+                    
+                      return true;
+                   }
+                }
 
                  return false;
             };

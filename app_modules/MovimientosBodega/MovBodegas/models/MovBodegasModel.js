@@ -192,11 +192,15 @@ MovimientosBodegasModel.prototype.consultar_productos_auditados = function(docum
 };
 
 MovimientosBodegasModel.prototype.consultar_detalle_movimiento_bodega_temporal_por_termino = function(documento_temporal_id, usuario_id, filtro, callback){
+    console.log("consultar_detalle_movimiento_bodega_temporal_por_termino >>>>>>>>>>>>>");
+    
+    
     var sql_aux = "";
-    var termino = filtro.termino_busqueda;
+    var termino = "%"+filtro.termino_busqueda+"%";
     
     if (filtro.codigo_barras) {        
-        
+        console.log(documento_temporal_id, usuario_id, filtro.termino_busqueda);
+        termino = filtro.termino_busqueda;
         sql_aux = " where a.auditado = '0' and a.codigo_barras = $3";
         
     } else if(filtro.descripcion_producto){
@@ -306,7 +310,7 @@ MovimientosBodegasModel.prototype.consultar_detalle_movimiento_bodega_temporal_p
     
     sql += sql_aux;
     
-    G.db.query(sql, [documento_temporal_id, usuario_id, "%" + termino + "%"], function(err, rows, result) {
+    G.db.query(sql, [documento_temporal_id, usuario_id,termino ], function(err, rows, result) {
 
         callback(err, rows);
     });

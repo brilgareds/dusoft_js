@@ -2,7 +2,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
 
     models.factory('ProductoOrdenCompra', ["Producto", function(Producto) {
 
-            function ProductoOrdenCompra(codigo, nombre, existencia, iva, costo_ultima_compra, tiene_valor_pactado, presentacion ) {
+            function ProductoOrdenCompra(codigo, nombre, existencia, iva, costo_ultima_compra, tiene_valor_pactado, presentacion, cantidad_presentacion ) {
                 
                 Producto.getClass().call(this, codigo, nombre, existencia);
                 
@@ -10,13 +10,14 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.costo_ultima_compra = costo_ultima_compra || "";
                 this.tiene_valor_pactado = tiene_valor_pactado || "";
                 this.presentacion = presentacion || "";
+                this.cantidad_presentacion = cantidad_presentacion || "";
                 
             }
 
             ProductoOrdenCompra.prototype = Object.create(Producto.getClass().prototype);
 
-            this.get = function(codigo, nombre, existencia, iva, costo_ultima_compra, tiene_valor_pactado, presentacion) {
-                return new ProductoOrdenCompra(codigo, nombre, existencia, iva, costo_ultima_compra, tiene_valor_pactado, presentacion);
+            this.get = function(codigo, nombre, existencia, iva, costo_ultima_compra, tiene_valor_pactado, presentacion, cantidad_presentacion) {
+                return new ProductoOrdenCompra(codigo, nombre, existencia, iva, costo_ultima_compra, tiene_valor_pactado, presentacion, cantidad_presentacion);
             };
             
             ProductoOrdenCompra.prototype.get_iva = function() {
@@ -29,6 +30,11 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             ProductoOrdenCompra.prototype.get_presentacion = function() {
                 
                 return this.presentacion;
+            };
+            
+            ProductoOrdenCompra.prototype.get_cantidad_presentacion = function() {
+                
+                return this.cantidad_presentacion;
             };
             
             ProductoOrdenCompra.prototype.set_costo = function(costo) {

@@ -128,6 +128,7 @@ define(["angular", "js/controllers",
             });
             
             $scope.$on("onRefrescarListadoPedidos",function(){
+                 $scope.termino_busqueda = "";
                  $scope.buscarPedidosSeparados(that.obtenerParametros(),1, false, $scope.renderPedidosSeparados);
             });
             

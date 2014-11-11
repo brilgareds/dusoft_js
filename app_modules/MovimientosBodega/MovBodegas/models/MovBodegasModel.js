@@ -123,6 +123,19 @@ MovimientosBodegasModel.prototype.auditar_producto_movimiento_bodega_temporal = 
     });
 };
 
+
+MovimientosBodegasModel.prototype.borrarJustificacionAuditor = function(usuario_id, doc_tmp_id, codigo_producto,  callback) {
+    console.log("borrarJustificacionAuditor usuario_id ",usuario_id, " doc_tmp_id ",doc_tmp_id, " codigo producto ", codigo_producto )
+    var sql = " UPDATE  inv_bodegas_movimiento_tmp_justificaciones_pendientes SET justificacion_auditor = '' WHERE usuario_id = $1 and doc_tmp_id = $2\
+                and codigo_producto = $3 ";
+
+    G.db.query(sql, [usuario_id, doc_tmp_id, codigo_producto], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
+
+
 // Consultar documento temporal
 MovimientosBodegasModel.prototype.consultar_documento_bodega_temporal = function(documento_temporal_id, usuario_id, callback) {
 
@@ -137,6 +150,46 @@ MovimientosBodegasModel.prototype.consultar_detalle_movimiento_bodega_temporal =
 
 };
 
+
+
+MovimientosBodegasModel.prototype.consultar_productos_auditados = function(documento_temporal_id, usuario_id, callback){
+      var sql = " select distinct doc_tmp_id, * from (\
+        select\
+        b.item_id,\
+        b.doc_tmp_id,\
+        b.codigo_producto,\
+        fc_descripcion_producto(b.codigo_producto) as descripcion_producto,\
+        b.cantidad :: integer as cantidad_ingresada,\
+        to_char(b.fecha_vencimiento, 'dd-mm-yyyy') as fecha_vencimiento,\
+        b.lote,\
+        b.auditado\
+        from inv_bodegas_movimiento_tmp a\
+        inner join inv_bodegas_movimiento_tmp_d b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id and b.auditado = '1'\
+        where a.doc_tmp_id = $1 and a.usuario_id = $2\
+        UNION\
+        select\
+        0 as item_id,\
+        b.doc_tmp_id,\
+        b.codigo_producto,\
+        fc_descripcion_producto(b.codigo_producto) as descripcion_producto,\
+        0 as cantidad_ingresada,\
+        null as fecha_vencimiento,\
+        '' as lote,\
+        '1' as auditado\
+        from inv_bodegas_movimiento_tmp a\
+        inner join inv_bodegas_movimiento_tmp_justificaciones_pendientes b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
+        where a.doc_tmp_id = $1 and a.usuario_id = $2 and b.codigo_producto not in(\
+              select aa.codigo_producto from inv_bodegas_movimiento_tmp_d aa where aa.doc_tmp_id = $1 and aa.usuario_id = $2\
+        ) and COALESCE(b.justificacion_auditor, '') <> ''\
+      ) as a ";
+    
+    
+    G.db.query(sql, [documento_temporal_id, usuario_id], function(err, rows, result) {
+
+        callback(err, rows);
+    });
+    
+};
 
 MovimientosBodegasModel.prototype.consultar_detalle_movimiento_bodega_temporal_por_termino = function(documento_temporal_id, usuario_id, filtro, callback){
     var sql_aux = "";

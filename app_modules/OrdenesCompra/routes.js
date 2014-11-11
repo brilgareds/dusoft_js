@@ -23,14 +23,19 @@ module.exports = function(app, di_container) {
         c_ordenes_compra.modificarUnidadNegocio(req, res);
     });
     
+    // Modificar Observacion de una orden de compra 
+    app.post('/api/OrdenesCompra/modificarObservacion', function(req, res) {
+        c_ordenes_compra.modificarObservacion(req, res);
+    });
+    
     // Insertar Detalle Ordene de Compras
     app.post('/api/OrdenesCompra/insertarDetalleOrdenCompra', function(req, res) {
         c_ordenes_compra.insertarDetalleOrdenCompra(req, res);
     });
     
     // Eliminar Orden de Compras
-    app.post('/api/OrdenesCompra/eliminarOrdenCompra', function(req, res) {
-        c_ordenes_compra.eliminarOrdenCompra(req, res);
+    app.post('/api/OrdenesCompra/anularOrdenCompra', function(req, res) {
+        c_ordenes_compra.anularOrdenCompra(req, res);
     });
     
     // Eliminar Producto de una Orden de Compra
@@ -46,6 +51,11 @@ module.exports = function(app, di_container) {
     // Consultar Detalle Orden de Compra por numero de orden
     app.post('/api/OrdenesCompra/consultarDetalleOrdenCompra', function(req, res) {
         c_ordenes_compra.consultarDetalleOrdenCompra(req, res);
+    });
+    
+    // Generar Orden de Compra
+    app.post('/api/OrdenesCompra/finalizarOrdenCompra', function(req, res) {
+        c_ordenes_compra.finalizarOrdenCompra(req, res);
     });
 
 };

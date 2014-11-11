@@ -60,8 +60,20 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
             };
             
             // Observacion
+            OrdenCompraPedido.prototype.set_observacion = function(observacion) {
+                this.observacion = observacion;
+            };
+            
             OrdenCompraPedido.prototype.get_observacion = function() {
                 return this.observacion;
+            };
+            
+            //Estado
+            OrdenCompraPedido.prototype.set_estado = function(estado) {
+                this.estado = estado;
+            };
+            OrdenCompraPedido.prototype.get_estado = function() {
+                return this.estado;
             };
             
             // Descripcion estado
@@ -80,6 +92,15 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
             
             OrdenCompraPedido.prototype.get_ingreso_temporal = function() {
                 return (this.tiene_ingreso_temporal === 0) ? false : true ;
+            };
+            
+            // Estado de Digitacion Orden Compra
+            OrdenCompraPedido.prototype.set_estado_digitacion = function(estado_digitacion) {
+                this.estado_digitacion = estado_digitacion;
+            };
+            
+            OrdenCompraPedido.prototype.get_estado_digitacion = function() {
+                return this.estado_digitacion ;
             };
 
             // Productos

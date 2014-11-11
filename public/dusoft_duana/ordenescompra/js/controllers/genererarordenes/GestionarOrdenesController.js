@@ -28,11 +28,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
             // Variables
-            $scope.numero_orden = localStorageService.get("numero_orden") || 0;
+            $scope.numero_orden = parseInt(localStorageService.get("numero_orden")) || 0;
+            $scope.vista_previa = (localStorageService.get("vista_previa") === '1') ? true : false;
+
             $scope.codigo_proveedor_id = '';
             $scope.unidad_negocio_id = '';
             $scope.observacion = '';
+            $scope.descripcion_estado = '';
             $scope.producto_eliminar = '';
+            $scope.cantidad_productos_orden_compra = 0;
+            
 
             // Variable para paginacion
             $scope.paginas = 0;
@@ -62,6 +67,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                         if (continuar) {
                             $scope.buscar_detalle_orden_compra();
+
+                            if (!$scope.vista_previa)
+                                $scope.finalizar_orden_compra(false);
                         }
                     });
                 }
@@ -87,10 +95,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                         $scope.orden_compra.set_proveedor($scope.Empresa.get_proveedor(datos.codigo_proveedor_id));
                         $scope.orden_compra.set_usuario(Usuario.get(datos.usuario_id, datos.nombre_usuario));
+                        $scope.orden_compra.set_descripcion_estado(datos.descripcion_estado);
 
                         $scope.codigo_proveedor_id = $scope.orden_compra.get_proveedor().get_codigo_proveedor();
                         $scope.unidad_negocio_id = $scope.orden_compra.get_unidad_negocio().get_codigo();
                         $scope.observacion = $scope.orden_compra.get_observacion();
+                        $scope.descripcion_estado = $scope.orden_compra.get_descripcion_estado();
+
 
                         callback(true);
                     } else {
@@ -106,7 +117,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 if ($scope.ultima_busqueda != $scope.termino_busqueda) {
                     $scope.pagina_actual = 1;
                 }
-                
+
 
                 var obj = {session: $scope.session, data: {ordenes_compras: {numero_orden: $scope.numero_orden, termino_busqueda: termino, pagina_actual: $scope.pagina_actual}}};
 
@@ -137,6 +148,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             producto.set_cantidad_seleccionada(data.cantidad_solicitada);
                             $scope.orden_compra.set_productos(producto);
                         });
+                        
+                        $scope.cantidad_productos_orden_compra = $scope.orden_compra.get_productos().length;
                     }
                 });
             };
@@ -219,16 +232,41 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     }
                 };
 
-              
+
                 Request.realizarRequest(API.ORDENES_COMPRA.MODIFICAR_UNIDAD_NEGOCIO, "POST", obj, function(data) {
 
-                   
+
 
                     AlertService.mostrarMensaje("warning", data.msj);
 
                     if (data.status === 200) {
 
-                        $scope.orden_compra.set_unidad_negocio($scope.Empresa.get_unidad_negocio($scope.unidad_negocio_id));                       
+                        $scope.orden_compra.set_unidad_negocio($scope.Empresa.get_unidad_negocio($scope.unidad_negocio_id));
+                    }
+                });
+            };
+
+
+            $scope.finalizar_orden_compra = function(finalizar_orden_compra) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        ordenes_compras: {
+                            numero_orden: $scope.orden_compra.get_numero_orden(),
+                            finalizar_orden_compra: finalizar_orden_compra
+                        }
+                    }
+                };
+
+
+                Request.realizarRequest(API.ORDENES_COMPRA.FINALIZAR_ORDEN_COMPRA, "POST", obj, function(data) {
+
+                    AlertService.mostrarMensaje("warning", data.msj);
+
+                    if (data.status === 200) {
+                        if (finalizar_orden_compra)
+                            $scope.cancelar_orden_compra();
                     }
                 });
             };
@@ -267,11 +305,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.buscar_productos = function() {
 
                 if ($scope.numero_orden === 0) {
-
+                    
                     $scope.orden_compra = OrdenCompra.get($scope.numero_orden, 1, $scope.observacion, new Date());
                     $scope.orden_compra.set_unidad_negocio($scope.Empresa.get_unidad_negocio($scope.unidad_negocio_id));
                     $scope.orden_compra.set_proveedor($scope.Empresa.get_proveedor($scope.codigo_proveedor_id));
                     $scope.orden_compra.set_usuario(Usuario.get(Sesion.usuario_id));
+                    $scope.orden_compra.set_descripcion_estado('Activa');
                 }
 
 
@@ -298,6 +337,32 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             };
 
+            $scope.modificar_observacion = function() {
+
+                if ($scope.numero_orden > 0 && $scope.observacion !== '' && $scope.observacion !== $scope.orden_compra.get_observacion()) {
+                    // Actualizar Observacion
+
+                    var obj = {
+                        session: $scope.session,
+                        data: {
+                            ordenes_compras: {
+                                numero_orden: $scope.orden_compra.get_numero_orden(),
+                                observacion: $scope.observacion
+                            }
+                        }
+                    };
+
+
+                    Request.realizarRequest(API.ORDENES_COMPRA.MODIFICAR_OBSERVACION, "POST", obj, function(data) {
+
+                        AlertService.mostrarMensaje("warning", data.msj);
+
+                        if (data.status === 200) {
+                            $scope.orden_compra.set_observacion($scope.observacion);
+                        }
+                    });
+                }
+            };
 
             $scope.cerrar = function() {
 
@@ -307,7 +372,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 //Consultar detalle de Orden de Compra
                 if ($scope.numero_orden > 0) {
-                    $scope.buscar_detalle_orden_compra();
+                    $scope.buscar_detalle_orden_compra();                    
                 }
             };
 
@@ -330,7 +395,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'cantidad_seleccionada', width: "7%", displayName: "Cantidad"},
                     {width: "7%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="eliminar_producto_orden_compra(row)" ><span class="glyphicon glyphicon-remove"></span></button>\
+                                            <button class="btn btn-default btn-xs" ng-click="eliminar_producto_orden_compra(row)" ng-disabled="vista_previa" ><span class="glyphicon glyphicon-remove"></span></button>\
                                         </div>'}
                 ]
             };
@@ -341,7 +406,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 var producto = row.entity;
                 $scope.producto_eliminar = producto;
 
-                //that.eliminar_producto();
+
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
@@ -363,13 +428,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                 </div>',
                     scope: $scope,
                     controller: function($scope, $modalInstance) {
-                        
-                        $scope.confirmar = function() {                            
+
+                        $scope.confirmar = function() {
                             $scope.eliminar_producto();
                             $modalInstance.close();
                         };
 
-                        $scope.close = function() {                            
+                        $scope.close = function() {
                             $modalInstance.close();
                         };
 
@@ -397,6 +462,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
 
             that.gestionar_consultas();
+
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;

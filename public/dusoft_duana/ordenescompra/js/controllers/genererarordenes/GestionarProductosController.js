@@ -36,22 +36,11 @@ define(["angular", "js/controllers",
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
             $scope.pagina_actual = 1;
+            
             $rootScope.$on('gestionar_productosCompleto', function(e, parametros) {
 
-
-                /*console.log(parametros[1]);
-                 console.log($scope.orden_compra);
-                 return
-                 var numero_orden = parametros[1].numero_orden;
-                 var unidad_negocio_id = parametros[1].unidad_negocio_id;
-                 var codigo_proveedor_id = parametros[1].codigo_proveedor_id;
-                 var observacion = parametros[1].observacion;
-                 
-                 $scope.orden_compra = OrdenCompra.get(numero_orden, 1, observacion, new Date());
-                 $scope.orden_compra.set_unidad_negocio($scope.Empresa.get_unidad_negocio(unidad_negocio_id));
-                 $scope.orden_compra.set_proveedor($scope.Empresa.get_proveedor(codigo_proveedor_id));
-                 $scope.orden_compra.set_usuario(Usuario.get(Sesion.usuario_id));*/
-
+                //console.log('=============== Iniciando Slider =============');
+                //console.log($scope.orden_compra);
 
                 that.buscar_laboratorios();
                 that.buscar_productos();
@@ -163,6 +152,7 @@ define(["angular", "js/controllers",
 
                     if (data.status === 200 && data.obj.numero_orden > 0) {
                         $scope.orden_compra.set_numero_orden(data.obj.numero_orden);
+                        localStorageService.add("numero_orden", $scope.orden_compra.get_numero_orden());
                         callback(true);
                     } else {
                         callback(false);

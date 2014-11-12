@@ -48,8 +48,9 @@ define(["angular"], function(angular) {
                 'LISTAR_DETALLE_PEDIDO_TEMPORAL':BASE_URL+'/PedidosFarmacias/listarProductosDetalleTemporal',
                 'ELIMINAR_REGISTRO_PEDIDO_TEMPORAL':BASE_URL+'/PedidosFarmacias/eliminarRegistroEncabezadoTemporal',
                 'ELIMINAR_REGISTRO_DETALLE_PEDIDO_TEMPORAL':BASE_URL+'/PedidosFarmacias/eliminarRegistroDetalleTemporal',
-                'INSERTAR_PEDIDO_DEFINITIVO':BASE_URL+'/PedidosFarmacias/insertarPedidoFarmaciaDefinitivo',
-                'INSERTAR_DETALLE_PEDIDO_DEFINITIVO':BASE_URL+'/PedidosFarmacias/insertarDetallePedidoFarmaciaDefinitivo'
+                'ELIMINAR_DETALLE_PEDIDO_FARMACIA_TEMPORAL_COMPLETO':BASE_URL+'/PedidosFarmacias/eliminarDetalleTemporalCompleto',
+                'INSERTAR_PEDIDO_FARMACIA_DEFINITIVO':BASE_URL+'/PedidosFarmacias/insertarPedidoFarmaciaDefinitivo',
+                'INSERTAR_DETALLE_PEDIDO_FARMACIA_DEFINITIVO':BASE_URL+'/PedidosFarmacias/insertarDetallePedidoFarmaciaDefinitivo'
                 
 	    },
 	    'TERCEROS':{

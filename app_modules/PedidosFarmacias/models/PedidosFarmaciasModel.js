@@ -137,6 +137,15 @@ PedidosFarmaciasModel.prototype.eliminar_registro_detalle_temporal = function(em
     });
 };
 
+PedidosFarmaciasModel.prototype.eliminar_detalle_temporal_completo = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback)
+{
+    var sql = "DELETE FROM solicitud_pro_a_bod_prpal_tmp WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and usuario_id = $4";
+
+    G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, usuario_id], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
 PedidosFarmaciasModel.prototype.insertar_pedido_farmacia_definitivo = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion, tipo_pedido, callback) {
     
     var sql = "INSERT INTO solicitud_productos_a_bodega_principal(farmacia_id, centro_utilidad, bodega, observacion, usuario_id, fecha_registro, empresa_destino, sw_despacho, estado, tipo_pedido) \

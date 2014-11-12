@@ -81,17 +81,22 @@ define(["angular", "js/controllers",'models/ClientePedido',
             
 
            that.agregarLote = function(data){
+              // console.log("cantidad lote  ", data)
                 var lote = LoteProductoPedido.get(data.lote, data.fecha_vencimiento);
                 lote.existencia_actual = data.existencia_actual;
                 lote.disponible = $scope.rootEditarProducto.producto.disponible;
                 lote.item_id = $scope.rootEditarProducto.producto.lote.item_id;
-                if(that.esLoteSeleccionado(lote)){
+                var seleccion = that.esLoteSeleccionado(lote); 
+                
+                if(seleccion.seleccionado){
+                    console.log("seleccion ",seleccion)
                     //lote.selected = true;
                     //console.log("cantidad ingresada >>>>>>>>>>>>>>>>>",$scope.rootEditarProducto.producto.cantidad_separada)
                    // lote.cantidad_ingresada = $scope.rootEditarProducto.producto.cantidad_separada;
 
                     //$scope.rootEditarProducto.producto.lote.existencia_actual = lote.existencia_actual;
                     lote.selected = true;
+                    lote.cantidad_ingresada = seleccion.lote.cantidad_ingresada;
 
                 }
 
@@ -130,6 +135,8 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
              $scope.onCantidadIngresadaChange= function(row,e){
                 //if(!row.entity.selected) return;
+                
+                row.entity.selected = !row.entity.selected;
                 $scope.rootEditarProducto.validacionlote = that.esCantidadIngresadaValida(row.entity);
 
                 if($scope.rootEditarProducto.validacionlote.valido){
@@ -293,11 +300,11 @@ define(["angular", "js/controllers",'models/ClientePedido',
                         && lote.fecha_vencimiento === _lote.fecha_vencimiento){
                         console.log("lote encontrado ", _lote)
                     
-                      return true;
+                      return {seleccionado:true, lote:_lote};
                    }
                 }
 
-                 return false;
+                 return {seleccionado:false, lote:{}};
             };
 
             $scope.auditarPedido = function(){

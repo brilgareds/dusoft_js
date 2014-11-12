@@ -30,6 +30,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             // Variables
             $scope.numero_orden = parseInt(localStorageService.get("numero_orden")) || 0;
             $scope.vista_previa = (localStorageService.get("vista_previa") === '1') ? true : false;
+            
+            $scope.arhivo_plano = '';
+            $scope.file = {};
 
             $scope.codigo_proveedor_id = '';
             $scope.unidad_negocio_id = '';
@@ -150,7 +153,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
 
                         $scope.orden_compra.limpiar_productos();
-                        
+
                         $scope.valor_subtotal = 0;
                         $scope.valor_iva = 0;
                         $scope.valor_total = 0;
@@ -497,6 +500,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $scope.buscar_detalle_orden_compra($scope.termino_busqueda, true);
             };
 
+            $scope.subirArchivo = function() {
+
+                console.log('=============== archivo_plano ===================');
+                console.log('file is ' + $scope.arhivo_plano);
+                console.log('file is ' + $scope.file.arhivo_plano);
+                console.log('=================================================');
+                
+            };
 
             that.gestionar_consultas();
 

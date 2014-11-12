@@ -150,7 +150,7 @@
                 
                 <tabset> <!--Grupo de Tabs-->
                     
-                    <tab disabled="rootCreaPedidoFarmacia.bloquear" active="rootCreaPedidoFarmacia.tab_estados.tab1">
+                    <tab disabled="rootCreaPedidoFarmacia.bloquear_tab" active="rootCreaPedidoFarmacia.tab_estados.tab1">
                         
                         <tab-heading>
                             <b> Incluir Producto Manual</b>
@@ -162,19 +162,24 @@
                             
                             <div class="input-group navbar-form ">
                             
-                                <button type="button" class="btn btn-default btn-medium ng-scope" ng-disabled="rootCreaPedidoFarmacia.bloquear" ng-click="onRowClickSelectProducto(2)">
+                                <button type="button" class="btn btn-default btn-medium ng-scope" ng-disabled="rootCreaPedidoFarmacia.bloquear_boton_incluir" ng-click="onRowClickSelectProducto(2)">
                                     <span class="glyphicon glyphicon-plus"></span> Incluir Producto
                                 </button>
                             
-                                <input type="text" class="form-control pull-right" ng-disabled="rootCreaPedidoFarmacia.bloquear" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="rootCreaPedidoFarmacia.termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">
+<!--                                <input type="text" class="form-control pull-right" ng-disabled="rootCreaPedidoFarmacia.bloquear" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="rootCreaPedidoFarmacia.termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">
                                 <div class="input-group-btn" >
                                     <button class="btn btn-default pull-right" type="submit" ng-disabled="rootCreaPedidoFarmacia.bloquear" ng-click="buscarDetalleDocumentoTemporal(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
-                                </div>
+                                </div>-->
                                 
                             </div>
                         <!--</div>-->
                         <!--<div class="panel-body">-->
-                            <div class="auditadosGrid" ng-grid="rootCreaPedidoFarmacia.lista_productos"></div>
+                            <div ng-if="rootCreaPedidoFarmacia.grid_pedido_generado_visible === false">
+                                <div class="auditadosGrid" ng-grid="rootCreaPedidoFarmacia.lista_productos"></div>
+                            </div>
+                            <div ng-if="rootCreaPedidoFarmacia.grid_pedido_generado_visible === true">
+                                <div class="auditadosGrid" ng-grid="rootCreaPedidoFarmacia.detalle_pedido_generado"></div>
+                            </div>
                         <!--</div>-->
                         
                     </tab>
@@ -224,7 +229,7 @@
     </div>
     
     <div class="col-sm-12 btn-toolbar">
-        <button type="submit" ng-disabled="!rootCreaPedidoFarmacia.bloqueo_producto_incluido" class="btn btn-accion btn-success pull-right">Generar Pedido</button>
+        <button type="submit" ng-disabled="rootCreaPedidoFarmacia.bloqueo_generar_pedido" class="btn btn-accion btn-success pull-right" ng-click="generarPedidoFarmacia()">Generar Pedido</button>
         <button type="submit" class="btn btn-accion btn-warning pull-right" ng-click="abrirViewVerPedidosFarmacias()">Cancelar Pedido</button>
     </div>
 

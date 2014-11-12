@@ -82,6 +82,11 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.eliminarRegistroDetalleTemporal(req, res);
     }); 
     
+    // Elimina el detalle completo del pedido por empresa, centro de utilidad, bodega y usuario
+    app.post('/api/PedidosFarmacias/eliminarDetalleTemporalCompleto', function(req, res) {
+        c_pedidos_farmacias.eliminarDetalleTemporalCompleto(req, res);
+    }); 
+    
     // Inserta el encabezado del pedido definitivo
     app.post('/api/PedidosFarmacias/insertarPedidoFarmaciaDefinitivo', function(req, res) {
         c_pedidos_farmacias.insertarPedidoFarmaciaDefinitivo(req, res);

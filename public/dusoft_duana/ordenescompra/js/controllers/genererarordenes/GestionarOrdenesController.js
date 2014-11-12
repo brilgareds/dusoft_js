@@ -38,6 +38,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.producto_eliminar = '';
             $scope.cantidad_productos_orden_compra = 0;
 
+            // Variables de Totales
+            $scope.valor_subtotal = 0;
+            $scope.valor_iva = 0;
+            $scope.valor_total = 0;
+
+
 
             // Variable para paginacion
             $scope.paginas = 0;
@@ -89,7 +95,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                         var unidad_negocio = ($scope.Empresa.get_unidad_negocio(datos.codigo_unidad_negocio).length > 0) ? $scope.Empresa.get_unidad_negocio(datos.codigo_unidad_negocio) : UnidadNegocio.get(datos.codigo_unidad_negocio, datos.descripcion)
 
-                        //$scope.orden_compra.set_unidad_negocio($scope.Empresa.get_unidad_negocio(datos.codigo_unidad_negocio));
                         $scope.orden_compra.set_unidad_negocio(unidad_negocio);
 
 
@@ -102,6 +107,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         $scope.observacion = $scope.orden_compra.get_observacion();
                         $scope.descripcion_estado = $scope.orden_compra.get_descripcion_estado();
 
+                        // Totales                        
+                        $scope.valor_subtotal = datos.subtotal;
+                        $scope.valor_iva = datos.valor_iva;
+                        $scope.valor_total = datos.total;
 
                         callback(true);
                     } else {
@@ -141,22 +150,23 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
 
                         $scope.orden_compra.limpiar_productos();
+                        
+                        $scope.valor_subtotal = 0;
+                        $scope.valor_iva = 0;
+                        $scope.valor_total = 0;
 
                         lista_productos.forEach(function(data) {
 
-                            var producto = Producto.get(data.codigo_producto, data.descripcion_producto, '', data.porc_iva, data.valor);
+                            var producto = Producto.get(data.codigo_producto, data.descripcion_producto, '', parseFloat(data.porc_iva).toFixed(2), data.valor);
                             producto.set_cantidad_seleccionada(data.cantidad_solicitada);
+
                             $scope.orden_compra.set_productos(producto);
-                            $scope.orden_compra.set_productos(producto);
-                            $scope.orden_compra.set_productos(producto);
-                            $scope.orden_compra.set_productos(producto);
-                            $scope.orden_compra.set_productos(producto);
-                            $scope.orden_compra.set_productos(producto);
-                            $scope.orden_compra.set_productos(producto);
-                            $scope.orden_compra.set_productos(producto);
-                            $scope.orden_compra.set_productos(producto);
-                            $scope.orden_compra.set_productos(producto);
-                            $scope.orden_compra.set_productos(producto);
+
+                            // Totales                        
+                            $scope.valor_subtotal += data.subtotal;
+                            $scope.valor_iva += data.valor_iva;
+                            $scope.valor_total += data.total;
+
                         });
 
                         $scope.cantidad_productos_orden_compra = $scope.orden_compra.get_productos().length;
@@ -242,10 +252,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     }
                 };
 
-
                 Request.realizarRequest(API.ORDENES_COMPRA.MODIFICAR_UNIDAD_NEGOCIO, "POST", obj, function(data) {
-
-
 
                     AlertService.mostrarMensaje("warning", data.msj);
 
@@ -403,15 +410,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                                     <tbody>\
                                                             <tr>\
                                                                     <td class="left"><strong>Subtotal</strong></td>\
-                                                                    <td class="right">$8.497,00</td>    \
+                                                                    <td class="right">{{valor_subtotal | currency: "$ "}}</td>    \
                                                             </tr>\
                                                             <tr>\
                                                                     <td class="left"><strong>I.V.A</strong></td>\
-                                                                    <td class="right">$1,699,40</td>                                        \
+                                                                    <td class="right">{{valor_iva | currency: "$ "}}</td>                                        \
                                                             </tr>\
                                                             <tr>\
                                                                     <td class="left"><strong>Total</strong></td>\
-                                                                    <td class="right">$679,76</td>                                        \
+                                                                    <td class="right">{{valor_total | currency: "$ "}}</td>                                        \
                                                             </tr>\
                                                     </tbody>\
                                             </table>\
@@ -420,8 +427,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Codigo Producto', width: "20%"},
                     {field: 'descripcion', displayName: 'Descripcion'},
-                    {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "15%", cellFilter: "currency:'$ '"},
                     {field: 'cantidad_seleccionada', width: "7%", displayName: "Cantidad"},
+                    {field: 'iva', width: "7%", displayName: "I.V.A (%)"},
+                    {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "10%", cellFilter: "currency:'$ '"},
                     {width: "7%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs" ng-click="eliminar_producto_orden_compra(row)" ng-disabled="vista_previa" ><span class="glyphicon glyphicon-remove"></span></button>\

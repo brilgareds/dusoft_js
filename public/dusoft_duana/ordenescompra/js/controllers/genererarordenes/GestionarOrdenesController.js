@@ -404,8 +404,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.lista_productos = {
                 data: 'orden_compra.get_productos()',
                 enableColumnResize: true,
-                enableRowSelection: false,
+                enableRowSelection: true,
                 enableCellSelection: true,
+                enableHighlighting: true,
                 showFooter: true,
                 footerTemplate: '   <div class="row col-md-12">\
                                         <div class="col-md-3 pull-right">\

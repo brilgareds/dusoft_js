@@ -57,8 +57,11 @@ OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_prov
     var sql_aux = " ";
     if (laboratorio_id)
         sql_aux = " AND a.clase_id = $4 ";
+    
     if (numero_orden > 0)
         sql_aux += " AND a.codigo_producto not in ( select a.codigo_producto from compras_ordenes_pedidos_detalle a where a.orden_pedido_id = " + numero_orden + " ) ";
+    
+    
     var sql = " SELECT \
                 e.descripcion as descripcion_grupo,\
                 d.descripcion as descripcion_clase,\

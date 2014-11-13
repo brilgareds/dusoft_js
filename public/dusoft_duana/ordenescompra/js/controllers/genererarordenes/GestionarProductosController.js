@@ -238,6 +238,7 @@ define(["angular", "js/controllers",
                 enableRowSelection: false,
                 enableCellSelection: true,
                 enableCellEditOnFocus: true,
+                enableHighlighting: true,
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Codigo Producto', width: "20%", enableCellEdit: false},
                     {field: 'descripcion', displayName: 'Descripcion', enableCellEdit: false},

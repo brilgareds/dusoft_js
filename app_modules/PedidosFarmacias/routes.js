@@ -95,7 +95,12 @@ module.exports = function(app, di_container) {
     // Inserta el detalle del pedido definitivo
     app.post('/api/PedidosFarmacias/insertarDetallePedidoFarmaciaDefinitivo', function(req, res) {
         c_pedidos_farmacias.insertarDetallePedidoFarmaciaDefinitivo(req, res);
-    });     
+    });    
+    
+    //Consultar Encabezado del Pedido
+    app.post('/api/PedidosFarmacias/consultarEncabezadoPedido', function(req, res) {
+        c_pedidos_farmacias.consultarEncabezadoPedido(req, res);
+    });      
     
     // Listar productos
 //    app.get('/listarProductos', function(req, res) {

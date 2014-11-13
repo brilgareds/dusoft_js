@@ -23,6 +23,11 @@
     padding-bottom: 0%;
 }
 
+.nopadding {
+   padding: 0 !important;
+   margin: 0 !important;
+}
+
 .h4MarginTopBottom {
 margin-top: 0px;
 margin-bottom: 0px;

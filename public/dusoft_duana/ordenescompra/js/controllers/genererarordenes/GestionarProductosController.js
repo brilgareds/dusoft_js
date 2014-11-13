@@ -48,10 +48,9 @@ define(["angular", "js/controllers",
             
             $rootScope.$on('cerrar_gestion_productosCompleto', function(e, parametros) {
 
-                console.log('============= cerrar_gestion_productosCompleto ==============');
-                
                  $scope.Empresa.limpiar_productos();
                  $scope.Empresa.limpiar_laboratorios();
+                 $scope.termino_busqueda = "";
                  
                  $scope.$$watchers = null;                
             });
@@ -100,9 +99,6 @@ define(["angular", "js/controllers",
                 };
 
                 Request.realizarRequest(API.ORDENES_COMPRA.LISTAR_PRODUCTOS, "POST", obj, function(data) {
-                    
-                    console.log('======== RESPUESTA SERVER ==========');
-                    console.log(data.obj.lista_productos);
                     
                     $scope.ultima_busqueda = $scope.termino_busqueda;
                     if (data.status === 200) {
@@ -247,7 +243,7 @@ define(["angular", "js/controllers",
                     {field: 'descripcion', displayName: 'Descripcion', enableCellEdit: false},
                     {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "15%", cellFilter: "currency:'$ '", enableCellEdit: false},
                     {field: 'cantidad', width: "7%", displayName: "Cantidad", enableCellEdit: true, cellFilter: "number"},
-                    {width: "7%", displayName: "Opcion", cellClass: "txt-center",
+                    {width: "7%", displayName: "Opcion", cellClass: "txt-center", enableCellEdit: false,
                         cellTemplate: '<div class="btn-toolbar">\
                                             <button class="btn btn-default btn-xs" ng-click="calcular_valores_producto(row)" ><span class="glyphicon glyphicon-zoom-in"></span></button>\
                                             <button class="btn btn-default btn-xs" ng-click="solicitar_producto(row)" ><span class="glyphicon glyphicon-ok"></span></button>\

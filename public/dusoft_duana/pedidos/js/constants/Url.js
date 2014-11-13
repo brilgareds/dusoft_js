@@ -24,7 +24,10 @@ define(["angular"], function(angular) {
                 'CONSULTAR_PRODUCTOS_AUDITADOS_CLIENTE':BASE_URL+'/movBodegas/E008/auditoriaProductosClientes',
                 'CONSULTAR_PRODUCTOS_AUDITADOS_FARMACIA':BASE_URL+'/movBodegas/E008/auditoriaProductosFarmacias',
                 'GENERAR_DESPACHO':BASE_URL+'/movBodegas/E008/generarDocumentoDespachoClientes',
-                'MODIFICAR_DETALLE_TEMPORAL':BASE_URL+'/movBodegas/E008/modificarDetalleDocumentoTemporal'
+                'MODIFICAR_DETALLE_TEMPORAL':BASE_URL+'/movBodegas/E008/modificarDetalleDocumentoTemporal',
+                'AGREGAR_DETALLE_TEMPORAL':BASE_URL+'/movBodegas/E008/detalleDocumentoTemporal',
+                'ELIMINAR_ITEM_TEMPORAL':BASE_URL+'/movBodegas/E008/eliminarProductoDocumentoTemporal',
+                'CONSULTAR_ITEMS_POR_PRODUCTO':BASE_URL+'/movBodegas/E008/buscarItemsTemporal'
 	    },
 	    'PEDIDOS' : {
 	    	'LISTAR_PEDIDOS': BASE_URL+'/PedidosClientes/listarPedidos',	

@@ -188,12 +188,12 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     
                     var producto_pedido_separado = this.crearProductoPedidoDocumentoTemporal(obj, tipo);
                     
-                    documento.getPedido().agregarProducto(producto_pedido_separado);
+                    documento.getPedido().agregarProducto(producto_pedido_separado, true);
 
                 }
 
                 console.log("productos creados >>>>>>>>>>>>>");
-                console.log(documento.getPedido().getProductos())
+                console.log(documento.getPedido().getProductos());
             };
 
 
@@ -301,6 +301,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     
                     if(_producto.codigo_producto === producto.codigo_producto){
                         //console.log(_producto, "productos en la lista ");
+                        _producto.lote.cantidad_ingresada = _producto.cantidad_separada;
                         productos.push(_producto);
                     }
                     

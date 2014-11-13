@@ -524,7 +524,7 @@ OrdenesCompra.prototype.finalizarOrdenCompra = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.ordenes_compras === undefined || args.ordenes_compras.numero_orden === undefined || args.ordenes_compras.finalizar_orden_compra === undefined ) {
+    if (args.ordenes_compras === undefined || args.ordenes_compras.numero_orden === undefined || args.ordenes_compras.finalizar_orden_compra === undefined) {
         res.send(G.utils.r(req.url, 'numero_orden no esta definidas', 404, {}));
         return;
     }
@@ -558,9 +558,9 @@ OrdenesCompra.prototype.finalizarOrdenCompra = function(req, res) {
                         return;
                     } else {
                         var msj = " Orden de Compra Finalizada Correctamente"
-                        if(finalizar_orden_compra === '0')
+                        if (finalizar_orden_compra === '0')
                             msj = ' Orden de Compra en proceso de modificacion';
-                        
+
                         res.send(G.utils.r(req.url, msj, 200, {orden_compra: []}));
                         return;
                     }
@@ -573,6 +573,39 @@ OrdenesCompra.prototype.finalizarOrdenCompra = function(req, res) {
         }
 
     });
+};
+
+
+// Subir Plano Orden de Compra
+OrdenesCompra.prototype.subirPlano = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    var ruta_tmp = req.files.file.path;
+    var nombre_archivo = G.random.randomKey(3, 3) + '.' + ruta_tmp.split('.').pop();
+    var ruta_nueva = G.dirname + G.settings.carpeta_temporal + nombre_archivo;
+
+    if (G.fs.existsSync(ruta_tmp)) {
+
+        G.fs.copy(ruta_tmp, ruta_nueva, function(err) {
+            if (err) {
+                console.error(err);
+                return;
+            } else {
+                G.fs.unlink(ruta_tmp, function(err) {
+                    if (err)
+                        throw err;
+                    console.log('Copy complete');
+                    console.log('successfully COPY and deleted FILE ');
+                    console.log('Existe el Temporal ??', G.fs.existsSync(ruta_tmp));
+                });
+            }
+        });
+    } else {
+        console.log('NOOO Existe el File ', ruta_tmp);
+    }
 };
 
 

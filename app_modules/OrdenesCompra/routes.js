@@ -57,5 +57,11 @@ module.exports = function(app, di_container) {
     app.post('/api/OrdenesCompra/finalizarOrdenCompra', function(req, res) {
         c_ordenes_compra.finalizarOrdenCompra(req, res);
     });
+    
+    // Subir Plano Orden de Compra
+    //app.post('/api/OrdenesCompra/subirPlano', function(req, res) {
+    app.post('/subirPlano', function(req, res) {
+        c_ordenes_compra.subirPlano(req, res);
+    });
 
 };

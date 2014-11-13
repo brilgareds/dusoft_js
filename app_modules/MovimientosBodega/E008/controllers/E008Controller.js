@@ -201,56 +201,6 @@ E008Controller.prototype.detalleDocumentoTemporal = function(req, res) {
     var that = this;
 
     var args = req.body.data;
-
-    /*if (args.documento_temporal === undefined || args.documento_temporal.doc_tmp_id === undefined || args.documento_temporal.empresa_id === undefined || args.documento_temporal.centro_utilidad_id === undefined || args.documento_temporal.bodega_id === undefined) {
-        res.send(G.utils.r(req.url, 'El doc_tmp_id, empresa_id, centro_utilidad_id o  bodega_id No Estan Definidos', 404, {}));
-        return;
-    }
-
-    if (args.documento_temporal.codigo_producto === undefined || args.documento_temporal.cantidad_ingresada === undefined) {
-        res.send(G.utils.r(req.url, 'El código de producto o la cantidad ingresada no están definidas', 404, {}));
-        return;
-    }
-
-    if (args.documento_temporal.lote === undefined || args.documento_temporal.fecha_vencimiento === undefined) {
-        res.send(G.utils.r(req.url, 'El lote o la fecha de vencimiento no están definidas', 404, {}));
-        return;
-    }
-
-    if (args.documento_temporal.iva === undefined || args.documento_temporal.valor_unitario === undefined) {
-        res.send(G.utils.r(req.url, 'El IVA o El vlr Unitario no están definidas', 404, {}));
-        return;
-    }
-
-    if (args.documento_temporal.total_costo === undefined || args.documento_temporal.total_costo_pedido === undefined) {
-        res.send(G.utils.r(req.url, 'El costo total y el costo total del pedido no están definidas', 404, {}));
-        return;
-    }
-
-    if (args.documento_temporal.doc_tmp_id === '' || args.documento_temporal.empresa_id === '' || args.documento_temporal.centro_utilidad_id === '' || args.documento_temporal.bodega_id === '') {
-        res.send(G.utils.r(req.url, 'El doc_tmp_id, empresa_id, centro_utilidad_id o  bodega_id estan vacios', 404, {}));
-        return;
-    }
-
-    if (args.documento_temporal.codigo_producto === '' || args.documento_temporal.cantidad_ingresada === '' || args.documento_temporal.cantidad_ingresada === 0) {
-        res.send(G.utils.r(req.url, 'El código de producto esta vacio o la cantidad ingresada es igual a 0', 404, {}));
-        return;
-    }
-
-    if (args.documento_temporal.lote === '' || args.documento_temporal.fecha_vencimiento === '') {
-        res.send(G.utils.r(req.url, 'El lote o la fecha de vencimiento están vacias', 404, {}));
-        return;
-    }
-
-    if (args.documento_temporal.iva === '' || args.documento_temporal.valor_unitario === '') {
-        res.send(G.utils.r(req.url, 'El IVA o El vlr Unitario están Vacíos', 404, {}));
-        return;
-    }
-
-    if (args.documento_temporal.total_costo === '' || args.documento_temporal.total_costo_pedido === '') {
-        res.send(G.utils.r(req.url, 'El costo total y el costo total del pedido están vacíos', 404, {}));
-        return;
-    }*/
     
     
     var validacion = __validarParametrosDetalleTemporal(args);
@@ -304,46 +254,6 @@ E008Controller.prototype.modificarDetalleDocumentoTemporal = function(req, res) 
     var that = this;
 
     var args = req.body.data;
-
-
-
-   /* if (args.documento_temporal === undefined || args.documento_temporal.item_id === undefined) {
-        res.send(G.utils.r(req.url, 'El documento o id no Estan Definidos', 404, {}));
-        return;
-    }
-
-    if (args.documento_temporal.cantidad_ingresada === undefined) {
-        res.send(G.utils.r(req.url, 'La cantidad ingresada no están definidas', 404, {}));
-        return;
-    }
-
-    if (args.documento_temporal.lote === undefined || args.documento_temporal.fecha_vencimiento === undefined) {
-        res.send(G.utils.r(req.url, 'El lote o la fecha de vencimiento no están definidas', 404, {}));
-        return;
-    }
-
-    if (args.documento_temporal.valor_unitario === undefined) {
-        res.send(G.utils.r(req.url, 'El vlr Unitario no están definidas', 404, {}));
-        return;
-    }
-
-
-
-
-    if (args.documento_temporal.cantidad_ingresada === '' || args.documento_temporal.cantidad_ingresada === 0) {
-        res.send(G.utils.r(req.url, 'La cantidad ingresada es igual a 0', 404, {}));
-        return;
-    }
-
-    if (args.documento_temporal.lote === '' || args.documento_temporal.fecha_vencimiento === '') {
-        res.send(G.utils.r(req.url, 'El lote o la fecha de vencimiento están vacias', 404, {}));
-        return;
-    }
-
-    if (args.documento_temporal.valor_unitario === '') {
-        res.send(G.utils.r(req.url, 'El vlr Unitario están Vacíos', 404, {}));
-        return;
-    }*/
     
     var validacion = __validarParametrosDetalleTemporal(args);
     if(!validacion.valido){
@@ -1223,6 +1133,39 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
             }
         });
     }
+};
+
+E008Controller.prototype.buscarItemsTemporal = function(req,res){
+    var that = this;
+    var args = req.body.data;
+    
+     if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined ||
+         args.documento_temporal.usuario_id === undefined  || args.documento_temporal.filtro === undefined) {
+     
+        res.send(G.utils.r(req.url, 'documento, usuario_id o filtro No Estan Definidos', 404, {}));
+        return;
+     }
+    
+     if (args.documento_temporal.documento_temporal_id === '' || args.documento_temporal.usuario_id === '') {
+        res.send(G.utils.r(req.url, 'documento_temporal_id O  usuario_id  estan vacios', 404, {}));
+        return;
+     }
+     
+     var filtro = args.documento_temporal.filtro;
+     var documento_temporal_id = args.documento_temporal.documento_temporal_id;
+     var usuario_id = args.documento_temporal.usuario_id;
+    
+    that.m_movientos_bodegas.consultar_detalle_movimiento_bodega_temporal_por_termino(documento_temporal_id, usuario_id, filtro, function(err,
+                                                                                    detalle_documento_temporal) {
+        
+        if (err) {
+            res.send(G.utils.r(req.url, 'Se ha generado un error consultado el detalle del pedido', 500, {documento_temporal: []}));
+            return;
+        }
+        
+        res.send(G.utils.r(req.url, 'Listado productos auditados', 200, {movimientos_bodegas: {lista_productos_auditados: detalle_documento_temporal}}));
+        
+    });
 };
 
 // Buscar productos para auditar de Clientes 

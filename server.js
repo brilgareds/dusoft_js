@@ -9,17 +9,20 @@ var intravenous = require('intravenous');
 var program = require('commander');
 var nodemailer = require('nodemailer');
 var date_utils = require('date-utils');
+var multipart = require('connect-multiparty');
 
 /*=========================================
  * Variables Globales
  * =========================================*/
 G = {};
+G.dirname = __dirname;
 G.settings = require('./lib/Settings').create();
 G.db = require('./lib/Pg').create();
 G.log = require('./lib/Logs');
 G.utils = require('./lib/Utils');
 G.random = require('./lib/Random');
 G.auth = require('./lib/Authentication');
+G.fs = require('fs-extra');
 
 /*=========================================
  * Comandos del Servidor
@@ -105,6 +108,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 app.use(express.favicon());
 app.use(express.logger('dev'));
+app.use(multipart());
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(express.methodOverride());

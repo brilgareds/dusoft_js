@@ -152,19 +152,18 @@ define(["angular", "js/controllers",'models/ClientePedido',
  
             $scope.detalle_pedido_separado_cliente = {
                 data: 'DocumentoTemporal.getPedido().getProductos()',
+                enableHighlighting: true,
                 columnDefs: [                
                     {field: 'codigo_producto', displayName: 'Código Producto'},
-                    {field: 'descripcion', displayName: 'Nombre Producto'},
+                    {field: 'descripcion', displayName: 'Nombre Producto', width:500},
                     {field: 'existencia_lotes', displayName: 'Existencia Lotes'},
                     {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada'},
                     {field: 'cantidad_separada', displayName: "Cantidad Separada"},
-                    {field: 'lote.codigo_lote', displayName: 'Lote'},
-                    {field: 'lote.fecha_vencimiento', displayName: "Fecha Vencimiento"},
                     {field: 'observacion', displayName: "Observación"},
-                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
+                    {field: 'opciones', displayName: "", cellClass: "txt-center", width:40,
                         cellTemplate: ' <div class="row">\n\
                                             <button class="btn btn-default btn-xs" ng-click="onEditarRow(DocumentoTemporal, row)">\n\
-                                                <span class="glyphicon glyphicon-zoom-in">VistaPrevia</span>\n\
+                                                <span class="glyphicon glyphicon-zoom-in"></span>\n\
                                             </button>\n\
                                         </div>'
                     }

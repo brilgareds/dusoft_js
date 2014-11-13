@@ -230,6 +230,38 @@ PedidosFarmacias.prototype.listarPedidosFarmacias = function(req, res) {
     });
 };
 
+PedidosFarmacias.prototype.consultarEncabezadoPedido = function(req, res) {
+    /* Modificar éste código */
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.pedidos_farmacias === undefined || args.pedidos_farmacias.numero_pedido === undefined) {
+        res.send(G.utils.r(req.url, 'numero_pedido no está definido', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_farmacias.numero_pedido === "") {
+        res.send(G.utils.r(req.url, 'numero_pedido está vacio', 404, {}));
+        return;
+    }
+
+
+    var numero_pedido = args.pedidos_farmacias.numero_pedido;
+    
+    this.m_pedidos_farmacias.consultar_encabezado_pedido(numero_pedido, function(err, cabecera_pedido) {
+        
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error en consulta de pedido', 500, {encabezado_pedido: {}}));
+        } else {
+            res.send(G.utils.r(req.url, 'Consulta de pedido satisfactoria', 200, {encabezado_pedido: cabecera_pedido}));
+        }
+        
+        //res.send(G.utils.r(req.url, 'Encabezado Pedido', 200, {pedidos_farmacias: lista_pedidos_farmacias}));
+    });
+    
+};
+
 /**
  * @api {post} /api/PedidosFarmacias/listaPedidosOperarioBodega Asignar Responsables 
  * @apiName Asignar Responsables.

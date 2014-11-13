@@ -14,12 +14,23 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.tipo = 1;
         }
 
-         PedidoAuditoria.prototype = Object.create(Pedido.getClass().prototype)
+         PedidoAuditoria.prototype = Object.create(Pedido.getClass().prototype);
 
         // Pedidos
         
-        PedidoAuditoria.prototype.agregarProducto = function(productos) {
-            this.productos.push(productos);
+        PedidoAuditoria.prototype.agregarProducto = function(producto, validar_existencia) {
+            
+            if(validar_existencia){ 
+                for(var i in this.productos){
+                    var _producto = this.productos[i];
+                    
+                    if(_producto.codigo_producto === producto.codigo_producto){
+                        return false;
+                    }
+                }                
+            }
+            
+            this.productos.push(producto);
         };
 
         PedidoAuditoria.prototype.setTipo = function(tipo) {

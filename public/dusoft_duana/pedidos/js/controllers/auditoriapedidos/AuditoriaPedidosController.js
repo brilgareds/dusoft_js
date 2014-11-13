@@ -188,12 +188,12 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     
                     var producto_pedido_separado = this.crearProductoPedidoDocumentoTemporal(obj, tipo);
                     
-                    documento.getPedido().agregarProducto(producto_pedido_separado);
+                    documento.getPedido().agregarProducto(producto_pedido_separado, true);
 
                 }
 
                 console.log("productos creados >>>>>>>>>>>>>");
-                console.log(documento.getPedido().getProductos())
+                console.log(documento.getPedido().getProductos());
             };
 
 

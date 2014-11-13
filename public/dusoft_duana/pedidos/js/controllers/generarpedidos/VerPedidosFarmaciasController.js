@@ -200,7 +200,12 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     {field: 'estado_actual_pedido', displayName: 'EstadoId', visible: false},
                     {field: 'descripcion_estado_actual_pedido', displayName: 'Estado', cellClass: "txt-center",
                         cellTemplate: "<button ng-class='rootVerPedidosFarmacias.estados[row.entity.estado_actual_pedido]'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
-                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="editarPedidoFarmacia(row.entity)"><span class="glyphicon glyphicon-zoom-in">Activar</span></button></div>'}
+                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
+                        cellTemplate: ' <div>\n\
+                                            <button class="btn btn-default btn-xs" ng-click="editarPedidoFarmacia(row.entity)" ng-disabled="(row.entity.estado_actual_pedido!=0 && row.entity.estado_actual_pedido!=1) || row.entity.estado_separacion != null">\n\
+                                                <span class="glyphicon glyphicon-pencil">Modificar</span>\n\
+                                            </button>\n\
+                                        </div>'}
 
                 ]
 
@@ -218,6 +223,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             $scope.abrirViewPedidoFarmacia = function(){
                 
+                PedidoVenta.pedidoseleccionado = "";    
+                localStorageService.set("pedidoseleccionado", PedidoVenta.pedidoseleccionado);
                 $state.go('CreaPedidosFarmacias');
             };
             

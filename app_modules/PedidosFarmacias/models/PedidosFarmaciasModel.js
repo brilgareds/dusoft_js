@@ -171,6 +171,17 @@ PedidosFarmaciasModel.prototype.insertar_detalle_pedido_farmacia_definitivo = fu
 
 };
 
+PedidosFarmaciasModel.prototype.consultar_encabezado_pedido = function(numero_pedido, callback)
+{
+    var sql = "SELECT farmacia_id, centro_utilidad, bodega, observacion, usuario_id, fecha_registro, empresa_destino, sw_despacho, estado, tipo_pedido\
+                FROM solicitud_productos_a_bodega_principal\
+                WHERE solicitud_prod_a_bod_ppal_id = $1";
+
+    G.db.query(sql, [numero_pedido], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
 
 
 // Listar todos los pedidos de farmacias

@@ -104,6 +104,10 @@ module.exports = function(app, di_container) {
     app.post('/api/movBodegas/E008/consultarProductosAuditados', function(req, res) {
         c_e008.consultarProductosAuditados(req, res);
     });
+    
+    app.post('/api/movBodegas/E008/buscarItemsTemporal', function(req, res){
+        c_e008.buscarItemsTemporal(req, res);
+    });
 
     // Modificar detalle Documento Temporal
     app.post('/api/movBodegas/E008/modificarDetalleDocumentoTemporal', function(req, res) {

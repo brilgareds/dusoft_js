@@ -406,3 +406,8 @@ ul.dropdown-options{
 textarea { 
     resize: none; 
 }
+
+
+.ngRow.selected{
+    background-color: #c9dde1!important;
+}

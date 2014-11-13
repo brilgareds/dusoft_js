@@ -19,6 +19,7 @@
     "nodemailer": "0.6.1",
     "date-utils": "~1.2.15",
     "connect-multiparty": "~1.2.5",
-    "fs-extra": "~0.12.0"
+    "fs-extra": "~0.12.0",
+    "node-xlsx": "~0.5.1"
   }
 }

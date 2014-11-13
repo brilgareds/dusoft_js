@@ -1,6 +1,6 @@
 define(["angular", "js/controllers",'models/ClientePedido',
         'models/PedidoAuditoria', 'models/Separador', 'models/DocumentoTemporal',
-        'models/ProductoPedido', 'models/LoteProductoPedido'], function(angular, controllers) {
+        'models/ProductoPedido', 'models/LoteProductoPedido', "directive/auditoriapedidos/ValidarEventoFila"], function(angular, controllers) {
 
     var fo = controllers.controller('EditarProductoController', [
         '$scope', '$rootScope', 'Request', 
@@ -146,9 +146,10 @@ define(["angular", "js/controllers",'models/ClientePedido',
            $scope.lotes_producto = {
                 data: 'rootEditarProducto.producto.lotesSeleccionados',
                 enableColumnResize: true,
-                enableRowSelection:false,
                 enableHighlighting: true,
-                columnDefs: [                
+                selectedItems:[],
+                columnDefs: [     
+                   // {field: '', displayName: '', width:30, cellTemplate:'<input type="checkbox" ng-model="" />'},
                     {field: 'codigo_lote', displayName: 'Código Lote'},
                     {field: 'fecha_vencimiento', displayName: 'Fecha Vencimiento'},
                     {field: 'existencia_actual', displayName: 'Existencia'},
@@ -158,7 +159,18 @@ define(["angular", "js/controllers",'models/ClientePedido',
                     {field: 'opciones', displayName: "Cambiar", cellClass: "txt-center", width: "10%",
                         cellTemplate: ' <input-check ng-model="row.entity.seleccionado" ng-change="onEditarLote(row)" ng-disabled="row.entity.cantidad_ingresada == 0" > />'
                     }
-                ]
+                ],
+                beforeSelectionChange:function(row, event){
+                   // console.log(row, "before selection ", event);
+                   // console.log($scope.lotes_producto.selectedItems);
+                    if($scope.esEventoPropagadoPorFila(event)){
+                        return row.entity.seleccionado;
+                    } else {
+                        if(!row.entity.seleccionado){
+                            return true;
+                        }
+                    }
+                }
 
             };
 
@@ -365,6 +377,9 @@ define(["angular", "js/controllers",'models/ClientePedido',
             };
 
             $scope.auditarPedido = function(){
+                
+                
+                return;
                 $scope.rootEditarProducto.validacionproducto.valido = true;
               
 

@@ -41,12 +41,12 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.lotesSeleccionados.push(lote);
         };
         
-        ProductoPedido.prototype.sumarCantidadSeleccionada = function() {
+        ProductoPedido.prototype.obtenerCantidadSeleccionada = function() {
             var cantidad = 0;
             for(var i in this.lotesSeleccionados){
                 var lote = this.lotesSeleccionados[i];
                 if(lote.seleccionado){
-                      cantidad += this.lotesSeleccionados[i].cantidad_ingresada;
+                      cantidad += parseInt(this.lotesSeleccionados[i].cantidad_ingresada);
                 }
             }
             

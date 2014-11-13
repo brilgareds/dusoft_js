@@ -35,10 +35,16 @@ define(["angular","js/directive"], function(angular, directive){
             });
 
            //watch para revisar el cambio del modelo en tiempo real
-           scope.$watch(function () {
+           /*scope.$watch(function () {
               return ngModel.$modelValue;
            }, function(newValue) {
-               // console.log("on model change "+newValue)
+              console.log("on model change "+newValue)
+               scope.checked = newValue;
+               directive.setClass(element, scope);
+           });*/
+            ngModel.$formatters.push(function(newValue) {
+                // Do stuff here, and return the formatted value.
+                // console.log("on model change "+newValue)
                scope.checked = newValue;
                directive.setClass(element, scope);
            });

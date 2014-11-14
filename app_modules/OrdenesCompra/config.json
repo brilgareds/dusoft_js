@@ -13,6 +13,11 @@
                     "module": "OrdenesCompra",
                     "model": "OrdenesCompraModel",
                     "alias": "m_ordenes_compra"
+                },
+                "productos_model": {
+                    "module": "Productos",
+                    "model": "ProductosModel",
+                    "alias": "m_productos"
                 }
             }],
         "events": [],

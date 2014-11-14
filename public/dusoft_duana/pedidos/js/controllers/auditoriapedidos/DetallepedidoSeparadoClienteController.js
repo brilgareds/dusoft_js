@@ -153,6 +153,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
             $scope.detalle_pedido_separado_cliente = {
                 data: 'DocumentoTemporal.getPedido().getProductos()',
                 enableHighlighting: true,
+                enableRowSelection:false,
                 columnDefs: [                
                     {field: 'codigo_producto', displayName: 'Código Producto'},
                     {field: 'descripcion', displayName: 'Nombre Producto', width:500},
@@ -176,6 +177,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
             $scope.lista_productos_auditados_clientes = {
                 data:'productosAuditados',
+                enableRowSelection:false,
                 columnDefs: [                
                     {field: 'codigo_producto', displayName: 'Código Producto'},
                     {field: 'descripcion', displayName: 'Nombre Producto'},

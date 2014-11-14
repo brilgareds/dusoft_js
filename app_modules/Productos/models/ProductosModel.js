@@ -3,6 +3,19 @@ var ProductosModel = function() {
 
 };
 
+// Autor:      : Camilo Orozco 
+// Descripcion : Validar si un producto existe o no en la base de datos
+// Calls       : OrdenesCompra -> OrdenesCompraController -> ordenCompraArchivoPlano();
+// 
+
+ProductosModel.prototype.validar_producto = function(codigo_producto, callback) {
+
+    var sql = " select * from inventarios_productos a where a.codigo_producto = $1 ";
+
+    G.db.query(sql, [codigo_producto], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
 
 // Autor:      : Camilo Orozco 
 // Descripcion : Buscar producto
@@ -76,7 +89,7 @@ ProductosModel.prototype.consultar_stock_producto = function(empresa_id, codigo_
     G.db.query(sql, [empresa_id, codigo_producto], function(err, rows, result) {
         callback(err, rows);
     });
-}
+};
 
 
 // Consultar lotes y fechas vencimientos produto
@@ -105,7 +118,6 @@ ProductosModel.prototype.consultar_existencias_producto = function(empresa_id, c
     G.db.query(sql, [empresa_id, codigo_producto], function(err, rows, result) {
         callback(err, rows);
     });
-
 };
 
 module.exports = ProductosModel;

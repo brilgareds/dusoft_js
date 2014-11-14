@@ -23,6 +23,8 @@ G.utils = require('./lib/Utils');
 G.random = require('./lib/Random');
 G.auth = require('./lib/Authentication');
 G.fs = require('fs-extra');
+G.xlsx = require('node-xlsx');
+G.path = path;
 
 /*=========================================
  * Comandos del Servidor

@@ -230,8 +230,8 @@ PedidosFarmacias.prototype.listarPedidosFarmacias = function(req, res) {
     });
 };
 
-PedidosFarmacias.prototype.consultarEncabezadoPedido = function(req, res) {
-    /* Modificar éste código */
+PedidosFarmacias.prototype.consultarEncabezadoPedidoFinal = function(req, res) {
+
     var that = this;
 
     var args = req.body.data;
@@ -249,7 +249,7 @@ PedidosFarmacias.prototype.consultarEncabezadoPedido = function(req, res) {
 
     var numero_pedido = args.pedidos_farmacias.numero_pedido;
     
-    this.m_pedidos_farmacias.consultar_encabezado_pedido(numero_pedido, function(err, cabecera_pedido) {
+    this.m_pedidos_farmacias.consultar_encabezado_pedido_final(numero_pedido, function(err, cabecera_pedido) {
         
         if (err) {
             res.send(G.utils.r(req.url, 'Error en consulta de pedido', 500, {encabezado_pedido: {}}));
@@ -257,10 +257,114 @@ PedidosFarmacias.prototype.consultarEncabezadoPedido = function(req, res) {
             res.send(G.utils.r(req.url, 'Consulta de pedido satisfactoria', 200, {encabezado_pedido: cabecera_pedido}));
         }
         
-        //res.send(G.utils.r(req.url, 'Encabezado Pedido', 200, {pedidos_farmacias: lista_pedidos_farmacias}));
     });
     
 };
+
+PedidosFarmacias.prototype.consultarDetallePedidoFinal = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.pedidos_farmacias === undefined || args.pedidos_farmacias.numero_pedido === undefined) {
+        res.send(G.utils.r(req.url, 'numero_pedido no está definido', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_farmacias.numero_pedido === "") {
+        res.send(G.utils.r(req.url, 'numero_pedido está vacio', 404, {}));
+        return;
+    }
+
+
+    var numero_pedido = args.pedidos_farmacias.numero_pedido;
+    
+    this.m_pedidos_farmacias.consultar_detalle_pedido_final(numero_pedido, function(err, filas_pedido) {
+        
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error en consulta detalle del pedido', 500, {detalle_pedido: {}}));
+        } else {
+            res.send(G.utils.r(req.url, 'Consulta detalle del pedido satisfactoria', 200, {detalle_pedido: filas_pedido}));
+        }
+        
+    });
+    
+};
+
+PedidosFarmacias.prototype.actualizarCantidadesDetallePedidoFinal = function(req, res) {
+    
+    var that = this;
+    
+    var args = req.body.data;
+    //numero_pedido, id_detalle_pedido, cantidad_solicitada, cantidad_pendiente
+    
+    if (args.pedidos_farmacias === undefined || args.pedidos_farmacias.numero_pedido === undefined || args.pedidos_farmacias.numero_detalle_pedido === undefined) {
+        res.send(G.utils.r(req.url, 'numero_pedido o numero_detalle_pedido no están definidos', 404, {}));
+        return;
+    }
+    
+    if (args.pedidos_farmacias.cantidad_solicitada === undefined || args.pedidos_farmacias.cantidad_pendiente === undefined) {
+        res.send(G.utils.r(req.url, 'cantidad_solicitada o cantidad_pendiente no están definidas', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_farmacias.numero_pedido === "" || args.pedidos_farmacias.numero_detalle_pedido === "") {
+        res.send(G.utils.r(req.url, 'numero_pedido o numero_detalle_pedido están vacios', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_farmacias.cantidad_solicitada === "" || args.pedidos_farmacias.cantidad_pendiente === "") {
+        res.send(G.utils.r(req.url, 'cantidad_solicitada o cantidad_pendiente están vacias', 404, {}));
+        return;
+    }
+
+    var numero_pedido = args.pedidos_farmacias.numero_pedido;
+    var numero_detalle_pedido = args.pedidos_farmacias.numero_pedido.numero_detalle_pedido;
+    var cantidad_solicitada = args.pedidos_farmacias.numero_pedido.cantidad_solicitada;
+    var cantidad_pendiente = args.pedidos_farmacias.numero_pedido.cantidad_pendiente;
+    
+    this.m_pedidos_farmacias.actualizar_cantidades_detalle_pedido_final(numero_pedido, numero_detalle_pedido, cantidad_solicitada, cantidad_pendiente, function(err, filas_pedido) {
+        
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error en la modificación de cantidades', 500, {error: err}));
+        } else {
+            res.send(G.utils.r(req.url, 'Cantidades modificadas satisfactoriamente', 200, {}));
+        }
+        
+    });    
+}
+
+PedidosFarmacias.prototype.eliminarProductoDetallePedidoFinal = function(req, res) {
+    
+    var that = this;
+    
+    var args = req.body.data;
+    //numero_pedido, id_detalle_pedido, cantidad_solicitada, cantidad_pendiente
+    
+    if (args.pedidos_farmacias === undefined || args.pedidos_farmacias.numero_pedido === undefined || args.pedidos_farmacias.numero_detalle_pedido === undefined) {
+        res.send(G.utils.r(req.url, 'numero_pedido o numero_detalle_pedido no están definidos', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_farmacias.numero_pedido === "" || args.pedidos_farmacias.numero_detalle_pedido === "") {
+        res.send(G.utils.r(req.url, 'numero_pedido o numero_detalle_pedido están vacios', 404, {}));
+        return;
+    }
+
+    var numero_pedido = args.pedidos_farmacias.numero_pedido;
+    var numero_detalle_pedido = args.pedidos_farmacias.numero_pedido.numero_detalle_pedido;
+    
+    this.m_pedidos_farmacias.eliminar_producto_detalle_pedido_final(numero_pedido, numero_detalle_pedido, function(err, filas_pedido) {
+        
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error: No se pudo eliminar el producto', 500, {error: err}));
+        } else {
+            res.send(G.utils.r(req.url, 'Eliminación del producto satisfactoria', 200, {}));
+        }
+        
+    });
+}
 
 /**
  * @api {post} /api/PedidosFarmacias/listaPedidosOperarioBodega Asignar Responsables 

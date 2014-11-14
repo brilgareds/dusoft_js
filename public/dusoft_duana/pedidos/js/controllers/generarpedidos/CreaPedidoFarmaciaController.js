@@ -7,8 +7,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         '$scope', '$rootScope', 'Request',
         'EmpresaPedido', 'Farmacia', 'PedidoVenta',
         'API', "socket", "AlertService",
-        '$state', "Usuario", "localStorageService",
-        function($scope, $rootScope, Request, Empresa, Farmacia, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService) {
+        '$state', "Usuario", "localStorageService", '$modal',
+        function($scope, $rootScope, Request, Empresa, Farmacia, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService, $modal) {
 
             $scope.expreg = new RegExp("^[0-9]*$");
 
@@ -60,6 +60,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.rootCreaPedidoFarmacia.para_lista_bodegas = [];
 
             $scope.rootCreaPedidoFarmacia.observacion = "";
+            
+            //Alertas
+            //$scope.rootCreaPedidoFarmacia.no_modificar_valor_cantidad = false;
 
             $scope.rootCreaPedidoFarmacia.pedido = {numero_pedido: ""};
 
@@ -321,130 +324,158 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     $scope.rootCreaPedidoFarmacia.pedido.numero_pedido = PedidoVenta.pedidoseleccionado;
 
                     localStorageService.set("pedidoseleccionado", PedidoVenta.pedidoseleccionado);
-
-                    /* Inicio - Consulta de pedido */
-
-                    var obj = {
-                        session: $scope.rootCreaPedidoFarmacia.session,
-                        data: {
-                            pedidos_farmacias: {
-                                numero_pedido: $scope.rootCreaPedidoFarmacia.pedido.numero_pedido,
-                            }
-                        }
-                    };
-
-                    Request.realizarRequest(API.PEDIDOS.CONSULTAR_ENCABEZADO_PEDIDO_FARMACIA, "POST", obj, function(data) {
-
-                        if (data.status == 200) {
-                            
-                            console.log("Consulta exitosa: ", data.msj);
-
-                            var para_farmacia_id = data.obj.encabezado_pedido[0].farmacia_id;
-                            var para_centro_utilidad = data.obj.encabezado_pedido[0].centro_utilidad;
-                            var para_bodega = data.obj.encabezado_pedido[0].bodega;
-                            var de_empresa_id = data.obj.encabezado_pedido[0].empresa_destino;
-                            
-                            $scope.rootCreaPedidoFarmacia.observacion = data.obj.encabezado_pedido[0].observacion;
-                            
-                            /* Inicio - Llenado de DropDowns*/
-
-                            $scope.consultarEmpresasDe(function(){
-                                
-                                $scope.rootCreaPedidoFarmacia.de_seleccion_empresa = de_empresa_id;
-                                
-                                $scope.consultarCentrosUtilidadDe(de_empresa_id, function(){
-
-                                    $scope.rootCreaPedidoFarmacia.de_seleccion_centro_utilidad = '1 ';
-                                    
-                                    $scope.consultarBodegaDe(de_empresa_id, '1 ', function(){
-
-                                        $scope.rootCreaPedidoFarmacia.de_seleccion_bodega = '03';
-                                        
-                                        $scope.consultarEmpresasPara(function(){
-                                            
-                                            var nombre_empresa = "";
-                                                    
-                                            $scope.rootCreaPedidoFarmacia.para_lista_empresas.forEach(function(empresa){
-                                                if(empresa.empresa_id == para_farmacia_id){
-                                                    nombre_empresa = empresa.nombre_empresa;
-                                                }
-                                            });
-                                            
-                                            $scope.rootCreaPedidoFarmacia.para_seleccion_empresa = para_farmacia_id+","+nombre_empresa;
-                                            
-                                            $scope.consultarCentrosUtilidadPara(para_farmacia_id, function(){
-
-                                                var nombre_centro_utilidad = "";
-                                                
-                                                $scope.rootCreaPedidoFarmacia.para_lista_centro_utilidad.forEach(function(centro_utilidad){
-                                                    if(centro_utilidad.centro_utilidad_id == para_centro_utilidad){
-                                                        nombre_centro_utilidad = centro_utilidad.nombre_centro_utilidad;
-                                                    }
-                                                });
-                                                                                                
-                                                $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad = para_centro_utilidad+","+nombre_centro_utilidad;
-
-                                                $scope.consultarBodegaPara(para_farmacia_id, para_centro_utilidad, function(){
-                                                    
-                                                    var nombre_bodega = "";
-                                                    
-                                                    $scope.rootCreaPedidoFarmacia.para_lista_bodegas.forEach(function(bodega){
-                                                        if(bodega.bodega_id == para_bodega){
-                                                            nombre_bodega = bodega.nombre_bodega;
-                                                        }
-                                                    });
-                                                    
-                                                    $scope.rootCreaPedidoFarmacia.para_seleccion_bodega = para_bodega+","+nombre_bodega;
-                                                    
-                                                });
-                                            });
-                                        });
-                                        
-                                    });
-                                    
-                                    
-                                });
-                            });
-
-                            /* Fin - Llenado de DropDowns*/
-
-                            /* Inicio - Validaciones de bloqueo */
-                            $scope.rootCreaPedidoFarmacia.grid_pedido_generado_visible = true;
-                            $scope.rootCreaPedidoFarmacia.bloqueo_generar_pedido = true;
-                            $scope.rootCreaPedidoFarmacia.bloquear_boton_incluir = true;
-
-                            //Llenar los DropDown antes de bloquear
-                            $scope.rootCreaPedidoFarmacia.bloqueo_producto_incluido = true;
-                            $scope.rootCreaPedidoFarmacia.bloqueo_upload = true;
-
-                            /* Fin - Validaciones de bloqueo */
-
-                        }
-                        else {
-                            console.log("Error en la consulta: ", data.msj);
-                        }
-
-                    });
-
-                    /* Fin - Consulta de pedido */
+                    
+                    $scope.cargarInformacionPedido();
 
                 }
                 else if (localStorageService.get("pedidoseleccionado")) {
                     
-                    $scope.consultarEmpresasDe();
-                    $scope.consultarEmpresasPara();
+                    //$scope.consultarEmpresasDe();
+                    //$scope.consultarEmpresasPara();
 
                     if (localStorageService.get("pedidoseleccionado").length > 0) {
-
                         $scope.rootCreaPedidoFarmacia.pedido.numero_pedido = localStorageService.get("pedidoseleccionado");
-
                     }
+                    
+                    $scope.cargarInformacionPedido();
                 }
                 else {
                     $scope.consultarEmpresasDe();
                     $scope.consultarEmpresasPara();
                 }
 
+            };
+            
+            //Función para cargar todos los datos del pedido
+            $scope.cargarInformacionPedido = function(){
+                
+                /* Inicio - Consulta de pedido */
+
+                var obj = {
+                    session: $scope.rootCreaPedidoFarmacia.session,
+                    data: {
+                        pedidos_farmacias: {
+                            numero_pedido: $scope.rootCreaPedidoFarmacia.pedido.numero_pedido,
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PEDIDOS.CONSULTAR_ENCABEZADO_PEDIDO_FARMACIA, "POST", obj, function(data) {
+
+                    if (data.status == 200) {
+
+                        console.log("Consulta exitosa: ", data.msj);
+
+                        var para_farmacia_id = data.obj.encabezado_pedido[0].farmacia_id;
+                        var para_centro_utilidad = data.obj.encabezado_pedido[0].centro_utilidad;
+                        var para_bodega = data.obj.encabezado_pedido[0].bodega;
+                        var de_empresa_id = data.obj.encabezado_pedido[0].empresa_destino;
+
+                        $scope.rootCreaPedidoFarmacia.observacion = data.obj.encabezado_pedido[0].observacion;
+
+                        /* Inicio - Llenado de DropDowns*/
+
+                        $scope.consultarEmpresasDe(function(){
+
+                            $scope.rootCreaPedidoFarmacia.de_seleccion_empresa = de_empresa_id;
+
+                            $scope.consultarCentrosUtilidadDe(de_empresa_id, function(){
+
+                                $scope.rootCreaPedidoFarmacia.de_seleccion_centro_utilidad = '1 ';
+
+                                $scope.consultarBodegaDe(de_empresa_id, '1 ', function(){
+
+                                    $scope.rootCreaPedidoFarmacia.de_seleccion_bodega = '03';
+
+                                    $scope.consultarEmpresasPara(function(){
+
+                                        var nombre_empresa = "";
+
+                                        $scope.rootCreaPedidoFarmacia.para_lista_empresas.forEach(function(empresa){
+                                            if(empresa.empresa_id == para_farmacia_id){
+                                                nombre_empresa = empresa.nombre_empresa;
+                                            }
+                                        });
+
+                                        $scope.rootCreaPedidoFarmacia.para_seleccion_empresa = para_farmacia_id+","+nombre_empresa;
+
+                                        $scope.consultarCentrosUtilidadPara(para_farmacia_id, function(){
+
+                                            var nombre_centro_utilidad = "";
+
+                                            $scope.rootCreaPedidoFarmacia.para_lista_centro_utilidad.forEach(function(centro_utilidad){
+                                                if(centro_utilidad.centro_utilidad_id == para_centro_utilidad){
+                                                    nombre_centro_utilidad = centro_utilidad.nombre_centro_utilidad;
+                                                }
+                                            });
+
+                                            $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad = para_centro_utilidad+","+nombre_centro_utilidad;
+
+                                            $scope.consultarBodegaPara(para_farmacia_id, para_centro_utilidad, function(){
+
+                                                var nombre_bodega = "";
+
+                                                $scope.rootCreaPedidoFarmacia.para_lista_bodegas.forEach(function(bodega){
+                                                    if(bodega.bodega_id == para_bodega){
+                                                        nombre_bodega = bodega.nombre_bodega;
+                                                    }
+                                                });
+
+                                                $scope.rootCreaPedidoFarmacia.para_seleccion_bodega = para_bodega+","+nombre_bodega;
+
+                                            });
+                                        });
+                                    });
+
+                                });
+
+
+                            });
+                        });
+
+                        /* Fin - Llenado de DropDowns*/
+
+                        /* Inicio - Validaciones de bloqueo */
+                        $scope.rootCreaPedidoFarmacia.grid_pedido_generado_visible = true;
+                        $scope.rootCreaPedidoFarmacia.bloqueo_generar_pedido = true;
+                        $scope.rootCreaPedidoFarmacia.bloquear_boton_incluir = true;
+
+                        //Llenar los DropDown antes de bloquear
+                        $scope.rootCreaPedidoFarmacia.bloqueo_producto_incluido = true;
+                        $scope.rootCreaPedidoFarmacia.bloqueo_upload = true;
+
+                        /* Fin - Validaciones de bloqueo */
+
+                    }
+                    else {
+                        console.log("Error en la consulta: ", data.msj);
+                    }
+
+                });
+
+                /* Fin - Consulta de pedido */
+
+                /* Inicio - Consulta Detalle Pedido */
+
+                var obj_detalle = {
+                    session: $scope.rootCreaPedidoFarmacia.session,
+                    data: {
+                        pedidos_farmacias: {
+                            numero_pedido: $scope.rootCreaPedidoFarmacia.pedido.numero_pedido,
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PEDIDOS.CONSULTAR_DETALLE_PEDIDO_FARMACIA, "POST", obj_detalle, function(data) {
+
+                    if (data.status == 200) {
+                        $scope.rootCreaPedidoFarmacia.listado_productos_pedido = data.obj.detalle_pedido;
+                    }
+                    else{
+
+                    }
+                });
+                /* Fin - Consulta Detalle Pedido*/                  
             };
 
 
@@ -464,7 +495,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'nueva_cantidad', displayName: 'Modificar Cantidad', enableCellEdit: true, width: "10%"},
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "11%",
                         cellTemplate: ' <div class="row">\n\
-                                                <button class="btn btn-default btn-xs" ng-click="onRowClick1(row)" ng-disabled="row.entity.nueva_cantidad<0 || row.entity.nueva_cantidad==null || !expreg.test(row.entity.nueva_cantidad)">\n\
+                                                <button class="btn btn-default btn-xs" ng-click="onRowClick1(row)" ng-disabled="row.entity.nueva_cantidad==null || !expreg.test(row.entity.nueva_cantidad)">\n\
                                                     <span class="glyphicon glyphicon-pencil">Modificar</span>\n\
                                                 </button>\n\
                                                 <button class="btn btn-danger btn-xs" ng-click="onRowClick2(row)">\n\
@@ -474,9 +505,193 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     }
                 ]
             };
+            
+            $scope.onRowClick1 = function(row){
+                //numero_detalle_pedido, farmacia_id, centro_utilidad, bodega, codigo_producto, descripcion, cantidad_solicitada, tipo_producto, usuario_id, fecha_registro, sw_pendiente, cantidad_pendiente
+                if(row.entity.nueva_cantidad >= row.entity.cantidad_solicitada){
+                    //$scope.rootCreaPedidoFarmacia.no_modificar_valor_cantidad = true;
+                    
+                    var template = ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <h4>La Nueva Cantidad debe ser Menor a la Actual ! </h4> \
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-warning" ng-click="close()">Aceptar</button>\
+                                </div>';
+                    
+                    controller = function($scope, $modalInstance) {
+
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+                    };
+
+                    $scope.opts = {
+                        backdrop: true,
+                        backdropClick: true,
+                        dialogFade: false,
+                        keyboard: true,
+                        template: template,
+                        scope: $scope,
+                        controller: controller
+                    };
+
+                    var modalInstance = $modal.open($scope.opts);
+                    
+                    
+                }
+                else{
+
+                    //$scope.rootCreaPedidoFarmacia.no_modificar_valor_cantidad = false;
+
+                    var template = ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <h4>Seguro desea bajar la cantidad de '+row.entity.cantidad_solicitada+' a '+row.entity.nueva_cantidad+' ? </h4> \
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-warning" ng-click="close()">No</button>\
+                                    <button class="btn btn-primary" ng-click="modificarCantidad()" ng-disabled="" >Si</button>\
+                                </div>';
+                    
+                    controller = function($scope, $modalInstance) {
+
+                        $scope.modificarCantidad = function() {
+                            $scope.verificarEstadoPedido();
+                            $scope.modificarValoresCantidad();
+                            $modalInstance.close();
+                        };
+
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+                    };
+
+                    $scope.opts = {
+                        backdrop: true,
+                        backdropClick: true,
+                        dialogFade: false,
+                        keyboard: true,
+                        template: template,
+                        scope: $scope,
+                        controller: controller
+                    };
+
+                    var modalInstance = $modal.open($scope.opts);
+                }
+            };
+            
+            $scope.verificarEstadoPedido = function(callback){
+                
+                /* Inicio: Verificación estado del pedido */
+                obj_verificar = {
+                    session:$scope.rootCreaPedidoFarmacia.session,
+                    data:{
+                        pedidos_farmacias:{
+                            termino_busqueda: $scope.rootCreaPedidoFarmacia.pedido.numero_pedido,
+                            empresa_id: $scope.rootCreaPedidoFarmacia.para_seleccion_empresa.split(",")[0],
+                            pagina_actual: $scope.rootCreaPedidoFarmacia.paginaactual,
+                            filtro:{}
+                        }
+                    }
+                };
+
+                var url = API.PEDIDOS.LISTAR_PEDIDOS_FARMACIAS;
+
+                Request.realizarRequest(url, "POST", obj_verificar, function(data) {
+
+                    //console.log("Data: ",data);
+
+                    if(data.status == 200) {
+
+                       if((data.obj.pedidos_farmacias[0].estado_actual_pedido != 0 && data.obj.pedidos_farmacias[0].estado_actual_pedido != 1)|| data.obj.pedidos_farmacias[0].estado_separacion != null){
+                           //No se debe hacer Modificación
+                           
+                            var template = ' <div class="modal-header">\
+                                                <button type="button" class="close" ng-click="close()">&times;</button>\
+                                                <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                            </div>\
+                                            <div class="modal-body">\
+                                                <h4>El pedido se encuentra en estado de separación y ya no puede modificarse !!</h4> \
+                                            </div>\
+                                            <div class="modal-footer">\
+                                                <button class="btn btn-warning" ng-click="close()">Aceptar</button>\
+                                            </div>';
+
+                            controller = function($scope, $modalInstance) {
+
+                                $scope.close = function() {
+                                    $modalInstance.close();
+                                };
+                            };
+
+                            $scope.opts = {
+                                backdrop: true,
+                                backdropClick: true,
+                                dialogFade: false,
+                                keyboard: true,
+                                template: template,
+                                scope: $scope,
+                                controller: controller
+                            };
+
+                            var modalInstance = $modal.open($scope.opts);
+
+                       }
+                       else{
+                           // Se puede hacer modificación o eliminación
+                           if(callback !== undefined){
+                               callback();
+                           }
+
+                       }
+                    }
+                    else{
+                        console.log("No se pudo realizar la consulta", data.msj);
+                    }
+
+                });
+
+                /* Fin: Verificación estado del pedido */                
+                
+            };
+            
+            $scope.modificarValoresCantidad = function(){
+                
+                //Operación a ejecutar
+                var solicitado_inicial = row.entity.cantidad_solicitada;
+                var pendiente_inicial = row.entity.cantidad_pendiente;
+                
+                var diferencia_cantidad = 0;
+                var nuevo_pendiente = 0;
+
+                diferencia_cantidad = row.entity.cantidad_solicitada - row.entity.nueva_cantidad;
+
+                row.entity.cantidad_solicitada = row.entity.nueva_cantidad;
+                row.entity.nueva_cantidad = "";
+
+                nuevo_pendiente = row.entity.cantidad_pendiente - diferencia_cantidad;
+
+                if(nuevo_pendiente >= 0){
+                    row.entity.cantidad_pendiente = nuevo_pendiente;
+                }
+                else{
+                    row.entity.cantidad_pendiente = 0;
+                }
+
+                /* Inicio - Modificación en BD */
+
+                
+
+                /* Fin - Modificación en BD */                
+            };
 
             //definicion y delegados del Tabla de pedidos clientes
-
             $scope.rootCreaPedidoFarmacia.lista_productos = {
                 data: 'rootCreaPedidoFarmacia.listado_productos',
                 enableColumnResize: true,

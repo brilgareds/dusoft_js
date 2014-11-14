@@ -171,7 +171,7 @@ PedidosFarmaciasModel.prototype.insertar_detalle_pedido_farmacia_definitivo = fu
 
 };
 
-PedidosFarmaciasModel.prototype.consultar_encabezado_pedido = function(numero_pedido, callback)
+PedidosFarmaciasModel.prototype.consultar_encabezado_pedido_final = function(numero_pedido, callback)
 {
     var sql = "SELECT farmacia_id, centro_utilidad, bodega, observacion, usuario_id, fecha_registro, empresa_destino, sw_despacho, estado, tipo_pedido\
                 FROM solicitud_productos_a_bodega_principal\
@@ -182,6 +182,40 @@ PedidosFarmaciasModel.prototype.consultar_encabezado_pedido = function(numero_pe
     });
 };
 
+PedidosFarmaciasModel.prototype.consultar_detalle_pedido_final = function(numero_pedido, callback)
+{
+    	
+    var sql = "SELECT solicitud_prod_a_bod_ppal_det_id as numero_detalle_pedido, farmacia_id, centro_utilidad, bodega, codigo_producto, fc_descripcion_producto(codigo_producto) as descripcion, cantidad_solic::integer as cantidad_solicitada, tipo_producto, usuario_id, fecha_registro, sw_pendiente, cantidad_pendiente\
+                FROM solicitud_productos_a_bodega_principal_detalle\
+                WHERE solicitud_prod_a_bod_ppal_id = $1";
+
+    G.db.query(sql, [numero_pedido], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+PedidosFarmaciasModel.prototype.actualizar_cantidades_detalle_pedido_final = function(numero_pedido, numero_detalle_pedido, cantidad_solicitada, cantidad_pendiente, callback)
+{
+    
+    var sql = "UPDATE solicitud_productos_a_bodega_principal_detalle\
+                SET cantidad_solic = $3, cantidad_pendiente = $4\
+                WHERE solicitud_prod_a_bod_ppal_id = $1 and solicitud_prod_a_bod_ppal_det_id = $2";
+
+    G.db.query(sql, [numero_pedido, numero_detalle_pedido, cantidad_solicitada, cantidad_pendiente], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+PedidosFarmaciasModel.prototype.eliminar_producto_detalle_pedido_final = function(numero_pedido, numero_detalle_pedido, callback)
+{
+    
+    var sql = "DELETE FROM solicitud_productos_a_bodega_principal_detalle\
+                WHERE solicitud_prod_a_bod_ppal_id = $1 and solicitud_prod_a_bod_ppal_det_id = $2";
+
+    G.db.query(sql, [numero_pedido, numero_detalle_pedido], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
 
 
 // Listar todos los pedidos de farmacias

@@ -97,8 +97,9 @@ margin-bottom: 0px;
 .lbl_editar_producto{
     margin-bottom: 3px;
     font-weight: bold;
-    margin-right:5px;
+    margin-right:10px;
     font-size: 13px;
+    float:left;
 
 }
 
@@ -128,4 +129,14 @@ margin-bottom: 0px;
 #editarproductomodal .input-sm{
     width: inherit;
     display: inline;
+}
+
+.validar_caja_contenedor{
+    width:100px;
+    display: inline;
+    overflow: hidden;
+}
+
+.validar_caja_contenedor input.form-control {
+    width:100px;
 }

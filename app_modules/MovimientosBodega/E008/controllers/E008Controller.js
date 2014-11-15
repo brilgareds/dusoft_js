@@ -1595,6 +1595,46 @@ E008Controller.prototype.generarRotuloCaja = function(req, res) {
 };
 
 
+E008Controller.prototype.actualizarCajaDeTemporales = function(req, res) {
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.documento_temporal === undefined || args.documento_temporal.temporales === undefined || args.documento_temporal.numero_caja === undefined) {
+        res.send(G.utils.r(req.url, 'documento_temporal, temporales  o numero_caja no estan definidos', 404, {}));
+        return;
+    }
+    
+    var temporales = args.documento_temporal.temporales;
+    var numero_caja = args.documento_temporal.numero_caja;
+    var i = temporales.length;
+    
+    temporales.forEach(function(temporal){
+        
+        that.m_e008.actualizarCajaDeTemporal(temporal, numero_caja, function(err, rows, result) {
+            
+            if (err || result.rowCount === 0) {
+                res.send(G.utils.r(req.url, 'Error actualizand  la caja', 500, {documento_temporal: {}}));
+                return;
+            } else {
+
+                if(--i === 0){
+                    res.send(G.utils.r(req.url, 'Cajas asignadas correctamente', 200, {documento_temporal: {}}));
+                    return;
+                }
+           }
+        });
+    });
+    
+
+E008Controller.prototype.agruparLotesPorCaja = function(){
+    
+};
+
+    
+};
+
+
 /*==================================================================================================================================================================
  * 
  *                                                          FUNCIONES PRIVADAS

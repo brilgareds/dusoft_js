@@ -27,7 +27,8 @@ define(["angular"], function(angular) {
                 'MODIFICAR_DETALLE_TEMPORAL':BASE_URL+'/movBodegas/E008/modificarDetalleDocumentoTemporal',
                 'AGREGAR_DETALLE_TEMPORAL':BASE_URL+'/movBodegas/E008/detalleDocumentoTemporal',
                 'ELIMINAR_ITEM_TEMPORAL':BASE_URL+'/movBodegas/E008/eliminarProductoDocumentoTemporal',
-                'CONSULTAR_ITEMS_POR_PRODUCTO':BASE_URL+'/movBodegas/E008/buscarItemsTemporal'
+                'CONSULTAR_ITEMS_POR_PRODUCTO':BASE_URL+'/movBodegas/E008/buscarItemsTemporal',
+                'ACTUALIZAR_CAJA_TEMPORALES':BASE_URL+'/movBodegas/E008/actualizarCajaDeTemporales'
 	    },
 	    'PEDIDOS' : {
 	    	'LISTAR_PEDIDOS': BASE_URL+'/PedidosClientes/listarPedidos',	

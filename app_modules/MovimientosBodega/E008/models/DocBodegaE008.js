@@ -561,6 +561,17 @@ DocuemntoBodegaE008.prototype.cerrar_caja = function(documento_id, numero_caja, 
 
 };
 
+DocuemntoBodegaE008.prototype.actualizarCajaDeTemporal = function(item_id, numero_caja, callback) {
+    var sql = " UPDATE inv_bodegas_movimiento_tmp_d SET numero_caja=$2 WHERE item_id = $1 ";
+
+
+    G.db.query(sql, [item_id, numero_caja], function(err, rows, result) {
+
+        callback(err, rows, result);
+    });
+};
+
+
 
 /*********************************************************************************************************************************
  * ============= DOCUMENTOS DESPACHO =============

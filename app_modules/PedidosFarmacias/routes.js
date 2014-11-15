@@ -98,9 +98,24 @@ module.exports = function(app, di_container) {
     });    
     
     //Consultar Encabezado del Pedido
-    app.post('/api/PedidosFarmacias/consultarEncabezadoPedido', function(req, res) {
-        c_pedidos_farmacias.consultarEncabezadoPedido(req, res);
-    });      
+    app.post('/api/PedidosFarmacias/consultarEncabezadoPedidoFinal', function(req, res) {
+        c_pedidos_farmacias.consultarEncabezadoPedidoFinal(req, res);
+    });
+    
+    //Consultar Detalle del Pedido
+    app.post('/api/PedidosFarmacias/consultarDetallePedidoFinal', function(req, res) {
+        c_pedidos_farmacias.consultarDetallePedidoFinal(req, res);
+    });  
+    
+    //Actualizar Cantidades Detalle Pedido Final
+    app.post('/api/PedidosFarmacias/actualizarCantidadesDetallePedidoFinal', function(req, res) {
+        c_pedidos_farmacias.actualizarCantidadesDetallePedidoFinal(req, res);
+    });
+    
+    //Eliminar Producto Detalle Pedido Final
+    app.post('/api/PedidosFarmacias/eliminarProductoDetallePedidoFinal', function(req, res) {
+        c_pedidos_farmacias.eliminarProductoDetallePedidoFinal(req, res);
+    });
     
     // Listar productos
 //    app.get('/listarProductos', function(req, res) {

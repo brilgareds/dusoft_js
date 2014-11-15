@@ -55,7 +55,10 @@ define(["angular"], function(angular) {
                 'ELIMINAR_DETALLE_PEDIDO_FARMACIA_TEMPORAL_COMPLETO':BASE_URL+'/PedidosFarmacias/eliminarDetalleTemporalCompleto',
                 'INSERTAR_PEDIDO_FARMACIA_DEFINITIVO':BASE_URL+'/PedidosFarmacias/insertarPedidoFarmaciaDefinitivo',
                 'INSERTAR_DETALLE_PEDIDO_FARMACIA_DEFINITIVO':BASE_URL+'/PedidosFarmacias/insertarDetallePedidoFarmaciaDefinitivo',
-                'CONSULTAR_ENCABEZADO_PEDIDO_FARMACIA':BASE_URL+'/PedidosFarmacias/consultarEncabezadoPedido'
+                'CONSULTAR_ENCABEZADO_PEDIDO_FARMACIA':BASE_URL+'/PedidosFarmacias/consultarEncabezadoPedidoFinal',
+                'CONSULTAR_DETALLE_PEDIDO_FARMACIA':BASE_URL+'/PedidosFarmacias/consultarDetallePedidoFinal',
+                'ACTUALIZAR_CANTIDADES_DETALLE_PEDIDO_FARMACIA':BASE_URL+'/PedidosFarmacias/actualizarCantidadesDetallePedidoFinal',
+                'ELIMINAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA':BASE_URL+'/PedidosFarmacias/eliminarProductoDetallePedidoFinal'
 	    },
 	    'TERCEROS':{
 	    	'LISTAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/listar",

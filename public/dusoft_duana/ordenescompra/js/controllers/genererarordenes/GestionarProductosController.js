@@ -125,14 +125,14 @@ define(["angular", "js/controllers",
                     that.insertar_cabercera_orden_compra(function(continuar) {
                         if (continuar) {
                             that.insertar_detalle_orden_compra(function(resultado) {
-                                callback(resultado)
+                                callback(resultado);
                             });
                         }
                     });
                 } else {
                     // Agregar Productos a Orden de Compra
                     that.insertar_detalle_orden_compra(function(resultado) {
-                        callback(resultado)
+                        callback(resultado);
                     });
                 }
 
@@ -211,7 +211,8 @@ define(["angular", "js/controllers",
 
 
             that.render_productos = function(productos) {
-
+                console.log('================ PRODUCTOS =====================');
+                console.log(productos);
                 $scope.Empresa.limpiar_productos();
                 productos.forEach(function(data) {
                     var producto = Producto.get(data.codigo_producto, data.descripcion_producto, '', data.iva, data.costo_ultima_compra, data.tiene_valor_pactado, data.presentacion, data.cantidad);
@@ -242,7 +243,13 @@ define(["angular", "js/controllers",
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Codigo Producto', width: "20%", enableCellEdit: false},
                     {field: 'descripcion', displayName: 'Descripcion', enableCellEdit: false},
-                    {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "15%", cellFilter: "currency:'$ '", enableCellEdit: false},
+                    {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "15%", cellFilter: "currency:'$ '", enableCellEdit: false,
+                        cellTemplate : '<div class="ngCellText" ng-class="col.colIndex()">\
+                                            <span class="label label-primary" ng-show="false" >Reg</span>\
+                                            <span class="label label-danger" ng-show="row.entity.tiene_valor_pactado == 0">S.C</span>\
+                                            <span class="label label-success" ng-show="row.entity.tiene_valor_pactado == 1">C.C</span>\
+                                            <span ng-cell-text class="pull-right" >{{COL_FIELD | currency:"$ "}}</span>\
+                                        </div>' },
                     {field: 'cantidad', width: "7%", displayName: "Cantidad", enableCellEdit: true, cellFilter: "number"},
                     {width: "7%", displayName: "Opcion", cellClass: "txt-center", enableCellEdit: false,
                         cellTemplate: '<div class="btn-toolbar">\

@@ -123,6 +123,11 @@ module.exports = function(app, di_container) {
     app.post('/api/movBodegas/E008/generarRotuloCaja', function(req, res) {
         c_e008.generarRotuloCaja(req, res);
     });
+    
+    //actualiza caja de item en temporal
+    app.post('/api/movBodegas/E008/actualizarCajaDeTemporales', function(req, res) {
+        c_e008.actualizarCajaDeTemporales(req, res);
+    });
 
     // Imprimir Rotulo 
     app.post('/api/movBodegas/E008/imprimirRotulosCaja', function(req, res) {

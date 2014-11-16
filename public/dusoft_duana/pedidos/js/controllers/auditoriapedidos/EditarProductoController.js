@@ -78,6 +78,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                             lote.item_id = lotes[i].item_id;
                             lote.cantidad_ingresada = lotes[i].cantidad_ingresada;
                             lote.seleccionado = true;
+                            lote.numero_caja = lotes[i].numero_caja;
                            // $scope.rootEditarProducto.seleccionados.push(lote);
                             $scope.rootEditarProducto.producto.agregarLote(lote);
                             
@@ -130,8 +131,8 @@ define(["angular", "js/controllers",'models/ClientePedido',
                for(var i in disponibles){
                    var encontrado = false;
                    var lote = disponibles[i];
-                   for(var i in separados){
-                       var _loteseparado = separados[i];
+                   for(var ii in separados){
+                       var _loteseparado = separados[ii];
                        if(_loteseparado.codigo_lote === lote.codigo_lote && lote.fecha_vencimiento === _loteseparado.fecha_vencimiento){
                            encontrado = true;
                            _loteseparado.existencia_actual = lote.existencia_actual;
@@ -226,14 +227,14 @@ define(["angular", "js/controllers",'models/ClientePedido',
                     {field: 'fecha_vencimiento', displayName: 'Fecha Vencimiento'},
                     {field: 'existencia_actual', displayName: 'Existencia'},
                    // {field: 'disponible', displayName: 'Disponible'},
-                    {field: 'item_id', displayName: 'item_id'},
+                    {field: 'numero_caja', displayName: 'Caja'},
                     {field:'cantidad_ingresada', displayName:'Cantidad', cellTemplate:'<div class="col-xs-12"><input type="text"  ng-focus="onCantidadFocus(row)" ng-model="row.entity.cantidad_ingresada" validacion-numero class="form-control grid-inline-input"  ng-change="onCantidadIngresadaChange(row)"'+
-                             'ng-model="row.entity.cantidad_ingresada" /></div>'},
+                             'ng-model="row.entity.cantidad_ingresada" ng-disabled="row.entity.numero_caja > 0" /></div>'},
                     {field: 'opciones', displayName: "Cambiar", cellClass: "txt-center", width: "10%",
-                        cellTemplate: ' <input-check ng-model="row.entity.seleccionado" ng-change="onEditarLote(row)" ng-disabled="row.entity.cantidad_ingresada == 0" >  />'},
+                        cellTemplate: ' <input-check  ng-model="row.entity.seleccionado" ng-change="onEditarLote(row)" ng-disabled="row.entity.cantidad_ingresada == 0 || row.entity.numero_caja > 0" >  />'},
                     {field: 'opciones', displayName: "", cellClass: "txt-center", width:40,
                         cellTemplate: ' <div class="row">\n\
-                                            <button class="btn btn-default btn-xs" ng-click="duplicarLote(row.entity)">\n\
+                                            <button class="btn btn-default btn-xs"  ng-disabled="!row.entity.seleccionado" ng-click="duplicarLote(row.entity)">\n\
                                                 <span class="glyphicon glyphicon-plus"></span>\n\
                                             </button>\n\
                                         </div>'
@@ -241,7 +242,9 @@ define(["angular", "js/controllers",'models/ClientePedido',
                    
                 ],
                 beforeSelectionChange:function(row, event){
-                    console.log(row, "before selection ", event);
+                    console.log(row, "before selection ", event, row instanceof  Array);
+                    if(!row.entity || row.entity.numero_caja > 0) return false;
+                    
                    // console.log($scope.lotes_producto.selectedItems);
                     if($scope.esEventoPropagadoPorFila(event)){
                         return row.entity.seleccionado;
@@ -271,9 +274,11 @@ define(["angular", "js/controllers",'models/ClientePedido',
             };
             
             $scope.duplicarLote = function(lote){
+                
                 console.log("lote a duplicar ", lote);
                 var _lote = angular.copy(lote);
                 _lote.item_id = 0;
+                _lote.numero_caja = 0;
                 _lote.seleccionado = false;
                 $scope.rootEditarProducto.producto.lotesSeleccionados.push(_lote);
                 
@@ -312,7 +317,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                 var lote = row.entity;
 
                 //eliminar el lote del temporal
-                if(lote.cantidad_ingresada !== 0 && !lote.seleccionado){
+                if(lote.cantidad_ingresada !== 0 && !lote.seleccionado || lote.numero_caja > 0){
                     row.selected = false;
                     that.eliminiarLoteTemporal(lote);
                 } else {
@@ -456,7 +461,6 @@ define(["angular", "js/controllers",'models/ClientePedido',
             $scope.auditarPedido = function(){
                 
                 
-                return;
                 $scope.rootEditarProducto.validacionproducto.valido = true;
               
 
@@ -476,56 +480,74 @@ define(["angular", "js/controllers",'models/ClientePedido',
                     $scope.rootEditarProducto.validacionproducto.mensaje = "Se debe ingresar la justificación del auditor";
                     return;
                 }
+                
+                
+                //validar que los productos seleccionados tengan cajas
+                for(var i in $scope.rootEditarProducto.producto.lotesSeleccionados){
+                    var lote = $scope.rootEditarProducto.producto.lotesSeleccionados[i];
                     
-
-                if(isNaN($scope.rootEditarProducto.caja.numero) /*|| $scope.rootEditarProducto.caja.numero == 0*/){
-                    $scope.rootEditarProducto.validacionproducto.valido = false
-                    $scope.rootEditarProducto.caja.valida = false;
-                    $scope.rootEditarProducto.validacionproducto.mensaje = "Número de caja no es válido";
-
-                    return;
-                }
-
-                if(!$scope.rootEditarProducto.caja.valida && $scope.rootEditarProducto.caja.numero > 0){
-                    $scope.rootEditarProducto.validacionproducto.valido = false;
-                    $scope.rootEditarProducto.validacionproducto.mensaje = "La caja se encuentra cerrada";
-                    return;
+                    if(lote.seleccionado && (lote.numero_caja === 0 || isNaN(lote.numero_caja))){
+                        $scope.rootEditarProducto.validacionproducto.valido = false;
+                        $scope.rootEditarProducto.validacionproducto.mensaje = "El lote codigo: "+lote.codigo_lote+ ", esta seleccionado y no tiene caja asignada.";
+                        return;
+                        
+                    }
+                    
                 }
                 
+                that.auditarItemsSeleccionados(0);
+                
    
-                var obj = {
-                    session:$scope.session,
-                    data:{
-                        documento_temporal: {
-                            item_id: $scope.rootEditarProducto.producto.lote.item_id,
-                            auditado: true,
-                            numero_caja:$scope.rootEditarProducto.caja.numero
-                        }
-                    }
-                };
-
-
-                if($scope.rootEditarProducto.producto.lote.justificacion_auditor.length >= 10 && $scope.rootEditarProducto.producto.lote.cantidad_pendiente > 0 ){
-                    obj.data.documento_temporal.justificacion = {
-                        documento_temporal_id:$scope.rootEditarProducto.documento.documento_temporal_id,
-                        codigo_producto:$scope.rootEditarProducto.producto.codigo_producto,
-                        cantidad_pendiente:$scope.rootEditarProducto.producto.lote.cantidad_pendiente,
-                        justificacion_auditor:$scope.rootEditarProducto.producto.lote.justificacion_auditor,
-                        existencia:$scope.rootEditarProducto.producto.lote.existencia_actual,
-                        usuario_id:$scope.rootEditarProducto.documento.separador.usuario_id,
-                        justificacion:$scope.rootEditarProducto.producto.lote.justificacion_separador
-                    };
+            };
+            
+            that.auditarItemsSeleccionados = function(index){
+                if(index > ($scope.rootEditarProducto.producto.lotesSeleccionados.length - 1) ){
+                    $rootScope.$emit("productoAuditado", $scope.rootEditarProducto.producto, $scope.rootEditarProducto.documento);
+                    $modalInstance.close();
+                    return;
                 }
-                console.log("params to send ",obj);
-                //console.log("cantidad pendienet ",$scope.rootEditarProducto.producto.lote)
-                //return;
-               Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.AUDITAR_DOCUMENTO_TEMPORAL, "POST", obj, function(data) {
+                var lote = $scope.rootEditarProducto.producto.lotesSeleccionados[index];
+                
+                    
+                if(lote.seleccionado){
 
-                    if(data.status === 200){
-                       $rootScope.$emit("productoAuditado", $scope.rootEditarProducto.producto, $scope.rootEditarProducto.documento);
-                       $modalInstance.close();
-                    } 
-                });
+                    var cantidad_pendiente = $scope.rootEditarProducto.producto.cantidad_solicitada - $scope.rootEditarProducto.producto.obtenerCantidadSeleccionada();
+                    var obj = {
+                        session:$scope.session,
+                        data:{
+                            documento_temporal: {
+                                item_id: lote.item_id,
+                                auditado: true,
+                                numero_caja:lote.numero_caja
+                            }
+                        }
+                    };
+
+
+                    if($scope.rootEditarProducto.producto.lote.justificacion_auditor.length >= 10 && $scope.rootEditarProducto.producto.lote.cantidad_pendiente > 0 ){
+                        obj.data.documento_temporal.justificacion = {
+                            documento_temporal_id:$scope.rootEditarProducto.documento.documento_temporal_id,
+                            codigo_producto:$scope.rootEditarProducto.producto.codigo_producto,
+                            cantidad_pendiente:cantidad_pendiente,
+                            justificacion_auditor:$scope.rootEditarProducto.producto.lote.justificacion_auditor,
+                            existencia:lote.existencia_actual,
+                            usuario_id:$scope.rootEditarProducto.documento.separador.usuario_id,
+                            justificacion:$scope.rootEditarProducto.producto.lote.justificacion_separador
+                        };
+                    }
+                    //console.log("params to send ",obj, lote);
+                    //return;
+                   Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.AUDITAR_DOCUMENTO_TEMPORAL, "POST", obj, function(data) {
+
+                        if(data.status === 200){
+                            index++;
+                            that.auditarItemsSeleccionados(index);
+                        } 
+                    });
+                } else {
+                    index++;
+                    that.auditarItemsSeleccionados(index);
+                }
             };
 
             that.esJustificacionNecesaria = function(){
@@ -533,7 +555,9 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
                 console.log("separada ",$scope.rootEditarProducto.producto.cantidad_separada, " solicitada ",$scope.rootEditarProducto.producto.cantidad_solicitada
                     , " lengt just",$scope.rootEditarProducto.producto.lote.justificacion_auditor.length, " justificacion auditor ",$scope.rootEditarProducto.producto.lote.justificacion_auditor);
-                if($scope.rootEditarProducto.producto.cantidad_separada < 
+                    
+                
+                if($scope.rootEditarProducto.producto.obtenerCantidadSeleccionada() < 
                     $scope.rootEditarProducto.producto.cantidad_solicitada ){
 
                         return true;
@@ -585,6 +609,50 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
                     } 
                 });
+            };
+            
+            $scope.onSeleccionarCaja = function(){
+             // console.log($scope.lotes_producto.selectedItems);
+              
+              var items = [];
+              
+              for(var i in $scope.lotes_producto.selectedItems){
+                  items.push($scope.lotes_producto.selectedItems[i].item_id);
+              }
+              
+              var obj = {
+                    session:$scope.session,
+                    data:{
+                        documento_temporal: {
+                            temporales: items,
+                            numero_caja: $scope.rootEditarProducto.caja.numero
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.ACTUALIZAR_CAJA_TEMPORALES, "POST", obj, function(data) {
+                   
+                    if(data.status === 200){
+                            //asigna numero de caja a los lotes seleccionados
+                           var lotes = $scope.lotes_producto.selectedItems;
+                           var index = 0;
+                           for(var i in items){
+                                for(var ii in lotes){
+                                    if(lotes[ii].item_id === items[i]){
+                                        lotes[ii].numero_caja = $scope.rootEditarProducto.caja.numero;
+                                        break;
+                                    }
+                                }
+                           }
+                           
+                           //desseleccionar los lotes que tiene caja
+                           for(var i in $scope.rootEditarProducto.producto.lotesSeleccionados){
+                               $scope.lotes_producto.selectRow(i, false);
+                           }
+                        
+                    } 
+                });
+                
             };
 
             $scope.onCerrarCaja = function(){

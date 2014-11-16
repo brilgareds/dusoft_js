@@ -120,4 +120,14 @@ ProductosModel.prototype.consultar_existencias_producto = function(empresa_id, c
     });
 };
 
+//Consultar tipo de productos
+ProductosModel.prototype.listar_tipo_productos = function(callback) {
+    
+    var sql = "select tipo_producto_id, descripcion from inv_tipo_producto";
+    
+    G.db.query(sql, [], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
 module.exports = ProductosModel;

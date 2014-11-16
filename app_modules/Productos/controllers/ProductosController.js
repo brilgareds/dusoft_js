@@ -63,6 +63,23 @@ Productos.prototype.consultarExistenciasProducto = function(req, res) {
     });
 };
 
+Productos.prototype.listarTipoProductos = function(req, res) {
+    
+    var that = this;
+    
+    that.m_productos.listar_tipo_productos( function(err, tipo_productos) {
+        
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error en consulta de tipos de Producto', 500, {lista_tipo_productos: {}}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Listado de tipos de Productos', 200, {lista_tipo_productos: tipo_productos}));
+            return;
+        }
+    });
+    
+};
+
 
 
 Productos.$inject = ["m_productos"];

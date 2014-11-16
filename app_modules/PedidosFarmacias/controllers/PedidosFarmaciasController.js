@@ -320,11 +320,16 @@ PedidosFarmacias.prototype.actualizarCantidadesDetallePedidoFinal = function(req
     }
 
     var numero_pedido = args.pedidos_farmacias.numero_pedido;
-    var numero_detalle_pedido = args.pedidos_farmacias.numero_pedido.numero_detalle_pedido;
-    var cantidad_solicitada = args.pedidos_farmacias.numero_pedido.cantidad_solicitada;
-    var cantidad_pendiente = args.pedidos_farmacias.numero_pedido.cantidad_pendiente;
+    var numero_detalle_pedido = args.pedidos_farmacias.numero_detalle_pedido;
+    var cantidad_solicitada = args.pedidos_farmacias.cantidad_solicitada;
+    var cantidad_pendiente = args.pedidos_farmacias.cantidad_pendiente;
     
-    this.m_pedidos_farmacias.actualizar_cantidades_detalle_pedido_final(numero_pedido, numero_detalle_pedido, cantidad_solicitada, cantidad_pendiente, function(err, filas_pedido) {
+    console.log("######################numero_pedido: ", numero_pedido);
+    console.log("######################numero_detalle_pedido: ", numero_detalle_pedido);
+    console.log("######################cantidad_solicitada: ",cantidad_solicitada);
+    console.log("######################cantidad_pendiente: ", cantidad_pendiente);
+    
+    this.m_pedidos_farmacias.actualizar_cantidades_detalle_pedido_final(numero_pedido, numero_detalle_pedido, cantidad_solicitada, cantidad_pendiente, function(err, rows) {
         
         if (err) {
             res.send(G.utils.r(req.url, 'Error en la modificación de cantidades', 500, {error: err}));
@@ -353,9 +358,9 @@ PedidosFarmacias.prototype.eliminarProductoDetallePedidoFinal = function(req, re
     }
 
     var numero_pedido = args.pedidos_farmacias.numero_pedido;
-    var numero_detalle_pedido = args.pedidos_farmacias.numero_pedido.numero_detalle_pedido;
+    var numero_detalle_pedido = args.pedidos_farmacias.numero_detalle_pedido;
     
-    this.m_pedidos_farmacias.eliminar_producto_detalle_pedido_final(numero_pedido, numero_detalle_pedido, function(err, filas_pedido) {
+    this.m_pedidos_farmacias.eliminar_producto_detalle_pedido_final(numero_pedido, numero_detalle_pedido, function(err, rows) {
         
         if (err) {
             res.send(G.utils.r(req.url, 'Error: No se pudo eliminar el producto', 500, {error: err}));

@@ -59,6 +59,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.rootCreaPedidoFarmacia.para_lista_centro_utilidad = [];
             $scope.rootCreaPedidoFarmacia.para_lista_bodegas = [];
 
+            $scope.rootCreaPedidoFarmacia.titulo_tab_1= "";
+            $scope.rootCreaPedidoFarmacia.titulo_tab_2= "";
             $scope.rootCreaPedidoFarmacia.observacion = "";
             
             //Alertas
@@ -320,6 +322,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 }
 
                 if (PedidoVenta.pedidoseleccionado !== "") {
+                    
+                    $scope.rootCreaPedidoFarmacia.titulo_tab_1= "Detalle Pedido";
+                    $scope.rootCreaPedidoFarmacia.titulo_tab_2= "";
 
                     $scope.rootCreaPedidoFarmacia.pedido.numero_pedido = PedidoVenta.pedidoseleccionado;
 
@@ -329,10 +334,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 }
                 else if (localStorageService.get("pedidoseleccionado")) {
-                    
-                    //$scope.consultarEmpresasDe();
-                    //$scope.consultarEmpresasPara();
 
+                    $scope.rootCreaPedidoFarmacia.titulo_tab_1= "Detalle Pedido";
+                    $scope.rootCreaPedidoFarmacia.titulo_tab_2= "";
+                    
                     if (localStorageService.get("pedidoseleccionado").length > 0) {
                         $scope.rootCreaPedidoFarmacia.pedido.numero_pedido = localStorageService.get("pedidoseleccionado");
                     }
@@ -340,6 +345,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     $scope.cargarInformacionPedido();
                 }
                 else {
+                    $scope.rootCreaPedidoFarmacia.titulo_tab_1= "Incluir Producto Manual";
+                    $scope.rootCreaPedidoFarmacia.titulo_tab_2= "Cargar Archivo Plano"
                     $scope.consultarEmpresasDe();
                     $scope.consultarEmpresasPara();
                 }
@@ -507,20 +514,20 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
             
             $scope.onRowClick1 = function(row){
-                //numero_detalle_pedido, farmacia_id, centro_utilidad, bodega, codigo_producto, descripcion, cantidad_solicitada, tipo_producto, usuario_id, fecha_registro, sw_pendiente, cantidad_pendiente
+                
                 if(row.entity.nueva_cantidad >= row.entity.cantidad_solicitada){
                     //$scope.rootCreaPedidoFarmacia.no_modificar_valor_cantidad = true;
                     
                     var template = ' <div class="modal-header">\
-                                    <button type="button" class="close" ng-click="close()">&times;</button>\
-                                    <h4 class="modal-title">Mensaje del Sistema</h4>\
-                                </div>\
-                                <div class="modal-body">\
-                                    <h4>La Nueva Cantidad debe ser Menor a la Actual ! </h4> \
-                                </div>\
-                                <div class="modal-footer">\
-                                    <button class="btn btn-warning" ng-click="close()">Aceptar</button>\
-                                </div>';
+                                        <button type="button" class="close" ng-click="close()">&times;</button>\
+                                        <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                    </div>\
+                                    <div class="modal-body">\
+                                        <h4>La Nueva Cantidad debe ser Menor a la Actual ! </h4> \
+                                    </div>\
+                                    <div class="modal-footer">\
+                                        <button class="btn btn-warning" ng-click="close()">Aceptar</button>\
+                                    </div>';
                     
                     controller = function($scope, $modalInstance) {
 
@@ -548,22 +555,29 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     //$scope.rootCreaPedidoFarmacia.no_modificar_valor_cantidad = false;
 
                     var template = ' <div class="modal-header">\
-                                    <button type="button" class="close" ng-click="close()">&times;</button>\
-                                    <h4 class="modal-title">Mensaje del Sistema</h4>\
-                                </div>\
-                                <div class="modal-body">\
-                                    <h4>Seguro desea bajar la cantidad de '+row.entity.cantidad_solicitada+' a '+row.entity.nueva_cantidad+' ? </h4> \
-                                </div>\
-                                <div class="modal-footer">\
-                                    <button class="btn btn-warning" ng-click="close()">No</button>\
-                                    <button class="btn btn-primary" ng-click="modificarCantidad()" ng-disabled="" >Si</button>\
-                                </div>';
+                                        <button type="button" class="close" ng-click="close()">&times;</button>\
+                                        <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                    </div>\
+                                    <div class="modal-body">\
+                                        <h4>Seguro desea bajar la cantidad de '+row.entity.cantidad_solicitada+' a '+row.entity.nueva_cantidad+' ? </h4> \
+                                    </div>\
+                                    <div class="modal-footer">\
+                                        <button class="btn btn-warning" ng-click="close()">No</button>\
+                                        <button class="btn btn-primary" ng-click="modificarCantidad()" ng-disabled="" >Si</button>\
+                                    </div>';
                     
                     controller = function($scope, $modalInstance) {
 
                         $scope.modificarCantidad = function() {
-                            $scope.verificarEstadoPedido();
-                            $scope.modificarValoresCantidad();
+                            $scope.verificarEstadoPedido(function(){
+                                    
+                                $scope.modificarValoresCantidad(
+                                    $scope.rootCreaPedidoFarmacia.pedido.numero_pedido,
+                                    row.entity
+                                );
+                            }    
+                            );
+                            
                             $modalInstance.close();
                         };
 
@@ -600,7 +614,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         }
                     }
                 };
-
+                
                 var url = API.PEDIDOS.LISTAR_PEDIDOS_FARMACIAS;
 
                 Request.realizarRequest(url, "POST", obj_verificar, function(data) {
@@ -645,10 +659,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                        }
                        else{
                            // Se puede hacer modificación o eliminación
-                           if(callback !== undefined){
+                           if(callback !== undefined && callback !== ""){
                                callback();
                            }
-
                        }
                     }
                     else{
@@ -661,35 +674,139 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 
             };
             
-            $scope.modificarValoresCantidad = function(){
+            $scope.modificarValoresCantidad = function(numero_pedido, data){
                 
-                //Operación a ejecutar
-                var solicitado_inicial = row.entity.cantidad_solicitada;
-                var pendiente_inicial = row.entity.cantidad_pendiente;
+                var solicitado_inicial = data.cantidad_solicitada;
+                var pendiente_inicial = data.cantidad_pendiente;
                 
                 var diferencia_cantidad = 0;
                 var nuevo_pendiente = 0;
 
-                diferencia_cantidad = row.entity.cantidad_solicitada - row.entity.nueva_cantidad;
+                diferencia_cantidad = data.cantidad_solicitada - data.nueva_cantidad;
 
-                row.entity.cantidad_solicitada = row.entity.nueva_cantidad;
-                row.entity.nueva_cantidad = "";
+                data.cantidad_solicitada = data.nueva_cantidad;
+                
+                data.nueva_cantidad = "";
 
-                nuevo_pendiente = row.entity.cantidad_pendiente - diferencia_cantidad;
+                nuevo_pendiente = data.cantidad_pendiente - diferencia_cantidad;
 
                 if(nuevo_pendiente >= 0){
-                    row.entity.cantidad_pendiente = nuevo_pendiente;
+                    data.cantidad_pendiente = nuevo_pendiente;
                 }
                 else{
-                    row.entity.cantidad_pendiente = 0;
+                    data.cantidad_pendiente = 0;
                 }
 
                 /* Inicio - Modificación en BD */
-
                 
+                obj_modificar = {
+                    session:$scope.rootCreaPedidoFarmacia.session,
+                    data:{
+                        pedidos_farmacias:{
+                            numero_pedido: parseInt(numero_pedido),
+                            numero_detalle_pedido: parseInt(data.numero_detalle_pedido),
+                            cantidad_solicitada: parseInt(data.cantidad_solicitada),
+                            cantidad_pendiente: parseInt(data.cantidad_pendiente)
+                        }
+                    }
+                };
+                
+                var url = API.PEDIDOS.ACTUALIZAR_CANTIDADES_DETALLE_PEDIDO_FARMACIA;
+                
+                Request.realizarRequest(url, "POST", obj_modificar, function(data) {
+
+                    if(data.status == 200) {
+                        console.log("Actualización Exitosa: ", data.msj);
+                    }
+                    else {
+                        console.log("Actualización Falló: ", data.msj);
+                        data.cantidad_solicitada = solicitado_inicial;
+                        data.cantidad_pendiente = pendiente_inicial;
+                    }
+                });
 
                 /* Fin - Modificación en BD */                
             };
+            
+            $scope.onRowClick2 = function(row){
+                
+                    var template = ' <div class="modal-header">\
+                                        <button type="button" class="close" ng-click="close()">&times;</button>\
+                                        <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                    </div>\
+                                    <div class="modal-body">\
+                                        <h4>Seguro desea eliminar el producto '+row.entity.codigo_producto+' ? </h4> \
+                                    </div>\
+                                    <div class="modal-footer">\
+                                        <button class="btn btn-warning" ng-click="close()">No</button>\
+                                        <button class="btn btn-primary" ng-click="eliminarProducto()" ng-disabled="" >Si</button>\
+                                    </div>';
+                    
+                    controller = function($scope, $modalInstance) {
+
+                        $scope.eliminarProducto = function() {
+                            $scope.verificarEstadoPedido(function(){
+                                    
+                                $scope.eliminarProductoPedido(
+                                    $scope.rootCreaPedidoFarmacia.pedido.numero_pedido,
+                                    row.entity,
+                                    row.rowIndex
+                                );
+                            }    
+                            );
+                            
+                            $modalInstance.close();
+                        };
+
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+                    };
+
+                    $scope.opts = {
+                        backdrop: true,
+                        backdropClick: true,
+                        dialogFade: false,
+                        keyboard: true,
+                        template: template,
+                        scope: $scope,
+                        controller: controller
+                    };
+
+                    var modalInstance = $modal.open($scope.opts);
+                
+            }
+            
+            $scope.eliminarProductoPedido = function(numero_pedido, data, index){
+                
+                /* Inicio - Borrado producto en BD */
+                
+                obj_eliminar = {
+                    session:$scope.rootCreaPedidoFarmacia.session,
+                    data:{
+                        pedidos_farmacias:{
+                            numero_pedido: parseInt(numero_pedido),
+                            numero_detalle_pedido: parseInt(data.numero_detalle_pedido),
+                        }
+                    }
+                };
+                
+                var url = API.PEDIDOS.ELIMINAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA;
+                
+                Request.realizarRequest(url, "POST", obj_eliminar, function(data) {
+
+                    if(data.status == 200) {
+                        console.log("Eliminación Exitosa: ", data.msj);
+                        $scope.rootCreaPedidoFarmacia.listado_productos_pedido.splice(index, 1);
+                    }
+                    else {
+                        console.log("Eliminación Falló: ", data.msj);
+                    }
+                });
+                
+                /* Fin - Borrado producto en BD */
+                
+            }            
 
             //definicion y delegados del Tabla de pedidos clientes
             $scope.rootCreaPedidoFarmacia.lista_productos = {
@@ -1071,6 +1188,61 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             {
                 $state.go('VerPedidosFarmacias'); //Crear la URL para éste acceso y relacionarlo con el botón de "Cancelar en la View"
             };
+            
+            $scope.abrirViewVerPedidosFarmaciasEliminarTemporal = function(){
+
+                //Eliminación Detalle Temporal
+                var obj_detalle = {
+                    session: $scope.rootCreaPedidoFarmacia.session,
+                    data: {
+                        detalle_pedidos_farmacias: {
+                            empresa_id: $scope.rootCreaPedidoFarmacia.para_seleccion_empresa.split(",")[0],
+                            centro_utilidad_id: $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad.split(",")[0],
+                            bodega_id: $scope.rootCreaPedidoFarmacia.para_seleccion_bodega.split(",")[0]
+                        }
+                    }
+                };
+                
+                var url_eliminar_detalle = API.PEDIDOS.ELIMINAR_DETALLE_PEDIDO_FARMACIA_TEMPORAL_COMPLETO;
+
+                Request.realizarRequest(url_eliminar_detalle, "POST", obj_detalle, function(data) {
+
+                    if (data.status == 200) {
+                        console.log("Eliminación del detalle Exitosa: ", data.msj);
+                        
+                        //Eliminación encabezado temporal
+                        var obj_encabezado = {
+                            session: $scope.rootCreaPedidoFarmacia.session,
+                            data: {
+                                pedidos_farmacias: {
+                                    empresa_id: $scope.rootCreaPedidoFarmacia.para_seleccion_empresa.split(",")[0],
+                                    centro_utilidad_id: $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad.split(",")[0],
+                                    bodega_id: $scope.rootCreaPedidoFarmacia.para_seleccion_bodega.split(",")[0]
+                                }
+                            }
+                        };
+
+                        var url_eliminar_encabezado = API.PEDIDOS.ELIMINAR_REGISTRO_PEDIDO_TEMPORAL;
+
+                        Request.realizarRequest(url_eliminar_encabezado, "POST", obj_encabezado, function(data) {
+
+                            if (data.status == 200) {
+                                console.log("Eliminación de encabezado Exitosa: ", data.msj);
+                                $state.go('VerPedidosFarmacias');
+                            }
+                            else{
+                                console.log("Eliminación de encabezado Fallida: ", data.msj);
+                            }
+                        });
+                        
+                        
+                    }
+                    else
+                    {
+                        console.log("Eliminación del detalle Fallida: ", data.msj);
+                    }
+                });
+            }
 
             //Método para liberar Memoria de todo lo construido en ésta clase
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {

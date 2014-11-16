@@ -19,4 +19,9 @@ module.exports = function(app, di_container) {
         c_productos.consultarExistenciasProducto(req, res);
     });
     
+    //Listar Tipo Productos
+    app.post('/api/Productos/listarTipoProductos', function(req, res) {
+        c_productos.listarTipoProductos(req, res);
+    });
+    
 };

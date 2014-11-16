@@ -57,7 +57,8 @@ define(["angular"], function(angular) {
                 'CONSULTAR_ENCABEZADO_PEDIDO_FARMACIA':BASE_URL+'/PedidosFarmacias/consultarEncabezadoPedidoFinal',
                 'CONSULTAR_DETALLE_PEDIDO_FARMACIA':BASE_URL+'/PedidosFarmacias/consultarDetallePedidoFinal',
                 'ACTUALIZAR_CANTIDADES_DETALLE_PEDIDO_FARMACIA':BASE_URL+'/PedidosFarmacias/actualizarCantidadesDetallePedidoFinal',
-                'ELIMINAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA':BASE_URL+'/PedidosFarmacias/eliminarProductoDetallePedidoFinal'
+                'ELIMINAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA':BASE_URL+'/PedidosFarmacias/eliminarProductoDetallePedidoFinal',
+                'LISTADO_TIPO_PRODUCTOS':BASE_URL+'/Productos/listarTipoProductos'
 	    },
 	    'TERCEROS':{
 	    	'LISTAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/listar",

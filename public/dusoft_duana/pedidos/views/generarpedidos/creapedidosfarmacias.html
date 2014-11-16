@@ -157,7 +157,7 @@
                     <tab disabled="rootCreaPedidoFarmacia.bloquear_tab" active="rootCreaPedidoFarmacia.tab_estados.tab1">
                         
                         <tab-heading>
-                            <b> Incluir Producto Manual</b>
+                            <b> {{rootCreaPedidoFarmacia.titulo_tab_1}} </b>
                         </tab-heading>
                         
                         <!--<button class="btn" ng-click="data.static2 = true">Select Static2 {{data.static2}}</button>-->
@@ -192,7 +192,7 @@
                     <!--<div ng-if="rootCreaPedidoFarmacia.grid_pedido_generado_visible === false">-->
                         <tab disabled="rootCreaPedidoFarmacia.bloqueo_upload" active="rootCreaPedidoFarmacia.tab_estados.tab2">
                             <tab-heading>
-                                <b> Cargar Archivo Plano </b>
+                                <b> {{rootCreaPedidoFarmacia.titulo_tab_2}} </b>
                             </tab-heading>
 
                             <!--<button class="btn" ng-click="data.static1 = true">Select Static1 {{data.static1}}</button>-->
@@ -236,8 +236,10 @@
     </div>
     
     <div class="col-sm-12 btn-toolbar">
-        <button type="submit" ng-disabled="rootCreaPedidoFarmacia.bloqueo_generar_pedido" class="btn btn-accion btn-success pull-right" ng-click="generarPedidoFarmacia()">Generar Pedido</button>
-        <button type="submit" class="btn btn-accion btn-warning pull-right" ng-click="abrirViewVerPedidosFarmacias()">Cancelar Pedido</button>
+        <button type="submit" ng-disabled="rootCreaPedidoFarmacia.bloqueo_generar_pedido" class="btn btn-accion btn-success pull-right" ng-click="generarPedidoFarmacia()" ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible === false">Generar Pedido</button>
+        <button type="submit" ng-disabled="rootCreaPedidoFarmacia.bloqueo_generar_pedido" class="btn btn-accion btn-primary pull-right" ng-click="abrirViewVerPedidosFarmacias()" ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible === false">Guardar Temporal</button>
+        <button type="submit" class="btn btn-accion btn-warning pull-right" ng-click="abrirViewVerPedidosFarmaciasEliminarTemporal()" ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible === false">Cancelar Pedido</button>
+        <button type="submit" class="btn btn-accion btn-success pull-right" ng-click="abrirViewVerPedidosFarmacias()" ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible === true">Finalizar</button>
     </div>
 
     <br/><br/><br/><br/><br/>

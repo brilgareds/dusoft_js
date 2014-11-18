@@ -1,0 +1,21 @@
+{
+    "module": "ObservacionesOrdenesCompras",
+    "dependency": {
+        "controllers": [{
+                "observaciones_controller": {
+                    "module": "Parametrizacion/ObservacionesOrdenesCompras",
+                    "controller": "ObservacionesOrdenesComprasController",
+                    "alias": "c_observaciones"
+                }
+            }],
+        "models": [{
+                "observaciones_model": {
+                    "module": "Parametrizacion/ObservacionesOrdenesCompras",
+                    "model": "ObservacionesOrdenesComprasModel",
+                    "alias": "m_observaciones"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

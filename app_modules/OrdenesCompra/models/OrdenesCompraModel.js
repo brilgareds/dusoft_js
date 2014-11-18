@@ -101,45 +101,6 @@ OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_prov
 // Consultar Ordenes de Compra  por numero de orden
 OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, callback) {
 
-
-    /*var sql = " SELECT \
-     a.orden_pedido_id as numero_orden,\
-     a.empresa_id,\
-     d.tipo_id_tercero as tipo_id_empresa,\
-     d.id as nit_empresa,\
-     d.razon_social as nombre_empresa,\
-     a.codigo_proveedor_id,\
-     c.tipo_id_tercero as tipo_id_proveedor,\
-     c.tercero_id as nit_proveedor,\
-     c.nombre_tercero as nombre_proveedor,\
-     c.direccion as direccion_proveedor,\
-     c.telefono as telefono_proveedor,\
-     a.estado,\
-     CASE WHEN a.estado = 0 THEN 'Recibida' \
-     WHEN a.estado = 1 THEN 'Activa' \
-     WHEN a.estado = 2 THEN 'Anulado' END as descripcion_estado, \
-     CASE WHEN a.sw_orden_compra_finalizada = '0' THEN 'En Proceso ...' \
-     WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion, \
-     a.observacion,\
-     f.codigo_unidad_negocio,\
-     f.imagen,\
-     f.descripcion,\
-     a.usuario_id,\
-     e.nombre as nombre_usuario,\
-     To_char(a.fecha_orden,'dd-mm-yyyy') as fecha_registro, \
-     CASE WHEN COALESCE (g.orden_pedido_id,0)=0 then 0 else 1 end as tiene_ingreso_temporal \
-     FROM compras_ordenes_pedidos a\
-     inner join terceros_proveedores b on a.codigo_proveedor_id = b.codigo_proveedor_id\
-     inner join terceros c on  b.tipo_id_tercero = c.tipo_id_tercero and b.tercero_id=c.tercero_id \
-     inner join empresas d on a.empresa_id = d.empresa_id\
-     inner join system_usuarios e on a.usuario_id = e.usuario_id\
-     left join unidades_negocio f on a.codigo_unidad_negocio = f.codigo_unidad_negocio \
-     left join (\
-     select aa.orden_pedido_id from inv_bodegas_movimiento_tmp_ordenes_compra aa\
-     ) as g on a.orden_pedido_id = g.orden_pedido_id\
-     WHERE a.orden_pedido_id = $1 ";*/
-
-
     var sql = " SELECT \
             a.orden_pedido_id as numero_orden,\
             a.empresa_id,\
@@ -187,7 +148,7 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
 // Consultar Detalle Ordene de Compra  por numero de orden
 OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_orden, termino_busqueda, pagina, callback) {
 
-    var sql = " select * from (\
+    /*var sql = " select * from (\
                     select\
                     a.orden_pedido_id as numero_orden,\
                     a.codigo_producto,\
@@ -200,12 +161,33 @@ OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_or
                     ( (a.numero_unidades::integer * a.valor) +  ((a.porc_iva/100) * (a.numero_unidades::integer * a.valor) )) as total,\
                     a.estado \
                     from compras_ordenes_pedidos_detalle as a\
+                ) AS a where a.numero_orden = $1 and a.estado = '1' and ( a.codigo_producto ilike $2 or  a.descripcion_producto ilike $2 ) ";*/
+    
+    var sql = " select * from (\
+                    select\
+                    a.item_id, \
+                    a.orden_pedido_id as numero_orden,\
+                    a.codigo_producto,\
+                    fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
+                    a.numero_unidades::integer as cantidad_solicitada,\
+                    a.valor,\
+                    a.porc_iva,\
+                    (a.numero_unidades::integer * a.valor) as subtotal,\
+                    ((a.porc_iva/100) * (a.numero_unidades::integer * a.valor) ) as valor_iva,\
+                    ( (a.numero_unidades::integer * a.valor) +  ((a.porc_iva/100) * (a.numero_unidades::integer * a.valor) )) as total,\
+                    a.estado,\
+                    c.codigo || ' - ' || c.descripcion as codigo_novedad,\
+                    b.descripcion as descripcion_novedad,\
+                    d.cantidad_archivos\
+                    from compras_ordenes_pedidos_detalle a\
+                    left join novedades_ordenes_compras b on a.item_id = b.item_id\
+                    left join observaciones_ordenes_compras c on b.observacion_orden_compra_id = c.id\
+                    left join (\
+                       select a.novedad_orden_compra_id, count(a.*) as cantidad_archivos from archivos_novedades_ordenes_compras a\
+                       group by 1\
+                    ) as d on b.id = d.novedad_orden_compra_id\
                 ) AS a where a.numero_orden = $1 and a.estado = '1' and ( a.codigo_producto ilike $2 or  a.descripcion_producto ilike $2 ) ";
-    
-    /*G.db.pagination(sql, [numero_orden, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
-        callback(err, rows);
-    });*/
-    
+   
     G.db.query(sql, [numero_orden, "%" + termino_busqueda + "%"], function(err, rows, result, total_records) {
         callback(err, rows);
     });
@@ -327,4 +309,16 @@ OrdenesCompraModel.prototype.finalizar_orden_compra = function(numero_orden, ord
         callback(err, rows, result);
     });
 };
+
+// Finaliza la Orden de Compra
+OrdenesCompraModel.prototype.insertar_novedad_producto = function(item_id, observacion_id, descripcion_novedad, usuario_id, callback) {
+
+
+    var sql = "  INSERT INTO novedades_ordenes_compras (item_id, observacion_orden_compra_id, descripcion, usuario_id, fecha_registro)  ";
+    G.db.query(sql, [numero_orden, orden_compra_finalizada], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
+
 module.exports = OrdenesCompraModel;

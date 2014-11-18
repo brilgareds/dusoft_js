@@ -30,14 +30,14 @@ define(["angular", "js/controllers",
                 usuario_id: Sesion.usuario_id,
                 auth_token: Sesion.token
             };
-            
-            
+
+
             // numero de orden compra
             localStorageService.add("numero_orden", 0);
-            
+
             // Vista Previa 
             localStorageService.add("vista_previa", '0'); //false
-            
+
             // Variables
             var fecha_actual = new Date()
             $scope.fecha_inicial = $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd");
@@ -54,7 +54,7 @@ define(["angular", "js/controllers",
             $scope.pagina_actual = 1;
 
 
-            
+
 
             $scope.buscar_ordenes_compras = function(termino, paginando) {
 
@@ -143,7 +143,7 @@ define(["angular", "js/controllers",
                     orden_compra.set_descripcion_estado(orden.descripcion_estado);
 
                     orden_compra.set_ingreso_temporal(orden.tiene_ingreso_temporal);
-                    
+
                     orden_compra.set_estado_digitacion(orden.estado_digitacion);
 
                     $scope.Empresa.set_ordenes_compras(orden_compra);
@@ -174,7 +174,9 @@ define(["angular", "js/controllers",
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
                                                 <li><a href="javascript:void(0);" ng-click="vista_previa(row.entity);" >Vista Previa</a></li>\
-                                                <li><a href="javascript:void(0);" ng-click="modificar_orden_compra(row.entity)" >Modificar</a></li>\
+                                                <li><a href="javascript:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,0)" >Modificar</a></li>\
+                                                <li class="divider"></li>\
+                                                <li><a href="javascript:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,1)" >Novedades</a></li>\
                                                 <li class="divider"></li>\
                                                 <li><a href="javascript:void(0);" ng-click="anular_orden_compra_seleccionada(row.entity)">Anular OC</a></li>\
                                             </ul>\
@@ -213,7 +215,11 @@ define(["angular", "js/controllers",
                 $state.go('OrdenCompra');
             };
 
-            $scope.modificar_orden_compra = function(orden_compra) {
+
+            $scope.gestionar_acciones_orden_compra = function(orden_compra, opcion) {
+
+                // Opcion => 0 = Modificar
+                // Opcion => 1 = Novedades
 
 
                 if (orden_compra.estado === '0' || orden_compra.estado === '2' || orden_compra.get_ingreso_temporal()) {
@@ -254,12 +260,16 @@ define(["angular", "js/controllers",
                         }
                     };
                     var modalInstance = $modal.open($scope.opts);
-
                 } else {
 
                     localStorageService.add("numero_orden", orden_compra.get_numero_orden());
-                    $state.go('OrdenCompra');
+
+                    if (opcion === 0)
+                        $state.go('OrdenCompra');
+                    else if (opcion === 1)
+                        $state.go('Novedades');
                 }
+
             };
 
             $scope.anular_orden_compra_seleccionada = function(orden_compra) {
@@ -327,8 +337,6 @@ define(["angular", "js/controllers",
                 var modalInstance = $modal.open($scope.opts);
 
             };
-
-
 
             $scope.buscar_ordenes_compras();
 

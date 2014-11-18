@@ -8,7 +8,8 @@ define([
     "includes/header/HeaderController", 'storage', "httpinterceptor",
     "includes/classes/Usuario", "includes/http/Request", "dragndropfile",
     "controllers/genererarordenes/ListarOrdenesController",
-    "controllers/genererarordenes/GestionarOrdenesController"
+    "controllers/genererarordenes/GestionarOrdenesController",
+    "controllers/novedadesordenes/GestionarNovedadesController"
 
 ], function(angular) {
     /* App Module and its dependencies */
@@ -44,6 +45,10 @@ define([
                 url: "/OrdenCompra",
                 text: "Administración Ordenes de Compra",
                 templateUrl: "views/genererarordenes/gestionarordenes.html"
+            }).state('Novedades', {
+                url: "/Novedades",
+                text: "Administración Novedades Ordenes de Compra",
+                templateUrl: "views/novedadesordenes/gestionarnovedades.html"
             });
 
 

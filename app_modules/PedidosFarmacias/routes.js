@@ -117,6 +117,11 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.eliminarProductoDetallePedidoFinal(req, res);
     });
     
+    // Pedido Farmacia por archivo plano
+    app.post('/pedidoFarmaciaArchivoPlano', function(req, res) {
+        c_pedidos_farmacias.ordenCompraArchivoPlano(req, res);
+    });    
+    
     // Listar productos
 //    app.get('/listarProductos', function(req, res) {
 //        c_pedidos_farmacias.listar_productos(req, res);

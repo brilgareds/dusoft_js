@@ -1,5 +1,6 @@
-<div flow-init="{target: '/pedidoFarmaciaArchivoPlano'}" flow-file-added="!!{txt:1,csv:1}[$file.getExtension()]">
-<div style ="padding:5px" ng-controller="CreaPedidoFarmaciaController">    
+<!--<div flow-init="{target: '/pedidoFarmaciaArchivoPlano'}" flow-file-added="!!{xlsx:1,xls:1}[$file.getExtension()]">-->
+    <!--/pedidoFarmaciaArchivoPlano-->
+<div style ="padding:5px" ng-controller="CreaPedidoFarmaciaController" nv-file-drop="" uploader="uploader" filters="queueLimit, customFilter">    
 
     <div class="row marginBottom5"> <!--Div Row Superior-->
         
@@ -197,12 +198,92 @@
 
                             <!--<button class="btn" ng-click="data.static1 = true">Select Static1 {{data.static1}}</button>-->
 
-                            <div> <!-- flow-init flow-object="existingFlowObject" -->
+                            <div> <!--flow-init flow-object="existingFlowObject"-->
 
-
+                                <!--Inicio Prueba FileUpload-->
+                                
                                 <br/>
+                                <div ng-show="uploader.isHTML5">
+                                    <div class="well my-drop-zone" nv-file-over="" uploader="uploader">
+                                        Arrastre y Suelte el archivo aquí
+                                    </div>
+                                <div>
+                                    
+                                Busque el archivo
+                                <input type="file" nv-file-select="" uploader="uploader" />
+                                
+                                <div class="col-md-9" style="margin-bottom: 40px">
 
-                                <div flow-prevent-drop flow-drag-enter="style={border: '5px solid green'}" flow-drag-leave="style={}" ng-style="dropEnabled && style">
+                                    <h3>Cola de Upload</h3>
+                                    <p>Longitud de la Cola: {{ uploader.queue.length }}</p>
+
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th width="50%">Nombre</th>
+                                                <th ng-show="uploader.isHTML5">Tamaño</th>
+                                                <th ng-show="uploader.isHTML5">Progreso</th>
+                                                <th>Estado</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="item in uploader.queue">
+                                                <td><strong>{{ item.file.name }}</strong></td>
+                                                <td ng-show="uploader.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
+                                                <td ng-show="uploader.isHTML5">
+                                                    <div class="progress" style="margin-bottom: 0;">
+                                                        <div class="progress-bar" role="progressbar" ng-style="{ 'width': item.progress + '%' }"></div>
+                                                    </div>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span ng-show="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
+                                                    <span ng-show="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
+                                                    <span ng-show="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
+                                                </td>
+                                                <td nowrap>
+                                                    <button type="button" class="btn btn-success btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
+                                                        <span class="glyphicon glyphicon-upload"></span> Upload
+                                                    </button>
+                                                    <button type="button" class="btn btn-warning btn-xs" ng-click="item.cancel()" ng-disabled="!item.isUploading">
+                                                        <span class="glyphicon glyphicon-ban-circle"></span> Cancel
+                                                    </button>
+                                                    <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">
+                                                        <span class="glyphicon glyphicon-trash"></span> Remove
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <div>
+                                        <div>
+                                            Progreso de la Cola:
+                                            <div class="progress" style="">
+                                                <div class="progress-bar" role="progressbar" ng-style="{ 'width': uploader.progress + '%' }"></div>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-success btn-s" ng-click="uploader.uploadAll()" ng-disabled="!uploader.getNotUploadedItems().length">
+                                            <span class="glyphicon glyphicon-upload"></span> Subir todo
+                                        </button>
+                                        <button type="button" class="btn btn-warning btn-s" ng-click="uploader.cancelAll()" ng-disabled="!uploader.isUploading">
+                                            <span class="glyphicon glyphicon-ban-circle"></span> Cancelar todo
+                                        </button>
+                                        <button type="button" class="btn btn-danger btn-s" ng-click="uploader.clearQueue()" ng-disabled="!uploader.queue.length">
+                                            <span class="glyphicon glyphicon-trash"></span> Remover todo
+                                        </button>
+                                    </div>
+
+                                </div>
+                                
+                                <!--Fin prueba FileUpload-->
+                                
+                                
+<!--                                <form method="POST" action="/pedidoFarmaciaArchivoPlano" enctype="multipart/form-data">
+                                            <input type="file" name='file'><button type="submit"> Subir</button>
+                                </form>-->
+
+<!--                                <div flow-prevent-drop flow-drag-enter="style={border: '5px solid green'}" flow-drag-leave="style={}" ng-style="dropEnabled && style">
 
                                     <div class="span6">
 
@@ -217,13 +298,13 @@
 
                                     <div class="alert" ng-show="$flow.files.length" flow-drop flow-drag-enter="class='alert alert-success'" flow-drag-leave="class='alert'" ng-class="class" style="text-align: center; padding: 50px 0;">
                                         El archivo a cargar es: {{$flow.files[0].name}}</br></br>
-                                        <img src="../../../images/txt-icon.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
+                                        <img src="../../../images/xls.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
                                         <br/><br/>
                                         <button class="btn btn-small btn-success" ng-show="$flow.files.length" ng-click="$flow.resume(); setTabActivo(1)">Subir Archivo</button>
                                         <button class="btn btn-danger" ng-show="$flow.files.length" ng-click="$flow.cancel()">Eliminar</button>
                                     </div>
 
-                                </div>
+                                </div>-->
 
                             </div>
                         </tab>
@@ -250,4 +331,4 @@
 
 </div>
 
-</div>
+<!--</div>-->

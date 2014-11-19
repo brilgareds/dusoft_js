@@ -1165,6 +1165,111 @@ PedidosFarmacias.prototype.insertarDetallePedidoFarmaciaDefinitivo = function(re
 
 };
 
+PedidosFarmacias.prototype.pedidoFarmaciaArchivoPlano = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+    
+    console.log(">>>>>>>>>>>>>>>>>>>>>>>>> RUTA ENCONTRADA <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+    
+    //console.log(req);
+
+   /* var empresa_id = '03';
+    var codigo_proveedor_id = '581';
+    var numero_orden = 29689;*/
+
+    __subir_archivo_plano(req.files, function(continuar, contenido) {
+
+        if (continuar) {
+            // crear Orden de Compra 
+            
+           console.log('============= EXITO subiendo Archivo Plano ================'); 
+           console.log(contenido[0].data);
+           
+           //res.send(contenido[0].data);
+           
+          /* var lista_productos = contenido[0].data;
+           
+           lista_productos.forEach(function(producto){
+               producto[0]
+           });*/
+//
+//            __validar_productos_archivo_plano(that, contenido, function(productos_validos, productos_invalidos) {
+//
+//                __validar_costo_productos_archivo_plano(that, empresa_id, codigo_proveedor_id, numero_orden, productos_validos, function(_productos_validos, _productos_invalidos) {
+//
+//
+//                    var i = _productos_validos.length;
+//                    
+//                    _productos_validos.forEach(function(producto) {
+//
+//                        that.m_ordenes_compra.insertar_detalle_orden_compra(numero_orden, producto.codigo_producto, producto.cantidad_solicitada, producto.costo, producto.iva, function(err, rows, result) {
+//                            if(err){
+//                                console.log('============= ERRRORRRRR ===========', err);
+//                            }
+//                            if(--i === 0){                                
+//                                console.log('============= FINISHED ================');
+//                                console.log('============== OHHHHHHHHHHHHHH YESSS===========');
+//                                console.log('Validos');
+//                                console.log(_productos_validos);
+//                                console.log('INNNValidos');
+//                                console.log(_productos_invalidos);
+//                            }
+//                        });
+//                    });
+//                });
+//            });
+        } else {
+            // Error
+            console.log('============= ERROR subiendo Archivo Plano ================');   
+        }
+    });
+};
+
+function __subir_archivo_plano(files, callback) {
+
+    var ruta_tmp = files.file.path;
+    var ext = G.path.extname(ruta_tmp);
+    var nombre_archivo = G.random.randomKey(3, 3) + ext;
+    var ruta_nueva = G.dirname + G.settings.carpeta_temporal + nombre_archivo;
+    var contenido_archivo_plano = [];
+
+    if (ext === '.xls' || ext === '.xlsx') {
+        if (G.fs.existsSync(ruta_tmp)) {
+            // Copiar Archivo
+            G.fs.copy(ruta_tmp, ruta_nueva, function(err) {
+                if (err) {
+                    // Borrar archivo fisico
+                    G.fs.unlinkSync(ruta_tmp);
+                    callback(false);
+                    return;
+                } else {
+                    G.fs.unlink(ruta_tmp, function(err) {
+                        if (err) {
+                            callback(false);
+                            return;
+                        } else {
+                            // Cargar Contenido
+                            contenido_archivo_plano = G.xlsx.parse(ruta_nueva);
+                            // Borrar archivo fisico
+                            G.fs.unlinkSync(ruta_nueva);
+                            callback(true, contenido_archivo_plano);
+                        }
+                    });
+                }
+            });
+        } else {
+            // El Archivo no Existe
+            callback(false);
+        }
+    } else {
+        //Extension No Permitida
+        G.fs.unlinkSync(ruta_tmp);
+        callback(false);
+    }
+};
+
 PedidosFarmacias.$inject = ["m_pedidos_farmacias", "e_pedidos_farmacias", "m_productos", "m_pedidos_clientes"];
 
 module.exports = PedidosFarmacias;

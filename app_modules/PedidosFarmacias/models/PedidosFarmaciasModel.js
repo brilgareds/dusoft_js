@@ -218,6 +218,21 @@ PedidosFarmaciasModel.prototype.eliminar_producto_detalle_pedido_final = functio
     });
 };
 
+PedidosFarmaciasModel.prototype.log_eliminar_producto_detalle_pedido_final = function(numero_pedido, numero_detalle_pedido, callback)
+{
+    
+    var sql = "INSERT INTO log_eliminacion_pedidos_farmacia(pedido_id,farmacia,usuario_solicitud,codigo_producto,cant_solicita,cant_pendiente,usuario_id,fecha_registro,usuario_ejecuta)\
+                SELECT a.solicitud_prod_a_bod_ppal_id as pedido_id, b.razon_social as farmacia, c.usuario as usuario_solicitud, a.codigo_producto, a.cantidad_solic as cant_solicita, a.cantidad_pendiente as cant_pendiente, a.usuario_id, CURRENT_TIMESTAMP as fecha_registro, c.nombre as usuario_ejecuta\
+                FROM solicitud_productos_a_bodega_principal_detalle a\
+                LEFT JOIN empresas b on b.empresa_id = a.farmacia_id\
+                LEFT JOIN system_usuarios c on c.usuario_id = a.usuario_id\
+                WHERE a.solicitud_prod_a_bod_ppal_id = $1\
+                AND a.solicitud_prod_a_bod_ppal_det_id = $2";
+
+    G.db.query(sql, [numero_pedido, numero_detalle_pedido], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
 
 // Listar todos los pedidos de farmacias
 PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, termino_busqueda, filtro, pagina, callback) {

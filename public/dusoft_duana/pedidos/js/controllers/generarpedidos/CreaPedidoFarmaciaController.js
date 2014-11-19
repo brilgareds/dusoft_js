@@ -66,7 +66,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 //            };
 //
 //            console.info('uploader', uploader);            
-//            
+            
             /* <<<<<<<<<<<<<<<<<<<<< Fin - Definiciones FileUploader >>>>>>>>>>>>>>>>>>>>>>>>>>>*/
 
             $scope.rootCreaPedidoFarmacia = {};
@@ -380,6 +380,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     
                     $scope.rootCreaPedidoFarmacia.titulo_tab_1= "Detalle Pedido";
                     $scope.rootCreaPedidoFarmacia.titulo_tab_2= "";
+                    $scope.rootCreaPedidoFarmacia.grid_pedido_generado_visible = true;
 
                     $scope.rootCreaPedidoFarmacia.pedido.numero_pedido = PedidoVenta.pedidoseleccionado;
 
@@ -392,6 +393,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                     $scope.rootCreaPedidoFarmacia.titulo_tab_1= "Detalle Pedido";
                     $scope.rootCreaPedidoFarmacia.titulo_tab_2= "";
+                    $scope.rootCreaPedidoFarmacia.grid_pedido_generado_visible = true;
                     
                     if (localStorageService.get("pedidoseleccionado").length > 0) {
                         $scope.rootCreaPedidoFarmacia.pedido.numero_pedido = localStorageService.get("pedidoseleccionado");
@@ -402,6 +404,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 else {
                     $scope.rootCreaPedidoFarmacia.titulo_tab_1= "Incluir Producto Manual";
                     $scope.rootCreaPedidoFarmacia.titulo_tab_2= "Cargar Archivo Plano"
+                    $scope.rootCreaPedidoFarmacia.grid_pedido_generado_visible = false;
+                    
                     $scope.consultarEmpresasDe();
                     $scope.consultarEmpresasPara();
                 }

@@ -66,8 +66,8 @@ module.exports = function(app, di_container) {
     
     
     // Generar Orden de Compra
-    app.post('/api/OrdenesCompra/ingresarNovedades', function(req, res) {
-        c_ordenes_compra.ingresarNovedades(req, res);
+    app.post('/api/OrdenesCompra/gestionarNovedades', function(req, res) {
+        c_ordenes_compra.gestionarNovedades(req, res);
     });
     
 

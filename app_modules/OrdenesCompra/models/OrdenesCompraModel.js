@@ -57,11 +57,11 @@ OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_prov
     var sql_aux = " ";
     if (laboratorio_id)
         sql_aux = " AND a.clase_id = $4 ";
-    
+
     if (numero_orden > 0)
         sql_aux += " AND a.codigo_producto not in ( select a.codigo_producto from compras_ordenes_pedidos_detalle a where a.orden_pedido_id = " + numero_orden + " ) ";
-    
-    
+
+
     var sql = " SELECT \
                 e.descripcion as descripcion_grupo,\
                 d.descripcion as descripcion_clase,\
@@ -73,7 +73,8 @@ OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_prov
                 CASE WHEN COALESCE (aa.valor_pactado,0)=0 then round((b.costo_ultima_compra)/((COALESCE(a.porc_iva,0)/100)+1),2) else aa.valor_pactado end as costo_ultima_compra,\
                 CASE WHEN COALESCE (aa.valor_pactado,0)=0 then 0 else 1 end as tiene_valor_pactado,\
                 a.cantidad,\
-                f.descripcion as presentacion\
+                f.descripcion as presentacion,\
+                a.sw_regulado\
                 FROM  inventarios_productos a\
                 INNER JOIN inventarios b ON a.codigo_producto = b.codigo_producto\
                 INNER JOIN inv_subclases_inventarios c ON a.subclase_id = c.subclase_id AND a.clase_id = c.clase_id AND a.grupo_id = c.grupo_id\
@@ -149,20 +150,20 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
 OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_orden, termino_busqueda, pagina, callback) {
 
     /*var sql = " select * from (\
-                    select\
-                    a.orden_pedido_id as numero_orden,\
-                    a.codigo_producto,\
-                    fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
-                    a.numero_unidades::integer as cantidad_solicitada,\
-                    a.valor,\
-                    a.porc_iva,\
-                    (a.numero_unidades::integer * a.valor) as subtotal,\
-                    ((a.porc_iva/100) * (a.numero_unidades::integer * a.valor) ) as valor_iva,\
-                    ( (a.numero_unidades::integer * a.valor) +  ((a.porc_iva/100) * (a.numero_unidades::integer * a.valor) )) as total,\
-                    a.estado \
-                    from compras_ordenes_pedidos_detalle as a\
-                ) AS a where a.numero_orden = $1 and a.estado = '1' and ( a.codigo_producto ilike $2 or  a.descripcion_producto ilike $2 ) ";*/
-    
+     select\
+     a.orden_pedido_id as numero_orden,\
+     a.codigo_producto,\
+     fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
+     a.numero_unidades::integer as cantidad_solicitada,\
+     a.valor,\
+     a.porc_iva,\
+     (a.numero_unidades::integer * a.valor) as subtotal,\
+     ((a.porc_iva/100) * (a.numero_unidades::integer * a.valor) ) as valor_iva,\
+     ( (a.numero_unidades::integer * a.valor) +  ((a.porc_iva/100) * (a.numero_unidades::integer * a.valor) )) as total,\
+     a.estado \
+     from compras_ordenes_pedidos_detalle as a\
+     ) AS a where a.numero_orden = $1 and a.estado = '1' and ( a.codigo_producto ilike $2 or  a.descripcion_producto ilike $2 ) ";*/
+
     var sql = " select * from (\
                     select\
                     a.item_id, \
@@ -176,8 +177,11 @@ OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_or
                     ((a.porc_iva/100) * (a.numero_unidades::integer * a.valor) ) as valor_iva,\
                     ( (a.numero_unidades::integer * a.valor) +  ((a.porc_iva/100) * (a.numero_unidades::integer * a.valor) )) as total,\
                     a.estado,\
-                    c.codigo || ' - ' || c.descripcion as codigo_novedad,\
+                    b.id as novedad_id,\
                     b.descripcion as descripcion_novedad,\
+                    c.id as id_observacion,\
+                    c.codigo as codigo_observacion,\
+                    c.descripcion as descripcion_observacion,\
                     d.cantidad_archivos\
                     from compras_ordenes_pedidos_detalle a\
                     left join novedades_ordenes_compras b on a.item_id = b.item_id\
@@ -187,7 +191,7 @@ OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_or
                        group by 1\
                     ) as d on b.id = d.novedad_orden_compra_id\
                 ) AS a where a.numero_orden = $1 and a.estado = '1' and ( a.codigo_producto ilike $2 or  a.descripcion_producto ilike $2 ) ";
-   
+
     G.db.query(sql, [numero_orden, "%" + termino_busqueda + "%"], function(err, rows, result, total_records) {
         callback(err, rows);
     });
@@ -310,15 +314,36 @@ OrdenesCompraModel.prototype.finalizar_orden_compra = function(numero_orden, ord
     });
 };
 
-// Finaliza la Orden de Compra
-OrdenesCompraModel.prototype.insertar_novedad_producto = function(item_id, observacion_id, descripcion_novedad, usuario_id, callback) {
+// Consultar Novedad Producto Orden de Compra
+OrdenesCompraModel.prototype.consultar_novedad_producto = function(novedad_id, callback) {
 
-
-    var sql = "  INSERT INTO novedades_ordenes_compras (item_id, observacion_orden_compra_id, descripcion, usuario_id, fecha_registro)  ";
-    G.db.query(sql, [numero_orden, orden_compra_finalizada], function(err, rows, result) {
+    var sql = "  SELECT  * FROM novedades_ordenes_compras a WHERE a.id = $1 ; ";
+    G.db.query(sql, [novedad_id], function(err, rows, result) {
         callback(err, rows, result);
     });
 };
+
+
+// Registrar Novedad Producto Orden de Compra
+OrdenesCompraModel.prototype.insertar_novedad_producto = function(item_id, observacion_id, descripcion_novedad, usuario_id, callback) {
+
+    var sql = "  INSERT INTO novedades_ordenes_compras (item_id, observacion_orden_compra_id, descripcion, usuario_id) \
+                 VALUES ( $1, $2, $3, $4) RETURNING id as novedad_id ; ";
+    G.db.query(sql, [item_id, observacion_id, descripcion_novedad, usuario_id], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
+// Modificar Novedad Producto Orden de Compra 
+OrdenesCompraModel.prototype.modificar_novedad_producto = function(novedad_id, observacion_id, descripcion_novedad, usuario_id, callback) {
+
+    var sql = " UPDATE novedades_ordenes_compras SET  observacion_orden_compra_id =$2 , descripcion =$3 , usuario_id = $4 WHERE id = $1 ; ";
+    G.db.query(sql, [novedad_id, observacion_id, descripcion_novedad, usuario_id], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
+
 
 
 module.exports = OrdenesCompraModel;

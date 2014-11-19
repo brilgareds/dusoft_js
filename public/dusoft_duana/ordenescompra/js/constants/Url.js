@@ -20,6 +20,7 @@ define(["angular"], function(angular) {
                 'ANULAR_ORDEN_COMPRA': BASE_URL + '/OrdenesCompra/anularOrdenCompra',
                 'FINALIZAR_ORDEN_COMPRA': BASE_URL + '/OrdenesCompra/finalizarOrdenCompra',
                 'SUBIR_ARCHIVO_PLANO': BASE_URL + '/OrdenesCompra/subirPlano',
+                'GESTIONAR_NOVEDADES': BASE_URL + '/OrdenesCompra/gestionarNovedades',
             },
             'PROVEEDORES': {
                 'LISTAR_PROVEEDORES': BASE_URL + '/Terceros/Proveedores/listar'
@@ -29,6 +30,9 @@ define(["angular"], function(angular) {
             },
             'LABORATORIOS': {
                 'LISTAR_LABORATORIOS': BASE_URL + '/Laboratorios/listarLaboratorios'
+            },
+            'OBSERVACIONES_ORDENES_COMPRA': {
+                'LISTAR_OBSERVACIONES': BASE_URL + '/ObservacionesOrdenesCompras/listarObservaciones'
             }
         }
     };

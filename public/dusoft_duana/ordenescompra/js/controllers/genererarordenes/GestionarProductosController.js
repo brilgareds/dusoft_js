@@ -216,6 +216,7 @@ define(["angular", "js/controllers",
                 $scope.Empresa.limpiar_productos();
                 productos.forEach(function(data) {
                     var producto = Producto.get(data.codigo_producto, data.descripcion_producto, '', data.iva, data.costo_ultima_compra, data.tiene_valor_pactado, data.presentacion, data.cantidad);
+                    producto.set_regulado(data.sw_regulado);
                     $scope.Empresa.set_productos(producto);
                 });
             };
@@ -245,7 +246,7 @@ define(["angular", "js/controllers",
                     {field: 'descripcion', displayName: 'Descripcion', enableCellEdit: false},
                     {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "15%", cellFilter: "currency:'$ '", enableCellEdit: false,
                         cellTemplate : '<div class="ngCellText" ng-class="col.colIndex()">\
-                                            <span class="label label-primary" ng-show="false" >Reg</span>\
+                                            <span class="label label-primary" ng-show="row.entity.regulado == 1" >Reg</span>\
                                             <span class="label label-danger" ng-show="row.entity.tiene_valor_pactado == 0">S.C</span>\
                                             <span class="label label-success" ng-show="row.entity.tiene_valor_pactado == 1">C.C</span>\
                                             <span ng-cell-text class="pull-right" >{{COL_FIELD | currency:"$ "}}</span>\

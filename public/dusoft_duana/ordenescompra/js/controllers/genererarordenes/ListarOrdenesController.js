@@ -5,6 +5,8 @@ define(["angular", "js/controllers",
     "models/ProveedorOrdenCompra",
     "models/UnidadNegocio",
     "models/ProductoOrdenCompra",
+    "models/NovedadOrdenCompra",
+    "models/ObservacionOrdenCompra",
     "models/UsuarioOrdenCompra",
 ], function(angular, controllers) {
 

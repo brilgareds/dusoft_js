@@ -12,9 +12,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         "ProveedorOrdenCompra",
         "UnidadNegocio",
         "ProductoOrdenCompra",
+        "NovedadOrdenCompra",
+        "ObservacionOrdenCompra",
         "UsuarioOrdenCompra",
         "Usuario",
-        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, OrdenCompra, Empresa, Proveedor, UnidadNegocio, Producto, Usuario, Sesion) {
+        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, OrdenCompra, Empresa, Proveedor, UnidadNegocio, Producto, Novedad, Observacion, Usuario, Sesion) {
 
             var that = this;
 
@@ -129,8 +131,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     $scope.ultima_busqueda = $scope.termino_busqueda;
 
                     if (data.status === 200) {
-
-
+                        
                         var lista_productos = data.obj.lista_productos;
 
                         $scope.cantidad_items = lista_productos.length;
@@ -153,7 +154,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                             var producto = Producto.get(data.codigo_producto, data.descripcion_producto, '', parseFloat(data.porc_iva).toFixed(2), data.valor);
                             producto.set_cantidad_seleccionada(data.cantidad_solicitada);
-
+                            
+                            var novedad = Novedad.get(data.novedad_id, data.descripcion_novedad, Observacion.get(data.id_observacion, data.codigo_observacion, data.descripcion_observacion));
+                            
+                            // Set Novedad Producto
+                            producto.set_id(data.item_id);
+                            producto.set_novedad(novedad);
+                            
                             $scope.orden_compra.set_productos(producto);
 
                             // Totales                        
@@ -162,7 +169,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             $scope.valor_total += data.total;
 
                         });
-
+                        
                         $scope.cantidad_productos_orden_compra = $scope.orden_compra.get_productos().length;
                     }
                 });
@@ -276,12 +283,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                         </div>\
                                     </div>',
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Codigo Producto', width: "10%"},
-                    {field: 'descripcion', displayName: 'Descripcion'},
-                    {field: 'cantidad_seleccionada', width: "7%", displayName: "Cantidad"},
-                    {field: 'iva', width: "7%", displayName: "Novedad"},
-                    {field: 'costo_ultima_compra', displayName: 'Observacion', width: "10%", cellFilter: "currency:'$ '"},
-                    {width: "7%", displayName: "Opcion", cellClass: "txt-center",
+                    {field: 'codigo_producto', displayName: 'Codigo Producto',width: "10%"},
+                    {field: 'descripcion', displayName: 'Descripcion', width: "40%"},
+                    {field: 'novedad.get_observacion().get_descripcion()', displayName: "Novedad",width: "15%"},
+                    {field: 'novedad.get_descripcion()', displayName: 'Observacion', width: "21%"},
+                    {field: 'cantidad_archivos', displayName: 'Archivos', width: "5%"},
+                    {displayName: "Opcion", cellClass: "txt-center", width: "7%",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs" ng-click="novedades_producto_orden_compra(row)" ><span class="glyphicon glyphicon-file"></span> Novedad </button>\
                                         </div>'}

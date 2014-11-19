@@ -7,12 +7,67 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         '$scope', '$rootScope', 'Request',
         'EmpresaPedido', 'Farmacia', 'PedidoVenta',
         'API', "socket", "AlertService",
-        '$state', "Usuario", "localStorageService", '$modal',
-        function($scope, $rootScope, Request, Empresa, Farmacia, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService, $modal) {
+        '$state', "Usuario", "localStorageService", '$modal', //'FileUploader',
+        function($scope, $rootScope, Request, Empresa, Farmacia, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService, $modal/*, FileUploader*/) {
 
             $scope.expreg = new RegExp("^[0-9]*$");
 
             var that = this;
+            
+            /* <<<<<<<<<<<<<<<<<<<<<<<< Inicio - Definiciones FileUploader >>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
+            
+//            $scope.uploader = $scope.uploader = new FileUploader({
+//                url: '/pedidoFarmaciaArchivoPlano'
+//            });
+//
+//            // FILTERS
+//
+//            uploader.filters.push({
+//                name: 'customFilter',
+//                fn: function(item /*{File|FileLikeObject}*/, options) {
+//                    return this.queue.length < 10;
+//                }
+//            });
+//
+//            // CALLBACKS
+//
+//            uploader.onWhenAddingFileFailed = function(item /*{File|FileLikeObject}*/, filter, options) {
+//                console.info('onWhenAddingFileFailed', item, filter, options);
+//            };
+//            uploader.onAfterAddingFile = function(fileItem) {
+//                console.info('onAfterAddingFile', fileItem);
+//            };
+//            uploader.onAfterAddingAll = function(addedFileItems) {
+//                console.info('onAfterAddingAll', addedFileItems);
+//            };
+//            uploader.onBeforeUploadItem = function(item) {
+//                console.info('onBeforeUploadItem', item);
+//            };
+//            uploader.onProgressItem = function(fileItem, progress) {
+//                console.info('onProgressItem', fileItem, progress);
+//            };
+//            uploader.onProgressAll = function(progress) {
+//                console.info('onProgressAll', progress);
+//            };
+//            uploader.onSuccessItem = function(fileItem, response, status, headers) {
+//                console.info('onSuccessItem', fileItem, response, status, headers);
+//            };
+//            uploader.onErrorItem = function(fileItem, response, status, headers) {
+//                console.info('onErrorItem', fileItem, response, status, headers);
+//            };
+//            uploader.onCancelItem = function(fileItem, response, status, headers) {
+//                console.info('onCancelItem', fileItem, response, status, headers);
+//            };
+//            uploader.onCompleteItem = function(fileItem, response, status, headers) {
+//                console.info('onCompleteItem', fileItem, response, status, headers);
+//            };
+//            uploader.onCompleteAll = function() {
+//                console.info('onCompleteAll');
+//            };
+//
+//            console.info('uploader', uploader);            
+//            
+            /* <<<<<<<<<<<<<<<<<<<<< Fin - Definiciones FileUploader >>>>>>>>>>>>>>>>>>>>>>>>>>>*/
 
             $scope.rootCreaPedidoFarmacia = {};
 
@@ -857,7 +912,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $scope.$broadcast('cargarGridSeleccionadoSlide', $scope.rootCreaPedidoFarmacia.listado_productos);
             };
 
-            $scope.$on('flow::fileAdded', function(event, $flow, flowFile) {
+           /* $scope.$on('flow::fileAdded', function(event, $flow, flowFile) {
                 //$scope.farmaciaFlowObject.fileAdded = function(event, $flow, flowFile) {
                 //event.preventDefault();//prevent file from uploading
                 //$scope.nombre_archivo = $flow;
@@ -866,12 +921,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 //                    console.log("El File Flow es",flowFile);
                 var arreglo_nombre = flowFile.name.split(".");
 
-                if (arreglo_nombre[1] !== 'txt' && arreglo_nombre[1] !== 'csv') {
-                    alert("El archivo debe ser TXT o CSV. Intente de nuevo ...");
+                if (arreglo_nombre[1] !== 'xls' && arreglo_nombre[1] !== 'xlsx') {
+                    //alert("El archivo debe ser TXT o CSV. Intente de nuevo ...");
+                    alert("El archivo debe ser XLS o XLSX. Intente de nuevo ...");
                     //flowFile = {};
                 }
                 //};
-            });
+            });*/
+
 
 //            $scope.$on('flow::filesAdded', function (event, $flow, flowFile) {
 //

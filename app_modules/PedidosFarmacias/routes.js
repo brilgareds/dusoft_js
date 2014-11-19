@@ -119,7 +119,7 @@ module.exports = function(app, di_container) {
     
     // Pedido Farmacia por archivo plano
     app.post('/pedidoFarmaciaArchivoPlano', function(req, res) {
-        c_pedidos_farmacias.ordenCompraArchivoPlano(req, res);
+        c_pedidos_farmacias.pedidoFarmaciaArchivoPlano(req, res);
     });    
     
     // Listar productos

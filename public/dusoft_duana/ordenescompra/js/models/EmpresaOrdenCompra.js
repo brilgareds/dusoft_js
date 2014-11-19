@@ -9,6 +9,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             EmpresaOrdenCompra.unidades_negocios = [];
             EmpresaOrdenCompra.laboratorios = [];
             EmpresaOrdenCompra.productos = [];
+            EmpresaOrdenCompra.observacionesOrdenesCompra = [];
 
 
             // Ordenes de Compra
@@ -88,6 +89,27 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
 
             EmpresaOrdenCompra.limpiar_productos = function() {
                 this.productos = [];
+            };
+            
+            
+            // Observaciones Ordenes Compra
+            EmpresaOrdenCompra.set_observaciones = function(observaciones) {
+                this.observacionesOrdenesCompra.push(observaciones);
+            };
+
+            EmpresaOrdenCompra.get_observaciones = function() {
+                return this.observacionesOrdenesCompra;
+            };
+            
+            EmpresaOrdenCompra.get_observacion = function(id) {
+                
+                var observacion = $filter('filter')(this.get_observaciones(), {id: parseInt(id)}, true);
+                
+                return (observacion.length > 0) ? observacion[0] : {};
+            };
+
+            EmpresaOrdenCompra.limpiar_observaciones = function() {
+                this.observacionesOrdenesCompra = [];
             };
 
             return EmpresaOrdenCompra;

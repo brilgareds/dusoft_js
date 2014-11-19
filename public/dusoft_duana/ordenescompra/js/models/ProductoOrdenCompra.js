@@ -19,6 +19,8 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.get = function(codigo, nombre, existencia, iva, costo_ultima_compra, tiene_valor_pactado, presentacion, cantidad_presentacion) {
                 return new ProductoOrdenCompra(codigo, nombre, existencia, iva, costo_ultima_compra, tiene_valor_pactado, presentacion, cantidad_presentacion);
             };
+            
+            
 
             // IVA
             ProductoOrdenCompra.prototype.get_iva = function() {
@@ -32,6 +34,15 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             ProductoOrdenCompra.prototype.get_presentacion = function() {
 
                 return this.presentacion;
+            };
+            
+            // Producto Regulado
+            ProductoOrdenCompra.prototype.set_regulado = function(regulado) {
+                this.regulado = regulado;
+            };
+            
+            ProductoOrdenCompra.prototype.get_regulado = function() {
+                return this.regulado;
             };
 
             // Cantidad Presentacion
@@ -57,6 +68,24 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             ProductoOrdenCompra.prototype.get_cantidad_seleccionada = function() {
 
                 return this.cantidad_seleccionada;
+            };
+            
+            //Set Item id -> Identificador en el detalle de la Orden de Compra          
+            ProductoOrdenCompra.prototype.set_id = function(id) {
+                this.id = id;
+            };
+
+            ProductoOrdenCompra.prototype.get_id = function() {
+                return this.id;
+            };
+            
+            //Novedad Producto           
+            ProductoOrdenCompra.prototype.set_novedad = function(novedad) {
+                this.novedad = novedad;
+            };
+
+            ProductoOrdenCompra.prototype.get_novedad = function() {
+                return this.novedad;
             };
 
             return this;

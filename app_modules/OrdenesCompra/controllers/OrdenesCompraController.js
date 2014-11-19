@@ -578,14 +578,14 @@ OrdenesCompra.prototype.finalizarOrdenCompra = function(req, res) {
 
 
 // Ingresar Novedades Orden Compra
-OrdenesCompra.prototype.ingresarNovedades = function(req, res) {
+OrdenesCompra.prototype.gestionarNovedades = function(req, res) {
 
     var that = this;
 
     var args = req.body.data;
 
-    if (args.ordenes_compras === undefined || args.ordenes_compras.item_id === undefined || args.ordenes_compras.observacion_id === undefined || args.ordenes_compras.descripcion === undefined) {
-        res.send(G.utils.r(req.url, 'item_id, observacion_id no esta definidas', 404, {}));
+    if (args.ordenes_compras === undefined || args.ordenes_compras.novedad_id === undefined || args.ordenes_compras.item_id === undefined || args.ordenes_compras.observacion_id === undefined || args.ordenes_compras.descripcion === undefined) {
+        res.send(G.utils.r(req.url, 'novedad_id, item_id, observacion_id no esta definidas', 404, {}));
         return;
     }
 
@@ -593,21 +593,51 @@ OrdenesCompra.prototype.ingresarNovedades = function(req, res) {
         res.send(G.utils.r(req.url, 'Se requiere el item_id', 404, {}));
         return;
     }
-    if (args.ordenes_compras.observacion_id === '' || args.ordenes_compras.descripcion === '' ) {
+    if (args.ordenes_compras.observacion_id === '' || args.ordenes_compras.descripcion === '') {
         res.send(G.utils.r(req.url, 'Se requiere el observacion_id, descripcion de la novedad', 404, {}));
         return;
     }
 
+    var novedad_id = args.ordenes_compras.novedad_id;
     var item_id = args.ordenes_compras.item_id;
     var observacion_id = args.ordenes_compras.observacion_id;
-    var descripcion = args.ordenes_compras.descripcion;
+    var descripcion_novedad = args.ordenes_compras.descripcion;
     var usuario_id = req.session.user.usuario_id;
-    
-    
-    that.m_ordenes_compra.insertar_novedad_producto();
 
 
-    
+
+    that.m_ordenes_compra.consultar_novedad_producto(novedad_id, function(err, novedades) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error consultando la novedad', 500, {ordenes_compras: []}));
+            return;
+        } else {
+
+            if (novedades.length === 0) {
+                that.m_ordenes_compra.insertar_novedad_producto(item_id, observacion_id, descripcion_novedad, usuario_id, function(err, rows, result) {
+
+                    if (err || result.rowCount === 0) {
+                        res.send(G.utils.r(req.url, 'Error registrando la novedad', 500, {ordenes_compras: []}));
+                        return;
+                    } else {
+                        res.send(G.utils.r(req.url, 'Novedad registrada correctamente', 200, {ordenes_compras: rows}));
+                        return;
+                    }
+                });
+            } else {
+                that.m_ordenes_compra.modificar_novedad_producto(novedad_id, observacion_id, descripcion_novedad, usuario_id, function(err, rows, result) {
+
+                    if (err || result.rowCount === 0) {
+                        res.send(G.utils.r(req.url, 'Error modificando la novedad', 500, {ordenes_compras: []}));
+                        return;
+                    } else {
+                        res.send(G.utils.r(req.url, 'Novedad modificada correctamente', 200, {ordenes_compras: []}));
+                        return;
+                    }
+                });
+            }
+        }
+    });
 };
 
 
@@ -633,14 +663,14 @@ OrdenesCompra.prototype.ordenCompraArchivoPlano = function(req, res) {
 
 
                     var i = _productos_validos.length;
-                    
+
                     _productos_validos.forEach(function(producto) {
 
                         that.m_ordenes_compra.insertar_detalle_orden_compra(numero_orden, producto.codigo_producto, producto.cantidad_solicitada, producto.costo, producto.iva, function(err, rows, result) {
-                            if(err){
+                            if (err) {
                                 console.log('============= ERRRORRRRR ===========', err);
                             }
-                            if(--i === 0){                                
+                            if (--i === 0) {
                                 console.log('============= FINISHED ================');
                                 console.log('============== OHHHHHHHHHHHHHH YESSS===========');
                                 console.log('Validos');
@@ -654,7 +684,7 @@ OrdenesCompra.prototype.ordenCompraArchivoPlano = function(req, res) {
             });
         } else {
             // Error
-            console.log('============= EERRROO subiendo Archivo Plano ================');   
+            console.log('============= EERRROO subiendo Archivo Plano ================');
         }
     });
 };

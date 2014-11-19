@@ -577,6 +577,40 @@ OrdenesCompra.prototype.finalizarOrdenCompra = function(req, res) {
 };
 
 
+// Ingresar Novedades Orden Compra
+OrdenesCompra.prototype.ingresarNovedades = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.item_id === undefined || args.ordenes_compras.observacion_id === undefined || args.ordenes_compras.descripcion === undefined) {
+        res.send(G.utils.r(req.url, 'item_id, observacion_id no esta definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.item_id === '' || args.ordenes_compras.item_id === 0 || args.ordenes_compras.item_id === '0') {
+        res.send(G.utils.r(req.url, 'Se requiere el item_id', 404, {}));
+        return;
+    }
+    if (args.ordenes_compras.observacion_id === '' || args.ordenes_compras.descripcion === '' ) {
+        res.send(G.utils.r(req.url, 'Se requiere el observacion_id, descripcion de la novedad', 404, {}));
+        return;
+    }
+
+    var item_id = args.ordenes_compras.item_id;
+    var observacion_id = args.ordenes_compras.observacion_id;
+    var descripcion = args.ordenes_compras.descripcion;
+    var usuario_id = req.session.user.usuario_id;
+    
+    
+    that.m_ordenes_compra.insertar_novedad_producto();
+
+
+    
+};
+
+
 // Subir Plano Orden de Compra
 OrdenesCompra.prototype.ordenCompraArchivoPlano = function(req, res) {
 

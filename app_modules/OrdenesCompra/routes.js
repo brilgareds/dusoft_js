@@ -65,10 +65,9 @@ module.exports = function(app, di_container) {
     });
     
     
-    // Generar Orden de Compra
+    // Generar Novedades Orden de Compra
     app.post('/api/OrdenesCompra/gestionarNovedades', function(req, res) {
         c_ordenes_compra.gestionarNovedades(req, res);
     });
-    
-
+   
 };

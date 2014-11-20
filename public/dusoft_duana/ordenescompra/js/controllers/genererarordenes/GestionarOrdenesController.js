@@ -30,9 +30,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             // Variables
             $scope.numero_orden = parseInt(localStorageService.get("numero_orden")) || 0;
             $scope.vista_previa = (localStorageService.get("vista_previa") === '1') ? true : false;
-            
-            $scope.arhivo_plano = '';
-            $scope.file = {};
 
             $scope.codigo_proveedor_id = '';
             $scope.unidad_negocio_id = '';
@@ -503,12 +500,27 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             $scope.subirArchivo = function() {
 
-                console.log('=============== archivo_plano ===================');
-                console.log('file is ' + $scope.arhivo_plano);
-                console.log('file is ' + $scope.file.arhivo_plano);
-                console.log('=================================================');
-                
+
+
             };
+
+
+            $scope.options_file = new Flow();
+            $scope.options_file.target = '/ordenCompraArchivoPlano_';
+            $scope.options_file.testChunks = false;
+            $scope.options_file.singleFile = true;
+            $scope.options_file.query = {session: JSON.stringify($scope.session)};
+
+            $scope.cargar_archivo_plano = function(e) {
+                $scope.options_file = e;
+                console.log('==================== FILES ===============');
+                console.log(e.files);
+            };
+
+            $scope.subir_archivo_plano = function(e) {
+                $scope.options_file.upload();
+            };
+
 
             that.gestionar_consultas();
 

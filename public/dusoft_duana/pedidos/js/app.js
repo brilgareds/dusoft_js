@@ -10,7 +10,7 @@
   "controllers/generarpedidos/VerPedidosFarmaciasController", "loader",  "models/EmpresaPedido",
   "includes/menu/menucontroller", "url", "includes/alert/Alert",
   "includes/header/HeaderController", 'storage', "httpinterceptor",
-  "includes/classes/Usuario", "includes/http/Request", "dragndropfile" //,"fileupload"
+  "includes/classes/Usuario", "includes/http/Request", "dragndropfile" ,"fileupload"
 
   ], function(angular){
   /* App Module and its dependencies */
@@ -26,8 +26,8 @@
           'services',
           'ui.select2',
           'LocalStorageModule',
-          'flow'/*,
-          'angularFileUpload'*/
+          'flow',
+          'angularFileUpload'
       ]);
 
       
@@ -35,7 +35,7 @@
       pedidos.config( ["$stateProvider", "$urlRouterProvider", "$httpProvider", function($stateProvider, $urlRouterProvider, $httpProvider){
 
           // For any unmatched url, send to /route1
-          console.log($httpProvider, "http provider")
+          console.log($httpProvider, "http provider");
           $httpProvider.interceptors.push('HttpInterceptor');
 
           $urlRouterProvider.otherwise("/AsignarPedidos");

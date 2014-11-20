@@ -3,19 +3,44 @@
     <!--Auditoria de pedidos-->
 
     <!--route 1 {{welcomemsg}} got to child  <a ui-sref="route1.item">Route item</a>-->
-   
+
     <tabset  class="">
-        
+
         <tab ng-controller="AuditoriaPedidosClientesController">
             <tab-heading>
                 Clientes <span ng-show="notificacionclientes > 0" class="badge badge-warning">{{notificacionclientes}}</span>
             </tab-heading>
+
+            <!--div flow-init="options"
+                 flow-files-submitted="upload($flow)"
+                 flow-file-success="$file.msg = $message">
+
+                <input type="file" flow-btn/>
+                Input OR Other element as upload button
+                <span class="btn" flow-btn>Upload File</span>
+
+                <table>
+                    <tr ng-repeat="file in $flow.files">
+                        <td>{{$index+1}}</td>
+                        <td>{{file.name}}</td>
+                        <td>{{file.msg}}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <input type="file" nv-file-select uploader="uploader"/><br/-->
+            <ul>
+                <li ng-repeat="item in uploader.queue">
+                    Name: <span ng-bind="item.file.name"></span><br/>
+                    <button ng-click="item.upload()">upload</button>
+                </li>
+            </ul>
             <!--<span class="badge badge-warning">42</span>-->
-<!--            <ul class="nav nav-pills nav-stacked">
-                <li class="active">-->
-                    
-<!--                </li>
-            </ul>-->
+            <!--            <ul class="nav nav-pills nav-stacked">
+                            <li class="active">-->
+
+            <!--                </li>
+                        </ul>-->
 
             <div class="input-group navbar-form">
 
@@ -47,11 +72,11 @@
         </tab>        
 
         <tab ng-controller="AuditoriaPedidosFarmaciasController">
-            
+
             <tab-heading>
                 Farmacias <span ng-show="notificacionfarmacias > 0" class="badge badge-warning">{{notificacionfarmacias}}</span>
             </tab-heading>
-            
+
             <select ui-select2  class="pull-left" style="width:300px" ng-model="seleccion" data-placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
                 <option ng-repeat="empresa in  empresas"  ng-value="empresa.empresa_id" >{{empresa.razon_social}}</option>
             </select>
@@ -76,7 +101,7 @@
                     <span class="glyphicon glyphicon-chevron-right" ></span>
                 </button>
             </div>
-            
+
             <div slide-content open-callback="mostrardetallefarmacia" close-callback="cerrardetallefarmacia"  class="slide" >
                 <div ng-include src="slideurl"  ng-controller="DetallepedidoSeparadoFarmaciaController" ></div>
             </div>

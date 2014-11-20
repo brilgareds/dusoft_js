@@ -612,7 +612,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
             };
             
             $scope.onSeleccionarCaja = function(){
-             // console.log($scope.lotes_producto.selectedItems);
+              console.log($scope.lotes_producto.selectedItems);
               
               var items = [];
               

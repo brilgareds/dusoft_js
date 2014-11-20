@@ -129,11 +129,12 @@ E008Controller.prototype.documentoTemporalFarmacias = function(req, res) {
     var observacion = args.documento_temporal.observacion;
     var usuario_id = req.session.user.usuario_id;
 
+
     //Validar que el usuario que crea el documento temporal, sea el mismo responsable del pedido
     __validar_responsable_pedidos_farmacias(that, numero_pedido, usuario_id, '1', function(err, continuar) {
 
         if (continuar) {
-            
+
             that.m_e008.ingresar_despacho_farmacias_temporal(bodegas_doc_id, empresa_id, numero_pedido, observacion, usuario_id, function(err, doc_tmp_id, resultado) {
                 if (err) {
                     res.send(G.utils.r(req.url, 'Error Creando el Documento Temporal Farmacias', 500, {documento_temporal: {}}));
@@ -201,19 +202,19 @@ E008Controller.prototype.detalleDocumentoTemporal = function(req, res) {
     var that = this;
 
     var args = req.body.data;
-    
-    
+
+
     var validacion = __validarParametrosDetalleTemporal(args);
-    if(!validacion.valido){
+    if (!validacion.valido) {
         res.send(G.utils.r(req.url, validacion.msj, 404, {}));
     }
-    
+
     if (args.documento_temporal.total_costo === undefined || args.documento_temporal.total_costo_pedido === undefined) {
-        return {valido:false,msj:'El costo total y el costo total del pedido no están definidas'};
+        return {valido: false, msj: 'El costo total y el costo total del pedido no están definidas'};
     }
-    
+
     if (args.documento_temporal.total_costo === '' || args.documento_temporal.total_costo_pedido === '') {
-        return {valido:false,msj: 'El costo total y el costo total del pedido están vacíos'};
+        return {valido: false, msj: 'El costo total y el costo total del pedido están vacíos'};
     }
 
 
@@ -254,9 +255,9 @@ E008Controller.prototype.modificarDetalleDocumentoTemporal = function(req, res) 
     var that = this;
 
     var args = req.body.data;
-    
+
     var validacion = __validarParametrosDetalleTemporal(args);
-    if(!validacion.valido){
+    if (!validacion.valido) {
         res.send(G.utils.r(req.url, validacion.msj, 404, {}));
     }
 
@@ -275,8 +276,8 @@ E008Controller.prototype.modificarDetalleDocumentoTemporal = function(req, res) 
     var iva = args.documento_temporal.iva;
 
 
-    that.m_movientos_bodegas.modificar_detalle_movimiento_bodega_temporal(item_id, valor_unitario, cantidad_ingresada, lote, fecha_vencimiento, usuario_id,empresa_id,
-                                                                          centro_utilidad_id, bodega_id, doc_tmp_id, codigo_producto, iva, function(err, rows) {
+    that.m_movientos_bodegas.modificar_detalle_movimiento_bodega_temporal(item_id, valor_unitario, cantidad_ingresada, lote, fecha_vencimiento, usuario_id, empresa_id,
+            centro_utilidad_id, bodega_id, doc_tmp_id, codigo_producto, iva, function(err, rows) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error Creando Modificando el Producto en el documento', 500, {documento_temporal: {item_id: 0}}));
             return;
@@ -291,47 +292,47 @@ E008Controller.prototype.modificarDetalleDocumentoTemporal = function(req, res) 
 };
 
 
-function __validarParametrosDetalleTemporal(args){
-    
-    
+function __validarParametrosDetalleTemporal(args) {
+
+
     if (args.documento_temporal === undefined || args.documento_temporal.doc_tmp_id === undefined || args.documento_temporal.empresa_id === undefined || args.documento_temporal.centro_utilidad_id === undefined || args.documento_temporal.bodega_id === undefined) {
-        return {valido:false, msj:'El doc_tmp_id, empresa_id, centro_utilidad_id o  bodega_id No Estan Definidos'};
-       // res.send(G.utils.r(req.url, 'El doc_tmp_id, empresa_id, centro_utilidad_id o  bodega_id No Estan Definidos', 404, {}));
+        return {valido: false, msj: 'El doc_tmp_id, empresa_id, centro_utilidad_id o  bodega_id No Estan Definidos'};
+        // res.send(G.utils.r(req.url, 'El doc_tmp_id, empresa_id, centro_utilidad_id o  bodega_id No Estan Definidos', 404, {}));
     }
 
     if (args.documento_temporal.codigo_producto === undefined || args.documento_temporal.cantidad_ingresada === undefined) {
-        return {valido:false,msj: 'El código de producto o la cantidad ingresada no están definidas'};
+        return {valido: false, msj: 'El código de producto o la cantidad ingresada no están definidas'};
     }
 
     if (args.documento_temporal.lote === undefined || args.documento_temporal.fecha_vencimiento === undefined) {
-        return {valido:false,msj:'El lote o la fecha de vencimiento no están definidas'};
+        return {valido: false, msj: 'El lote o la fecha de vencimiento no están definidas'};
     }
 
     if (args.documento_temporal.iva === undefined || args.documento_temporal.valor_unitario === undefined) {
-        return {valido:false,msj:'El IVA o El vlr Unitario no están definidas'};
+        return {valido: false, msj: 'El IVA o El vlr Unitario no están definidas'};
     }
 
-   
+
 
     if (args.documento_temporal.doc_tmp_id === '' || args.documento_temporal.empresa_id === '' || args.documento_temporal.centro_utilidad_id === '' || args.documento_temporal.bodega_id === '') {
-        return {valido:false,msj:'El doc_tmp_id, empresa_id, centro_utilidad_id o  bodega_id estan vacios'};
+        return {valido: false, msj: 'El doc_tmp_id, empresa_id, centro_utilidad_id o  bodega_id estan vacios'};
     }
 
     if (args.documento_temporal.codigo_producto === '' || args.documento_temporal.cantidad_ingresada === '' || args.documento_temporal.cantidad_ingresada === 0) {
-        return {valido:false,msj: 'El código de producto esta vacio o la cantidad ingresada es igual a 0'};
+        return {valido: false, msj: 'El código de producto esta vacio o la cantidad ingresada es igual a 0'};
     }
 
     if (args.documento_temporal.lote === '' || args.documento_temporal.fecha_vencimiento === '') {
-        return {valido:false,msj: 'El lote o la fecha de vencimiento están vacias'};
+        return {valido: false, msj: 'El lote o la fecha de vencimiento están vacias'};
     }
 
     if (args.documento_temporal.iva === '' || args.documento_temporal.valor_unitario === '') {
-        return {valido:false,msj: 'El IVA o El vlr Unitario están Vacíos'};
+        return {valido: false, msj: 'El IVA o El vlr Unitario están Vacíos'};
     }
 
-  
-    
-    return  {valido:true,msj:''};
+
+
+    return  {valido: true, msj: ''};
 }
 
 // Consultar TODOS los documentos temporales de despacho clientes 
@@ -974,10 +975,10 @@ E008Controller.prototype.consultarProductosAuditados = function(req, res) {
             return;
         } else {
             /*detalle_documento_temporal.forEach(function(producto) {
-                if (producto.auditado === '1'){
-                    lista_productos.push(producto);
-                }
-            });*/
+             if (producto.auditado === '1'){
+             lista_productos.push(producto);
+             }
+             });*/
             res.send(G.utils.r(req.url, 'Listado productos auditados', 200, {movimientos_bodegas: {lista_productos_auditados: detalle_documento_temporal}}));
         }
     });
@@ -1043,7 +1044,7 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
     var auditado = args.documento_temporal.auditado;
     var numero_caja = args.documento_temporal.numero_caja;
 
-    
+
 
     if (args.documento_temporal.justificacion !== undefined) {
         // Auditar con Justificacion.
@@ -1060,26 +1061,26 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
                 res.send(G.utils.r(req.url, 'Error ingresando la justificación', 500, {documento_temporal: {}}));
                 return;
             } else {
-                
+
                 that.m_movientos_bodegas.auditar_producto_movimiento_bodega_temporal(item_id, auditado, numero_caja, function(err, rows, result) {
 
                     if (err /*|| result.rowCount === 0*/) {
                         res.send(G.utils.r(req.url, 'Error Auditando el Producto', 500, {movimientos_bodegas: {}}));
                         return;
                     } else {
-                        
-                         var msj = " Producto Auditado Correctamente";
-                         if (!auditado)
+
+                        var msj = " Producto Auditado Correctamente";
+                        if (!auditado)
                             msj = " Producto ya NO esta auditado";
-                        
-                        if(result.rowCount === 0 && !auditado){
-                            that.m_movientos_bodegas.borrarJustificacionAuditor(usuario_id, doc_tmp_id,codigo_producto, function(err, rows, result){
-                                
-                                if(err || result.rowCount === 0){
+
+                        if (result.rowCount === 0 && !auditado) {
+                            that.m_movientos_bodegas.borrarJustificacionAuditor(usuario_id, doc_tmp_id, codigo_producto, function(err, rows, result) {
+
+                                if (err || result.rowCount === 0) {
                                     res.send(G.utils.r(req.url, 'Error Auditando el Producto', 500, {movimientos_bodegas: {}}));
                                     return;
                                 }
-                                
+
                                 res.send(G.utils.r(req.url, msj, 200, {movimientos_bodegas: {}}));
                             });
                         } else {
@@ -1090,13 +1091,13 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
             }
         });
     } else {
-        
-        
-        
-        var usuario_id  = args.documento_temporal.usuario_id;
+
+
+
+        var usuario_id = args.documento_temporal.usuario_id;
         var doc_tmp_id = args.documento_temporal.documento_temporal_id;
         var codigo_producto = args.documento_temporal.codigo_producto;
-        
+
         // Auditar sin Justificar.
         that.m_movientos_bodegas.auditar_producto_movimiento_bodega_temporal(item_id, auditado, numero_caja, function(err, rows, result) {
 
@@ -1104,67 +1105,67 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
                 res.send(G.utils.r(req.url, 'Error Auditando el Producto', 500, {movimientos_bodegas: {}}));
                 return;
             } else {
-                
+
                 var msj = " Producto Auditado Correctamente";
                 if (!auditado)
-                   msj = " Producto ya NO esta auditado";
+                    msj = " Producto ya NO esta auditado";
 
-                if(result.rowCount === 0 && !auditado){
-                    
-                    if (args.documento_temporal.documento_temporal_id === undefined || args.documento_temporal.usuario_id === undefined 
-                         || args.documento_temporal.codigo_producto === undefined) {
+                if (result.rowCount === 0 && !auditado) {
 
-                         res.send(G.utils.r(req.url, 'El documento_temporal_id, usuario_id o codigo_producto no estan definidos', 404, {}));
-                         return;
-                     }
-                    
-                    that.m_movientos_bodegas.borrarJustificacionAuditor(usuario_id, doc_tmp_id, codigo_producto, function(err, rows, result){
+                    if (args.documento_temporal.documento_temporal_id === undefined || args.documento_temporal.usuario_id === undefined
+                            || args.documento_temporal.codigo_producto === undefined) {
 
-                        if(err || result.rowCount === 0){
+                        res.send(G.utils.r(req.url, 'El documento_temporal_id, usuario_id o codigo_producto no estan definidos', 404, {}));
+                        return;
+                    }
+
+                    that.m_movientos_bodegas.borrarJustificacionAuditor(usuario_id, doc_tmp_id, codigo_producto, function(err, rows, result) {
+
+                        if (err || result.rowCount === 0) {
                             res.send(G.utils.r(req.url, 'Error Auditando el Producto', 500, {movimientos_bodegas: {}}));
                             return;
                         }
 
-                         res.send(G.utils.r(req.url, msj, 200, {movimientos_bodegas: {}}));
+                        res.send(G.utils.r(req.url, msj, 200, {movimientos_bodegas: {}}));
                     });
                 } else {
-                   res.send(G.utils.r(req.url, msj, 200, {movimientos_bodegas: {}}));
+                    res.send(G.utils.r(req.url, msj, 200, {movimientos_bodegas: {}}));
                 }
             }
         });
     }
 };
 
-E008Controller.prototype.buscarItemsTemporal = function(req,res){
+E008Controller.prototype.buscarItemsTemporal = function(req, res) {
     var that = this;
     var args = req.body.data;
-    
-     if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined ||
-         args.documento_temporal.usuario_id === undefined  || args.documento_temporal.filtro === undefined) {
-     
+
+    if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined ||
+            args.documento_temporal.usuario_id === undefined || args.documento_temporal.filtro === undefined) {
+
         res.send(G.utils.r(req.url, 'documento, usuario_id o filtro No Estan Definidos', 404, {}));
         return;
-     }
-    
-     if (args.documento_temporal.documento_temporal_id === '' || args.documento_temporal.usuario_id === '') {
+    }
+
+    if (args.documento_temporal.documento_temporal_id === '' || args.documento_temporal.usuario_id === '') {
         res.send(G.utils.r(req.url, 'documento_temporal_id O  usuario_id  estan vacios', 404, {}));
         return;
-     }
-     
-     var filtro = args.documento_temporal.filtro;
-     var documento_temporal_id = args.documento_temporal.documento_temporal_id;
-     var usuario_id = args.documento_temporal.usuario_id;
-    
+    }
+
+    var filtro = args.documento_temporal.filtro;
+    var documento_temporal_id = args.documento_temporal.documento_temporal_id;
+    var usuario_id = args.documento_temporal.usuario_id;
+
     that.m_movientos_bodegas.consultar_detalle_movimiento_bodega_temporal_por_termino(documento_temporal_id, usuario_id, filtro, function(err,
-                                                                                    detalle_documento_temporal) {
-        
+            detalle_documento_temporal) {
+
         if (err) {
             res.send(G.utils.r(req.url, 'Se ha generado un error consultado el detalle del pedido', 500, {documento_temporal: []}));
             return;
         }
-        
+
         res.send(G.utils.r(req.url, 'Listado productos auditados', 200, {movimientos_bodegas: {lista_productos_auditados: detalle_documento_temporal}}));
-        
+
     });
 };
 
@@ -1604,34 +1605,34 @@ E008Controller.prototype.actualizarCajaDeTemporales = function(req, res) {
         res.send(G.utils.r(req.url, 'documento_temporal, temporales  o numero_caja no estan definidos', 404, {}));
         return;
     }
-    
+
     var temporales = args.documento_temporal.temporales;
     var numero_caja = args.documento_temporal.numero_caja;
     var i = temporales.length;
-    
-    temporales.forEach(function(temporal){
-        
+
+    temporales.forEach(function(temporal) {
+
         that.m_e008.actualizarCajaDeTemporal(temporal, numero_caja, function(err, rows, result) {
-            
+
             if (err || result.rowCount === 0) {
                 res.send(G.utils.r(req.url, 'Error actualizand  la caja', 500, {documento_temporal: {}}));
                 return;
             } else {
 
-                if(--i === 0){
+                if (--i === 0) {
                     res.send(G.utils.r(req.url, 'Cajas asignadas correctamente', 200, {documento_temporal: {}}));
                     return;
                 }
-           }
+            }
         });
     });
-    
 
-E008Controller.prototype.agruparLotesPorCaja = function(){
-    
-};
 
-    
+    E008Controller.prototype.agruparLotesPorCaja = function() {
+
+    };
+
+
 };
 
 
@@ -1681,13 +1682,13 @@ function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento
                         console.log(producto_pedido);*/
                        /* console.log("producto separado >>>>>>>>>>>>>>>>>>>>>>>");
                         console.log(producto_separado);*/
-                        
+    
                         // Verificar que los productos esten auditados
-                        if (producto_separado.length === 0) {               
+                        if (producto_separado.length === 0) {
                             // Producto que no fue separado y le falta la justificacion del auditor
                             if (cantidad_pendiente > 0 && producto_pedido.justificacion_auditor === '')
                                 productos_pendientes.push(producto_pedido);
-                            else if(producto_pedido.item_id > 0)
+                            else if (producto_pedido.item_id > 0)
                                 productos_no_auditados.push(producto_pedido);
                         } else {
                             // Verificar que los productos con pendientes esten justificados po el auditor/
@@ -1701,6 +1702,7 @@ function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento
                     console.log("productos pendientes <>>>>>>>>>>>>>")
                     console.log(productos_pendientes);*/
                     
+
                     callback(err, productos_no_auditados, productos_pendientes);
                     return;
                 }
@@ -1786,7 +1788,7 @@ function __validar_responsable_pedidos_clientes(contexto, numero_pedido, respons
         } else {
 
             var responsable = responsables.filter(function(responsable) {
-                return responsable.usuario_id_responsable === responsable_pedido && responsable.estado === estado_pedido;
+                return responsable.usuario_id_responsable === parseInt(responsable_pedido) && responsable.estado === estado_pedido;
             });
 
             if (responsable.length > 0) {
@@ -1814,8 +1816,9 @@ function __validar_responsable_pedidos_farmacias(contexto, numero_pedido, respon
             callback(err, continuar);
         } else {
 
-            var responsable = responsables.filter(function(responsable) {
-                return responsable.usuario_id_responsable === responsable_pedido && responsable.estado === estado_pedido;
+            var responsable = responsables.filter(function(data) {
+                
+                return data.usuario_id_responsable === parseInt(responsable_pedido) && data.estado === estado_pedido;
             });
 
             if (responsable.length > 0) {

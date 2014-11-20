@@ -374,39 +374,19 @@ PedidosFarmacias.prototype.eliminarProductoDetallePedidoFinal = function(req, re
 
     var numero_pedido = args.pedidos_farmacias.numero_pedido;
     var numero_detalle_pedido = args.pedidos_farmacias.numero_detalle_pedido;
-    
-    // Iniciar Transacción
-    G.db.begin(function() {
-        
-        //Ingresa primero la información del Log de eliminación
-        that.m_pedidos_farmacias.log_eliminar_producto_detalle_pedido_final(numero_pedido, numero_detalle_pedido, function(err, rows) {
 
-            if (err) {
-                res.send(G.utils.r(req.url, 'No se pudo crear el log', 500, {error: err}));
-                return;
-            } else {
-                console.log('Creación de log exitosa');
-                
-                //Se procede a eliminar el archivo
-                that.m_pedidos_farmacias.eliminar_producto_detalle_pedido_final(numero_pedido, numero_detalle_pedido, function(err, rows) {
+    //Se procede a eliminar el archivo
+    that.m_pedidos_farmacias.eliminar_producto_detalle_pedido_final(numero_pedido, numero_detalle_pedido, function(err, rows) {
 
-                    if (err) {
-                        res.send(G.utils.r(req.url, 'No se pudo eliminar el producto', 500, {error: err}));
-                        return;
-                    } else {
-                        // Finalizar Transacción.
-                        G.db.commit(function(){
-                            res.send(G.utils.r(req.url, 'Eliminación del producto exitosa', 200, {}));
-                        });
-                    }
-
-                });
-
-            }
-
-        });
+        if (err) {
+            res.send(G.utils.r(req.url, 'No se pudo eliminar el producto', 500, {error: err}));
+            return;
+        } else {
+            // Finalizar Transacción.
+            res.send(G.utils.r(req.url, 'Eliminación del producto exitosa', 200, {}));
+        }
     });
-    
+
 //    this.m_pedidos_farmacias.eliminar_producto_detalle_pedido_final(numero_pedido, numero_detalle_pedido, function(err, rows) {
 //        
 //        if (err) {
@@ -416,7 +396,7 @@ PedidosFarmacias.prototype.eliminarProductoDetallePedidoFinal = function(req, re
 //        }
 //        
 //    });
-}
+};
 
 /**
  * @api {post} /api/PedidosFarmacias/listaPedidosOperarioBodega Asignar Responsables 

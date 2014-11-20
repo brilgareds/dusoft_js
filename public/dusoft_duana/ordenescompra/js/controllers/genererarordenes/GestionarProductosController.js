@@ -211,8 +211,7 @@ define(["angular", "js/controllers",
 
 
             that.render_productos = function(productos) {
-                console.log('================ PRODUCTOS =====================');
-                console.log(productos);
+                
                 $scope.Empresa.limpiar_productos();
                 productos.forEach(function(data) {
                     var producto = Producto.get(data.codigo_producto, data.descripcion_producto, '', data.iva, data.costo_ultima_compra, data.tiene_valor_pactado, data.presentacion, data.cantidad);

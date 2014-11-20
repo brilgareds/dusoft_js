@@ -33,7 +33,34 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.filtro = {
                 codigo_barras:false
             };
+            
+            var obj = {
+                            session: $scope.session,
+                            data: {
+                                documento_temporal: {
+                                    documento_temporal_id : 1,
+                                    usuario_id: 1350,
+                                    filtro:{busqueda:true},
+                                    numero_pedido:8000
+                                }
+                            }
+                        };
+            
+            
+            /*$scope.options = new Flow();
+            
+            $scope.options.target = '/ordenCompraArchivoPlano';
 
+            $scope.options.testChunks = false;
+            $scope.options.singleFile = true;
+            
+            $scope.options.query = {session:JSON.stringify($scope.session)};
+            
+            $scope.upload = function(e){
+               $scope.options = e;
+                // console.log($scope.options, e)
+                 $scope.options.upload();
+            };*/
 
             var that = this;
 

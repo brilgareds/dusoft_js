@@ -651,6 +651,12 @@ OrdenesCompra.prototype.ordenCompraArchivoPlano = function(req, res) {
     var empresa_id = '03';
     var codigo_proveedor_id = '581';
     var numero_orden = 29689;
+    
+    console.log("=============================================")
+    console.log(req.headers);
+    console.log(req.body);
+    
+    return;
 
     __subir_archivo_plano(req.files, function(continuar, contenido) {
 

@@ -25,7 +25,7 @@ requirejs.config({
         storage:"../../javascripts/angular/storage",
         httpinterceptor:"../includes/http/HttpInterceptor",
         dragndropfile:"../../javascripts/dragndropfile/ng-flow-standalone",
-        fileupload:"../../javascripts/fileupload/angular-file-upload"
+        fileupload:"../../javascripts/fileupload/fileupload"
     },
     shim: {
         "angular": {

@@ -312,7 +312,7 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
                             )\
                     ) a group by 1,2,3,4,6, 7, 8, 9, 10, 11 \
                 ) as b on a.pedido_cliente_id = b.numero_pedido and a.codigo_producto = b.codigo_producto\
-                where a.pedido_cliente_id = $1 order by e.descripcion ;";
+                where a.pedido_cliente_id = $1  order by e.descripcion ;";
 
     G.db.query(sql, [numero_pedido], function(err, rows, result) {
         callback(err, rows);

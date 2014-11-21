@@ -46,21 +46,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                             }
                         };
             
-            
-            /*$scope.options = new Flow();
-            
-            $scope.options.target = '/ordenCompraArchivoPlano';
-
-            $scope.options.testChunks = false;
-            $scope.options.singleFile = true;
-            
-            $scope.options.query = {session:JSON.stringify($scope.session)};
-            
-            $scope.upload = function(e){
-               $scope.options = e;
-                // console.log($scope.options, e)
-                 $scope.options.upload();
-            };*/
 
             var that = this;
 

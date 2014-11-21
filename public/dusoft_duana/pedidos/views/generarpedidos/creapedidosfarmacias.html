@@ -180,11 +180,11 @@
                             </div>
                         <!--</div>-->
                         <!--<div class="panel-body">-->
-                            <div ng-if="rootCreaPedidoFarmacia.grid_pedido_generado_visible === false">
-                                <div class="auditadosGrid" ng-grid="rootCreaPedidoFarmacia.lista_productos"></div>
+                            <div class="table-responsive" ng-if="rootCreaPedidoFarmacia.grid_pedido_generado_visible === false">
+                                <div class="auditadosGrid grid-responsive" ng-grid="rootCreaPedidoFarmacia.lista_productos"></div>
                             </div>
-                            <div ng-if="rootCreaPedidoFarmacia.grid_pedido_generado_visible === true">
-                                <div class="auditadosGrid" ng-grid="rootCreaPedidoFarmacia.detalle_pedido_generado"></div>
+                            <div class="table-responsive" ng-if="rootCreaPedidoFarmacia.grid_pedido_generado_visible === true">
+                                <div class="auditadosGrid grid-responsive" ng-grid="rootCreaPedidoFarmacia.detalle_pedido_generado"></div>
                             </div>
                         <!--</div>-->
                         

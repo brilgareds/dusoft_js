@@ -79,10 +79,12 @@ define(["angular","js/directive", "includes/slide/transition"], function(angular
           configurarSlide : function($element, contenedor){
               var parent = $(".contenidoPrincipal");
               var width  = parent.width();
+              var height = parent.height();
               //console.log("configure slide with width "+width);
               $element.width(width +25);
+              
               contenedor.height(document.body.scrollHeight);
-             // console.log("slide height ", height, document.body.scrollHeight)
+              console.log("slide height >>>>>>>>>>> ", document.body.scrollHeight);
           },
 
           mostrarslide: function($element, contenedor, $attrs, datos){

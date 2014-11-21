@@ -113,10 +113,57 @@
                                     <tab-heading>
                                         <i class="glyphicon glyphicon-cloud-upload"></i> Cargar Archivo Plano
                                     </tab-heading>
-                                    <div class="row">    
-                                        <form method="POST" action="/ordenCompraArchivoPlano" enctype="multipart/form-data">
+
+                                    <div class="row col-md-8 col-md-offset-2" style="margin-top: 25px">    
+                                        <!--form method="POST" action="/ordenCompraArchivoPlano" enctype="multipart/form-data">
                                             <input type="file" name='file'><button type="submit"> Subir</button>
-                                        </form>
+                                        </form-->
+                                        <!--div flow-init="options_file"
+                                             flow-files-submitted="upload($flow)"
+                                             flow-file-success="$file.msg = $message">
+
+                                            <input type="file" flow-btn/>
+                                            <button ng-click="subir()">Subir</button>
+
+                                            <table>
+                                                <tr ng-repeat="file in $flow.files">
+                                                    <td>{{$index+1}}</td>
+                                                    <td>{{file.name}}</td>
+                                                    <td>{{file.msg}}</td>
+                                                </tr>
+                                            </table>
+                                        </div-->
+
+                                        <!---->
+
+                                        <div flow-init="options_file" flow-files-submitted="cargar_archivo_plano($flow)" class="ng-scope" flow-prevent-drop="" flow-drag-enter="dropClass='drag-over'" flow-drag-leave="dropClass=''" >
+                                            <div class="drop txt-center" flow-drop="" ng-class="dropClass">
+
+                                                <div class="col-md-12">
+                                                    <img  ng-hide="$flow.files.length" src="../../../images/Cloud-Upload-Blue.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
+                                                    <img ng-show="$flow.files.length" src="../../../images/xls.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
+                                                </div>
+                                                <div ng-hide="$flow.files.length">
+                                                    <b>OR</b> Arrastrar y Soltar el archivo AQUI!!..                                                    
+                                                </div>
+                                                <div class="" ng-repeat="file in $flow.files" ng-show="$flow.files.length">
+                                                    Nombre Archivo : <label>{{file.name}}</label>                                                                                                                                                       
+                                                </div>
+                                            </div>
+
+                                            <br>
+
+                                            <div class="well txt-center">
+                                                <span class="btn btn-default" flow-btn="" ng-hide="$flow.files.length">Seleccionar Archivo<input type="file" multiple="" style="visibility: hidden; position: absolute;"></span>                                                
+                                                <button class="btn btn-default" ng-click="" ng-disabled="" ng-show="$flow.files.length">
+                                                    <span class="glyphicon glyphicon-minus" ></span> Remover
+                                                </button>
+                                                <button class="btn btn-default" ng-click="" ng-disabled="" ng-show="$flow.files.length">
+                                                    <span class="glyphicon glyphicon-cloud-upload" ></span> Subir
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <!---->
                                     </div>
                                 </tab>                                
                             </tabset>

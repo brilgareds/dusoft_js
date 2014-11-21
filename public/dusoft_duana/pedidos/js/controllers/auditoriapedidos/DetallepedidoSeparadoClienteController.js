@@ -87,7 +87,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
             $rootScope.$on("cerrardetalleclienteCompleto",function(e){
                 $scope.DocumentoTemporal.getPedido().vaciarProductos();
                  console.log("cerrardetalleclienteCompleto ________________________");
-                console.log($scope.DocumentoTemporal)
+                console.log($scope.DocumentoTemporal);
                 $scope.$$watchers = null;
                // $scope.DocumentoTemporal.getPedido().vaciarProductos();
                 //$scope.detalle_pedido_separado_cliente.data = [];
@@ -155,13 +155,13 @@ define(["angular", "js/controllers",'models/ClientePedido',
                 enableHighlighting: true,
                 enableRowSelection:false,
                 columnDefs: [                
-                    {field: 'codigo_producto', displayName: 'Código Producto'},
+                    {field: 'codigo_producto', displayName: 'Código' , width:100},
                     {field: 'descripcion', displayName: 'Nombre Producto', width:500},
-                    {field: 'existencia_lotes', displayName: 'Existencia Lotes'},
-                    {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada'},
-                    {field: 'cantidad_separada', displayName: "Cantidad Separada"},
-                    {field: 'observacion', displayName: "Observación"},
-                    {field: 'opciones', displayName: "", cellClass: "txt-center", width:40,
+                    {field: 'existencia_lotes', displayName: 'Existencia'},
+                    {field: 'cantidad_solicitada', displayName: 'Solicitado' },
+                    {field: 'cantidad_separada', displayName: "Separado"},
+                    {field: 'observacion', displayName: "Observación", width:150},
+                    {field: 'opciones', displayName: "", cellClass: "txt-center" , width:40,
                         cellTemplate: ' <div class="row">\n\
                                             <button class="btn btn-default btn-xs" ng-click="onEditarRow(DocumentoTemporal, row)">\n\
                                                 <span class="glyphicon glyphicon-zoom-in"></span>\n\

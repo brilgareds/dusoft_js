@@ -411,3 +411,12 @@ textarea {
 .ngRow.selected{
     background-color: #c9dde1!important;
 }
+
+
+.table-responsive{
+    overflow-x:auto;
+}
+
+.grid-responsive{
+    min-width:1024px;
+}

@@ -297,7 +297,6 @@ PedidosFarmacias.prototype.actualizarCantidadesDetallePedidoFinal = function(req
     var that = this;
     
     var args = req.body.data;
-    //numero_pedido, id_detalle_pedido, cantidad_solicitada, cantidad_pendiente
     
     if (args.pedidos_farmacias === undefined || args.pedidos_farmacias.numero_pedido === undefined || args.pedidos_farmacias.numero_detalle_pedido === undefined) {
         res.send(G.utils.r(req.url, 'numero_pedido o numero_detalle_pedido no están definidos', 404, {}));
@@ -323,35 +322,16 @@ PedidosFarmacias.prototype.actualizarCantidadesDetallePedidoFinal = function(req
     var numero_detalle_pedido = args.pedidos_farmacias.numero_detalle_pedido;
     var cantidad_solicitada = args.pedidos_farmacias.cantidad_solicitada;
     var cantidad_pendiente = args.pedidos_farmacias.cantidad_pendiente;
-    
-    // Iniciar Transacción
-    G.db.begin(function() {
-        
-        //Ingresa primero la información del Log como causa de la modificación. Se usa la misma tabla de logs de la eliminación
-        that.m_pedidos_farmacias.log_eliminar_producto_detalle_pedido_final(numero_pedido, numero_detalle_pedido, function(err, rows) {
-
-            if (err) {
-                res.send(G.utils.r(req.url, 'No se pudo crear el log', 500, {error: err}));
-                return;
-            } else {
-                console.log('Creación de log exitosa');
                 
-                //Se procede a modificar el archivo
-                that.m_pedidos_farmacias.actualizar_cantidades_detalle_pedido_final(numero_pedido, numero_detalle_pedido, cantidad_solicitada, cantidad_pendiente, function(err, rows) {
+    //Se procede a modificar el archivo
+    that.m_pedidos_farmacias.actualizar_cantidades_detalle_pedido_final(numero_pedido, numero_detalle_pedido, cantidad_solicitada, cantidad_pendiente, function(err, rows) {
 
-                    if (err) {
-                        res.send(G.utils.r(req.url, 'Error en la modificación de cantidades', 500, {error: err}));
-                        return;
-                    } else {
-                        // Finalizar Transacción.
-                        G.db.commit(function(){
-                            res.send(G.utils.r(req.url, 'Cantidades modificadas satisfactoriamente', 200, {}));
-                        });
-                    }
-
-                });
-            }
-        });
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error en la modificación de cantidades', 500, {error: err}));
+            return;
+        } else {    
+            res.send(G.utils.r(req.url, 'Cantidades modificadas satisfactoriamente', 200, {}));
+        }
     });
 };
 
@@ -382,20 +362,9 @@ PedidosFarmacias.prototype.eliminarProductoDetallePedidoFinal = function(req, re
             res.send(G.utils.r(req.url, 'No se pudo eliminar el producto', 500, {error: err}));
             return;
         } else {
-            // Finalizar Transacción.
             res.send(G.utils.r(req.url, 'Eliminación del producto exitosa', 200, {}));
         }
     });
-
-//    this.m_pedidos_farmacias.eliminar_producto_detalle_pedido_final(numero_pedido, numero_detalle_pedido, function(err, rows) {
-//        
-//        if (err) {
-//            res.send(G.utils.r(req.url, 'Error: No se pudo eliminar el producto', 500, {error: err}));
-//        } else {
-//            res.send(G.utils.r(req.url, 'Eliminación del producto satisfactoria', 200, {}));
-//        }
-//        
-//    });
 };
 
 /**

@@ -59,8 +59,7 @@ module.exports = function(app, di_container) {
     });
     
     // Orden de Compra a traves de un archivo plano
-    //app.post('/api/OrdenesCompra/subirPlano', function(req, res) {
-    app.post('/ordenCompraArchivoPlano', function(req, res) {
+    app.post('/api/OrdenesCompra/subirPlano', function(req, res) {    
         c_ordenes_compra.ordenCompraArchivoPlano(req, res);
     });
     

@@ -10,7 +10,7 @@
   "controllers/generarpedidos/VerPedidosFarmaciasController", "loader",  "models/EmpresaPedido",
   "includes/menu/menucontroller", "url", "includes/alert/Alert",
   "includes/header/HeaderController", 'storage', "httpinterceptor",
-  "includes/classes/Usuario", "includes/http/Request", "dragndropfile" ,"fileupload"
+  "includes/classes/Usuario", "includes/http/Request", "dragndropfile" 
 
   ], function(angular){
   /* App Module and its dependencies */
@@ -26,8 +26,7 @@
           'services',
           'ui.select2',
           'LocalStorageModule',
-          'flow',
-          'angularFileUpload'
+          'flow'
       ]);
 
       

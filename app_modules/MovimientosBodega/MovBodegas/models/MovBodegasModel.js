@@ -208,7 +208,7 @@ MovimientosBodegasModel.prototype.consultar_detalle_movimiento_bodega_temporal_p
         
     } else if(filtro.codigo_producto){
         termino = filtro.termino_busqueda;
-        sql_aux = " where a.auditado = '0' and  a.codigo_producto = $3";
+        sql_aux = " where  a.codigo_producto = $3";
     }
     
     

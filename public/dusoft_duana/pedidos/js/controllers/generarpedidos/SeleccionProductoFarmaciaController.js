@@ -261,14 +261,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     //selectedItems: $scope.selectedRow,
                     multiSelect: false,
                     columnDefs: [
-                        {field: 'codigo_producto', displayName: 'Código Producto', width: "9%"},
+                        {field: 'codigo_producto', displayName: 'Código', width: "9%"},
                         {field: 'nombre_producto', displayName: 'Descripción', width: "37%"},
                         //{field: 'descripcion_molecula', displayName: 'Molécula'},
-                        {field: 'existencias_farmacia', displayName: 'Existencia Farmacia', width: "10%"},
-                        {field: 'existencia', displayName: 'Existencia Bodega', width: "10%"},
+                        {field: 'existencias_farmacia', displayName: 'Exist. Farmacia', width: "8%"},
+                        {field: 'existencia', displayName: 'Exist. Bodega', width: "8%"},
                         {field: 'total_existencias_farmacias', displayName: 'Total Exist. Farmacia', width: "11%"},
                         {field: 'disponibilidad_bodega', displayName: 'Disponible', width: "6%"},
-                        {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada', enableCellEdit: true, width: "10%",
+                        {field: 'cantidad_solicitada', displayName: 'Solicitado', enableCellEdit: true, width: "10%",
                             cellTemplate: '<div class="col-xs-12"><input type="text"  ng-focus="onCantidadFocus(row)" ng-model="row.entity.cantidad_ingresada" validacion-numero class="form-control grid-inline-input"  ng-change="onCantidadIngresadaChange(row)"'+
                              'ng-model="row.entity.cantidad_ingresada" ng-disabled="row.entity.numero_caja > 0" /></div>'
                         },
@@ -290,10 +290,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     //selectedItems: $scope.selectedRow,
                     multiSelect: false,
                     columnDefs: [
-                        {field: 'codigo_producto', displayName: 'Código Producto', width: "9%"},
+                        {field: 'codigo_producto', displayName: 'Código', width: "9%"},
                         {field: 'descripcion', displayName: 'Descripción', width: "37%"},
-                        {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada'},
-                        {field: 'cantidad_pendiente', displayName: 'Cantidad Pendiente'},
+                        {field: 'cantidad_solicitada', displayName: 'Solicitado'},
+                        {field: 'cantidad_pendiente', displayName: 'Pendiente'},
                         {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
                             cellTemplate: ' <div class="row">\n\
                                                 <button class="btn btn-danger btn-xs" ng-click="onRowClick2(row)">\n\

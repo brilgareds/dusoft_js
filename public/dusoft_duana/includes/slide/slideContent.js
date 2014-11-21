@@ -15,8 +15,8 @@ define(["angular","js/directive", "includes/slide/transition"], function(angular
           },
           controller: ["$scope", "$element", "$attrs",function($scope, $element, $attrs) {
               
-              if(($attrs.closeCallback === undefined || $attrs.closeCallback.length == 0) || 
-                  ($attrs.openCallback === undefined || $attrs.openCallback.length == 0)){
+              if(($attrs.closeCallback === undefined || $attrs.closeCallback.length === 0) || 
+                  ($attrs.openCallback === undefined || $attrs.openCallback.length === 0)){
                  throw "No se han declarado los callbacks para el slide";
                  return;
               }
@@ -31,6 +31,8 @@ define(["angular","js/directive", "includes/slide/transition"], function(angular
                     $(document.body).append("<div id='contenedormodalslide'> </div>");
                     modalslide = $("#contenedormodalslide");
                   }
+                  
+                  modalslide.css({"background-color":"rgba(112,112,112, 0.2)"});
 
                   //asegura que el slide este cerrado
                   slide.cerrarslide($element, false, modalslide);
@@ -54,7 +56,7 @@ define(["angular","js/directive", "includes/slide/transition"], function(angular
                   });
 
                   //coloca el elemento en el body
-                  if($(".slide").length == 0){
+                  if($(".slide").length === 0){
                     $(document.body).append($element.detach());
                   }
                   
@@ -75,9 +77,14 @@ define(["angular","js/directive", "includes/slide/transition"], function(angular
           }],
 
           configurarSlide : function($element, contenedor){
-              var width = $(".contenidoPrincipal").width();
+              var parent = $(".contenidoPrincipal");
+              var width  = parent.width();
+              var height = parent.height();
               //console.log("configure slide with width "+width);
               $element.width(width +25);
+              
+              contenedor.height(document.body.scrollHeight);
+              console.log("slide height >>>>>>>>>>> ", document.body.scrollHeight);
           },
 
           mostrarslide: function($element, contenedor, $attrs, datos){
@@ -95,10 +102,10 @@ define(["angular","js/directive", "includes/slide/transition"], function(angular
             var rootWidth = $(window).width() +slide.margen
             console.log("cerrarslide "+rootWidth + " animad "+animado);
             var duration = (animado)?1000:0;
-
+            contenedor.hide();
             $element.transition({ x: rootWidth+"px", duration:duration},function(){
                $element.css({"display":"none"});
-               contenedor.hide();
+              
                if($attrs){
                    $rootScope.$emit($attrs.closeCallback+"Completo");
                }

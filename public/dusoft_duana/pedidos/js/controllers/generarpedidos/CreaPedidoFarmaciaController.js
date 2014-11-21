@@ -554,10 +554,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 //selectedItems: $scope.selectedRow,
                 multiSelect: false,
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Código Producto', width: "9%"},
+                    {field: 'codigo_producto', displayName: 'Código', width: "9%"},
                     {field: 'descripcion', displayName: 'Descripción', width: "37%"},
-                    {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada'},
-                    {field: 'cantidad_pendiente', displayName: 'Cantidad Pendiente'},
+                    {field: 'cantidad_solicitada', displayName: 'Solicitado'},
+                    {field: 'cantidad_pendiente', displayName: 'Pendiente'},
                     {field: 'nueva_cantidad', displayName: 'Modificar Cantidad', enableCellEdit: true, width: "10%"},
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "11%",
                         cellTemplate: ' <div class="row">\n\
@@ -876,10 +876,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 //selectedItems: $scope.selectedRow,
                 multiSelect: false,
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Código Producto', width: "9%"},
+                    {field: 'codigo_producto', displayName: 'Código', width: "9%"},
                     {field: 'descripcion', displayName: 'Descripción', width: "37%"},
-                    {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada'},
-                    {field: 'cantidad_pendiente', displayName: 'Cantidad Pendiente'}
+                    {field: 'cantidad_solicitada', displayName: 'Solicitado'},
+                    {field: 'cantidad_pendiente', displayName: 'Pendiente'}
                 ]
             };
 

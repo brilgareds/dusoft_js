@@ -37,8 +37,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.descripcion_estado = '';
             $scope.producto_eliminar = '';
             $scope.cantidad_productos_orden_compra = 0;
-            
-            $scope.activar_tab = { tab_productos : true, tab_cargar_archivo:false};
+
+            $scope.activar_tab = {tab_productos: true, tab_cargar_archivo: false};
 
             // Variables de Totales
             $scope.valor_subtotal = 0;
@@ -54,6 +54,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.ultima_busqueda = "";
             $scope.pagina_actual = 1;
 
+
+
+            that.set_orden_compra = function() {
+
+                $scope.orden_compra = OrdenCompra.get($scope.numero_orden, 1, $scope.observacion, new Date());
+                $scope.orden_compra.set_unidad_negocio($scope.Empresa.get_unidad_negocio($scope.unidad_negocio_id));
+                $scope.orden_compra.set_proveedor($scope.Empresa.get_proveedor($scope.codigo_proveedor_id));
+                $scope.orden_compra.set_usuario(Usuario.get(Sesion.usuario_id));
+                $scope.orden_compra.set_descripcion_estado('Activa');
+
+            };
 
             that.gestionar_consultas = function() {
 
@@ -75,8 +86,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         if (continuar) {
 
                             $scope.buscar_detalle_orden_compra();
-
-                            that.configuracion_subida_archivo();
 
                             if (!$scope.vista_previa)
                                 $scope.finalizar_orden_compra(false);
@@ -316,6 +325,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     if (data.status === 200 && data.obj.numero_orden > 0) {
                         $scope.orden_compra.set_numero_orden(data.obj.numero_orden);
                         localStorageService.add("numero_orden", $scope.orden_compra.get_numero_orden());
+                        $scope.numero_orden = $scope.orden_compra.get_numero_orden();
                         callback(true);
                     } else {
                         callback(false);
@@ -357,12 +367,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.buscar_productos = function() {
 
                 if ($scope.numero_orden === 0) {
-
-                    $scope.orden_compra = OrdenCompra.get($scope.numero_orden, 1, $scope.observacion, new Date());
-                    $scope.orden_compra.set_unidad_negocio($scope.Empresa.get_unidad_negocio($scope.unidad_negocio_id));
-                    $scope.orden_compra.set_proveedor($scope.Empresa.get_proveedor($scope.codigo_proveedor_id));
-                    $scope.orden_compra.set_usuario(Usuario.get(Sesion.usuario_id));
-                    $scope.orden_compra.set_descripcion_estado('Activa');
+ 
+                    that.set_orden_compra();
                 }
 
 
@@ -534,12 +540,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
 
-            that.configuracion_subida_archivo = function() {
-
-
-
-            };
-
             $scope.opciones_archivo = new Flow();
             $scope.opciones_archivo.target = API.ORDENES_COMPRA.SUBIR_ARCHIVO_PLANO;
             $scope.opciones_archivo.testChunks = false;
@@ -553,25 +553,44 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.cargar_archivo_plano = function($flow) {
 
                 $scope.opciones_archivo = $flow;
-
-                $scope.opciones_archivo.opts.query.data = JSON.stringify({
-                    ordenes_compras: {
-                        empresa_id: '03',
-                        numero_orden: $scope.numero_orden,
-                        codigo_proveedor_id: $scope.codigo_proveedor_id
-                    }
-                });
-
             };
 
             $scope.subir_archivo_plano = function() {
 
                 if ($scope.numero_orden > 0) {
                     // Solo Subir Plano
+                    $scope.opciones_archivo.opts.query.data = JSON.stringify({
+                        ordenes_compras: {
+                            empresa_id: '03',
+                            numero_orden: $scope.numero_orden,
+                            codigo_proveedor_id: $scope.codigo_proveedor_id
+                        }
+                    });
+
                     $scope.opciones_archivo.upload();
+
                 } else {
                     // Crear OC y subir plano
-                    console.log('== Crear OC y subir plano == ');
+                    
+                    that.set_orden_compra();
+                    
+                    that.insertar_cabercera_orden_compra(function(continuar) {
+
+                        if (continuar) {
+
+                            $scope.opciones_archivo.opts.query.data = JSON.stringify({
+                                ordenes_compras: {
+                                    empresa_id: '03',
+                                    numero_orden: $scope.numero_orden,
+                                    codigo_proveedor_id: $scope.codigo_proveedor_id
+                                }
+                            });
+                            console.log('===================================');
+                            console.log($scope.opciones_archivo);
+                            console.log('===================================');
+                            $scope.opciones_archivo.upload();
+                        }
+                    });
                 }
             };
 
@@ -579,13 +598,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 var data = (message !== undefined) ? JSON.parse(message) : {};
 
-                
+
                 if (data.status === 200) {
 
                     $scope.opciones_archivo.cancel();
 
                     $scope.buscar_detalle_orden_compra();
-                    
+
                     $scope.activar_tab.tab_productos = true;
 
                     $scope.productos_validos = data.obj.ordenes_compras.productos_validos;

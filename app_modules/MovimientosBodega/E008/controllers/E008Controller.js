@@ -1239,14 +1239,15 @@ E008Controller.prototype.auditoriaProductosClientes = function(req, res) {
                 }
 
                 var count = detalle_documento_temporal.length;
-
+                
+                //se unifica el detalle
+                productos_pedidos =  __unificarLotesDetalle(productos_pedidos);
+                
                 detalle_documento_temporal.forEach(function(detalle) {
 
                     // Consultar las justificaciones del producto
                     that.m_e008.consultar_justificaciones_temporales_pendientes(documento.documento_temporal_id, documento.usuario_id, detalle.codigo_producto, function(err, justificaciones) {
 
-                        /* console.log("consultar_justificaciones_temporales_pendientes >>>>>>>>>>>>>>>>>>>>>");
-                         console.log(justificaciones);*/
                         detalle.justificaciones = justificaciones;
 
                         var producto = productos_pedidos.filter(function(value) {
@@ -1257,23 +1258,12 @@ E008Controller.prototype.auditoriaProductosClientes = function(req, res) {
                             producto = producto[0];
                             detalle.cantidad_solicitada = producto.cantidad_solicitada;
                             detalle.cantidad_pendiente = producto.cantidad_solicitada - detalle.cantidad_ingresada;
+                            detalle.cantidad_ingresada = producto.cantidad_ingresada;
                             //detalle.justificacion = producto.justificacion;
                             //detalle.justificacion_auditor = producto.justificacion_auditor;
                         }
 
                         lista_productos.push(detalle);
-                        //Si filtro es por codigo de barras.
-                        /*if (filtro.codigo_barras) {
-                         if (detalle.auditado === '0' && detalle.codigo_barras === termino_busqueda)
-                         lista_productos.push(detalle);
-                         }
-                         
-                         //si filtro es por descripcion 
-                         if (filtro.descripcion_producto) {
-                         console.log("buscando detalle ",detalle)
-                         if (detalle.auditado === '0' && detalle.descripcion_producto.toLocaleLowerCase().substring(0, termino_busqueda.length) === termino_busqueda.toLowerCase())
-                         lista_productos.push(detalle);
-                         }*/
 
                         if (--count === 0) {
                             console.log(lista_productos);

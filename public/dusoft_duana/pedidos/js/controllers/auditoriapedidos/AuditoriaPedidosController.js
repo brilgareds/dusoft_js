@@ -385,7 +385,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 var count = 0;
                 for(var i in $scope.productosAuditados){
                     var producto = $scope.productosAuditados[i];
-                    if(producto.codigo_producto == _producto.codigo_producto){
+                    if(producto.codigo_producto === _producto.codigo_producto && producto.lote.item_id === _producto.lote.item_id){
                         $scope.productosAuditados.splice(count,1);
                         break;
                     }
@@ -395,6 +395,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
 
             $scope.onEliminarProductoAuditado = function(DocumentoTemporal, row){
+                
+                console.log("row entity ", row.entity.lote.item_id);
+                
                 var obj = {
                     session:$scope.session,
                     data:{

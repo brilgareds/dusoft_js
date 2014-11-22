@@ -184,6 +184,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                     {field: 'cantidad_separada', displayName: "Cantidad Separada"},
                     {field: 'lote.codigo_lote', displayName: 'Lote'},
                     {field: 'lote.fecha_vencimiento', displayName: "Fecha Vencimiento"},
+                    {field: 'lote.item_id', displayName:'Item'},
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
                         cellTemplate: ' <div class="row">\n\
                                             <button class="btn btn-default btn-xs" ng-click="onEliminarProductoAuditado(DocumentoTemporal, row)">\n\

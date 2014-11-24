@@ -10,31 +10,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
         '$state', "Usuario", "localStorageService",
 
         function($scope, $rootScope, Request, Empresa, Farmacia, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService) {
-
-            /*$scope.Empresa = Empresa;
-            
-            $scope.paginas = 0;
-            $scope.items = 0;
-            $scope.termino_busqueda = "";
-            $scope.ultima_busqueda = {};
-            $scope.paginaactual = 1;
-            //$scope.numero_pedido = "";
-            //$scope.obj = {};
-            $scope.listado_pedidos = [];
-            
-            $scope.ultima_busqueda.seleccion = "";
-            $scope.ultima_busqueda.termino_busqueda = "";
-            
-            $scope.seleccion = "FD";
-            
-            $scope.session = {
-                usuario_id:Usuario.usuario_id,
-                auth_token:Usuario.token
-            };
-            
-            $scope.empresas = [];
-
-            $scope.estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];*/
             
             $scope.rootVerPedidosFarmacias = {};
             
@@ -82,7 +57,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 });
             };
             
-            /* Código añadido 2 - para revisar */
             $scope.obtenerParametros = function(){
 
                 //valida si cambio el termino de busqueda
@@ -104,9 +78,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 };
 
                 return obj;
-            }               
-            
-            /* Código añadido 1 - para revisar */
+            };
             
             $scope.buscarPedidosFarmacias = function(obj, paginando) {
                 

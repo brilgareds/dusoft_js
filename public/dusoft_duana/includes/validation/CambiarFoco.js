@@ -7,7 +7,8 @@ define(["angular","js/directive"], function(angular, directive){
                 that = this;
                 var code = e.keyCode || e.which;
                 if (code === 13) {
-                    
+                    console.log(">>>>>>>>>>>> Cambio de Foco INTRO<<<<<<<<<<<<<<<");
+                    console.log("CODE: ", code);
                     scope.$apply(function(){
                         e.preventDefault();
                         that.next().focus();

@@ -1,31 +1,28 @@
-<!--<div flow-init="{target: '/pedidoFarmaciaArchivoPlano'}" flow-file-added="!!{xlsx:1,xls:1}[$file.getExtension()]">-->
-    <!--/pedidoFarmaciaArchivoPlano-->
-<div style ="padding:5px" ng-controller="CreaPedidoFarmaciaController" nv-file-drop="" uploader="uploader" filters="queueLimit, customFilter">    
+<div flow-init="{target: '/pedidoFarmaciaArchivoPlano'}" flow-file-added="!!{xlsx:1,xls:1}[$file.getExtension()]">
+    
+    <div class ="padding5" ng-controller="CreaPedidoFarmaciaController">    
 
-    <div class="row marginBottom5"> <!--Div Row Superior-->
-        
-        <div class="col-sm-12 col-md-12 marginBottom5">
+        <div class="row marginBottom5"> <!--Div Row Superior-->
+
+            <div class="col-sm-12 col-md-12 marginBottom5">
 
                 <div class="panel panel-default marginBottom0 paddingBottomZero"> <!--Div Panel Principal Superior-->
-                    
+
                     <div class="panel-heading">
                         <h4 class="h4MarginTopBottom">Información General</h4></br>
-                        <!--<div class="col-sm-12 col-md-6 col-lg-6 pull-left">-->
-                            <!--<alert ng-show="rootCreaPedidoFarmacia.no_modificar_valor_cantidad == true" type="danger">La Nueva Cantidad debe ser Menor a la Actual</alert>-->
-                        <!--</div>-->
                     </div>
-                    <!--<alert ng-show="rootCreaPedidoFarmacia.no_modificar_valor_cantidad == true" type="danger">La Nueva Cantidad debe ser Menor a la Actual</alert>-->
+
                     <div class="panel-body marginBottom0 paddingBottomZero marginRightZero"> <!--Div Panel Body-->
-                        
+
                         <div class="row col-sm-12 col-md-12 marginBottom0 paddingBottomZero paddingRightZero"> <!--Div Contenedor Principal-->
-                            
+
                             <div class="col-sm-12 col-md-6 paddingRightZero paddingLeftZero marginBottom0 paddingBottomZero"> <!--Div Contenedor Izquierdo-->
 
                                 <div class="panel panel-default marginBottom0 col-sm-12 col-md-12 paddingBottomtZero"> <!--Div Encabezado-->
                                     <h4><b><i>De</i></b></h4>
                                 </div> <!--/Div Encabezado-->
-                                
-                                <div class="panel panel-default marginTop0 col-sm-12 col-md-12 paddingTopZero marginBottom0 paddingBottomZero" style ="height:230px;"> <!--Div Cuerpo-->
+
+                                <div class="panel panel-default marginTop0 col-sm-12 col-md-12 paddingTopZero marginBottom0 paddingBottomZero altoSeleccionBodega"> <!--Div Cuerpo-->
                                     <div class="row">
                                         <div class="col-md-6">
                                             </br>
@@ -37,7 +34,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="row">
                                         <div class="col-md-6">
                                             </br>
@@ -49,7 +46,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="row">
                                         <div class="col-md-6">
                                             </br>
@@ -61,13 +58,13 @@
                                             </select>
                                         </div>
                                     </div>
-                                    
+
                                 </div> <!--/Div Cuerpo-->
-                            
+
                             </div> <!--/Div Contenedor Izquierdo-->
-                            
+
                             <div class="col-sm-12 col-md-6 paddingLeftZero paddingRightZero marginBottom0 paddingBottomZero"> <!--/Div Contenedor Derecho-->
-                                
+
                                 <div class="panel panel-default marginBottom0 col-sm-12 col-md-12 paddingBottomZero"> <!--Div Encabezado-->
 
                                     <div class="pull-left col-sm-12 col-md-6"> <!--Div Izquierdo-->
@@ -79,9 +76,9 @@
                                     </div> <!--/Div Derecho-->
 
                                 </div> <!--/Div Encabezado-->
-                                
-                                <div class="panel panel-default marginTop0 col-sm-12 col-md-12 paddingTopZero marginBottom0 paddingBottomZero" style ="height:230px;"> <!--Div Cuerpo-->
-                                    
+
+                                <div class="panel panel-default marginTop0 col-sm-12 col-md-12 paddingTopZero marginBottom0 paddingBottomZero altoSeleccionBodega"> <!--Div Cuerpo-->
+
                                     <div class="row">
                                         <div class="col-md-6">
                                             </br>
@@ -93,7 +90,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="row">
                                         <div class="col-md-6">
                                             </br>
@@ -105,7 +102,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="row">
                                         <div class="col-md-6">
                                             </br>
@@ -117,12 +114,12 @@
                                             </select>
                                         </div>
                                     </div>
-                                    
+
                                 </div> <!--/Div Cuerpo-->
-                                
+
                             </div> <!--/Div Contenedor Derecho-->
-                            
-                            <div class="panel panel-default marginTop0 paddingTopZero paddingBottomZero marginBottom0 col-sm-12 col-md-12 col-lg-12" style ="height:135px;"> <!--Div Contenedor Inferior-->
+
+                            <div class="panel panel-default marginTop0 paddingTopZero paddingBottomZero marginBottom0 col-sm-12 col-md-12 col-lg-12 altoObservacion"> <!--Div Contenedor Inferior-->
                                 </br>
                                 <h4 class="h4MarginTopBottom">Observación:</h4></br>
                                 <textarea  class="col-lg-12 col-md-12 col-sm-12" rows="4" name="" ng-model="rootCreaPedidoFarmacia.observacion" placeholder="Ingresar Observación"></textarea>
@@ -132,203 +129,97 @@
                         </div> <!--/Div Contenedor Principal-->
 
                     </div>  <!--/Div Panel Body-->
-                    
-                </div> <!--/Div Panel Principal Superior-->
-                
-        </div>
-        
-    </div> <!--/Div Row Superior-->
-      
-    <!-- End Código desplazado -->
-    <div class="row">
-        <div class="col-xs-12">
-          
-            <!--<div class="panel panel-default marginBottom5" ng-init="activeTab = true">-->
 
-<!--                <div class="panel-heading">
-                  <h4 class="h4MarginTopBottom">Productos</h4>
-                </div>
-                -->
+                </div> <!--/Div Panel Principal Superior-->
+
+            </div>
+
+        </div> <!--/Div Row Superior-->
+
+        <!-- End Código desplazado -->
+        <div class="row">
+            <div class="col-xs-12">
+
                 <div>
                     <br/><!--Espacio entre Tab Y título de Panel-->
                 </div>
-                
+
                 <tabset> <!--Grupo de Tabs-->
-                    
+
                     <tab disabled="rootCreaPedidoFarmacia.bloquear_tab" active="rootCreaPedidoFarmacia.tab_estados.tab1">
-                        
+
                         <tab-heading>
                             <b> {{rootCreaPedidoFarmacia.titulo_tab_1}} </b>
                         </tab-heading>
-                        
-                        <!--<button class="btn" ng-click="data.static2 = true">Select Static2 {{data.static2}}</button>-->
-                        
-                        <!--<div class="panel-body">-->
-                            
+
                             <div class="input-group navbar-form ">
                                 <div ng-if="rootCreaPedidoFarmacia.grid_pedido_generado_visible === false">
                                     <button type="button" class="btn btn-default btn-medium ng-scope" ng-disabled="rootCreaPedidoFarmacia.bloquear_boton_incluir" ng-click="onRowClickSelectProducto(2)">
                                         <span class="glyphicon glyphicon-plus"></span> Incluir Producto
                                     </button>
-                                </div>
-                            
-<!--                                <input type="text" class="form-control pull-right" ng-disabled="rootCreaPedidoFarmacia.bloquear" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="rootCreaPedidoFarmacia.termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">
-                                <div class="input-group-btn" >
-                                    <button class="btn btn-default pull-right" type="submit" ng-disabled="rootCreaPedidoFarmacia.bloquear" ng-click="buscarDetalleDocumentoTemporal(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
-                                </div>-->
-                                
+                                </div>                                
                             </div>
-                        <!--</div>-->
-                        <!--<div class="panel-body">-->
+
                             <div class="table-responsive" ng-if="rootCreaPedidoFarmacia.grid_pedido_generado_visible === false">
                                 <div class="auditadosGrid grid-responsive" ng-grid="rootCreaPedidoFarmacia.lista_productos"></div>
                             </div>
                             <div class="table-responsive" ng-if="rootCreaPedidoFarmacia.grid_pedido_generado_visible === true">
                                 <div class="auditadosGrid grid-responsive" ng-grid="rootCreaPedidoFarmacia.detalle_pedido_generado"></div>
                             </div>
-                        <!--</div>-->
-                        
+
                     </tab>
-                    
-                    <!--<div ng-if="rootCreaPedidoFarmacia.grid_pedido_generado_visible === false">-->
-                        <tab disabled="rootCreaPedidoFarmacia.bloqueo_upload" active="rootCreaPedidoFarmacia.tab_estados.tab2">
-                            <tab-heading>
-                                <b> {{rootCreaPedidoFarmacia.titulo_tab_2}} </b>
-                            </tab-heading>
 
-                            <!--<button class="btn" ng-click="data.static1 = true">Select Static1 {{data.static1}}</button>-->
+                    <tab disabled="rootCreaPedidoFarmacia.bloqueo_upload" active="rootCreaPedidoFarmacia.tab_estados.tab2">
+                        <tab-heading>
+                            <b> {{rootCreaPedidoFarmacia.titulo_tab_2}} </b>
+                        </tab-heading>
 
-                            <div> <!--flow-init flow-object="existingFlowObject"-->
+                        <div> <!--flow-init flow-object="existingFlowObject"-->
 
-                                <!--Inicio Prueba FileUpload-->
-                                
-                                <br/>
-<!--                                <div ng-show="uploader.isHTML5">
-                                    <div class="well my-drop-zone" nv-file-over="" uploader="uploader">
-                                        Arrastre y Suelte el archivo aquí
-                                    </div>
-                                <div>
-                                    
-                                Busque el archivo
-                                <input type="file" nv-file-select="" uploader="uploader" />
-                                
-                                <div class="col-md-9" style="margin-bottom: 40px">
+                            <br/>
 
-                                    <h3>Cola de Upload</h3>
-                                    <p>Longitud de la Cola: {{ uploader.queue.length }}</p>
+                            <div flow-prevent-drop flow-drag-enter="class='dragNgFlow'" flow-drag-leave="" ng-style="dropEnabled && style">
 
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th width="50%">Nombre</th>
-                                                <th ng-show="uploader.isHTML5">Tamaño</th>
-                                                <th ng-show="uploader.isHTML5">Progreso</th>
-                                                <th>Estado</th>
-                                                <th>Acciones</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr ng-repeat="item in uploader.queue">
-                                                <td><strong>{{ item.file.name }}</strong></td>
-                                                <td ng-show="uploader.isHTML5" nowrap>{{ item.file.size/1024/1024|number:2 }} MB</td>
-                                                <td ng-show="uploader.isHTML5">
-                                                    <div class="progress" style="margin-bottom: 0;">
-                                                        <div class="progress-bar" role="progressbar" ng-style="{ 'width': item.progress + '%' }"></div>
-                                                    </div>
-                                                </td>
-                                                <td class="text-center">
-                                                    <span ng-show="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
-                                                    <span ng-show="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
-                                                    <span ng-show="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
-                                                </td>
-                                                <td nowrap>
-                                                    <button type="button" class="btn btn-success btn-xs" ng-click="item.upload()" ng-disabled="item.isReady || item.isUploading || item.isSuccess">
-                                                        <span class="glyphicon glyphicon-upload"></span> Upload
-                                                    </button>
-                                                    <button type="button" class="btn btn-warning btn-xs" ng-click="item.cancel()" ng-disabled="!item.isUploading">
-                                                        <span class="glyphicon glyphicon-ban-circle"></span> Cancel
-                                                    </button>
-                                                    <button type="button" class="btn btn-danger btn-xs" ng-click="item.remove()">
-                                                        <span class="glyphicon glyphicon-trash"></span> Remove
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                <div class="span6">
 
-                                    <div>
-                                        <div>
-                                            Progreso de la Cola:
-                                            <div class="progress" style="">
-                                                <div class="progress-bar" role="progressbar" ng-style="{ 'width': uploader.progress + '%' }"></div>
-                                            </div>
-                                        </div>
-                                        <button type="button" class="btn btn-success btn-s" ng-click="uploader.uploadAll()" ng-disabled="!uploader.getNotUploadedItems().length">
-                                            <span class="glyphicon glyphicon-upload"></span> Subir todo
-                                        </button>
-                                        <button type="button" class="btn btn-warning btn-s" ng-click="uploader.cancelAll()" ng-disabled="!uploader.isUploading">
-                                            <span class="glyphicon glyphicon-ban-circle"></span> Cancelar todo
-                                        </button>
-                                        <button type="button" class="btn btn-danger btn-s" ng-click="uploader.clearQueue()" ng-disabled="!uploader.queue.length">
-                                            <span class="glyphicon glyphicon-trash"></span> Remover todo
-                                        </button>
-                                    </div>
+                                </div>
 
-                                </div>-->
-                                
-                                <!--Fin prueba FileUpload-->
-                                
-                                
-<!--                                <form method="POST" action="/pedidoFarmaciaArchivoPlano" enctype="multipart/form-data">
-                                            <input type="file" name='file'><button type="submit"> Subir</button>
-                                </form>-->
+                                <div class="alert alertaUpload" ng-hide="$flow.files.length" flow-drop flow-drag-enter="class='alert alert-success'" flow-drag-leave="class='alert'" ng-class="class">
+                                    <img src="../../../images/Cloud-Upload-Blue.png" class="imagenUpload"/>
+                                    <br/><br/>
+                                    Arrastre y suelte el archivo en ésta área o use el botón ...</br></br>
+                                    <button class="btn btn-info" ng-disabled="bloqueo_upload" flow-btn><i class="icon icon-file"></i>Buscar Archivo</button>
+                                </div>
 
-<!--                                <div flow-prevent-drop flow-drag-enter="style={border: '5px solid green'}" flow-drag-leave="style={}" ng-style="dropEnabled && style">
-
-                                    <div class="span6">
-
-                                    </div>
-
-                                    <div class="alert" ng-hide="$flow.files.length" flow-drop flow-drag-enter="class='alert alert-success'" flow-drag-leave="class='alert'" ng-class="class" style="text-align: center; padding: 50px 0;">
-                                        <img src="../../../images/Cloud-Upload-Blue.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
-                                        <br/><br/>
-                                        Arrastre y suelte el archivo en ésta área o use el botón ...</br></br>
-                                        <button class="btn btn-info" ng-disabled="bloqueo_upload" flow-btn><i class="icon icon-file"></i>Buscar Archivo</button>
-                                    </div>
-
-                                    <div class="alert" ng-show="$flow.files.length" flow-drop flow-drag-enter="class='alert alert-success'" flow-drag-leave="class='alert'" ng-class="class" style="text-align: center; padding: 50px 0;">
-                                        El archivo a cargar es: {{$flow.files[0].name}}</br></br>
-                                        <img src="../../../images/xls.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
-                                        <br/><br/>
-                                        <button class="btn btn-small btn-success" ng-show="$flow.files.length" ng-click="$flow.resume(); setTabActivo(1)">Subir Archivo</button>
-                                        <button class="btn btn-danger" ng-show="$flow.files.length" ng-click="$flow.cancel()">Eliminar</button>
-                                    </div>
-
-                                </div>-->
+                                <div class="alert alertaUpload" ng-show="$flow.files.length" flow-drop flow-drag-enter="class='alert alert-success'" flow-drag-leave="class='alert'" ng-class="class">
+                                    El archivo a cargar es: {{$flow.files[0].name}}</br></br>
+                                    <img src="../../../images/xls.png" class="imagenUpload"/>
+                                    <br/><br/>
+                                    <button class="btn btn-small btn-success" ng-show="$flow.files.length" ng-click="$flow.resume(); setTabActivo(1)">Subir Archivo</button>
+                                    <button class="btn btn-danger" ng-show="$flow.files.length" ng-click="$flow.cancel()">Eliminar</button>
+                                </div>
 
                             </div>
-                        </tab>
-                    <!--</div>-->
-                    
-                </tabset>
-            <!--</div>-->
-              
-        </div>    
+
+                        </div>
+                    </tab>                    
+                </tabset>  
+            </div>    
+        </div>
+
+        <div class="col-sm-12 btn-toolbar">
+            <button type="submit" ng-disabled="rootCreaPedidoFarmacia.bloqueo_generar_pedido" class="btn btn-accion btn-success pull-right" ng-click="generarPedidoFarmacia()" ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible === false">Generar Pedido</button>
+            <button type="submit" ng-disabled="rootCreaPedidoFarmacia.bloqueo_generar_pedido" class="btn btn-accion btn-primary pull-right" ng-click="abrirViewVerPedidosFarmacias()" ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible === false">Guardar Temporal</button>
+            <button type="submit" class="btn btn-accion btn-warning pull-right" ng-click="abrirViewVerPedidosFarmaciasEliminarTemporal()" ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible === false">Cancelar Pedido</button>
+            <button type="submit" class="btn btn-accion btn-success pull-right" ng-click="abrirViewVerPedidosFarmacias()" ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible === true">Finalizar</button>
+        </div>
+
+        <br/><br/><br/><br/><br/>
+
+        <div slide-content open-callback="mostrarseleccionproducto" close-callback="cerrarseleccionproducto"  class="slide" >
+            <div ng-include src="slideurl"  ng-controller="SeleccionProductoFarmaciaController" ></div>
+        </div>
+        
     </div>
     
-    <div class="col-sm-12 btn-toolbar">
-        <button type="submit" ng-disabled="rootCreaPedidoFarmacia.bloqueo_generar_pedido" class="btn btn-accion btn-success pull-right" ng-click="generarPedidoFarmacia()" ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible === false">Generar Pedido</button>
-        <button type="submit" ng-disabled="rootCreaPedidoFarmacia.bloqueo_generar_pedido" class="btn btn-accion btn-primary pull-right" ng-click="abrirViewVerPedidosFarmacias()" ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible === false">Guardar Temporal</button>
-        <button type="submit" class="btn btn-accion btn-warning pull-right" ng-click="abrirViewVerPedidosFarmaciasEliminarTemporal()" ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible === false">Cancelar Pedido</button>
-        <button type="submit" class="btn btn-accion btn-success pull-right" ng-click="abrirViewVerPedidosFarmacias()" ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible === true">Finalizar</button>
-    </div>
-
-    <br/><br/><br/><br/><br/>
-    
-    <div slide-content open-callback="mostrarseleccionproducto" close-callback="cerrarseleccionproducto"  class="slide" >
-        <div ng-include src="slideurl"  ng-controller="SeleccionProductoFarmaciaController" ></div>
-    </div>
-
 </div>
-
-<!--</div>-->

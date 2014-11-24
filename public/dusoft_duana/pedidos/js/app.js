@@ -2,7 +2,7 @@
  define([
   "angular", "socketservice", "route",
   "bootstrap","js/controllers", "js/models",
-   "js/services",  "js/directive", "nggrid", "includes/validation/ValidacionNumero", "includes/widgets/InputCheck",/*"includes/validation/CambiarFoco",*/
+   "js/services",  "js/directive", "nggrid", "includes/validation/ValidacionNumero", "includes/widgets/InputCheck",
   "controllers/asignarpedidos/PedidosController","controllers/asignarpedidos/PedidosClientesController", "controllers/asignarpedidos/PedidosFarmaciasController",  "uiselect2", 
   "controllers/auditoriapedidos/AuditoriaPedidosController",  "controllers/auditoriapedidos/DetallepedidoSeparadoClienteController", "controllers/generarpedidos/CotizacionesController",
   "controllers/auditoriapedidos/DetallepedidoSeparadoFarmaciaController", "controllers/generarpedidos/CreaCotizacionesController","controllers/generarpedidos/SeleccionClienteController",

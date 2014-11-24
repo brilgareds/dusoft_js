@@ -5,15 +5,11 @@
 
             <div class="col-md-3">
                 <p class="input-group">
-                    <!--<span class="input-group-btn">-->
-                        <button type="button" class="btn btn-default btn-medium ng-scope" ng-click="abrirViewPedidoFarmacia()">
-                            <span class="glyphicon glyphicon-plus"></span> Crear Pedido
-                        </button>
-                    <!--</span>-->
+                    <button type="button" class="btn btn-default btn-medium ng-scope" ng-click="abrirViewPedidoFarmacia()">
+                        <span class="glyphicon glyphicon-plus"></span> Crear Pedido
+                    </button>
                 </p>
             </div>
-
-            
 
         </div>
         
@@ -21,7 +17,7 @@
             
             <div class="col-md-3">
                 <p class="input-group">
-                    <select ui-select2  class="pull-left" style="width:300px" ng-model="rootVerPedidosFarmacias.seleccion" data-placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
+                    <select ui-select2  class="pull-left anchoSeleccionEmpresa" ng-model="rootVerPedidosFarmacias.seleccion" data-placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
                         <option ng-repeat="empresa in  rootVerPedidosFarmacias.empresas"  ng-value="empresa.empresa_id" >{{empresa.razon_social}}</option>
                     </select>
                 </p>

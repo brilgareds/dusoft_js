@@ -234,7 +234,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                         cellTemplate: ' <input-check  ng-model="row.entity.seleccionado" ng-change="onEditarLote(row)" ng-disabled="row.entity.cantidad_ingresada == 0 || row.entity.numero_caja > 0" >  />'},
                     {field: 'opciones', displayName: "", cellClass: "txt-center", width:40,
                         cellTemplate: ' <div class="row">\n\
-                                            <button class="btn btn-default btn-xs"  ng-disabled="!row.entity.seleccionado" ng-click="duplicarLote(row.entity)">\n\
+                                            <button class="btn btn-default btn-xs"  ng-disabled="!row.entity.seleccionado" ng-click="duplicarLote(row.entity, row)">\n\
                                                 <span class="glyphicon glyphicon-plus"></span>\n\
                                             </button>\n\
                                         </div>'
@@ -273,14 +273,14 @@ define(["angular", "js/controllers",'models/ClientePedido',
                 row.selected = false;
             };
             
-            $scope.duplicarLote = function(lote){
+            $scope.duplicarLote = function(lote, row){
                 
-                console.log("lote a duplicar ", lote);
+                console.log("lote a duplicar ", lote, " index ",row);
                 var _lote = angular.copy(lote);
                 _lote.item_id = 0;
                 _lote.numero_caja = 0;
                 _lote.seleccionado = false;
-                $scope.rootEditarProducto.producto.lotesSeleccionados.push(_lote);
+                $scope.rootEditarProducto.producto.lotesSeleccionados.splice(row.rowIndex + 1, 0,_lote);
                 
             };
 

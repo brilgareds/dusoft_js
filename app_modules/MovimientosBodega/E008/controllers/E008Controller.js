@@ -1239,14 +1239,15 @@ E008Controller.prototype.auditoriaProductosClientes = function(req, res) {
                 }
 
                 var count = detalle_documento_temporal.length;
-
+                
+                //se unifica el detalle
+                productos_pedidos =  __unificarLotesDetalle(productos_pedidos);
+                
                 detalle_documento_temporal.forEach(function(detalle) {
 
                     // Consultar las justificaciones del producto
                     that.m_e008.consultar_justificaciones_temporales_pendientes(documento.documento_temporal_id, documento.usuario_id, detalle.codigo_producto, function(err, justificaciones) {
 
-                        /* console.log("consultar_justificaciones_temporales_pendientes >>>>>>>>>>>>>>>>>>>>>");
-                         console.log(justificaciones);*/
                         detalle.justificaciones = justificaciones;
 
                         var producto = productos_pedidos.filter(function(value) {
@@ -1257,23 +1258,12 @@ E008Controller.prototype.auditoriaProductosClientes = function(req, res) {
                             producto = producto[0];
                             detalle.cantidad_solicitada = producto.cantidad_solicitada;
                             detalle.cantidad_pendiente = producto.cantidad_solicitada - detalle.cantidad_ingresada;
+                            detalle.cantidad_ingresada = producto.cantidad_ingresada;
                             //detalle.justificacion = producto.justificacion;
                             //detalle.justificacion_auditor = producto.justificacion_auditor;
                         }
 
                         lista_productos.push(detalle);
-                        //Si filtro es por codigo de barras.
-                        /*if (filtro.codigo_barras) {
-                         if (detalle.auditado === '0' && detalle.codigo_barras === termino_busqueda)
-                         lista_productos.push(detalle);
-                         }
-                         
-                         //si filtro es por descripcion 
-                         if (filtro.descripcion_producto) {
-                         console.log("buscando detalle ",detalle)
-                         if (detalle.auditado === '0' && detalle.descripcion_producto.toLocaleLowerCase().substring(0, termino_busqueda.length) === termino_busqueda.toLowerCase())
-                         lista_productos.push(detalle);
-                         }*/
 
                         if (--count === 0) {
                             console.log(lista_productos);
@@ -1448,10 +1438,10 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
         } else {
             if (productos_no_auditados.length > 0 || productos_pendientes.length > 0) {
 
-                console.log('==== productos_no_auditados =====');
+                /*console.log('==== productos_no_auditados =====');
                 console.log(productos_no_auditados);
                 console.log('=== productos_pendientes ====');
-                console.log(productos_pendientes);
+                console.log(productos_pendientes);*/
 
                 res.send(G.utils.r(req.url, 'Algunos productos no ha sido auditados o tienen pendientes la justificacion', 404, {movimientos_bodegas: {productos_no_auditados: productos_no_auditados, productos_pendientes: productos_pendientes}}));
                 return;
@@ -1666,42 +1656,63 @@ function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento
                     var productos_pendientes = [];
                     var productos_no_auditados = [];
                     
+                    
+                    
                    
+                   detalle_pedido =  __unificarLotesDetalle(detalle_pedido);
 
-                    detalle_pedido.forEach(function(producto_pedido) {   
+                   console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", detalle_pedido.length)
+                   
+                   
+                   detalle_pedido.forEach(function(producto_pedido) {   
+                        
+                        //validar que la cantidad pendiente sea mayor a cero en ventas_ordenes_pedidos_d
+                      if((producto_pedido.cantidad_solicitada  - producto_pedido.cantidad_despachada)  >  0){    
+                            // Producto seleccionado por el operario de bodega
+                            var producto_separado = detalle_documento_temporal.filter(function(value) {
+                                return producto_pedido.codigo_producto === value.codigo_producto && value.auditado === '1';
+                            });
 
-                        // Producto seleccionado por el operario de bodega
-                        var producto_separado = detalle_documento_temporal.filter(function(value) {
-                            return producto_pedido.codigo_producto === value.codigo_producto && value.auditado === '1';
-                        });
-                        
-                         var cantidad_pendiente = _obtenerCantidadPendiente(detalle_pedido,producto_pedido);
-                        
-                        console.log("cantidad pendiente ****************", cantidad_pendiente, " codigo ", producto_pedido.codigo_producto)
-                        /*console.log("productos para auditar >>>>>>>>>>>>>>>>>");
-                        console.log(producto_pedido);*/
-                       /* console.log("producto separado >>>>>>>>>>>>>>>>>>>>>>>");
-                        console.log(producto_separado);*/
-    
-                        // Verificar que los productos esten auditados
-                        if (producto_separado.length === 0) {
-                            // Producto que no fue separado y le falta la justificacion del auditor
-                            if (cantidad_pendiente > 0 && producto_pedido.justificacion_auditor === '')
-                                productos_pendientes.push(producto_pedido);
-                            else if (producto_pedido.item_id > 0)
-                                productos_no_auditados.push(producto_pedido);
-                        } else {
-                            // Verificar que los productos con pendientes esten justificados po el auditor/
-                            if (cantidad_pendiente > 0 && producto_pedido.justificacion_auditor === '')
-                                productos_pendientes.push(producto_pedido);
-                        }
+
+                            // var cantidad_pendiente = _obtenerCantidadPendiente(detalle_pedido,producto_pedido);
+                            var cantidad_pendiente = producto_pedido.cantidad_pendiente;
+
+                            /*console.log("cantidad pendiente ****************", cantidad_pendiente, " codigo ", producto_pedido.codigo_producto)
+                            console.log("productos para auditar >>>>>>>>>>>>>>>>>");
+                            console.log(producto_pedido);
+                            console.log("producto separado >>>>>>>>>>>>>>>>>>>>>>>");
+                            console.log(producto_separado);*/
+
+                            // Verificar que los productos esten auditados
+
+                           
+                            if (producto_separado.length === 0) {
+                                // Producto que no fue separado y le falta la justificacion del auditor
+                                if (cantidad_pendiente > 0 && producto_pedido.justificacion_auditor === ''){
+                                    productos_pendientes.push(producto_pedido);
+                                   //productos_pendientes = __agregarProducto(producto_pedido, productos_pendientes);
+                                } else if (producto_pedido.item_id > 0){
+                                    productos_no_auditados.push(producto_pedido);
+                                    //productos_no_auditados = __agregarProducto(producto_pedido, productos_no_auditados);
+                                }
+                            } else {
+                                console.log("producto para evaluar ",producto_pedido)
+                                // Verificar que los productos con pendientes esten justificados po el auditor/
+                                if (cantidad_pendiente > 0 && producto_pedido.justificacion_auditor === ''){
+                                    //console.log("productos >>>>>>>>>>>>>>>>>>>>>>>>>>> >>>>>>>>>>>>>>>>>");
+                                     //productos_pendientes = __agregarProducto(producto_pedido, productos_pendientes);
+                                     productos_pendientes.push(producto_pedido);
+
+                                } else if(producto_pedido.auditado === '0')  {
+                                    productos_no_auditados.push(producto_pedido);
+                                    //no hay cantidades pendientes, pero no esta auditado
+                                    // productos_no_auditados = __agregarProducto(producto_pedido, productos_no_auditados);
+                                   // console.log("falto por ingresar ", producto_pedido.codigo_producto, " cantidad ", producto_pedido.cantidad_ingresada, " pendiente ", cantidad_pendiente, " justificacion ", producto_pedido.justificacion_auditor);
+
+                                }
+                            }
+                      }
                     });
-                    
-                   /* console.log("productos no auditatos  >>>>>>>>>>>>>>>>>>");
-                    console.log(productos_no_auditados);
-                    console.log("productos pendientes <>>>>>>>>>>>>>")
-                    console.log(productos_pendientes);*/
-                    
 
                     callback(err, productos_no_auditados, productos_pendientes);
                     return;
@@ -1711,26 +1722,78 @@ function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento
     });
 };
 
-//regresa la suma de todos los lotes que sean del mismo producto
+//se encarga de unificar todos los lotes con el mismo producto 
+function __unificarLotesDetalle(detalle){
+    
+    for(var i in detalle){
+        var lote = detalle[i];
+        
+        for(var ii in detalle){
+            var _lote = detalle[ii];
+            //se unifica el lote
+            if(_lote.codigo_producto === lote.codigo_producto && lote.item_id !== _lote.item_id){
+                 lote.cantidad_ingresada += _lote.cantidad_ingresada;
+                 lote.cantidad_pendiente -= _lote.cantidad_ingresada;
+                 
+                 if(lote.auditado === '1'){
+                     lote.auditado = _lote.auditado;
+                 }
+                 
+                 detalle.splice(ii, 1);
+                 __unificarLotesDetalle(detalle);
+                 break;
+            }
+        }
+        
+    }
+    
+    return detalle;
+};
+
+function __unificarLote(lote){
+    
+};
+
+/*
 function _obtenerCantidadPendiente(detalle , producto){
-   /* console.log("buscar cantidad para producto ***********************");
-    console.log(producto);*/
+
     var cantidad_solicitada = producto.cantidad_solicitada;
     var cantidad_ingresada = 0;
     
     for(var i in detalle){
         var producto_detalle = detalle[i];
-        if(producto_detalle.codigo_producto === producto.codigo_producto && producto_detalle.auditado === '1'){
+        if(producto_detalle.codigo_producto === producto.codigo_producto ){
+            //console.log("sumando producto >>>>>>>>>>>>>>>>>>> ", producto.codigo_producto, producto.cantidad_ingresada)
             cantidad_ingresada += producto_detalle.cantidad_ingresada;
         }
     }
     
-    
-   /* console.log(detalle);
-    console.log("******************************************************");*/
+    //console.log("sumando producto >>>>>>>>>>>>>>>>>>> ", cantidad_ingresada, " producto ",producto.codigo_producto, " cantidad ingresada indv ",producto.cantidad_ingresada);
     return cantidad_solicitada - cantidad_ingresada;
 };
 
+
+//se encarga de unificar los lotes en uno solo, aplica para pendientes y no auditados
+function __agregarProducto(producto, arreglo){
+    var existe = false;
+    for(var i in arreglo){
+        var producto_detalle = arreglo[i];
+        if(producto_detalle.codigo_producto === producto.codigo_producto){
+            existe = true;
+            producto.cantidad_ingresada += producto_detalle.cantidad_ingresada;
+            arreglo[i] = producto;
+            break;
+        }
+    }
+    
+    //apesar que se suma las cantidades ingresadas de todos solo se agrega si no existe el producto y ademas no este auditado
+    if(!existe && producto.auditado === '0'){
+        arreglo.push(producto);
+    }
+    
+    return arreglo;
+};
+*/
 function __validar_productos_pedidos_farmacias() {
 
 }

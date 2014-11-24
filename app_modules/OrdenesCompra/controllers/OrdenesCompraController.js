@@ -648,25 +648,45 @@ OrdenesCompra.prototype.ordenCompraArchivoPlano = function(req, res) {
 
     var args = req.body.data;
 
-    var empresa_id = '03';
-    var codigo_proveedor_id = '581';
-    var numero_orden = 29689;
-    
-    console.log("=============================================")
-    console.log(req.headers);
-    console.log(req.body);
-    
-    return;
+    console.log('========================');
+    console.log(args);
+    console.log('========================');
+    if (args.ordenes_compras === undefined || args.ordenes_compras.numero_orden === undefined || args.ordenes_compras.empresa_id === undefined || args.ordenes_compras.codigo_proveedor_id === undefined) {
+        res.send(G.utils.r(req.url, 'numero_orden, empresa_id, codigo_proveedor_id no esta definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.numero_orden === '' || args.ordenes_compras.numero_orden === 0 || args.ordenes_compras.numero_orden === '0') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero_orden', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.empresa_id === '' || args.ordenes_compras.codigo_proveedor_id === '') {
+        res.send(G.utils.r(req.url, 'Se requiere el empresa_id, codigo_proveedor_id', 404, {}));
+        return;
+    }
+
+    if (req.files === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere un archivo plano', 404, {}));
+        return;
+    }
+
+    var empresa_id = args.ordenes_compras.empresa_id;
+    var codigo_proveedor_id = args.ordenes_compras.codigo_proveedor_id;
+    var numero_orden = args.ordenes_compras.numero_orden;
 
     __subir_archivo_plano(req.files, function(continuar, contenido) {
 
         if (continuar) {
             // crear Orden de Compra 
-
             __validar_productos_archivo_plano(that, contenido, function(productos_validos, productos_invalidos) {
 
                 __validar_costo_productos_archivo_plano(that, empresa_id, codigo_proveedor_id, numero_orden, productos_validos, function(_productos_validos, _productos_invalidos) {
 
+                    if (_productos_validos.length === 0) {
+                        res.send(G.utils.r(req.url, 'Lista de Productos', 200, {ordenes_compras: {productos_validos: _productos_validos, productos_invalidos: _productos_invalidos.concat(productos_invalidos)}}));
+                        return;
+                    }
 
                     var i = _productos_validos.length;
 
@@ -674,23 +694,19 @@ OrdenesCompra.prototype.ordenCompraArchivoPlano = function(req, res) {
 
                         that.m_ordenes_compra.insertar_detalle_orden_compra(numero_orden, producto.codigo_producto, producto.cantidad_solicitada, producto.costo, producto.iva, function(err, rows, result) {
                             if (err) {
-                                console.log('============= ERRRORRRRR ===========', err);
+                                _productos_invalidos.push(producto);
                             }
                             if (--i === 0) {
-                                console.log('============= FINISHED ================');
-                                console.log('============== OHHHHHHHHHHHHHH YESSS===========');
-                                console.log('Validos');
-                                console.log(_productos_validos);
-                                console.log('INNNValidos');
-                                console.log(_productos_invalidos);
+                                res.send(G.utils.r(req.url, 'Lista de Productos', 200, {ordenes_compras: {productos_validos: _productos_validos, productos_invalidos: _productos_invalidos.concat(productos_invalidos)}}));
+                                return;
                             }
                         });
                     });
                 });
             });
         } else {
-            // Error
-            console.log('============= EERRROO subiendo Archivo Plano ================');
+            res.send(G.utils.r(req.url, 'Error subiendo el archivo plano', 404, {}));
+            return;
         }
     });
 };
@@ -704,39 +720,39 @@ function __subir_archivo_plano(files, callback) {
     var ruta_nueva = G.dirname + G.settings.carpeta_temporal + nombre_archivo;
     var contenido_archivo_plano = [];
 
-    if (ext === '.xls' || ext === '.xlsx') {
-        if (G.fs.existsSync(ruta_tmp)) {
-            // Copiar Archivo
-            G.fs.copy(ruta_tmp, ruta_nueva, function(err) {
-                if (err) {
-                    // Borrar archivo fisico
-                    G.fs.unlinkSync(ruta_tmp);
-                    callback(false);
-                    return;
-                } else {
-                    G.fs.unlink(ruta_tmp, function(err) {
-                        if (err) {
-                            callback(false);
-                            return;
-                        } else {
-                            // Cargar Contenido
-                            contenido_archivo_plano = G.xlsx.parse(ruta_nueva);
-                            // Borrar archivo fisico
-                            G.fs.unlinkSync(ruta_nueva);
-                            callback(true, contenido_archivo_plano);
-                        }
-                    });
-                }
-            });
-        } else {
-            // El Archivo no Existe
-            callback(false);
-        }
+    //if (ext === '.xls' || ext === '.xlsx') {
+    if (G.fs.existsSync(ruta_tmp)) {
+        // Copiar Archivo
+        G.fs.copy(ruta_tmp, ruta_nueva, function(err) {
+            if (err) {
+                // Borrar archivo fisico
+                G.fs.unlinkSync(ruta_tmp);
+                callback(false);
+                return;
+            } else {
+                G.fs.unlink(ruta_tmp, function(err) {
+                    if (err) {
+                        callback(false);
+                        return;
+                    } else {
+                        // Cargar Contenido
+                        contenido_archivo_plano = G.xlsx.parse(ruta_nueva);
+                        // Borrar archivo fisico
+                        G.fs.unlinkSync(ruta_nueva);
+                        callback(true, contenido_archivo_plano);
+                    }
+                });
+            }
+        });
     } else {
-        //Extension No Permitida
-        G.fs.unlinkSync(ruta_tmp);
+        // El Archivo no Existe
         callback(false);
     }
+    /*} else {
+     //Extension No Permitida
+     G.fs.unlinkSync(ruta_tmp);
+     callback(false);
+     }*/
 }
 ;
 
@@ -788,6 +804,11 @@ function __validar_costo_productos_archivo_plano(contexto, empresa_id, codigo_pr
     var productos_invalidos = [];
 
     var i = productos.length;
+
+    if (productos.length === 0) {
+        callback(productos_validos, productos_invalidos);
+        return;
+    }
 
     productos.forEach(function(row) {
 

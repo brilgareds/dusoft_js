@@ -38,6 +38,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.producto_eliminar = '';
             $scope.cantidad_productos_orden_compra = 0;
 
+            $scope.activar_tab = {tab_productos: true, tab_cargar_archivo: false};
+
             // Variables de Totales
             $scope.valor_subtotal = 0;
             $scope.valor_iva = 0;
@@ -53,6 +55,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.pagina_actual = 1;
 
 
+
+            that.set_orden_compra = function() {
+
+                $scope.orden_compra = OrdenCompra.get($scope.numero_orden, 1, $scope.observacion, new Date());
+                $scope.orden_compra.set_unidad_negocio($scope.Empresa.get_unidad_negocio($scope.unidad_negocio_id));
+                $scope.orden_compra.set_proveedor($scope.Empresa.get_proveedor($scope.codigo_proveedor_id));
+                $scope.orden_compra.set_usuario(Usuario.get(Sesion.usuario_id));
+                $scope.orden_compra.set_descripcion_estado('Activa');
+
+            };
+
             that.gestionar_consultas = function() {
 
                 that.buscar_proveedores(function() {
@@ -60,7 +73,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     that.buscar_unidades_negocio(function() {
 
                         that.gestionar_orden_compra();
-
                     });
                 });
             };
@@ -72,6 +84,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     $scope.buscar_orden_compra(function(continuar) {
 
                         if (continuar) {
+
                             $scope.buscar_detalle_orden_compra();
 
                             if (!$scope.vista_previa)
@@ -289,6 +302,38 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
 
+            that.insertar_cabercera_orden_compra = function(callback) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        ordenes_compras: {
+                            unidad_negocio: $scope.orden_compra.get_unidad_negocio().get_codigo(),
+                            codigo_proveedor: $scope.orden_compra.get_proveedor().get_codigo_proveedor(),
+                            empresa_id: '03',
+                            observacion: $scope.orden_compra.get_observacion()
+                        }
+                    }
+                };
+
+
+                Request.realizarRequest(API.ORDENES_COMPRA.CREAR_ORDEN_COMPRA, "POST", obj, function(data) {
+
+
+                    AlertService.mostrarMensaje("warning", data.msj);
+
+                    if (data.status === 200 && data.obj.numero_orden > 0) {
+                        $scope.orden_compra.set_numero_orden(data.obj.numero_orden);
+                        localStorageService.add("numero_orden", $scope.orden_compra.get_numero_orden());
+                        $scope.numero_orden = $scope.orden_compra.get_numero_orden();
+                        callback(true);
+                    } else {
+                        callback(false);
+                    }
+                });
+            };
+
+
             $scope.buscador_productos_orden_compra = function(ev, termino_busqueda) {
                 if (ev.which == 13) {
                     $scope.buscar_detalle_orden_compra(termino_busqueda);
@@ -322,12 +367,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.buscar_productos = function() {
 
                 if ($scope.numero_orden === 0) {
-
-                    $scope.orden_compra = OrdenCompra.get($scope.numero_orden, 1, $scope.observacion, new Date());
-                    $scope.orden_compra.set_unidad_negocio($scope.Empresa.get_unidad_negocio($scope.unidad_negocio_id));
-                    $scope.orden_compra.set_proveedor($scope.Empresa.get_proveedor($scope.codigo_proveedor_id));
-                    $scope.orden_compra.set_usuario(Usuario.get(Sesion.usuario_id));
-                    $scope.orden_compra.set_descripcion_estado('Activa');
+ 
+                    that.set_orden_compra();
                 }
 
 
@@ -498,29 +539,115 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $scope.buscar_detalle_orden_compra($scope.termino_busqueda, true);
             };
 
-            $scope.subirArchivo = function() {
 
-
-
+            $scope.opciones_archivo = new Flow();
+            $scope.opciones_archivo.target = API.ORDENES_COMPRA.SUBIR_ARCHIVO_PLANO;
+            $scope.opciones_archivo.testChunks = false;
+            $scope.opciones_archivo.singleFile = true;
+            $scope.opciones_archivo.query = {
+                session: JSON.stringify($scope.session)
             };
 
 
-            $scope.options_file = new Flow();
-            $scope.options_file.target = '/ordenCompraArchivoPlano_';
-            $scope.options_file.testChunks = false;
-            $scope.options_file.singleFile = true;
-            $scope.options_file.query = {session: JSON.stringify($scope.session)};
 
-            $scope.cargar_archivo_plano = function(e) {
-                $scope.options_file = e;
-                console.log('==================== FILES ===============');
-                console.log(e.files);
+            $scope.cargar_archivo_plano = function($flow) {
+
+                $scope.opciones_archivo = $flow;
             };
 
-            $scope.subir_archivo_plano = function(e) {
-                $scope.options_file.upload();
+            $scope.subir_archivo_plano = function() {
+
+                if ($scope.numero_orden > 0) {
+                    // Solo Subir Plano
+                    $scope.opciones_archivo.opts.query.data = JSON.stringify({
+                        ordenes_compras: {
+                            empresa_id: '03',
+                            numero_orden: $scope.numero_orden,
+                            codigo_proveedor_id: $scope.codigo_proveedor_id
+                        }
+                    });
+
+                    $scope.opciones_archivo.upload();
+
+                } else {
+                    // Crear OC y subir plano
+                    
+                    that.set_orden_compra();
+                    
+                    that.insertar_cabercera_orden_compra(function(continuar) {
+
+                        if (continuar) {
+
+                            $scope.opciones_archivo.opts.query.data = JSON.stringify({
+                                ordenes_compras: {
+                                    empresa_id: '03',
+                                    numero_orden: $scope.numero_orden,
+                                    codigo_proveedor_id: $scope.codigo_proveedor_id
+                                }
+                            });
+                            console.log('===================================');
+                            console.log($scope.opciones_archivo);
+                            console.log('===================================');
+                            $scope.opciones_archivo.upload();
+                        }
+                    });
+                }
             };
 
+            $scope.respuesta_archivo_plano = function(file, message) {
+
+                var data = (message !== undefined) ? JSON.parse(message) : {};
+
+
+                if (data.status === 200) {
+
+                    $scope.opciones_archivo.cancel();
+
+                    $scope.buscar_detalle_orden_compra();
+
+                    $scope.activar_tab.tab_productos = true;
+
+                    $scope.productos_validos = data.obj.ordenes_compras.productos_validos;
+                    $scope.productos_invalidos = data.obj.ordenes_compras.productos_invalidos;
+
+
+                    $scope.opts = {
+                        backdrop: true,
+                        backdropClick: true,
+                        dialogFade: false,
+                        keyboard: true,
+                        template: ' <div class="modal-header">\
+                                        <button type="button" class="close" ng-click="close()">&times;</button>\
+                                        <h4 class="modal-title">Listado Productos </h4>\
+                                    </div>\
+                                    <div class="modal-body row">\
+                                        <div class="col-md-12">\
+                                            <h4 >Lista Productos INVALIDOS.</h4>\
+                                            <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
+                                                <div class="list-group">\
+                                                    <a ng-repeat="producto in productos_invalidos" class="list-group-item defaultcursor" href="javascript:void(0)">\
+                                                        {{ producto.codigo_producto}}\
+                                                    </a>\
+                                                </div>\
+                                            </div>\
+                                        </div>\
+                                    </div>\
+                                    <div class="modal-footer">\
+                                        <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                    </div>',
+                        scope: $scope,
+                        controller: function($scope, $modalInstance) {
+                            $scope.close = function() {
+                                $modalInstance.close();
+                            };
+                        }
+                    };
+                    var modalInstance = $modal.open($scope.opts);
+
+                } else {
+                    AlertService.mostrarMensaje("warning", data.msj);
+                }
+            };
 
             that.gestionar_consultas();
 

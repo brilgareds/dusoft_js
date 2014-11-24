@@ -56,7 +56,7 @@ define(["angular", "js/controllers",'models/Farmacia',
                             tipo_documento: 'E008'
                         }
                     }
-                }
+                };
 
 
                 $scope.traerListadoDocumentosUsuario(obj, $scope.resultasdoListadoDocumentosUsuario);
@@ -82,7 +82,7 @@ define(["angular", "js/controllers",'models/Farmacia',
             
             $scope.obtenerParametros = function(){
                                 //valida si cambio el termino de busqueda
-                if ($scope.ultima_busqueda != $scope.termino_busqueda) {
+                if ($scope.ultima_busqueda !== $scope.termino_busqueda) {
                     $scope.paginaactual = 1;
                 }
                 
@@ -100,7 +100,7 @@ define(["angular", "js/controllers",'models/Farmacia',
             };
 
             $scope.resultasdoListadoDocumentosUsuario = function(data){
-                if(data.obj.movimientos_bodegas != undefined){
+                if(data.obj.movimientos_bodegas !== undefined){
                     //$scope.DocumentoTemporal.bodegas_doc_id
                     $scope.documentos_usuarios = data.obj.movimientos_bodegas;
                 }
@@ -113,7 +113,7 @@ define(["angular", "js/controllers",'models/Farmacia',
                     $scope.items = data.lista_productos.length;
                     
                     //se valida que hayan registros en una siguiente pagina
-                    if (paginando && $scope.items == 0) {
+                    if (paginando && $scope.items === 0) {
                         if ($scope.paginaactual > 1) {
                             $scope.paginaactual--;
                         }
@@ -163,11 +163,11 @@ define(["angular", "js/controllers",'models/Farmacia',
                     {field: 'lote.fecha_vencimiento', displayName: "Fecha Vencimiento"},
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
                         cellTemplate: ' <div class="row">\n\
-                                            <button class="btn btn-default btn-xs" ng-click="onEditarRow(DocumentoTemporal, row)">\n\
-                                                <span class="glyphicon glyphicon-zoom-in">Editar</span>\n\
+                                            <button class="btn btn-default btn-xs" ng-click="onEliminarProductoAuditado(DocumentoTemporal, row)">\n\
+                                                <span class="glyphicon glyphicon-zoom-in">Eliminar</span>\n\
                                             </button>\n\
                                         </div>'
-                    }
+                   }
                 ]
             };
             

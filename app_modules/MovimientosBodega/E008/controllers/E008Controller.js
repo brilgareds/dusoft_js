@@ -572,7 +572,7 @@ E008Controller.prototype.consultarDocumentoTemporalFarmacias = function(req, res
                         detalle.cantidad_solicitada = producto.cantidad_solicitada;
                         detalle.cantidad_pendiente = producto.cantidad_solicitada - detalle.cantidad_ingresada;
                         detalle.justificacion = producto.justificacion;
-                        //detalle.justificacion_auditor = producto.justificacion_auditor;
+                        detalle.justificacion_auditor = producto.justificacion_auditor;
                     }
 
                 });

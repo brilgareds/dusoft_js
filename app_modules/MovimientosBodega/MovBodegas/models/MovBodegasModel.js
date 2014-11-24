@@ -125,7 +125,7 @@ MovimientosBodegasModel.prototype.auditar_producto_movimiento_bodega_temporal = 
 
 
 MovimientosBodegasModel.prototype.borrarJustificacionAuditor = function(usuario_id, doc_tmp_id, codigo_producto,  callback) {
-    console.log("borrarJustificacionAuditor usuario_id ",usuario_id, " doc_tmp_id ",doc_tmp_id, " codigo producto ", codigo_producto )
+    console.log("borrarJustificacionAuditor usuario_id >>>>>>>>>>>>>>>>>> ",usuario_id, " doc_tmp_id ",doc_tmp_id, " codigo producto ", codigo_producto )
     var sql = " UPDATE  inv_bodegas_movimiento_tmp_justificaciones_pendientes SET justificacion_auditor = '' WHERE usuario_id = $1 and doc_tmp_id = $2\
                 and codigo_producto = $3 ";
 

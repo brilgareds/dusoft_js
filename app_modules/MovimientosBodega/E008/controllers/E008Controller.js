@@ -991,20 +991,25 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
     var that = this;
 
     var args = req.body.data;
+    
+    
+    if(!args.documento_temporal.justificacionPendiente){
+        
+        if (args.documento_temporal === undefined || args.documento_temporal.item_id === undefined || args.documento_temporal.auditado === undefined || args.documento_temporal.numero_caja === undefined) {
+            res.send(G.utils.r(req.url, 'El item_id, numero_caja o auditado No Estan Definidos', 404, {}));
+            return;
+        }
+        if (args.documento_temporal.item_id === '' || args.documento_temporal.item_id === "0" || args.documento_temporal.auditado === '' || args.documento_temporal.numero_caja === '' | args.documento_temporal.numero_caja === '0') {
+            res.send(G.utils.r(req.url, 'El item_id o auditado  está vacio', 404, {}));
+            return;
+        }
 
-    if (args.documento_temporal === undefined || args.documento_temporal.item_id === undefined || args.documento_temporal.auditado === undefined || args.documento_temporal.numero_caja === undefined) {
-        res.send(G.utils.r(req.url, 'El item_id, numero_caja o auditado No Estan Definidos', 404, {}));
-        return;
-    }
-    if (args.documento_temporal.item_id === '' || args.documento_temporal.item_id === "0" || args.documento_temporal.auditado === '' || args.documento_temporal.numero_caja === '' | args.documento_temporal.numero_caja === '0') {
-        res.send(G.utils.r(req.url, 'El item_id o auditado  está vacio', 404, {}));
-        return;
+        if (args.documento_temporal.numero_caja === '') {
+            res.send(G.utils.r(req.url, 'El numero de caja esta vacio o es igual cero', 404, {}));
+            return;
+        }
     }
 
-    if (args.documento_temporal.numero_caja === '') {
-        res.send(G.utils.r(req.url, 'El numero de caja esta vacio o es igual cero', 404, {}));
-        return;
-    }
 
     // Datos requeridos para auditar con la justificacion
     if (args.documento_temporal.justificacion !== undefined) {
@@ -1040,9 +1045,9 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
     }
 
 
-    var item_id = args.documento_temporal.item_id;
+    var item_id = args.documento_temporal.item_id || 0;
     var auditado = args.documento_temporal.auditado;
-    var numero_caja = args.documento_temporal.numero_caja;
+    var numero_caja = args.documento_temporal.numero_caja || 0;
 
 
 
@@ -1070,10 +1075,12 @@ E008Controller.prototype.auditarProductoDocumentoTemporal = function(req, res) {
                     } else {
 
                         var msj = " Producto Auditado Correctamente";
-                        if (!auditado)
+                        if (!auditado){
                             msj = " Producto ya NO esta auditado";
-
-                        if (result.rowCount === 0 && !auditado) {
+                        }
+     
+                        if (/*result.rowCount === 0 &&*/ !auditado) {
+                            
                             that.m_movientos_bodegas.borrarJustificacionAuditor(usuario_id, doc_tmp_id, codigo_producto, function(err, rows, result) {
 
                                 if (err || result.rowCount === 0) {
@@ -1459,7 +1466,6 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                         return;
                     }
 
-
                     that.m_e008.generar_documento_despacho_clientes(documento_temporal_id, usuario_id, auditor_id, function(err, rows) {
 
                         if (err) {
@@ -1794,10 +1800,7 @@ function __agregarProducto(producto, arreglo){
     return arreglo;
 };
 */
-function __validar_productos_pedidos_farmacias() {
 
-}
-;
 
 function __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, callback) {
 
@@ -1820,8 +1823,20 @@ function __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, callba
                         return;
                     } else {
                         caja_producto.forEach(function(caja) {
-                            if (caja.caja_cerrada === '0')
-                                cajas_no_cerradas.push(caja);
+                            if (caja.caja_cerrada === '0'){
+                                var agregada = false;
+                                //valida que la caja no este agregada por otro item
+                                for(var i in cajas_no_cerradas){
+                                    var caja_no_cerrada = cajas_no_cerradas[i];
+                                    
+                                    if(caja.numero_caja === caja_no_cerrada.numero_caja){
+                                        agregada = true;
+                                        break;
+                                    }
+                                }
+                                if(!agregada)
+                                    cajas_no_cerradas.push(caja);
+                            }
                         });
 
                         if (--i === 0) {

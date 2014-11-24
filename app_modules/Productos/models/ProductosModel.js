@@ -130,4 +130,16 @@ ProductosModel.prototype.listar_tipo_productos = function(callback) {
     });
 };
 
+
+ProductosModel.prototype.obtenerDescripcionProducto = function(codigo , callback) {
+    
+    var sql = "select fc_descripcion_producto($1) as descripcion_producto";
+    
+    G.db.query(sql, [codigo], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+
+
 module.exports = ProductosModel;

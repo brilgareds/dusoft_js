@@ -1466,7 +1466,6 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                         return;
                     }
 
-                    return;
                     that.m_e008.generar_documento_despacho_clientes(documento_temporal_id, usuario_id, auditor_id, function(err, rows) {
 
                         if (err) {

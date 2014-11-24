@@ -68,11 +68,15 @@ define(["angular", "js/controllers",
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
-
-                    {field: 'numero_caja', displayName: 'Número de caja'},
+                    {field: 'numero_caja', displayName: 'Número de caja', width:150},
                     {field: 'cliente', displayName: 'Cliente'},
                     {field: 'direccion', displayName: 'Direccion'},
-                    {field: 'movimiento', displayName: "Opciones", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onCerrarCaja(row.entity)"><span class="glyphicon glyphicon-ok">Cerrar</span></button></div>'}
+                    {field: 'movimiento', displayName: "Opciones", width:200, cellClass: "txt-center", 
+                     cellTemplate: '<div>'+
+                        '<button class="btn btn-default btn-xs" ng-click="onCerrarCaja(row.entity)"><span class="glyphicon glyphicon-ok"></span> Cerrar</button>'+ 
+                        '<button class="btn btn-default btn-xs" ng-click="onImprimirRotulo(row.entity)"><span class="glyphicon glyphicon-print"></span> Imprimir</button>'+'\
+                        </div>'
+                    }
 
                 ]
 

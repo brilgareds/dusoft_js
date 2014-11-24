@@ -441,11 +441,16 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     console.log(data.status , " tipo de estado ", typeof data.status);
                     if(data.status === 200){
-                        that.sacarCaja(caja);
+                        //that.sacarCaja(caja);
                     } else {
                         AlertService.mostrarMensaje("warning", "Se genero un error al cerrar la caja");
                     }
                 });
+            };
+            
+            
+            $scope.onImprimirRotulo = function(caja){
+                
             };
             
             that.sacarCaja = function(caja){

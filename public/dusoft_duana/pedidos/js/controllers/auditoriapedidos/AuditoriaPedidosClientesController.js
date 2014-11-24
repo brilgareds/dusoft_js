@@ -22,7 +22,7 @@ define(["angular", "js/controllers",
             var that = this;
             that.obtenerParametros = function(){
                  //valida si cambio el termino de busqueda
-                if ($scope.ultima_busqueda != $scope.termino_busqueda) {
+                if ($scope.ultima_busqueda !== $scope.termino_busqueda) {
                     $scope.paginaactual = 1;
                 }
 
@@ -57,7 +57,11 @@ define(["angular", "js/controllers",
                     {field: 'auditor.nombre_responsable', displayName: 'Auditor'},
                     {field: 'descripcion_estado_separacion', displayName: 'Estado Separación'},
                     {field: 'fecha_separacion_pedido', displayName: "Fecha Separación"},
-                    {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Auditar</span></button></div>'}
+                    {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "7%",
+                        cellTemplate: '<div>'+
+                                        '<button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Auditar</span></button>'+'\
+                                      </div>'
+                    }
 
                 ]
 
@@ -109,9 +113,10 @@ define(["angular", "js/controllers",
             $scope.onKeySeparadosPress = function(ev, termino_busqueda) {
                 if (ev.which === 13) {
                     $scope.buscarPedidosSeparados( that.obtenerParametros(),
-                                                   1,
-                                                  false ,
-                                                  $scope.renderPedidosSeparados );
+                                                    1,
+                                                    false ,
+                                                    $scope.renderPedidosSeparados 
+                                                 );
                 }
             };
 

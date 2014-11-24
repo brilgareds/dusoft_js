@@ -65,8 +65,17 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             return cantidad;
         };
 
-        this.get = function(codigo, nombre, existencia, precio, cantidad_solicitada, cantidad_ingresada, observacion_cambio, disponible, molecula, existencia_farmacia, tipo_producto_id, total_existencias_farmacia, existencia_disponible, cantidad_pendiente) {
-            return new ProductoPedido(codigo, nombre, existencia, precio, cantidad_solicitada, cantidad_ingresada, observacion_cambio, disponible, molecula, existencia_farmacia, tipo_producto_id, total_existencias_farmacia, existencia_disponible, cantidad_pendiente);
+        this.get = function(codigo, nombre, existencia, precio,
+                                cantidad_solicitada, cantidad_ingresada, observacion_cambio, disponible,
+                                molecula, existencia_farmacia, tipo_producto_id,
+                                total_existencias_farmacia, existencia_disponible, cantidad_pendiente
+                           ) {
+            
+            return new ProductoPedido(codigo, nombre, existencia, precio,
+                                        cantidad_solicitada, cantidad_ingresada, observacion_cambio, disponible,
+                                        molecula, existencia_farmacia, tipo_producto_id, total_existencias_farmacia,
+                                        existencia_disponible, cantidad_pendiente
+                                     );
         };
 
         return this;

@@ -82,7 +82,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 Request.realizarRequest(url_tipo_producto, "POST", obj_tipo_producto, function(data) {
 
-                    if (data.status == 200) {
+                    if (data.status === 200) {
                         $scope.rootSeleccionProductoFarmacia.lista_tipo_productos = data.obj.lista_tipo_productos;
                     }
                     else {
@@ -104,7 +104,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.obtenerParametros = function() {
 
                 //valida si cambio el termino de busqueda
-                if ($scope.rootSeleccionProductoFarmacia.ultima_busqueda.termino_busqueda != $scope.rootSeleccionProductoFarmacia.termino_busqueda) {
+                if ($scope.rootSeleccionProductoFarmacia.ultima_busqueda.termino_busqueda !== $scope.rootSeleccionProductoFarmacia.termino_busqueda) {
                     $scope.rootSeleccionProductoFarmacia.paginaactual = 1;
                 }
 
@@ -140,7 +140,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                     console.log("Datos Listado Productos: ", data);
 
-                    if (data.status == 200) {
+                    if (data.status === 200) {
 
                         $scope.rootSeleccionProductoFarmacia.ultima_busqueda = {
                             termino_busqueda: $scope.rootSeleccionProductoFarmacia.termino_busqueda,
@@ -159,7 +159,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $scope.rootSeleccionProductoFarmacia.items = data.lista_productos.length;
 
                 //se valida que hayan registros en una siguiente pagina
-                if (paginando && $scope.rootSeleccionProductoFarmacia.items == 0) {
+                if (paginando && $scope.rootSeleccionProductoFarmacia.items === 0) {
                     if ($scope.rootSeleccionProductoFarmacia.paginaactual > 1) {
                         $scope.rootSeleccionProductoFarmacia.paginaactual--;
                     }
@@ -299,7 +299,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                     Request.realizarRequest(url_registros_encabezado, "POST", obj_encabezado, function(data) {
 
-                        if (data.status == 200) {
+                        if (data.status === 200) {
                             console.log("ENCABEZADO: data.obj.numero_registros[0].count = ", data.obj.numero_registros[0].count)
                             if (data.obj.numero_registros[0].count > 0) {
 
@@ -312,7 +312,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                                 Request.realizarRequest(url_encabezado, "POST", obj_encabezado, function(data) {
 
-                                    if (data.status == 200) {
+                                    if (data.status === 200) {
                                         console.log("Registro Insertado Exitosamente en Encabezado");
                                     }
                                     else {
@@ -353,7 +353,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                         Request.realizarRequest(url_registros_detalle, "POST", obj_detalle, function(data) {
 
-                            if (data.status == 200) {
+                            if (data.status === 200) {
                                 console.log("DETALLE: data.obj.numero_registros[0].count = ", data.obj.numero_registros[0].count)
                                 if (data.obj.numero_registros[0].count > 0) {
 
@@ -495,7 +495,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                                         Request.realizarRequest(url_detalle, "POST", obj_detalle, function(data) {
 
-                                            if (data.status == 200) {
+                                            if (data.status === 200) {
                                                 console.log("Registro Insertado Exitosamente en Detalle");
                                             }
                                             else {

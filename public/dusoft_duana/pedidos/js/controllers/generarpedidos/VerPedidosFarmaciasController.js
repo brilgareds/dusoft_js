@@ -49,7 +49,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 Request.realizarRequest(API.PEDIDOS.LISTAR_EMPRESAS, "POST", obj, function(data) {
                     
-                    if (data.status == 200) {
+                    if (data.status === 200) {
                         $scope.rootVerPedidosFarmacias.empresas = data.obj.empresas;
                         //console.log(JSON.stringify($scope.empresas))
                     }
@@ -60,8 +60,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.obtenerParametros = function(){
 
                 //valida si cambio el termino de busqueda
-                if($scope.rootVerPedidosFarmacias.ultima_busqueda.termino_busqueda != $scope.rootVerPedidosFarmacias.termino_busqueda
-                        || $scope.rootVerPedidosFarmacias.ultima_busqueda.seleccion != $scope.rootVerPedidosFarmacias.seleccion){
+                if($scope.rootVerPedidosFarmacias.ultima_busqueda.termino_busqueda !== $scope.rootVerPedidosFarmacias.termino_busqueda
+                        || $scope.rootVerPedidosFarmacias.ultima_busqueda.seleccion !== $scope.rootVerPedidosFarmacias.seleccion){
                     $scope.rootVerPedidosFarmacias.paginaactual = 1;
                 }
 
@@ -88,7 +88,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     
                     console.log("Data: ",data);
 
-                    if(data.status == 200) {
+                    if(data.status === 200) {
                         
                         $scope.rootVerPedidosFarmacias.ultima_busqueda = {
                                 termino_busqueda: $scope.rootVerPedidosFarmacias.termino_busqueda,
@@ -107,7 +107,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 $scope.rootVerPedidosFarmacias.items = data.pedidos_farmacias.length;
                 
                 //se valida que hayan registros en una siguiente pagina
-                if(paginando && $scope.rootVerPedidosFarmacias.items == 0){
+                if(paginando && $scope.rootVerPedidosFarmacias.items === 0){
                     if($scope.rootVerPedidosFarmacias.paginaactual > 1){
                         $scope.rootVerPedidosFarmacias.paginaactual--;
                     }
@@ -174,7 +174,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         cellTemplate: "<button ng-class='rootVerPedidosFarmacias.estados[row.entity.estado_actual_pedido]'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
                         cellTemplate: ' <div>\n\
-                                            <button class="btn btn-default btn-xs" ng-click="editarPedidoFarmacia(row.entity)" ng-disabled="(row.entity.estado_actual_pedido!=0 && row.entity.estado_actual_pedido!=1) || row.entity.estado_separacion != null">\n\
+                                            <button class="btn btn-default btn-xs" ng-click="editarPedidoFarmacia(row.entity)" ng-disabled="(row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1) || row.entity.estado_separacion != null">\n\
                                                 <span class="glyphicon glyphicon-pencil">Modificar</span>\n\
                                             </button>\n\
                                         </div>'}
@@ -217,7 +217,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             //eventos de widgets
             $scope.onKeyVerPedidosFarmaciasPress = function(ev) {
 
-                 if (ev.which == 13) {
+                 if (ev.which === 13) {
                      $scope.buscarPedidosFarmacias($scope.obtenerParametros());
                  }
             };

@@ -78,10 +78,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 Request.realizarRequest(API.PEDIDOS.LISTAR_EMPRESAS_GRUPO, "POST", obj, function(data) {
                     
-                    if (data.status == 200) {
+                    if (data.status === 200) {
                         $scope.rootCreaPedidoFarmacia.de_lista_empresas = data.obj.empresas;
                         
-                        if(callback != undefined && callback != ""){
+                        if(callback !== undefined && callback !== ""){
                             callback();
                         }
                     }
@@ -92,7 +92,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             $scope.consultarCentrosUtilidadDe = function(empresa_id, callback) {
                 
-                if(empresa_id != undefined && empresa_id != ""){
+                if(empresa_id !== undefined && empresa_id !== ""){
                     $scope.rootCreaPedidoFarmacia.de_seleccion_empresa = empresa_id;
                 }
 
@@ -107,10 +107,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 Request.realizarRequest(API.PEDIDOS.CENTROS_UTILIDAD_EMPRESAS_GRUPO, "POST", obj, function(data) {
 
-                    if (data.status == 200) {
+                    if (data.status === 200) {
                         $scope.rootCreaPedidoFarmacia.de_lista_centro_utilidad = data.obj.centros_utilidad;
 
-                        if(callback != undefined && callback != ""){
+                        if(callback !== undefined && callback !== ""){
                             callback();
                         }
                     }
@@ -120,11 +120,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             $scope.consultarBodegaDe = function(empresa_id, centro_utilidad_id, callback) {
                 
-                if(empresa_id != undefined && empresa_id != ""){
+                if(empresa_id !== undefined && empresa_id !== ""){
                     $scope.rootCreaPedidoFarmacia.de_seleccion_empresa = empresa_id;
                 }
                 
-                if(centro_utilidad_id != undefined && centro_utilidad_id != ""){
+                if(centro_utilidad_id !== undefined && centro_utilidad_id !== ""){
                     $scope.rootCreaPedidoFarmacia.de_seleccion_centro_utilidad = centro_utilidad_id;
                 }
 
@@ -140,10 +140,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 Request.realizarRequest(API.PEDIDOS.BODEGAS_EMPRESAS_GRUPO, "POST", obj, function(data) {
 
-                    if (data.status == 200) {
+                    if (data.status === 200) {
                         $scope.rootCreaPedidoFarmacia.de_lista_bodegas = data.obj.bodegas;
 
-                        if(callback != undefined && callback != ""){
+                        if(callback !== undefined && callback !== ""){
                             callback();
                         }
                     }
@@ -162,10 +162,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 Request.realizarRequest(API.PEDIDOS.LISTAR_FARMACIAS, "POST", obj, function(data) {
 
-                    if (data.status == 200) {
+                    if (data.status === 200) {
                         $scope.rootCreaPedidoFarmacia.para_lista_empresas = data.obj.lista_farmacias;
                         
-                        if(callback != undefined && callback != ""){
+                        if(callback !== undefined && callback !== ""){
                             callback();
                         }
                     }
@@ -178,7 +178,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 
                 var para_seleccion_empresa = "";
                 
-                if(empresa_id != undefined && empresa_id != ""){
+                if(empresa_id !== undefined && empresa_id !== ""){
                     para_seleccion_empresa = empresa_id;
                 }
                 else{
@@ -197,11 +197,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 
                 Request.realizarRequest(API.PEDIDOS.CENTROS_UTILIDAD_FARMACIAS, "POST", obj, function(data) {
 
-                    if (data.status == 200) {
+                    if (data.status === 200) {
                 
                         $scope.rootCreaPedidoFarmacia.para_lista_centro_utilidad = data.obj.lista_centros_utilidad;
                 
-                        if(callback != undefined && callback != ""){
+                        if(callback !== undefined && callback !== ""){
                             callback();
                         }
                     }
@@ -240,11 +240,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 Request.realizarRequest(API.PEDIDOS.BODEGAS_FARMACIAS, "POST", obj, function(data) {
 
-                    if (data.status == 200) {
+                    if (data.status === 200) {
                         
                         $scope.rootCreaPedidoFarmacia.para_lista_bodegas = data.obj.lista_bodegas;
                         
-                        if(callback != undefined && callback != ""){
+                        if(callback !== undefined && callback !== ""){
                             callback();
                         }
                     }
@@ -281,7 +281,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             });
 
-            $scope.buscarCotizaciones = function(termino, paginando) {
+            $scope.buscarPedido = function(termino, paginando) {
 
                 //valida si cambio el termino de busqueda
                 if ($scope.rootCreaPedidoFarmacia.ultima_busqueda != $scope.rootCreaPedidoFarmacia.termino_busqueda) {
@@ -339,7 +339,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 Request.realizarRequest(API.PEDIDOS.CONSULTAR_ENCABEZADO_PEDIDO_FARMACIA, "POST", obj, function(data) {
 
-                    if (data.status == 200) {
+                    if (data.status === 200) {
 
                         console.log("Consulta exitosa: ", data.msj);
 
@@ -443,7 +443,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 Request.realizarRequest(API.PEDIDOS.CONSULTAR_DETALLE_PEDIDO_FARMACIA, "POST", obj_detalle, function(data) {
 
-                    if (data.status == 200) {
+                    if (data.status === 200) {
                         $scope.rootCreaPedidoFarmacia.listado_productos_pedido = data.obj.detalle_pedido;
                     }
                     else{
@@ -584,7 +584,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 Request.realizarRequest(url, "POST", obj_verificar, function(data) {
 
-                    if(data.status == 200) {
+                    if(data.status === 200) {
 
                        if((data.obj.pedidos_farmacias[0].estado_actual_pedido != 0 && data.obj.pedidos_farmacias[0].estado_actual_pedido != 1)|| data.obj.pedidos_farmacias[0].estado_separacion != null){
                            //No se debe hacer Modificación
@@ -677,7 +677,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 
                 Request.realizarRequest(url, "POST", obj_modificar, function(data) {
 
-                    if(data.status == 200) {
+                    if(data.status === 200) {
                         console.log("Actualización Exitosa: ", data.msj);
                     }
                     else {
@@ -756,7 +756,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 
                 Request.realizarRequest(url, "POST", obj_eliminar, function(data) {
 
-                    if(data.status == 200) {
+                    if(data.status === 200) {
                         console.log("Eliminación Exitosa: ", data.msj);
                         $scope.rootCreaPedidoFarmacia.listado_productos_pedido.splice(index, 1);
                     }
@@ -783,7 +783,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
 
-            $scope.onRowClickSelectProducto = function(tipo_cliente) {
+            $scope.onSelectProducto = function(tipo_cliente) {
                 $scope.slideurl = "views/generarpedidos/seleccionproductofarmacia.html?time=" + new Date().getTime();
 
                 var datos_de = {
@@ -892,7 +892,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                     Request.realizarRequest(url_productos_detalle, "POST", obj_detalle, function(data) {
 
-                        if (data.status == 200) {
+                        if (data.status === 200) {
 
                             if (data) {
 
@@ -963,7 +963,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 Request.realizarRequest(url_encabezado, "POST", obj_encabezado, function(data) {
 
-                    if (data.status == 200) {
+                    if (data.status === 200) {
                         console.log("Encabezado Ingresado : ", data.msj);
                         console.log("El número de pedido es: ", data.obj.numero_pedido[0].solicitud_prod_a_bod_ppal_id)
 
@@ -989,7 +989,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                         Request.realizarRequest(url_detalle, "POST", obj_detalle, function(data) {
 
-                            if (data.status == 200) {
+                            if (data.status === 200) {
                                 console.log("Detalle Ingresado : ", data.msj);
                                 PedidoVenta.pedidoseleccionado = numero_pedido_generado;
                                 $scope.rootCreaPedidoFarmacia.pedido.numero_pedido = PedidoVenta.pedidoseleccionado;
@@ -1013,7 +1013,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                                 Request.realizarRequest(url_eliminar_detalle, "POST", obj_detalle, function(data) {
 
-                                    if (data.status == 200) {
+                                    if (data.status === 200) {
                                         console.log("Eliminación de detalle Exitosa: ", data.msj);
 
                                         //Se asignan los valores de la Grid de pedidos temporales a la Grid del Pedido Generado
@@ -1038,7 +1038,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                                         Request.realizarRequest(url_eliminar_encabezado, "POST", obj_encabezado, function(data) {
 
-                                            if (data.status == 200) {
+                                            if (data.status === 200) {
                                                 console.log("Eliminación de encabezado Exitosa: ", data.msj);
                                             }
                                             else
@@ -1069,12 +1069,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             $scope.setTabActivo = function(number) {
 
-                if (number == 1)
+                if (number === 1)
                 {
                     $scope.rootCreaPedidoFarmacia.tab_estados.tab1 = true;
                 }
 
-                if (number == 2)
+                if (number === 2)
                 {
                     $scope.rootCreaPedidoFarmacia.tab_estados.tab2 = true;
                 }
@@ -1104,7 +1104,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 Request.realizarRequest(url_eliminar_detalle, "POST", obj_detalle, function(data) {
 
-                    if (data.status == 200) {
+                    if (data.status === 200) {
                         console.log("Eliminación del detalle Exitosa: ", data.msj);
                         
                         //Eliminación encabezado temporal
@@ -1123,7 +1123,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                         Request.realizarRequest(url_eliminar_encabezado, "POST", obj_encabezado, function(data) {
 
-                            if (data.status == 200) {
+                            if (data.status === 200) {
                                 console.log("Eliminación de encabezado Exitosa: ", data.msj);
                                 $state.go('VerPedidosFarmacias');
                             }
@@ -1139,7 +1139,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         console.log("Eliminación del detalle Fallida: ", data.msj);
                     }
                 });
-            }
+            };
 
             //Método para liberar Memoria de todo lo construido en ésta clase
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
@@ -1162,7 +1162,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             });
 
-            $scope.buscarCotizaciones("");
+            $scope.buscarPedido("");
 
         }]);
 });

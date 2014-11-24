@@ -15,6 +15,10 @@
     margin-right: 0%;
 }
 
+.marginRightCerrarSlide{
+    margin-right:15px;
+}
+
 .paddingToptZero {
     padding-top: 0%;
 }
@@ -140,4 +144,41 @@ margin-bottom: 0px;
 .altoSlide{
     padding:5px;
     height:900px;
+}
+
+.alertaUpload{
+    text-align: center;
+    padding: 50px 0;
+}
+
+.imagenUpload{
+    max-width: 200px;
+    max-height: 150px;
+    line-height: 20px;
+    margin-bottom: 5px;
+}
+
+.altoSeleccionBodega{
+    height:230px;
+}
+
+.dragNgFlow{
+    border: 5px solid green;
+}
+
+.altoObservacion{
+    height:135px;
+}
+
+.padding5{
+    padding:5px;
+}
+
+.contenedorGridSeleccion{
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+.anchoSeleccionEmpresa{
+    width: 300px;
 }

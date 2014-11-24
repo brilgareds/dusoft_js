@@ -1,7 +1,7 @@
 //Controlador de la View cotizacioncliente.html
 
-define(["angular", "js/controllers",'includes/slide/slideContent',
-        'models/ClientePedido', 'models/PedidoVenta'], function(angular, controllers) {
+define(["angular", "js/controllers", 'includes/slide/slideContent',
+    'models/ClientePedido', 'models/PedidoVenta'], function(angular, controllers) {
 
     var fo = controllers.controller('CreaCotizacionesController', [
         '$scope', '$rootScope', 'Request',
@@ -11,7 +11,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
         function($scope, $rootScope, Request, Empresa, Cliente, PedidoVenta, API, socket, AlertService, $state) {
 
             //$scope.Empresa = Empresa;
-            
+
 //            $scope.session = {
 //                usuario_id: Usuario.usuario_id,
 //                auth_token: Usuario.token
@@ -29,11 +29,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             //$scope.numero_pedido = "";
             //$scope.obj = {};
             $scope.listado_productos = [];
-            
+
             //$scope.ruta_upload = {target: '/subida'}; //ruta del servidor para subir el archivo
-            
+
             $scope.seleccion_vendedor = 0;
-            
+
             $scope.datos_cliente = {
                 nit: '',
                 nombre: '',
@@ -41,58 +41,58 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 telefono: '',
                 ubicacion: ''
             };
-            
-            $scope.lista_vendedores = [ {id: 1, nombre: 'Oscar Huerta'},
-                                        {id: 2, nombre: 'Bruce Wayn'},
-                                        {id: 3, nombre: 'John Malcovich'},
-                                        {id: 4, nombre: 'Patricia Salgado'},
-                                        {id: 5, nombre: 'Sofia Vergara'},
-                                        {id: 6, nombre: 'Salma Hayec'}
-                                        ];
-                   
+
+            $scope.lista_vendedores = [{id: 1, nombre: 'Oscar Huerta'},
+                {id: 2, nombre: 'Bruce Wayn'},
+                {id: 3, nombre: 'John Malcovich'},
+                {id: 4, nombre: 'Patricia Salgado'},
+                {id: 5, nombre: 'Sofia Vergara'},
+                {id: 6, nombre: 'Salma Hayec'}
+            ];
+
             $scope.$on('cargarClienteSlide', function(event, data) {
-                    //console.log("La Información Llega a la Grid ", data);
-                    //console.log("Después: ", data);
-                    
-                    $scope.datos_cliente = data;
-                    
-                    if($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.seleccion_vendedor != 0)
-                    {
-                        $scope.bloquear = false;
-                    }
-                    
-                    if($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.seleccion_vendedor != 0 && $scope.listado_productos.length == 0){
+                //console.log("La Información Llega a la Grid ", data);
+                //console.log("Después: ", data);
 
-                        $scope.bloquear_upload = false;
-                    }
-                    else{
-                        
-                        $scope.bloquear_upload = true;
-                    }
-                    
-                });
-            
+                $scope.datos_cliente = data;
+
+                if ($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.seleccion_vendedor != 0)
+                {
+                    $scope.bloquear = false;
+                }
+
+                if ($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.seleccion_vendedor != 0 && $scope.listado_productos.length == 0) {
+
+                    $scope.bloquear_upload = false;
+                }
+                else {
+
+                    $scope.bloquear_upload = true;
+                }
+
+            });
+
             $scope.$on('cargarGridPrincipal', function(event, data) {
-                    //console.log("La Información Llega a la Grid ", data);
-                    $scope.listado_productos = data;
-                    
-                    if($scope.listado_productos.length){                        
-                        $scope.bloqueo_producto_incluido = true;
-                    }
-                    else {
-                        $scope.bloqueo_producto_incluido = false;
-                    }
-                    
-                    if($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.seleccion_vendedor != 0 && $scope.listado_productos.length == 0){
-                        
-                        $scope.bloquear_upload = false;
-                    }
-                    else{
-                        $scope.bloquear_upload = true;
-                    }
+                //console.log("La Información Llega a la Grid ", data);
+                $scope.listado_productos = data;
 
-                });
-                
+                if ($scope.listado_productos.length) {
+                    $scope.bloqueo_producto_incluido = true;
+                }
+                else {
+                    $scope.bloqueo_producto_incluido = false;
+                }
+
+                if ($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.seleccion_vendedor != 0 && $scope.listado_productos.length == 0) {
+
+                    $scope.bloquear_upload = false;
+                }
+                else {
+                    $scope.bloquear_upload = true;
+                }
+
+            });
+
 //            $scope.$on('flow::fileAdded', function (event, $flow, flowFile) {
 //                    event.preventDefault();//prevent file from uploading
 //                });
@@ -105,7 +105,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 if ($scope.ultima_busqueda != $scope.termino_busqueda) {
                     $scope.paginaactual = 1;
                 }
-                
+
 //                for(i=0; i<10; i++)
 //                {
 //                    //var pedido = Pedido.get();
@@ -124,7 +124,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 //                        
 //                }
 
-                
+
 //                var obj = {
 //                    session: $scope.session,
 //                    data: {
@@ -205,27 +205,26 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 //            };
 
             //definicion y delegados del Tabla de pedidos clientes
-            
-            $scope.lista_productos = {    
-                    data: 'listado_productos',
-                    enableColumnResize: true,
-                    enableRowSelection: false,
-                    //enableCellSelection: true,
-                    //selectedItems: $scope.selectedRow,
-                    multiSelect: false,
-                            
-                    columnDefs: [
-                        {field: 'codigo_producto', displayName: 'Código Producto'},
-                        {field: 'descripcion', displayName: 'Descripción'},
-                        {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada'},
-                        {field: 'iva', displayName: 'Iva'},
-                        {field: 'precio_venta', displayName: 'Precio Unitario'},
-                        {field: 'total_sin_iva', displayName: 'Total Sin Iva'},
-                        {field: 'total_con_iva', displayName: 'Total Con Iva'}
-                    ]
 
-                };
-/**************** Antigua Grid *********/
+            $scope.lista_productos = {
+                data: 'listado_productos',
+                enableColumnResize: true,
+                enableRowSelection: false,
+                //enableCellSelection: true,
+                //selectedItems: $scope.selectedRow,
+                multiSelect: false,
+                columnDefs: [
+                    {field: 'codigo_producto', displayName: 'Código Producto'},
+                    {field: 'descripcion', displayName: 'Descripción'},
+                    {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada'},
+                    {field: 'iva', displayName: 'Iva'},
+                    {field: 'precio_venta', displayName: 'Precio Unitario'},
+                    {field: 'total_sin_iva', displayName: 'Total Sin Iva'},
+                    {field: 'total_con_iva', displayName: 'Total Con Iva'}
+                ]
+
+            };
+            /**************** Antigua Grid *********/
 //            $scope.lista_productos = {
 //                data: 'listado_productos',
 //                enableColumnResize: true,
@@ -242,67 +241,67 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 //                ]
 //
 //            };
-/**************** Antigua Grid *********/
+            /**************** Antigua Grid *********/
 
-            
+
             $scope.abrirViewPedidosClientes = function()
             {
                 $state.go('PedidosClientes');
             }
-            
+
             $scope.onRowClickSelectCliente = function() {
                 $scope.slideurl = "views/generarpedidos/seleccioncliente.html?time=" + new Date().getTime();
                 $scope.$emit('mostrarseleccioncliente');
             };
-            
+
             $scope.onRowClickSelectProducto = function(tipo_cliente) {
                 $scope.slideurl = "views/generarpedidos/seleccionproductocliente.html?time=" + new Date().getTime();
                 $scope.$emit('mostrarseleccionproducto', tipo_cliente);
-                
+
                 $scope.$broadcast('cargarGridSeleccionadoSlide', $scope.listado_productos);
             };
-            
+
 //            $scope.onClickTab = function() {
 //                $scope.tab_activo = false;
 //            }
-            
+
             $scope.valorSeleccionado = function() {
-                
+
                 console.log("Valor Seleccionado: ", $scope.seleccion_vendedor);
-                
-                if($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.seleccion_vendedor != 0)
+
+                if ($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.seleccion_vendedor != 0)
                 {
                     $scope.bloquear = false;
                 }
-                
-                if($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.seleccion_vendedor != 0 && $scope.listado_productos.length == 0){
+
+                if ($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.seleccion_vendedor != 0 && $scope.listado_productos.length == 0) {
                     $scope.bloquear_upload = false;
                 }
-                else{
+                else {
                     $scope.bloquear_upload = true;
                 }
-                
+
             };
-            
-            $scope.$on('flow::fileAdded', function (event, $flow, flowFile) {
-                
+
+            $scope.$on('flow::fileAdded', function(event, $flow, flowFile) {
+
                 var arreglo_nombre = flowFile.name.split(".");
-    
-                if(arreglo_nombre[1] !== 'txt' && arreglo_nombre[1] !== 'csv') {
+
+                if (arreglo_nombre[1] !== 'txt' && arreglo_nombre[1] !== 'csv') {
                     alert("El archivo debe ser TXT o CSV. Intente de nuevo ...");
                 }
             });
-            
+
             //Método para liberar Memoria de todo lo construido en ésta clase
-            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
-               
-               //alert("En éste momento debo limpiar algo");
-               
-               $scope.listado_productos = [];
-               $scope.lista_vendedores = [];
-               
+            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+
+                //alert("En éste momento debo limpiar algo");
+
+                $scope.listado_productos = [];
+                $scope.lista_vendedores = [];
+
             });
-            
+
             $scope.buscarCotizaciones("");
 
         }]);

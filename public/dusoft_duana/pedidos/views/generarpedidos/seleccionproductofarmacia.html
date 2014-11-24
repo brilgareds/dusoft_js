@@ -2,7 +2,7 @@
 <div class="altoSlide">
     
     <div>
-        <button ng-click="cerrar()" class="pull-right btn btn-default btn-xs" style="margin-right:15px"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>   
+        <button ng-click="cerrar()" class="pull-right btn btn-default btn-xs marginRightCerrarSlide"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>   
     </div>  
     
     <div class="row">
@@ -14,27 +14,23 @@
                   <h4 class="h4MarginTopBottom" align="center">Selección de Producto para Farmacias</h4>
                 </div>
                 <div class="panel-body">
-                    
-                    <!--<div class="input-group navbar-form paddingRightZero">-->
                         
-                        <div class="col-sm-12 col-md-12 col-lg-12">
-                            <div class="col-sm-12 col-md-6 col-lg-6 pull-left">
-                                <alert ng-show="rootSeleccionProductoFarmacia.no_incluir_producto == true" type="danger">El Producto que intenta Incluir ya fue INGRESADO. Elimínelo primero de los Productos Seleccionados.</alert>
-                            </div>
-
-                            <div class="col-sm-12 col-md-6 col-lg-3 pull-right input-group">
-
-                                <input type="text" class="form-control pull-right" ng-keypress="onKeySeleccionProductoPress($event)" ng-model="rootSeleccionProductoFarmacia.termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">
-
-                                <div class="input-group-btn" >
-                                    <button class="btn btn-default pull-right" type="submit" ng-click="buscarSeleccionProducto(obtenerParametros())"><i class="glyphicon glyphicon-search"></i></button>
-                                </div>
-
-                            </div>
+                    <div class="col-sm-12 col-md-12 col-lg-12">
+                        <div class="col-sm-12 col-md-6 col-lg-6 pull-left">
+                            <alert ng-show="rootSeleccionProductoFarmacia.no_incluir_producto == true" type="danger">El Producto que intenta Incluir ya fue INGRESADO. Elimínelo primero de los Productos Seleccionados.</alert>
                         </div>
-                        
-                    <!--</div>-->
-                    
+
+                        <div class="col-sm-12 col-md-6 col-lg-3 pull-right input-group">
+
+                            <input type="text" class="form-control pull-right" ng-keypress="onKeySeleccionProductoPress($event)" ng-model="rootSeleccionProductoFarmacia.termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">
+
+                            <div class="input-group-btn" >
+                                <button class="btn btn-default pull-right" type="submit" ng-click="buscarSeleccionProducto(obtenerParametros())"><i class="glyphicon glyphicon-search"></i></button>
+                            </div>
+
+                        </div>
+                    </div>
+
                 </div>
                 <div class="panel-body table-responsive" ng-if="rootSeleccionProductoFarmacia.listado_productos.length > 0">
                     <div class="mediaPantallaGrid grid-responsive" ng-grid="lista_productos"></div>
@@ -46,20 +42,20 @@
     
     <br/>
 
-        <div class="row text-center">
-            <button type="button" class="btn btn-default btn-medium" ng-disabled="rootSeleccionProductoFarmacia.paginaactual == 1" ng-click="paginaAnterior()">
-                <span class="glyphicon glyphicon-chevron-left" ></span>
-            </button>
-            <button type="button" class="btn btn-default btn-medium" ng-disabled="rootSeleccionProductoFarmacia.items == 0" ng-click="paginaSiguiente()">
-                <span class="glyphicon glyphicon-chevron-right" ></span>
-            </button>
-        </div>
+    <div class="row text-center">
+        <button type="button" class="btn btn-default btn-medium" ng-disabled="rootSeleccionProductoFarmacia.paginaactual == 1" ng-click="paginaAnterior()">
+            <span class="glyphicon glyphicon-chevron-left" ></span>
+        </button>
+        <button type="button" class="btn btn-default btn-medium" ng-disabled="rootSeleccionProductoFarmacia.items == 0" ng-click="paginaSiguiente()">
+            <span class="glyphicon glyphicon-chevron-right" ></span>
+        </button>
+    </div>
 
     <br/>
 
     <div class="container col-xs-12 paddingRightZero paddingLeftZero" >
         <br><br><br>
-        <div class="fieldset" style ="border: 1px solid #ccc; padding: 10px; padding:10px;">
+        <div class="fieldset contenedorGridSeleccion">
             <legend>Productos Seleccionados</legend>
             <div class="row-fluid table-responsive" ng-if="rootSeleccionProductoFarmacia.listado_productos_seleccionados.length > 0">                
                 <div class="mediaPantallaGrid grid-responsive" ng-grid="lista_productos_seleccionados"></div>

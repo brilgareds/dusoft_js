@@ -13,61 +13,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.expreg = new RegExp("^[0-9]*$");
 
             var that = this;
-            
-            /* <<<<<<<<<<<<<<<<<<<<<<<< Inicio - Definiciones FileUploader >>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
-            
-//            $scope.uploader = $scope.uploader = new FileUploader({
-//                url: '/pedidoFarmaciaArchivoPlano'
-//            });
-//
-//            // FILTERS
-//
-//            uploader.filters.push({
-//                name: 'customFilter',
-//                fn: function(item /*{File|FileLikeObject}*/, options) {
-//                    return this.queue.length < 10;
-//                }
-//            });
-//
-//            // CALLBACKS
-//
-//            uploader.onWhenAddingFileFailed = function(item /*{File|FileLikeObject}*/, filter, options) {
-//                console.info('onWhenAddingFileFailed', item, filter, options);
-//            };
-//            uploader.onAfterAddingFile = function(fileItem) {
-//                console.info('onAfterAddingFile', fileItem);
-//            };
-//            uploader.onAfterAddingAll = function(addedFileItems) {
-//                console.info('onAfterAddingAll', addedFileItems);
-//            };
-//            uploader.onBeforeUploadItem = function(item) {
-//                console.info('onBeforeUploadItem', item);
-//            };
-//            uploader.onProgressItem = function(fileItem, progress) {
-//                console.info('onProgressItem', fileItem, progress);
-//            };
-//            uploader.onProgressAll = function(progress) {
-//                console.info('onProgressAll', progress);
-//            };
-//            uploader.onSuccessItem = function(fileItem, response, status, headers) {
-//                console.info('onSuccessItem', fileItem, response, status, headers);
-//            };
-//            uploader.onErrorItem = function(fileItem, response, status, headers) {
-//                console.info('onErrorItem', fileItem, response, status, headers);
-//            };
-//            uploader.onCancelItem = function(fileItem, response, status, headers) {
-//                console.info('onCancelItem', fileItem, response, status, headers);
-//            };
-//            uploader.onCompleteItem = function(fileItem, response, status, headers) {
-//                console.info('onCompleteItem', fileItem, response, status, headers);
-//            };
-//            uploader.onCompleteAll = function() {
-//                console.info('onCompleteAll');
-//            };
-//
-//            console.info('uploader', uploader);            
-            
-            /* <<<<<<<<<<<<<<<<<<<<< Fin - Definiciones FileUploader >>>>>>>>>>>>>>>>>>>>>>>>>>>*/
 
             $scope.rootCreaPedidoFarmacia = {};
 
@@ -118,38 +63,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.rootCreaPedidoFarmacia.titulo_tab_2= "";
             $scope.rootCreaPedidoFarmacia.observacion = "";
             
-            //Alertas
-            //$scope.rootCreaPedidoFarmacia.no_modificar_valor_cantidad = false;
-
             $scope.rootCreaPedidoFarmacia.pedido = {numero_pedido: ""};
 
             that.pedido = PedidoVenta.get();
-
-//            $scope.flujoArchivo = flowFactory.create({
-//                target: '/upload'
-//            });
-//            
-//            $scope.flujoArchivo.on('catchAll', function (event) {
-//                alert("Hola");
-//            });
-
-            //$scope.ruta_upload = {target: '/subida'}; //ruta del servidor para subir el archivo
-
-            //$scope.existingFlowObject = flowFactory.create();
-
-            //$scope.existingFlowObject.defaults = { target: '/subida', permanentErrors:[404, 500, 501], minFileSize: 0 };
-
-//            $scope.existingFlowObject.on('catchAll', function (event) {
-//                
-//                alert("Acceso al Evento");
-//                
-//            });            
-
-//                                                
-//            $scope.farmaciaFlowObject = flowFactory.create({
-//                target: '/upload'
-//             });
-
 
             /******************** DROPDOWN DE ***********************/
 
@@ -342,8 +258,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 $scope.rootCreaPedidoFarmacia.listado_productos = data;
 
-                //console.log("El pedido devuelto de Selección Producto: ",that.pedido);
-
                 if ($scope.rootCreaPedidoFarmacia.listado_productos.length > 0) {
                     $scope.rootCreaPedidoFarmacia.bloqueo_producto_incluido = true;
                     $scope.rootCreaPedidoFarmacia.bloqueo_generar_pedido = false;
@@ -366,8 +280,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 }
 
             });
-
-            $scope.rootCreaPedidoFarmacia.estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
 
             $scope.buscarCotizaciones = function(termino, paginando) {
 
@@ -416,7 +328,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.cargarInformacionPedido = function(){
                 
                 /* Inicio - Consulta de pedido */
-
                 var obj = {
                     session: $scope.rootCreaPedidoFarmacia.session,
                     data: {
@@ -440,7 +351,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         $scope.rootCreaPedidoFarmacia.observacion = data.obj.encabezado_pedido[0].observacion;
 
                         /* Inicio - Llenado de DropDowns*/
-
                         $scope.consultarEmpresasDe(function(){
 
                             $scope.rootCreaPedidoFarmacia.de_seleccion_empresa = de_empresa_id;
@@ -506,7 +416,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         $scope.rootCreaPedidoFarmacia.bloqueo_generar_pedido = true;
                         $scope.rootCreaPedidoFarmacia.bloquear_boton_incluir = true;
 
-                        //Llenar los DropDown antes de bloquear
                         $scope.rootCreaPedidoFarmacia.bloqueo_producto_incluido = true;
                         $scope.rootCreaPedidoFarmacia.bloqueo_upload = true;
 
@@ -575,7 +484,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.onRowClick1 = function(row){
                 
                 if(row.entity.nueva_cantidad >= row.entity.cantidad_solicitada){
-                    //$scope.rootCreaPedidoFarmacia.no_modificar_valor_cantidad = true;
                     
                     var template = ' <div class="modal-header">\
                                         <button type="button" class="close" ng-click="close()">&times;</button>\
@@ -610,8 +518,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     
                 }
                 else{
-
-                    //$scope.rootCreaPedidoFarmacia.no_modificar_valor_cantidad = false;
 
                     var template = ' <div class="modal-header">\
                                         <button type="button" class="close" ng-click="close()">&times;</button>\
@@ -678,8 +584,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 Request.realizarRequest(url, "POST", obj_verificar, function(data) {
 
-                    //console.log("Data: ",data);
-
                     if(data.status == 200) {
 
                        if((data.obj.pedidos_farmacias[0].estado_actual_pedido != 0 && data.obj.pedidos_farmacias[0].estado_actual_pedido != 1)|| data.obj.pedidos_farmacias[0].estado_separacion != null){
@@ -729,8 +633,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 });
 
-                /* Fin: Verificación estado del pedido */                
-                
+                /* Fin: Verificación estado del pedido */                                
             };
             
             $scope.modificarValoresCantidad = function(numero_pedido, data){
@@ -839,7 +742,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.eliminarProductoPedido = function(numero_pedido, data, index){
                 
                 /* Inicio - Borrado producto en BD */
-                
                 obj_eliminar = {
                     session:$scope.rootCreaPedidoFarmacia.session,
                     data:{
@@ -864,7 +766,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 });
                 
                 /* Fin - Borrado producto en BD */
-                
             }            
 
             //definicion y delegados del Tabla de pedidos clientes
@@ -872,8 +773,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 data: 'rootCreaPedidoFarmacia.listado_productos',
                 enableColumnResize: true,
                 enableRowSelection: false,
-                //enableCellSelection: true,
-                //selectedItems: $scope.selectedRow,
                 multiSelect: false,
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Código', width: "9%"},
@@ -916,44 +815,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $scope.$broadcast('cargarGridSeleccionadoSlide', $scope.rootCreaPedidoFarmacia.listado_productos);
             };
 
-           /* $scope.$on('flow::fileAdded', function(event, $flow, flowFile) {
-                //$scope.farmaciaFlowObject.fileAdded = function(event, $flow, flowFile) {
-                //event.preventDefault();//prevent file from uploading
-                //$scope.nombre_archivo = $flow;
-//                    console.log("El Evento es",event);
-//                    console.log("El Flow es",$flow);
-//                    console.log("El File Flow es",flowFile);
-                var arreglo_nombre = flowFile.name.split(".");
-
-                if (arreglo_nombre[1] !== 'xls' && arreglo_nombre[1] !== 'xlsx') {
-                    //alert("El archivo debe ser TXT o CSV. Intente de nuevo ...");
-                    alert("El archivo debe ser XLS o XLSX. Intente de nuevo ...");
-                    //flowFile = {};
-                }
-                //};
-            });*/
-
-
-//            $scope.$on('flow::filesAdded', function (event, $flow, flowFile) {
-//
-//                    console.log("El Evento es",event);
-//                    console.log("El Flow es",$flow);
-//                    console.log("El File Flow es",flowFile);
-//                    
-//                    var arreglo_nombre = flowFile.name.split(".");
-//                    
-//                    if(arreglo_nombre[1] !== 'txt') {
-//                        alert("El tipo de archivo no es Valido. Debe ser TXT.");
-//                        flowFile.cancel();
-//                    }
-//
-//                });
-
-
-//            $scope.onClickFile = function (data) {
-//                alert("Botón Cargar Presionado");
-//            }
-
             $scope.valorSeleccionado = function() {
 
                 var para_seleccion_empresa = [];
@@ -975,18 +836,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     para_seleccion_bodega = $scope.rootCreaPedidoFarmacia.para_seleccion_bodega.split(',');
                 }
 
-                /* Mostrar valores selección */
-
-                console.log("De Empresa: ", $scope.rootCreaPedidoFarmacia.de_seleccion_empresa);
-                console.log("De CentroUtil: ", $scope.rootCreaPedidoFarmacia.de_seleccion_centro_utilidad);
-                console.log("De Bodega: ", $scope.rootCreaPedidoFarmacia.de_seleccion_bodega);
-
-                console.log("Para Empresa: ", para_seleccion_empresa[0]);
-                console.log("Para CentroUtil: ", para_seleccion_centro_utilidad[0]);
-                console.log("Para Bodega: ", para_seleccion_bodega[0]);
-
-                /****************************/
-
                 /* Validaciones DropDown DE */
 
                 if ($scope.rootCreaPedidoFarmacia.de_seleccion_empresa !== 0)
@@ -1001,19 +850,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     $scope.rootCreaPedidoFarmacia.bloqueo_bodega_de = false;
                 }
 
-
                 /* Validaciones DropDown PARA */
-
-                console.log("para_seleccion_empresa[0] =", para_seleccion_empresa[0]);
 
                 if (para_seleccion_empresa[0] !== '0')
                 {
-                    //console.log("Dentro de IF - para_seleccion_empresa[0] =",para_seleccion_empresa[0]);
                     $scope.consultarCentrosUtilidadPara();
                     $scope.rootCreaPedidoFarmacia.bloqueo_centro_utilidad_para = false;
                 }
-
-                //console.log("para_seleccion_centro_utilidad[0] =",para_seleccion_centro_utilidad[0]);
 
                 if (para_seleccion_centro_utilidad[0] !== '0')
                 {
@@ -1080,7 +923,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     /*********************************************************************/
                 }
 
-                //Desabilitar carga de archivo plano si hay producto en la grid cuando no un pedido temporal almacenado en BD
+                //Desabilitar carga de archivo plano si hay producto en la grid cuando no hay un pedido temporal almacenado en BD
                 if ($scope.rootCreaPedidoFarmacia.de_seleccion_empresa !== 0 && $scope.rootCreaPedidoFarmacia.de_seleccion_centro_utilidad !== 0
                         && $scope.rootCreaPedidoFarmacia.de_seleccion_bodega !== 0 && para_seleccion_empresa[0] !== '0'
                         && para_seleccion_centro_utilidad[0] !== '0' && para_seleccion_bodega[0] !== '0'
@@ -1120,8 +963,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 Request.realizarRequest(url_encabezado, "POST", obj_encabezado, function(data) {
 
-                    //console.log("Resultado INSERT Pedido: ",data);
-
                     if (data.status == 200) {
                         console.log("Encabezado Ingresado : ", data.msj);
                         console.log("El número de pedido es: ", data.obj.numero_pedido[0].solicitud_prod_a_bod_ppal_id)
@@ -1152,9 +993,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                 console.log("Detalle Ingresado : ", data.msj);
                                 PedidoVenta.pedidoseleccionado = numero_pedido_generado;
                                 $scope.rootCreaPedidoFarmacia.pedido.numero_pedido = PedidoVenta.pedidoseleccionado;
-
-                                /* Inicio - Eliminar Detalle Completo Pedido Temporal */
-                                /*------------------------------------------------------*/
 
                                 /* Inicio - Objeto para Eliminar Detalle Completo */
                                 var obj_detalle = {
@@ -1216,8 +1054,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                 });
                                 /* Fin - Borrado Detalle Completo Pedido*/
 
-                                /*------------------------------------------------------*/
-                                /* Fin - Eliminar Detalle Completo Pedido Temporal*/
                             }
                             else {
                                 console.log("Detalle No Ingresado : ", data.msj);
@@ -1326,8 +1162,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             });
 
-            //$scope.consultarEmpresasDe();
-            //$scope.consultarEmpresasPara();
             $scope.buscarCotizaciones("");
 
         }]);

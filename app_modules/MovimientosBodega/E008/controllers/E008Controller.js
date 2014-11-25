@@ -1538,8 +1538,9 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
                     res.send(G.utils.r(req.url, 'Algunas cajas no se han cerrado', 404, {movimientos_bodegas: {cajas_no_cerradas: cajas_no_cerradas}}));
                     return;
                 }
+                
 
-                that.m_e008.generar_documento_despacho_clientes(documento_temporal_id, usuario_id, auditor_id, function(err, rows) {
+                that.m_e008.generar_documento_despacho_farmacias(documento_temporal_id, usuario_id, auditor_id, function(err, rows) {
 
                     if (err) {
                         console.log("========================================== generar documento despacho clientes error generado ============================");
@@ -1596,7 +1597,6 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
     var usuario_id = req.session.user.usuario_id;
 
     that.m_e008.consultar_rotulo_caja(documento_temporal_id, numero_caja, function(err, rotulos_cajas) {
-
         if (err) {
             res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
             return;

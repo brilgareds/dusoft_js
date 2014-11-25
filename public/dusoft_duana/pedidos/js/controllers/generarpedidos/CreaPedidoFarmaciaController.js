@@ -7,8 +7,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         '$scope', '$rootScope', 'Request',
         'EmpresaPedido', 'Farmacia', 'PedidoVenta',
         'API', "socket", "AlertService",
-        '$state', "Usuario", "localStorageService", '$modal', //'FileUploader',
-        function($scope, $rootScope, Request, Empresa, Farmacia, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService, $modal/*, FileUploader*/) {
+        '$state', "Usuario", "localStorageService", '$modal',
+        function($scope, $rootScope, Request, Empresa, Farmacia, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService, $modal) {
 
             $scope.expreg = new RegExp("^[0-9]*$");
 
@@ -27,7 +27,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.rootCreaPedidoFarmacia.ultima_busqueda = "";
             $scope.rootCreaPedidoFarmacia.paginaactual = 1;
 
-            $scope.rootCreaPedidoFarmacia.bloquear_tab = true; //Default True
+            $scope.rootCreaPedidoFarmacia.bloquear_tab = true; 
             $scope.rootCreaPedidoFarmacia.bloquear_boton_incluir = true;
 
             $scope.rootCreaPedidoFarmacia.bloqueo_producto_incluido = false;
@@ -69,7 +69,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             /******************** DROPDOWN DE ***********************/
 
-            $scope.consultarEmpresasDe = function(callback) {
+            that.consultarEmpresasDe = function(callback) {
 
                 var obj = {
                     session: $scope.rootCreaPedidoFarmacia.session,
@@ -90,7 +90,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             };
 
-            $scope.consultarCentrosUtilidadDe = function(empresa_id, callback) {
+            that.consultarCentrosUtilidadDe = function(empresa_id, callback) {
                 
                 if(empresa_id !== undefined && empresa_id !== ""){
                     $scope.rootCreaPedidoFarmacia.de_seleccion_empresa = empresa_id;
@@ -118,7 +118,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 });
             };
 
-            $scope.consultarBodegaDe = function(empresa_id, centro_utilidad_id, callback) {
+            that.consultarBodegaDe = function(empresa_id, centro_utilidad_id, callback) {
                 
                 if(empresa_id !== undefined && empresa_id !== ""){
                     $scope.rootCreaPedidoFarmacia.de_seleccion_empresa = empresa_id;
@@ -153,7 +153,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             /******************** DROPDOWN PARA ***********************/
 
-            $scope.consultarEmpresasPara = function(callback) {
+            that.consultarEmpresasPara = function(callback) {
 
                 var obj = {
                     session: $scope.rootCreaPedidoFarmacia.session,
@@ -174,7 +174,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             };
 
-            $scope.consultarCentrosUtilidadPara = function(empresa_id, callback) {
+            that.consultarCentrosUtilidadPara = function(empresa_id, callback) {
                 
                 var para_seleccion_empresa = "";
                 
@@ -209,7 +209,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 });
             };
 
-            $scope.consultarBodegaPara = function(empresa_id, centro_utilidad_id, callback) {
+            that.consultarBodegaPara = function(empresa_id, centro_utilidad_id, callback) {
                 
                 var para_seleccion_empresa = "";
                 var para_seleccion_centro_utilidad = "";
@@ -281,7 +281,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             });
 
-            $scope.buscarPedido = function(termino, paginando) {
+            that.buscarPedido = function(termino, paginando) {
 
                 //valida si cambio el termino de busqueda
                 if ($scope.rootCreaPedidoFarmacia.ultima_busqueda != $scope.rootCreaPedidoFarmacia.termino_busqueda) {
@@ -290,42 +290,42 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 if (PedidoVenta.pedidoseleccionado !== "") {
                     
-                    $scope.rootCreaPedidoFarmacia.titulo_tab_1= "Detalle Pedido";
-                    $scope.rootCreaPedidoFarmacia.titulo_tab_2= "";
+                    $scope.rootCreaPedidoFarmacia.titulo_tab_1 = "Detalle Pedido";
+                    $scope.rootCreaPedidoFarmacia.titulo_tab_2 = "";
                     $scope.rootCreaPedidoFarmacia.grid_pedido_generado_visible = true;
 
                     $scope.rootCreaPedidoFarmacia.pedido.numero_pedido = PedidoVenta.pedidoseleccionado;
 
                     localStorageService.set("pedidoseleccionado", PedidoVenta.pedidoseleccionado);
                     
-                    $scope.cargarInformacionPedido();
+                    that.cargarInformacionPedido();
 
                 }
                 else if (localStorageService.get("pedidoseleccionado")) {
 
-                    $scope.rootCreaPedidoFarmacia.titulo_tab_1= "Detalle Pedido";
-                    $scope.rootCreaPedidoFarmacia.titulo_tab_2= "";
+                    $scope.rootCreaPedidoFarmacia.titulo_tab_1 = "Detalle Pedido";
+                    $scope.rootCreaPedidoFarmacia.titulo_tab_2 = "";
                     $scope.rootCreaPedidoFarmacia.grid_pedido_generado_visible = true;
                     
                     if (localStorageService.get("pedidoseleccionado").length > 0) {
                         $scope.rootCreaPedidoFarmacia.pedido.numero_pedido = localStorageService.get("pedidoseleccionado");
                     }
                     
-                    $scope.cargarInformacionPedido();
+                    that.cargarInformacionPedido();
                 }
                 else {
-                    $scope.rootCreaPedidoFarmacia.titulo_tab_1= "Incluir Producto Manual";
-                    $scope.rootCreaPedidoFarmacia.titulo_tab_2= "Cargar Archivo Plano"
+                    $scope.rootCreaPedidoFarmacia.titulo_tab_1 = "Incluir Producto Manual";
+                    $scope.rootCreaPedidoFarmacia.titulo_tab_2 = "Cargar Archivo Plano";
                     $scope.rootCreaPedidoFarmacia.grid_pedido_generado_visible = false;
                     
-                    $scope.consultarEmpresasDe();
-                    $scope.consultarEmpresasPara();
+                    that.consultarEmpresasDe();
+                    that.consultarEmpresasPara();
                 }
 
             };
             
             //Función para cargar todos los datos del pedido
-            $scope.cargarInformacionPedido = function(){
+            that.cargarInformacionPedido = function(){
                 
                 /* Inicio - Consulta de pedido */
                 var obj = {
@@ -351,48 +351,48 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         $scope.rootCreaPedidoFarmacia.observacion = data.obj.encabezado_pedido[0].observacion;
 
                         /* Inicio - Llenado de DropDowns*/
-                        $scope.consultarEmpresasDe(function(){
+                        that.consultarEmpresasDe(function(){
 
                             $scope.rootCreaPedidoFarmacia.de_seleccion_empresa = de_empresa_id;
 
-                            $scope.consultarCentrosUtilidadDe(de_empresa_id, function(){
+                            that.consultarCentrosUtilidadDe(de_empresa_id, function(){
 
                                 $scope.rootCreaPedidoFarmacia.de_seleccion_centro_utilidad = '1 ';
 
-                                $scope.consultarBodegaDe(de_empresa_id, '1 ', function(){
+                                that.consultarBodegaDe(de_empresa_id, '1 ', function(){
 
                                     $scope.rootCreaPedidoFarmacia.de_seleccion_bodega = '03';
 
-                                    $scope.consultarEmpresasPara(function(){
+                                    that.consultarEmpresasPara(function(){
 
                                         var nombre_empresa = "";
 
                                         $scope.rootCreaPedidoFarmacia.para_lista_empresas.forEach(function(empresa){
-                                            if(empresa.empresa_id == para_farmacia_id){
+                                            if(empresa.empresa_id === para_farmacia_id){
                                                 nombre_empresa = empresa.nombre_empresa;
                                             }
                                         });
 
                                         $scope.rootCreaPedidoFarmacia.para_seleccion_empresa = para_farmacia_id+","+nombre_empresa;
 
-                                        $scope.consultarCentrosUtilidadPara(para_farmacia_id, function(){
+                                        that.consultarCentrosUtilidadPara(para_farmacia_id, function(){
 
                                             var nombre_centro_utilidad = "";
 
                                             $scope.rootCreaPedidoFarmacia.para_lista_centro_utilidad.forEach(function(centro_utilidad){
-                                                if(centro_utilidad.centro_utilidad_id == para_centro_utilidad){
+                                                if(centro_utilidad.centro_utilidad_id === para_centro_utilidad){
                                                     nombre_centro_utilidad = centro_utilidad.nombre_centro_utilidad;
                                                 }
                                             });
 
                                             $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad = para_centro_utilidad+","+nombre_centro_utilidad;
 
-                                            $scope.consultarBodegaPara(para_farmacia_id, para_centro_utilidad, function(){
+                                            that.consultarBodegaPara(para_farmacia_id, para_centro_utilidad, function(){
 
                                                 var nombre_bodega = "";
 
                                                 $scope.rootCreaPedidoFarmacia.para_lista_bodegas.forEach(function(bodega){
-                                                    if(bodega.bodega_id == para_bodega){
+                                                    if(bodega.bodega_id === para_bodega){
                                                         nombre_bodega = bodega.nombre_bodega;
                                                     }
                                                 });
@@ -470,10 +470,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'nueva_cantidad', displayName: 'Modificar Cantidad', enableCellEdit: true, width: "10%"},
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "11%",
                         cellTemplate: ' <div class="row">\n\
-                                                <button class="btn btn-default btn-xs" ng-click="onRowClick1(row)" ng-disabled="row.entity.nueva_cantidad==null || !expreg.test(row.entity.nueva_cantidad)">\n\
+                                                <button class="btn btn-default btn-xs" ng-click="onModificarCantidad(row)" ng-disabled="row.entity.nueva_cantidad==null || !expreg.test(row.entity.nueva_cantidad)">\n\
                                                     <span class="glyphicon glyphicon-pencil">Modificar</span>\n\
                                                 </button>\n\
-                                                <button class="btn btn-danger btn-xs" ng-click="onRowClick2(row)">\n\
+                                                <button class="btn btn-danger btn-xs" ng-click="onEliminarProducto(row)">\n\
                                                     <span class="glyphicon glyphicon-minus-sign">Eliminar</span>\n\
                                                 </button>\n\
                                             </div>'
@@ -481,7 +481,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 ]
             };
             
-            $scope.onRowClick1 = function(row){
+            $scope.onModificarCantidad = function(row){
                 
                 if(row.entity.nueva_cantidad >= row.entity.cantidad_solicitada){
                     
@@ -534,9 +534,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     controller = function($scope, $modalInstance) {
 
                         $scope.modificarCantidad = function() {
-                            $scope.verificarEstadoPedido(function(){
+                            that.verificarEstadoPedido(function(){
                                     
-                                $scope.modificarValoresCantidad(
+                                that.modificarValoresCantidad(
                                     $scope.rootCreaPedidoFarmacia.pedido.numero_pedido,
                                     row.entity
                                 );
@@ -565,7 +565,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 }
             };
             
-            $scope.verificarEstadoPedido = function(callback){
+            that.verificarEstadoPedido = function(callback){
                 
                 /* Inicio: Verificación estado del pedido */
                 obj_verificar = {
@@ -586,7 +586,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                     if(data.status === 200) {
 
-                       if((data.obj.pedidos_farmacias[0].estado_actual_pedido != 0 && data.obj.pedidos_farmacias[0].estado_actual_pedido != 1)|| data.obj.pedidos_farmacias[0].estado_separacion != null){
+                       if((data.obj.pedidos_farmacias[0].estado_actual_pedido !== 0 && data.obj.pedidos_farmacias[0].estado_actual_pedido !== 1)|| data.obj.pedidos_farmacias[0].estado_separacion !== null){
                            //No se debe hacer Modificación
                            
                             var template = ' <div class="modal-header">\
@@ -636,7 +636,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 /* Fin: Verificación estado del pedido */                                
             };
             
-            $scope.modificarValoresCantidad = function(numero_pedido, data){
+            that.modificarValoresCantidad = function(numero_pedido, data){
                 
                 var solicitado_inicial = data.cantidad_solicitada;
                 var pendiente_inicial = data.cantidad_pendiente;
@@ -690,7 +690,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 /* Fin - Modificación en BD */                
             };
             
-            $scope.onRowClick2 = function(row){
+            $scope.onEliminarProducto = function(row){
                 
                     var template = ' <div class="modal-header">\
                                         <button type="button" class="close" ng-click="close()">&times;</button>\
@@ -707,9 +707,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     controller = function($scope, $modalInstance) {
 
                         $scope.eliminarProducto = function() {
-                            $scope.verificarEstadoPedido(function(){
+                            that.verificarEstadoPedido(function(){
                                     
-                                $scope.eliminarProductoPedido(
+                                that.eliminarProductoPedido(
                                     $scope.rootCreaPedidoFarmacia.pedido.numero_pedido,
                                     row.entity,
                                     row.rowIndex
@@ -736,10 +736,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     };
 
                     var modalInstance = $modal.open($scope.opts);
-                
-            }
+            };
             
-            $scope.eliminarProductoPedido = function(numero_pedido, data, index){
+            that.eliminarProductoPedido = function(numero_pedido, data, index){
                 
                 /* Inicio - Borrado producto en BD */
                 obj_eliminar = {
@@ -783,7 +782,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
 
-            $scope.onSelectProducto = function(tipo_cliente) {
+            $scope.onIncluirProductos = function(tipo_cliente) {
                 $scope.slideurl = "views/generarpedidos/seleccionproductofarmacia.html?time=" + new Date().getTime();
 
                 var datos_de = {
@@ -840,13 +839,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 if ($scope.rootCreaPedidoFarmacia.de_seleccion_empresa !== 0)
                 {
-                    $scope.consultarCentrosUtilidadDe();
+                    that.consultarCentrosUtilidadDe();
                     $scope.rootCreaPedidoFarmacia.bloqueo_centro_utilidad_de = false;
                 }
 
                 if ($scope.rootCreaPedidoFarmacia.de_seleccion_centro_utilidad !== 0)
                 {
-                    $scope.consultarBodegaDe();
+                    that.consultarBodegaDe();
                     $scope.rootCreaPedidoFarmacia.bloqueo_bodega_de = false;
                 }
 
@@ -854,13 +853,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 if (para_seleccion_empresa[0] !== '0')
                 {
-                    $scope.consultarCentrosUtilidadPara();
+                    that.consultarCentrosUtilidadPara();
                     $scope.rootCreaPedidoFarmacia.bloqueo_centro_utilidad_para = false;
                 }
 
                 if (para_seleccion_centro_utilidad[0] !== '0')
                 {
-                    $scope.consultarBodegaPara();
+                    that.consultarBodegaPara();
                     $scope.rootCreaPedidoFarmacia.bloqueo_bodega_para = false;
                 }
 
@@ -1162,7 +1161,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             });
 
-            $scope.buscarPedido("");
+            that.buscarPedido("");
 
         }]);
 });

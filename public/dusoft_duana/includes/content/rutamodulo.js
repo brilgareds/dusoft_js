@@ -5,16 +5,23 @@ define(["angular","js/directive"], function(angular, directive){
             restrict: 'A',
             link: function (scope, el, attrs)
             {
-
                $rootScope.$on("$stateChangeSuccess", function(event, toState){
-                    console.log("statechage ", toState);
+                    el.css({display:"inline"});
+                   
+                    var titulo = el.find("#menubread");
                     if(toState.text !== undefined){
-                        el.text(toState.text);
+                        titulo.text(toState.text);
                     } else {
-                        el.text(toState.name);
+                        titulo.text(toState.name);
                     }
-               })
-            }
+               });
+            },
+            template:'<ul class="page-breadcrumb breadcrumb">'+
+                        '<li>'+
+                            '<i class="glyphicon glyphicon-home"></i> '+
+                            '<a href="javascript:void(0);" id="menubread" style="margin-left:5px;"></a>'+
+                        '</li>'+
+                       '</ul>'
         };
        
     }]);

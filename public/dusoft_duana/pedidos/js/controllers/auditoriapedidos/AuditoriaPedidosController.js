@@ -466,8 +466,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
 
             $scope.generarDocumento = function(documento){
+
                 
                 var url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO;
+                
+                if(documento.pedido.tipo === documento.pedido.TIPO_FARMACIA){
+                   url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO_FARMACIA; 
+                }
+                
 
                 var obj = {
                     session:$scope.session,
@@ -480,6 +486,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         }
                     }
                 };
+
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     

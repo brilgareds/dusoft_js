@@ -1481,7 +1481,80 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
 
 // Generar Documento Despacho Farmacias
 E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) {
+     // Verificar Pendientes
+    // Ingresar Justificacion
+    // Verificar Rotulos
 
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined || args.documento_temporal.documento_temporal_id === undefined
+            || args.documento_temporal.usuario_id === undefined) {
+
+        res.send(G.utils.r(req.url, 'documento_temporal_id,  usuario_id o numero_pedido No Estan Definidos', 404, {}));
+        return;
+    }
+
+    if (args.documento_temporal.numero_pedido === '' || args.documento_temporal.documento_temporal_id === '' || args.documento_temporal.usuario_id === '') {
+        res.send(G.utils.r(req.url, 'documento_temporal_id,  usuario_id o numero_pedido estan vacios', 404, {}));
+        return;
+    }
+
+    var numero_pedido = args.documento_temporal.numero_pedido;
+    var documento_temporal_id = args.documento_temporal.documento_temporal_id;
+    var usuario_id = args.documento_temporal.usuario_id;
+    var auditor_id = args.documento_temporal.auditor_id;
+
+
+
+    __validar_productos_pedidos_farmacias(that, numero_pedido, documento_temporal_id, usuario_id, function(err, productos_no_auditados, productos_pendientes) {
+
+        /*console.log("productos no auditados >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        console.log(productos_no_auditados);
+        console.log("productos pendientes >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        console.log(productos_pendientes);*/
+        
+        if (err) {
+            res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
+            return;
+        } else {
+            if (productos_no_auditados.length > 0 || productos_pendientes.length > 0) {
+
+                res.send(G.utils.r(req.url, 'Algunos productos no ha sido auditados o tienen pendientes la justificacion', 404,
+                                            {movimientos_bodegas: {productos_no_auditados: productos_no_auditados, productos_pendientes: productos_pendientes}}));
+                return;
+            }
+        }
+        
+        __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, function(err, cajas_no_cerradas) {
+
+            if (err) {
+                res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
+                return;
+            } else {
+
+                if (cajas_no_cerradas.length > 0) {
+                    res.send(G.utils.r(req.url, 'Algunas cajas no se han cerrado', 404, {movimientos_bodegas: {cajas_no_cerradas: cajas_no_cerradas}}));
+                    return;
+                }
+
+                that.m_e008.generar_documento_despacho_clientes(documento_temporal_id, usuario_id, auditor_id, function(err, rows) {
+
+                    if (err) {
+                        console.log("========================================== generar documento despacho clientes error generado ============================");
+                        console.log(err);
+                        res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
+                        return;
+                    } else {
+                        console.log("========================================== generar documento despacho clientes satisfactorio ============================");
+                        res.send(G.utils.r(req.url, 'Se ha generado el documento', 200, {movimientos_bodegas: {}}));
+                    }
+
+                });
+            }
+        });
+    });
 
 };
 
@@ -1661,13 +1734,98 @@ function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento
                    
                    detalle_pedido =  __unificarLotesDetalle(detalle_pedido);
 
-                   console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", detalle_pedido.length)
+                  // console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", detalle_pedido);
                    
                    
                    detalle_pedido.forEach(function(producto_pedido) {   
                         
                         //validar que la cantidad pendiente sea mayor a cero en ventas_ordenes_pedidos_d
                       if((producto_pedido.cantidad_solicitada  - producto_pedido.cantidad_despachada)  >  0){    
+                            // Producto seleccionado por el operario de bodega
+                            var producto_separado = detalle_documento_temporal.filter(function(value) {
+                                return producto_pedido.codigo_producto === value.codigo_producto && value.auditado === '1';
+                            });
+
+
+                            // var cantidad_pendiente = _obtenerCantidadPendiente(detalle_pedido,producto_pedido);
+                            var cantidad_pendiente = producto_pedido.cantidad_pendiente;
+
+                            /*console.log("cantidad pendiente ****************", cantidad_pendiente, " codigo ", producto_pedido.codigo_producto)
+                            console.log("productos para auditar >>>>>>>>>>>>>>>>>");
+                            console.log(producto_pedido);
+                            console.log("producto separado >>>>>>>>>>>>>>>>>>>>>>>");
+                            console.log(producto_separado);*/
+
+                            // Verificar que los productos esten auditados
+
+                           
+                            if (producto_separado.length === 0) {
+                                // Producto que no fue separado y le falta la justificacion del auditor
+                                if (cantidad_pendiente > 0 && producto_pedido.justificacion_auditor === ''){
+                                    productos_pendientes.push(producto_pedido);
+                                   //productos_pendientes = __agregarProducto(producto_pedido, productos_pendientes);
+                                } else if (producto_pedido.item_id > 0){
+                                    productos_no_auditados.push(producto_pedido);
+                                    //productos_no_auditados = __agregarProducto(producto_pedido, productos_no_auditados);
+                                }
+                            } else {
+                                console.log("producto para evaluar ",producto_pedido)
+                                // Verificar que los productos con pendientes esten justificados po el auditor/
+                                if (cantidad_pendiente > 0 && producto_pedido.justificacion_auditor === ''){
+                                    //console.log("productos >>>>>>>>>>>>>>>>>>>>>>>>>>> >>>>>>>>>>>>>>>>>");
+                                     //productos_pendientes = __agregarProducto(producto_pedido, productos_pendientes);
+                                     productos_pendientes.push(producto_pedido);
+
+                                } else if(producto_pedido.auditado === '0')  {
+                                    productos_no_auditados.push(producto_pedido);
+                                    //no hay cantidades pendientes, pero no esta auditado
+                                    // productos_no_auditados = __agregarProducto(producto_pedido, productos_no_auditados);
+                                   // console.log("falto por ingresar ", producto_pedido.codigo_producto, " cantidad ", producto_pedido.cantidad_ingresada, " pendiente ", cantidad_pendiente, " justificacion ", producto_pedido.justificacion_auditor);
+
+                                }
+                            }
+                      }
+                    });
+
+                    callback(err, productos_no_auditados, productos_pendientes);
+                    return;
+                }
+            });
+        }
+    });
+};
+
+
+function __validar_productos_pedidos_farmacias(contexto, numero_pedido, documento_temporal_id, usuario_id, callback) {
+
+    var that = contexto;
+
+    // Consultar Detalle del Pedido
+    that.m_pedidos_farmacias.consultar_detalle_pedido(numero_pedido, function(err, detalle_pedido) {
+        if (err) {
+            callback(err);
+            return;
+        } else {
+
+            that.m_movientos_bodegas.consultar_detalle_movimiento_bodega_temporal(documento_temporal_id, usuario_id, function(err, detalle_documento_temporal) {
+
+                if (err) {
+                    callback(err);
+                    return;
+                } else {
+
+                    var productos_pendientes = [];
+                    var productos_no_auditados = [];
+                    
+                    
+                    
+                   
+                   detalle_pedido =  __unificarLotesDetalle(detalle_pedido);
+
+                   detalle_pedido.forEach(function(producto_pedido) {   
+                        
+                        //validar que la cantidad pendiente sea mayor a cero en ventas_ordenes_pedidos_d
+                      if(producto_pedido.cantidad_pendiente_real  >  0){    
                             // Producto seleccionado por el operario de bodega
                             var producto_separado = detalle_documento_temporal.filter(function(value) {
                                 return producto_pedido.codigo_producto === value.codigo_producto && value.auditado === '1';

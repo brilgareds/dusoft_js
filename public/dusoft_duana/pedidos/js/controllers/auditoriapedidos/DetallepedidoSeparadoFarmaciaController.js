@@ -217,7 +217,7 @@ define(["angular", "js/controllers",'models/Farmacia',
             };
 
             $rootScope.$on("productoAuditado", function(e, producto){ 
-                 if($scope.DocumentoTemporal.getPedido() === undefined){ return }
+                 if($scope.DocumentoTemporal.getPedido() === undefined){ return; }
                  $scope.DocumentoTemporal.getPedido().vaciarProductos();
 
             });

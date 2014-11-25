@@ -148,7 +148,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         obj.farmacia_id,
                         obj.bodega_id,
                         obj.nombre_farmacia,
-                        obj.nombre_bodega
+                        obj.nombre_bodega,
+                        obj.centro_utilidad,
+                        obj.nombre_centro_utilidad
                         );
 
                 pedido.setFarmacia(farmacia);

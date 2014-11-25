@@ -716,9 +716,9 @@ function __errorGenerandoDocumento(err, callback){
 
 //Ingresar cabecera documento despacho farmacias
 function __ingresar_documento_despacho_farmacias(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento, auditor_id, callback) {
-    var sql = " INSERT INTO inv_bodegas_movimiento_despachos_farmacias(empresa_id, prefijo, numero, farmacia_id, solicitud_prod_a_bod_ppal_id, usuario_id,fecha_registro,rutaviaje_destinoempresa_id )\
-                SELECT $3 as empresa_id, $4 as prefijo, $5 as numero, a.farmacia_id, a.solicitud_prod_a_bod_ppal_id, $6 as usuario_id, NOW() as fecha_registro a.rutaviaje_destinoempresa_i\
-                FROM Tableinv_bodegas_movimiento_despachos_farmacias a WHERE a.doc_tmp_id =$1 AND a.usuario_id =$2 ";
+    var sql = " INSERT INTO inv_bodegas_movimiento_despachos_farmacias(empresa_id, prefijo, numero, farmacia_id, solicitud_prod_a_bod_ppal_id, usuario_id,fecha_registro,rutaviaje_destinoempresa_id, sw_revisado, sw_entregado_off )\
+                SELECT $3 as empresa_id, $4 as prefijo, $5 as numero, a.farmacia_id, a.solicitud_prod_a_bod_ppal_id, $6 as usuario_id, NOW() as fecha_registro, a.rutaviaje_destinoempresa_id, '1' as sw_revisado, '1' as sw_entregado_off\
+                FROM inv_bodegas_movimiento_tmp_despachos_farmacias a WHERE a.doc_tmp_id =$1 AND a.usuario_id =$2 ";
 
     G.db.transaction(sql, [documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento, auditor_id], callback);  
 };

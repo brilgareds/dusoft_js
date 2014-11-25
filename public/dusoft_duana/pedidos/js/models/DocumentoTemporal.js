@@ -44,11 +44,11 @@ define(["angular", "js/models"], function(angular, models) {
         
         DocumentoTemporal.prototype.getPedido = function() {
             return this.pedido;
-        }
+        };
         
         DocumentoTemporal.prototype.getSeparador = function () {
             return this.separador;
-        }
+        };
 
         //we return new instance of usermodel class  because factory is a singleton and we dont need like that
         this.get = function() {

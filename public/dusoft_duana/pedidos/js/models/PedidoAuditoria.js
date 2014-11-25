@@ -12,6 +12,8 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.farmacia;
             this.productos = [];
             this.tipo = 1;
+            this.TIPO_CLIENTE  = 1;
+            this.TIPO_FARMACIA = 2;
         }
 
          PedidoAuditoria.prototype = Object.create(Pedido.getClass().prototype);

@@ -22,7 +22,7 @@ define(["angular", "js/controllers",
             var that = this;
             that.obtenerParametros = function(){
                  //valida si cambio el termino de busqueda
-                if ($scope.ultima_busqueda != $scope.termino_busqueda) {
+                if ($scope.ultima_busqueda !== $scope.termino_busqueda) {
                     $scope.paginaactual = 1;
                 }
 
@@ -49,15 +49,23 @@ define(["angular", "js/controllers",
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
-                    {field: 'pedido.numero_pedido', displayName: 'Numero Pedido', cellTemplate:"<div class='ngCellText ng-scope col1 colt1'>{{row.entity.pedido.numero_pedido}}"+
-                        "<span  ng-show='row.entity.esDocumentoNuevo' class='label label-danger pull-right'>Nuevo</span></div>"},
+                    {field: 'pedido.numero_pedido', displayName: 'Numero Pedido',
+                     cellTemplate:"<div class='ngCellText ng-scope col1 colt1'>\
+                                        {{row.entity.pedido.numero_pedido}}\
+                                        <span  ng-show='row.entity.esDocumentoNuevo' class='label label-danger pull-right'>Nuevo</span>\
+                                     </div>"
+                    },
                     {field: 'pedido.cliente.nombre_tercero', displayName: 'Cliente'},
                     {field: 'pedido.nombre_vendedor', displayName: 'Vendedor'},
                     {field: 'separador.nombre_operario', displayName: 'Separador'},
                     {field: 'auditor.nombre_responsable', displayName: 'Auditor'},
                     {field: 'descripcion_estado_separacion', displayName: 'Estado Separación'},
                     {field: 'fecha_separacion_pedido', displayName: "Fecha Separación"},
-                    {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Auditar</span></button></div>'}
+                    {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "7%",
+                        cellTemplate: '<div>'+
+                                        '<button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Auditar</span></button>'+'\
+                                      </div>'
+                    }
 
                 ]
 
@@ -109,9 +117,10 @@ define(["angular", "js/controllers",
             $scope.onKeySeparadosPress = function(ev, termino_busqueda) {
                 if (ev.which === 13) {
                     $scope.buscarPedidosSeparados( that.obtenerParametros(),
-                                                   1,
-                                                  false ,
-                                                  $scope.renderPedidosSeparados );
+                                                    1,
+                                                    false ,
+                                                    $scope.renderPedidosSeparados 
+                                                 );
                 }
             };
 

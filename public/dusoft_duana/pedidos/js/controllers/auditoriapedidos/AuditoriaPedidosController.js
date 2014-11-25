@@ -35,16 +35,16 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
             
             var obj = {
-                            session: $scope.session,
-                            data: {
-                                documento_temporal: {
-                                    documento_temporal_id : 1,
-                                    usuario_id: 1350,
-                                    filtro:{busqueda:true},
-                                    numero_pedido:8000
-                                }
-                            }
-                        };
+                session: $scope.session,
+                data: {
+                    documento_temporal: {
+                        documento_temporal_id : 1,
+                        usuario_id: 1350,
+                        filtro:{busqueda:true},
+                        numero_pedido:8000
+                    }
+                }
+            };
             
 
             var that = this;
@@ -466,8 +466,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
 
             $scope.generarDocumento = function(documento){
+
                 
                 var url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO;
+                
+                if(documento.pedido.tipo === documento.pedido.TIPO_FARMACIA){
+                   url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO_FARMACIA; 
+                }
+                
 
                 var obj = {
                     session:$scope.session,
@@ -480,6 +486,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         }
                     }
                 };
+
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     
@@ -501,10 +508,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                             that.renderDetalleDocumentoTemporal(documento,movimientos_bodegas.productos_no_auditados.concat(movimientos_bodegas.productos_pendientes), 2);
                         }
                         
-                        
-                       // that.renderDetalleDocumentoTemporal(documento,movimientos_bodegas.productos_pendientes, 3);
-                       /* that.renderProductosAuditados(movimientos_bodegas.productos_no_auditados, $scope.productosAuditados);
-                        that.renderProductosAuditados(movimientos_bodegas.productos_pendientes, $scope.productosAuditados);*/
                         
                         if(movimientos_bodegas.cajas_no_cerradas){
                             $scope.cajasSinCerrar = movimientos_bodegas.cajas_no_cerradas;

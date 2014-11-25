@@ -28,8 +28,8 @@ define(["angular", "js/controllers",
                 $scope.ultima_busqueda.termino_busqueda;
 
                 //valida si cambio el termino de busqueda
-                if($scope.ultima_busqueda.termino_busqueda != $scope.termino_busqueda
-                        || $scope.ultima_busqueda.seleccion != $scope.seleccion){
+                if($scope.ultima_busqueda.termino_busqueda !== $scope.termino_busqueda
+                        || $scope.ultima_busqueda.seleccion !== $scope.seleccion){
                     $scope.paginaactual = 1;
                 }
 
@@ -49,13 +49,13 @@ define(["angular", "js/controllers",
 
 
                 return obj;
-            }
+            };
 
             $scope.$on("onPedidosSeparadosRenderFarmacia",function(e,items){
                 $scope.ultima_busqueda = {
                     termino_busqueda: $scope.termino_busqueda,
                     seleccion: $scope.seleccion
-                }
+                };
                 $scope.items = items;
             });
 
@@ -78,7 +78,7 @@ define(["angular", "js/controllers",
 
                 Request.realizarRequest(API.PEDIDOS.LISTAR_EMPRESAS, "POST", obj, function(data) {
                     
-                    if (data.status == 200) {
+                    if (data.status === 200) {
                         $scope.empresas = data.obj.empresas;
                         //console.log(JSON.stringify($scope.empresas))
                     }
@@ -103,7 +103,11 @@ define(["angular", "js/controllers",
                     {field: 'auditor.nombre_operario', displayName: 'Auditor'},
                     {field: 'descripcion_estado_separacion', displayName: 'Estado Separación'},
                     {field: 'fecha_separacion_pedido', displayName: "Fecha Separación"},
-                    {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Auditar</span></button></div>'}
+                    {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "7%", 
+                     cellTemplate: '<div>\
+                                      <button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Auditar</span></button>\
+                                   </div>'
+                    }
                 ]
 
             };
@@ -124,7 +128,7 @@ define(["angular", "js/controllers",
             //eventos de widgets
             $scope.onKeySeparadosPress = function(ev, termino_busqueda) {
                 
-                if (ev.which == 13) {
+                if (ev.which === 13) {
                     $scope.buscarPedidosSeparados($scope.obtenerParametros(), 2, false, $scope.renderPedidosSeparados);
                 }
             };

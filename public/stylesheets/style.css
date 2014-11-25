@@ -304,6 +304,10 @@ div.ngHeaderCell	{
     padding-right: 0px;
 }
 
+.titulo_modulo{
+    display:none;
+}
+
 .txt-center{
     text-align: center;
     padding-top: 4px;

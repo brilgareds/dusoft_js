@@ -13,7 +13,7 @@ define(["angular","js/services"], function(angular, services){
          this.colaEjecucion.push({tipo:tipo,msg:msg});
          this.procesarMensaje();
           
-      }  
+      };
 
       this.procesarMensaje =function(){
         if(!this.mostrandoMensaje){
@@ -22,7 +22,7 @@ define(["angular","js/services"], function(angular, services){
 
             if(msg){
                 this.mostrandoMensaje = true;
-                console.log(msg)
+                console.log(msg);
                 that.el.html("<p class='alertcontenido alert alert-"+msg.tipo+"'>"+msg.msg+"</p>").show();
 
                 this.timer = setTimeout(function(){
@@ -36,18 +36,18 @@ define(["angular","js/services"], function(angular, services){
 
 
             } else {
-              console.log(this.colaEjecucion)
+              console.log(this.colaEjecucion);
               console.log("no hay mensajes pendientes");
             }
 
         }
-      }
+      };
 
 
       this.destruirIntervalo =function(){
         clearTimeout(this.timer);
          this.timer = null;
-      }
+      };
 
       angular.element(document).ready(function () {
           $("body").append(
@@ -58,19 +58,6 @@ define(["angular","js/services"], function(angular, services){
           );
 
           that.el = $("#systemAlerlt");
-
-         /* that.mostrarMensage("danger","my mesage here");
-          that.mostrarMensage("success","my mesage here2");
-          that.mostrarMensage("warning","my mesage here3");
-
-          setTimeout(function(){
-               that.mostrarMensage("danger","my mesage here4");
-              that.mostrarMensage("info","my mesage here5");
-              that.mostrarMensage("info","my mesage here6 its to large but i want to show here");
-          },2000)*/
-
-           
-
       });
 
     });

@@ -108,6 +108,27 @@
 
         </div>
     </div> <!-- / end payment details section -->
+    
+    <div class="row">
+        <div class="col-sm-12 col-md-12" ng-if="cajasSinCerrar.length > 0">
+
+            <div class="panel panel-info marginBottom5"> 
+
+                <div class="panel-heading">
+                  <h4 class="h4MarginTopBottom">Cajas sin cerrar</h4>
+                </div>
+
+                <div class="panel-body paddingRightZero">
+
+                    <div class="table-responsive" >
+                         <div class="auditadosGrid grid-responsive" ng-grid="lista_cajas_no_cerradas_farmacias"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div> 
+    </div>
+
       
     <!-- End Código desplazado -->
     <div class="row">
@@ -129,7 +150,8 @@
               
         </div>    
     </div> <!-- / end class row --> 
-
+    
+    
     <div class="col-sm-12 row marginBottom5">
         <button type="submit" class="btn btn-accion btn-primary pull-right" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ng-click="generarDocumento(DocumentoTemporal)">Generar Documento</button>    
     </div>

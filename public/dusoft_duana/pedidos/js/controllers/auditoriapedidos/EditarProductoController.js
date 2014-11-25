@@ -337,8 +337,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                     }
                 };
 
-                console.log("params to send ",obj);
-                
+
 
                Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.MODIFICAR_DETALLE_TEMPORAL, "POST", obj, function(data) {
 
@@ -559,7 +558,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                 var cliente = (!$scope.rootEditarProducto.pedido.cliente)?$scope.rootEditarProducto.pedido.farmacia:$scope.rootEditarProducto.pedido.cliente;
 
                 var url = API.DOCUMENTOS_TEMPORALES.VALIDAR_CAJA;
-                 console.log($scope.rootEditarProducto, " cliente ", cliente);
+                 //console.log($scope.rootEditarProducto.pedido.farmacia, " cliente ", cliente);
                 var obj = {
                     session:$scope.session,
                     data:{
@@ -567,7 +566,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                             documento_temporal_id: $scope.rootEditarProducto.documento.documento_temporal_id,
                             numero_caja: $scope.rootEditarProducto.caja.numero,
                             numero_pedido: $scope.rootEditarProducto.pedido.numero_pedido,
-                            direccion_cliente: $scope.rootEditarProducto.pedido.cliente.direccion,
+                            direccion_cliente: cliente.direccion || cliente.nombre_farmacia,
                             nombre_cliente:cliente.nombre_tercero || cliente.nombre_farmacia
                         }
                     }

@@ -1354,6 +1354,8 @@ E008Controller.prototype.auditoriaProductosFarmacias = function(req, res) {
                 }
 
                 var count = detalle_documento_temporal.length;
+                
+                productos_pedidos =  __unificarLotesDetalle(productos_pedidos);
 
                 detalle_documento_temporal.forEach(function(detalle) {
 
@@ -1747,51 +1749,6 @@ function __unificarLotesDetalle(detalle){
     
     return detalle;
 };
-
-function __unificarLote(lote){
-    
-};
-
-/*
-function _obtenerCantidadPendiente(detalle , producto){
-
-    var cantidad_solicitada = producto.cantidad_solicitada;
-    var cantidad_ingresada = 0;
-    
-    for(var i in detalle){
-        var producto_detalle = detalle[i];
-        if(producto_detalle.codigo_producto === producto.codigo_producto ){
-            //console.log("sumando producto >>>>>>>>>>>>>>>>>>> ", producto.codigo_producto, producto.cantidad_ingresada)
-            cantidad_ingresada += producto_detalle.cantidad_ingresada;
-        }
-    }
-    
-    //console.log("sumando producto >>>>>>>>>>>>>>>>>>> ", cantidad_ingresada, " producto ",producto.codigo_producto, " cantidad ingresada indv ",producto.cantidad_ingresada);
-    return cantidad_solicitada - cantidad_ingresada;
-};
-
-
-//se encarga de unificar los lotes en uno solo, aplica para pendientes y no auditados
-function __agregarProducto(producto, arreglo){
-    var existe = false;
-    for(var i in arreglo){
-        var producto_detalle = arreglo[i];
-        if(producto_detalle.codigo_producto === producto.codigo_producto){
-            existe = true;
-            producto.cantidad_ingresada += producto_detalle.cantidad_ingresada;
-            arreglo[i] = producto;
-            break;
-        }
-    }
-    
-    //apesar que se suma las cantidades ingresadas de todos solo se agrega si no existe el producto y ademas no este auditado
-    if(!existe && producto.auditado === '0'){
-        arreglo.push(producto);
-    }
-    
-    return arreglo;
-};
-*/
 
 
 function __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, callback) {

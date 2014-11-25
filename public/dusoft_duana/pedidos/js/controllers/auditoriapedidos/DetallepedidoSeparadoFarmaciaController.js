@@ -22,7 +22,6 @@ define(["angular", "js/controllers",'models/Farmacia',
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = {};
             $scope.paginaactual = 1;
-            $scope.detalle_pedido_separado_farmacia = {};
             $scope.documentos_usuarios = [];
             $scope.documento_temporal_id = "";
             $scope.usuario_id = "";
@@ -129,23 +128,22 @@ define(["angular", "js/controllers",'models/Farmacia',
                    $scope.usuario_id = data.usuario_id;
             };
 
+            
             $scope.detalle_pedido_separado_farmacia = {
                 data: 'DocumentoTemporal.getPedido().getProductos()',
-                enableColumnResize: true,
+                enableHighlighting: true,
                 enableRowSelection:false,
                 columnDefs: [                
-                    {field: 'codigo_producto', displayName: 'Código Producto'},
-                    {field: 'descripcion', displayName: 'Nombre Producto'},
-                    {field: 'existencia_lotes', displayName: 'Existencia Lotes'},
-                    {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada'},
-                    {field: 'cantidad_separada', displayName: "Cantidad Separada"},
-                    {field: 'lote.codigo_lote', displayName: 'Lote'},
-                    {field: 'lote.fecha_vencimiento', displayName: "Fecha Vencimiento"},
-                    {field: 'observacion', displayName: "Observación"},
-                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
+                    {field: 'codigo_producto', displayName: 'Código' , width:100},
+                    {field: 'descripcion', displayName: 'Nombre Producto', width:500},
+                    {field: 'existencia_lotes', displayName: 'Existencia'},
+                    {field: 'cantidad_solicitada', displayName: 'Solicitado' },
+                    {field: 'cantidad_separada', displayName: "Separado"},
+                    {field: 'observacion', displayName: "Observación", width:150},
+                    {field: 'opciones', displayName: "", cellClass: "txt-center" , width:40,
                         cellTemplate: ' <div class="row">\n\
                                             <button class="btn btn-default btn-xs" ng-click="onEditarRow(DocumentoTemporal, row)">\n\
-                                                <span class="glyphicon glyphicon-zoom-in">VistaPrevia</span>\n\
+                                                <span class="glyphicon glyphicon-zoom-in"></span>\n\
                                             </button>\n\
                                         </div>'
                     }
@@ -153,11 +151,14 @@ define(["angular", "js/controllers",'models/Farmacia',
 
             };
 
+
              $scope.lista_productos_auditados_farmacias = {
                 data:'productosAuditados',
+                enableHighlighting: true,
+                enableRowSelection:false,
                 columnDefs: [                
-                    {field: 'codigo_producto', displayName: 'Código Producto'},
-                    {field: 'descripcion', displayName: 'Nombre Producto'},
+                    {field: 'codigo_producto', displayName: 'Código' , width:100},
+                    {field: 'descripcion', displayName: 'Nombre Producto', width:500},
                     {field: 'cantidad_separada', displayName: "Cantidad Separada"},
                     {field: 'lote.codigo_lote', displayName: 'Lote'},
                     {field: 'lote.fecha_vencimiento', displayName: "Fecha Vencimiento"},
@@ -192,7 +193,7 @@ define(["angular", "js/controllers",'models/Farmacia',
 
             $scope.onKeyDetalleDocumentoTemporalPress = function(ev, termino_busqueda, buscarcodigodebarras) {
                 if(!$scope.esDocumentoBodegaValido($scope.DocumentoTemporal.bodegas_doc_id)) return;
-                    if (ev.which == 13) {  
+                    if (ev.which === 13) {  
                         console.log("search with code "+buscarcodigodebarras);
                         $scope.filtro.termino_busqueda  =  termino_busqueda;
                         $scope.filtro.codigo_barras = buscarcodigodebarras;
@@ -216,7 +217,7 @@ define(["angular", "js/controllers",'models/Farmacia',
             };
 
             $rootScope.$on("productoAuditado", function(e, producto){ 
-                 if($scope.DocumentoTemporal.getPedido() == undefined){ return }
+                 if($scope.DocumentoTemporal.getPedido() === undefined){ return }
                  $scope.DocumentoTemporal.getPedido().vaciarProductos();
 
             });

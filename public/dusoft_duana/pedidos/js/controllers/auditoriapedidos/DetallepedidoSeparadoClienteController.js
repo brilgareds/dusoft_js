@@ -75,13 +75,6 @@ define(["angular", "js/controllers",'models/ClientePedido',
                 $scope.traerProductosAuditatos(params);
                 
             });
-            
-           /* $scope.$on("refrescarProductosDocumento",function(e,productos){
-                $scope.DocumentoTemporal.getPedido().vaciarProductos();
-                console.log("=======================");
-                console.log(productos)
-                $scope.DocumentoTemporal.getPedido().setProductos(productos);
-            });*/
 
 
             $rootScope.$on("cerrardetalleclienteCompleto",function(e){
@@ -103,7 +96,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                     
                    //console.log("resultadoBusquedaDocumento ========================== ", $scope.DocumentoTemporal)
                     //se valida que hayan registros en una siguiente pagina
-                    if (paginando && $scope.items == 0) {
+                    if (paginando && $scope.items === 0) {
                         if ($scope.paginaactual > 1) {
                             $scope.paginaactual--;
                         }
@@ -125,7 +118,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
             
             that.obtenerParametros = function(){
                                 //valida si cambio el termino de busqueda
-                if ($scope.ultima_busqueda != $scope.termino_busqueda) {
+                if ($scope.ultima_busqueda !== $scope.termino_busqueda) {
                     $scope.paginaactual = 1;
                 }
                 
@@ -143,7 +136,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
             };
 
             that.resultasdoListadoDocumentosUsuario = function(data){
-                console.log("resultadod listado ******************", data)
+                console.log("resultadod listado ******************", data);
                 if(data.obj.movimientos_bodegas !== undefined){
                     $scope.documentos_usuarios = data.obj.movimientos_bodegas;
                 }
@@ -220,7 +213,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
            //eventos de widgets
            $scope.onKeyDetalleDocumentoTemporalPress = function(ev, termino_busqueda, buscarcodigodebarras) {
                 if(!$scope.esDocumentoBodegaValido($scope.DocumentoTemporal.bodegas_doc_id)) return;
-                    if (ev.which == 13) {  
+                    if (ev.which === 13) {  
                         console.log("search with code "+buscarcodigodebarras);
                         $scope.filtro.termino_busqueda  =  termino_busqueda;
                         $scope.filtro.codigo_barras = buscarcodigodebarras;

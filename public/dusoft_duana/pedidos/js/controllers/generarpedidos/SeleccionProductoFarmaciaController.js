@@ -12,7 +12,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             $scope.expreg = new RegExp("^[0-9]*$");
 
-            that = this;
+            var that = this;
 
             $scope.$on('cargarGridSeleccionadoSlide', function(event, mass) {
                 //Recibimos la GRID del PADRE: -> mass
@@ -98,7 +98,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $scope.rootSeleccionProductoFarmacia.observacion_encabezado = observacion;
                 $scope.rootSeleccionProductoFarmacia.pedido = pedido;
 
-                $scope.buscarSeleccionProducto($scope.obtenerParametros(), "");
+                $scope.onBuscarSeleccionProducto($scope.obtenerParametros(), "");
             });
 
             $scope.obtenerParametros = function() {
@@ -128,7 +128,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 return obj;
             }
 
-            $scope.buscarSeleccionProducto = function(obj, paginando) {
+            $scope.onBuscarSeleccionProducto = function(obj, paginando) {
 
                 var url = API.PEDIDOS.LISTAR_PRODUCTOS_FARMACIAS;
 
@@ -151,7 +151,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 });
 
-                $scope.renderGrid();
+                that.renderGrid();
             };
 
             that.renderProductosFarmacia = function(data, paginando) {
@@ -193,7 +193,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             /*  Construcción de Grid    */
 
-            $scope.renderGrid = function() {
+            that.renderGrid = function() {
 
                 $scope.lista_productos = {
                     data: 'rootSeleccionProductoFarmacia.listado_productos',
@@ -212,13 +212,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         {field: 'disponibilidad_bodega', displayName: 'Disponible'/*, width: "6%"*/},
                         {field: 'cantidad_solicitada', displayName: 'Solicitado', enableCellEdit: false, width: "10%",
                             cellTemplate: ' <div class="col-xs-12">\n\
-                                                <input type="text" ng-model="row.entity.cantidad_solicitada" validacion-numero class="form-control grid-inline-input"  ng-keyup="onKeyPressIngresaProducto($event, row)"' +
-                                    'ng-model="row.entity.cantidad_ingresada" ng-disabled="row.entity.numero_caja > 0" />\n\
+                                                <input type="text" ng-model="row.entity.cantidad_solicitada" validacion-numero class="form-control grid-inline-input"'+
+                                                'ng-keyup="onTeclaIngresaProducto($event, row)" ng-model="row.entity.cantidad_ingresada" ng-disabled="row.entity.numero_caja > 0" />\n\
                                             </div>'
                         },
                         {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "6%",
                             cellTemplate: ' <div class="row">\n\
-                                                <button class="btn btn-default btn-xs" ng-click="onRowClick1(row)" ng-disabled="row.entity.cantidad_solicitada<=0 || row.entity.cantidad_solicitada==null || !expreg.test(row.entity.cantidad_solicitada)">\n\
+                                                <button class="btn btn-default btn-xs" ng-click="onIncluirProducto(row)" '+
+                                                ' ng-disabled="row.entity.cantidad_solicitada<=0 || row.entity.cantidad_solicitada==null || !expreg.test(row.entity.cantidad_solicitada)">\n\
                                                     <span class="glyphicon glyphicon-plus-sign">Incluir</span>\n\
                                                 </button>\n\
                                             </div>'
@@ -238,7 +239,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         {field: 'cantidad_pendiente', displayName: 'Pendiente'},
                         {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
                             cellTemplate: ' <div class="row">\n\
-                                                <button class="btn btn-danger btn-xs" ng-click="onRowClick2(row)">\n\
+                                                <button class="btn btn-danger btn-xs" ng-click="onEliminarSeleccionado(row)">\n\
                                                     <span class="glyphicon glyphicon-minus-sign">Eliminar</span>\n\
                                                 </button>\n\
                                             </div>'
@@ -248,22 +249,22 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
             //Inserta producto presionando Botón
-            $scope.onRowClick1 = function(row) {
-                $scope.insertarProducto(row);
+            $scope.onIncluirProducto = function(row) {
+                that.insertarProducto(row);
             };
 
             //Inserta producto presionando ENTER
-            $scope.onKeyPressIngresaProducto = function(ev, row) {
+            $scope.onTeclaIngresaProducto = function(ev, row) {
                 console.log("Key Evento: ", ev.which);
                 if (ev.which === 13) {
                     if (parseInt(row.entity.cantidad_solicitada) > 0) {
-                        $scope.insertarProducto(row);
+                        that.insertarProducto(row);
                     }
                 }
             };
 
             //Ejecuta operaciones conjuntas de Inserción del producto en pedido temporal
-            $scope.insertarProducto = function(row) {
+            that.insertarProducto = function(row) {
 
                 $scope.rootSeleccionProductoFarmacia.no_incluir_producto = false;
 
@@ -517,7 +518,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 }
             };
 
-            $scope.onRowClick2 = function(row) {
+            $scope.onEliminarSeleccionado = function(row) {
 
                 $scope.rootSeleccionProductoFarmacia.no_incluir_producto = false;
 
@@ -598,26 +599,22 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             });
 
             //eventos de widgets
-            $scope.onKeySeleccionProductoPress = function(ev) {
+            $scope.onTeclaBuscarSeleccionProducto = function(ev) {
 
                 if (ev.which == 13) {
                     console.log("Término Búsqueda: ", $scope.rootSeleccionProductoFarmacia.termino_busqueda);
-                    $scope.buscarSeleccionProducto($scope.obtenerParametros());
+                    $scope.onBuscarSeleccionProducto($scope.obtenerParametros());
                 }
             };
 
             $scope.paginaAnterior = function() {
                 $scope.rootSeleccionProductoFarmacia.paginaactual--;
-                $scope.buscarSeleccionProducto($scope.obtenerParametros(), true);
+                $scope.onBuscarSeleccionProducto($scope.obtenerParametros(), true);
             };
 
             $scope.paginaSiguiente = function() {
                 $scope.rootSeleccionProductoFarmacia.paginaactual++;
-                $scope.buscarSeleccionProducto($scope.obtenerParametros(), true);
-            };
-
-            $scope.valorSeleccionado = function() {
-
+                $scope.onBuscarSeleccionProducto($scope.obtenerParametros(), true);
             };
 
         }]);

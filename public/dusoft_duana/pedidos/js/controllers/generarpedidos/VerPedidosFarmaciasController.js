@@ -9,11 +9,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
         'API', "socket", "AlertService",
         '$state', "Usuario", "localStorageService",
 
-        function($scope, $rootScope, Request, Empresa, Farmacia, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService) {
+        function($scope, $rootScope, Request, EmpresaPedido, Farmacia, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService) {
             
             $scope.rootVerPedidosFarmacias = {};
             
-            $scope.rootVerPedidosFarmacias.Empresa = Empresa;
+            $scope.rootVerPedidosFarmacias.Empresa = EmpresaPedido;
             
             $scope.rootVerPedidosFarmacias.paginas = 0;
             $scope.rootVerPedidosFarmacias.items = 0;
@@ -33,14 +33,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 auth_token:Usuario.token
             };
             
-            $scope.rootVerPedidosFarmacias.empresas = [];
+            $scope.rootVerPedidosFarmacias.listado_farmacias = [];
 
             $scope.rootVerPedidosFarmacias.estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
             
             var that = this;            
 
 
-            $scope.listarEmpresas = function() {
+            that.listarFarmacias = function() {
 
                 var obj = {
                     session: $scope.rootVerPedidosFarmacias.session,
@@ -50,8 +50,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 Request.realizarRequest(API.PEDIDOS.LISTAR_EMPRESAS, "POST", obj, function(data) {
                     
                     if (data.status === 200) {
-                        $scope.rootVerPedidosFarmacias.empresas = data.obj.empresas;
-                        //console.log(JSON.stringify($scope.empresas))
+                        $scope.rootVerPedidosFarmacias.listado_farmacias = data.obj.empresas;
                     }
                     
                 });
@@ -80,7 +79,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 return obj;
             };
             
-            $scope.buscarPedidosFarmacias = function(obj, paginando) {
+            $scope.onBuscarPedidosFarmacias = function(obj, paginando) {
                 
                 var url = API.PEDIDOS.LISTAR_PEDIDOS_FARMACIAS;
 
@@ -215,30 +214,30 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             });
             
             //eventos de widgets
-            $scope.onKeyVerPedidosFarmaciasPress = function(ev) {
+            $scope.onTeclaBuscarPedidosFarmacias = function(ev) {
 
                  if (ev.which === 13) {
-                     $scope.buscarPedidosFarmacias($scope.obtenerParametros());
+                     $scope.onBuscarPedidosFarmacias($scope.obtenerParametros());
                  }
             };
             
             $scope.paginaAnterior = function() {
                  $scope.rootVerPedidosFarmacias.paginaactual--;
-                 $scope.buscarPedidosFarmacias($scope.obtenerParametros(), true);
+                 $scope.onBuscarPedidosFarmacias($scope.obtenerParametros(), true);
             };
 
             $scope.paginaSiguiente = function() {
                  $scope.rootVerPedidosFarmacias.paginaactual++;
-                 $scope.buscarPedidosFarmacias($scope.obtenerParametros(), true);
+                 $scope.onBuscarPedidosFarmacias($scope.obtenerParametros(), true);
             };
 
             $scope.valorSeleccionado = function() {
                 
-                $scope.buscarPedidosFarmacias($scope.obtenerParametros());
+                $scope.onBuscarPedidosFarmacias($scope.obtenerParametros());
             };
             
-            $scope.buscarPedidosFarmacias($scope.obtenerParametros());
-            $scope.listarEmpresas("");
+            $scope.onBuscarPedidosFarmacias($scope.obtenerParametros());
+            that.listarFarmacias("");
 
         }]);
 });

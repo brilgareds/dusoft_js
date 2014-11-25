@@ -17,17 +17,17 @@
             
             <div class="col-md-3">
                 <p class="input-group">
-                    <select ui-select2  class="pull-left anchoSeleccionEmpresa" ng-model="rootVerPedidosFarmacias.seleccion" data-placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
-                        <option ng-repeat="empresa in  rootVerPedidosFarmacias.empresas"  ng-value="empresa.empresa_id" >{{empresa.razon_social}}</option>
+                    <select ui-select2  class="pull-left anchoSeleccionEmpresa" ng-model="rootVerPedidosFarmacias.seleccion" data-placeholder="Seleccionar Farmacia" ng-change="valorSeleccionado()">
+                        <option ng-repeat="farmacia in  rootVerPedidosFarmacias.listado_farmacias"  ng-value="farmacia.empresa_id" >{{farmacia.razon_social}}</option>
                     </select>
                 </p>
             </div>
             
             <div class="col-md-2 pull-right">
                 <p class="input-group">
-                    <input type="text" class="form-control pull-right" ng-keypress="onKeyVerPedidosFarmaciasPress($event)" ng-model="rootVerPedidosFarmacias.termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
+                    <input type="text" class="form-control pull-right" ng-keypress="onTeclaBuscarPedidosFarmacias($event)" ng-model="rootVerPedidosFarmacias.termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
                     <span class="input-group-btn" >
-                        <button class="btn btn-default" type="submit" ng-click="buscarPedidosFarmacias(obtenerParametros())"><i class="glyphicon glyphicon-search"></i></button>
+                        <button class="btn btn-default" type="submit" ng-click="onBuscarPedidosFarmacias(obtenerParametros())"><i class="glyphicon glyphicon-search"></i></button>
                     </span>
                 </p>    
             </div>

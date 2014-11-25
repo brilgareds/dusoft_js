@@ -1346,7 +1346,7 @@ E008Controller.prototype.auditoriaProductosFarmacias = function(req, res) {
                 return;
             }
             // Consultar los productos asociados al documento temporal    
-            that.m_movientos_bodegas.consultar_detalle_movimiento_bodega_temporal(documento.documento_temporal_id, documento.usuario_id, function(err, detalle_documento_temporal) {
+            that.m_movientos_bodegas.consultar_detalle_movimiento_bodega_temporal_por_termino(documento.documento_temporal_id, documento.usuario_id,filtro, function(err, detalle_documento_temporal) {
 
                 if (err) {
                     res.send(G.utils.r(req.url, 'Se ha generado un error consultado el detall del documento temporal', 500, {documento_temporal: []}));
@@ -1370,21 +1370,13 @@ E008Controller.prototype.auditoriaProductosFarmacias = function(req, res) {
                             producto = producto[0];
                             detalle.cantidad_solicitada = producto.cantidad_solicitada;
                             detalle.cantidad_pendiente = producto.cantidad_solicitada - detalle.cantidad_ingresada;
+                            detalle.cantidad_ingresada = producto.cantidad_ingresada;
                             //detalle.justificacion = producto.justificacion;
                             //detalle.justificacion_auditor = producto.justificacion_auditor;
                         }
-
-                        //Si filtro es por codigo de barras.
-                        if (filtro.codigo_barras) {
-                            if (detalle.auditado === '0' && detalle.codigo_barras === termino_busqueda)
-                                lista_productos.push(detalle);
-                        }
-
-                        //si filtro es por descripcion 
-                        if (filtro.descripcion_producto) {
-                            if (detalle.auditado === '0' && detalle.descripcion_producto.toLocaleLowerCase().substring(0, termino_busqueda.length) === termino_busqueda.toLowerCase())
-                                lista_productos.push(detalle);
-                        }
+                        
+                        lista_productos.push(detalle);
+                        
                         if (--count === 0) {
                             console.log(lista_productos);
                             res.send(G.utils.r(req.url, 'Listado productos auditados', 200, {movimientos_bodegas: {lista_productos_auditados: lista_productos}}));

@@ -163,7 +163,7 @@ PedidosFarmaciasModel.prototype.insertar_pedido_farmacia_definitivo = function(e
 PedidosFarmaciasModel.prototype.insertar_detalle_pedido_farmacia_definitivo = function(numero_pedido, empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback) {
     
     var sql = "INSERT INTO solicitud_productos_a_bodega_principal_detalle(solicitud_prod_a_bod_ppal_id, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, usuario_id, fecha_registro, sw_pendiente, cantidad_pendiente) \
-                SELECT $1, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, usuario_id, CURRENT_TIMESTAMP, 0, cantidad_pendiente from solicitud_pro_a_bod_prpal_tmp \
+                SELECT $1, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, usuario_id, CURRENT_TIMESTAMP, 0, cantidad_solic from solicitud_pro_a_bod_prpal_tmp \
                 WHERE farmacia_id = $2 and centro_utilidad = $3 and bodega = $4 and usuario_id = $5";
 
     G.db.query(sql, [numero_pedido, empresa_id, centro_utilidad_id, bodega_id, usuario_id], function(err, rows, result) {

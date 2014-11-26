@@ -8,13 +8,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         'EmpresaPedido', 'Farmacia', 'PedidoVenta',
         'API', "socket", "AlertService",
         '$state', "Usuario", "localStorageService", '$modal',
-        function($scope, $rootScope, Request, Empresa, Farmacia, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService, $modal) {
+        function($scope, $rootScope, Request, EmpresaPedido, Farmacia, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService, $modal) {
 
             $scope.expreg = new RegExp("^[0-9]*$");
 
             var that = this;
 
             $scope.rootCreaPedidoFarmacia = {};
+            
+            $scope.rootCreaPedidoFarmacia.Empresa = EmpresaPedido;
 
             $scope.rootCreaPedidoFarmacia.session = {
                 usuario_id: Usuario.usuario_id,
@@ -290,6 +292,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 if (PedidoVenta.pedidoseleccionado !== "") {
                     
+                    console.log("Singleton Empresa: ", $scope.rootCreaPedidoFarmacia.Empresa);
+                    
                     $scope.rootCreaPedidoFarmacia.titulo_tab_1 = "Detalle Pedido";
                     $scope.rootCreaPedidoFarmacia.titulo_tab_2 = "";
                     $scope.rootCreaPedidoFarmacia.grid_pedido_generado_visible = true;
@@ -303,6 +307,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 }
                 else if (localStorageService.get("pedidoseleccionado")) {
 
+                    console.log("Singleton Empresa Recargando: ", $scope.rootCreaPedidoFarmacia.Empresa);
+                    
                     $scope.rootCreaPedidoFarmacia.titulo_tab_1 = "Detalle Pedido";
                     $scope.rootCreaPedidoFarmacia.titulo_tab_2 = "";
                     $scope.rootCreaPedidoFarmacia.grid_pedido_generado_visible = true;

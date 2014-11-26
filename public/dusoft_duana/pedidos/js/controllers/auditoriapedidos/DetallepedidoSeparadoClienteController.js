@@ -80,12 +80,9 @@ define(["angular", "js/controllers",'models/ClientePedido',
             $rootScope.$on("cerrardetalleclienteCompleto",function(e){
                  $scope.$$watchers = null;
                 if($scope.DocumentoTemporal === undefined) return;
+                
+                if($scope.DocumentoTemporal.pedido === undefined) return;
                 $scope.DocumentoTemporal.getPedido().vaciarProductos();
-                 console.log("cerrardetalleclienteCompleto ________________________");
-                console.log($scope.DocumentoTemporal);
-               
-               // $scope.DocumentoTemporal.getPedido().vaciarProductos();
-                //$scope.detalle_pedido_separado_cliente.data = [];
                
             });
 

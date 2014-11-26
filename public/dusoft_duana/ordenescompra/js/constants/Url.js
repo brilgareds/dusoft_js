@@ -21,6 +21,8 @@ define(["angular"], function(angular) {
                 'FINALIZAR_ORDEN_COMPRA': BASE_URL + '/OrdenesCompra/finalizarOrdenCompra',
                 'SUBIR_ARCHIVO_PLANO': BASE_URL + '/OrdenesCompra/subirPlano',
                 'GESTIONAR_NOVEDADES': BASE_URL + '/OrdenesCompra/gestionarNovedades',
+                'CONSULTAR_ARCHIVOS_NOVEDAD': BASE_URL + '/OrdenesCompra/consultarArchivosNovedades',
+                'SUBIR_ARCHIVO_NOVEDAD': BASE_URL + '/OrdenesCompra/subirArchivoNovedades'
             },
             'PROVEEDORES': {
                 'LISTAR_PROVEEDORES': BASE_URL + '/Terceros/Proveedores/listar'

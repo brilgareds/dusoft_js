@@ -61,12 +61,22 @@ module.exports = function(app, di_container) {
     // Orden de Compra a traves de un archivo plano
     app.post('/api/OrdenesCompra/subirPlano', function(req, res) {    
         c_ordenes_compra.ordenCompraArchivoPlano(req, res);
-    });
-    
+    });    
     
     // Generar Novedades Orden de Compra
     app.post('/api/OrdenesCompra/gestionarNovedades', function(req, res) {
         c_ordenes_compra.gestionarNovedades(req, res);
+    });
+    
+   
+    // Consultar Archivos Novedad Orden de Compra
+    app.post('/api/OrdenesCompra/consultarArchivosNovedades', function(req, res) {
+        c_ordenes_compra.consultarArchivosNovedades(req, res);
+    });
+    
+    // Subir Archivos Novedades Orden de Compra
+    app.post('/api/OrdenesCompra/subirArchivoNovedades', function(req, res) {
+        c_ordenes_compra.subirArchivoNovedades(req, res);
     });
    
 };

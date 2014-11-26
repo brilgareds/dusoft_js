@@ -149,21 +149,6 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
 // Consultar Detalle Ordene de Compra  por numero de orden
 OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_orden, termino_busqueda, pagina, callback) {
 
-    /*var sql = " select * from (\
-     select\
-     a.orden_pedido_id as numero_orden,\
-     a.codigo_producto,\
-     fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
-     a.numero_unidades::integer as cantidad_solicitada,\
-     a.valor,\
-     a.porc_iva,\
-     (a.numero_unidades::integer * a.valor) as subtotal,\
-     ((a.porc_iva/100) * (a.numero_unidades::integer * a.valor) ) as valor_iva,\
-     ( (a.numero_unidades::integer * a.valor) +  ((a.porc_iva/100) * (a.numero_unidades::integer * a.valor) )) as total,\
-     a.estado \
-     from compras_ordenes_pedidos_detalle as a\
-     ) AS a where a.numero_orden = $1 and a.estado = '1' and ( a.codigo_producto ilike $2 or  a.descripcion_producto ilike $2 ) ";*/
-
     var sql = " select * from (\
                     select\
                     a.item_id, \
@@ -344,6 +329,25 @@ OrdenesCompraModel.prototype.modificar_novedad_producto = function(novedad_id, o
 };
 
 
+// Modificar Novedad Producto Orden de Compra 
+OrdenesCompraModel.prototype.insertar_archivo_novedad_producto = function(novedad_id, nombre_archivo, descripcion_archivo, usuario_id, callback) {
+
+    var sql = " INSERT INTO archivos_novedades_ordenes_compras (novedad_orden_compra_id, nombre_archivo, descripcion_archivo, usuario_id, fecha_registro) \
+                VALUES ( $1, $2, $3, $4, now() ) ; ";
+    G.db.query(sql, [novedad_id, nombre_archivo, descripcion_archivo, usuario_id], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
+// Consultar Archivo Novedad Producto Orden de Compra
+OrdenesCompraModel.prototype.consultar_archivo_novedad_producto = function(novedad_id, callback) {
+
+    var sql = "  SELECT  * FROM archivos_novedades_ordenes_compras a WHERE a.novedad_orden_compra_id = $1 ; ";
+    
+    G.db.query(sql, [novedad_id], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
 
 
 module.exports = OrdenesCompraModel;

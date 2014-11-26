@@ -14,6 +14,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.rootVerPedidosFarmacias = {};
             
             $scope.rootVerPedidosFarmacias.Empresa = EmpresaPedido;
+            $scope.rootVerPedidosFarmacias.Pedido = PedidoVenta;
             
             $scope.rootVerPedidosFarmacias.paginas = 0;
             $scope.rootVerPedidosFarmacias.items = 0;
@@ -132,7 +133,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
                 var pedido = PedidoVenta.get();
                 
-                datos_pedido = {
+                var datos_pedido = {
                     numero_pedido: obj.numero_pedido,
                     fecha_registro: obj.fecha_registro,
                     descripcion_estado_actual_pedido: obj.descripcion_estado_actual_pedido,
@@ -175,7 +176,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         cellTemplate: "<button ng-class='rootVerPedidosFarmacias.estados[row.entity.estado_actual_pedido]'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
                         cellTemplate: ' <div>\n\
-                                            <button class="btn btn-default btn-xs" ng-click="editarPedidoFarmacia(row.entity)" ng-disabled="(row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1) || row.entity.estado_separacion != null">\n\
+                                            <button class="btn btn-default btn-xs" ng-click="onEditarPedidoFarmacia(row.entity)" ng-disabled="(row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1) || row.entity.estado_separacion != null">\n\
                                                 <span class="glyphicon glyphicon-pencil">Modificar</span>\n\
                                             </button>\n\
                                         </div>'}
@@ -201,8 +202,45 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 $state.go('CreaPedidosFarmacias');
             };
             
-            $scope.editarPedidoFarmacia = function(data){
+            $scope.onEditarPedidoFarmacia = function(data){
                 
+                /* Pedido Farmacia */
+                
+                /////////////
+                
+                //$scope.rootVerPedidosFarmacias.Pedido
+                
+                ////////////
+                
+                //var pedido = PedidoVenta.get();
+                
+               /* var datos_pedido = {
+                    numero_pedido: data.numero_pedido,
+                    fecha_registro: data.fecha_registro,
+                    descripcion_estado_actual_pedido: data.descripcion_estado_actual_pedido,
+                    estado_actual_pedido: data.estado_actual_pedido,
+                    estado_separacion: data.estado_separacion
+                };
+                
+                //pedido.setDatos(datos_pedido);
+                $scope.rootVerPedidosFarmacias.Pedido.setDatos(datos_pedido)
+                $scope.rootVerPedidosFarmacias.Pedido.setTipo(2);
+
+                        
+                var farmacia = Farmacia.get(
+                        obj.farmacia_id,
+                        obj.bodega_id,
+                        obj.nombre_farmacia,
+                        obj.nombre_bodega,
+                        obj.centro_utilidad,
+                        obj.nombre_centro_utilidad
+                        );
+
+                $scope.rootVerPedidosFarmacias.Pedido.setFarmacia(farmacia);*/
+
+                //return pedido;
+                
+                /* Pedido Farmacia */
                 PedidoVenta.pedidoseleccionado = data.numero_pedido;
                 $state.go('CreaPedidosFarmacias');                
             }

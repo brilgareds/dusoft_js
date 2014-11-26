@@ -494,6 +494,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         console.log("respuesta al generar documento "+data); 
                         $scope.$broadcast("onRefrescarListadoPedidos");
                         $scope.$emit('cerrardetallecliente', {animado:true});
+                        $scope.$emit('cerrardetallefarmacia', {animado:true});
                         AlertService.mostrarMensaje("success", data.msj);
                     } else {
                          AlertService.mostrarMensaje("warning", data.msj);

@@ -7,7 +7,8 @@ define(["angular", "js/controllers",
     "models/ProductoOrdenCompra",
     "models/NovedadOrdenCompra",
     "models/ObservacionOrdenCompra",
-    "models/UsuarioOrdenCompra",
+    "models/ArchivoNovedadOrdenCompra",
+    "models/UsuarioOrdenCompra"
 ], function(angular, controllers) {
 
     controllers.controller('ListarOrdenesController', [

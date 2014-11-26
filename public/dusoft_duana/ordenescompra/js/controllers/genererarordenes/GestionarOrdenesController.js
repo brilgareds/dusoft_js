@@ -585,9 +585,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                     codigo_proveedor_id: $scope.codigo_proveedor_id
                                 }
                             });
-                            console.log('===================================');
-                            console.log($scope.opciones_archivo);
-                            console.log('===================================');
+                            
                             $scope.opciones_archivo.upload();
                         }
                     });

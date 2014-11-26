@@ -78,10 +78,12 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
 
             $rootScope.$on("cerrardetalleclienteCompleto",function(e){
+                 $scope.$$watchers = null;
+                if($scope.DocumentoTemporal === undefined) return;
                 $scope.DocumentoTemporal.getPedido().vaciarProductos();
                  console.log("cerrardetalleclienteCompleto ________________________");
                 console.log($scope.DocumentoTemporal);
-                $scope.$$watchers = null;
+               
                // $scope.DocumentoTemporal.getPedido().vaciarProductos();
                 //$scope.detalle_pedido_separado_cliente.data = [];
                
@@ -248,7 +250,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
             };
             
             $scope.valorSeleccionado= function(manual) {
-                console.log("valor seleccionado  manual ", manual , " seleccion ",$scope.seleccion)
+                console.log("valor seleccionado  manual ", manual , " seleccion ",$scope.seleccion);
                 if(!manual){
                     return;
                 }

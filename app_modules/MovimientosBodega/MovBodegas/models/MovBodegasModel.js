@@ -211,7 +211,8 @@ MovimientosBodegasModel.prototype.consultar_detalle_movimiento_bodega_temporal_p
         sql_aux = " where  a.codigo_producto = $3";
     }
     
-    
+ 
+   
      var sql = " select * from (\
             select\
             b.item_id,\

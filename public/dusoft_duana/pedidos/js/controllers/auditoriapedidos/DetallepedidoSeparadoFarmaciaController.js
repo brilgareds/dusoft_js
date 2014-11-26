@@ -76,7 +76,6 @@ define(["angular", "js/controllers",'models/Farmacia',
 
             $rootScope.$on("cerrardetallefarmaciaCompleto",function(e){
                 $scope.$$watchers = null;
-                $scope.detalle_pedido_separado_farmacia.data = [];
             });
             
             $scope.obtenerParametros = function(){

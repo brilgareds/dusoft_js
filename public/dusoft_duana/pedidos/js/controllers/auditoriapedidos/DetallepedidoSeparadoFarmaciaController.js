@@ -76,6 +76,12 @@ define(["angular", "js/controllers",'models/Farmacia',
 
             $rootScope.$on("cerrardetallefarmaciaCompleto",function(e){
                 $scope.$$watchers = null;
+                
+                if($scope.DocumentoTemporal === undefined) return;
+                
+                if($scope.DocumentoTemporal.pedido === undefined) return;
+                $scope.DocumentoTemporal.getPedido().vaciarProductos();
+               
             });
             
             $scope.obtenerParametros = function(){

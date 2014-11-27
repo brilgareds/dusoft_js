@@ -640,6 +640,99 @@ OrdenesCompra.prototype.gestionarNovedades = function(req, res) {
     });
 };
 
+OrdenesCompra.prototype.subirArchivoNovedades = function(req, res) {
+
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.novedad_id === undefined) {
+        res.send(G.utils.r(req.url, 'novedad_id  no esta definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.novedad_id === '' || args.ordenes_compras.novedad_id === 0 || args.ordenes_compras.novedad_id === '0') {
+        res.send(G.utils.r(req.url, 'Se requiere el novedad_id', 404, {}));
+        return;
+    }
+
+    var novedad_id = args.ordenes_compras.novedad_id;
+    var usuario_id = req.session.user.usuario_id;
+
+    that.m_ordenes_compra.consultar_novedad_producto(novedad_id, function(err, novedades) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error consultando la novedad', 500, {ordenes_compras: []}));
+            return;
+        } else {
+
+            if (novedades.length === 0) {
+                res.send(G.utils.r(req.url, 'La novedad no existe', 500, {ordenes_compras: []}));
+                return;
+            } else {
+
+                __subir_archivo_novedad(req.body, req.files, function(continuar, nombre_archivo) {
+
+                    if (continuar) {
+
+                        that.m_ordenes_compra.insertar_archivo_novedad_producto(novedad_id, nombre_archivo, nombre_archivo, usuario_id, function(err, rows, result) {
+
+                            if (err || result.rowCount === 0) {
+
+                                var ruta_novedades = G.dirname + G.settings.carpeta_ordenes_compra + 'Novedades/' + nombre_archivo;
+                                G.fs.unlinkSync(ruta_novedades);
+
+                                res.send(G.utils.r(req.url, 'Error subiendo el archivo de novedad', 500, {}));
+                                return;
+                            } else {
+                                res.send(G.utils.r(req.url, 'Archivo cargado correctamente', 200, {}));
+                                return;
+                            }
+                        });
+                    } else {
+                        res.send(G.utils.r(req.url, 'Error subiendo el archivo de novedad', 500, {}));
+                        return;
+                    }
+                });
+            }
+        }
+    });
+};
+
+// Consultar Archivos Novedad Orden de Compra
+OrdenesCompra.prototype.consultarArchivosNovedades = function(req, res) {
+
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.novedad_id === undefined) {
+        res.send(G.utils.r(req.url, 'novedad_id  no esta definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.novedad_id === '' || args.ordenes_compras.novedad_id === 0 || args.ordenes_compras.novedad_id === '0') {
+        res.send(G.utils.r(req.url, 'Se requiere el novedad_id', 404, {}));
+        return;
+    }
+
+    var novedad_id = args.ordenes_compras.novedad_id;
+
+    that.m_ordenes_compra.consultar_archivo_novedad_producto(novedad_id, function(err, lista_archivos) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error consultando los archivos de novedad', 500, {lista_archivos: []}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Lista Archivos Novedad', 200, {lista_archivos: lista_archivos}));
+            return;
+        }
+    });
+};
+
+
 
 // Subir Plano Orden de Compra
 OrdenesCompra.prototype.ordenCompraArchivoPlano = function(req, res) {
@@ -648,9 +741,6 @@ OrdenesCompra.prototype.ordenCompraArchivoPlano = function(req, res) {
 
     var args = req.body.data;
 
-    console.log('========================');
-    console.log(args);
-    console.log('========================');
     if (args.ordenes_compras === undefined || args.ordenes_compras.numero_orden === undefined || args.ordenes_compras.empresa_id === undefined || args.ordenes_compras.codigo_proveedor_id === undefined) {
         res.send(G.utils.r(req.url, 'numero_orden, empresa_id, codigo_proveedor_id no esta definidas', 404, {}));
         return;
@@ -678,7 +768,7 @@ OrdenesCompra.prototype.ordenCompraArchivoPlano = function(req, res) {
     __subir_archivo_plano(req.files, function(continuar, contenido) {
 
         if (continuar) {
-            // crear Orden de Compra 
+
             __validar_productos_archivo_plano(that, contenido, function(productos_validos, productos_invalidos) {
 
                 __validar_costo_productos_archivo_plano(that, empresa_id, codigo_proveedor_id, numero_orden, productos_validos, function(_productos_validos, _productos_invalidos) {
@@ -720,7 +810,6 @@ function __subir_archivo_plano(files, callback) {
     var ruta_nueva = G.dirname + G.settings.carpeta_temporal + nombre_archivo;
     var contenido_archivo_plano = [];
 
-    //if (ext === '.xls' || ext === '.xlsx') {
     if (G.fs.existsSync(ruta_tmp)) {
         // Copiar Archivo
         G.fs.copy(ruta_tmp, ruta_nueva, function(err) {
@@ -745,14 +834,40 @@ function __subir_archivo_plano(files, callback) {
             }
         });
     } else {
-        // El Archivo no Existe
         callback(false);
     }
-    /*} else {
-     //Extension No Permitida
-     G.fs.unlinkSync(ruta_tmp);
-     callback(false);
-     }*/
+}
+
+
+function __subir_archivo_novedad(data, files, callback) {
+
+    var ruta_tmp = files.file.path;
+    var ext = G.path.extname(data.flowFilename);
+    var nombre_archivo = 'NOC_' + G.random.randomKey(3, 3) + ext;
+    var ruta_nueva = G.dirname + G.settings.carpeta_ordenes_compra + 'Novedades/' + nombre_archivo;
+
+    if (G.fs.existsSync(ruta_tmp)) {
+        // Copiar Archivo
+        G.fs.copy(ruta_tmp, ruta_nueva, function(err) {
+            if (err) {
+                // Borrar archivo fisico
+                G.fs.unlinkSync(ruta_tmp);
+                callback(false);
+                return;
+            } else {
+                G.fs.unlink(ruta_tmp, function(err) {
+                    if (err) {
+                        callback(false);
+                        return;
+                    } else {
+                        callback(true, nombre_archivo);
+                    }
+                });
+            }
+        });
+    } else {
+        callback(false);
+    }
 }
 ;
 

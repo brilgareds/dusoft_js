@@ -151,12 +151,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         $scope.valor_total = 0;
 
                         lista_productos.forEach(function(data) {
-
                             var producto = Producto.get(data.codigo_producto, data.descripcion_producto, '', parseFloat(data.porc_iva).toFixed(2), data.valor);
                             producto.set_cantidad_seleccionada(data.cantidad_solicitada);
                             
-                            var novedad = Novedad.get(data.novedad_id, data.descripcion_novedad, Observacion.get(data.id_observacion, data.codigo_observacion, data.descripcion_observacion));
-                            
+                            var novedad = Novedad.get(data.novedad_id, data.descripcion_novedad, Observacion.get(data.id_observacion, data.codigo_observacion, data.descripcion_observacion), data.cantidad_archivos);
+                                                        
                             // Set Novedad Producto
                             producto.set_id(data.item_id);
                             producto.set_novedad(novedad);
@@ -287,7 +286,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'descripcion', displayName: 'Descripcion', width: "40%"},
                     {field: 'novedad.get_observacion().get_descripcion()', displayName: "Novedad",width: "15%"},
                     {field: 'novedad.get_descripcion()', displayName: 'Observacion', width: "21%"},
-                    {field: 'cantidad_archivos', displayName: 'Archivos', width: "5%"},
+                    {field: 'novedad.get_cantidad_archivos()', displayName: 'Archivos', width: "5%"},
                     {displayName: "Opcion", cellClass: "txt-center", width: "7%",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs" ng-click="novedades_producto_orden_compra(row)" ><span class="glyphicon glyphicon-file"></span> Novedad </button>\

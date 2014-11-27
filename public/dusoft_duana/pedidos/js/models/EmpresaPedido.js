@@ -10,6 +10,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
         EmpresaPedido.separadores = [];
         EmpresaPedido.documentosTemporalesClientes = [];
         EmpresaPedido.documentosTemporalesFarmacias = [];
+        EmpresaPedido.pedidoSeleccionado = {};
 
         EmpresaPedido.agregarPedido = function(pedido) {
             this.pedidos.push(pedido);
@@ -39,15 +40,15 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
         
         EmpresaPedido.agregarSeparador = function(separador) {
             this.separadores.push(separador);
-        }
+        };
 
         EmpresaPedido.getSeparadores = function() {
             return this.separadores;
-        }
+        };
 
         EmpresaPedido.vaciarSeparadores = function() {
             this.separadores = [];
-        }
+        };
 
         EmpresaPedido.obtenerSeparadorPorId = function(id) {
             for (var i in this.separadores) {
@@ -57,7 +58,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
                     return separador;
                 }
             }
-        }
+        };
 
         //Documentos Temporales
         EmpresaPedido.agregarDocumentoTemporal = function(documento_temporal, tipo) {
@@ -69,7 +70,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             if (tipo == 2) {
                 this.documentosTemporalesFarmacias.push(documento_temporal);
             }
-        }
+        };
 
         EmpresaPedido.getDocumentoTemporal = function(tipo) {
             
@@ -80,7 +81,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             if (tipo == 2) {
                 return this.documentosTemporalesFarmacias;
             }
-        }
+        };
 
         EmpresaPedido.vaciarDocumentoTemporal = function(tipo) {
             
@@ -91,7 +92,15 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             if (tipo == 2) {
                 this.documentosTemporalesFarmacias = [];
             }
-        }    
+        };
+        
+        EmpresaPedido.getPedidoSeleccionado = function() {
+            return this.pedidoSeleccionado;
+        };
+        
+        EmpresaPedido.setPedidoSeleccionado = function(pedido) {
+            this.pedidoSeleccionado = pedido;
+        };
         
         return EmpresaPedido;
 

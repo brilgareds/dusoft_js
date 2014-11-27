@@ -83,7 +83,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.onBuscarPedidosFarmacias = function(obj, paginando) {
                 
                 var url = API.PEDIDOS.LISTAR_PEDIDOS_FARMACIAS;
-
+                
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     
                     console.log("Data: ",data);
@@ -116,6 +116,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 }
 
                 $scope.rootVerPedidosFarmacias.Empresa.vaciarPedidosFarmacia();
+                $scope.rootVerPedidosFarmacias.Empresa.setCodigo(data.pedidos_farmacias[0].empresa_origen_id);
                
                 for (var i in data.pedidos_farmacias) {
 
@@ -143,6 +144,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
                 pedido.setDatos(datos_pedido);
                 pedido.setTipo(2);
+                pedido.setObservacion(obj.observacion);
 
                         
                 var farmacia = Farmacia.get(
@@ -159,8 +161,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 return pedido;
             };
 
-            //definicion y delegados del Tabla de pedidos clientes
-
+            //Grid Lista Pedidos
             $scope.rootVerPedidosFarmacias.lista_pedidos_farmacias = {
                 data: 'rootVerPedidosFarmacias.Empresa.getPedidosFarmacia()',
                 enableColumnResize: true,
@@ -204,17 +205,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             $scope.onEditarPedidoFarmacia = function(data){
                 
-                /* Pedido Farmacia */
+                var pedido = PedidoVenta.get();
                 
-                /////////////
-                
-                //$scope.rootVerPedidosFarmacias.Pedido
-                
-                ////////////
-                
-                //var pedido = PedidoVenta.get();
-                
-               /* var datos_pedido = {
+                var datos_pedido = {
                     numero_pedido: data.numero_pedido,
                     fecha_registro: data.fecha_registro,
                     descripcion_estado_actual_pedido: data.descripcion_estado_actual_pedido,
@@ -222,25 +215,24 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     estado_separacion: data.estado_separacion
                 };
                 
-                //pedido.setDatos(datos_pedido);
-                $scope.rootVerPedidosFarmacias.Pedido.setDatos(datos_pedido)
-                $scope.rootVerPedidosFarmacias.Pedido.setTipo(2);
+                pedido.setDatos(datos_pedido);
+                pedido.setTipo(2);
+                pedido.setObservacion(data.observacion);
 
                         
                 var farmacia = Farmacia.get(
-                        obj.farmacia_id,
-                        obj.bodega_id,
-                        obj.nombre_farmacia,
-                        obj.nombre_bodega,
-                        obj.centro_utilidad,
-                        obj.nombre_centro_utilidad
+                        data.farmacia.farmacia_id,
+                        data.farmacia.bodega_id,
+                        data.farmacia.nombre_farmacia,
+                        data.farmacia.nombre_bodega,
+                        data.farmacia.centro_utilidad_id,
+                        data.farmacia.nombre_centro_utilidad
                         );
 
-                $scope.rootVerPedidosFarmacias.Pedido.setFarmacia(farmacia);*/
-
-                //return pedido;
+                pedido.setFarmacia(farmacia);
+                //Insertar aquí el pedido seleccionado para el singleton Empresa
+                $scope.rootVerPedidosFarmacias.Empresa.setPedidoSeleccionado(pedido);
                 
-                /* Pedido Farmacia */
                 PedidoVenta.pedidoseleccionado = data.numero_pedido;
                 $state.go('CreaPedidosFarmacias');                
             }

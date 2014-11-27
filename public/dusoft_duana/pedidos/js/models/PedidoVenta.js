@@ -9,6 +9,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.valor_cotizacion = "";
             this.lista_productos = [];
             this.tipo = 1;
+            this.observacion;
         };
 
         PedidoVenta.prototype = Object.create(Pedido.getClass().prototype);
@@ -44,8 +45,16 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.tipo = tipo;
         };
         
-        PedidoVenta.prototype.getTipo = function(tipo) {
+        PedidoVenta.prototype.getTipo = function() {
             return this.tipo;
+        };
+        
+        PedidoVenta.prototype.setObservacion = function(observacion) {
+            this.observacion = observacion;
+        };
+        
+        PedidoVenta.prototype.getObservacion = function() {
+            return this.observacion;
         };
 
         this.get = function() {

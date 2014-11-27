@@ -286,7 +286,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             that.buscarPedido = function(termino, paginando) {
 
                 //valida si cambio el termino de busqueda
-                if ($scope.rootCreaPedidoFarmacia.ultima_busqueda != $scope.rootCreaPedidoFarmacia.termino_busqueda) {
+                if ($scope.rootCreaPedidoFarmacia.ultima_busqueda !== $scope.rootCreaPedidoFarmacia.termino_busqueda) {
                     $scope.rootCreaPedidoFarmacia.paginaactual = 1;
                 }
 
@@ -306,8 +306,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 }
                 else if (localStorageService.get("pedidoseleccionado")) {
-
-                    console.log("Singleton Empresa Recargando: ", $scope.rootCreaPedidoFarmacia.Empresa);
                     
                     $scope.rootCreaPedidoFarmacia.titulo_tab_1 = "Detalle Pedido";
                     $scope.rootCreaPedidoFarmacia.titulo_tab_2 = "";
@@ -317,7 +315,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         $scope.rootCreaPedidoFarmacia.pedido.numero_pedido = localStorageService.get("pedidoseleccionado");
                     }
                     
-                    that.cargarInformacionPedido();
+                    that.recargarInformacionPedido();
                 }
                 else {
                     $scope.rootCreaPedidoFarmacia.titulo_tab_1 = "Incluir Producto Manual";
@@ -330,8 +328,94 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             };
             
-            //Función para cargar todos los datos del pedido
             that.cargarInformacionPedido = function(){
+
+                var para_farmacia_id = $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.farmacia_id;
+                var para_centro_utilidad = $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.centro_utilidad_id;;
+                var para_bodega = $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.bodega_id;
+                
+                var nombre_farmacia = $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.nombre_farmacia;
+                var nombre_centro_utilidad = $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.nombre_centro_utilidad;
+                var nombre_bodega = $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.nombre_bodega;
+                
+                var de_empresa_id = $scope.rootCreaPedidoFarmacia.Empresa.getCodigo();
+
+                $scope.rootCreaPedidoFarmacia.observacion = $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().observacion;
+
+                /* Inicio - Llenado de DropDowns*/
+                that.consultarEmpresasDe(function(){
+
+                    $scope.rootCreaPedidoFarmacia.de_seleccion_empresa = de_empresa_id;
+
+                    that.consultarCentrosUtilidadDe(de_empresa_id, function(){
+
+                        $scope.rootCreaPedidoFarmacia.de_seleccion_centro_utilidad = '1 ';
+
+                        that.consultarBodegaDe(de_empresa_id, '1 ', function(){
+
+                            $scope.rootCreaPedidoFarmacia.de_seleccion_bodega = '03';
+
+                            that.consultarEmpresasPara(function(){
+
+                                $scope.rootCreaPedidoFarmacia.para_seleccion_empresa = para_farmacia_id+","+nombre_farmacia;
+
+                                that.consultarCentrosUtilidadPara(para_farmacia_id, function(){
+
+                                    $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad = para_centro_utilidad+","+nombre_centro_utilidad;
+
+                                    that.consultarBodegaPara(para_farmacia_id, para_centro_utilidad, function(){
+
+                                        $scope.rootCreaPedidoFarmacia.para_seleccion_bodega = para_bodega+","+nombre_bodega;
+
+                                    });
+                                });
+                            });
+
+                        });
+
+                    });
+                });
+
+                /* Fin - Llenado de DropDowns*/
+
+                /* Inicio - Validaciones de bloqueo */
+                $scope.rootCreaPedidoFarmacia.grid_pedido_generado_visible = true;
+                $scope.rootCreaPedidoFarmacia.bloqueo_generar_pedido = true;
+                $scope.rootCreaPedidoFarmacia.bloquear_boton_incluir = true;
+
+                $scope.rootCreaPedidoFarmacia.bloqueo_producto_incluido = true;
+                $scope.rootCreaPedidoFarmacia.bloqueo_upload = true;
+
+                /* Fin - Validaciones de bloqueo */
+
+                /* Inicio - Consulta Detalle Pedido */
+
+                var obj_detalle = {
+                    session: $scope.rootCreaPedidoFarmacia.session,
+                    data: {
+                        pedidos_farmacias: {
+                            numero_pedido: $scope.rootCreaPedidoFarmacia.pedido.numero_pedido,
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PEDIDOS.CONSULTAR_DETALLE_PEDIDO_FARMACIA, "POST", obj_detalle, function(data) {
+
+                    if (data.status === 200) {
+                        $scope.rootCreaPedidoFarmacia.listado_productos_pedido = data.obj.detalle_pedido;
+                        
+                        //crear detalle en el objeto
+                        
+                    }
+                    else{
+
+                    }
+                });
+                /* Fin - Consulta Detalle Pedido*/                  
+            };            
+            
+            //Función para recargar todos los datos del pedido si se hace 'reload'
+            that.recargarInformacionPedido = function(){
                 
                 /* Inicio - Consulta de pedido */
                 var obj = {

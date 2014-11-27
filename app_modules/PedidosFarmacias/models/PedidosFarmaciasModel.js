@@ -439,6 +439,9 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                       select a.solicitud_prod_a_bod_ppal_id  as numero_pedido, b.codigo_producto, b.observacion as justificacion, b.justificacion_auditor, 0 as cantidad_temporalmente_separada, '' as lote, null as fecha_vencimiento,  0 as item_id, '3' as tipo_estado_auditoria, 0 as cantidad_ingresada, '0' as auditado\
                       from inv_bodegas_movimiento_tmp_despachos_farmacias a \
                       left join inv_bodegas_movimiento_tmp_justificaciones_pendientes b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
+                       and b.codigo_producto not in(\
+                            select aa.codigo_producto from inv_bodegas_movimiento_tmp_d aa where aa.doc_tmp_id = b.doc_tmp_id and aa.usuario_id = b.usuario_id\
+                       )\
                     ) a group by 1,2,3,4, 6, 7, 8,9, 10, 11\
                 ) as b on a.solicitud_prod_a_bod_ppal_id = b.numero_pedido and a.codigo_producto = b.codigo_producto\
                 where a.solicitud_prod_a_bod_ppal_id= $1 order by e.descripcion ; ";

@@ -322,7 +322,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
                 $scope.opts = {
                     //backdrop: true,
-                    size: 1000,
+                    size: 'lg',
                     backdropClick: true,
                     backdrop :'static',
                     dialogFade: true,
@@ -495,7 +495,34 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         $scope.$broadcast("onRefrescarListadoPedidos");
                         $scope.$emit('cerrardetallecliente', {animado:true});
                         $scope.$emit('cerrardetallefarmacia', {animado:true});
-                        AlertService.mostrarMensaje("success", data.msj);
+                        
+                        $scope.documento_generado = data.obj.movimientos_bodegas;
+                        $scope.opts = {
+                        backdrop: true,
+                        backdropClick: true,
+                        dialogFade: false,
+                        size:'sm',
+                        keyboard: true,
+                        template: ' <div class="modal-header">\
+                                        <button type="button" class="close" ng-click="close()">&times;</button>\
+                                        <h4 class="modal-title">Generación de documento</h4>\
+                                    </div>\
+                                    <div class="modal-body row">\
+                                        El documento {{documento_generado.prefijo_documento}} {{documento_generado.numero_documento}} ha sido generado.\
+                                    </div>\
+                                    <div class="modal-footer">\
+                                        <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                    </div>',
+                        scope: $scope,
+                        controller: function($scope, $modalInstance) {
+                            $scope.close = function() {
+                                $modalInstance.close();
+                            };
+                        }
+                    };
+                    var modalInstance = $modal.open($scope.opts);
+                        
+                        
                     } else {
                          AlertService.mostrarMensaje("warning", data.msj);
                         var movimientos_bodegas = data.obj.movimientos_bodegas;

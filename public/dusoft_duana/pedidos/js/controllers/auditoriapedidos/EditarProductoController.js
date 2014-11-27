@@ -337,7 +337,8 @@ define(["angular", "js/controllers",'models/ClientePedido',
                     }
                 };
 
-
+                console.log("params to send ",obj);
+                
 
                Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.MODIFICAR_DETALLE_TEMPORAL, "POST", obj, function(data) {
 

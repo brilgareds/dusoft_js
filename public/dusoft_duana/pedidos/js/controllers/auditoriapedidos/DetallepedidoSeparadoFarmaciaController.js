@@ -45,7 +45,8 @@ define(["angular", "js/controllers",'models/Farmacia',
                 $scope.farmacia = $scope.DocumentoTemporal.pedido.farmacia;
                 $scope.numero_pedido = $scope.DocumentoTemporal.pedido.numero_pedido;
                 $scope.filtro.codigo_barras = true;
-
+                
+                //TEMPORALEMNTE HARDCODED HASTA QUE SE REALIZE LA FUNCIONALIDAD DE PERSMISOS
                 var obj = {
                     session: $scope.session,
                     data: {

@@ -267,6 +267,8 @@ MovimientosBodegasModel.prototype.consultar_documentos_usuario = function(usuari
     var sql = " select \
                 d.inv_tipo_movimiento as tipo_movimiento,\
                 b.bodegas_doc_id,\
+                b.empresa_id,\
+                b.centro_utilidad,\
                 c.tipo_doc_general_id as tipo_doc_bodega_id,\
                 d.descripcion as tipo_clase_documento, \
                 c.prefijo,\

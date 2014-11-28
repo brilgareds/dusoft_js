@@ -14,15 +14,15 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
 
         EmpresaPedido.agregarPedido = function(pedido) {
             this.pedidos.push(pedido);
-        }
+        };
 
         EmpresaPedido.getPedidos = function() {
             return this.pedidos;
-        }
+        };
 
         EmpresaPedido.vaciarPedidos = function() {
             this.pedidos = [];
-        }
+        };
         
         // Pedidos Farmacias
         EmpresaPedido.agregarPedidoFarmacia = function(pedido) {
@@ -62,34 +62,49 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
 
         //Documentos Temporales
         EmpresaPedido.agregarDocumentoTemporal = function(documento_temporal, tipo) {
-            
-            if (tipo == 1) {
-                this.documentosTemporalesClientes.push(documento_temporal);
+            //console.log("agregar documento >>>>>>>>>>>>>",documento_temporal);
+            var arreglo = [];
+            if (tipo === 1) {
+                arreglo = this.documentosTemporalesClientes;
+                //this.documentosTemporalesClientes.push(documento_temporal);
             }
             
-            if (tipo == 2) {
-                this.documentosTemporalesFarmacias.push(documento_temporal);
+            if (tipo === 2) {
+                arreglo = this.documentosTemporalesFarmacias;
+                //this.documentosTemporalesFarmacias.push(documento_temporal);
             }
+            
+            for(var i in arreglo){
+                var doc = arreglo[i];
+                 
+                if(doc.documento_temporal_id === documento_temporal.documento_temporal_id){
+                    //console.log("agregar documento >>>>>>>>>>>>>",documento_temporal, " buscando ", doc); 
+                    doc.esDocumentoNuevo = documento_temporal.esDocumentoNuevo;
+                    return;
+                }
+            }
+            
+            arreglo.push(documento_temporal);
         };
 
         EmpresaPedido.getDocumentoTemporal = function(tipo) {
             
-            if (tipo == 1) {
+            if (tipo === 1) {
                 return this.documentosTemporalesClientes;
             }
             
-            if (tipo == 2) {
+            if (tipo === 2) {
                 return this.documentosTemporalesFarmacias;
             }
         };
 
         EmpresaPedido.vaciarDocumentoTemporal = function(tipo) {
             
-            if (tipo == 1) {
+            if (tipo === 1) {
                 this.documentosTemporalesClientes = [];
             }
             
-            if (tipo == 2) {
+            if (tipo === 2) {
                 this.documentosTemporalesFarmacias = [];
             }
         };

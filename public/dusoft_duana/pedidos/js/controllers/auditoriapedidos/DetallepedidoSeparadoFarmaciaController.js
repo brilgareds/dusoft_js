@@ -25,10 +25,12 @@ define(["angular", "js/controllers",'models/Farmacia',
             $scope.documentos_usuarios = [];
             $scope.documento_temporal_id = "";
             $scope.usuario_id = "";
-            $scope.seleccion = ""; 
+            $scope.seleccion = {}; 
+            $scope.documento_despacho = {};
             $scope.cajas = [];
             $scope.seleccion_caja = "";
             $scope.numero_pedido = "";
+            var that = this;
 
             
             $scope.cerrar = function(){
@@ -128,6 +130,7 @@ define(["angular", "js/controllers",'models/Farmacia',
                 
                    $scope.DocumentoTemporal.bodegas_doc_id = data.bodegas_doc_id;
                    $scope.seleccion = $scope.DocumentoTemporal.bodegas_doc_id;
+                   that.seleccionarDocumentoDespacho($scope.seleccion);
                    //$scope.renderDetalleDocumentoTemporal($scope.DocumentoTemporal, data, paginando);
 
                    $scope.documento_temporal_id = data.doc_tmp_id;
@@ -148,7 +151,7 @@ define(["angular", "js/controllers",'models/Farmacia',
                     {field: 'observacion', displayName: "Observación", width:150},
                     {field: 'opciones', displayName: "", cellClass: "txt-center" , width:40,
                         cellTemplate: ' <div class="row">\n\
-                                            <button class="btn btn-default btn-xs" ng-click="onEditarRow(DocumentoTemporal, row)">\n\
+                                            <button class="btn btn-default btn-xs" ng-click="onEditarRow(DocumentoTemporal,documento_despacho, row)">\n\
                                                 <span class="glyphicon glyphicon-zoom-in"></span>\n\
                                             </button>\n\
                                         </div>'
@@ -183,6 +186,7 @@ define(["angular", "js/controllers",'models/Farmacia',
                 if(!$scope.esDocumentoBodegaValido($scope.DocumentoTemporal.bodegas_doc_id)) return;
 
                 if (ev.which === 13) {
+                    //
                     $scope.buscarDetalleDocumentoTemporal(termino_busqueda);
                 }
             };
@@ -229,6 +233,7 @@ define(["angular", "js/controllers",'models/Farmacia',
             });
             
             $scope.valorSeleccionado = function() {
+                that.seleccionarDocumentoDespacho($scope.seleccion);
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -250,6 +255,17 @@ define(["angular", "js/controllers",'models/Farmacia',
                     }
                 });
 
+            };
+            
+            that.seleccionarDocumentoDespacho = function(bodega_doc_id){
+                bodega_doc_id = parseInt(bodega_doc_id);
+                for(var i in $scope.documentos_usuarios){
+                    var doc = $scope.documentos_usuarios[i];
+                    if(bodega_doc_id === doc.bodegas_doc_id){
+                        $scope.documento_despacho = doc;
+                        break;
+                    }
+                }
             };
         }]);
 

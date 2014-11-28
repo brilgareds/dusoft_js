@@ -269,6 +269,7 @@ MovimientosBodegasModel.prototype.consultar_documentos_usuario = function(usuari
                 b.bodegas_doc_id,\
                 b.empresa_id,\
                 b.centro_utilidad,\
+                b.bodega,\
                 c.tipo_doc_general_id as tipo_doc_bodega_id,\
                 d.descripcion as tipo_clase_documento, \
                 c.prefijo,\

@@ -21,9 +21,10 @@ define(["angular", "js/controllers",
             $scope.ultima_busqueda  = {};
             $scope.paginaactual = 1;
             $scope.numero_pedido = "";
+            var that = this;
 
 
-             $scope.obtenerParametros = function(){
+             that.obtenerParametros = function(){
                 $scope.ultima_busqueda.seleccion;
                 $scope.ultima_busqueda.termino_busqueda;
 
@@ -142,32 +143,38 @@ define(["angular", "js/controllers",
             
             $scope.valorSeleccionado = function(valor) {
                 $scope.termino_busqueda = "";
-                $scope.buscarPedidosSeparados($scope.obtenerParametros(),2, false, $scope.renderPedidosSeparados);
+                $scope.buscarPedidosSeparados(that.obtenerParametros(),2, false, $scope.renderPedidosSeparados);
             };
 
             //eventos de widgets
             $scope.onKeySeparadosPress = function(ev, termino_busqueda) {
                 
                 if (ev.which === 13) {
-                    $scope.buscarPedidosSeparados($scope.obtenerParametros(), 2, false, $scope.renderPedidosSeparados);
+                    $scope.buscarPedidosSeparados(that.obtenerParametros(), 2, false, $scope.renderPedidosSeparados);
                 }
             };
 
             $scope.paginaAnterior = function(){
 
                 $scope.paginaactual--;
-                $scope.buscarPedidosSeparados($scope.obtenerParametros(), 2,true,$scope.renderPedidosSeparados);
+                $scope.buscarPedidosSeparados(that.obtenerParametros(), 2,true,$scope.renderPedidosSeparados);
             };
 
             $scope.paginaSiguiente = function(){
                 $scope.paginaactual++;
-                $scope.buscarPedidosSeparados($scope.obtenerParametros(), 2,true, $scope.renderPedidosSeparados);
+                $scope.buscarPedidosSeparados(that.obtenerParametros(), 2,true, $scope.renderPedidosSeparados);
             };
+            
+            
+             $scope.$on("onRefrescarListadoPedidos",function(){
+                 $scope.termino_busqueda = "";
+                 $scope.buscarPedidosSeparados(that.obtenerParametros(),2, false, $scope.renderPedidosSeparados);
+            });
 
             //fin de eventos
 
             //se realiza el llamado a api para pedidos
-           $scope.buscarPedidosSeparados($scope.obtenerParametros(),2, false, $scope.renderPedidosSeparados);
+           $scope.buscarPedidosSeparados(that.obtenerParametros(),2, false, $scope.renderPedidosSeparados);
            $scope.listarEmpresas("");
 
         }]);

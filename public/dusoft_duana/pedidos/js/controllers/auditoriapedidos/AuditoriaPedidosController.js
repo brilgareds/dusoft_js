@@ -67,7 +67,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
             };
 
-
+                
             that.crearDocumentoTemporal = function(obj, tipo) {
                 //console.log("datos obj ",obj)
                 var documento_temporal = DocumentoTemporal.get();
@@ -300,9 +300,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
 
 
-            $scope.onEditarRow = function(documento, row){
+            $scope.onEditarRow = function(documento,documento_despacho,  row){
                 
-                
+                console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> documento_despacho ");
+                console.log(documento_despacho);
                 //almacenar lotes del mismo producto
                 var productos = [];
                 var producto =  row.entity;
@@ -323,10 +324,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 $scope.opts = {
                     //backdrop: true,
                     size: 'lg',
-                    backdropClick: true,
                     backdrop :'static',
-                    dialogFade: true,
-                    keyboard: true,
                     dialogClass:"editarproductomodal",
                     templateUrl: 'views/auditoriapedidos/editarproducto.html',
                     controller: "EditarProductoController",
@@ -339,6 +337,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                           }, 
                           productos : function(){
                               return  productos;
+                          },
+                          documento_despacho:function(){
+                              return documento_despacho;
                           }
                     }
                 };

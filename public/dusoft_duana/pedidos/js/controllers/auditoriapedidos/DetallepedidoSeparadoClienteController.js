@@ -27,6 +27,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
             $scope.documento_temporal_id = "";
             $scope.usuario_id = "";
             $scope.seleccion = {};
+            $scope.documento_despacho = {};
             $scope.seleccion2 = 154;
             $scope.cajas = [];
             $scope.seleccion_caja = "";
@@ -108,6 +109,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                     
                    $scope.DocumentoTemporal.bodegas_doc_id = data.bodegas_doc_id;
                    $scope.seleccion.bodegas_doc_id = $scope.DocumentoTemporal.bodegas_doc_id;
+                   that.seleccionarDocumentoDespacho($scope.seleccion.bodegas_doc_id);
 
                    //$('#id').select2('val',$scope.seleccion.bodegas_doc_id );
                    $scope.documento_temporal_id = data.doc_tmp_id;
@@ -155,7 +157,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                     {field: 'observacion', displayName: "Observación", width:150},
                     {field: 'opciones', displayName: "", cellClass: "txt-center" , width:40,
                         cellTemplate: ' <div class="row">\n\
-                                            <button class="btn btn-default btn-xs" ng-click="onEditarRow(DocumentoTemporal, row)">\n\
+                                            <button class="btn btn-default btn-xs" ng-click="onEditarRow(DocumentoTemporal,documento_despacho, row)">\n\
                                                 <span class="glyphicon glyphicon-zoom-in"></span>\n\
                                             </button>\n\
                                         </div>'
@@ -248,6 +250,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
             
             $scope.valorSeleccionado= function(manual) {
                 console.log("valor seleccionado  manual ", manual , " seleccion ",$scope.seleccion);
+                that.seleccionarDocumentoDespacho($scope.seleccion);
                 if(!manual){
                     return;
                 }
@@ -271,7 +274,20 @@ define(["angular", "js/controllers",'models/ClientePedido',
                         AlertService.mostrarMensaje("warning", data.msj);
                     }
                 });
+                
+                
 
+            };
+            
+            that.seleccionarDocumentoDespacho = function(bodega_doc_id){
+                bodega_doc_id = parseInt(bodega_doc_id);
+                for(var i in $scope.documentos_usuarios){
+                    var doc = $scope.documentos_usuarios[i];
+                    if(bodega_doc_id === doc.bodegas_doc_id){
+                        $scope.documento_despacho = doc;
+                        break;
+                    }
+                }
             };
         }]);
 

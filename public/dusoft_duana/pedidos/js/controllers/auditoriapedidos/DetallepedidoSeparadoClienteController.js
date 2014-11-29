@@ -37,6 +37,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
             $scope.cerrar = function(){
                $scope.$emit('cerrardetallecliente', {animado:true});
                $scope.$emit('onDetalleCerrado');
+               $scope.DocumentoTemporal = DocumentoTemporal.get();
               // $scope.DocumentoTemporal  = {};
             };
             

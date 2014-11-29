@@ -36,7 +36,7 @@ define(["angular", "js/controllers",'models/Farmacia',
             $scope.cerrar = function(){
                $scope.$emit('cerrardetallefarmacia', {animado:true});
                $scope.$emit('onDetalleCerrado');
-               $scope.DocumentoTemporal  = {};
+               $scope.DocumentoTemporal  = DocumentoTemporal.get();
             };
             
             $rootScope.$on("mostrardetallefarmaciaCompleto", function(e, datos) {
@@ -79,10 +79,8 @@ define(["angular", "js/controllers",'models/Farmacia',
 
             $rootScope.$on("cerrardetallefarmaciaCompleto",function(e){
                 $scope.$$watchers = null;
-                
-                if($scope.DocumentoTemporal === undefined) return;
-                
-                if($scope.DocumentoTemporal.pedido === undefined) return;
+                               
+                if($scope.DocumentoTemporal.getPedido() === undefined) return;
                 $scope.DocumentoTemporal.getPedido().vaciarProductos();
                
             });
@@ -227,7 +225,7 @@ define(["angular", "js/controllers",'models/Farmacia',
             };
 
             $rootScope.$on("productoAuditado", function(e, producto){ 
-                 if($scope.DocumentoTemporal.getPedido() === undefined){ return; }
+                 if($scope.DocumentoTemporal.pedido === undefined){ return; }
                  $scope.DocumentoTemporal.getPedido().vaciarProductos();
 
             });

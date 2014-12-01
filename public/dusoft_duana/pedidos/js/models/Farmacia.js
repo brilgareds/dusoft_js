@@ -13,8 +13,8 @@ define(["angular", "js/models"], function(angular, models) {
             this.nombre_centro_utilidad = nombre_centro_utilidad || "";
         }
 
-        this.get = function(farmacia_id, bodega_id, nombre_farmacia, nombre_bodega) {
-            return new Farmacia(farmacia_id, bodega_id, nombre_farmacia, nombre_bodega);
+        this.get = function(farmacia_id, bodega_id, nombre_farmacia, nombre_bodega, centro_utilidad_id, nombre_centro_utilidad) {
+            return new Farmacia(farmacia_id, bodega_id, nombre_farmacia, nombre_bodega, centro_utilidad_id, nombre_centro_utilidad);
         };
 
         return this;

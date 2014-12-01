@@ -343,7 +343,9 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
                      when a.estado = 6 then 'En Auditoria' end as descripcion_estado_actual_pedido, \
                 f.estado as estado_separacion, \
                 to_char(a.fecha_registro, 'dd-mm-yyyy') as fecha_registro,\
-                c.descripcion as nombre_centro_utilidad\
+                c.descripcion as nombre_centro_utilidad,\
+                a.empresa_destino as empresa_origen_id,\
+                a.observacion\
                 from solicitud_productos_a_bodega_principal as a \
                 inner join bodegas as b on a.farmacia_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega \
                 inner join centros_utilidad as c on b.empresa_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad \
@@ -439,6 +441,9 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                       select a.solicitud_prod_a_bod_ppal_id  as numero_pedido, b.codigo_producto, b.observacion as justificacion, b.justificacion_auditor, 0 as cantidad_temporalmente_separada, '' as lote, null as fecha_vencimiento,  0 as item_id, '3' as tipo_estado_auditoria, 0 as cantidad_ingresada, '0' as auditado\
                       from inv_bodegas_movimiento_tmp_despachos_farmacias a \
                       left join inv_bodegas_movimiento_tmp_justificaciones_pendientes b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
+                       and b.codigo_producto not in(\
+                            select aa.codigo_producto from inv_bodegas_movimiento_tmp_d aa where aa.doc_tmp_id = b.doc_tmp_id and aa.usuario_id = b.usuario_id\
+                       )\
                     ) a group by 1,2,3,4, 6, 7, 8,9, 10, 11\
                 ) as b on a.solicitud_prod_a_bod_ppal_id = b.numero_pedido and a.codigo_producto = b.codigo_producto\
                 where a.solicitud_prod_a_bod_ppal_id= $1 order by e.descripcion ; ";

@@ -7,11 +7,13 @@ define(["angular", "js/controllers",'models/ClientePedido',
         '$modalInstance', 'EmpresaPedido','Cliente',
          'PedidoAuditoria', 'API',"socket", "AlertService",
          "producto", "Usuario", "documento","LoteProductoPedido","productos",
+         "documento_despacho",
 
         function(   $scope, $rootScope, Request,
                     $modalInstance, Empresa, Cliente,
                     PedidoAuditoria, API, socket, AlertService, 
-                    producto, Usuario, documento, LoteProductoPedido, productos) {
+                    producto, Usuario, documento, LoteProductoPedido, productos,
+                    documento_despacho) {
             
            $scope.rootEditarProducto = {}; 
            $scope.rootEditarProducto.producto = angular.copy(producto);
@@ -314,7 +316,9 @@ define(["angular", "js/controllers",'models/ClientePedido',
                 $scope.rootEditarProducto.producto.cantidad_separada = Number($scope.rootEditarProducto.validacionlote.cantidad_ingresada);
                 $scope.rootEditarProducto.producto.lote.cantidad_pendiente = $scope.rootEditarProducto.producto.cantidad_solicitada - lote.cantidad_ingresada;
                 $scope.rootEditarProducto.mostrarJustificacion = that.esJustificacionNecesaria();
-
+                
+                
+                console.log(">>>>>>>>>>>>>>>>>>>>>>> ",documento_despacho);
                  var obj = {
                     session:$scope.session,
                     data:{
@@ -324,9 +328,9 @@ define(["angular", "js/controllers",'models/ClientePedido',
                             fecha_vencimiento:$scope.rootEditarProducto.producto.lote.fecha_vencimiento,
                             lote:$scope.rootEditarProducto.producto.lote.codigo_lote,
                             valor_unitario:$scope.rootEditarProducto.producto.precio,
-                            empresa_id:$scope.rootEditarProducto.documento.empresa_id,
-                            centro_utilidad_id:$scope.rootEditarProducto.documento.centro_utilidad,
-                            bodega_id:$scope.rootEditarProducto.documento.bodega_id,
+                            empresa_id:documento_despacho.empresa_id.trim(),
+                            centro_utilidad_id:documento_despacho.centro_utilidad.trim(),
+                            bodega_id:documento_despacho.bodega.trim(),
                             doc_tmp_id:$scope.rootEditarProducto.documento.documento_temporal_id,
                             usuario_id:$scope.rootEditarProducto.documento.usuario_id,
                             codigo_producto:$scope.rootEditarProducto.producto.codigo_producto,
@@ -337,8 +341,8 @@ define(["angular", "js/controllers",'models/ClientePedido',
                     }
                 };
 
-
-
+                //console.log("params to send ",obj);
+                
                Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.MODIFICAR_DETALLE_TEMPORAL, "POST", obj, function(data) {
 
                    // console.log("respuesta al modificar lote ",data);

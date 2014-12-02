@@ -99,10 +99,10 @@ define(["angular","js/directive", "includes/slide/transition"], function(angular
           },
 
           cerrarslide: function($element, animado, contenedor, $attrs){
-            var rootWidth = $(window).width() +slide.margen
+            contenedor.hide();
+            var rootWidth = $(window).width() +slide.margen;
             console.log("cerrarslide "+rootWidth + " animad "+animado);
             var duration = (animado)?1000:0;
-            contenedor.hide();
             $element.transition({ x: rootWidth+"px", duration:duration},function(){
                $element.css({"display":"none"});
               

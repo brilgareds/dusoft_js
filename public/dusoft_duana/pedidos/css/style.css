@@ -86,7 +86,7 @@ margin-bottom: 0px;
 }
 
 .modal .modal-dialog {
-   width: 800px;
+   /*width: 800px;*/
 }
 
 .modal-content{
@@ -98,8 +98,11 @@ margin-bottom: 0px;
     font-weight: bold;
     margin-right:10px;
     font-size: 13px;
-    float:left;
 
+}
+
+label.lbl_editar_producto{
+      float:left;
 }
 
 .panel-action{
@@ -128,6 +131,10 @@ margin-bottom: 0px;
 #editarproductomodal .input-sm{
     width: inherit;
     display: inline;
+}
+
+.editarproductomodal{
+    width:800px;
 }
 
 .validar_caja_contenedor{

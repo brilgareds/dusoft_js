@@ -7,8 +7,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         '$scope', '$rootScope', 'Request',
         'EmpresaPedido', 'Farmacia', 'PedidoVenta',
         'API', "socket", "AlertService",
-        '$state', "Usuario", "localStorageService", '$modal',
-        function($scope, $rootScope, Request, EmpresaPedido, Farmacia, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService, $modal) {
+        '$state', "Usuario", "localStorageService", '$modal', 'ProductoPedido',
+        function($scope, $rootScope, Request, EmpresaPedido, Farmacia, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService, $modal, ProductoPedido) {
 
             $scope.expreg = new RegExp("^[0-9]*$");
 
@@ -405,7 +405,28 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         $scope.rootCreaPedidoFarmacia.listado_productos_pedido = data.obj.detalle_pedido;
                         
                         //crear detalle en el objeto
-                        
+                        data.obj.detalle_pedido.forEach(function(registro){
+
+                            var producto = ProductoPedido.get(
+                                                registro.codigo_producto,        //codigo_producto
+                                                registro.descripcion,            //descripcion
+                                                0,                               //existencia **hasta aquí heredado
+                                                0,                               //precio
+                                                registro.cantidad_solicitada,    //cantidad_solicitada
+                                                0,                               //cantidad_separada
+                                                "",                              //observacion
+                                                "",                              //disponible
+                                                "",                              //molecula
+                                                "",                              //existencia_farmacia
+                                                registro.tipo_producto,          //tipo_producto_id
+                                                "",                              //total_existencias_farmacia
+                                                "",                              //existencia_disponible
+                                                registro.cantidad_pendiente      //cantidad_pendiente
+                                            );
+                                                
+                            $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().agregarProducto(producto);
+                                                
+                        });
                     }
                     else{
 
@@ -432,7 +453,19 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     if (data.status === 200) {
 
                         console.log("Consulta exitosa: ", data.msj);
+                        
+                        /* Para continur Modificación */
+                        /*$scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.farmacia_id;
+                        $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.centro_utilidad_id;;
+                        $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.bodega_id;
 
+                        $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.nombre_farmacia;
+                        $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.nombre_centro_utilidad;
+                        $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.nombre_bodega;
+
+                        $scope.rootCreaPedidoFarmacia.Empresa.setCodigo(data.obj.encabezado_pedido[0].empresa_destino);*/
+                        /**/
+                        
                         var para_farmacia_id = data.obj.encabezado_pedido[0].farmacia_id;
                         var para_centro_utilidad = data.obj.encabezado_pedido[0].centro_utilidad;
                         var para_bodega = data.obj.encabezado_pedido[0].bodega;
@@ -547,6 +580,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             //Grid para pedidos ya generados
             $scope.rootCreaPedidoFarmacia.detalle_pedido_generado = {
                 data: 'rootCreaPedidoFarmacia.listado_productos_pedido',
+                //data: 'rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().lista_productos',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 //enableCellSelection: true,

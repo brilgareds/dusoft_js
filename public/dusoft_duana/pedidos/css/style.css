@@ -98,8 +98,11 @@ margin-bottom: 0px;
     font-weight: bold;
     margin-right:10px;
     font-size: 13px;
-    float:left;
 
+}
+
+label.lbl_editar_producto{
+      float:left;
 }
 
 .panel-action{

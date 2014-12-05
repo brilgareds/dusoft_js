@@ -486,3 +486,480 @@
 2014-12-05T16:17:27.144Z - info: Creating default express app.
 2014-12-05T16:17:27.191Z - info: jsreport server successfully started on http port: 3003
 2014-12-05T16:17:27.294Z - info: reporter initialized
+2014-12-05T19:39:41.183Z - info: Searching for available extensions in f:\docseduar\projects\DusoftServer\dusoft-server\
+2014-12-05T19:39:42.165Z - info: Found 21 extensions
+2014-12-05T19:39:42.195Z - info: Using extension excel-parser
+2014-12-05T19:39:42.195Z - info: Using extension xlsx
+2014-12-05T19:39:42.195Z - info: Using extension html-to-xlsx
+2014-12-05T19:39:42.195Z - info: Using extension express
+2014-12-05T19:39:42.195Z - info: Using extension templates
+2014-12-05T19:39:42.205Z - info: Using extension html
+2014-12-05T19:39:42.205Z - info: Using extension phantom-pdf
+2014-12-05T19:39:42.205Z - info: Using extension scripts
+2014-12-05T19:39:42.205Z - info: Using extension data
+2014-12-05T19:39:42.205Z - info: Using extension images
+2014-12-05T19:39:42.205Z - info: Using extension statistics
+2014-12-05T19:39:42.215Z - info: Using extension reports
+2014-12-05T19:39:42.215Z - info: Using extension childTemplates
+2014-12-05T19:39:42.215Z - info: Using extension sample-template
+2014-12-05T19:39:43.046Z - info: Extensions loaded.
+2014-12-05T19:39:43.055Z - info: Creating default express app.
+2014-12-05T19:39:43.071Z - info: jsreport server successfully started on http port: 3003
+2014-12-05T19:39:43.110Z - info: reporter initialized
+2014-12-05T20:47:43.430Z - info: Searching for available extensions in f:\docseduar\projects\DusoftServer\dusoft-server\
+2014-12-05T20:47:44.267Z - info: Found 21 extensions
+2014-12-05T20:47:44.283Z - info: Using extension excel-parser
+2014-12-05T20:47:44.283Z - info: Using extension xlsx
+2014-12-05T20:47:44.283Z - info: Using extension html-to-xlsx
+2014-12-05T20:47:44.283Z - info: Using extension express
+2014-12-05T20:47:44.283Z - info: Using extension templates
+2014-12-05T20:47:44.283Z - info: Using extension html
+2014-12-05T20:47:44.298Z - info: Using extension phantom-pdf
+2014-12-05T20:47:44.301Z - info: Using extension scripts
+2014-12-05T20:47:44.302Z - info: Using extension data
+2014-12-05T20:47:44.303Z - info: Using extension images
+2014-12-05T20:47:44.305Z - info: Using extension statistics
+2014-12-05T20:47:44.306Z - info: Using extension reports
+2014-12-05T20:47:44.306Z - info: Using extension childTemplates
+2014-12-05T20:47:44.306Z - info: Using extension sample-template
+2014-12-05T20:47:44.866Z - info: Extensions loaded.
+2014-12-05T20:47:44.882Z - info: Creating default express app.
+2014-12-05T20:47:44.937Z - info: jsreport server successfully started on http port: 3003
+2014-12-05T20:47:45.016Z - info: reporter initialized
+2014-12-05T20:48:41.901Z - info: Searching for available extensions in f:\docseduar\projects\DusoftServer\dusoft-server\
+2014-12-05T20:48:42.766Z - info: Found 21 extensions
+2014-12-05T20:48:42.773Z - info: Using extension excel-parser
+2014-12-05T20:48:42.773Z - info: Using extension xlsx
+2014-12-05T20:48:42.773Z - info: Using extension html-to-xlsx
+2014-12-05T20:48:42.773Z - info: Using extension express
+2014-12-05T20:48:42.773Z - info: Using extension templates
+2014-12-05T20:48:42.789Z - info: Using extension html
+2014-12-05T20:48:42.789Z - info: Using extension phantom-pdf
+2014-12-05T20:48:42.789Z - info: Using extension scripts
+2014-12-05T20:48:42.789Z - info: Using extension data
+2014-12-05T20:48:42.789Z - info: Using extension images
+2014-12-05T20:48:42.789Z - info: Using extension statistics
+2014-12-05T20:48:42.789Z - info: Using extension reports
+2014-12-05T20:48:42.789Z - info: Using extension childTemplates
+2014-12-05T20:48:42.789Z - info: Using extension sample-template
+2014-12-05T20:48:43.282Z - info: Extensions loaded.
+2014-12-05T20:48:43.298Z - info: Creating default express app.
+2014-12-05T20:48:43.298Z - info: jsreport server successfully started on http port: 3003
+2014-12-05T20:48:43.377Z - info: reporter initialized
+2014-12-05T20:49:24.024Z - info: Searching for available extensions in f:\docseduar\projects\DusoftServer\dusoft-server\
+2014-12-05T20:49:25.019Z - info: Found 21 extensions
+2014-12-05T20:49:25.039Z - info: Using extension excel-parser
+2014-12-05T20:49:25.043Z - info: Using extension xlsx
+2014-12-05T20:49:25.045Z - info: Using extension html-to-xlsx
+2014-12-05T20:49:25.046Z - info: Using extension express
+2014-12-05T20:49:25.048Z - info: Using extension templates
+2014-12-05T20:49:25.050Z - info: Using extension html
+2014-12-05T20:49:25.052Z - info: Using extension phantom-pdf
+2014-12-05T20:49:25.058Z - info: Using extension scripts
+2014-12-05T20:49:25.063Z - info: Using extension data
+2014-12-05T20:49:25.066Z - info: Using extension images
+2014-12-05T20:49:25.068Z - info: Using extension statistics
+2014-12-05T20:49:25.070Z - info: Using extension reports
+2014-12-05T20:49:25.073Z - info: Using extension childTemplates
+2014-12-05T20:49:25.076Z - info: Using extension sample-template
+2014-12-05T20:49:25.715Z - info: Extensions loaded.
+2014-12-05T20:49:25.721Z - info: Creating default express app.
+2014-12-05T20:49:25.775Z - info: jsreport server successfully started on http port: 3003
+2014-12-05T20:49:25.814Z - info: reporter initialized
+2014-12-05T20:51:22.392Z - info: Searching for available extensions in f:\docseduar\projects\DusoftServer\dusoft-server\
+2014-12-05T20:51:23.264Z - info: Found 21 extensions
+2014-12-05T20:51:23.267Z - info: Using extension excel-parser
+2014-12-05T20:51:23.283Z - info: Using extension xlsx
+2014-12-05T20:51:23.283Z - info: Using extension html-to-xlsx
+2014-12-05T20:51:23.283Z - info: Using extension express
+2014-12-05T20:51:23.283Z - info: Using extension templates
+2014-12-05T20:51:23.283Z - info: Using extension html
+2014-12-05T20:51:23.283Z - info: Using extension phantom-pdf
+2014-12-05T20:51:23.283Z - info: Using extension scripts
+2014-12-05T20:51:23.283Z - info: Using extension data
+2014-12-05T20:51:23.298Z - info: Using extension images
+2014-12-05T20:51:23.298Z - info: Using extension statistics
+2014-12-05T20:51:23.298Z - info: Using extension reports
+2014-12-05T20:51:23.298Z - info: Using extension childTemplates
+2014-12-05T20:51:23.298Z - info: Using extension sample-template
+2014-12-05T20:51:23.780Z - info: Extensions loaded.
+2014-12-05T20:51:23.796Z - info: Creating default express app.
+2014-12-05T20:51:23.811Z - info: jsreport server successfully started on http port: 3003
+2014-12-05T20:51:23.861Z - info: reporter initialized
+2014-12-05T20:52:36.997Z - info: Searching for available extensions in f:\docseduar\projects\DusoftServer\dusoft-server\
+2014-12-05T20:52:37.887Z - info: Found 21 extensions
+2014-12-05T20:52:37.903Z - info: Using extension excel-parser
+2014-12-05T20:52:37.903Z - info: Using extension xlsx
+2014-12-05T20:52:37.903Z - info: Using extension html-to-xlsx
+2014-12-05T20:52:37.903Z - info: Using extension express
+2014-12-05T20:52:37.903Z - info: Using extension templates
+2014-12-05T20:52:37.918Z - info: Using extension html
+2014-12-05T20:52:37.919Z - info: Using extension phantom-pdf
+2014-12-05T20:52:37.921Z - info: Using extension scripts
+2014-12-05T20:52:37.922Z - info: Using extension data
+2014-12-05T20:52:37.924Z - info: Using extension images
+2014-12-05T20:52:37.925Z - info: Using extension statistics
+2014-12-05T20:52:37.926Z - info: Using extension reports
+2014-12-05T20:52:37.929Z - info: Using extension childTemplates
+2014-12-05T20:52:37.930Z - info: Using extension sample-template
+2014-12-05T20:52:38.378Z - info: Extensions loaded.
+2014-12-05T20:52:38.393Z - info: Creating default express app.
+2014-12-05T20:52:38.409Z - info: jsreport server successfully started on http port: 3003
+2014-12-05T20:52:38.518Z - info: reporter initialized
+2014-12-05T20:53:10.348Z - info: Searching for available extensions in f:\docseduar\projects\DusoftServer\dusoft-server\
+2014-12-05T20:53:11.197Z - info: Found 21 extensions
+2014-12-05T20:53:11.212Z - info: Using extension excel-parser
+2014-12-05T20:53:11.212Z - info: Using extension xlsx
+2014-12-05T20:53:11.212Z - info: Using extension html-to-xlsx
+2014-12-05T20:53:11.212Z - info: Using extension express
+2014-12-05T20:53:11.212Z - info: Using extension templates
+2014-12-05T20:53:11.212Z - info: Using extension html
+2014-12-05T20:53:11.212Z - info: Using extension phantom-pdf
+2014-12-05T20:53:11.212Z - info: Using extension scripts
+2014-12-05T20:53:11.212Z - info: Using extension data
+2014-12-05T20:53:11.212Z - info: Using extension images
+2014-12-05T20:53:11.228Z - info: Using extension statistics
+2014-12-05T20:53:11.228Z - info: Using extension reports
+2014-12-05T20:53:11.228Z - info: Using extension childTemplates
+2014-12-05T20:53:11.228Z - info: Using extension sample-template
+2014-12-05T20:53:11.732Z - info: Extensions loaded.
+2014-12-05T20:53:11.763Z - info: Creating default express app.
+2014-12-05T20:53:11.779Z - info: jsreport server successfully started on http port: 3003
+2014-12-05T20:53:11.826Z - info: reporter initialized
+2014-12-05T20:54:04.883Z - info: Searching for available extensions in f:\docseduar\projects\DusoftServer\dusoft-server\
+2014-12-05T20:54:05.729Z - info: Found 21 extensions
+2014-12-05T20:54:05.745Z - info: Using extension excel-parser
+2014-12-05T20:54:05.745Z - info: Using extension xlsx
+2014-12-05T20:54:05.745Z - info: Using extension html-to-xlsx
+2014-12-05T20:54:05.745Z - info: Using extension express
+2014-12-05T20:54:05.745Z - info: Using extension templates
+2014-12-05T20:54:05.760Z - info: Using extension html
+2014-12-05T20:54:05.760Z - info: Using extension phantom-pdf
+2014-12-05T20:54:05.760Z - info: Using extension scripts
+2014-12-05T20:54:05.760Z - info: Using extension data
+2014-12-05T20:54:05.760Z - info: Using extension images
+2014-12-05T20:54:05.760Z - info: Using extension statistics
+2014-12-05T20:54:05.760Z - info: Using extension reports
+2014-12-05T20:54:05.760Z - info: Using extension childTemplates
+2014-12-05T20:54:05.760Z - info: Using extension sample-template
+2014-12-05T20:54:06.247Z - info: Extensions loaded.
+2014-12-05T20:54:06.247Z - info: Creating default express app.
+2014-12-05T20:54:06.278Z - info: jsreport server successfully started on http port: 3003
+2014-12-05T20:54:06.325Z - info: reporter initialized
+2014-12-05T20:54:07.756Z - info: Starting rendering request 1
+2014-12-05T20:54:08.214Z - info: Rendering request 1 finished in 457 ms
+2014-12-05T20:56:45.393Z - info: Starting rendering request 2
+2014-12-05T20:56:48.123Z - info: Rendering request 2 finished in 2731 ms
+2014-12-05T20:58:48.665Z - info: Starting rendering request 3
+2014-12-05T20:58:51.398Z - info: Rendering request 3 finished in 2733 ms
+2014-12-05T20:59:14.554Z - info: Searching for available extensions in f:\docseduar\projects\DusoftServer\dusoft-server\
+2014-12-05T20:59:15.319Z - info: Found 21 extensions
+2014-12-05T20:59:15.335Z - info: Using extension excel-parser
+2014-12-05T20:59:15.351Z - info: Using extension xlsx
+2014-12-05T20:59:15.351Z - info: Using extension html-to-xlsx
+2014-12-05T20:59:15.351Z - info: Using extension express
+2014-12-05T20:59:15.351Z - info: Using extension templates
+2014-12-05T20:59:15.351Z - info: Using extension html
+2014-12-05T20:59:15.351Z - info: Using extension phantom-pdf
+2014-12-05T20:59:15.351Z - info: Using extension scripts
+2014-12-05T20:59:15.351Z - info: Using extension data
+2014-12-05T20:59:15.351Z - info: Using extension images
+2014-12-05T20:59:15.351Z - info: Using extension statistics
+2014-12-05T20:59:15.366Z - info: Using extension reports
+2014-12-05T20:59:15.367Z - info: Using extension childTemplates
+2014-12-05T20:59:15.367Z - info: Using extension sample-template
+2014-12-05T20:59:15.822Z - info: Extensions loaded.
+2014-12-05T20:59:15.900Z - info: Creating default express app.
+2014-12-05T20:59:15.915Z - info: jsreport server successfully started on http port: 3003
+2014-12-05T20:59:15.979Z - info: reporter initialized
+2014-12-05T20:59:24.505Z - info: Starting rendering request 1
+2014-12-05T20:59:27.416Z - info: Rendering request 1 finished in 2911 ms
+2014-12-05T21:00:02.061Z - info: Starting rendering request 2
+2014-12-05T21:00:04.840Z - info: Rendering request 2 finished in 2780 ms
+2014-12-05T21:00:57.197Z - info: Starting rendering request 3
+2014-12-05T21:00:59.946Z - info: Rendering request 3 finished in 2748 ms
+2014-12-05T21:01:41.125Z - info: Starting rendering request 4
+2014-12-05T21:01:43.839Z - info: Rendering request 4 finished in 2715 ms
+2014-12-05T21:02:14.451Z - info: Starting rendering request 5
+2014-12-05T21:02:15.726Z - info: Rendering request 5 finished in 1274 ms
+2014-12-05T21:02:17.954Z - info: Starting rendering request 6
+2014-12-05T21:02:18.123Z - info: Rendering request 6 finished in 169 ms
+2014-12-05T21:06:44.680Z - info: Starting rendering request 7
+2014-12-05T21:06:45.906Z - info: Rendering request 7 finished in 1226 ms
+2014-12-05T21:07:20.546Z - info: Starting rendering request 8
+2014-12-05T21:07:20.710Z - info: Rendering request 8 finished in 164 ms
+2014-12-05T21:08:39.561Z - info: Starting rendering request 9
+2014-12-05T21:08:39.771Z - info: Rendering request 9 finished in 210 ms
+2014-12-05T21:10:11.519Z - info: Starting rendering request 10
+2014-12-05T21:10:11.737Z - info: Rendering request 10 finished in 218 ms
+2014-12-05T21:11:24.613Z - info: Starting rendering request 11
+2014-12-05T21:11:24.833Z - info: Rendering request 11 finished in 221 ms
+2014-12-05T21:11:40.271Z - info: Starting rendering request 12
+2014-12-05T21:11:40.522Z - info: Rendering request 12 finished in 252 ms
+2014-12-05T21:15:48.030Z - info: Searching for available extensions in f:\docseduar\projects\DusoftServer\dusoft-server\
+2014-12-05T21:15:49.029Z - info: Found 21 extensions
+2014-12-05T21:15:49.221Z - info: Using extension excel-parser
+2014-12-05T21:15:49.224Z - info: Using extension xlsx
+2014-12-05T21:15:49.226Z - info: Using extension html-to-xlsx
+2014-12-05T21:15:49.228Z - info: Using extension express
+2014-12-05T21:15:49.229Z - info: Using extension templates
+2014-12-05T21:15:49.231Z - info: Using extension html
+2014-12-05T21:15:49.233Z - info: Using extension phantom-pdf
+2014-12-05T21:15:49.236Z - info: Using extension scripts
+2014-12-05T21:15:49.238Z - info: Using extension data
+2014-12-05T21:15:49.242Z - info: Using extension images
+2014-12-05T21:15:49.250Z - info: Using extension statistics
+2014-12-05T21:15:49.252Z - info: Using extension reports
+2014-12-05T21:15:49.259Z - info: Using extension childTemplates
+2014-12-05T21:15:49.261Z - info: Using extension sample-template
+2014-12-05T21:15:54.908Z - info: Extensions loaded.
+2014-12-05T21:15:54.915Z - info: Creating default express app.
+2014-12-05T21:15:54.947Z - info: jsreport server successfully started on http port: 3003
+2014-12-05T21:15:54.994Z - info: reporter initialized
+2014-12-05T21:16:11.342Z - info: Starting rendering request 1
+2014-12-05T21:16:12.004Z - info: Rendering request 1 finished in 662 ms
+2014-12-05T21:17:17.492Z - info: Searching for available extensions in f:\docseduar\projects\DusoftServer\dusoft-server\
+2014-12-05T21:17:18.431Z - info: Found 21 extensions
+2014-12-05T21:17:18.446Z - info: Using extension excel-parser
+2014-12-05T21:17:18.446Z - info: Using extension xlsx
+2014-12-05T21:17:18.463Z - info: Using extension html-to-xlsx
+2014-12-05T21:17:18.463Z - info: Using extension express
+2014-12-05T21:17:18.463Z - info: Using extension templates
+2014-12-05T21:17:18.463Z - info: Using extension html
+2014-12-05T21:17:18.463Z - info: Using extension phantom-pdf
+2014-12-05T21:17:18.463Z - info: Using extension scripts
+2014-12-05T21:17:18.479Z - info: Using extension data
+2014-12-05T21:17:18.479Z - info: Using extension images
+2014-12-05T21:17:18.479Z - info: Using extension statistics
+2014-12-05T21:17:18.479Z - info: Using extension reports
+2014-12-05T21:17:18.479Z - info: Using extension childTemplates
+2014-12-05T21:17:18.479Z - info: Using extension sample-template
+2014-12-05T21:17:19.040Z - info: Extensions loaded.
+2014-12-05T21:17:19.087Z - info: Creating default express app.
+2014-12-05T21:17:19.087Z - info: jsreport server successfully started on http port: 3003
+2014-12-05T21:17:19.190Z - info: reporter initialized
+2014-12-05T21:17:20.518Z - info: Starting rendering request 1
+2014-12-05T21:17:23.491Z - info: Rendering request 1 finished in 2973 ms
+2014-12-05T21:18:16.198Z - info: Starting rendering request 2
+2014-12-05T21:18:19.024Z - info: Rendering request 2 finished in 2826 ms
+2014-12-05T21:19:11.435Z - info: Searching for available extensions in f:\docseduar\projects\DusoftServer\dusoft-server\
+2014-12-05T21:19:12.212Z - info: Found 21 extensions
+2014-12-05T21:19:12.228Z - info: Using extension excel-parser
+2014-12-05T21:19:12.228Z - info: Using extension xlsx
+2014-12-05T21:19:12.228Z - info: Using extension html-to-xlsx
+2014-12-05T21:19:12.228Z - info: Using extension express
+2014-12-05T21:19:12.228Z - info: Using extension templates
+2014-12-05T21:19:12.228Z - info: Using extension html
+2014-12-05T21:19:12.228Z - info: Using extension phantom-pdf
+2014-12-05T21:19:12.228Z - info: Using extension scripts
+2014-12-05T21:19:12.228Z - info: Using extension data
+2014-12-05T21:19:12.243Z - info: Using extension images
+2014-12-05T21:19:12.243Z - info: Using extension statistics
+2014-12-05T21:19:12.243Z - info: Using extension reports
+2014-12-05T21:19:12.243Z - info: Using extension childTemplates
+2014-12-05T21:19:12.243Z - info: Using extension sample-template
+2014-12-05T21:19:12.852Z - info: Extensions loaded.
+2014-12-05T21:19:12.930Z - info: Creating default express app.
+2014-12-05T21:19:12.945Z - info: jsreport server successfully started on http port: 3003
+2014-12-05T21:19:12.992Z - info: reporter initialized
+2014-12-05T21:19:14.412Z - info: Starting rendering request 1
+2014-12-05T21:19:17.430Z - info: Rendering request 1 finished in 3017 ms
+2014-12-05T21:20:44.745Z - info: Searching for available extensions in f:\docseduar\projects\DusoftServer\dusoft-server\
+2014-12-05T21:20:45.729Z - info: Found 21 extensions
+2014-12-05T21:20:45.760Z - info: Using extension excel-parser
+2014-12-05T21:20:45.760Z - info: Using extension xlsx
+2014-12-05T21:20:45.760Z - info: Using extension html-to-xlsx
+2014-12-05T21:20:45.760Z - info: Using extension express
+2014-12-05T21:20:45.760Z - info: Using extension templates
+2014-12-05T21:20:45.760Z - info: Using extension html
+2014-12-05T21:20:45.760Z - info: Using extension phantom-pdf
+2014-12-05T21:20:45.760Z - info: Using extension scripts
+2014-12-05T21:20:45.760Z - info: Using extension data
+2014-12-05T21:20:45.776Z - info: Using extension images
+2014-12-05T21:20:45.776Z - info: Using extension statistics
+2014-12-05T21:20:45.776Z - info: Using extension reports
+2014-12-05T21:20:45.776Z - info: Using extension childTemplates
+2014-12-05T21:20:45.776Z - info: Using extension sample-template
+2014-12-05T21:20:46.328Z - info: Extensions loaded.
+2014-12-05T21:20:46.328Z - info: Creating default express app.
+2014-12-05T21:20:46.328Z - info: jsreport server successfully started on http port: 3003
+2014-12-05T21:20:46.453Z - info: reporter initialized
+2014-12-05T21:20:49.194Z - info: Starting rendering request 1
+2014-12-05T21:20:49.639Z - info: Rendering request 1 finished in 446 ms
+2014-12-05T21:21:39.461Z - info: Searching for available extensions in f:\docseduar\projects\DusoftServer\dusoft-server\
+2014-12-05T21:21:40.511Z - info: Found 21 extensions
+2014-12-05T21:21:40.542Z - info: Using extension excel-parser
+2014-12-05T21:21:40.542Z - info: Using extension xlsx
+2014-12-05T21:21:40.558Z - info: Using extension html-to-xlsx
+2014-12-05T21:21:40.558Z - info: Using extension express
+2014-12-05T21:21:40.558Z - info: Using extension templates
+2014-12-05T21:21:40.558Z - info: Using extension html
+2014-12-05T21:21:40.558Z - info: Using extension phantom-pdf
+2014-12-05T21:21:40.573Z - info: Using extension scripts
+2014-12-05T21:21:40.573Z - info: Using extension data
+2014-12-05T21:21:40.573Z - info: Using extension images
+2014-12-05T21:21:40.573Z - info: Using extension statistics
+2014-12-05T21:21:40.573Z - info: Using extension reports
+2014-12-05T21:21:40.573Z - info: Using extension childTemplates
+2014-12-05T21:21:40.573Z - info: Using extension sample-template
+2014-12-05T21:21:41.214Z - info: Extensions loaded.
+2014-12-05T21:21:41.230Z - info: Creating default express app.
+2014-12-05T21:21:41.276Z - info: jsreport server successfully started on http port: 3003
+2014-12-05T21:21:41.339Z - info: reporter initialized
+2014-12-05T21:21:46.015Z - info: Starting rendering request 1
+2014-12-05T21:21:46.523Z - info: Rendering request 1 finished in 509 ms
+2014-12-05T21:43:36.271Z - info: Searching for available extensions in f:\docseduar\projects\DusoftServer\dusoft-server\
+2014-12-05T21:43:37.031Z - info: Found 21 extensions
+2014-12-05T21:43:37.047Z - info: Using extension excel-parser
+2014-12-05T21:43:37.047Z - info: Using extension xlsx
+2014-12-05T21:43:37.047Z - info: Using extension html-to-xlsx
+2014-12-05T21:43:37.047Z - info: Using extension express
+2014-12-05T21:43:37.047Z - info: Using extension templates
+2014-12-05T21:43:37.047Z - info: Using extension html
+2014-12-05T21:43:37.047Z - info: Using extension phantom-pdf
+2014-12-05T21:43:37.063Z - info: Using extension scripts
+2014-12-05T21:43:37.063Z - info: Using extension data
+2014-12-05T21:43:37.063Z - info: Using extension images
+2014-12-05T21:43:37.063Z - info: Using extension statistics
+2014-12-05T21:43:37.063Z - info: Using extension reports
+2014-12-05T21:43:37.063Z - info: Using extension childTemplates
+2014-12-05T21:43:37.063Z - info: Using extension sample-template
+2014-12-05T21:43:37.429Z - info: Extensions loaded.
+2014-12-05T21:43:37.444Z - info: Creating default express app.
+2014-12-05T21:43:37.444Z - info: jsreport server successfully started on http port: 3003
+2014-12-05T21:43:37.519Z - info: reporter initialized
+2014-12-05T21:44:19.337Z - info: Searching for available extensions in f:\docseduar\projects\DusoftServer\dusoft-server\
+2014-12-05T21:44:20.036Z - info: Found 21 extensions
+2014-12-05T21:44:20.052Z - info: Using extension excel-parser
+2014-12-05T21:44:20.052Z - info: Using extension xlsx
+2014-12-05T21:44:20.052Z - info: Using extension html-to-xlsx
+2014-12-05T21:44:20.067Z - info: Using extension express
+2014-12-05T21:44:20.067Z - info: Using extension templates
+2014-12-05T21:44:20.067Z - info: Using extension html
+2014-12-05T21:44:20.067Z - info: Using extension phantom-pdf
+2014-12-05T21:44:20.067Z - info: Using extension scripts
+2014-12-05T21:44:20.067Z - info: Using extension data
+2014-12-05T21:44:20.067Z - info: Using extension images
+2014-12-05T21:44:20.067Z - info: Using extension statistics
+2014-12-05T21:44:20.067Z - info: Using extension reports
+2014-12-05T21:44:20.067Z - info: Using extension childTemplates
+2014-12-05T21:44:20.083Z - info: Using extension sample-template
+2014-12-05T21:44:20.539Z - info: Extensions loaded.
+2014-12-05T21:44:20.539Z - info: Creating default express app.
+2014-12-05T21:44:20.554Z - info: jsreport server successfully started on http port: 3003
+2014-12-05T21:44:20.590Z - info: reporter initialized
+2014-12-05T21:44:20.610Z - info: Starting rendering request 1
+2014-12-05T21:44:21.564Z - info: Rendering request 1 finished in 939 ms
+2014-12-05T21:44:59.821Z - info: Starting rendering request 2
+2014-12-05T21:44:59.987Z - info: Rendering request 2 finished in 166 ms
+2014-12-05T21:45:24.285Z - info: Starting rendering request 3
+2014-12-05T21:45:24.338Z - warn: Error when processing render request Error during rendering report: Cannot read property 'nombre' of undefined TypeError: Cannot read property 'nombre' of undefined
+    at Object.obtenerNombre (evalmachine.<anonymous>:2:30)
+    at Object.eval (eval at <anonymous> (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\node_modules\handlebars\dist\cjs\handlebars\compiler\javascript-compiler.js:171:23), <anonymous>:4:102)
+    at prog (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\node_modules\handlebars\dist\cjs\handlebars\runtime.js:168:15)
+    at Object.<anonymous> (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\node_modules\handlebars\dist\cjs\handlebars\base.js:130:23)
+    at Object.eval (eval at <anonymous> (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\node_modules\handlebars\dist\cjs\handlebars\compiler\javascript-compiler.js:171:23), <anonymous>:5:25)
+    at ret (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\node_modules\handlebars\dist\cjs\handlebars\runtime.js:137:30)
+    at ret (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\node_modules\handlebars\dist\cjs\handlebars\compiler\compiler.js:422:21)
+    at module.exports (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\lib\render\handlebarsEngine.js:16:12)
+    at evalmachine.<anonymous>:1:9
+    at module.exports (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\lib\render\renderExecution.js:113:8)
+From previous event:
+    at Reporter.renderContent (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\lib\reporter.js:166:38)
+    at Object.reporter.extensionsManager.recipes.push.execute (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\extension\html\lib\html.js:14:29)
+    at Reporter.executeRecipe (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\lib\reporter.js:148:19)
+    at Phantom.execute (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\extension\phantom-pdf\lib\phantom.js:64:26)
+    at Reporter.executeRecipe (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\lib\reporter.js:148:19)
+    at dataProvider.startContext.then.then.then.then.then.then.fail.e.message (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\lib\reporter.js:123:21)
+    at _fulfilled (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\node_modules\jaydata\node_modules\q\q.js:860:32)
+    at f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\node_modules\jaydata\node_modules\q\q.js:881:34
+2014-12-05T21:46:12.979Z - info: Starting rendering request 4
+2014-12-05T21:46:13.034Z - warn: Error when processing render request Error during rendering report: Cannot read property 'nombre' of undefined TypeError: Cannot read property 'nombre' of undefined
+    at Object.obtenerNombre (evalmachine.<anonymous>:2:30)
+    at Object.eval (eval at <anonymous> (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\node_modules\handlebars\dist\cjs\handlebars\compiler\javascript-compiler.js:171:23), <anonymous>:4:102)
+    at prog (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\node_modules\handlebars\dist\cjs\handlebars\runtime.js:168:15)
+    at Object.<anonymous> (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\node_modules\handlebars\dist\cjs\handlebars\base.js:130:23)
+    at Object.eval (eval at <anonymous> (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\node_modules\handlebars\dist\cjs\handlebars\compiler\javascript-compiler.js:171:23), <anonymous>:5:25)
+    at ret (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\node_modules\handlebars\dist\cjs\handlebars\runtime.js:137:30)
+    at ret (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\node_modules\handlebars\dist\cjs\handlebars\compiler\compiler.js:422:21)
+    at module.exports (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\lib\render\handlebarsEngine.js:16:12)
+    at evalmachine.<anonymous>:1:9
+    at module.exports (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\lib\render\renderExecution.js:113:8)
+From previous event:
+    at Reporter.renderContent (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\lib\reporter.js:166:38)
+    at Object.reporter.extensionsManager.recipes.push.execute (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\extension\html\lib\html.js:14:29)
+    at Reporter.executeRecipe (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\lib\reporter.js:148:19)
+    at Phantom.execute (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\extension\phantom-pdf\lib\phantom.js:64:26)
+    at Reporter.executeRecipe (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\lib\reporter.js:148:19)
+    at dataProvider.startContext.then.then.then.then.then.then.fail.e.message (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\lib\reporter.js:123:21)
+    at _fulfilled (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\node_modules\jaydata\node_modules\q\q.js:860:32)
+    at f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\node_modules\jaydata\node_modules\q\q.js:881:34
+2014-12-05T21:48:01.604Z - info: Searching for available extensions in f:\docseduar\projects\DusoftServer\dusoft-server\
+2014-12-05T21:48:02.319Z - info: Found 21 extensions
+2014-12-05T21:48:02.334Z - info: Using extension excel-parser
+2014-12-05T21:48:02.336Z - info: Using extension xlsx
+2014-12-05T21:48:02.338Z - info: Using extension html-to-xlsx
+2014-12-05T21:48:02.339Z - info: Using extension express
+2014-12-05T21:48:02.341Z - info: Using extension templates
+2014-12-05T21:48:02.342Z - info: Using extension html
+2014-12-05T21:48:02.343Z - info: Using extension phantom-pdf
+2014-12-05T21:48:02.345Z - info: Using extension scripts
+2014-12-05T21:48:02.351Z - info: Using extension data
+2014-12-05T21:48:02.352Z - info: Using extension images
+2014-12-05T21:48:02.354Z - info: Using extension statistics
+2014-12-05T21:48:02.355Z - info: Using extension reports
+2014-12-05T21:48:02.358Z - info: Using extension childTemplates
+2014-12-05T21:48:02.360Z - info: Using extension sample-template
+2014-12-05T21:48:02.802Z - info: Extensions loaded.
+2014-12-05T21:48:02.808Z - info: Creating default express app.
+2014-12-05T21:48:02.841Z - info: jsreport server successfully started on http port: 3003
+2014-12-05T21:48:02.899Z - info: reporter initialized
+2014-12-05T21:48:06.013Z - info: Starting rendering request 1
+2014-12-05T21:48:06.181Z - warn: Error when processing render request Error during rendering report: Cannot read property 'nombre' of undefined TypeError: Cannot read property 'nombre' of undefined
+    at Object.obtenerNombre (evalmachine.<anonymous>:2:30)
+    at Object.eval (eval at <anonymous> (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\node_modules\handlebars\dist\cjs\handlebars\compiler\javascript-compiler.js:171:23), <anonymous>:4:102)
+    at prog (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\node_modules\handlebars\dist\cjs\handlebars\runtime.js:168:15)
+    at Object.<anonymous> (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\node_modules\handlebars\dist\cjs\handlebars\base.js:130:23)
+    at Object.eval (eval at <anonymous> (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\node_modules\handlebars\dist\cjs\handlebars\compiler\javascript-compiler.js:171:23), <anonymous>:5:25)
+    at ret (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\node_modules\handlebars\dist\cjs\handlebars\runtime.js:137:30)
+    at ret (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\node_modules\handlebars\dist\cjs\handlebars\compiler\compiler.js:422:21)
+    at module.exports (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\lib\render\handlebarsEngine.js:16:12)
+    at evalmachine.<anonymous>:1:9
+    at module.exports (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\lib\render\renderExecution.js:113:8)
+From previous event:
+    at Reporter.renderContent (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\lib\reporter.js:166:38)
+    at Object.reporter.extensionsManager.recipes.push.execute (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\extension\html\lib\html.js:14:29)
+    at Reporter.executeRecipe (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\lib\reporter.js:148:19)
+    at Phantom.execute (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\extension\phantom-pdf\lib\phantom.js:64:26)
+    at Reporter.executeRecipe (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\lib\reporter.js:148:19)
+    at dataProvider.startContext.then.then.then.then.then.then.fail.e.message (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\lib\reporter.js:123:21)
+    at _fulfilled (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\node_modules\jaydata\node_modules\q\q.js:860:32)
+    at f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\node_modules\jaydata\node_modules\q\q.js:881:34
+2014-12-05T21:48:44.099Z - info: Searching for available extensions in f:\docseduar\projects\DusoftServer\dusoft-server\
+2014-12-05T21:48:44.830Z - info: Found 21 extensions
+2014-12-05T21:48:44.846Z - info: Using extension excel-parser
+2014-12-05T21:48:44.846Z - info: Using extension xlsx
+2014-12-05T21:48:44.846Z - info: Using extension html-to-xlsx
+2014-12-05T21:48:44.846Z - info: Using extension express
+2014-12-05T21:48:44.846Z - info: Using extension templates
+2014-12-05T21:48:44.846Z - info: Using extension html
+2014-12-05T21:48:44.846Z - info: Using extension phantom-pdf
+2014-12-05T21:48:44.846Z - info: Using extension scripts
+2014-12-05T21:48:44.846Z - info: Using extension data
+2014-12-05T21:48:44.846Z - info: Using extension images
+2014-12-05T21:48:44.861Z - info: Using extension statistics
+2014-12-05T21:48:44.861Z - info: Using extension reports
+2014-12-05T21:48:44.861Z - info: Using extension childTemplates
+2014-12-05T21:48:44.861Z - info: Using extension sample-template
+2014-12-05T21:48:45.298Z - info: Extensions loaded.
+2014-12-05T21:48:45.298Z - info: Creating default express app.
+2014-12-05T21:48:45.298Z - info: jsreport server successfully started on http port: 3003
+2014-12-05T21:48:45.329Z - info: reporter initialized
+2014-12-05T21:48:46.842Z - info: Starting rendering request 1
+2014-12-05T21:48:47.230Z - info: Rendering request 1 finished in 388 ms
+2014-12-05T21:57:42.413Z - info: Starting rendering request 2
+2014-12-05T21:57:42.574Z - info: Rendering request 2 finished in 162 ms
+2014-12-05T22:04:06.669Z - info: Starting rendering request 3
+2014-12-05T22:04:06.830Z - info: Rendering request 3 finished in 161 ms
+2014-12-05T22:04:17.957Z - info: Starting rendering request 4
+2014-12-05T22:04:18.139Z - info: Rendering request 4 finished in 182 ms

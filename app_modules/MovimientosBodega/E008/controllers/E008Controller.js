@@ -1397,9 +1397,18 @@ E008Controller.prototype.auditoriaProductosFarmacias = function(req, res) {
 E008Controller.prototype.imprimirRotulo = function(req, res){
         G.jsreport.reporter.render({
 	    template: { 
-	        content: "<html><head></head><body><h1>Hello world descargado esta en la carpeta temporal</h1></body></html>",
+	        content: G.fs.readFileSync('app_modules/MovimientosBodega/E008/reports/rotulos.html', 'utf8'),
+                helpers: G.fs.readFileSync('app_modules/MovimientosBodega/E008/reports/javascripts/rotulos.js', 'utf8'),
 	        recipe: "phantom-pdf"
-	    }
+	    },
+            data:{
+                style:G.dirname+'/app_modules/MovimientosBodega/E008/reports/stylesheets/rotulos.css',
+                productos:[
+                    {codigo:"2544", nombre:"ibuprofeno" },
+                    {codigo:"8888477", nombre:"acetaminofen"},
+                    {codigo:"8455", nombre:"captopril"}
+                ]
+            }
 	}).then(function (response) {
 	   
 	   //copy the file from temporal, ouput content

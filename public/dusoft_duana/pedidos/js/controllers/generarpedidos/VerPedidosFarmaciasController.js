@@ -11,6 +11,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
         function($scope, $rootScope, Request, EmpresaPedido, Farmacia, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService) {
             
+            var that = this;
+            
+            that.pedido = PedidoVenta.get();
+            
             $scope.rootVerPedidosFarmacias = {};
             
             $scope.rootVerPedidosFarmacias.Empresa = EmpresaPedido;
@@ -37,9 +41,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.rootVerPedidosFarmacias.listado_farmacias = [];
 
             $scope.rootVerPedidosFarmacias.estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
-            
-            var that = this;            
-
 
             that.listarFarmacias = function() {
 
@@ -52,17 +53,39 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     
                     if (data.status === 200) {
                         $scope.rootVerPedidosFarmacias.listado_farmacias = data.obj.empresas;
+                        //that.renderFarmacias(data.obj.empresas);
                     }
                     
                 });
             };
             
+            /*that.renderFarmacias = function(farmacias){
+                
+                $scope.rootVerPedidosFarmacias.Empresa.vaciarFarmacias();
+                
+                farmacias.forEach(function(registro){
+                    
+                    var farmacia = Farmacia.get(registro.empresa_id, "", registro.razon_social, "", 0, "");
+                    
+                    $scope.rootVerPedidosFarmacias.Empresa.agregarFarmacias(farmacia);
+                });
+                console.log("EmpresaPedido Farmacias: ", $scope.rootVerPedidosFarmacias.Empresa.getFarmacias());
+            };*/
+            
+           /* $scope.seleccion_farmacia = function(){
+                console.log('>>>>>>>>>>>>',$scope.farmacia_seleccionada.get_farmacia_id(), $scope.farmacia_seleccionada.get_nombre_farmacia());                
+            }*/
+            
             $scope.obtenerParametros = function(){
 
                 //valida si cambio el termino de busqueda
                 if($scope.rootVerPedidosFarmacias.ultima_busqueda.termino_busqueda !== $scope.rootVerPedidosFarmacias.termino_busqueda
-                        || $scope.rootVerPedidosFarmacias.ultima_busqueda.seleccion !== $scope.rootVerPedidosFarmacias.seleccion){
+                        || $scope.rootVerPedidosFarmacias.ultima_busqueda.seleccion !== $scope.rootVerPedidosFarmacias.seleccion)
+                /*if($scope.rootVerPedidosFarmacias.ultima_busqueda.termino_busqueda !== $scope.rootVerPedidosFarmacias.termino_busqueda
+                        || $scope.rootVerPedidosFarmacias.ultima_busqueda.seleccion !== $scope.farmacia_seleccionada.get_farmacia_id())*/
+                {
                     $scope.rootVerPedidosFarmacias.paginaactual = 1;
+                
                 }
 
                 var obj = {
@@ -71,6 +94,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         pedidos_farmacias:{
                             termino_busqueda: $scope.rootVerPedidosFarmacias.termino_busqueda,
                             empresa_id: $scope.rootVerPedidosFarmacias.seleccion,
+                            //empresa_id: $scope.farmacia_seleccionada.get_farmacia_id(),
                             pagina_actual: $scope.rootVerPedidosFarmacias.paginaactual,
                             filtro:{}
                         }
@@ -93,6 +117,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         $scope.rootVerPedidosFarmacias.ultima_busqueda = {
                                 termino_busqueda: $scope.rootVerPedidosFarmacias.termino_busqueda,
                                 seleccion: $scope.rootVerPedidosFarmacias.seleccion
+                                //seleccion: $scope.farmacia_seleccionada.get_farmacia_id()
                         }
                         
                         that.renderPedidosFarmacias(data.obj, paginando);
@@ -116,7 +141,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 }
 
                 $scope.rootVerPedidosFarmacias.Empresa.vaciarPedidosFarmacia();
-                $scope.rootVerPedidosFarmacias.Empresa.setCodigo(data.pedidos_farmacias[0].empresa_origen_id);
+                
+                if(data.pedidos_farmacias.length > 0)
+                {    
+                    $scope.rootVerPedidosFarmacias.Empresa.setCodigo(data.pedidos_farmacias[0].empresa_origen_id);
+                }
                
                 for (var i in data.pedidos_farmacias) {
 
@@ -143,7 +172,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 };
                 
                 pedido.setDatos(datos_pedido);
-                pedido.setTipo(2);
+                pedido.setTipo(pedido.TIPO_FARMACIA);
                 pedido.setObservacion(obj.observacion);
 
                         
@@ -200,6 +229,38 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
                 PedidoVenta.pedidoseleccionado = "";    
                 localStorageService.set("pedidoseleccionado", PedidoVenta.pedidoseleccionado);
+                
+                /**/
+                
+                var datos_pedido = {
+                        numero_pedido: "",
+                        fecha_registro: "",
+                        descripcion_estado_actual_pedido: "",
+                        estado_actual_pedido: "",
+                        estado_separacion: ""
+                    };
+
+                that.pedido.setDatos(datos_pedido);
+                that.pedido.setTipo(2);
+                that.pedido.setObservacion("");
+                
+                //Creación objeto farmacia
+                var farmacia = Farmacia.get(
+                        0,
+                        0,
+                        "",
+                        "",
+                        0,
+                        ""
+                );
+
+                that.pedido.setFarmacia(farmacia);
+
+                $scope.rootVerPedidosFarmacias.Empresa.setPedidoSeleccionado(that.pedido);
+                
+                /**/
+                
+                $scope.rootVerPedidosFarmacias.Empresa.getPedidoSeleccionado().vaciarProductos();
                 $state.go('CreaPedidosFarmacias');
             };
             

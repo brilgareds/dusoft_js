@@ -67,11 +67,16 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.existeRegistroDetalleTemporal(req, res);
     });    
     
+    // Consulta Encabezado de Pedido Temporal
+    app.post('/api/PedidosFarmacias/consultarPedidoFarmaciaTemporal', function(req, res) {
+        c_pedidos_farmacias.consultarPedidoFarmaciaTemporal(req, res);
+    });
+    
     // Trae listado de productos de pedido temporal
     app.post('/api/PedidosFarmacias/listarProductosDetalleTemporal', function(req, res) {
         c_pedidos_farmacias.listarProductosDetalleTemporal(req, res);
     });
-    
+
     // Elimina el registro del encabezado del pedido por empresa, centro de utilidad, bodega y usuario
     app.post('/api/PedidosFarmacias/eliminarRegistroEncabezadoTemporal', function(req, res) {
         c_pedidos_farmacias.eliminarRegistroEncabezadoTemporal(req, res);

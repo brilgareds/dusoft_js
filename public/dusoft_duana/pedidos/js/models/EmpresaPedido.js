@@ -11,7 +11,21 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
         EmpresaPedido.documentosTemporalesClientes = [];
         EmpresaPedido.documentosTemporalesFarmacias = [];
         EmpresaPedido.pedidoSeleccionado = {};
+        EmpresaPedido.lista_farmacias = [];
 
+        //Agregar farmacia
+        EmpresaPedido.agregarFarmacias = function(farmacia){
+            this.lista_farmacias.push(farmacia);
+        };
+        
+        EmpresaPedido.getFarmacias = function(){
+            return this.lista_farmacias;
+        };
+        
+        EmpresaPedido.vaciarFarmacias = function() {
+            this.lista_farmacias = [];
+        };
+        
         EmpresaPedido.agregarPedido = function(pedido) {
             this.pedidos.push(pedido);
         };

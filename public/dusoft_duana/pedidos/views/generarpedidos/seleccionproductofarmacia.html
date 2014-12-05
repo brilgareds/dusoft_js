@@ -57,7 +57,7 @@
         <br><br><br>
         <div class="fieldset contenedorGridSeleccion">
             <legend>Productos Seleccionados</legend>
-            <div class="row-fluid table-responsive" ng-if="rootSeleccionProductoFarmacia.listado_productos_seleccionados.length > 0">                
+            <div class="row-fluid table-responsive" ng-if="rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().lista_productos.length > 0">
                 <div class="mediaPantallaGrid grid-responsive" ng-grid="lista_productos_seleccionados"></div>
             </div>
         </div>

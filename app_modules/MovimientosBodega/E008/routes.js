@@ -150,6 +150,11 @@ module.exports = function(app, di_container) {
         c_e008.generarDocumentoDespachoFarmacias(req, res);
     });
     
+    //generar rotulo por caja
+    app.post('/api/movBodegas/E008/imprimirRotulo', function(req, res){
+       c_e008.imprimirRotulo(req, res); 
+    });
+    
     // ======== FIN Auditoria de Documento de Despacho ====================
 
     // ======== Events E008 ========

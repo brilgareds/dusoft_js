@@ -436,7 +436,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                 }
                 
                 if($scope.rootEditarProducto.producto.obtenerCantidadSeleccionada() > 0){
-                    console.log($scope.rootEditarProducto.producto.lotesSeleccionados.length, "seleccionados >>>>")
+                    console.log($scope.rootEditarProducto.producto.lotesSeleccionados.length, "seleccionados >>>>");
                     that.auditarItemsSeleccionados(0);
                 } else {
                     that.justificarPendiente();
@@ -675,6 +675,29 @@ define(["angular", "js/controllers",'models/ClientePedido',
                         //$scope.rootEditarProducto.caja.numero = "";
                     } else {
                         $scope.cerrar = false;
+                    }
+                });
+            };
+            
+            $scope.onImprimirRotulo = function(){
+                var url = API.DOCUMENTOS_TEMPORALES.IMPRIMIRROTULO;
+                var obj = {
+                    session:$scope.session,
+                    data:{
+                        documento_temporal: {
+                            documento_temporal_id: $scope.rootEditarProducto.documento.documento_temporal_id,
+                            numero_caja: $scope.rootEditarProducto.caja.numero
+                        }
+                    }
+                };
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    if(data.status === 200){
+                        var nombre_reporte = data.obj.movimientos_bodegas.nombre_reporte;
+                        
+                         $scope.visualizarReporte("/reports/"+nombre_reporte, "Rotulo_"+$scope.rootEditarProducto.caja.numero, "download");
+                    } else {
+                        
                     }
                 });
             };

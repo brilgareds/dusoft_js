@@ -1394,6 +1394,25 @@ E008Controller.prototype.auditoriaProductosFarmacias = function(req, res) {
 };
 
 
+E008Controller.prototype.imprimirRotulo = function(req, res){
+        G.jsreport.reporter.render({
+	    template: { 
+	        content: "<html><head></head><body><h1>Hello world descargado esta en la carpeta temporal</h1></body></html>",
+	        recipe: "phantom-pdf"
+	    }
+	}).then(function (response) {
+	   
+	   //copy the file from temporal, ouput content
+	    var name = response.result.path;
+            var fecha = new Date();
+            var nombreTmp = G.random.randomKey(2,5)+ "_"+fecha.toFormat('DD-MM-YYYY')+".pdf";
+            G.fs.copySync(name, G.dirname+"/public/reports/"+nombreTmp);
+            
+            res.send(G.utils.r(req.url, 'Url reporte rotulo', 200, {movimientos_bodegas: {nombre_reporte: nombreTmp}}));
+            //response.result.pipe(res);
+        });
+};
+
 // Generar Documento Despacho Clientes
 E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
 

@@ -466,6 +466,7 @@
 2014-12-05T16:01:56.408Z - info: Rendering request 14 finished in 190 ms
 2014-12-05T16:02:15.759Z - info: Starting rendering request 15
 2014-12-05T16:02:15.996Z - info: Rendering request 15 finished in 222 ms
+<<<<<<< HEAD
 2014-12-05T16:36:14.713Z - info: Searching for available extensions in C:\Users\alxlopez\Documents\desarrollo_duana\dusoft-server\
 2014-12-05T16:36:16.541Z - info: Found 21 extensions
 2014-12-05T16:36:16.588Z - info: Using extension excel-parser
@@ -488,3 +489,25 @@
 2014-12-05T16:36:17.458Z - info: reporter initialized
 2014-12-05T16:38:06.450Z - info: Starting rendering request 1
 2014-12-05T16:38:07.622Z - info: Rendering request 1 finished in 1172 ms
+=======
+2014-12-05T16:17:25.073Z - info: Searching for available extensions in f:\docseduar\projects\DusoftServer\dusoft-server\
+2014-12-05T16:17:26.577Z - info: Found 21 extensions
+2014-12-05T16:17:26.596Z - info: Using extension excel-parser
+2014-12-05T16:17:26.596Z - info: Using extension xlsx
+2014-12-05T16:17:26.596Z - info: Using extension html-to-xlsx
+2014-12-05T16:17:26.596Z - info: Using extension express
+2014-12-05T16:17:26.611Z - info: Using extension templates
+2014-12-05T16:17:26.611Z - info: Using extension html
+2014-12-05T16:17:26.611Z - info: Using extension phantom-pdf
+2014-12-05T16:17:26.611Z - info: Using extension scripts
+2014-12-05T16:17:26.611Z - info: Using extension data
+2014-12-05T16:17:26.611Z - info: Using extension images
+2014-12-05T16:17:26.611Z - info: Using extension statistics
+2014-12-05T16:17:26.611Z - info: Using extension reports
+2014-12-05T16:17:26.627Z - info: Using extension childTemplates
+2014-12-05T16:17:26.627Z - info: Using extension sample-template
+2014-12-05T16:17:27.144Z - info: Extensions loaded.
+2014-12-05T16:17:27.144Z - info: Creating default express app.
+2014-12-05T16:17:27.191Z - info: jsreport server successfully started on http port: 3003
+2014-12-05T16:17:27.294Z - info: reporter initialized
+>>>>>>> 759d9c5cd399eef12f44141fa7065b67cb3f14f7

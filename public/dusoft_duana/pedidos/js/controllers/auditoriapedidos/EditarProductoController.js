@@ -695,7 +695,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                     if(data.status === 200){
                         var nombre_reporte = data.obj.movimientos_bodegas.nombre_reporte;
                         
-                         $scope.visualizarReporte("/reports/"+nombre_reporte, "Rotulo_"+$scope.rootEditarProducto.caja.numero, "blank");
+                         $scope.visualizarReporte("/reports/"+nombre_reporte, "Rotulo_"+$scope.rootEditarProducto.caja.numero, "download");
                     } else {
                         
                     }

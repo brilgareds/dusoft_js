@@ -7,8 +7,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         '$scope', '$rootScope', 'Request',
         'EmpresaPedido', 'Farmacia', 'PedidoVenta',
         'API', "socket", "AlertService",
-        '$state', "Usuario", "localStorageService", '$modal',
-        function($scope, $rootScope, Request, EmpresaPedido, Farmacia, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService, $modal) {
+        '$state', "Usuario", "localStorageService", '$modal', 'ProductoPedido',
+        function($scope, $rootScope, Request, EmpresaPedido, Farmacia, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService, $modal, ProductoPedido) {
 
             $scope.expreg = new RegExp("^[0-9]*$");
 
@@ -405,7 +405,28 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         $scope.rootCreaPedidoFarmacia.listado_productos_pedido = data.obj.detalle_pedido;
                         
                         //crear detalle en el objeto
-                        
+                        data.obj.detalle_pedido.forEach(function(registro){
+
+                            var producto = ProductoPedido.get(
+                                                registro.codigo_producto,        //codigo_producto
+                                                registro.descripcion,            //descripcion
+                                                0,                               //existencia **hasta aquí heredado
+                                                0,                               //precio
+                                                registro.cantidad_solicitada,    //cantidad_solicitada
+                                                0,                               //cantidad_separada
+                                                "",                              //observacion
+                                                "",                              //disponible
+                                                "",                              //molecula
+                                                "",                              //existencia_farmacia
+                                                registro.tipo_producto,          //tipo_producto_id
+                                                "",                              //total_existencias_farmacia
+                                                "",                              //existencia_disponible
+                                                registro.cantidad_pendiente      //cantidad_pendiente
+                                            );
+                                                
+                            $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().agregarProducto(producto);
+                                                
+                        });
                     }
                     else{
 
@@ -432,11 +453,59 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     if (data.status === 200) {
 
                         console.log("Consulta exitosa: ", data.msj);
+                        
+                        //DATOS CONSULTA
+                        //farmacia_id, centro_utilidad, bodega, observacion, usuario_id, fecha_registro, empresa_destino, sw_despacho, estado, tipo_pedido
+                        
+                        /* Para continuar Modificación Proceso Normal de creación de objetos */
+                        
+                        //Crea empresa - setCodigo
+                        //$scope.rootCreaPedidoFarmacia.Empresa.setCodigo(data.obj.encabezado_pedido[0].empresa_destino);
+                        
+                        /* Ejemplo Parte 1 - Inicio*/
+                        
+                        //$scope.rootVerPedidosFarmacias.Empresa.setCodigo(data.pedidos_farmacias[0].empresa_origen_id);
+               
+                        //for (var i in data.pedidos_farmacias) {
 
+                      /*      var obj = data.pedidos_farmacias[i];
+
+                            var pedido = that.crearPedido(obj);
+
+                            $scope.rootVerPedidosFarmacias.Empresa.agregarPedidoFarmacia(pedido);*/
+
+                        //}
+                        /* Ejemplo Parte 1 - Fin*/
+                        
+                        /* Ejemplo parte 2 - Inicio */
+                        /*Usar función creaPedido*/
+                        /* Ejemplo parte 2 - Fin */
+                        
+                        //Variables para creación de Farmacia más adelante
                         var para_farmacia_id = data.obj.encabezado_pedido[0].farmacia_id;
                         var para_centro_utilidad = data.obj.encabezado_pedido[0].centro_utilidad;
                         var para_bodega = data.obj.encabezado_pedido[0].bodega;
                         var de_empresa_id = data.obj.encabezado_pedido[0].empresa_destino;
+                        
+                        //Crea empresa - setCodigo
+                        $scope.rootCreaPedidoFarmacia.Empresa.setCodigo(de_empresa_id);
+                        
+                        
+                        var pedido = PedidoVenta.get();
+                        //farmacia_id, centro_utilidad, bodega, observacion, usuario_id, fecha_registro, empresa_destino, sw_despacho, estado, tipo_pedido
+                        var datos_pedido = {
+                            numero_pedido: $scope.rootCreaPedidoFarmacia.pedido.numero_pedido,
+                            fecha_registro: data.obj.encabezado_pedido[0].fecha_registro,
+                            descripcion_estado_actual_pedido: "",
+                            estado_actual_pedido: data.obj.encabezado_pedido[0].estado,
+                            estado_separacion: ""
+                        };
+
+                        pedido.setDatos(datos_pedido);
+                        pedido.setTipo(2);
+                        pedido.setObservacion(data.obj.encabezado_pedido[0].observacion);
+                        
+                        console.log(">>>>>>>>>>>>>>>>>>> Pedido Creado: ", pedido);
 
                         $scope.rootCreaPedidoFarmacia.observacion = data.obj.encabezado_pedido[0].observacion;
 
@@ -488,6 +557,72 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                                 });
 
                                                 $scope.rootCreaPedidoFarmacia.para_seleccion_bodega = para_bodega+","+nombre_bodega;
+                                                
+                                                /* Aquí debo construir el objeto farmacia */
+                                                /*para_farmacia_id
+                                                para_centro_utilidad
+                                                para_bodega
+                                                
+                                                nombre_empresa
+                                                nombre_centro_utilidad
+                                                nombre_bodega*/
+                                                
+                                                var farmacia = Farmacia.get(
+                                                        para_farmacia_id,
+                                                        para_bodega,
+                                                        nombre_empresa,
+                                                        nombre_bodega,
+                                                        para_centro_utilidad,
+                                                        nombre_centro_utilidad
+                                                );
+
+                                                pedido.setFarmacia(farmacia);
+                                                
+                                                $scope.rootCreaPedidoFarmacia.Empresa.setPedidoSeleccionado(pedido);
+                                                
+                                                /* Inicio - Consulta Detalle Pedido */
+
+                                                var obj_detalle = {
+                                                    session: $scope.rootCreaPedidoFarmacia.session,
+                                                    data: {
+                                                        pedidos_farmacias: {
+                                                            numero_pedido: $scope.rootCreaPedidoFarmacia.pedido.numero_pedido,
+                                                        }
+                                                    }
+                                                };
+
+                                                Request.realizarRequest(API.PEDIDOS.CONSULTAR_DETALLE_PEDIDO_FARMACIA, "POST", obj_detalle, function(data) {
+
+                                                    if (data.status === 200) {
+                                                        $scope.rootCreaPedidoFarmacia.listado_productos_pedido = data.obj.detalle_pedido;
+
+                                                        data.obj.detalle_pedido.forEach(function(registro){
+
+                                                            var producto = ProductoPedido.get(
+                                                                            registro.codigo_producto,        //codigo_producto
+                                                                            registro.descripcion,            //descripcion
+                                                                            0,                               //existencia **hasta aquí heredado
+                                                                            0,                               //precio
+                                                                            registro.cantidad_solicitada,    //cantidad_solicitada
+                                                                            0,                               //cantidad_separada
+                                                                            "",                              //observacion
+                                                                            "",                              //disponible
+                                                                            "",                              //molecula
+                                                                            "",                              //existencia_farmacia
+                                                                            registro.tipo_producto,          //tipo_producto_id
+                                                                            "",                              //total_existencias_farmacia
+                                                                            "",                              //existencia_disponible
+                                                                            registro.cantidad_pendiente      //cantidad_pendiente
+                                                                        );
+
+                                                            $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().agregarProducto(producto);
+                                                        });
+                                                    }
+                                                    else{
+                                                        console.log("Error en la consulta del detalle: ", data.msj);
+                                                    }
+                                                });
+                                                /* Fin - Consulta Detalle Pedido*/ 
 
                                             });
                                         });
@@ -519,34 +654,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 });
 
                 /* Fin - Consulta de pedido */
-
-                /* Inicio - Consulta Detalle Pedido */
-
-                var obj_detalle = {
-                    session: $scope.rootCreaPedidoFarmacia.session,
-                    data: {
-                        pedidos_farmacias: {
-                            numero_pedido: $scope.rootCreaPedidoFarmacia.pedido.numero_pedido,
-                        }
-                    }
-                };
-
-                Request.realizarRequest(API.PEDIDOS.CONSULTAR_DETALLE_PEDIDO_FARMACIA, "POST", obj_detalle, function(data) {
-
-                    if (data.status === 200) {
-                        $scope.rootCreaPedidoFarmacia.listado_productos_pedido = data.obj.detalle_pedido;
-                    }
-                    else{
-
-                    }
-                });
-                /* Fin - Consulta Detalle Pedido*/                  
+                 
             };
-
+            
 
             //Grid para pedidos ya generados
             $scope.rootCreaPedidoFarmacia.detalle_pedido_generado = {
                 data: 'rootCreaPedidoFarmacia.listado_productos_pedido',
+                //data: 'rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().lista_productos',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 //enableCellSelection: true,

@@ -7,5 +7,6 @@ Queries.sql
 newrelic_agent.log
 package.sublime-workspace
 dist/
+public/reports/*
 tmp/*
 !.gitignore

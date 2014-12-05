@@ -4,7 +4,10 @@ define(["angular", "js/models"], function(angular, models) {
 
     //declare usermodel wrapper 'factory'
     models.factory('Pedido', function() {
-
+        
+        //Constantes para definir tipo de cliente
+        this.TIPO_CLIENTE  = 1;
+        this.TIPO_FARMACIA = 2;
 
         //declare usermodel class
         function Pedido() {

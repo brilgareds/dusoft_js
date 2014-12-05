@@ -20,6 +20,9 @@
                     <select ui-select2  class="pull-left anchoSeleccionEmpresa" ng-model="rootVerPedidosFarmacias.seleccion" data-placeholder="Seleccionar Farmacia" ng-change="valorSeleccionado()">
                         <option ng-repeat="farmacia in  rootVerPedidosFarmacias.listado_farmacias"  ng-value="farmacia.empresa_id" >{{farmacia.razon_social}}</option>
                     </select>
+<!--                    <select ui-select2  class="pull-left anchoSeleccionEmpresa" ng-model="farmacia_seleccionada" data-placeholder="Seleccionar Farmacia" ng-change="seleccion_farmacia()" 
+                            data-ng-options="farmacia as farmacia.get_nombre_farmacia() for farmacia in rootVerPedidosFarmacias.Empresa.getFarmacias()">                        
+                    </select>-->
                 </p>
             </div>
             

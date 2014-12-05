@@ -10,6 +10,8 @@ var program = require('commander');
 var nodemailer = require('nodemailer');
 var date_utils = require('date-utils');
 var multipart = require('connect-multiparty');
+var jsreport  = require("jsreport");
+
 
 /*=========================================
  * Variables Globales
@@ -144,6 +146,14 @@ app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     console.log(err);
     res.send(G.utils.r(req.url, 'Se ha generado un error interno code 2', 500, {msj : err}));
+});
+
+/*========================================
+    Carga libreria de reportes
+==========================================*/
+jsreport.bootstrapper().start().then(function(bootstrapper) {
+	G.jsreport =  bootstrapper;
+
 });
 
 /*=========================================

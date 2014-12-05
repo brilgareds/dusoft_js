@@ -9,5 +9,6 @@ package.sublime-workspace
 dist/
 public/reports/*
 data
+logs
 tmp/*
 !.gitignore

@@ -5,11 +5,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
     var fo = controllers.controller('VerPedidosFarmaciasController', [
         '$scope', '$rootScope', 'Request',
-        'EmpresaPedido', 'Farmacia', 'PedidoVenta',
+        'EmpresaPedido', 'FarmaciaVenta', 'PedidoVenta',
         'API', "socket", "AlertService",
         '$state', "Usuario", "localStorageService",
 
-        function($scope, $rootScope, Request, EmpresaPedido, Farmacia, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService) {
+        function($scope, $rootScope, Request, EmpresaPedido, FarmaciaVenta, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService) {
             
             var that = this;
             
@@ -65,7 +65,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
                 farmacias.forEach(function(registro){
                     
-                    var farmacia = Farmacia.get(registro.empresa_id, "", registro.razon_social, "", 0, "");
+                    var farmacia = FarmaciaVenta.get(registro.empresa_id, "", registro.razon_social, "", 0, "");
                     
                     $scope.rootVerPedidosFarmacias.Empresa.agregarFarmacias(farmacia);
                 });
@@ -172,11 +172,12 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 };
                 
                 pedido.setDatos(datos_pedido);
-                pedido.setTipo(pedido.TIPO_FARMACIA);
+                pedido.setTipo(PedidoVenta.TIPO_FARMACIA);
+                
                 pedido.setObservacion(obj.observacion);
 
                         
-                var farmacia = Farmacia.get(
+                var farmacia = FarmaciaVenta.get(
                         obj.farmacia_id,
                         obj.bodega_id,
                         obj.nombre_farmacia,
@@ -230,7 +231,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 PedidoVenta.pedidoseleccionado = "";    
                 localStorageService.set("pedidoseleccionado", PedidoVenta.pedidoseleccionado);
                 
-                /**/
+                /*Inicio - Creación de objeto*/
                 
                 var datos_pedido = {
                         numero_pedido: "",
@@ -245,7 +246,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 that.pedido.setObservacion("");
                 
                 //Creación objeto farmacia
-                var farmacia = Farmacia.get(
+                var farmacia = FarmaciaVenta.get(
                         0,
                         0,
                         "",
@@ -258,7 +259,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 $scope.rootVerPedidosFarmacias.Empresa.setPedidoSeleccionado(that.pedido);
                 
-                /**/
+                /*Fin - Creación de objeto*/
                 
                 $scope.rootVerPedidosFarmacias.Empresa.getPedidoSeleccionado().vaciarProductos();
                 $state.go('CreaPedidosFarmacias');
@@ -281,7 +282,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 pedido.setObservacion(data.observacion);
 
                         
-                var farmacia = Farmacia.get(
+                var farmacia = FarmaciaVenta.get(
                         data.farmacia.farmacia_id,
                         data.farmacia.bodega_id,
                         data.farmacia.nombre_farmacia,

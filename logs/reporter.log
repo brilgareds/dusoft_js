@@ -511,3 +511,43 @@
 2014-12-05T16:17:27.191Z - info: jsreport server successfully started on http port: 3003
 2014-12-05T16:17:27.294Z - info: reporter initialized
 >>>>>>> 759d9c5cd399eef12f44141fa7065b67cb3f14f7
+2014-12-05T16:47:38.423Z - info: Searching for available extensions in C:\Users\alxlopez\Documents\desarrollo_duana\dusoft-server\
+2014-12-05T16:47:39.344Z - info: Found 21 extensions
+2014-12-05T16:47:39.376Z - info: Using extension excel-parser
+2014-12-05T16:47:39.376Z - info: Using extension xlsx
+2014-12-05T16:47:39.376Z - info: Using extension html-to-xlsx
+2014-12-05T16:47:39.376Z - info: Using extension express
+2014-12-05T16:47:39.376Z - info: Using extension templates
+2014-12-05T16:47:39.376Z - info: Using extension html
+2014-12-05T16:47:39.376Z - info: Using extension phantom-pdf
+2014-12-05T16:47:39.391Z - info: Using extension scripts
+2014-12-05T16:47:39.391Z - info: Using extension data
+2014-12-05T16:47:39.391Z - info: Using extension images
+2014-12-05T16:47:39.407Z - info: Using extension statistics
+2014-12-05T16:47:39.407Z - info: Using extension reports
+2014-12-05T16:47:39.407Z - info: Using extension childTemplates
+2014-12-05T16:47:39.407Z - info: Using extension sample-template
+2014-12-05T16:47:40.126Z - info: Extensions loaded.
+2014-12-05T16:47:40.126Z - info: Creating default express app.
+2014-12-05T16:47:40.313Z - info: jsreport server successfully started on http port: 3003
+2014-12-05T16:47:41.069Z - info: reporter initialized
+2014-12-06T15:56:47.529Z - info: Searching for available extensions in C:\Users\alxlopez\Documents\desarrollo_duana\dusoft-server\
+2014-12-06T15:56:48.683Z - info: Found 21 extensions
+2014-12-06T15:56:48.728Z - info: Using extension excel-parser
+2014-12-06T15:56:48.731Z - info: Using extension xlsx
+2014-12-06T15:56:48.733Z - info: Using extension html-to-xlsx
+2014-12-06T15:56:48.734Z - info: Using extension express
+2014-12-06T15:56:48.736Z - info: Using extension templates
+2014-12-06T15:56:48.738Z - info: Using extension html
+2014-12-06T15:56:48.740Z - info: Using extension phantom-pdf
+2014-12-06T15:56:48.744Z - info: Using extension scripts
+2014-12-06T15:56:48.746Z - info: Using extension data
+2014-12-06T15:56:48.756Z - info: Using extension images
+2014-12-06T15:56:48.758Z - info: Using extension statistics
+2014-12-06T15:56:48.759Z - info: Using extension reports
+2014-12-06T15:56:48.761Z - info: Using extension childTemplates
+2014-12-06T15:56:48.763Z - info: Using extension sample-template
+2014-12-06T15:56:49.935Z - info: Extensions loaded.
+2014-12-06T15:56:49.940Z - info: Creating default express app.
+2014-12-06T15:56:50.306Z - info: jsreport server successfully started on http port: 3003
+2014-12-06T15:56:50.376Z - info: reporter initialized

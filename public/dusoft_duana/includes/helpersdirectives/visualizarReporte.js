@@ -10,8 +10,8 @@ define(["angular","js/directive"], function(angular, directive){
         directive.restrict = 'E';
 
 
-        directive.controller = ["$scope",function($scope){
-            $scope.$parent.visualizarReporte = function(url, nombre, tipo){
+        directive.controller = ["$scope",function($scope){ 
+            $scope.visualizarReporte = function(url, nombre, tipo){
                 if(tipo === 'download'){
                     var link = document.createElement("a");
                     link.download = nombre;

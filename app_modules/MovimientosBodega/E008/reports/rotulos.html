@@ -1,0 +1,45 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <link  rel="stylesheet" href="{{this.style}}" />
+        <script>
+            function init(){
+                document.getElementById("response").innerHTML = window.location.href;
+            }
+        </script>
+    </head>
+    <body onload="init()">
+            
+            <table>
+                <tr>
+                    <td>
+                        Codigo
+                    </td>
+                    <td>
+                        Nombre
+                    </td>
+                </tr>
+                
+                {{#each productos}}
+                     <tr>
+                         <td>
+                             {{~obtenerNombre this}}
+                         </td>
+                         <td>
+                             {{codigo}}
+                         </td>
+                     </tr>
+                {{/each}}
+            </table>
+            
+        <div id="response">
+            
+        </div>
+        <div>
+            {{this.style}}
+        </div>
+    </body>
+</html>

@@ -8,6 +8,7 @@ newrelic_agent.log
 package.sublime-workspace
 dist/
 public/reports/*
-data
+data/
+logs/
 tmp/*
 !.gitignore

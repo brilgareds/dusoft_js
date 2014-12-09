@@ -475,6 +475,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                    url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO_FARMACIA; 
                 }
                 
+                console.log(typeof documento.pedido.tipo, ">>>>> ",documento.pedido.TIPO_FARMACIA)
+                return;
 
                 var obj = {
                     session:$scope.session,

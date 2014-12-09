@@ -661,6 +661,19 @@ PedidosClienteModel.prototype.obtener_responsables_del_pedido = function(numero_
 };
 
 
+// obtiene informacion del rotulo para imprimir
+PedidosClienteModel.prototype.obtenerDetalleRotulo = function(numero_pedido, numero_caja, callback) {
+
+
+    var sql = "SELECT a.direccion, a.cliente, '' AS departamento, a.numero_caja FROM inv_rotulo_caja a\
+               WHERE a.solicitud_prod_a_bod_ppal_id = $1 AND a.numero_caja = $2;";
+
+    G.db.query(sql, [numero_pedido, numero_caja], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+
 // Pedidos en Donde esta pendiente por entregar el Producto
 PedidosClienteModel.prototype.listar_pedidos_pendientes_by_producto = function(empresa, codigo_producto, callback) {
 

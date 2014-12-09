@@ -240,3 +240,14 @@
     at Object.expressInit [as handle] (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\express\lib\middleware.js:30:5)
     at next (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\express\node_modules\connect\lib\proto.js:193:15)
     at Object.query [as handle] (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\express\node_modules\connect\lib\middleware\query.js:45:5)
+2014-12-09T13:06:00.511Z - error: Error during processing request: http://10.0.2.191:3003/api/report?studio=normal details: Cannot read property 'template' of undefined TypeError: Cannot read property 'template' of undefined
+    at f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\jsreport\extension\express\lib\routes.js:76:32
+    at callbacks (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\express\lib\router\index.js:164:37)
+    at param (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\express\lib\router\index.js:138:11)
+    at pass (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\express\lib\router\index.js:145:5)
+    at Router._dispatch (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\express\lib\router\index.js:173:5)
+    at Object.router (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\express\lib\router\index.js:33:10)
+    at next (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\express\node_modules\connect\lib\proto.js:193:15)
+    at Object.expressInit [as handle] (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\express\lib\middleware.js:30:5)
+    at next (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\express\node_modules\connect\lib\proto.js:193:15)
+    at Object.query [as handle] (f:\docseduar\projects\DusoftServer\dusoft-server\node_modules\express\node_modules\connect\lib\middleware\query.js:45:5)

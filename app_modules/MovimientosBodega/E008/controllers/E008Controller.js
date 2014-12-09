@@ -1395,31 +1395,42 @@ E008Controller.prototype.auditoriaProductosFarmacias = function(req, res) {
 
 
 E008Controller.prototype.imprimirRotulo = function(req, res){
-        G.jsreport.reporter.render({
-	    template: { 
-	        content: G.fs.readFileSync('app_modules/MovimientosBodega/E008/reports/rotulos.html', 'utf8'),
-                helpers: G.fs.readFileSync('app_modules/MovimientosBodega/E008/reports/javascripts/rotulos.js', 'utf8'),
-	        recipe: "phantom-pdf"
-	    },
-            data:{
-                style:G.dirname+'/app_modules/MovimientosBodega/E008/reports/stylesheets/rotulos.css',
-                productos:[
-                    {codigo:"2544", nombre:"ibuprofeno" },
-                    {codigo:"8888477", nombre:"acetaminofen"},
-                    {codigo:"8455", nombre:"captopril"}
-                ]
-            }
-	}).then(function (response) {
-	   
-	   //copy the file from temporal, ouput content
-	    var name = response.result.path;
-            var fecha = new Date();
-            var nombreTmp = G.random.randomKey(2,5)+ "_"+fecha.toFormat('DD-MM-YYYY')+".pdf";
-            G.fs.copySync(name, G.dirname+"/public/reports/"+nombreTmp);
-            
-            res.send(G.utils.r(req.url, 'Url reporte rotulo', 200, {movimientos_bodegas: {nombre_reporte: nombreTmp}}));
-            //response.result.pipe(res);
-        });
+    
+    var that = this;
+
+    var args = req.body.data;
+
+    /*if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined) {
+        res.send(G.utils.r(req.url, 'Documento temporal o numero_pedido  No Estan Definidos', 404, {}));
+        return;
+    }*/
+    
+    
+    G.jsreport.reporter.render({
+        template: { 
+            content: G.fs.readFileSync('app_modules/MovimientosBodega/E008/reports/rotulos.html', 'utf8'),
+            helpers: G.fs.readFileSync('app_modules/MovimientosBodega/E008/reports/javascripts/rotulos.js', 'utf8'),
+            recipe: "phantom-pdf"
+        },
+        data:{
+            style:G.dirname+'/app_modules/MovimientosBodega/E008/reports/stylesheets/rotulos.css',
+            productos:[
+                {codigo:"2544", nombre:"ibuprofeno" },
+                {codigo:"8888477", nombre:"acetaminofen"},
+                {codigo:"8455", nombre:"captopril"}
+            ]
+        }
+    }).then(function (response) {
+
+       //copy the file from temporal, ouput content
+        var name = response.result.path;
+        var fecha = new Date();
+        var nombreTmp = G.random.randomKey(2,5)+ "_"+fecha.toFormat('DD-MM-YYYY')+".pdf";
+        G.fs.copySync(name, G.dirname+"/public/reports/"+nombreTmp);
+
+        res.send(G.utils.r(req.url, 'Url reporte rotulo', 200, {movimientos_bodegas: {nombre_reporte: nombreTmp}}));
+        //response.result.pipe(res);
+    });
 };
 
 // Generar Documento Despacho Clientes
@@ -1567,7 +1578,8 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
                     return;
                 }
                 
-
+                console.log("generar documento de farmacias >>>>>>>>>>>>>>>>>>>>>>");
+                return;
                 that.m_e008.generar_documento_despacho_farmacias(documento_temporal_id, usuario_id, auditor_id, function(err, empresa_id, prefijo_documento, numero_documento) {
 
                     if (err) {

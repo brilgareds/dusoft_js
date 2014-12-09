@@ -1447,39 +1447,24 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             $scope.subir_archivo_plano = function() {
 
-                if ($scope.numero_orden > 0) {
-                    // Solo Subir Plano
-                    $scope.rootCreaPedidoFarmacia.opciones_archivo.opts.query.data = JSON.stringify({
-                        ordenes_compras: {
-                            empresa_id: '03',
-                            numero_orden: $scope.numero_orden,
-                            codigo_proveedor_id: $scope.codigo_proveedor_id
-                        }
-                    });
-
-                    $scope.rootCreaPedidoFarmacia.opciones_archivo.upload();
-
-                } else {
                     // Crear OC y subir plano
+                    //that.set_orden_compra();
                     
-                    that.set_orden_compra();
-                    
-                    that.insertar_cabercera_orden_compra(function(continuar) {
+                    //that.insertar_cabercera_orden_compra(function(continuar) {
 
-                        if (continuar) {
-
-                            $scope.rootCreaPedidoFarmacia.opciones_archivo.opts.query.data = JSON.stringify({
-                                ordenes_compras: {
-                                    empresa_id: '03',
-                                    numero_orden: $scope.numero_orden,
-                                    codigo_proveedor_id: $scope.codigo_proveedor_id
-                                }
-                            });
-                            
-                            $scope.rootCreaPedidoFarmacia.opciones_archivo.upload();
-                        }
-                    });
-                }
+//                        if (continuar) {
+//
+//                            $scope.rootCreaPedidoFarmacia.opciones_archivo.opts.query.data = JSON.stringify({
+//                                ordenes_compras: {
+//                                    empresa_id: '03',
+//                                    numero_orden: $scope.numero_orden,
+//                                    codigo_proveedor_id: $scope.codigo_proveedor_id
+//                                }
+//                            });
+//                            
+//                            $scope.rootCreaPedidoFarmacia.opciones_archivo.upload();
+//                        }
+//                    });
             };
 
             $scope.respuesta_archivo_plano = function(file, message) {

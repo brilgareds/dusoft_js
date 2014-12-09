@@ -1428,6 +1428,115 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
 
             });
+        
+/* Código Camilo */
+            $scope.rootCreaPedidoFarmacia.opciones_archivo = new Flow();
+            $scope.rootCreaPedidoFarmacia.opciones_archivo.target = API.PEDIDOS.ARCHIVO_PLANO_PEDIDO_FARMACIA;
+            $scope.rootCreaPedidoFarmacia.opciones_archivo.testChunks = false;
+            $scope.rootCreaPedidoFarmacia.opciones_archivo.singleFile = true;
+            $scope.rootCreaPedidoFarmacia.opciones_archivo.query = {
+                session: JSON.stringify($scope.session)
+            };
+
+
+
+            $scope.cargar_archivo_plano = function($flow) {
+
+                $scope.rootCreaPedidoFarmacia.opciones_archivo = $flow;
+            };
+
+            $scope.subir_archivo_plano = function() {
+
+                if ($scope.numero_orden > 0) {
+                    // Solo Subir Plano
+                    $scope.rootCreaPedidoFarmacia.opciones_archivo.opts.query.data = JSON.stringify({
+                        ordenes_compras: {
+                            empresa_id: '03',
+                            numero_orden: $scope.numero_orden,
+                            codigo_proveedor_id: $scope.codigo_proveedor_id
+                        }
+                    });
+
+                    $scope.rootCreaPedidoFarmacia.opciones_archivo.upload();
+
+                } else {
+                    // Crear OC y subir plano
+                    
+                    that.set_orden_compra();
+                    
+                    that.insertar_cabercera_orden_compra(function(continuar) {
+
+                        if (continuar) {
+
+                            $scope.rootCreaPedidoFarmacia.opciones_archivo.opts.query.data = JSON.stringify({
+                                ordenes_compras: {
+                                    empresa_id: '03',
+                                    numero_orden: $scope.numero_orden,
+                                    codigo_proveedor_id: $scope.codigo_proveedor_id
+                                }
+                            });
+                            
+                            $scope.rootCreaPedidoFarmacia.opciones_archivo.upload();
+                        }
+                    });
+                }
+            };
+
+            $scope.respuesta_archivo_plano = function(file, message) {
+
+                var data = (message !== undefined) ? JSON.parse(message) : {};
+
+
+                if (data.status === 200) {
+
+                    $scope.rootCreaPedidoFarmacia.opciones_archivo.cancel();
+
+                    $scope.buscar_detalle_orden_compra();
+
+                    $scope.activar_tab.tab_productos = true;
+
+                    $scope.productos_validos = data.obj.ordenes_compras.productos_validos;
+                    $scope.productos_invalidos = data.obj.ordenes_compras.productos_invalidos;
+
+
+                    $scope.opts = {
+                        backdrop: true,
+                        backdropClick: true,
+                        dialogFade: false,
+                        keyboard: true,
+                        template: ' <div class="modal-header">\
+                                        <button type="button" class="close" ng-click="close()">&times;</button>\
+                                        <h4 class="modal-title">Listado Productos </h4>\
+                                    </div>\
+                                    <div class="modal-body row">\
+                                        <div class="col-md-12">\
+                                            <h4 >Lista Productos INVALIDOS.</h4>\
+                                            <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
+                                                <div class="list-group">\
+                                                    <a ng-repeat="producto in productos_invalidos" class="list-group-item defaultcursor" href="javascript:void(0)">\
+                                                        {{ producto.codigo_producto}}\
+                                                    </a>\
+                                                </div>\
+                                            </div>\
+                                        </div>\
+                                    </div>\
+                                    <div class="modal-footer">\
+                                        <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                    </div>',
+                        scope: $scope,
+                        controller: function($scope, $modalInstance) {
+                            $scope.close = function() {
+                                $modalInstance.close();
+                            };
+                        }
+                    };
+                    var modalInstance = $modal.open($scope.opts);
+
+                } else {
+                    AlertService.mostrarMensaje("warning", data.msj);
+                }
+            };
+/* Código Camilo */            
 
             that.buscarPedido("");
 

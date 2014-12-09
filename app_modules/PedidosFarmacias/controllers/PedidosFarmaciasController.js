@@ -1204,6 +1204,29 @@ PedidosFarmacias.prototype.pedidoFarmaciaArchivoPlano = function(req, res) {
 
     var args = req.body.data;
     
+    if (args.pedido_farmacia === undefined || args.pedido_farmacia.codigo_producto === undefined || args.pedido_farmacia.cantidad === undefined) {
+        res.send(G.utils.r(req.url, 'codigo_producto o cantidad no esta definidos', 404, {}));
+        return;
+    }
+
+    if (args.pedido_farmacia.codigo_producto === '' || args.pedido_farmacia.codigo_producto === 0 || args.pedido_farmacia.codigo_producto === '0') {
+        res.send(G.utils.r(req.url, 'Se requiere el código del Producto', 404, {}));
+        return;
+    }
+/**/
+    if (args.pedido_farmacia.cantidad === '' || args.pedido_farmacia.cantidad === 0 || args.pedido_farmacia.cantidad === '0') {
+        res.send(G.utils.r(req.url, 'Se requiere cantidad', 404, {}));
+        return;
+    }
+
+    if (req.files === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere un archivo plano', 404, {}));
+        return;
+    }
+
+    var codigo_producto = args.pedido_farmacia.codigo_producto;
+    var cantidad = args.pedido_farmacia.cantidad;
+    
     console.log(">>>>>>>>>>>>>>>>>>>>>>>>> RUTA ENCONTRADA <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
     
     //console.log(req);

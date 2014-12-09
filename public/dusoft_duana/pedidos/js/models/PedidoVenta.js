@@ -2,7 +2,12 @@
 define(["angular", "js/models", "includes/classes/Pedido"], function(angular, models) {
 
     models.factory('PedidoVenta', ["Pedido", function(Pedido) {
-
+            
+        //constants
+        this.TIPO_CLIENTE  = 1;
+        this.TIPO_FARMACIA = 2; 
+       
+        
         function PedidoVenta() {
             Pedido.getClass().call(this);
             this.numero_cotizacion = "";

@@ -10,7 +10,7 @@
   "controllers/generarpedidos/VerPedidosFarmaciasController", "loader",  "models/EmpresaPedido",
   "includes/menu/menucontroller", "url", "includes/alert/Alert",
   "includes/header/HeaderController", 'storage', "httpinterceptor",
-  "includes/classes/Usuario", "includes/http/Request", "dragndropfile", "includes/helpersdirectives/visualizarReporte","includes/classes/Pedido"
+  "includes/classes/Usuario", "includes/http/Request", "dragndropfile", "includes/helpersdirectives/visualizarReporte"
 
   ], function(angular){
   /* App Module and its dependencies */

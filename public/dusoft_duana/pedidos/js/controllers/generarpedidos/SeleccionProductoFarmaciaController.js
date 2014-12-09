@@ -7,14 +7,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         '$scope', '$rootScope', 'Request',
         'EmpresaPedido', 'ClientePedido', 'PedidoVenta',
         'API', "socket", "AlertService",
-        '$state', 'Usuario', 'ProductoPedido', '$modal', 'Farmacia',
-        function($scope, $rootScope, Request, EmpresaPedido, Cliente, PedidoVenta, API, socket, AlertService, $state, Usuario, ProductoPedido, $modal, Farmacia) {
+        '$state', 'Usuario', 'ProductoPedido', '$modal', 'FarmaciaVenta',
+        function($scope, $rootScope, Request, EmpresaPedido, Cliente, PedidoVenta, API, socket, AlertService, $state, Usuario, ProductoPedido, $modal, FarmaciaVenta) {
 
             $scope.expreg = new RegExp("^[0-9]*$");
 
             var that = this;
 
-            $scope.$on('cargarGridSeleccionadoSlide', function(event/*, mass*/) {
+           // $scope.$on('cargarGridSeleccionadoSlide', function(event/*, mass*/) {
                 //Recibimos la GRID del PADRE: -> mass
                 //$scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados = mass;
 
@@ -30,7 +30,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     });
                 }*/
 
-            });
+           // });
 
             $scope.cerrar = function() {
                 $scope.$emit('cerrarseleccionproducto', {animado: true});

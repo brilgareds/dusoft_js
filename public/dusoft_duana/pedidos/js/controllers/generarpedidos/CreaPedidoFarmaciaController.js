@@ -5,10 +5,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
     var fo = controllers.controller('CreaPedidoFarmaciaController', [
         '$scope', '$rootScope', 'Request',
-        'EmpresaPedido', 'Farmacia', 'PedidoVenta',
+        'EmpresaPedido', 'FarmaciaVenta', 'PedidoVenta',
         'API', "socket", "AlertService",
         '$state', "Usuario", "localStorageService", '$modal', 'ProductoPedido',
-        function($scope, $rootScope, Request, EmpresaPedido, Farmacia, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService, $modal, ProductoPedido) {
+        function($scope, $rootScope, Request, EmpresaPedido, FarmaciaVenta, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService, $modal, ProductoPedido) {
 
             $scope.expreg = new RegExp("^[0-9]*$");
 
@@ -528,7 +528,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                                 $scope.rootCreaPedidoFarmacia.para_seleccion_bodega = para_bodega+","+nombre_bodega;
                                                 
                                                 //Creación objeto farmacia
-                                                var farmacia = Farmacia.get(
+                                                var farmacia = FarmaciaVenta.get(
                                                         para_farmacia_id,
                                                         para_bodega,
                                                         nombre_empresa,
@@ -632,13 +632,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'nueva_cantidad', displayName: 'Modificar Cantidad', enableCellEdit: true, width: "10%"},
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "11%",
                         cellTemplate: ' <div class="row">\n\
-                                                <button class="btn btn-default btn-xs" ng-click="onModificarCantidad(row)" ng-disabled="row.entity.nueva_cantidad==null || !expreg.test(row.entity.nueva_cantidad)">\n\
-                                                    <span class="glyphicon glyphicon-pencil">Modificar</span>\n\
-                                                </button>\n\
-                                                <button class="btn btn-danger btn-xs" ng-click="onEliminarProducto(row)">\n\
-                                                    <span class="glyphicon glyphicon-minus-sign">Eliminar</span>\n\
-                                                </button>\n\
-                                            </div>'
+                                            <button class="btn btn-default btn-xs" ng-click="onModificarCantidad(row)" ng-disabled="row.entity.nueva_cantidad==null || !expreg.test(row.entity.nueva_cantidad)">\n\
+                                                <span class="glyphicon glyphicon-pencil">Modificar</span>\n\
+                                            </button>\n\
+                                            <button class="btn btn-danger btn-xs" ng-click="onEliminarProducto(row)">\n\
+                                                <span class="glyphicon glyphicon-minus-sign">Eliminar</span>\n\
+                                            </button>\n\
+                                        </div>'
                     }
                 ]
             };
@@ -681,17 +681,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 }
                 else{
 
-                    var template = ' <div class="modal-header">\
-                                        <button type="button" class="close" ng-click="close()">&times;</button>\
-                                        <h4 class="modal-title">Mensaje del Sistema</h4>\
-                                    </div>\
-                                    <div class="modal-body">\
-                                        <h4>Seguro desea bajar la cantidad de '+row.entity.cantidad_solicitada+' a '+row.entity.nueva_cantidad+' ? </h4> \
-                                    </div>\
-                                    <div class="modal-footer">\
-                                        <button class="btn btn-warning" ng-click="close()">No</button>\
-                                        <button class="btn btn-primary" ng-click="modificarCantidad()" ng-disabled="" >Si</button>\
-                                    </div>';
+                        var template = ' <div class="modal-header">\
+                                            <button type="button" class="close" ng-click="close()">&times;</button>\
+                                            <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                        </div>\
+                                        <div class="modal-body">\
+                                            <h4>Seguro desea bajar la cantidad de '+row.entity.cantidad_solicitada+' a '+row.entity.nueva_cantidad+' ? </h4> \
+                                        </div>\
+                                        <div class="modal-footer">\
+                                            <button class="btn btn-warning" ng-click="close()">No</button>\
+                                            <button class="btn btn-primary" ng-click="modificarCantidad()" ng-disabled="" >Si</button>\
+                                        </div>';
                     
                     controller = function($scope, $modalInstance) {
 
@@ -751,7 +751,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                        if((data.obj.pedidos_farmacias[0].estado_actual_pedido !== '0' && data.obj.pedidos_farmacias[0].estado_actual_pedido !== '1')|| data.obj.pedidos_farmacias[0].estado_separacion !== null){
                            //No se debe hacer Modificación
                            
-                            var template = ' <div class="modal-header">\
+                            var template = '<div class="modal-header">\
                                                 <button type="button" class="close" ng-click="close()">&times;</button>\
                                                 <h4 class="modal-title">Mensaje del Sistema</h4>\
                                             </div>\
@@ -854,7 +854,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             $scope.onEliminarProducto = function(row){
                 
-                    var template = ' <div class="modal-header">\
+                    var template = '<div class="modal-header">\
                                         <button type="button" class="close" ng-click="close()">&times;</button>\
                                         <h4 class="modal-title">Mensaje del Sistema</h4>\
                                     </div>\
@@ -932,7 +932,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             //definicion y delegados del Tabla de pedidos clientes
             $scope.rootCreaPedidoFarmacia.lista_productos = {
-                //data: 'rootCreaPedidoFarmacia.listado_productos',
                 data: 'rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().lista_productos',
                 enableColumnResize: true,
                 enableRowSelection: false,
@@ -976,7 +975,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 that.pedido.setObservacion($scope.rootCreaPedidoFarmacia.observacion);
                 
                 //Creación objeto farmacia
-                var farmacia = Farmacia.get(
+                var farmacia = FarmaciaVenta.get(
                         parseInt($scope.rootCreaPedidoFarmacia.para_seleccion_empresa.split(",")[0]),
                         parseInt($scope.rootCreaPedidoFarmacia.para_seleccion_bodega.split(",")[0]),
                         $scope.rootCreaPedidoFarmacia.para_seleccion_empresa.split(",")[1],
@@ -991,7 +990,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 $scope.$emit('mostrarseleccionproducto', tipo_cliente, datos_de, datos_para, observacion, that.pedido);
 
-                $scope.$broadcast('cargarGridSeleccionadoSlide'/*, $scope.rootCreaPedidoFarmacia.listado_productos*/);
+                //$scope.$broadcast('cargarGridSeleccionadoSlide'/*, $scope.rootCreaPedidoFarmacia.listado_productos*/);
             };
 
             $scope.valorSeleccionado = function() {
@@ -1091,7 +1090,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             }
 
                             //Creación objeto farmacia
-                            var farmacia = Farmacia.get(
+                            var farmacia = FarmaciaVenta.get(
                                     parseInt($scope.rootCreaPedidoFarmacia.para_seleccion_empresa.split(",")[0]),
                                     parseInt($scope.rootCreaPedidoFarmacia.para_seleccion_bodega.split(",")[0]),
                                     $scope.rootCreaPedidoFarmacia.para_seleccion_empresa.split(",")[1],

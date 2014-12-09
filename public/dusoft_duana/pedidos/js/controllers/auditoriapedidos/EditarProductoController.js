@@ -680,7 +680,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
             };
             
             $scope.onImprimirRotulo = function(){
-                var url = API.DOCUMENTOS_TEMPORALES.IMPRIMIRROTULO;
+                var url = API.DOCUMENTOS_TEMPORALES.IMPRIMIR_ROTULO_CLIENTES;
                 var obj = {
                     session:$scope.session,
                     data:{

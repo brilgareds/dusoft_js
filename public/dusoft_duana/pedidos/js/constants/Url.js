@@ -30,7 +30,7 @@ define(["angular"], function(angular) {
                 'ELIMINAR_ITEM_TEMPORAL':BASE_URL+'/movBodegas/E008/eliminarProductoDocumentoTemporal',
                 'CONSULTAR_ITEMS_POR_PRODUCTO':BASE_URL+'/movBodegas/E008/buscarItemsTemporal',
                 'ACTUALIZAR_CAJA_TEMPORALES':BASE_URL+'/movBodegas/E008/actualizarCajaDeTemporales',
-                'IMPRIMIRROTULO':BASE_URL+'/movBodegas/E008/imprimirRotulo'
+                'IMPRIMIR_ROTULO_CLIENTES':BASE_URL+'/movBodegas/E008/imprimirRotuloClientes'
 	    },
 	    'PEDIDOS' : {
 	    	'LISTAR_PEDIDOS': BASE_URL+'/PedidosClientes/listarPedidos',	

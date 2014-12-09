@@ -1394,19 +1394,26 @@ E008Controller.prototype.auditoriaProductosFarmacias = function(req, res) {
 };
 
 
-E008Controller.prototype.imprimirRotulo = function(req, res){
+E008Controller.prototype.imprimirRotuloClientes = function(req, res){
     
     var that = this;
 
     var args = req.body.data;
 
-    /*if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined) {
+    /*if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined || args.documento_temporal.numero_caja) {
         res.send(G.utils.r(req.url, 'Documento temporal o numero_pedido  No Estan Definidos', 404, {}));
         return;
     }*/
     
     
-    G.jsreport.reporter.render({
+    that.m_pedidos_clientes.obtenerDetalleRotulo(/*args.documento_temporal.numero_pedido*/33441, /*args.documento_temporal.numero_caja*/1, function(e, rows){
+        console.log("cajas >>>>>>>>>>>>>>>>>>>>>>");
+        console.log(rows);
+        return;
+    });
+    
+    
+    /*G.jsreport.reporter.render({
         template: { 
             content: G.fs.readFileSync('app_modules/MovimientosBodega/E008/reports/rotulos.html', 'utf8'),
             helpers: G.fs.readFileSync('app_modules/MovimientosBodega/E008/reports/javascripts/rotulos.js', 'utf8'),
@@ -1430,7 +1437,7 @@ E008Controller.prototype.imprimirRotulo = function(req, res){
 
         res.send(G.utils.r(req.url, 'Url reporte rotulo', 200, {movimientos_bodegas: {nombre_reporte: nombreTmp}}));
         //response.result.pipe(res);
-    });
+    });*/
 };
 
 // Generar Documento Despacho Clientes

@@ -14,7 +14,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             var that = this;
 
-            $scope.$on('cargarGridSeleccionadoSlide', function(event/*, mass*/) {
+           // $scope.$on('cargarGridSeleccionadoSlide', function(event/*, mass*/) {
                 //Recibimos la GRID del PADRE: -> mass
                 //$scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados = mass;
 
@@ -30,7 +30,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     });
                 }*/
 
-            });
+           // });
 
             $scope.cerrar = function() {
                 $scope.$emit('cerrarseleccionproducto', {animado: true});

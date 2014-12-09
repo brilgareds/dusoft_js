@@ -990,7 +990,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 $scope.$emit('mostrarseleccionproducto', tipo_cliente, datos_de, datos_para, observacion, that.pedido);
 
-                $scope.$broadcast('cargarGridSeleccionadoSlide'/*, $scope.rootCreaPedidoFarmacia.listado_productos*/);
+                //$scope.$broadcast('cargarGridSeleccionadoSlide'/*, $scope.rootCreaPedidoFarmacia.listado_productos*/);
             };
 
             $scope.valorSeleccionado = function() {

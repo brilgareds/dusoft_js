@@ -1,45 +1,57 @@
-
 <!DOCTYPE html>
 <html>
     <head>
-        <title></title>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <link  rel="stylesheet" href="{{this.style}}" />
-        <script>
-            function init(){
-                document.getElementById("response").innerHTML = window.location.href;
+        <style>
+            h1, h2{
+                text-align:center;
+            
+            }    
+            
+            .cabecera{
+                overflow:hidden;
             }
-        </script>
+            
+            .departamento{
+                float:right;
+                font-weight:bold;
+            }
+            
+            .documentos{
+                margin-bottom:50px;
+            }
+            
+            .numero_caja_span{
+                margin-right:5px;
+            }
+            
+            .separador{
+                margin-top:30px;
+                margin-bottom:30px;
+            }
+        </style>
+        
     </head>
-    <body onload="init()">
-            
-            <table>
-                <tr>
-                    <td>
-                        Codigo
-                    </td>
-                    <td>
-                        Nombre
-                    </td>
-                </tr>
-                
-                {{#each productos}}
-                     <tr>
-                         <td>
-                             {{~obtenerNombre this}}
-                         </td>
-                         <td>
-                             {{codigo}}
-                         </td>
-                     </tr>
-                {{/each}}
-            </table>
-            
-        <div id="response">
-            
-        </div>
-        <div>
-            {{this.style}}
-        </div>
+    <body>
+        <div class="cabecera"><span class="departamento">{{:departamento}}</span></div>
+        <div>DESTINATARIO:</div>
+        <h1>{{:cliente}}</h1>
+        <div>DIRECCION:</div>
+        <h2>{{:direccion}}</h2>
+        <div class="documentos">DOCUMENTOS:</div>
+        <br/>
+        <span class="numero_caja_span">NUMERO CAJA: </span><strong>{{:numero_caja}}</strong>
+        <h1>((((( DELICADO ))))</h1>
+        
+        <hr class="separador"/>
+        
+        <div class="cabecera"><span class="departamento">{{:departamento}}</span></div>
+        <div>DESTINATARIO:</div>
+        <h1>{{:cliente}}</h1>
+        <div>DIRECCION:</div>
+        <h2>{{:direccion}}</h2>
+        <div class="documentos">DOCUMENTOS:</div>
+        <br/>
+        <span class="numero_caja_span">NUMERO CAJA: </span><strong>{{:numero_caja}}</strong>
+        <h1>((((( DELICADO ))))</h1>
     </body>
 </html>

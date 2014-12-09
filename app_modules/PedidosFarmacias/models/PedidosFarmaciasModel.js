@@ -702,8 +702,23 @@ PedidosFarmaciasModel.prototype.listar_pedidos_pendientes_by_producto = function
 
 };
 
+// obtiene informacion del rotulo para imprimir
+PedidosFarmaciasModel.prototype.obtenerDetalleRotulo = function(numero_pedido, numero_caja, callback) {
 
-// Autor:      : Camilo Orozco 
+
+    var sql  =  "SELECT c.ubicacion as direccion, c.descripcion as cliente, d.descripcion AS departamento, a.numero_caja FROM inv_rotulo_caja  a\
+            INNER JOIN solicitud_productos_a_bodega_principal b ON b.solicitud_prod_a_bod_ppal_id = a.solicitud_prod_a_bod_ppal_id\
+            INNER JOIN bodegas c ON b.farmacia_id = c.empresa_id AND b.centro_utilidad = c.centro_utilidad AND b.bodega = c.bodega\
+            INNER JOIN departamentos d ON c.departamento = d.departamento\
+            WHERE a.solicitud_prod_a_bod_ppal_id = $1 AND a.numero_caja = $2;";
+
+    G.db.query(sql, [numero_pedido, numero_caja], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+
+// Autor:      : Camila la reina Orozco 
 // Descripcion : Calcula la cantidad TOTAL pendiente de un producto en pedidos farmacia
 // Calls       : PedidosFarmacias -> PedidosFarmaciasController -> listar_productos();
 //               

@@ -1400,45 +1400,92 @@ E008Controller.prototype.imprimirRotuloClientes = function(req, res){
 
     var args = req.body.data;
 
-    /*if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined || args.documento_temporal.numero_caja) {
+    if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined || args.documento_temporal.numero_caja === undefined) {
         res.send(G.utils.r(req.url, 'Documento temporal o numero_pedido  No Estan Definidos', 404, {}));
         return;
-    }*/
+    }
     
     
-    that.m_pedidos_clientes.obtenerDetalleRotulo(/*args.documento_temporal.numero_pedido*/33441, /*args.documento_temporal.numero_caja*/1, function(e, rows){
-        console.log("cajas >>>>>>>>>>>>>>>>>>>>>>");
-        console.log(rows);
-        return;
+    that.m_pedidos_clientes.obtenerDetalleRotulo(args.documento_temporal.numero_pedido, args.documento_temporal.numero_caja, function(e, rows){
+        
+        
+        
+         if (e) {
+            res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
+            return;
+         } 
+         
+         if(rows.length === 0){
+             res.send(G.utils.r(req.url, 'No se encontro la caja para el pedido', 404, {}));
+             return;
+         }
+         
+        
+        _generarDocumentoRotulo(rows, function(nombreTmp){
+             res.send(G.utils.r(req.url, 'Url reporte rotulo', 200, {movimientos_bodegas: {nombre_reporte: nombreTmp}}));
+        });
     });
     
-    
-    /*G.jsreport.reporter.render({
-        template: { 
-            content: G.fs.readFileSync('app_modules/MovimientosBodega/E008/reports/rotulos.html', 'utf8'),
-            helpers: G.fs.readFileSync('app_modules/MovimientosBodega/E008/reports/javascripts/rotulos.js', 'utf8'),
-            recipe: "phantom-pdf"
-        },
-        data:{
-            style:G.dirname+'/app_modules/MovimientosBodega/E008/reports/stylesheets/rotulos.css',
-            productos:[
-                {codigo:"2544", nombre:"ibuprofeno" },
-                {codigo:"8888477", nombre:"acetaminofen"},
-                {codigo:"8455", nombre:"captopril"}
-            ]
-        }
-    }).then(function (response) {
-
-       //copy the file from temporal, ouput content
-        var name = response.result.path;
-        var fecha = new Date();
-        var nombreTmp = G.random.randomKey(2,5)+ "_"+fecha.toFormat('DD-MM-YYYY')+".pdf";
-        G.fs.copySync(name, G.dirname+"/public/reports/"+nombreTmp);
-
-        res.send(G.utils.r(req.url, 'Url reporte rotulo', 200, {movimientos_bodegas: {nombre_reporte: nombreTmp}}));
-        //response.result.pipe(res);
-    });*/
 };
+
+
+
+
+E008Controller.prototype.imprimirRotuloFarmacias = function(req, res){
+    
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined || args.documento_temporal.numero_caja === undefined) {
+        res.send(G.utils.r(req.url, 'Documento temporal o numero_pedido  No Estan Definidos', 404, {}));
+        return;
+    }
+    
+    
+    that.m_pedidos_farmacias.obtenerDetalleRotulo(args.documento_temporal.numero_pedido, args.documento_temporal.numero_caja, function(e, rows){
+        
+        
+        
+         if (e) {
+            res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
+            return;
+         } 
+         
+         if(rows.length === 0){
+             res.send(G.utils.r(req.url, 'No se encontro la caja para el pedido', 404, {}));
+             return;
+         }
+        
+        _generarDocumentoRotulo(rows, function(nombreTmp){
+             res.send(G.utils.r(req.url, 'Url reporte rotulo', 200, {movimientos_bodegas: {nombre_reporte: nombreTmp}}));
+        });
+        
+    });
+    
+};
+
+function _generarDocumentoRotulo(rows,callback){
+     G.jsreport.reporter.render({
+            template: { 
+                content: G.fs.readFileSync('app_modules/MovimientosBodega/E008/reports/rotulos.html', 'utf8'),
+                helpers: G.fs.readFileSync('app_modules/MovimientosBodega/E008/reports/javascripts/rotulos.js', 'utf8'),
+                recipe: "phantom-pdf",
+                engine:'jsrender'
+            },
+            data:rows[0]
+        }).then(function (response) {
+
+            var name = response.result.path;
+            var fecha = new Date();
+            var nombreTmp = G.random.randomKey(2,5)+ "_"+fecha.toFormat('DD-MM-YYYY')+".pdf";
+            G.fs.copySync(name, G.dirname+"/public/reports/"+nombreTmp);
+
+            callback(nombreTmp);
+        });
+}
+
+
 
 // Generar Documento Despacho Clientes
 E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {

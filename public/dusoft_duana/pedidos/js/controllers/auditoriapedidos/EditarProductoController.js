@@ -681,11 +681,17 @@ define(["angular", "js/controllers",'models/ClientePedido',
             
             $scope.onImprimirRotulo = function(){
                 var url = API.DOCUMENTOS_TEMPORALES.IMPRIMIR_ROTULO_CLIENTES;
+                
+                if($scope.rootEditarProducto.documento.pedido === $scope.rootEditarProducto.documento.pedido.TIPO_FARMACIA){
+                    url = API.DOCUMENTOS_TEMPORALES.IMPRIMIR_ROTULO_FARMACIAS;
+                }
+                
+                
                 var obj = {
                     session:$scope.session,
                     data:{
                         documento_temporal: {
-                            documento_temporal_id: $scope.rootEditarProducto.documento.documento_temporal_id,
+                            numero_pedido: $scope.rootEditarProducto.documento.pedido.numero_pedido,
                             numero_caja: $scope.rootEditarProducto.caja.numero
                         }
                     }

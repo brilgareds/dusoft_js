@@ -645,6 +645,11 @@ PedidosFarmacias.prototype.listar_productos = function(req, res) {
     that.m_productos.buscar_productos(empresa_id, centro_utilidad_id, bodega_id, termino_busqueda, pagina_actual, function(err, lista_productos) {
 
         var i = lista_productos.length;
+        
+        if(i === 0){
+            res.send(G.utils.r(req.url, 'Lista de productos vacía', 200, {lista_productos: [] }));
+            return;
+        }
 
         lista_productos.forEach(function(producto) {
 

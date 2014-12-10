@@ -71,24 +71,7 @@ define(["angular", "js/controllers",
 
             };
             
-            $scope.lista_cajas_no_cerradas_clientes = {
-                data: 'cajasSinCerrar',
-                enableColumnResize: true,
-                enableRowSelection: false,
-                columnDefs: [
-                    {field: 'numero_caja', displayName: 'Número de caja', width:150},
-                    {field: 'cliente', displayName: 'Cliente'},
-                    {field: 'direccion', displayName: 'Direccion'},
-                    {field: 'movimiento', displayName: "Opciones", width:200, cellClass: "txt-center", 
-                     cellTemplate: '<div>'+
-                        '<button class="btn btn-default btn-xs" ng-click="onCerrarCaja(row.entity)"><span class="glyphicon glyphicon-ok"></span> Cerrar</button>'+ 
-                        '<button class="btn btn-default btn-xs" ng-click="onImprimirRotulo(row.entity)"><span class="glyphicon glyphicon-print"></span> Imprimir</button>'+'\
-                        </div>'
-                    }
-
-                ]
-
-            };
+            
             
 
             $scope.$on("onPedidosSeparadosRenderCliente",function(e,items){

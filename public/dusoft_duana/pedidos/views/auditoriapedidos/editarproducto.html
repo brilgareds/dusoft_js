@@ -86,7 +86,7 @@
                     <input-check ng-model="cerrar" id="cerrarcaja" ng-switch-when="true" ng-click="onCerrarCaja()" />
                 </div>
                 <div class ="col-md-2 text-center" ng-switch on="cerrar">
-                        <button class="btn btn-primary ng-binding btn-accion" ng-switch-when="true">Generar</button>
+                        <button class="btn btn-primary ng-binding btn-accion" ng-switch-when="true" ng-click="onImprimirRotulo()">Generar</button>
                 </div>
             </div>
          </div>
@@ -137,9 +137,8 @@
         </div>
         
     </div-->
-    <visualizar-reporte></visualizar-reporte>
+   
     <button class="btn btn-primary ng-binding pull-right" ng-click="auditarPedido()">Auditar</button>
     <button class="btn btn-warning pull-right" style="margin-right:20px;" ng-click="cerrarModal()">Cancelar</button>
-    <button class="btn btn-primary ng-binding btn-accion" ng-click="onImprimirRotulo()">Generar</button>
 
 </div>

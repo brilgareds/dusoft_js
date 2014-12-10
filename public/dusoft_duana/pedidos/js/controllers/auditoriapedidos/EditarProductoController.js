@@ -555,7 +555,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
             };
             
             $scope.onSeleccionarCaja = function(){
-                
+                $scope.cerrar = false;
                 if($scope.lotes_producto.selectedItems.length === 0){
                     $scope.rootEditarProducto.validacionproducto.valido = false;
                     $scope.rootEditarProducto.caja.valida = false;
@@ -680,32 +680,11 @@ define(["angular", "js/controllers",'models/ClientePedido',
             };
             
             $scope.onImprimirRotulo = function(){
-                var url = API.DOCUMENTOS_TEMPORALES.IMPRIMIR_ROTULO_CLIENTES;
+                $scope.cerrar = false;     
+                $rootScope.$emit("onGenerarPdfRotulo", $scope.rootEditarProducto.documento.pedido.tipo,
+                                                       $scope.rootEditarProducto.documento.pedido.numero_pedido,
+                                                       $scope.rootEditarProducto.caja.numero);
                 
-                if($scope.rootEditarProducto.documento.pedido === $scope.rootEditarProducto.documento.pedido.TIPO_FARMACIA){
-                    url = API.DOCUMENTOS_TEMPORALES.IMPRIMIR_ROTULO_FARMACIAS;
-                }
-                
-                
-                var obj = {
-                    session:$scope.session,
-                    data:{
-                        documento_temporal: {
-                            numero_pedido: $scope.rootEditarProducto.documento.pedido.numero_pedido,
-                            numero_caja: $scope.rootEditarProducto.caja.numero
-                        }
-                    }
-                };
-
-                Request.realizarRequest(url, "POST", obj, function(data) {
-                    if(data.status === 200){
-                        var nombre_reporte = data.obj.movimientos_bodegas.nombre_reporte;
-                        
-                         $scope.visualizarReporte("/reports/"+nombre_reporte, "Rotulo_"+$scope.rootEditarProducto.caja.numero, "download");
-                    } else {
-                        
-                    }
-                });
             };
 
             $scope.cerrarModal = function(){

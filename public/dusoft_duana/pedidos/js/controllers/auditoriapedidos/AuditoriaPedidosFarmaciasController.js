@@ -101,7 +101,7 @@ define(["angular", "js/controllers",
                     {field: 'zona_pedido', displayName: 'Zona'},
 //                    {field: 'descripcion_estado_actual_separado', displayName: "Estado"},
                     {field: 'separador.nombre_operario', displayName: 'Separador'},
-                    {field: 'auditor.nombre_operario', displayName: 'Auditor'},
+                    {field: 'auditor.nombre_responsable', displayName: 'Auditor'},
                     {field: 'descripcion_estado_separacion', displayName: 'Estado Separación'},
                     {field: 'fecha_separacion_pedido', displayName: "Fecha Separación"},
                     {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "7%", 
@@ -114,24 +114,7 @@ define(["angular", "js/controllers",
             };
             
             
-            $scope.lista_cajas_no_cerradas_farmacias = {
-                data: 'cajasSinCerrar',
-                enableColumnResize: true,
-                enableRowSelection: false,
-                columnDefs: [
-                    {field: 'numero_caja', displayName: 'Número de caja', width:150},
-                    {field: 'cliente', displayName: 'Cliente'},
-                    {field: 'direccion', displayName: 'Direccion'},
-                    {field: 'movimiento', displayName: "Opciones", width:200, cellClass: "txt-center", 
-                     cellTemplate: '<div>'+
-                        '<button class="btn btn-default btn-xs" ng-click="onCerrarCaja(row.entity)"><span class="glyphicon glyphicon-ok"></span> Cerrar</button>'+ 
-                        '<button class="btn btn-default btn-xs" ng-click="onImprimirRotulo(row.entity)"><span class="glyphicon glyphicon-print"></span> Imprimir</button>'+'\
-                        </div>'
-                    }
-
-                ]
-
-            };
+            
 
             $scope.onRowClick = function(row){
                 row.entity.esDocumentoNuevo = false;

@@ -24,7 +24,7 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
 
             pedido.forEach(function(datos) {
 
-                var fecha_registro_pedido = datos.fecha_registro;
+                var fecha_registro_pedido = datos.fecha_registro_pedido;
 
                 // Se procede a consultar la cantidad TOTAL solicitada de ese producto en todos los pedidos
                 // anteriores al pedido actual
@@ -55,11 +55,21 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                 stock = (stock_producto.length === 1) ? stock_producto[0].existencia : 0;
 
                                 // Se aplica la Formula de Disponibilidad producto
-                                disponible_bodega = cantidad_total_despachada + stock - cantidad_total_solicitada - cantidad_despachada;
+                                disponible_bodega = parseInt(cantidad_total_despachada) +  parseInt(stock) -  parseInt(cantidad_total_solicitada) -  parseInt(cantidad_despachada);
 
+                                console.log('============ Here =================');
+                                console.log('cantidad_total_despachada', cantidad_total_despachada);
+                                console.log('stock', stock);
+                                console.log('cantidad_total_solicitada', cantidad_total_solicitada);
+                                console.log('cantidad_despachada', cantidad_despachada);
+                                console.log('disponible_bodega', disponible_bodega);
+                                console.log('===================================');
+                                
                                 disponible_bodega = (disponible_bodega < 0) ? 0 : disponible_bodega;
                                 disponible_bodega = (disponible_bodega > stock) ? stock : disponible_bodega;
-                                
+
+
+
                                 callback(err, {codigo_producto: codigo_producto, disponible_bodega: disponible_bodega});
 
                             });
@@ -141,8 +151,11 @@ function consultar_cantidad_total_solicitada_producto(empresa_id, codigo_product
                     from ventas_ordenes_pedidos a\
                     inner join ventas_ordenes_pedidos_d b on a.pedido_cliente_id = b.pedido_cliente_id\
                     GROUP BY  1,2,3\
-                ) as a where a.empresa_id= $1 and a.codigo_producto = $2 and a.fecha_registro < ( $3 )\
+                ) as a where a.empresa_id= $1 and a.codigo_producto = $2 and a.fecha_registro < ( $3 )::timestamp \
                 group by 1 ; ";
+    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+    console.log(fecha_registro_pedido);
+    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
     
     G.db.query(sql, [empresa_id, codigo_producto, fecha_registro_pedido], function(err, rows, result) {
         callback(err, rows);
@@ -168,7 +181,7 @@ function consultar_cantidad_total_productos_despachados(empresa_id, codigo_produ
                 group by 1 order by 1 asc ; ";
 
     /*console.log(empresa_id, codigo_producto, fecha_registro_pedido, sql);
-    return*/
+     return*/
     G.db.query(sql, [empresa_id, codigo_producto, fecha_registro_pedido], function(err, rows, result) {
         callback(err, rows);
     });

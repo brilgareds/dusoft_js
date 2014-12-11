@@ -398,7 +398,8 @@ PedidosFarmaciasModel.prototype.consultar_pedido = function(numero_pedido, callb
                      when a.estado = 5 then 'Despachado con Pendientes' \
                      when a.estado = 6 then 'En Auditoria' end as descripcion_estado_actual_pedido, \
                 f.estado as estado_separacion, \
-                to_char(a.fecha_registro, 'dd-mm-yyyy HH24:MI:SS.MS') as fecha_registro \
+                to_char(a.fecha_registro, 'dd-mm-yyyy HH24:MI:SS.MS') as fecha_registro, \
+                a.fecha_registro as fecha_registro_pedido\
                 from solicitud_productos_a_bodega_principal as a \
                 inner join bodegas as b on a.farmacia_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega \
                 inner join centros_utilidad as c on b.empresa_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad \

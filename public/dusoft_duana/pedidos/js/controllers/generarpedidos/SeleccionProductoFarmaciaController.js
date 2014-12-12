@@ -493,7 +493,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                 /* Fin - Inserción de objeto en grid de seleccionados */
 
                                 $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados = $scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().lista_productos;
-                                $scope.$emit('cargarGridPrincipal');
+                                $scope.$emit('cargarGridPrincipal', 1);
 
                                 /* Inicio - Inserción del Detalle */
 
@@ -554,7 +554,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados = $scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().lista_productos;
                 //
-                $scope.$emit('cargarGridPrincipal'/*, $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados*/);
+                $scope.$emit('cargarGridPrincipal', 1);
 
                 /* Inicio - Objeto para Eliminar Registro del Detalle */
                 var obj_detalle = {

@@ -1248,7 +1248,7 @@ PedidosFarmacias.prototype.pedidoFarmaciaArchivoPlano = function(req, res) {
                     return;
                 }
                 
-                var i = productos_validos.length;
+                var j = productos_validos.length;
 
                 productos_validos.forEach(function(producto_valido) {
 
@@ -1291,17 +1291,12 @@ PedidosFarmacias.prototype.pedidoFarmaciaArchivoPlano = function(req, res) {
                                     producto.cantidad_pendiente = parseInt(producto_valido.cantidad_solicitada) - producto.disponibilidad_bodega;
                                     
                                     that.m_pedidos_farmacias.insertar_detalle_pedido_farmacia_temporal(numero_pedido, empresa_para, centro_utilidad_para, bodega_para, producto_valido.codigo_producto, producto_valido.cantidad_solicitada,  producto.tipo_producto_id, producto.cantidad_pendiente, usuario_id, function(err, rows, result) {
-                                        
-                                        if(--i === 0){  
-                                            
-                                            if(err) {
-                                                res.send(G.utils.r(req.url, 'Se Generó un error en la inserción de productos', 500, {}));
-                                                return;
-                                            }
-                                            else {
-                                                res.send(G.utils.r(req.url, 'Lista de Productos', 200, {pedido_farmacia_detalle: {productos_validos: productos_validos, productos_invalidos: productos_invalidos}}));
-                                                return;
-                                            }
+                                        if(err) {
+                                            productos_invalidos.push(producto);
+                                        }
+                                        if(--j === 0){  
+                                            res.send(G.utils.r(req.url, 'Lista de Productos', 200, {pedido_farmacia_detalle: {productos_validos: productos_validos, productos_invalidos: productos_invalidos}}));
+                                            return;
                                         }
                                         
                                     });
@@ -1315,7 +1310,7 @@ PedidosFarmacias.prototype.pedidoFarmaciaArchivoPlano = function(req, res) {
             });
         } else {
             // Error
-            console.log('============= ERROR subiendo Archivo Plano ================');   
+            console.log('Se ha generado error subiendo el archivo Plano. Revise el formato!');   
         }
     });
 };

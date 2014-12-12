@@ -143,10 +143,9 @@ define(["angular", "js/controllers",'models/Farmacia',
                 columnDefs: [                
                     {field: 'codigo_producto', displayName: 'Código' , width:100},
                     {field: 'descripcion', displayName: 'Nombre Producto', width:500},
-                    {field: 'existencia_lotes', displayName: 'Existencia'},
                     {field: 'cantidad_solicitada', displayName: 'Solicitado' },
                     {field: 'cantidad_separada', displayName: "Separado"},
-                    {field: 'observacion', displayName: "Observación", width:150},
+                    {field: 'observacion', displayName: "Observación", width:350},
                     {field: 'opciones', displayName: "", cellClass: "txt-center" , width:40,
                         cellTemplate: ' <div class="row">\n\
                                             <button class="btn btn-default btn-xs" ng-click="onEditarRow(DocumentoTemporal,documento_despacho, row)">\n\
@@ -177,6 +176,25 @@ define(["angular", "js/controllers",'models/Farmacia',
                                         </div>'
                    }
                 ]
+            };
+            
+            $scope.lista_cajas_no_cerradas_farmacias = {
+                data: 'cajasSinCerrar',
+                enableColumnResize: true,
+                enableRowSelection: false,
+                columnDefs: [
+                    {field: 'numero_caja', displayName: 'Número de caja', width:150},
+                    {field: 'cliente', displayName: 'Cliente'},
+                    {field: 'direccion', displayName: 'Direccion'},
+                    {field: 'movimiento', displayName: "Opciones", width:200, cellClass: "txt-center", 
+                     cellTemplate: '<div ng-switch="row.entity.caja_cerrada">\
+                            <button ng-switch-when="0"  class="btn btn-default btn-xs" ng-click="onCerrarCaja(row.entity)"><span class="glyphicon glyphicon-ok"></span> Cerrar</button>\
+                            <button ng-switch-when="1" class="btn btn-default btn-xs" ng-click="onImprimirRotulo(2,DocumentoTemporal.pedido.numero_pedido,row.entity.numero_caja)"><span class="glyphicon glyphicon-print"></span> Imprimir</button>\
+                        </div>'
+                    }
+
+                ]
+
             };
             
            //eventos de widgets

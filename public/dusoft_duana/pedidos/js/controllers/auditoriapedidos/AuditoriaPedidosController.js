@@ -442,6 +442,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     console.log(data.status , " tipo de estado ", typeof data.status);
                     if(data.status === 200){
+                        caja.caja_cerrada = '1';
                         //that.sacarCaja(caja);
                     } else {
                         AlertService.mostrarMensaje("warning", "Se genero un error al cerrar la caja");
@@ -450,9 +451,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
             
             
-            $scope.onImprimirRotulo = function(caja){
-                
-            };
             
             that.sacarCaja = function(caja){
                for(var i in $scope.cajasSinCerrar){
@@ -567,6 +565,41 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 $scope.traerProductosAuditatos(params);
 
             });
+            
+            $rootScope.$on("onGenerarPdfRotulo",function(e, tipo, numero_pedido, numero_caja){
+                $scope.onImprimirRotulo(tipo, numero_pedido, numero_caja);
+            });
+            
+            
+            $scope.onImprimirRotulo = function(tipo, numero_pedido, numero_caja){
+                
+                var url = API.DOCUMENTOS_TEMPORALES.IMPRIMIR_ROTULO_CLIENTES;
+                
+                if(tipo === 2){
+                    url = API.DOCUMENTOS_TEMPORALES.IMPRIMIR_ROTULO_FARMACIAS;
+                }
+                
+                
+                var obj = {
+                    session:$scope.session,
+                    data:{
+                        documento_temporal: {
+                            numero_pedido: numero_pedido,
+                            numero_caja: numero_caja
+                        }
+                    }
+                };
+                
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    if(data.status === 200){
+                        var nombre_reporte = data.obj.movimientos_bodegas.nombre_reporte;
+                        console.log("reporte generado")
+                         $scope.visualizarReporte("/reports/"+nombre_reporte, "Rotulo_"+numero_caja, "download");
+                    } else {
+                        
+                    }
+                });
+            };
 
 
             $scope.$on("onDetalleCerrado",function(){

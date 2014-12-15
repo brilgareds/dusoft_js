@@ -442,7 +442,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                                 registro.tipo_producto_id,          //tipo_producto_id
                                                 "",                              //total_existencias_farmacia
                                                 "",                              //existencia_disponible
-                                                (registro.cantidad_pendiente <= 0) ? 0 : registro.cantidad_pendiente      //cantidad_pendiente --(registro.cantidad_pendiente <= 0) ? 0 : registro.cantidad_pendiente -- registro.cantidad_pendiente
+                                                (registro.cantidad_pendiente <= 0) ? '0' : registro.cantidad_pendiente      //cantidad_pendiente --(registro.cantidad_pendiente <= 0) ? 0 : registro.cantidad_pendiente -- registro.cantidad_pendiente
                                             );
                                                 
                             $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().agregarProducto(producto);
@@ -595,7 +595,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                                                             registro.tipo_producto_id,       //tipo_producto_id
                                                                             "",                              //total_existencias_farmacia
                                                                             "",                              //existencia_disponible
-                                                                            (registro.cantidad_pendiente <= 0) ? 0 : registro.cantidad_pendiente      //cantidad_pendiente
+                                                                            (registro.cantidad_pendiente <= 0) ? '0' : registro.cantidad_pendiente      //cantidad_pendiente
                                                                         );
 
                                                             $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().agregarProducto(producto);
@@ -654,7 +654,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 //keepLastSelected: true,
                 multiSelect: false,
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Código', width: "9%", cellEditableCondition: true, enableCellSelection: false},
+                    {field: 'codigo_producto', displayName: 'Código', width: "9%"},
                     {field: 'descripcion', displayName: 'Descripción', width: "37%"},
                     {field: 'cantidad_solicitada', displayName: 'Solicitado'},
                     {field: 'cantidad_pendiente', displayName: 'Pendiente'},
@@ -1138,7 +1138,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                                     registro.tipo_producto_id,       //tipo_producto_id
                                                     "",                              //total_existencias_farmacia
                                                     "",                              //existencia_disponible
-                                                    (registro.cantidad_pendiente <= 0) ? 0 : registro.cantidad_pendiente      //cantidad_pendiente
+                                                    (registro.cantidad_pendiente <= 0) ? '0' : registro.cantidad_pendiente      //cantidad_pendiente
                                                 );
 
                                 $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().agregarProducto(producto);

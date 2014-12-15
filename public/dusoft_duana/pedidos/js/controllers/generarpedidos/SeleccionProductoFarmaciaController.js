@@ -350,7 +350,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             codigo_producto: row.entity.codigo_producto,
                             cantidad_solic: parseInt(row.entity.cantidad_solicitada),
                             tipo_producto_id: row.entity.tipo_producto_id,
-                            cantidad_pendiente: (cantidad_pendiente < 0) ? 0 : cantidad_pendiente
+                            cantidad_pendiente: (cantidad_pendiente < 0) ? '0' : cantidad_pendiente
                         }
                     }
                 };
@@ -388,7 +388,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                                 row.entity.tipo_producto_id,          //tipo_producto_id
                                                 "",                              //total_existencias_farmacia
                                                 "",                              //existencia_disponible
-                                                (cantidad_pendiente < 0) ? 0 : cantidad_pendiente      //cantidad_pendiente
+                                                (cantidad_pendiente < 0) ? '0' : cantidad_pendiente      //cantidad_pendiente
                                             );
 
                             $scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().agregarProducto(producto);

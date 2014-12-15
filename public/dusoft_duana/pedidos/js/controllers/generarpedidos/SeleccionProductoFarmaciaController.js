@@ -223,7 +223,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             cellTemplate: ' <div class="row">\n\
                                                 <button class="btn btn-default btn-xs" ng-click="onIncluirProducto(row)" '+
                                                 ' ng-disabled="row.entity.cantidad_solicitada<=0 || row.entity.cantidad_solicitada==null || !expreg.test(row.entity.cantidad_solicitada)">\n\
-                                                    <span class="glyphicon glyphicon-plus-sign">Incluir</span>\n\
+                                                    <span class="glyphicon glyphicon-plus-sign"> Incluir</span>\n\
                                                 </button>\n\
                                             </div>'
                         }
@@ -243,8 +243,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         {field: 'cantidad_pendiente', displayName: 'Pendiente'},
                         {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
                             cellTemplate: ' <div class="row">\n\
-                                                <button class="btn btn-danger btn-xs" ng-click="onEliminarSeleccionado(row)">\n\
-                                                    <span class="glyphicon glyphicon-minus-sign">Eliminar</span>\n\
+                                                <button class="btn btn-default btn-xs" ng-click="onEliminarSeleccionado(row)">\n\
+                                                    <span class="glyphicon glyphicon-remove"> Eliminar</span>\n\
                                                 </button>\n\
                                             </div>'
                         }

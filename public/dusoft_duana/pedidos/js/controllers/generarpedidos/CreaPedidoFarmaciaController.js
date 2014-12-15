@@ -659,13 +659,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'cantidad_solicitada', displayName: 'Solicitado'},
                     {field: 'cantidad_pendiente', displayName: 'Pendiente'},
                     {field: 'nueva_cantidad', displayName: 'Modificar Cantidad', enableCellEdit: true, width: "10%"},
-                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "11%",
+                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "13%",
                         cellTemplate: ' <div class="row">\n\
                                             <button class="btn btn-default btn-xs" ng-click="onModificarCantidad(row)" ng-disabled="row.entity.nueva_cantidad==null || !expreg.test(row.entity.nueva_cantidad)">\n\
-                                                <span class="glyphicon glyphicon-pencil">Modificar</span>\n\
+                                                <span class="glyphicon glyphicon-pencil"> Modificar</span>\n\
                                             </button>\n\
-                                            <button class="btn btn-danger btn-xs" ng-click="onEliminarProducto(row)">\n\
-                                                <span class="glyphicon glyphicon-minus-sign">Eliminar</span>\n\
+                                            <button class="btn btn-default btn-xs" ng-click="onEliminarProducto(row)">\n\
+                                                <span class="glyphicon glyphicon-remove"> Eliminar</span>\n\
                                             </button>\n\
                                         </div>'
                     }

@@ -208,7 +208,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
                         cellTemplate: ' <div>\n\
                                             <button class="btn btn-default btn-xs" ng-click="onEditarPedidoFarmacia(row.entity)" ng-disabled="(row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1) || row.entity.estado_separacion != null">\n\
-                                                <span class="glyphicon glyphicon-pencil">Modificar</span>\n\
+                                                <span class="glyphicon glyphicon-pencil"> Modificar</span>\n\
                                             </button>\n\
                                         </div>'}
 

@@ -124,9 +124,13 @@ module.exports = function(app, di_container) {
     
     // Pedido Farmacia por archivo plano
     app.post('/api/PedidosFarmacias/pedidoFarmaciaArchivoPlano', function(req, res) {
-        console.log(">>>>> Viendo la Ruta de Consulta");
         c_pedidos_farmacias.pedidoFarmaciaArchivoPlano(req, res);
     });    
+    
+    // Generar PDF del pedido
+    app.post('/api/PedidosFarmacias/imprimirPedidoFarmacia', function(req, res) {
+        c_pedidos_farmacias.imprimirPedidoFarmacia(req, res);
+    });
     
     // Listar productos
 //    app.get('/listarProductos', function(req, res) {

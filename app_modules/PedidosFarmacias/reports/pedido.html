@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<style>
+  t1 {background-color:lightgray}
+  h1   {color:blue}
+  p    {color:green}
+</style>
+<h1>Pedido # {{:encabezado_pedido_farmacia.numero_pedido}}</h1>
+
+<table style='border-style:solid' width="100%">
+    <tr>
+        <th></th>
+        <th>Empresa</th>
+        <th>Centro Utilidad</th>
+        <th>Bodega</th>
+    </tr>
+    <tr>
+        <th style='border-style:solid'>Origen</th>
+        <td><center>{{:encabezado_pedido_farmacia.empresa_origen}}</center></td>
+        <td><center>{{:encabezado_pedido_farmacia.centro_utilidad_origen}}</center></td>
+        <td><center>{{:encabezado_pedido_farmacia.bodega_origen}}</center></td>
+    </tr>
+    <tr>
+        <th style='border-style:solid'>Destino</th>
+        <td><center>{{:encabezado_pedido_farmacia.empresa_destino}}</center></td>
+        <td><center>{{:encabezado_pedido_farmacia.centro_utilidad_destino}}</center></td>
+        <td><center>{{:encabezado_pedido_farmacia.bodega_destino}}</center></td>
+    </tr>
+</table>
+
+</br>
+
+<table>
+    <tr>
+        <th>Observaci&oacute;n:</th>
+        <td>{{:encabezado_pedido_farmacia.observacion}}</td>
+    </tr>
+</table>
+
+</br>
+
+<table border=1 style='border-style:solid' width="100%">
+    <tr>
+        <th>C&oacute;digo Producto</th>
+        <th>Descripci&oacute;n</th>
+        <th>Cantidad Solicitada</th>
+        <th>Cantidad Pendiente</th>
+    </tr>
+    {{for detalle_pedido_farmacia}}
+        <tr>
+            <td><center>{{:codigo_producto}}</center></td>
+            <td><center>{{:descripcion}}</center></td>
+            <td><center>{{:cantidad_solicitada}}</center></td>
+            <td><center>{{:cantidad_pendiente}}</center></td>
+        </tr>
+    {{/for}}
+</table>
+</html>

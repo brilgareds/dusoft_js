@@ -1687,6 +1687,72 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 
                 callback();
             };
+            
+            $scope.generarPdfPedidoFarmacia = function(){
+                
+                var nombre_empresa_origen = "";
+                var nombre_centro_utilidad_origen = "";
+                var nombre_bodega_origen = "";
+                
+                $scope.rootCreaPedidoFarmacia.de_lista_empresas.forEach(function(empresa){
+                    if(empresa.empresa_id === $scope.rootCreaPedidoFarmacia.Empresa.getCodigo()){
+                        nombre_empresa_origen = empresa.razon_social;
+                    }
+                });
+                
+                $scope.rootCreaPedidoFarmacia.de_lista_centro_utilidad.forEach(function(centro_utilidad){
+                    if(centro_utilidad.centro_utilidad_id === $scope.rootCreaPedidoFarmacia.de_seleccion_centro_utilidad){
+                        nombre_centro_utilidad_origen = centro_utilidad.descripcion;
+                    }
+                });
+                
+                $scope.rootCreaPedidoFarmacia.de_lista_bodegas.forEach(function(bodega){
+                    if(bodega.bodega_id === $scope.rootCreaPedidoFarmacia.de_seleccion_bodega){
+                        nombre_bodega_origen = bodega.descripcion;
+                    }
+                });
+                
+                var numero_pedido = $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().numero_pedido;
+
+                var obj_pdf = {
+                    session: $scope.rootCreaPedidoFarmacia.session,
+                    data: {
+                        encabezado_pedido_farmacia: {
+                            numero_pedido: numero_pedido,
+                            empresa_origen: nombre_empresa_origen,
+                            centro_utilidad_origen: nombre_centro_utilidad_origen,
+                            bodega_origen: nombre_bodega_origen,
+                            empresa_destino: $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.nombre_farmacia,//$scope.rootCreaPedidoFarmacia.para_seleccion_empresa.split(",")[1],
+                            centro_utilidad_destino: $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.nombre_centro_utilidad,
+                            bodega_destino: $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.nombre_bodega,
+                            fecha_registro: $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().fecha_registro,
+                            observacion: $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getObservacion()
+                        },
+                        detalle_pedido_farmacia: $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().lista_productos
+                    }
+                };
+
+                console.log("Fecha Registro: ",$scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().fecha_registro);
+                console.log("Observación: ",$scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getObservacion);
+                console.log("Objeto PDF: ",obj_pdf);
+
+                var url_eliminar_detalle = API.PEDIDOS.IMPRIMIR_PEDIDO_FARMACIA;
+
+                Request.realizarRequest(url_eliminar_detalle, "POST", obj_pdf, function(data) {
+
+                    if (data.status === 200) {
+                        //console.log("Eliminación de detalle Exitosa: ", data.msj);
+                        var nombre_archivo_temporal = data.obj.reporte_pedido.nombre_reporte;
+                        console.log("Exito: ", data.msj);
+                        console.log("Data Resultado Temporal: ",data);
+                        console.log("Nombre PDF: ", nombre_archivo_temporal); //public/reports/
+                        $scope.visualizarReporte("/reports/"+nombre_archivo_temporal, "Pedido: "+numero_pedido, "download");
+                    }
+                    else{
+                        console.log("Error: ", data.msj);
+                    }
+                });
+            };
        
             that.buscarPedido("");
 

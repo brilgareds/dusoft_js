@@ -174,32 +174,9 @@
                             <b> {{rootCreaPedidoFarmacia.titulo_tab_2}} </b>
                         </tab-heading>
 
-                        <div> <!--flow-init flow-object="existingFlowObject"-->
+                        <div>
 
                             <br/>
-
-<!--                            <div flow-prevent-drop flow-drag-enter="class='dragNgFlow'" flow-drag-leave="" ng-style="dropEnabled && style">
-
-                                <div class="span6">
-
-                                </div>
-
-                                <div class="alert alertaUpload" ng-hide="$flow.files.length" flow-drop flow-drag-enter="class='alert alert-success'" flow-drag-leave="class='alert'" ng-class="class">
-                                    <img src="../../../images/Cloud-Upload-Blue.png" class="imagenUpload"/>
-                                    <br/><br/>
-                                    Arrastre y suelte el archivo en ésta área o use el botón ...</br></br>
-                                    <button class="btn btn-info" ng-disabled="bloqueo_upload" flow-btn><i class="icon icon-file"></i>Buscar Archivo</button>
-                                </div>
-
-                                <div class="alert alertaUpload" ng-show="$flow.files.length" flow-drop flow-drag-enter="class='alert alert-success'" flow-drag-leave="class='alert'" ng-class="class">
-                                    El archivo a cargar es: {{$flow.files[0].name}}</br></br>
-                                    <img src="../../../images/xls.png" class="imagenUpload"/>
-                                    <br/><br/>
-                                    <button class="btn btn-small btn-success" ng-show="$flow.files.length" ng-click="$flow.resume(); setTabActivo(1)">Subir Archivo</button>
-                                    <button class="btn btn-danger" ng-show="$flow.files.length" ng-click="$flow.cancel()">Eliminar</button>
-                                </div>
-
-                            </div>-->
 
                             <div class="row col-md-8 col-md-offset-2" style="margin-top: 25px">    
 
@@ -256,7 +233,7 @@
         <div slide-content open-callback="mostrarseleccionproducto" close-callback="cerrarseleccionproducto"  class="slide" >
             <div ng-include src="slideurl"  ng-controller="SeleccionProductoFarmaciaController" ></div>
         </div>
-        
+        <visualizar-reporte></visualizar-reporte>
     </div>
     
 <!--</div>-->

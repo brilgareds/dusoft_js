@@ -288,6 +288,7 @@ MovimientosBodegasModel.prototype.consultar_documentos_usuario = function(usuari
 
 // Actualizar bodegas_doc_id en documento temporal.
 MovimientosBodegasModel.prototype.actualizar_tipo_documento_temporal = function(documento_temporal_id, usuario_id, bodegas_doc_id, callback) {
+    console.log(documento_temporal_id, " ", usuario_id, " ",bodegas_doc_id , " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 
     var sql = " update inv_bodegas_movimiento_tmp set bodegas_doc_id = $3 where doc_tmp_id = $1  and usuario_id = $2 ";
 

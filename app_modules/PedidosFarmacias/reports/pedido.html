@@ -7,7 +7,7 @@
   h1   {color:blue}
   p    {color:green}
 </style>
-<h1>Pedido # {{:encabezado_pedido_farmacia.numero_pedido}}</h1>
+<h1>Pedido No {{:encabezado_pedido_farmacia.numero_pedido}}</h1>
 
 <table style='border-style:solid' width="100%">
     <tr>
@@ -50,10 +50,10 @@
     </tr>
     {{for detalle_pedido_farmacia}}
         <tr>
-            <td><center>{{:codigo_producto}}</center></td>
-            <td><center>{{:descripcion}}</center></td>
-            <td><center>{{:cantidad_solicitada}}</center></td>
-            <td><center>{{:cantidad_pendiente}}</center></td>
+            <td>{{:codigo_producto}}</td>
+            <td>{{:descripcion}}</td>
+            <td>{{:cantidad_solicitada}}</td>
+            <td>{{:cantidad_pendiente}}</td>
         </tr>
     {{/for}}
 </table>

@@ -216,7 +216,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         {field: 'cantidad_solicitada', displayName: 'Solicitado', enableCellEdit: false, width: "10%",
                             cellTemplate: ' <div class="col-xs-12">\n\
                                                 <input type="text" ng-model="row.entity.cantidad_solicitada" validacion-numero class="form-control grid-inline-input"'+
-                                                'ng-keyup="onTeclaIngresaProducto($event, row)" ng-model="row.entity.cantidad_ingresada" ng-disabled="row.entity.numero_caja > 0" />\n\
+                                                'ng-keyup="onTeclaIngresaProducto($event, row)"/>\n\
                                             </div>'
                         },
                         {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "6%",

@@ -658,10 +658,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'descripcion', displayName: 'Descripción', width: "37%"},
                     {field: 'cantidad_solicitada', displayName: 'Solicitado'},
                     {field: 'cantidad_pendiente', displayName: 'Pendiente'},
-                    {field: 'nueva_cantidad', displayName: 'Modificar Cantidad', enableCellEdit: true, width: "10%"},
+                    {field: 'nueva_cantidad', displayName: 'Modificar Cantidad', enableCellEdit: true, width: "10%",
+                                cellTemplate: ' <div class="col-xs-12">\n\
+                                                    <input type="text" ng-model="row.entity.nueva_cantidad" validacion-numero class="form-control grid-inline-input"'+
+                                                    'ng-keyup="onTeclaModificarCantidad($event, row)" ng-model="row.entity.cantidad_ingresada" ng-disabled="row.entity.numero_caja > 0" />\n\
+                                                </div>'
+                    },
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "13%",
                         cellTemplate: ' <div class="row">\n\
-                                            <button class="btn btn-default btn-xs" ng-click="onModificarCantidad(row)" ng-disabled="row.entity.nueva_cantidad==null || !expreg.test(row.entity.nueva_cantidad)">\n\
+                                            <button class="btn btn-default btn-xs" ng-click="onModificarCantidad(row)" ng-disabled="row.entity.nueva_cantidad<=0 || row.entity.nueva_cantidad==null || !expreg.test(row.entity.nueva_cantidad)">\n\
                                                 <span class="glyphicon glyphicon-pencil"> Modificar</span>\n\
                                             </button>\n\
                                             <button class="btn btn-default btn-xs" ng-click="onEliminarProducto(row)">\n\
@@ -670,6 +675,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                         </div>'
                     }
                 ]
+            };
+            
+            $scope.onTeclaModificarCantidad = function(ev, row) {
+                console.log("Key Evento: ", ev.which);
+                if (ev.which === 13) {
+                    if (parseInt(row.entity.nueva_cantidad) > 0) {
+                        $scope.onModificarCantidad(row);
+                    }
+                }
             };
             
             $scope.onModificarCantidad = function(row){

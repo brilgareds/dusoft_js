@@ -210,7 +210,18 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                             <button class="btn btn-default btn-xs" ng-click="onEditarPedidoFarmacia(row.entity)" ng-disabled="(row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1) || row.entity.estado_separacion != null">\n\
                                                 <span class="glyphicon glyphicon-pencil"> Modificar</span>\n\
                                             </button>\n\
-                                        </div>'}
+                                        </div>'
+                        /*cellTemplate: '<div class="btn-group">\
+                                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
+                                            <ul class="dropdown-menu dropdown-options">\
+                                                <li><a href="javascript:void(0);" ng-click="onEditarPedidoFarmacia(row.entity)" ng-disabled="(row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1) || row.entity.estado_separacion != null" >Modificar</a></li>\
+                                                <li class="divider"></li>\
+                                                <li><a href="javascript:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,1)" >Novedades</a></li>\
+                                                <li class="divider"></li>\
+                                                <li><a href="javascript:void(0);" ng-click="anular_orden_compra_seleccionada(row.entity)">Anular OC</a></li>\
+                                            </ul>\
+                                        </div>'*/
+                    }
 
                 ]
 

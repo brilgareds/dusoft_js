@@ -1388,6 +1388,41 @@ function __validar_productos_archivo_plano(contexto, contenido_archivo_plano, ca
     });
 };
 
+PedidosFarmacias.prototype.actualizarEstadoActualPedido = function(req, res){
+    
+    var that = this;
+
+    var args = req.body.data;
+    
+    if (args.pedido_farmacia === undefined || args.pedido_farmacia.numero_pedido === undefined || args.pedido_farmacia.estado === undefined) {
+        res.send(G.utils.r(req.url, 'numero_pedido o estado no están definidos', 404, {}));
+        return;
+    }
+    
+    if (args.pedido_farmacia.numero_pedido === '' || args.pedido_farmacia.estado === '') {
+        res.send(G.utils.r(req.url, 'numero_pedido o estado están vacios', 404, {}));
+        return;
+    }
+    
+    var numero_pedido = args.pedido_farmacia.numero_pedido;
+    var estado = args.pedido_farmacia.estado;
+    console.log(">>>>>>>>>>>>>>>>>>> Actualizando estado del pedido ... desde TABLET ...");
+    that.m_pedidos_farmacias.actualizar_estado_actual_pedido(numero_pedido, estado, function(err, rows, result){
+        
+        if (err) {
+            res.send(G.utils.r(req.url, 'Se ha Generado un Error en la actualización del Estado', 500, {error: err}));
+            return;
+        }
+        else
+        {
+            res.send(G.utils.r(req.url, 'Estado actualizado exitosamente', 200, {}));
+            return;
+        }
+        
+    });
+    
+};
+
 //Generar documento PDF - copia código Eduar
 PedidosFarmacias.prototype.imprimirPedidoFarmacia = function(req, res){
     
@@ -1470,28 +1505,11 @@ PedidosFarmacias.prototype.imprimirPedidoFarmacia = function(req, res){
             
         });
     }
-    
-    
-   // that.m_pedidos_farmacias.obtenerDetalleRotulo(args.documento_temporal.numero_pedido, args.documento_temporal.numero_caja, function(e, rows){
         
-        
-        
-//         if (e) {
-//            res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
-//            return;
-//         } 
-//         
-//         if(rows.length === 0){
-//             res.send(G.utils.r(req.url, 'No se encontro la caja para el pedido', 404, {}));
-//             return;
-//         }
-        
-        _generarDocumentoPedido(args, function(nombreTmp){
-             res.send(G.utils.r(req.url, 'Url reporte pedido', 200, {reporte_pedido: {nombre_reporte: nombreTmp}}));
-             return;
-        });
-        
-   // });
+    _generarDocumentoPedido(args, function(nombreTmp){
+         res.send(G.utils.r(req.url, 'Url reporte pedido', 200, {reporte_pedido: {nombre_reporte: nombreTmp}}));
+         return;
+    });
     
 };
 

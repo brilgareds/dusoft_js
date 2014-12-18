@@ -65,7 +65,8 @@ define(["angular"], function(angular) {
                 'ELIMINAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA':BASE_URL+'/PedidosFarmacias/eliminarProductoDetallePedidoFinal',
                 'LISTADO_TIPO_PRODUCTOS':BASE_URL+'/Productos/listarTipoProductos',
                 'ARCHIVO_PLANO_PEDIDO_FARMACIA':BASE_URL+'/PedidosFarmacias/pedidoFarmaciaArchivoPlano',
-                'IMPRIMIR_PEDIDO_FARMACIA':BASE_URL+'/PedidosFarmacias/imprimirPedidoFarmacia'
+                'IMPRIMIR_PEDIDO_FARMACIA':BASE_URL+'/PedidosFarmacias/imprimirPedidoFarmacia',
+                'ACTUALIZAR_ESTADO_PEDIDO_FARMACIA':BASE_URL+'/PedidosFarmacias/actualizarEstadoActualPedido'
 	    },
 	    'TERCEROS':{
 	    	'LISTAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/listar",

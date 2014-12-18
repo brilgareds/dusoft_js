@@ -132,6 +132,11 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.imprimirPedidoFarmacia(req, res);
     });
     
+    //Actualizar Estado Pedido
+    app.post('/api/PedidosFarmacias/actualizarEstadoActualPedido', function(req, res) {
+        c_pedidos_farmacias.actualizarEstadoActualPedido(req, res);
+    });
+    
     // Listar productos
 //    app.get('/listarProductos', function(req, res) {
 //        c_pedidos_farmacias.listar_productos(req, res);

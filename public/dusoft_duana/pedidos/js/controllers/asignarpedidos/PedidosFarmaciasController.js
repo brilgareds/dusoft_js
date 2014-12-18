@@ -216,7 +216,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                 for (var i in $scope.Empresa.getPedidosFarmacia()) {
                     var _pedido = $scope.Empresa.getPedidosFarmacia()[i];
 
-                    if (pedido.numero_pedido == _pedido.numero_pedido) {
+                    if (pedido.numero_pedido == _pedido.numero_pedido) {  
 
                         console.log(pedido.numero_pedido);
                         _pedido.descripcion_estado_actual_pedido = pedido.descripcion_estado_actual_pedido;
@@ -243,7 +243,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                             return $scope.pedidosSeleccionados;
                         },
                         url: function() {
-                            return API.PEDIDOS.ASIGNAR_RESPONSABLE_FARMACIA
+                            return API.PEDIDOS.ASIGNAR_RESPONSABLE_FARMACIA;
                         }
                     }
                 };
@@ -271,7 +271,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                     var obj = datos.obj.pedidos_farmacias[0];
                     var pedido = $scope.crearPedido(obj);
                     console.log("objecto del socket");
-                    console.log(pedido)
+                    console.log(pedido);
                     $scope.reemplazarPedidoEstado(pedido);
                     AlertService.mostrarMensaje("success", "pedido Asignado Correctamente!");
                 }

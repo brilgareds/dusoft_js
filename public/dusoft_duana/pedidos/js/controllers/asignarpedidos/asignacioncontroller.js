@@ -16,13 +16,13 @@ define(["angular", "js/controllers", 'models/Separador'], function(angular, cont
             $scope.dialog = false;
             $scope.msg   = "";
             $scope.operario_id = false;
+            var that = this;
 
             $scope.session = {
                usuario_id:Usuario.usuario_id,
                auth_token:Usuario.token
             };
-
-
+            
             $modalInstance.result.then(function() {
                 //on ok button press 
             }, function() {
@@ -54,6 +54,12 @@ define(["angular", "js/controllers", 'models/Separador'], function(angular, cont
 
                     pedidos.push(pedido.numero_pedido);
                 }
+                
+                if(pedidos.length === 0){
+                    $scope.dialog = true;
+                    $scope.msg = "No hay pedidos seleccionados";
+                    return;
+                }
 
                 var obj = {
                     session:$scope.session,
@@ -77,6 +83,22 @@ define(["angular", "js/controllers", 'models/Separador'], function(angular, cont
                         }                  
                     }
                 );
+            };
+            
+            $scope.validarEstado = function(pedidosSeleccionados){
+
+                
+                 for (var i  in pedidosSeleccionados) {
+                    var pedido = pedidosSeleccionados[i];
+                    if((pedido.estado_actual_pedido !== '0' && pedido.estado_actual_pedido !== '1') || pedido.estado === '3' || pedido.estado_separacion){
+                        console.log("pedido sacado ", pedido)
+                        pedidosSeleccionados.splice(i, 1);
+                        $scope.validarEstado(pedidosSeleccionados);
+                        break;
+                    }
+                }
+                
+                return pedidosSeleccionados;
             };
 
 
@@ -117,6 +139,8 @@ define(["angular", "js/controllers", 'models/Separador'], function(angular, cont
                 
 
             });
+            
+            $scope.validarEstado($scope.pedidosSeleccionados);
 
 
 

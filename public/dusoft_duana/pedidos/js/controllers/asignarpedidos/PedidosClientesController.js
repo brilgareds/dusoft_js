@@ -176,7 +176,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
 
             $scope.onPedidoSeleccionado = function(check, row) {
                 console.log("agregar!!!!!");
-                console.log(check)
+                console.log(check);
                 console.log(row);
 
                 row.selected = check;
@@ -273,7 +273,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                     var obj = datos.obj.pedidos_clientes[0];
                     var pedido = that.crearPedido(obj);
                     console.log("objecto del socket");
-                    console.log(obj)
+                    console.log(obj);
                     that.reemplazarPedidoEstado(pedido);
                     AlertService.mostrarMensaje("success", "pedido Asignado Correctamente!");
 

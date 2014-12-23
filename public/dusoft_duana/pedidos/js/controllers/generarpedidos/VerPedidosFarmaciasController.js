@@ -7,9 +7,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
         '$scope', '$rootScope', 'Request',
         'EmpresaPedido', 'FarmaciaVenta', 'PedidoVenta',
         'API', "socket", "AlertService",
-        '$state', "Usuario", "localStorageService",
+        '$state', "Usuario", "localStorageService", "$modal",
 
-        function($scope, $rootScope, Request, EmpresaPedido, FarmaciaVenta, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService) {
+        function($scope, $rootScope, Request, EmpresaPedido, FarmaciaVenta, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService, $modal) {
             
             var that = this;
             
@@ -106,25 +106,41 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             $scope.onBuscarPedidosFarmacias = function(obj, paginando) {
                 
+                that.consultarEncabezadosPedidos(obj, function(data){
+                
+                    console.log(">>>>>>>>>>>>> DENTRO DE CONSULTA PEDIDOS ...");
+                    console.log(">>>>>>>>>>>>> OBJETO: ",obj);
+                    console.log(">>>>>>>>>>>>> RESULTADO: ",data);
+                    
+                    $scope.rootVerPedidosFarmacias.ultima_busqueda = {
+                        termino_busqueda: $scope.rootVerPedidosFarmacias.termino_busqueda,
+                        seleccion: $scope.rootVerPedidosFarmacias.seleccion
+                        //seleccion: $scope.farmacia_seleccionada.get_farmacia_id()
+                    }
+
+                    that.renderPedidosFarmacias(data.obj, paginando);
+                    
+                });
+            };
+            
+            
+            that.consultarEncabezadosPedidos = function(obj, callback){
+
                 var url = API.PEDIDOS.LISTAR_PEDIDOS_FARMACIAS;
                 
                 Request.realizarRequest(url, "POST", obj, function(data) {
-                    
-                    console.log("Data: ",data);
 
                     if(data.status === 200) {
+                        console.log("Consulta exitosa: ", data.msj);
                         
-                        $scope.rootVerPedidosFarmacias.ultima_busqueda = {
-                                termino_busqueda: $scope.rootVerPedidosFarmacias.termino_busqueda,
-                                seleccion: $scope.rootVerPedidosFarmacias.seleccion
-                                //seleccion: $scope.farmacia_seleccionada.get_farmacia_id()
+                        if(callback !== undefined && callback !== "" && callback !== 0){
+                            callback(data);
                         }
-                        
-                        that.renderPedidosFarmacias(data.obj, paginando);
                     }
-
+                    else{
+                        console.log("Error en la consulta: ",data.msj);
+                    }
                 });
-
             };
 
             that.renderPedidosFarmacias = function(data, paginando) {
@@ -175,8 +191,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 pedido.setTipo(PedidoVenta.TIPO_FARMACIA);
                 
                 pedido.setObservacion(obj.observacion);
+                
+                pedido.setEnUso(obj.en_uso);
 
-                        
                 var farmacia = FarmaciaVenta.get(
                         obj.farmacia_id,
                         obj.bodega_id,
@@ -187,6 +204,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         );
 
                 pedido.setFarmacia(farmacia);
+                
+                console.log(">>>>>>>>>>>>>>>> PEDIDO: ",pedido.numero_pedido," - ",pedido.en_uso);
 
                 return pedido;
             };
@@ -207,8 +226,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         cellTemplate: "<button ng-class='rootVerPedidosFarmacias.estados[row.entity.estado_actual_pedido]'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
                         cellTemplate: ' <div>\n\
-                                            <button class="btn btn-default btn-xs" ng-click="onEditarPedidoFarmacia(row.entity)" ng-disabled="(row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1) || row.entity.estado_separacion != null">\n\
-                                                <span class="glyphicon glyphicon-pencil"> Modificar</span>\n\
+                                            <button class="btn btn-default btn-xs" ng-click="onEditarPedidoFarmacia(row.entity)" ng-disabled="(row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1) || row.entity.estado_separacion != null || row.entity.en_uso != 0">\n\
+                                                <span ng-if="row.entity.en_uso != 0" class="glyphicon glyphicon-eye-open"></span>\n\
+                                                <span class="glyphicon glyphicon-pencil">Modificar</span>\n\
                                             </button>\n\
                                         </div>'
                         /*cellTemplate: '<div class="btn-group">\
@@ -255,6 +275,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 that.pedido.setDatos(datos_pedido);
                 that.pedido.setTipo(2);
                 that.pedido.setObservacion("");
+                //that.pedido.setEnUso(0);
                 
                 //Creación objeto farmacia
                 var farmacia = FarmaciaVenta.get(
@@ -291,23 +312,87 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 pedido.setDatos(datos_pedido);
                 pedido.setTipo(2);
                 pedido.setObservacion(data.observacion);
-
-                        
-                var farmacia = FarmaciaVenta.get(
-                        data.farmacia.farmacia_id,
-                        data.farmacia.bodega_id,
-                        data.farmacia.nombre_farmacia,
-                        data.farmacia.nombre_bodega,
-                        data.farmacia.centro_utilidad_id,
-                        data.farmacia.nombre_centro_utilidad
-                        );
-
-                pedido.setFarmacia(farmacia);
-                //Insertar aquí el pedido seleccionado para el singleton Empresa
-                $scope.rootVerPedidosFarmacias.Empresa.setPedidoSeleccionado(pedido);
                 
-                PedidoVenta.pedidoseleccionado = data.numero_pedido;
-                $state.go('CreaPedidosFarmacias');                
+                //Set en_uso -- Hacer consulta antes para confirmar estado en BD -- Recibir información del evento (socket)
+                
+                //Objeto para consulta de encabezado pedido
+                var obj = {
+                    session:$scope.rootVerPedidosFarmacias.session,
+                    data:{
+                        pedidos_farmacias:{
+                            termino_busqueda: data.numero_pedido,
+                            empresa_id: $scope.rootVerPedidosFarmacias.seleccion,
+                            pagina_actual: $scope.rootVerPedidosFarmacias.paginaactual,
+                            filtro:{}
+                        }
+                    }
+                };
+                
+                that.consultarEncabezadosPedidos(obj, function(data_encabezado){
+                    
+                    //console.log(">>>>>>>>>>> EN_USO : ",data_encabezado.obj.pedidos_farmacias[0].en_uso);
+                    //pedido.setEnUso(data.obj.pedidos_farmacias[0].en_uso);
+                    pedido.setEnUso(data_encabezado.obj.pedidos_farmacias[0].en_uso);
+                    
+                    console.log(">>>>>>>>>>> EN_USO Pedido get : ",pedido.getEnUso());
+                    //console.log(">>>>>>>>>>> EN_USO Pedido var : ",pedido.en_uso);
+
+                    var farmacia = FarmaciaVenta.get(
+                            data.farmacia.farmacia_id,
+                            data.farmacia.bodega_id,
+                            data.farmacia.nombre_farmacia,
+                            data.farmacia.nombre_bodega,
+                            data.farmacia.centro_utilidad_id,
+                            data.farmacia.nombre_centro_utilidad
+                            );
+
+                    pedido.setFarmacia(farmacia);
+                    //Insertar aquí el pedido seleccionado para el singleton Empresa
+                    $scope.rootVerPedidosFarmacias.Empresa.setPedidoSeleccionado(pedido);
+
+                    PedidoVenta.pedidoseleccionado = data.numero_pedido;
+
+                    //console.log(" >>>>>>>> Get En Uso: ", $scope.rootVerPedidosFarmacias.Empresa.getPedidoSeleccionado().getEnUso());
+                    //console.log(" >>>>>>>> Variable En Uso: ", $scope.rootVerPedidosFarmacias.Empresa.getPedidoSeleccionado().en_uso);
+
+                    if($scope.rootVerPedidosFarmacias.Empresa.getPedidoSeleccionado().getEnUso() === 0){
+
+                        $state.go('CreaPedidosFarmacias');    
+
+                    }
+                    else{
+
+                        //Avisar la no posibilidad de modiificar porque el pedido está abierto en una tablet
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: ' <div class="modal-header">\
+                                            <button type="button" class="close" ng-click="close()">&times;</button>\
+                                            <h4 class="modal-title">Aviso: </h4>\
+                                        </div>\
+                                        <div class="modal-body row">\
+                                            <div class="col-md-12">\
+                                                <h4 >El Pedido '+$scope.rootVerPedidosFarmacias.Empresa.getPedidoSeleccionado().numero_pedido+' ha sido abierto por el usuario asignado. No puede modificarse!</h4>\
+                                            </div>\
+                                        </div>\
+                                        <div class="modal-footer">\
+                                            <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                        </div>',
+                            scope: $scope,
+                            controller: function($scope, $modalInstance) {
+                                $scope.close = function() {
+                                    $modalInstance.close();
+                                };
+                            }
+                        };
+
+                        var modalInstance = $modal.open($scope.opts); 
+                    }
+                    
+                });
+
             }
             
             //Método para liberar Memoria de todo lo construido en ésta clase

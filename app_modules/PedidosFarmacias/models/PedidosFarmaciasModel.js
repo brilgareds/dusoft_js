@@ -158,14 +158,14 @@ PedidosFarmaciasModel.prototype.eliminar_detalle_temporal_completo = function(em
     });
 };
 
-PedidosFarmaciasModel.prototype.insertar_pedido_farmacia_definitivo = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion, tipo_pedido, callback) {
+PedidosFarmaciasModel.prototype.insertar_pedido_farmacia_definitivo = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion, tipo_pedido, en_uso, callback) {
     
-    var sql = "INSERT INTO solicitud_productos_a_bodega_principal(farmacia_id, centro_utilidad, bodega, observacion, usuario_id, fecha_registro, empresa_destino, sw_despacho, estado, tipo_pedido) \
-                SELECT farmacia_id, centro_utilidad, bodega, $5, usuario_id, CURRENT_TIMESTAMP, empresa_destino, 0, 0, $6 from solicitud_Bodega_principal_aux \
+    var sql = "INSERT INTO solicitud_productos_a_bodega_principal(farmacia_id, centro_utilidad, bodega, observacion, usuario_id, fecha_registro, empresa_destino, sw_despacho, estado, tipo_pedido, en_uso) \
+                SELECT farmacia_id, centro_utilidad, bodega, $5, usuario_id, CURRENT_TIMESTAMP, empresa_destino, 0, 0, $6, $7 from solicitud_Bodega_principal_aux \
                 WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and usuario_id = $4 \
                 RETURNING solicitud_prod_a_bod_ppal_id";
 
-    G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion, tipo_pedido], function(err, rows, result) {
+    G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion, tipo_pedido, en_uso], function(err, rows, result) {
         callback(err, rows, result);
     });
 
@@ -185,7 +185,7 @@ PedidosFarmaciasModel.prototype.insertar_detalle_pedido_farmacia_definitivo = fu
 
 PedidosFarmaciasModel.prototype.consultar_encabezado_pedido_final = function(numero_pedido, callback)
 {
-    var sql = "SELECT farmacia_id, centro_utilidad, bodega, observacion, usuario_id, fecha_registro, empresa_destino, sw_despacho, estado, tipo_pedido\
+    var sql = "SELECT farmacia_id, centro_utilidad, bodega, observacion, usuario_id, fecha_registro, empresa_destino, sw_despacho, estado, tipo_pedido, en_uso\
                 FROM solicitud_productos_a_bodega_principal\
                 WHERE solicitud_prod_a_bod_ppal_id = $1";
 
@@ -356,7 +356,8 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
                 to_char(a.fecha_registro, 'dd-mm-yyyy') as fecha_registro,\
                 c.descripcion as nombre_centro_utilidad,\
                 a.empresa_destino as empresa_origen_id,\
-                a.observacion\
+                a.observacion,\
+                a.en_uso\
                 from solicitud_productos_a_bodega_principal as a \
                 inner join bodegas as b on a.farmacia_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega \
                 inner join centros_utilidad as c on b.empresa_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad \
@@ -605,6 +606,16 @@ PedidosFarmaciasModel.prototype.actualizar_responsables_pedidos = function(numer
 PedidosFarmaciasModel.prototype.actualizar_estado_actual_pedido = function(numero_pedido, estado_pedido, callback) {
 
     var sql = "UPDATE solicitud_productos_a_bodega_principal SET estado=$2 WHERE solicitud_prod_a_bod_ppal_id=$1;";
+
+    G.db.query(sql, [numero_pedido, estado_pedido], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+// actualizacion el estado actual del pedido
+PedidosFarmaciasModel.prototype.actualizar_en_uso_pedido = function(numero_pedido, estado_pedido, callback) {
+
+    var sql = "UPDATE solicitud_productos_a_bodega_principal SET en_uso=$2 WHERE solicitud_prod_a_bod_ppal_id=$1;";
 
     G.db.query(sql, [numero_pedido, estado_pedido], function(err, rows, result) {
         callback(err, rows);

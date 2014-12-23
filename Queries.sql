@@ -364,3 +364,17 @@ IS 'Usuario que registra el archivo';
 
 COMMENT ON COLUMN "public"."archivos_novedades_ordenes_compras"."fecha_registro"
 IS 'Fech en que se registra el archivo';
+
+
+---- ================================================================================================== ----
+---- Crea columna en_uso para encabezado de pedido Farmacias y Clientes
+
+ALTER TABLE solicitud_productos_a_bodega_principal ADD en_uso INTEGER DEFAULT 0;
+
+COMMENT ON COLUMN "public"."solicitud_productos_a_bodega_principal"."en_uso"
+IS 'Estado de bloqueo si el pedido está siendo visto en la tablet. 1 => bloqueado, 0 => libre' ;
+
+ALTER TABLE ventas_ordenes_pedidos ADD en_uso INTEGER DEFAULT 0;
+
+COMMENT ON COLUMN "public"."ventas_ordenes_pedidos"."en_uso"
+IS 'Estado de bloqueo si el pedido está siendo visto en la tablet. 1 => bloqueado, 0 => libre' ;

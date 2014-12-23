@@ -1111,8 +1111,8 @@ PedidosFarmacias.prototype.insertarPedidoFarmaciaDefinitivo = function(req, res)
         return;
     }
     
-    if (args.pedidos_farmacias.tipo_pedido === undefined){
-        res.send(G.utils.r(req.url, 'tipo_pedido no está definido', 404, {}));
+    if (args.pedidos_farmacias.tipo_pedido === undefined || args.pedidos_farmacias.en_uso === undefined){
+        res.send(G.utils.r(req.url, 'tipo_pedido o en_uso no están definidos', 404, {}));
         return;
     }
 
@@ -1121,8 +1121,8 @@ PedidosFarmacias.prototype.insertarPedidoFarmaciaDefinitivo = function(req, res)
         return;
     }
     
-    if (args.pedidos_farmacias.tipo_pedido === ''){
-        res.send(G.utils.r(req.url, 'tipo_pedido está vacio', 404, {}));
+    if (args.pedidos_farmacias.tipo_pedido === '' || args.pedidos_farmacias.en_uso === ''){
+        res.send(G.utils.r(req.url, 'tipo_pedido o en_uso están vacios', 404, {}));
         return;
     }
     
@@ -1135,8 +1135,9 @@ PedidosFarmacias.prototype.insertarPedidoFarmaciaDefinitivo = function(req, res)
     var observacion = args.pedidos_farmacias.observacion;
             
     var tipo_pedido = args.pedidos_farmacias.tipo_pedido;
+    var en_uso = args.pedidos_farmacias.en_uso;
 
-    that.m_pedidos_farmacias.insertar_pedido_farmacia_definitivo(empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion, tipo_pedido, function(err, id_pedido) {
+    that.m_pedidos_farmacias.insertar_pedido_farmacia_definitivo(empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion, tipo_pedido, en_uso, function(err, id_pedido) {
         
         if (err) {
             res.send(G.utils.r(req.url, 'Se ha Generado un Error en el almacenamiento del Encabezado', 500, {error: err}));
@@ -1406,8 +1407,13 @@ PedidosFarmacias.prototype.actualizarEstadoActualPedido = function(req, res){
     
     var numero_pedido = args.pedido_farmacia.numero_pedido;
     var estado = args.pedido_farmacia.estado;
+    
     console.log(">>>>>>>>>>>>>>>>>>> Actualizando estado del pedido ... desde TABLET ...");
-    that.m_pedidos_farmacias.actualizar_estado_actual_pedido(numero_pedido, estado, function(err, rows, result){
+    console.log("Pedido: ", numero_pedido);
+    console.log("Estado: ", estado);
+    //return;
+    
+    that.m_pedidos_farmacias.actualizar_en_uso_pedido(numero_pedido, estado, function(err, rows, result){
         
         if (err) {
             res.send(G.utils.r(req.url, 'Se ha Generado un Error en la actualización del Estado', 500, {error: err}));

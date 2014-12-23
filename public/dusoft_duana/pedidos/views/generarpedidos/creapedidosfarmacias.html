@@ -149,7 +149,7 @@
                     <tab disabled="rootCreaPedidoFarmacia.bloquear_tab" active="rootCreaPedidoFarmacia.tab_estados.tab1">
 
                         <tab-heading>
-                            <b> {{rootCreaPedidoFarmacia.titulo_tab_1}} </b>
+                            <span ng-if="rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEnUso()!=0" class="glyphicon glyphicon-eye-open"></span> <b> {{rootCreaPedidoFarmacia.titulo_tab_1}} </b>
                         </tab-heading>
 
                             <div class="input-group navbar-form ">

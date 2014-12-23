@@ -83,6 +83,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 that.pedido.setDatos(datos_pedido);
                 that.pedido.setTipo(2);
                 that.pedido.setObservacion("");
+                that.pedido.setEnUso(0);
 
                 var farmacia = FarmaciaVenta.get();
 
@@ -456,10 +457,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 /* Fin - Consulta Detalle Pedido*/                  
             };            
             
-            //Función para recargar todos los datos del pedido si se hace 'reload'
-            that.recargarInformacionPedido = function(){
+            
+            that.consultarEncabezadoPedidoFinal = function(numero_pedido, callback){
                 
-                /* Inicio - Consulta de pedido */
                 var obj = {
                     session: $scope.rootCreaPedidoFarmacia.session,
                     data: {
@@ -468,12 +468,47 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         }
                     }
                 };
+                
+                var url = API.PEDIDOS.CONSULTAR_ENCABEZADO_PEDIDO_FARMACIA;
+                
+                Request.realizarRequest(url, "POST", obj, function(data) {
 
-                Request.realizarRequest(API.PEDIDOS.CONSULTAR_ENCABEZADO_PEDIDO_FARMACIA, "POST", obj, function(data) {
-
-                    if (data.status === 200) {
-
+                    if(data.status === 200) {
+                        
                         console.log("Consulta exitosa: ", data.msj);
+                        
+                        if(callback !== undefined && callback !== "" && callback !== 0){
+                            callback(data);
+                        }
+                    }
+                    else{
+                        console.log("Error en la consulta: ", data.msj);
+                    }
+                });
+            };
+            
+            //Función para recargar todos los datos del pedido si se hace 'reload'
+            that.recargarInformacionPedido = function(){
+                
+//                /* Inicio - Consulta de pedido */
+//                var obj = {
+//                    session: $scope.rootCreaPedidoFarmacia.session,
+//                    data: {
+//                        pedidos_farmacias: {
+//                            numero_pedido: $scope.rootCreaPedidoFarmacia.pedido.numero_pedido,
+//                        }
+//                    }
+//                };
+//
+//                Request.realizarRequest(API.PEDIDOS.CONSULTAR_ENCABEZADO_PEDIDO_FARMACIA, "POST", obj, function(data) {
+//
+//                    if (data.status === 200) {
+
+                var numero_pedido = $scope.rootCreaPedidoFarmacia.pedido.numero_pedido;
+
+                that.consultarEncabezadoPedidoFinal(numero_pedido, function(data){
+
+                        //console.log("Consulta exitosa: ", data.msj);
 
                         //Variables para creación de Farmacia más adelante
                         var para_farmacia_id = data.obj.encabezado_pedido[0].farmacia_id;
@@ -498,6 +533,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         pedido.setDatos(datos_pedido);
                         pedido.setTipo(2);
                         pedido.setObservacion(data.obj.encabezado_pedido[0].observacion);
+                        pedido.setEnUso(data.obj.encabezado_pedido[0].en_uso);
 
                         $scope.rootCreaPedidoFarmacia.observacion = data.obj.encabezado_pedido[0].observacion;
 
@@ -627,12 +663,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         $scope.rootCreaPedidoFarmacia.bloqueo_producto_incluido = true;
                         $scope.rootCreaPedidoFarmacia.bloqueo_upload = true;
 
+                        
                         /* Fin - Validaciones de bloqueo */
 
-                    }
-                    else {
-                        console.log("Error en la consulta: ", data.msj);
-                    }
+//                    }
+//                    else {
+//                        console.log("Error en la consulta: ", data.msj);
+//                    }
 
                 });
 
@@ -666,11 +703,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     },
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "13%",
                         cellTemplate: ' <div class="row">\n\
-                                            <button class="btn btn-default btn-xs" ng-click="onModificarCantidad(row)" ng-disabled="row.entity.nueva_cantidad<=0 || row.entity.nueva_cantidad==null || !expreg.test(row.entity.nueva_cantidad)">\n\
-                                                <span class="glyphicon glyphicon-pencil"> Modificar</span>\n\
+                                            <button class="btn btn-default btn-xs" ng-click="onModificarCantidad(row)" ng-disabled="row.entity.nueva_cantidad<=0 || row.entity.nueva_cantidad==null || !expreg.test(row.entity.nueva_cantidad) || rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEnUso()!=0">\n\
+                                                <span class="glyphicon glyphicon-pencil">Modificar</span>\n\
                                             </button>\n\
-                                            <button class="btn btn-default btn-xs" ng-click="onEliminarProducto(row)">\n\
-                                                <span class="glyphicon glyphicon-remove"> Eliminar</span>\n\
+                                            <button class="btn btn-default btn-xs" ng-click="onEliminarProducto(row)" ng-disabled="rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEnUso()!=0">\n\
+                                                <span class="glyphicon glyphicon-remove">Eliminar</span>\n\
                                             </button>\n\
                                         </div>'
                     }
@@ -688,86 +725,125 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             $scope.onModificarCantidad = function(row){
                 
-                if(row.entity.nueva_cantidad >= row.entity.cantidad_solicitada){
-                    
-                    var template = ' <div class="modal-header">\
-                                        <button type="button" class="close" ng-click="close()">&times;</button>\
-                                        <h4 class="modal-title">Mensaje del Sistema</h4>\
-                                    </div>\
-                                    <div class="modal-body">\
-                                        <h4>La Nueva Cantidad debe ser Menor a la Actual ! </h4> \
-                                    </div>\
-                                    <div class="modal-footer">\
-                                        <button class="btn btn-warning" ng-click="close()">Aceptar</button>\
-                                    </div>';
-                    
-                    controller = function($scope, $modalInstance) {
+                var numero_pedido = $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().numero_pedido;
+                
+                that.consultarEncabezadoPedidoFinal(numero_pedido, function(data){
 
-                        $scope.close = function() {
-                            $modalInstance.close();
-                        };
-                    };
-
-                    $scope.opts = {
-                        backdrop: true,
-                        backdropClick: true,
-                        dialogFade: false,
-                        keyboard: true,
-                        template: template,
-                        scope: $scope,
-                        controller: controller
-                    };
-
-                    var modalInstance = $modal.open($scope.opts);
+                    $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().setEnUso(data.obj.encabezado_pedido[0].en_uso);
                     
+                    if($scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEnUso() === 0){
                     
-                }
-                else{
+                        if(row.entity.nueva_cantidad >= row.entity.cantidad_solicitada){
 
-                        var template = ' <div class="modal-header">\
+                            var template = ' <div class="modal-header">\
+                                                <button type="button" class="close" ng-click="close()">&times;</button>\
+                                                <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                            </div>\
+                                            <div class="modal-body">\
+                                                <h4>La Nueva Cantidad debe ser Menor a la Actual ! </h4> \
+                                            </div>\
+                                            <div class="modal-footer">\
+                                                <button class="btn btn-warning" ng-click="close()">Aceptar</button>\
+                                            </div>';
+
+                            controller = function($scope, $modalInstance) {
+
+                                $scope.close = function() {
+                                    $modalInstance.close();
+                                };
+                            };
+
+                            $scope.opts = {
+                                backdrop: true,
+                                backdropClick: true,
+                                dialogFade: false,
+                                keyboard: true,
+                                template: template,
+                                scope: $scope,
+                                controller: controller
+                            };
+
+                            var modalInstance = $modal.open($scope.opts);
+
+
+                        }
+                        else{
+
+                                var template = ' <div class="modal-header">\
+                                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                                    <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                                </div>\
+                                                <div class="modal-body">\
+                                                    <h4>Seguro desea bajar la cantidad de '+row.entity.cantidad_solicitada+' a '+row.entity.nueva_cantidad+' ? </h4> \
+                                                </div>\
+                                                <div class="modal-footer">\
+                                                    <button class="btn btn-warning" ng-click="close()">No</button>\
+                                                    <button class="btn btn-primary" ng-click="modificarCantidad()" ng-disabled="" >Si</button>\
+                                                </div>';
+
+                            controller = function($scope, $modalInstance) {
+
+                                $scope.modificarCantidad = function() {
+                                    that.verificarEstadoPedido(function(){
+
+                                        that.modificarValoresCantidad(
+                                            $scope.rootCreaPedidoFarmacia.pedido.numero_pedido,
+                                            row.entity
+                                        );
+                                    }    
+                                    );
+
+                                    $modalInstance.close();
+                                };
+
+                                $scope.close = function() {
+                                    $modalInstance.close();
+                                };
+                            };
+
+                            $scope.opts = {
+                                backdrop: true,
+                                backdropClick: true,
+                                dialogFade: false,
+                                keyboard: true,
+                                template: template,
+                                scope: $scope,
+                                controller: controller
+                            };
+
+                            var modalInstance = $modal.open($scope.opts);
+                        }
+                    }
+                    else{
+                        //Avisar la no posibilidad de modiificar porque el pedido está abierto en una tablet
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: ' <div class="modal-header">\
                                             <button type="button" class="close" ng-click="close()">&times;</button>\
-                                            <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                            <h4 class="modal-title">Aviso: </h4>\
                                         </div>\
-                                        <div class="modal-body">\
-                                            <h4>Seguro desea bajar la cantidad de '+row.entity.cantidad_solicitada+' a '+row.entity.nueva_cantidad+' ? </h4> \
+                                        <div class="modal-body row">\
+                                            <div class="col-md-12">\
+                                                <h4 >El Pedido '+numero_pedido+' ha sido abierto por el usuario asignado. No puede modificarse!</h4>\
+                                            </div>\
                                         </div>\
                                         <div class="modal-footer">\
-                                            <button class="btn btn-warning" ng-click="close()">No</button>\
-                                            <button class="btn btn-primary" ng-click="modificarCantidad()" ng-disabled="" >Si</button>\
-                                        </div>';
-                    
-                    controller = function($scope, $modalInstance) {
-
-                        $scope.modificarCantidad = function() {
-                            that.verificarEstadoPedido(function(){
-                                    
-                                that.modificarValoresCantidad(
-                                    $scope.rootCreaPedidoFarmacia.pedido.numero_pedido,
-                                    row.entity
-                                );
-                            }    
-                            );
-                            
-                            $modalInstance.close();
+                                            <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                        </div>',
+                            scope: $scope,
+                            controller: function($scope, $modalInstance) {
+                                $scope.close = function() {
+                                    $modalInstance.close();
+                                };
+                            }
                         };
 
-                        $scope.close = function() {
-                            $modalInstance.close();
-                        };
-                    };
-
-                    $scope.opts = {
-                        backdrop: true,
-                        backdropClick: true,
-                        dialogFade: false,
-                        keyboard: true,
-                        template: template,
-                        scope: $scope,
-                        controller: controller
-                    };
-
-                    var modalInstance = $modal.open($scope.opts);
-                }
+                        var modalInstance = $modal.open($scope.opts); 
+                    }
+                });
             };
             
             that.verificarEstadoPedido = function(callback){
@@ -897,50 +973,89 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             $scope.onEliminarProducto = function(row){
                 
-                    var template = '<div class="modal-header">\
-                                        <button type="button" class="close" ng-click="close()">&times;</button>\
-                                        <h4 class="modal-title">Mensaje del Sistema</h4>\
-                                    </div>\
-                                    <div class="modal-body">\
-                                        <h4>Seguro desea eliminar el producto '+row.entity.codigo_producto+' ? </h4> \
-                                    </div>\
-                                    <div class="modal-footer">\
-                                        <button class="btn btn-warning" ng-click="close()">No</button>\
-                                        <button class="btn btn-primary" ng-click="eliminarProducto()" ng-disabled="" >Si</button>\
-                                    </div>';
-                    
-                    controller = function($scope, $modalInstance) {
+                var numero_pedido = $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().numero_pedido;
+                
+                that.consultarEncabezadoPedidoFinal(numero_pedido, function(data){
 
-                        $scope.eliminarProducto = function() {
-                            that.verificarEstadoPedido(function(){
-                                    
-                                that.eliminarProductoPedido(
-                                    $scope.rootCreaPedidoFarmacia.pedido.numero_pedido,
-                                    row.entity,
-                                    row.rowIndex
+                    $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().setEnUso(data.obj.encabezado_pedido[0].en_uso);
+
+                    if($scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEnUso() === 0){
+                
+                        var template = '<div class="modal-header">\
+                                            <button type="button" class="close" ng-click="close()">&times;</button>\
+                                            <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                        </div>\
+                                        <div class="modal-body">\
+                                            <h4>Seguro desea eliminar el producto '+row.entity.codigo_producto+' ? </h4> \
+                                        </div>\
+                                        <div class="modal-footer">\
+                                            <button class="btn btn-warning" ng-click="close()">No</button>\
+                                            <button class="btn btn-primary" ng-click="eliminarProducto()" ng-disabled="" >Si</button>\
+                                        </div>';
+
+                        controller = function($scope, $modalInstance) {
+
+                            $scope.eliminarProducto = function() {
+                                that.verificarEstadoPedido(function(){
+
+                                    that.eliminarProductoPedido(
+                                        $scope.rootCreaPedidoFarmacia.pedido.numero_pedido,
+                                        row.entity,
+                                        row.rowIndex
+                                    );
+                                }    
                                 );
-                            }    
-                            );
-                            
-                            $modalInstance.close();
+
+                                $modalInstance.close();
+                            };
+
+                            $scope.close = function() {
+                                $modalInstance.close();
+                            };
                         };
 
-                        $scope.close = function() {
-                            $modalInstance.close();
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: template,
+                            scope: $scope,
+                            controller: controller
                         };
-                    };
 
-                    $scope.opts = {
-                        backdrop: true,
-                        backdropClick: true,
-                        dialogFade: false,
-                        keyboard: true,
-                        template: template,
-                        scope: $scope,
-                        controller: controller
-                    };
+                        var modalInstance = $modal.open($scope.opts);
+                    }
+                    else{
+                        //Avisar la no posibilidad de modiificar porque el pedido está abierto en una tablet
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: ' <div class="modal-header">\
+                                            <button type="button" class="close" ng-click="close()">&times;</button>\
+                                            <h4 class="modal-title">Aviso: </h4>\
+                                        </div>\
+                                        <div class="modal-body row">\
+                                            <div class="col-md-12">\
+                                                <h4 >El Pedido '+numero_pedido+' ha sido abierto por el usuario asignado. No puede modificarse!</h4>\
+                                            </div>\
+                                        </div>\
+                                        <div class="modal-footer">\
+                                            <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                        </div>',
+                            scope: $scope,
+                            controller: function($scope, $modalInstance) {
+                                $scope.close = function() {
+                                    $modalInstance.close();
+                                };
+                            }
+                        };
 
-                    var modalInstance = $modal.open($scope.opts);
+                        var modalInstance = $modal.open($scope.opts); 
+                    }
+                });
             };
             
             that.eliminarProductoPedido = function(numero_pedido, data, index){
@@ -1292,7 +1407,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             centro_utilidad_id: $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad.split(",")[0],
                             bodega_id: $scope.rootCreaPedidoFarmacia.para_seleccion_bodega.split(",")[0],
                             observacion: $scope.rootCreaPedidoFarmacia.observacion,
-                            tipo_pedido: 0 //Pedido Normal. Pedido General tiene un valor de 1
+                            tipo_pedido: 0, //Pedido Normal. Pedido General tiene un valor de 1
+                            en_uso: 0 //No está siendo visto aún en Tablet
                         }
                     }
                 };

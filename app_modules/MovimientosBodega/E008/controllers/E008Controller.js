@@ -810,7 +810,7 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalClientes = function(req,
 
 
     var documento_temporal_id = args.documento_temporal.documento_temporal_id;
-    var usuario_id = args.documento_temporal.usuario_id;
+    var responsable_id = args.documento_temporal.usuario_id;
     var bodegas_doc_id = args.documento_temporal.bodegas_doc_id;
 
     var numero_pedido = args.documento_temporal.numero_pedido;
@@ -831,7 +831,7 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalClientes = function(req,
 
             auditor = operario.operario_id;
 
-            that.m_movientos_bodegas.actualizar_tipo_documento_temporal(documento_temporal_id, usuario_id, bodegas_doc_id, function(err, rows, result) {
+            that.m_movientos_bodegas.actualizar_tipo_documento_temporal(documento_temporal_id, responsable_id, bodegas_doc_id, function(err, rows, result) {
 
                 if (err || result.rowCount === 0) {
                     res.send(G.utils.r(req.url, 'Error Actualizando el documento Temporal', 500, {movimientos_bodegas: {}}));
@@ -892,7 +892,7 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalFarmacias = function(req
     }
 
     var documento_temporal_id = args.documento_temporal.documento_temporal_id;
-    var usuario_id = args.documento_temporal.usuario_id;
+    var responsable_id = args.documento_temporal.usuario_id;
     var bodegas_doc_id = args.documento_temporal.bodegas_doc_id;
 
     var numero_pedido = args.documento_temporal.numero_pedido;
@@ -900,9 +900,10 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalFarmacias = function(req
     var auditor = 0;
     var estado = '2';
     var estado_pedido = '6'; // En auditoria
-
+    
+    //seleccionar el auditor
     that.m_terceros.seleccionar_operario_por_usuario_id(usuario_id, function(err, operario) {
-
+        
         if (err || operario.length === 0) {
             res.send(G.utils.r(req.url, 'No se ha parametrizado un operario de bodega con el id ' + usuario_id, 500, {movimientos_bodegas: {}}));
             return;
@@ -911,9 +912,9 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalFarmacias = function(req
             operario = operario[0];
 
             auditor = operario.operario_id;
-
-            that.m_movientos_bodegas.actualizar_tipo_documento_temporal(documento_temporal_id, usuario_id, bodegas_doc_id, function(err, rows, result) {
-
+            
+            that.m_movientos_bodegas.actualizar_tipo_documento_temporal(documento_temporal_id, responsable_id, bodegas_doc_id, function(err, rows, result) {
+             
                 if (err || result.rowCount === 0) {
                     res.send(G.utils.r(req.url, 'Error Actualizando el documento Temporal', 500, {movimientos_bodegas: {}}));
                     return;

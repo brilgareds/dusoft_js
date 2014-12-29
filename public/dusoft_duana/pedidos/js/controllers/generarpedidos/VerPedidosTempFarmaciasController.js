@@ -181,11 +181,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 var pedido = PedidoVenta.get();
 
                 var datos_pedido = {
-                    numero_pedido: obj.numero_pedido,
-                    fecha_registro: obj.fecha_registro,
-                    descripcion_estado_actual_pedido: obj.descripcion_estado_actual_pedido,
-                    estado_actual_pedido: obj.estado_actual_pedido,
-                    estado_separacion: obj.estado_separacion
+                    numero_pedido: '',
+                    fecha_registro: '',
+                    descripcion_estado_actual_pedido: '',
+                    estado_actual_pedido: '',
+                    estado_separacion: ''
                 };
 
                 pedido.setDatos(datos_pedido);
@@ -193,11 +193,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 pedido.setObservacion(obj.observacion);
 
-                pedido.setEnUso(obj.en_uso);
-
                 var farmacia = FarmaciaVenta.get(
                         obj.farmacia_id,
-                        obj.bodega_id,
+                        obj.bodega,
                         obj.nombre_farmacia,
                         obj.nombre_bodega,
                         obj.centro_utilidad,
@@ -209,8 +207,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 return pedido;
             };
 
-            //Grid Lista Pedidos Definitivos
-            $scope.rootVerPedidosFarmacias.lista_pedidos_farmacias = {
+            //Grid Lista Pedidos Temporales
+            $scope.rootVerPedidosFarmacias.lista_pedidos_temporales_farmacias = {
                 data: 'rootVerPedidosFarmacias.Empresa.getPedidosFarmacia()',
                 enableColumnResize: true,
                 enableRowSelection: false,
@@ -230,16 +228,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                                 <span class="glyphicon glyphicon-pencil">Modificar</span>\n\
                                             </button>\n\
                                         </div>'
-                                /*cellTemplate: '<div class="btn-group">\
-                                 <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
-                                 <ul class="dropdown-menu dropdown-options">\
-                                 <li><a href="javascript:void(0);" ng-click="onEditarPedidoFarmacia(row.entity)" ng-disabled="(row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1) || row.entity.estado_separacion != null" >Modificar</a></li>\
-                                 <li class="divider"></li>\
-                                 <li><a href="javascript:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,1)" >Novedades</a></li>\
-                                 <li class="divider"></li>\
-                                 <li><a href="javascript:void(0);" ng-click="anular_orden_compra_seleccionada(row.entity)">Anular OC</a></li>\
-                                 </ul>\
-                                 </div>'*/
                     }
 
                 ]
@@ -460,3 +448,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
         }]);
 });
+
+
+

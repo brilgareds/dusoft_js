@@ -376,6 +376,38 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
     });
 };
 
+// Lista todos los pedidos temorales de farmacias
+PedidosFarmaciasModel.prototype.listar_pedidos_temporales_farmacias = function(empresa_id, termino_busqueda, pagina, callback) {
+
+    var sql = " select\
+                d.razon_social as nombre_farmacia, \
+                c.descripcion as nombre_centro_utilidad,\
+                b.descripcion as nombre_bodega,\
+                e.nombre as nombre_usuario,\
+                a.farmacia_id\
+                a.centro_utilidad\
+                a.bodega\
+                a.empresa_destino\
+                a.centro_destino\
+                a.bodega_destino\
+                a.usuario_id\
+                a.observacion\
+                from solicitud_Bodega_principal_aux as a\
+                inner join bodegas as b on a.farmacia_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega \
+                inner join centros_utilidad as c on b.empresa_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad \
+                inner join empresas as d ON c.empresa_id = d.empresa_id\
+                inner join system_usuarios as e ON a.usuario_id = e.usuario_id\
+                where farmacia_id = $1\
+                and ( c.descripcion ilike $2 \
+                      or b.descripcion ilike $2\
+                      or e.nombre ilike $2)\n\
+                order by 2, 3 desc ";
+
+    G.db.pagination(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
 
 // Seleccionar Pedido Por un numero de pedido
 PedidosFarmaciasModel.prototype.consultar_pedido = function(numero_pedido, callback) {
@@ -400,7 +432,8 @@ PedidosFarmaciasModel.prototype.consultar_pedido = function(numero_pedido, callb
                      when a.estado = 6 then 'En Auditoria' end as descripcion_estado_actual_pedido, \
                 f.estado as estado_separacion, \
                 to_char(a.fecha_registro, 'dd-mm-yyyy HH24:MI:SS.MS') as fecha_registro, \
-                a.fecha_registro as fecha_registro_pedido\
+                a.fecha_registro as fecha_registro_pedido,\
+                a.en_uso\
                 from solicitud_productos_a_bodega_principal as a \
                 inner join bodegas as b on a.farmacia_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega \
                 inner join centros_utilidad as c on b.empresa_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad \

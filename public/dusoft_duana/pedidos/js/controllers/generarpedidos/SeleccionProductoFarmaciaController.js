@@ -40,7 +40,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             $rootScope.$on("mostrarseleccionproducto", function(e, tipo_cliente, datos_de, datos_para, observacion, pedido) {
 
-                console.log("Pedido desde CrearPedidoFarmacia: ", pedido);
+//                console.log("Pedido desde CrearPedidoFarmacia: ", pedido);
 
                 $scope.rootSeleccionProductoFarmacia = {};
                 
@@ -135,13 +135,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 var url = API.PEDIDOS.LISTAR_PRODUCTOS_FARMACIAS;
 
-                console.log("Antes de listar Productos ... ");
+//                console.log("Antes de listar Productos ... ");
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
-                    console.log("Después de obtener Data ... ");
-
-                    console.log("Datos Listado Productos: ", data);
+//                    console.log("Después de obtener Data ... ");
+//
+//                    console.log("Datos Listado Productos: ", data);
 
                     if (data.status === 200) {
 
@@ -259,7 +259,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             //Inserta producto presionando ENTER
             $scope.onTeclaIngresaProducto = function(ev, row) {
-                console.log("Key Evento: ", ev.which);
+//                console.log("Key Evento: ", ev.which);
                 if (ev.which === 13) {
                     if (parseInt(row.entity.cantidad_solicitada) > 0) {
                         that.insertarProducto(row);
@@ -293,7 +293,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 Request.realizarRequest(url_registros_encabezado, "POST", obj_encabezado, function(data) {
 
                     if (data.status === 200) {
-                        console.log("ENCABEZADO: data.obj.numero_registros[0].count = ", data.obj.numero_registros[0].count)
+//                        console.log("ENCABEZADO: data.obj.numero_registros[0].count = ", data.obj.numero_registros[0].count)
                         if (data.obj.numero_registros[0].count > 0) {
 
                             console.log("Ya existe éste registro en el encabezado");
@@ -363,14 +363,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 Request.realizarRequest(url_registros_detalle, "POST", obj_detalle, function(data) {
 
                     if (data.status === 200) {
-                        console.log("DETALLE: data.obj.numero_registros[0].count = ", data.obj.numero_registros[0].count)
+//                        console.log("DETALLE: data.obj.numero_registros[0].count = ", data.obj.numero_registros[0].count)
                         if (data.obj.numero_registros[0].count > 0) {
 
                             console.log("Ya existe éste producto en el detalle");
                         }
                         else {
 
-                            console.log("Ingresando el detalle");
+//                            console.log("Ingresando el detalle");
 
                             /* Inicio - Inserción de objeto en grid de seleccionados */
 
@@ -634,7 +634,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.onTeclaBuscarSeleccionProducto = function(ev) {
 
                 if (ev.which == 13) {
-                    console.log("Término Búsqueda: ", $scope.rootSeleccionProductoFarmacia.termino_busqueda);
+//                    console.log("Término Búsqueda: ", $scope.rootSeleccionProductoFarmacia.termino_busqueda);
                     $scope.onBuscarSeleccionProducto($scope.obtenerParametros());
                 }
             };

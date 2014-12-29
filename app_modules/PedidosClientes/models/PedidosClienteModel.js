@@ -698,6 +698,15 @@ PedidosClienteModel.prototype.listar_pedidos_pendientes_by_producto = function(e
     });
 };
 
+// Actualizacion el estado actual del pedido
+PedidosClienteModel.prototype.actualizar_en_uso_pedido = function(numero_pedido, estado_pedido, callback) {
+
+    var sql = "UPDATE ventas_ordenes_pedidos SET en_uso=$2 WHERE pedido_cliente_id = $1;";
+
+    G.db.query(sql, [numero_pedido, estado_pedido], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
 
 PedidosClienteModel.$inject = ["m_productos"];
 

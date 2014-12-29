@@ -267,7 +267,7 @@ E008Controller.prototype.modificarDetalleDocumentoTemporal = function(req, res) 
     var fecha_vencimiento = args.documento_temporal.fecha_vencimiento;
     var cantidad_ingresada = args.documento_temporal.cantidad_ingresada;
     var valor_unitario = args.documento_temporal.valor_unitario;
-    var usuario_id = req.session.user.usuario_id;
+    var usuario_id = args.documento_temporal.usuario_id;
     var empresa_id = args.documento_temporal.empresa_id;
     var centro_utilidad_id = args.documento_temporal.centro_utilidad_id;
     var bodega_id = args.documento_temporal.bodega_id;
@@ -1633,8 +1633,7 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
                     return;
                 }
                 
-                console.log("generar documento de farmacias >>>>>>>>>>>>>>>>>>>>>>");
-                return;
+
                 that.m_e008.generar_documento_despacho_farmacias(documento_temporal_id, usuario_id, auditor_id, function(err, empresa_id, prefijo_documento, numero_documento) {
 
                     if (err) {

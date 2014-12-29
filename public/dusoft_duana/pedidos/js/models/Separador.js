@@ -15,7 +15,7 @@ define(["angular", "js/models"], function(angular, models) {
                     this.nombre_operario = datos[i].nombre_responsable;
                     this.operario_id     = datos[i].operario_id;
                     this.estado          = datos[i].estado;
-                    this.usuario_id      = datos[i].usuario_id;
+                    this.usuario_id      = datos[i].usuario_id_responsable;
                     break;
                 }
             }

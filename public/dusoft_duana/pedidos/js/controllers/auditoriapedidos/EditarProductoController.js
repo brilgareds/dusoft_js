@@ -288,6 +288,9 @@ define(["angular", "js/controllers",'models/ClientePedido',
                     console.log("respuesta al modificar lote ",data);
                     if(data.status === 200){
                         lote.item_id = 0 ;
+                    } else {
+                        $scope.rootEditarProducto.validacionproducto.valido = false;
+                        $scope.rootEditarProducto.validacionproducto.mensaje = "Ha ocurrido un error eliminando el item";
                     }
                 });
                 
@@ -348,6 +351,9 @@ define(["angular", "js/controllers",'models/ClientePedido',
                    // console.log("respuesta al modificar lote ",data);
                     if(data.status === 200){
                         lote.item_id = data.obj.documento_temporal.item_id;
+                    } else {
+                        $scope.rootEditarProducto.validacionproducto.valido = false;
+                        $scope.rootEditarProducto.validacionproducto.mensaje = "Ha ocurrido un error guardando el item";
                     }
                 });
                   
@@ -477,7 +483,10 @@ define(["angular", "js/controllers",'models/ClientePedido',
                         if(data.status === 200){
                            $rootScope.$emit("productoAuditado", $scope.rootEditarProducto.producto, $scope.rootEditarProducto.documento);
                            $modalInstance.close();
-                        } 
+                        } else {
+                            $scope.rootEditarProducto.validacionproducto.valido = false;
+                            $scope.rootEditarProducto.validacionproducto.mensaje = "Ha ocurrido un error auditando el producto";
+                        }
                     });
             };
             
@@ -605,6 +614,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                             console.log($scope.lotes_producto.selectedItems, " caja valida ",$scope.rootEditarProducto.caja.valida );
               
                             var items = [];
+                            
 
                             for(var i in $scope.lotes_producto.selectedItems){
                                 items.push($scope.lotes_producto.selectedItems[i].item_id);
@@ -643,7 +653,10 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
                                          $scope.rootEditarProducto.caja.valida = true;
 
-                                  } 
+                                  } else {
+                                        $scope.rootEditarProducto.validacionproducto.valido = false;
+                                        $scope.rootEditarProducto.validacionproducto.mensaje = "Ha ocurrido un error generanado la caja";
+                                  }
                               });
                         }
 

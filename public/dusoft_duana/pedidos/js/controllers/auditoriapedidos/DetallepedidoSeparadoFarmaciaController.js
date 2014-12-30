@@ -82,7 +82,6 @@ define(["angular", "js/controllers",'models/Farmacia',
                                
                 if($scope.DocumentoTemporal.getPedido() === undefined) return;
                 $scope.DocumentoTemporal.getPedido().vaciarProductos();
-                $scope.cajasSinCerrar = [];
                
             });
             

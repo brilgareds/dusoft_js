@@ -384,13 +384,13 @@ PedidosFarmaciasModel.prototype.listar_pedidos_temporales_farmacias = function(e
                 c.descripcion as nombre_centro_utilidad,\
                 b.descripcion as nombre_bodega,\
                 e.nombre as nombre_usuario,\
-                a.farmacia_id\
-                a.centro_utilidad\
-                a.bodega\
-                a.empresa_destino\
-                a.centro_destino\
-                a.bodega_destino\
-                a.usuario_id\
+                a.farmacia_id,\
+                a.centro_utilidad,\
+                a.bodega,\
+                a.empresa_destino,\
+                a.centro_destino,\
+                a.bodega_destino,\
+                a.usuario_id,\
                 a.observacion\
                 from solicitud_Bodega_principal_aux as a\
                 inner join bodegas as b on a.farmacia_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega \
@@ -400,10 +400,10 @@ PedidosFarmaciasModel.prototype.listar_pedidos_temporales_farmacias = function(e
                 where farmacia_id = $1\
                 and ( c.descripcion ilike $2 \
                       or b.descripcion ilike $2\
-                      or e.nombre ilike $2)\n\
-                order by 2, 3 desc ";
+                      or e.nombre ilike $2)\
+                order by 2 desc ";
 
-    G.db.pagination(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result) {
+    G.db.pagination(sql, [empresa_id, "%" + termino_busqueda + "%"], 1 /*pagina*/, G.settings.limit, function(err, rows, result) {
         callback(err, rows);
     });
 };

@@ -3,7 +3,7 @@
 define(["angular", "js/controllers", 'includes/slide/slideContent',
     'models/ClientePedido', 'models/PedidoVenta'], function(angular, controllers) {
 
-    var fo = controllers.controller('VerPedidosFarmaciasController', [
+    var fo = controllers.controller('VerPedidosTempFarmaciasController', [
         '$scope', '$rootScope', 'Request',
         'EmpresaPedido', 'FarmaciaVenta', 'PedidoVenta',
         'API', "socket", "AlertService",

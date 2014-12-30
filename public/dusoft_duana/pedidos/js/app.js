@@ -7,10 +7,11 @@
   "controllers/auditoriapedidos/AuditoriaPedidosController",  "controllers/auditoriapedidos/DetallepedidoSeparadoClienteController", "controllers/generarpedidos/CotizacionesController",
   "controllers/auditoriapedidos/DetallepedidoSeparadoFarmaciaController", "controllers/generarpedidos/CreaCotizacionesController","controllers/generarpedidos/SeleccionClienteController",
   "controllers/generarpedidos/SeleccionProductoClienteController", "controllers/generarpedidos/SeleccionProductoFarmaciaController", "controllers/generarpedidos/CreaPedidoFarmaciaController",
-  "controllers/generarpedidos/VerPedidosFarmaciasController", "loader",  "models/EmpresaPedido",
+  "controllers/generarpedidos/VerPedidosFarmaciasController", "controllers/generarpedidos/VerPedidosTempFarmaciasController", "loader",  "models/EmpresaPedido",
   "includes/menu/menucontroller", "url", "includes/alert/Alert",
   "includes/header/HeaderController", 'storage', "httpinterceptor",
-  "includes/classes/Usuario", "includes/http/Request", "dragndropfile", "includes/helpersdirectives/visualizarReporte"
+  "includes/classes/Usuario", "includes/http/Request", "dragndropfile",
+  "includes/helpersdirectives/visualizarReporte"
 
   ], function(angular){
   /* App Module and its dependencies */

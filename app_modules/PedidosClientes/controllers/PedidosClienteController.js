@@ -363,6 +363,41 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
 
 };
 
+PedidosCliente.prototype.actualizarEstadoActualPedido = function(req, res){
+    
+    var that = this;
+
+    var args = req.body.data;
+    
+    if (args.pedido_cliente === undefined || args.pedido_cliente.numero_pedido === undefined || args.pedido_cliente.estado === undefined) {
+        res.send(G.utils.r(req.url, 'numero_pedido o estado no están definidos', 404, {}));
+        return;
+    }
+    
+    if (args.pedido_cliente.numero_pedido === '' || args.pedido_cliente.estado === '') {
+        res.send(G.utils.r(req.url, 'numero_pedido o estado están vacios', 404, {}));
+        return;
+    }
+    
+    var numero_pedido = args.pedido_cliente.numero_pedido;
+    var estado = args.pedido_cliente.estado;
+    
+    that.m_pedidos_clientes.actualizar_en_uso_pedido(numero_pedido, estado, function(err, rows, result){
+        
+        if (err) {
+            res.send(G.utils.r(req.url, 'Se ha Generado un Error en la actualización del Estado', 500, {error: err}));
+            return;
+        }
+        else
+        {
+            res.send(G.utils.r(req.url, 'Estado actualizado exitosamente', 200, {}));
+            return;
+        }
+        
+    });
+    
+};
+
 PedidosCliente.$inject = ["m_pedidos_clientes", "e_pedidos_clientes", "m_productos"];
 
 module.exports = PedidosCliente;

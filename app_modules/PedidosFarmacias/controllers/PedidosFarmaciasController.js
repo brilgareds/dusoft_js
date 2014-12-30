@@ -230,6 +230,32 @@ PedidosFarmacias.prototype.listarPedidosFarmacias = function(req, res) {
     });
 };
 
+//Lista los Pedidos Temporales de Farmacias
+PedidosFarmacias.prototype.listarPedidosTemporalesFarmacias = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.pedidos_farmacias === undefined || args.pedidos_farmacias.empresa_id === undefined || args.pedidos_farmacias.termino_busqueda === undefined || args.pedidos_farmacias.pagina_actual === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_farmacias.empresa_id === "" || args.pedidos_farmacias.pagina_actual === '') {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios Estan Vacios', 404, {}));
+        return;
+    }
+
+    var empresa_id = args.pedidos_farmacias.empresa_id;
+    var termino_busqueda = args.pedidos_farmacias.termino_busqueda;
+    var pagina_actual = args.pedidos_farmacias.pagina_actual;
+
+    this.m_pedidos_farmacias.listar_pedidos_temporales_farmacias(empresa_id, termino_busqueda, pagina_actual, function(err, lista_pedidos_farmacias) {
+        res.send(G.utils.r(req.url, 'Lista Pedidos Temporales Farmacias', 200, {pedidos_farmacias: lista_pedidos_farmacias}));
+    });
+};
+
 PedidosFarmacias.prototype.consultarEncabezadoPedidoFinal = function(req, res) {
 
     var that = this;

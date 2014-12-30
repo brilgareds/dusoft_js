@@ -1,57 +1,139 @@
 <div>
-    <div ng-controller="VerPedidosFarmaciasController">
+    <div> <!--ng-controller="VerPedidosFarmaciasController"-->
 
-        <div class="row">
+        <tabset  class="">
 
-            <div class="col-md-3">
-                <p class="input-group">
-                    <button type="button" class="btn btn-default btn-medium ng-scope" ng-click="abrirViewPedidoFarmacia()">
-                        <span class="glyphicon glyphicon-plus"></span> Crear Pedido
+            <tab ng-controller="VerPedidosFarmaciasController">
+                <tab-heading>
+                    Pedidos Farmacias <!--<span ng-show="notificacionclientes > 0" class="badge badge-warning">{{notificacionclientes}}</span>-->
+                </tab-heading>
+
+                <div class="row">
+
+                    <div class="col-md-3">
+                        <p class="input-group">
+                            <button type="button" class="btn btn-default btn-medium ng-scope" ng-click="abrirViewPedidoFarmacia()">
+                                <span class="glyphicon glyphicon-plus"></span> Crear Pedido
+                            </button>
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-3">
+                        <p class="input-group">
+                            <select ui-select2  class="pull-left anchoSeleccionEmpresa" ng-model="rootVerPedidosFarmacias.seleccion" data-placeholder="Seleccionar Farmacia" ng-change="valorSeleccionado()">
+                                <option ng-repeat="farmacia in  rootVerPedidosFarmacias.listado_farmacias"  ng-value="farmacia.empresa_id" >{{farmacia.razon_social}}</option>
+                            </select>
+                            <!--                    <select ui-select2  class="pull-left anchoSeleccionEmpresa" ng-model="farmacia_seleccionada" data-placeholder="Seleccionar Farmacia" ng-change="seleccion_farmacia()" 
+                                                        data-ng-options="farmacia as farmacia.get_nombre_farmacia() for farmacia in rootVerPedidosFarmacias.Empresa.getFarmacias()">                        
+                                                </select>-->
+                        </p>
+                    </div>
+
+                    <div class="col-md-2 pull-right">
+                        <p class="input-group">
+                            <input type="text" class="form-control pull-right" ng-keypress="onTeclaBuscarPedidosFarmacias($event)" ng-model="rootVerPedidosFarmacias.termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
+                            <span class="input-group-btn" >
+                                <button class="btn btn-default" type="submit" ng-click="onBuscarPedidosFarmacias(obtenerParametros())"><i class="glyphicon glyphicon-search"></i></button>
+                            </span>
+                        </p>    
+                    </div>
+
+                </div>
+
+                <div class="defaultGrid" ng-grid="rootVerPedidosFarmacias.lista_pedidos_farmacias"></div>
+
+                <br/>
+
+                <div class="row text-center">
+                    <button type="button" class="btn btn-default btn-medium" ng-disabled="rootVerPedidosFarmacias.paginaactual == 1" ng-click="paginaAnterior()">
+                        <span class="glyphicon glyphicon-chevron-left" ></span>
                     </button>
-                </p>
-            </div>
+                    <button type="button" class="btn btn-default btn-medium" ng-disabled="rootVerPedidosFarmacias.items == 0" ng-click="paginaSiguiente()">
+                        <span class="glyphicon glyphicon-chevron-right" ></span>
+                    </button>
+                </div>
 
-        </div>
-        
-        <div class="row">
-            
-            <div class="col-md-3">
-                <p class="input-group">
-                    <select ui-select2  class="pull-left anchoSeleccionEmpresa" ng-model="rootVerPedidosFarmacias.seleccion" data-placeholder="Seleccionar Farmacia" ng-change="valorSeleccionado()">
-                        <option ng-repeat="farmacia in  rootVerPedidosFarmacias.listado_farmacias"  ng-value="farmacia.empresa_id" >{{farmacia.razon_social}}</option>
-                    </select>
-<!--                    <select ui-select2  class="pull-left anchoSeleccionEmpresa" ng-model="farmacia_seleccionada" data-placeholder="Seleccionar Farmacia" ng-change="seleccion_farmacia()" 
-                            data-ng-options="farmacia as farmacia.get_nombre_farmacia() for farmacia in rootVerPedidosFarmacias.Empresa.getFarmacias()">                        
-                    </select>-->
-                </p>
-            </div>
-            
-            <div class="col-md-2 pull-right">
-                <p class="input-group">
-                    <input type="text" class="form-control pull-right" ng-keypress="onTeclaBuscarPedidosFarmacias($event)" ng-model="rootVerPedidosFarmacias.termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
-                    <span class="input-group-btn" >
-                        <button class="btn btn-default" type="submit" ng-click="onBuscarPedidosFarmacias(obtenerParametros())"><i class="glyphicon glyphicon-search"></i></button>
-                    </span>
-                </p>    
-            </div>
-            
-        </div>
-        
-        <div class="defaultGrid" ng-grid="rootVerPedidosFarmacias.lista_pedidos_farmacias"></div>
+                </br>
+            </tab>
 
-        <br/>
 
-        <div class="row text-center">
-            <button type="button" class="btn btn-default btn-medium" ng-disabled="rootVerPedidosFarmacias.paginaactual == 1" ng-click="paginaAnterior()">
-                <span class="glyphicon glyphicon-chevron-left" ></span>
-            </button>
-            <button type="button" class="btn btn-default btn-medium" ng-disabled="rootVerPedidosFarmacias.items == 0" ng-click="paginaSiguiente()">
-                <span class="glyphicon glyphicon-chevron-right" ></span>
-            </button>
-        </div>
+            <tab> <!-- ng-controller="VerPedidosTempFarmaciasController" -->
+                <tab-heading>
+                   Pedidos Temporales
+                </tab-heading>
+               
+                <!--
+                <div class="row">
 
-        </br>
-        
+                    <div class="col-md-3">
+                        <p class="input-group">
+                            <button type="button" class="btn btn-default btn-medium ng-scope" ng-click="abrirViewPedidoFarmacia()">
+                                <span class="glyphicon glyphicon-plus"></span> Crear Pedido
+                            </button>
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-3">
+                        <p class="input-group">
+                            <select ui-select2  class="pull-left anchoSeleccionEmpresa" ng-model="rootVerPedidosFarmacias.seleccion" data-placeholder="Seleccionar Farmacia" ng-change="valorSeleccionado()">
+                                <option ng-repeat="farmacia in  rootVerPedidosFarmacias.listado_farmacias"  ng-value="farmacia.empresa_id" >{{farmacia.razon_social}}</option>
+                            </select>
+                -->
+                
+                            <!--      (Esto No va)              <select ui-select2  class="pull-left anchoSeleccionEmpresa" ng-model="farmacia_seleccionada" data-placeholder="Seleccionar Farmacia" ng-change="seleccion_farmacia()" 
+                                                        data-ng-options="farmacia as farmacia.get_nombre_farmacia() for farmacia in rootVerPedidosFarmacias.Empresa.getFarmacias()">                        
+                                                </select>-->
+                <!--
+                            
+                        </p>
+                    </div>
+
+                    <div class="col-md-2 pull-right">
+                        <p class="input-group">
+                            <input type="text" class="form-control pull-right" ng-keypress="onTeclaBuscarPedidosFarmacias($event)" ng-model="rootVerPedidosFarmacias.termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
+                            <span class="input-group-btn" >
+                                <button class="btn btn-default" type="submit" ng-click="onBuscarPedidosFarmacias(obtenerParametros())"><i class="glyphicon glyphicon-search"></i></button>
+                            </span>
+                        </p>    
+                    </div>
+
+                </div>
+                
+                -->
+                
+                <!--Modificar de aquí en adelante-->
+                
+                <!--
+                <div class="defaultGrid" ng-grid="rootVerPedidosFarmacias.lista_pedidos_temporales_farmacias"></div>
+
+                <br/>
+
+                <div class="row text-center">
+                    <button type="button" class="btn btn-default btn-medium" ng-disabled="rootVerPedidosFarmacias.paginaactual == 1" ng-click="paginaAnterior()">
+                        <span class="glyphicon glyphicon-chevron-left" ></span>
+                    </button>
+                    <button type="button" class="btn btn-default btn-medium" ng-disabled="rootVerPedidosFarmacias.items == 0" ng-click="paginaSiguiente()">
+                        <span class="glyphicon glyphicon-chevron-right" ></span>
+                    </button>
+                </div>
+
+                </br>
+                
+                -->
+                
+            </tab>
+
+
+        </tabset>
+
     </div>
 
 </div>

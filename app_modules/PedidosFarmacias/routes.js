@@ -137,6 +137,11 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.actualizarEstadoActualPedido(req, res);
     });
     
+    //Listar Pedidos Temporales Farmacia
+    app.post('/api/PedidosFarmacias/listarPedidosTemporalesFarmacias', function(req, res) {
+        c_pedidos_farmacias.listarPedidosTemporalesFarmacias(req, res);
+    });
+    
     // Listar productos
 //    app.get('/listarProductos', function(req, res) {
 //        c_pedidos_farmacias.listar_productos(req, res);

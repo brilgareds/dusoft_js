@@ -282,7 +282,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             /*************** EVENTO CARGA GRID **********************/
 
             $scope.$on('cargarGridPrincipal', function(event, valor) {
-                console.log(">>>>>>>>>>>>>>> He ingresado a cargarGridPrincipal: linea 261");
+//                console.log(">>>>>>>>>>>>>>> He ingresado a cargarGridPrincipal: linea 261");
                 if ($scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().lista_productos.length > 0) {
                     $scope.rootCreaPedidoFarmacia.bloqueo_producto_incluido = true;
                     $scope.rootCreaPedidoFarmacia.bloqueo_generar_pedido = false;
@@ -315,7 +315,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 if (PedidoVenta.pedidoseleccionado !== "") {
                     
-                    console.log("Singleton Empresa: ", $scope.rootCreaPedidoFarmacia.Empresa);
+//                    console.log("Singleton Empresa: ", $scope.rootCreaPedidoFarmacia.Empresa);
                     
                     $scope.rootCreaPedidoFarmacia.titulo_tab_1 = "Detalle Pedido";
                     $scope.rootCreaPedidoFarmacia.titulo_tab_2 = "";
@@ -347,6 +347,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     
                     that.consultarEmpresasDe();
                     that.consultarEmpresasPara();
+                    
+                    console.log("EN USO: ",$scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEnUso());
                 }
 
             };
@@ -715,7 +717,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
             
             $scope.onTeclaModificarCantidad = function(ev, row) {
-                console.log("Key Evento: ", ev.which);
+//                console.log("Key Evento: ", ev.which);
                 if (ev.which === 13) {
                     if (parseInt(row.entity.nueva_cantidad) > 0) {
                         $scope.onModificarCantidad(row);
@@ -1243,7 +1245,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                         if (data) {
 
-                            console.log("Productos en BD: ", data.obj);
+                            //console.log("Productos en BD: ", data.obj);
                             //$scope.rootCreaPedidoFarmacia.listado_productos = data.obj.listado_productos;
 
                             /* Inicio - Objeto */
@@ -1304,6 +1306,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 var para_seleccion_empresa = [];
                 var para_seleccion_centro_utilidad = [];
                 var para_seleccion_bodega = [];
+                
+                console.log("EN USO - Valor Seleccionado: ",$scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEnUso());
 
                 if ($scope.rootCreaPedidoFarmacia.para_seleccion_empresa)
                 {
@@ -1322,12 +1326,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 
                 
                 /* INICIO - BORRAR LUEGO */
-                console.log(">>> de_seleccion_empresa: ",$scope.rootCreaPedidoFarmacia.de_seleccion_empresa);
-                console.log(">>> de_seleccion_centro_utilidad: ",$scope.rootCreaPedidoFarmacia.de_seleccion_centro_utilidad);
-                console.log(">>> de_seleccion_bodega: ",$scope.rootCreaPedidoFarmacia.de_seleccion_bodega);
-                console.log(">>> para_seleccion_empresa: ",para_seleccion_empresa[0]);
-                console.log(">>> para_seleccion_centro_utilidad: ",para_seleccion_centro_utilidad[0]);
-                console.log(">>> para_seleccion_bodega: ",para_seleccion_bodega[0]);
+//                console.log(">>> de_seleccion_empresa: ",$scope.rootCreaPedidoFarmacia.de_seleccion_empresa);
+//                console.log(">>> de_seleccion_centro_utilidad: ",$scope.rootCreaPedidoFarmacia.de_seleccion_centro_utilidad);
+//                console.log(">>> de_seleccion_bodega: ",$scope.rootCreaPedidoFarmacia.de_seleccion_bodega);
+//                console.log(">>> para_seleccion_empresa: ",para_seleccion_empresa[0]);
+//                console.log(">>> para_seleccion_centro_utilidad: ",para_seleccion_centro_utilidad[0]);
+//                console.log(">>> para_seleccion_bodega: ",para_seleccion_bodega[0]);
 
                 /* FIN - BORRAR LUEGO */
                 
@@ -1644,7 +1648,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     }
                 };
                 
-                console.log(">>> obj_encabezado: ", obj_encabezado);
+                //console.log(">>> obj_encabezado: ", obj_encabezado);
                 /* Fin - Objeto para inserción de Encabezado*/
 
                 /* Inicio - Validar Existencia de encabezado */
@@ -1654,7 +1658,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 Request.realizarRequest(url_registros_encabezado, "POST", obj_encabezado, function(data) {
 
                     if (data.status === 200) {
-                        console.log("ENCABEZADO: data.obj.numero_registros[0].count = ", data.obj.numero_registros[0].count)
+                        //console.log("ENCABEZADO: data.obj.numero_registros[0].count = ", data.obj.numero_registros[0].count)
                         if (data.obj.numero_registros[0].count > 0) {
 
                             console.log("Ya existe éste registro en el encabezado");
@@ -1862,9 +1866,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     }
                 };
 
-                console.log("Fecha Registro: ",$scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().fecha_registro);
-                console.log("Observación: ",$scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getObservacion);
-                console.log("Objeto PDF: ",obj_pdf);
+//                console.log("Fecha Registro: ",$scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().fecha_registro);
+//                console.log("Observación: ",$scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getObservacion);
+//                console.log("Objeto PDF: ",obj_pdf);
 
                 var url_eliminar_detalle = API.PEDIDOS.IMPRIMIR_PEDIDO_FARMACIA;
 
@@ -1873,9 +1877,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     if (data.status === 200) {
                         //console.log("Eliminación de detalle Exitosa: ", data.msj);
                         var nombre_archivo_temporal = data.obj.reporte_pedido.nombre_reporte;
-                        console.log("Exito: ", data.msj);
-                        console.log("Data Resultado Temporal: ",data);
-                        console.log("Nombre PDF: ", nombre_archivo_temporal); //public/reports/
+//                        console.log("Exito: ", data.msj);
+//                        console.log("Data Resultado Temporal: ",data);
+//                        console.log("Nombre PDF: ", nombre_archivo_temporal); //public/reports/
                         $scope.visualizarReporte("/reports/"+nombre_archivo_temporal, "Pedido: "+numero_pedido, "download");
                     }
                     else{

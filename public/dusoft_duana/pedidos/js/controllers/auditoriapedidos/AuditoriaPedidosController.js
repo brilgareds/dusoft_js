@@ -607,8 +607,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 });
             };
 
-
+            
             $scope.$on("onDetalleCerrado",function(){
+                console.log("========================= onDetalleCerrado");
                 $scope.productosAuditados = [];
                 $scope.productosNoAuditados = [];
                 $scope.productosPendientes = [];

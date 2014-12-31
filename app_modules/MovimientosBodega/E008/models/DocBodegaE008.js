@@ -802,11 +802,34 @@ function __eliminar_documento_temporal_farmacias(documento_temporal_id, usuario_
 // Eliminar Documento Temporal Despacho Clientes
 function __eliminar_documento_temporal_clientes(documento_temporal_id, usuario_id, callback) {
 
-    var sql = " DELETE FROM inv_bodegas_movimiento_tmp_despachos_clientes WHERE  doc_tmp_id = $1 AND usuario_id = $2;\n\
-                DELETE FROM inv_bodegas_movimiento_tmp WHERE  doc_tmp_id = $1 AND usuario_id = $2;\
-                DELETE FROM inv_bodegas_movimiento_tmp_d WHERE  doc_tmp_id = $1 AND usuario_id = $2;";
 
-    G.db.transaction(sql, [documento_temporal_id, usuario_id], callback);
+    
+    var sql = " DELETE FROM inv_bodegas_movimiento_tmp_despachos_clientes WHERE  doc_tmp_id = $1 AND usuario_id = $2;";
+
+    
+    
+    
+    G.db.transaction(sql, [documento_temporal_id, usuario_id], function(err, result){
+        if(err){
+            callback(err);
+            return;
+        }
+        
+       sql = " DELETE FROM inv_bodegas_movimiento_tmp_d WHERE  doc_tmp_id = $1 AND usuario_id = $2;";
+       G.db.transaction(sql, [documento_temporal_id, usuario_id], function(err, result){
+           if(err){
+                callback(err);
+                return;
+           }
+           sql = " DELETE FROM inv_bodegas_movimiento_tmp WHERE  doc_tmp_id = $1 AND usuario_id = $2";
+            G.db.transaction(sql, [documento_temporal_id, usuario_id], callback);
+       });
+       
+    });
+    
+    
+    
+    
 };
 
 

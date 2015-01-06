@@ -12,6 +12,8 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
         EmpresaPedido.documentosTemporalesFarmacias = [];
         EmpresaPedido.pedidoSeleccionado = {};
         EmpresaPedido.lista_farmacias = [];
+        EmpresaPedido.pedidosTemporales = [];
+        EmpresaPedido.pedidosTemporalesFarmacias = [];
 
         //Agregar farmacia
         EmpresaPedido.agregarFarmacias = function(farmacia){
@@ -50,7 +52,6 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
         EmpresaPedido.vaciarPedidosFarmacia = function() {
             this.pedidosFarmacias = [];
         };
-
         
         EmpresaPedido.agregarSeparador = function(separador) {
             this.separadores.push(separador);
@@ -129,6 +130,32 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
         
         EmpresaPedido.setPedidoSeleccionado = function(pedido) {
             this.pedidoSeleccionado = pedido;
+        };
+        
+        //Operaciones para pedidos temporales Clientes
+        EmpresaPedido.agregarPedidoTemporal = function(pedido) {
+            this.pedidosTemporales.push(pedido);
+        };
+
+        EmpresaPedido.getPedidosTemporales = function() {
+            return this.pedidosTemporales;
+        };
+
+        EmpresaPedido.vaciarPedidosTemporales = function() {
+            this.pedidosTemporales = [];
+        };
+        
+        // Pedidos Farmacias
+        EmpresaPedido.agregarPedidoTemporalFarmacia = function(pedido) {
+            this.pedidosTemporalesFarmacias.push(pedido);
+        };
+
+        EmpresaPedido.getPedidosTemporalesFarmacia = function() {
+            return this.pedidosTemporalesFarmacias;
+        };
+
+        EmpresaPedido.vaciarPedidosTemporalesFarmacia = function() {
+            this.pedidosTemporalesFarmacias = [];
         };
         
         return EmpresaPedido;

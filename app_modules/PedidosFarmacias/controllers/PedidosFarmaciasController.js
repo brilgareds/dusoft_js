@@ -250,8 +250,11 @@ PedidosFarmacias.prototype.listarPedidosTemporalesFarmacias = function(req, res)
     var empresa_id = args.pedidos_farmacias.empresa_id;
     var termino_busqueda = args.pedidos_farmacias.termino_busqueda;
     var pagina_actual = args.pedidos_farmacias.pagina_actual;
+    
+    var usuario = req.session.user.usuario_id;
 
-    this.m_pedidos_farmacias.listar_pedidos_temporales_farmacias(empresa_id, termino_busqueda, pagina_actual, function(err, lista_pedidos_farmacias) {
+    this.m_pedidos_farmacias.listar_pedidos_temporales_farmacias(empresa_id, termino_busqueda, pagina_actual, usuario, function(err, lista_pedidos_farmacias) {
+        
         res.send(G.utils.r(req.url, 'Lista Pedidos Temporales Farmacias', 200, {pedidos_farmacias: lista_pedidos_farmacias}));
     });
 };

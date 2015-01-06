@@ -387,7 +387,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 });
 
-            }
+            };
 
             //Método para liberar Memoria de todo lo construido en ésta clase
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {

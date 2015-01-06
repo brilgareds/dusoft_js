@@ -377,7 +377,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
 };
 
 // Lista todos los pedidos temorales de farmacias
-PedidosFarmaciasModel.prototype.listar_pedidos_temporales_farmacias = function(empresa_id, termino_busqueda, pagina, callback) {
+PedidosFarmaciasModel.prototype.listar_pedidos_temporales_farmacias = function(empresa_id, termino_busqueda, pagina, usuario, callback) {
 
     var sql = " select\
                 d.razon_social as nombre_farmacia, \
@@ -389,7 +389,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_temporales_farmacias = function(e
                 a.bodega,\
                 a.empresa_destino,\
                 a.centro_destino,\
-                a.bodega_destino,\
+                a.bogega_destino,\
                 a.usuario_id,\
                 a.observacion\
                 from solicitud_Bodega_principal_aux as a\
@@ -397,13 +397,14 @@ PedidosFarmaciasModel.prototype.listar_pedidos_temporales_farmacias = function(e
                 inner join centros_utilidad as c on b.empresa_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad \
                 inner join empresas as d ON c.empresa_id = d.empresa_id\
                 inner join system_usuarios as e ON a.usuario_id = e.usuario_id\
-                where farmacia_id = $1\
+                where a.farmacia_id = $1\
+                and a.usuario_id = $3\
                 and ( c.descripcion ilike $2 \
                       or b.descripcion ilike $2\
                       or e.nombre ilike $2)\
                 order by 2 desc ";
 
-    G.db.pagination(sql, [empresa_id, "%" + termino_busqueda + "%"], 1 /*pagina*/, G.settings.limit, function(err, rows, result) {
+    G.db.pagination(sql, [empresa_id, "%" + termino_busqueda + "%", usuario], pagina, G.settings.limit, function(err, rows, result) {
         callback(err, rows);
     });
 };

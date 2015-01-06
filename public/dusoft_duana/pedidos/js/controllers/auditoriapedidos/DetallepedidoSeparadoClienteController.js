@@ -20,7 +20,6 @@ define(["angular", "js/controllers",'models/ClientePedido',
             $scope.DocumentoTemporal = DocumentoTemporal.get();
             $scope.paginas = 0;
             $scope.items = 0;
-            $scope.termino_busqueda = "";
             $scope.ultima_busqueda = {};
             $scope.paginaactual = 1;
             $scope.documentos_usuarios = [];
@@ -121,7 +120,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
             
             that.obtenerParametros = function(){
                                 //valida si cambio el termino de busqueda
-                if ($scope.ultima_busqueda !== $scope.termino_busqueda) {
+                if ($scope.ultima_busqueda !== $scope.filtro.termino_busqueda) {
                     $scope.paginaactual = 1;
                 }
                 
@@ -234,11 +233,10 @@ define(["angular", "js/controllers",'models/ClientePedido',
             };
             
            //eventos de widgets
-           $scope.onKeyDetalleDocumentoTemporalPress = function(ev, termino_busqueda, buscarcodigodebarras) {
+           $scope.onKeyDetalleDocumentoTemporalPress = function(ev, buscarcodigodebarras) {
                 if(!$scope.esDocumentoBodegaValido($scope.DocumentoTemporal.bodegas_doc_id)) return;
                     if (ev.which === 13) {  
                         console.log("search with code "+buscarcodigodebarras);
-                        $scope.filtro.termino_busqueda  =  termino_busqueda;
                         $scope.filtro.codigo_barras = buscarcodigodebarras;
                         $scope.filtro.descripcion_producto = !buscarcodigodebarras;
 
@@ -254,7 +252,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                             }
                         };
 
-                    $scope.onKeyDocumentosSeparadosPress(ev, termino_busqueda, $scope.DocumentoTemporal, obj, 1);
+                    $scope.onKeyDocumentosSeparadosPress(ev, $scope.DocumentoTemporal, obj, 1);
                      
                 }
             };
@@ -262,12 +260,12 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
             $scope.paginaAnterior = function() {
                 $scope.paginaactual--;
-                $scope.buscarDetalleDocumentoTemporal($scope.termino_busqueda, true);
+                $scope.buscarDetalleDocumentoTemporal($scope.filtro.termino_busqueda, true);
             };
 
             $scope.paginaSiguiente = function() {
                 $scope.paginaactual++;
-                $scope.buscarDetalleDocumentoTemporal($scope.termino_busqueda, true);
+                $scope.buscarDetalleDocumentoTemporal($scope.filtro.termino_busqueda, true);
             };
             
             $scope.valorSeleccionado= function(manual) {

@@ -45,9 +45,8 @@
             <div class="input-group navbar-form">
 
                 <input type="text" class="form-control pull-right" ng-keypress="onKeySeparadosPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
-                {{termino_busqueda}}
                 <div class="input-group-btn" >
-                    <button class="btn btn-default" type="submit" ng-click="buscarPedidosSeparadosCliente(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                    <button class="btn btn-default" type="submit" ng-click="onKeySeparadosPress({which:13}, termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
                 </div>
 
             </div>
@@ -89,7 +88,7 @@
 
                 <input type="text" class="form-control pull-right" ng-keypress="onKeySeparadosPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
                 <div class="input-group-btn" >
-                    <button class="btn btn-default" type="submit" ng-click="buscarPedidosSeparadosFarmacia(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                    <button class="btn btn-default" type="submit" ng-click="onKeySeparadosPress({which:13}, termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
                 </div>
 
             </div>

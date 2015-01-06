@@ -826,10 +826,7 @@ function __eliminar_documento_temporal_clientes(documento_temporal_id, usuario_i
        });
        
     });
-    
-    
-    
-    
+
 };
 
 

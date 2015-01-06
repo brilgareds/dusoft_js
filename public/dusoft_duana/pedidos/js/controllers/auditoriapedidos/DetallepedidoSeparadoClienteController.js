@@ -85,7 +85,6 @@ define(["angular", "js/controllers",'models/ClientePedido',
                 
                 if($scope.DocumentoTemporal.pedido === undefined) return;
                 $scope.DocumentoTemporal.getPedido().vaciarProductos();
-                $scope.cajasSinCerrar = [];
                
             });
 

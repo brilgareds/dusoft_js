@@ -492,6 +492,12 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     
                     if(data.status === 200){
+                        
+                        $scope.productosNoAuditados = [];
+                        $scope.productosPendientes  = [];
+                        $scope.cajasSinCerrar = [];
+                        $scope.productosAuditados = [];
+                        
                         console.log("respuesta al generar documento "+data); 
                         $scope.$broadcast("onRefrescarListadoPedidos");
                         $scope.$emit('cerrardetallecliente', {animado:true});
@@ -601,8 +607,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 });
             };
 
-
+            
             $scope.$on("onDetalleCerrado",function(){
+                console.log("========================= onDetalleCerrado");
                 $scope.productosAuditados = [];
                 $scope.productosNoAuditados = [];
                 $scope.productosPendientes = [];

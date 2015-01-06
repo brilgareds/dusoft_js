@@ -37,8 +37,6 @@ define(["angular", "js/controllers",'models/ClientePedido',
             $scope.cerrar = function(){
                $scope.$emit('cerrardetallecliente', {animado:true});
                $scope.$emit('onDetalleCerrado');
-               $scope.DocumentoTemporal = DocumentoTemporal.get();
-              // $scope.DocumentoTemporal  = {};
             };
             
             $rootScope.$on("mostrardetalleclienteCompleto", function(e, datos) {
@@ -80,12 +78,15 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
 
             $rootScope.$on("cerrardetalleclienteCompleto",function(e){
-                 $scope.$$watchers = null;
-                if($scope.DocumentoTemporal === undefined) return;
-                
-                if($scope.DocumentoTemporal.pedido === undefined) return;
-                $scope.DocumentoTemporal.getPedido().vaciarProductos();
+                 $scope.filtro.termino_busqueda = "";
+                if($scope.DocumentoTemporal !== undefined) {
+                    if($scope.DocumentoTemporal.pedido !== undefined) {
+                         $scope.DocumentoTemporal.getPedido().vaciarProductos();
+                    }
                
+                }
+                 $scope.$$watchers = null;
+                
             });
 
             

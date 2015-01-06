@@ -19,7 +19,6 @@ define(["angular", "js/controllers",'models/Farmacia',
             $scope.DocumentoTemporal = DocumentoTemporal.get();
             $scope.paginas = 0;
             $scope.items = 0;
-            $scope.termino_busqueda = "";
             $scope.ultima_busqueda = {};
             $scope.paginaactual = 1;
             $scope.documentos_usuarios = [];
@@ -36,7 +35,6 @@ define(["angular", "js/controllers",'models/Farmacia',
             $scope.cerrar = function(){
                $scope.$emit('cerrardetallefarmacia', {animado:true});
                $scope.$emit('onDetalleCerrado');
-               $scope.DocumentoTemporal  = DocumentoTemporal.get();
             };
             
             $rootScope.$on("mostrardetallefarmaciaCompleto", function(e, datos) {
@@ -78,16 +76,19 @@ define(["angular", "js/controllers",'models/Farmacia',
             });
 
             $rootScope.$on("cerrardetallefarmaciaCompleto",function(e){
+                $scope.filtro.termino_busqueda = ""; 
+                
+                if($scope.DocumentoTemporal.getPedido() !== undefined) {
+                    
+                    $scope.DocumentoTemporal.getPedido().vaciarProductos();
+                }
                 $scope.$$watchers = null;
-                               
-                if($scope.DocumentoTemporal.getPedido() === undefined) return;
-                $scope.DocumentoTemporal.getPedido().vaciarProductos();
                
             });
             
             $scope.obtenerParametros = function(){
                                 //valida si cambio el termino de busqueda
-                if ($scope.ultima_busqueda !== $scope.termino_busqueda) {
+                if ($scope.ultima_busqueda !== $scope.filtro.termino_busqueda) {
                     $scope.paginaactual = 1;
                 }
                 
@@ -209,19 +210,17 @@ define(["angular", "js/controllers",'models/Farmacia',
 
             $scope.paginaAnterior = function() {
                 $scope.paginaactual--;
-                $scope.buscarDetalleDocumentoTemporal($scope.termino_busqueda, true);
+                $scope.buscarDetalleDocumentoTemporal($scope.filtro.termino_busqueda, true);
             };
 
             $scope.paginaSiguiente = function() {
                 $scope.paginaactual++;
-                $scope.buscarDetalleDocumentoTemporal($scope.termino_busqueda, true);
+                $scope.buscarDetalleDocumentoTemporal($scope.filtro.termino_busqueda, true);
             };
 
-            $scope.onKeyDetalleDocumentoTemporalPress = function(ev, termino_busqueda, buscarcodigodebarras) {
+            $scope.onKeyDetalleDocumentoTemporalPress = function(ev, buscarcodigodebarras) {
                 if(!$scope.esDocumentoBodegaValido($scope.DocumentoTemporal.bodegas_doc_id)) return;
                     if (ev.which === 13) {  
-                        console.log("search with code "+buscarcodigodebarras);
-                        $scope.filtro.termino_busqueda  =  termino_busqueda;
                         $scope.filtro.codigo_barras = buscarcodigodebarras;
                         $scope.filtro.descripcion_producto = !buscarcodigodebarras;
 
@@ -237,7 +236,7 @@ define(["angular", "js/controllers",'models/Farmacia',
                             }
                         };
 
-                    $scope.onKeyDocumentosSeparadosPress(ev, termino_busqueda, $scope.DocumentoTemporal, obj,2);
+                    $scope.onKeyDocumentosSeparadosPress(ev, $scope.DocumentoTemporal, obj,2);
                      
                 }
             };

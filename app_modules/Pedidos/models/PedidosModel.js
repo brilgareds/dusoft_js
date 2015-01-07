@@ -25,7 +25,7 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
             pedido.forEach(function(datos) {
 
                 var fecha_registro_pedido = datos.fecha_registro_pedido;
-
+   
                 // Se procede a consultar la cantidad TOTAL solicitada de ese producto en todos los pedidos
                 // anteriores al pedido actual
                 consultar_cantidad_total_solicitada_producto(empresa_id, codigo_producto, fecha_registro_pedido, function(err, cantidad_total) {
@@ -46,8 +46,15 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                             var producto = detalle_pedido.filter(function(el) {
                                 return el.codigo_producto === codigo_producto;
                             });
-
-                            cantidad_despachada = (producto.length === 1) ? producto[0].cantidad_despachada : 0;
+                            
+                            //comentado por el ajuste de permitir el mismo producto varias veces en un item de despacho temporal
+                           // cantidad_despachada = (producto.length === 1) ? producto[0].cantidad_despachada : 0;
+                           cantidad_despachada = 0;
+                           if(producto.length > 0){
+                               for(var i in producto){
+                                   cantidad_despachada += producto[i].cantidad_despachada;
+                               }
+                           }
 
                             // se consulta el total de existencias del producto seleccionado
                             that.m_productos.consultar_stock_producto(empresa_id, codigo_producto, function(err, stock_producto) {
@@ -58,11 +65,13 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                 disponible_bodega = parseInt(cantidad_total_despachada) +  parseInt(stock) -  parseInt(cantidad_total_solicitada) -  parseInt(cantidad_despachada);
 
                                 console.log('============ Here =================');
+                                console.log("codigo producto ", codigo_producto);
                                 console.log('cantidad_total_despachada', cantidad_total_despachada);
                                 console.log('stock', stock);
                                 console.log('cantidad_total_solicitada', cantidad_total_solicitada);
                                 console.log('cantidad_despachada', cantidad_despachada);
                                 console.log('disponible_bodega', disponible_bodega);
+                                console.log('fecha_registro', fecha_registro_pedido);
                                 console.log('===================================');
                                 
                                 disponible_bodega = (disponible_bodega < 0) ? 0 : disponible_bodega;

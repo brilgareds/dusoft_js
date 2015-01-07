@@ -45,9 +45,25 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
            $modalInstance.opened.then(function() {
                that.traerItemsAuditados(function(){
-                   that.traerDisponibles(function(disponibles){
-                       that.agregarDisponibles(disponibles);
-                       
+                   that.traerDisponibles(function(data){
+                      
+                        if(data.status === 200){
+                            $scope.rootEditarProducto.mostrarJustificacion = ($scope.rootEditarProducto.producto.lote.justificacion_auditor.length > 0)?true:false;
+                           // console.log("justificacion auditor ",$scope.rootEditarProducto.producto.lote.justificacion_auditor);
+                           var lotes = data.obj.existencias_producto;
+                           var lotesDisponibles = [];
+                           $scope.rootEditarProducto.producto.disponible = data.obj.disponibilidad_bodega;
+
+                           for(var i in lotes){
+                               var lote = LoteProductoPedido.get(lotes[i].lote, lotes[i].fecha_vencimiento);
+                               lote.existencia_actual =  lotes[i].existencia_actual;
+                               lotesDisponibles.push(lote);
+                           }
+
+                            that.agregarDisponibles(lotesDisponibles);
+
+                        } 
+
                    });
                     
                });
@@ -108,22 +124,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
                Request.realizarRequest(API.PEDIDOS.DISPONIBILIDAD, "POST", obj, function(data) {
 
-                    if(data.status === 200){
-                        $scope.rootEditarProducto.mostrarJustificacion = ($scope.rootEditarProducto.producto.lote.justificacion_auditor.length > 0)?true:false;
-                       // console.log("justificacion auditor ",$scope.rootEditarProducto.producto.lote.justificacion_auditor);
-                       var lotes = data.obj.existencias_producto;
-                       var lotesDisponibles = [];
-                       $scope.rootEditarProducto.producto.disponible = data.obj.disponibilidad_bodega;
-                       
-                       for(var i in lotes){
-                           var lote = LoteProductoPedido.get(lotes[i].lote, lotes[i].fecha_vencimiento);
-                           lote.existencia_actual =  lotes[i].existencia_actual;
-                           lotesDisponibles.push(lote);
-                       }
-                       
-                       callback(lotesDisponibles);
-                       
-                    } 
+                   callback(data);
                 });
            };
            
@@ -171,7 +172,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                     {field: 'existencia_actual', displayName: 'Existencia'},
                    // {field: 'disponible', displayName: 'Disponible'},
                     {field: 'numero_caja', displayName: 'Caja'},
-                    {field:'cantidad_ingresada', displayName:'Cantidad', cellTemplate:'<div class="col-xs-12"><input type="text"  ng-focus="onCantidadFocus(row)" ng-model="row.entity.cantidad_ingresada" validacion-numero class="form-control grid-inline-input"  ng-change="onCantidadIngresadaChange(row)"'+
+                    {field:'cantidad_ingresada', displayName:'Cantidad', cellTemplate:'<div class="col-xs-12"><input type="text"  ng-focus="onCantidadFocus(row)" ng-model="row.entity.cantidad_ingresada" validacion-numero class="form-control grid-inline-input" ng-disabled="row.entity.seleccionado"  ng-change="onCantidadIngresadaChange(row)"'+
                              'ng-model="row.entity.cantidad_ingresada" ng-disabled="row.entity.numero_caja > 0" /></div>'},
                     {field: 'opciones', displayName: "Cambiar", cellClass: "txt-center", width: "10%",
                         cellTemplate: ' <input-check  ng-model="row.entity.seleccionado" ng-change="onEditarLote(row)" ng-disabled="row.entity.cantidad_ingresada == 0 || row.entity.numero_caja > 0" >  />'},
@@ -288,6 +289,15 @@ define(["angular", "js/controllers",'models/ClientePedido',
                     console.log("respuesta al modificar lote ",data);
                     if(data.status === 200){
                         lote.item_id = 0 ;
+                        that.traerDisponibles(function(data){
+                      
+                            if(data.status === 200){
+   
+                               $scope.rootEditarProducto.producto.disponible = data.obj.disponibilidad_bodega;
+
+                            } 
+
+                       });
                     } else {
                         $scope.rootEditarProducto.validacionproducto.valido = false;
                         $scope.rootEditarProducto.validacionproducto.mensaje = "Ha ocurrido un error eliminando el item";
@@ -351,6 +361,15 @@ define(["angular", "js/controllers",'models/ClientePedido',
                    // console.log("respuesta al modificar lote ",data);
                     if(data.status === 200){
                         lote.item_id = data.obj.documento_temporal.item_id;
+                        that.traerDisponibles(function(data){
+                      
+                            if(data.status === 200){
+   
+                               $scope.rootEditarProducto.producto.disponible = data.obj.disponibilidad_bodega;
+
+                            } 
+
+                       });
                     } else {
                         $scope.rootEditarProducto.validacionproducto.valido = false;
                         $scope.rootEditarProducto.validacionproducto.mensaje = "Ha ocurrido un error guardando el item";
@@ -385,7 +404,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                 }
                 
                 
-                if(cantidad_ingresada >/* lote.disponible*/$scope.rootEditarProducto.producto.disponible){
+                if(lote.cantidad_ingresada >/* lote.disponible*/$scope.rootEditarProducto.producto.disponible){
                     obj.valido  = false;
                     obj.mensaje = "La cantidad ingresada, NO PUEDE SER MAYOR A la Disponibilidad en BODEGA!!.";
                     return obj;

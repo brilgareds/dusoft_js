@@ -118,7 +118,13 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                 return el.codigo_producto === codigo_producto;
                             });
 
-                            cantidad_despachada = (producto.length === 1) ? producto[0].cantidad_despachada : 0;
+                            //cantidad_despachada = (producto.length === 1) ? producto[0].cantidad_despachada : 0;
+                            cantidad_despachada = 0;
+                            if(producto.length > 0){
+                               for(var i in producto){
+                                   cantidad_despachada += producto[i].cantidad_despachada;
+                               }
+                            }
 
                             // se consulta el total de existencias del producto seleccionado
                             that.m_productos.consultar_stock_producto(empresa_id, codigo_producto, function(err, stock_producto) {
@@ -126,10 +132,21 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                 stock = (stock_producto.length === 1) ? stock_producto[0].existencia : 0;
 
                                 // Se aplica la Formula de Disponibilidad producto
-                                disponible_bodega = cantidad_total_despachada + stock - cantidad_total_solicitada - cantidad_despachada;
-
+                                disponible_bodega = parseInt(cantidad_total_despachada) + parseInt(stock) - parseInt(cantidad_total_solicitada) - parseInt(cantidad_despachada);
+                                console.log('disponible_bodega', disponible_bodega);
                                 disponible_bodega = (disponible_bodega < 0) ? 0 : disponible_bodega;
                                 disponible_bodega = (disponible_bodega > stock) ? stock : disponible_bodega;
+                                
+                                
+                                 console.log('============ Here =================');
+                                console.log("codigo producto ", codigo_producto);
+                                console.log('cantidad_total_despachada', cantidad_total_despachada);
+                                console.log('stock', stock);
+                                console.log('cantidad_total_solicitada', cantidad_total_solicitada);
+                                console.log('cantidad_despachada', cantidad_despachada);
+                                console.log('disponible_bodega', disponible_bodega);
+                                console.log('fecha_registro', fecha_registro_pedido);
+                                console.log('===================================');
 
                                 callback(err, {codigo_producto: codigo_producto, disponible_bodega: disponible_bodega});
 

@@ -275,7 +275,7 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
                 a.codigo_producto,\
                 fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
                 a.numero_unidades::integer as cantidad_solicitada,\
-                a.cantidad_despachada::integer,\
+                ABS((a.numero_unidades - (a.numero_unidades - a.cantidad_despachada) - COALESCE(b.cantidad_temporalmente_separada,0))::integer) as cantidad_despachada,\
                 (a.numero_unidades - a.cantidad_despachada - COALESCE(b.cantidad_temporalmente_separada,0))::integer as cantidad_pendiente,\
                 a.cantidad_facturada::integer,\
                 a.valor_unitario,\

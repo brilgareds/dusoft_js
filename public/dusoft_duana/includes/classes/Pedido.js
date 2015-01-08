@@ -24,6 +24,11 @@ define(["angular", "js/models"], function(angular, models) {
             this.estado_separacion = datos.estado_separacion || null;
         };
 
+
+        Pedido.prototype.get_numero_pedido = function() {
+            return this.numero_pedido;
+        };
+        
         Pedido.prototype.setCliente = function(cliente) {
             this.cliente = cliente;
         };

@@ -209,7 +209,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
 
 
-            $scope.onKeyDocumentosSeparadosPress = function(ev, termino_busqueda, documento, params, tipo){
+            $scope.onKeyDocumentosSeparadosPress = function(ev, documento, params, tipo){
                 
 
                 that.buscarProductosSeparadosEnDocumento(params, tipo ,function(data){

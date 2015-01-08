@@ -87,14 +87,14 @@
                             <label style="margin-right:3px;">Busquedad por codigo de barras</label>
                             <input-check ng-model="filtro.codigo_barras" ></input-check>
                         </span>
-                        <input type="text" class="form-control pull-right" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda, true)" ng-model="$parent.termino_busqueda" placeholder="Código Barras" ng-switch-when="true" name="srch-term" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" id="srch-term" />
+                        <input type="text" class="form-control pull-right" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, true)" ng-model="filtro.termino_busqueda" placeholder="Código Barras" ng-switch-when="true" name="srch-term" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" id="srch-term" />
                         <div class="input-group-btn" >
-                            <button class="btn btn-default pull-right" ng-click="onKeyDetalleDocumentoTemporalPress({which:13},termino_busqueda,true)" ng-switch-when="true" type="submit" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0"><i class="glyphicon glyphicon-search"></i></button>
+                            <button class="btn btn-default pull-right" ng-click="onKeyDetalleDocumentoTemporalPress({which:13},true)" ng-switch-when="true" type="submit" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0"><i class="glyphicon glyphicon-search"></i></button>
                         </div>
-                         <input type="text" ng-switch-when="false" class="form-control pull-right" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda, false)" ng-model="$parent.termino_busqueda" placeholder="Descripción Producto" name="srch-term" id="srch-term" />
+                         <input type="text" ng-switch-when="false" class="form-control pull-right" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, false)" ng-model="filtro.termino_busqueda" placeholder="Descripción Producto" name="srch-term" id="srch-term" />
 
                         <div class="input-group-btn" ng-switch-when="false"  >
-                            <button class="btn btn-default pull-right"  ng-click="onKeyDetalleDocumentoTemporalPress({which:13},termino_busqueda,false)" type="submit" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0"><i class="glyphicon glyphicon-search"></i></button>
+                            <button class="btn btn-default pull-right"  ng-click="onKeyDetalleDocumentoTemporalPress({which:13},false)" type="submit" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0"><i class="glyphicon glyphicon-search"></i></button>
                         </div>
                     </div>
                     

@@ -45,7 +45,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             $scope.rootVerPedidosFarmacias.listado_farmacias = [];
 
-            $scope.rootVerPedidosFarmacias.estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
+            var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
 
             that.listarFarmacias = function() {
 
@@ -222,28 +222,41 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'fecha_registro', displayName: 'Fecha'},
                     {field: 'estado_actual_pedido', displayName: 'EstadoId', visible: false},
                     {field: 'descripcion_estado_actual_pedido', displayName: 'Estado', cellClass: "txt-center",
-                        cellTemplate: "<button ng-class='rootVerPedidosFarmacias.estados[row.entity.estado_actual_pedido]'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
-                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
-                        cellTemplate: ' <div>\n\
+                        cellTemplate: "<button ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
+                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center dropdown-button", width: "8%",
+                        /*cellTemplate: ' <div>\n\
                                             <button class="btn btn-default btn-xs" ng-click="onEditarPedidoFarmacia(row.entity)" ng-disabled="(row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1) || row.entity.estado_separacion != null || row.entity.en_uso != 0">\n\
-                                                <span ng-if="row.entity.en_uso != 0" class="glyphicon glyphicon-eye-open"></span>\n\
+                                                <!--<span ng-if="row.entity.en_uso != 0" class="glyphicon glyphicon-eye-open"></span>-->\n\
                                                 <span class="glyphicon glyphicon-pencil">Modificar</span>\n\
                                             </button>\n\
-                                        </div>'
-                                /*cellTemplate: '<div class="btn-group">\
+                                            <button class="btn btn-default btn-xs" ng-if="row.entity.en_uso != 0">\n\
+                                                <span class="glyphicon glyphicon-eye-open"></span>\n\
+                                            </button>\n\
+                                        </div>'*/
+                                cellTemplate: '<div class="btn-group">\
                                  <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
                                  <ul class="dropdown-menu dropdown-options">\
-                                 <li><a href="javascript:void(0);" ng-click="onEditarPedidoFarmacia(row.entity)" ng-disabled="(row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1) || row.entity.estado_separacion != null" >Modificar</a></li>\
-                                 <li class="divider"></li>\
-                                 <li><a href="javascript:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,1)" >Novedades</a></li>\
-                                 <li class="divider"></li>\
-                                 <li><a href="javascript:void(0);" ng-click="anular_orden_compra_seleccionada(row.entity)">Anular OC</a></li>\
-                                 </ul>\
-                                 </div>'*/
+                                 <li ng-show="!((row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1) || row.entity.estado_separacion != null || row.entity.en_uso != 0)"><a href="javascript:void(0);" ng-click="onEditarPedidoFarmacia(row.entity)">Modificar</a></li>\
+                                 <li class="divider" ng-show="!((row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1) || row.entity.estado_separacion != null || row.entity.en_uso != 0)"></li>\
+                                 <li><a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity)" >Ver</a></li>\
+                                 </ul>\n\
+                                 <button class="btn btn-default btn-xs" ng-if="row.entity.en_uso != 0">\n\
+                                    <span class="glyphicon glyphicon-eye-open"></span>\n\
+                                </button>\n\
+                                 </div>'
                     }
 
                 ]
 
+            };
+            
+            $scope.agregarClase = function(estado) {
+
+                if (estado == 6) {
+                    return estados[1];
+                }
+
+                return estados[estado];
             };
 
             // Agregar Restriccion de acuerdo al estado de asigancion del pedido
@@ -314,6 +327,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 pedido.setDatos(datos_pedido);
                 pedido.setTipo(2);
                 pedido.setObservacion(data.observacion);
+                pedido.setEditable(true);
 
                 //Set en_uso -- Hacer consulta antes para confirmar estado en BD -- Recibir información del evento (socket)
 
@@ -350,8 +364,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     PedidoVenta.pedidoseleccionado = data.numero_pedido;
 
                     if ($scope.rootVerPedidosFarmacias.Empresa.getPedidoSeleccionado().getEnUso() === 0) {
-
+                        //$scope.$emit('bloqueoModificarPedido', false);
                         $state.go('CreaPedidosFarmacias');
+                        //$scope.$emit('bloqueoModificarPedido', false);
 
                     }
                     else {
@@ -388,6 +403,72 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 });
 
             };
+            
+            
+/********************/
+            $scope.onVerPedidoFarmacia = function(data) {
+
+                var pedido = PedidoVenta.get();
+
+                var datos_pedido = {
+                    numero_pedido: data.numero_pedido,
+                    fecha_registro: data.fecha_registro,
+                    descripcion_estado_actual_pedido: data.descripcion_estado_actual_pedido,
+                    estado_actual_pedido: data.estado_actual_pedido,
+                    estado_separacion: data.estado_separacion
+                };
+
+                pedido.setDatos(datos_pedido);
+                pedido.setTipo(2);
+                pedido.setObservacion(data.observacion);
+                pedido.setEditable(false);
+
+                //Set en_uso -- Hacer consulta antes para confirmar estado en BD -- Recibir información del evento (socket)
+
+                //Objeto para consulta de encabezado pedido
+                var obj = {
+                    session: $scope.rootVerPedidosFarmacias.session,
+                    data: {
+                        pedidos_farmacias: {
+                            termino_busqueda: data.numero_pedido,
+                            empresa_id: $scope.rootVerPedidosFarmacias.seleccion,
+                            pagina_actual: $scope.rootVerPedidosFarmacias.paginaactual,
+                            filtro: {}
+                        }
+                    }
+                };
+
+                that.consultarEncabezadosPedidos(obj, function(data_encabezado) {
+
+                    pedido.setEnUso(data_encabezado.obj.pedidos_farmacias[0].en_uso);
+
+                    var farmacia = FarmaciaVenta.get(
+                            data.farmacia.farmacia_id,
+                            data.farmacia.bodega_id,
+                            data.farmacia.nombre_farmacia,
+                            data.farmacia.nombre_bodega,
+                            data.farmacia.centro_utilidad_id,
+                            data.farmacia.nombre_centro_utilidad
+                            );
+
+                    pedido.setFarmacia(farmacia);
+                    //Insertar aquí el pedido seleccionado para el singleton Empresa
+                    $scope.rootVerPedidosFarmacias.Empresa.setPedidoSeleccionado(pedido);
+
+                    PedidoVenta.pedidoseleccionado = data.numero_pedido;
+                    
+                    //$scope.$emit('bloqueoModificarPedido', true);
+
+                    $state.go('CreaPedidosFarmacias');
+                    
+                    //$scope.$emit('bloqueoModificarPedido', true);
+
+                });
+
+            };
+/********************/            
+            
+            //$scope.$emit('mostrarseleccionproducto', tipo_cliente, datos_de, datos_para, observacion, that.pedido);
 
             //Método para liberar Memoria de todo lo construido en ésta clase
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {

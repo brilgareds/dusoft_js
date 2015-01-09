@@ -1638,7 +1638,7 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
                 }
                 
 
-                that.m_e008.generar_documento_despacho_farmacias(documento_temporal_id, usuario_id, auditor_id, function(err, empresa_id, prefijo_documento, numero_documento) {
+                that.m_e008.generar_documento_despacho_farmacias(documento_temporal_id,numero_pedido, usuario_id, auditor_id, function(err, empresa_id, prefijo_documento, numero_documento) {
 
                     if (err) {
                         console.log("========================================== generar documento despacho clientes error generado ============================");

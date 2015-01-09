@@ -765,7 +765,7 @@ PedidosFarmaciasModel.prototype.obtenerDetalleRotulo = function(numero_pedido, n
 };
 
 
-// Autor:      : Camila la reina Orozco 
+// Autor:      : Camila  Orozco 
 // Descripcion : Calcula la cantidad TOTAL pendiente de un producto en pedidos farmacia
 // Calls       : PedidosFarmacias -> PedidosFarmaciasController -> listar_productos();
 //               
@@ -782,6 +782,18 @@ PedidosFarmaciasModel.prototype.calcular_cantidad_total_pendiente_producto = fun
         callback(err, rows);
     });
 };
+
+/**
+ * @api {sql} actualizar_cantidad_pendiente_en_solicitud Pedidos farmacias model
+ * @apiName Pedidos Farmacias
+ * @apiGroup PedidosFarmacias (sql)
+ * @apiDescription se actualiza la cantidad pendiente del pedido al genear el despacho
+ * @apiDefinePermission autenticado Requiere Autenticacion
+ * Requiere que el usuario esté autenticado.
+ * @apiPermission autenticado
+ * @apiParam {Number} numero_pedido Numero del pedido a asignar
+ * @apiParam {Function} callback Funcion de retorno de informacion.
+ */
 
 PedidosFarmaciasModel.prototype.actualizar_cantidad_pendiente_en_solicitud = function(numero_pedido, callback) {
      var sql = " select b.codigo_producto, b.cantidad_solic, sum(coalesce(c.cantidad_despachada,0)) as cantidad_despachada,\
@@ -805,18 +817,29 @@ PedidosFarmaciasModel.prototype.actualizar_cantidad_pendiente_en_solicitud = fun
             return;
         }
         
-        var sql_detalle = "";
-        for(var i in rows){
-            var cantidad_pendiente = parsetInt(rows[i].cantidad_pendiente);
-             sql_detalle += "UPDATE solicitud_productos_a_bodega_principal_detalle\
-                             SET cantidad_pendiente= "+cantidad_pendiente+" WHERE solicitud_prod_a_bod_ppal_id="+numero_pedido+" AND\
-                             codigo_producto='"+rows[i].codigo_producto+"'; ";
-        }
+        var length = rows.length;
         
-         G.db.query(sql_detalle, [], function(err, rows, result) {
-              callback(err, rows);
-         });
-        
+        G.db.begin(function() {
+            rows.forEach(function(row){
+
+                var cantidad_pendiente = parsetInt(row.cantidad_pendiente);
+                 sql = "UPDATE solicitud_productos_a_bodega_principal_detalle\
+                        SET cantidad_pendiente= $1 WHERE solicitud_prod_a_bod_ppal_id= $2 AND\
+                        codigo_producto=$3; ";
+
+
+                G.db.transaction(sql, [cantidad_pendiente, numero_pedido, row.codigo_producto], function(err, rows, result) {
+
+                     if (--length === 0) {
+                         G.db.commit(function(){
+                            callback(err, rows);
+                            return;
+                         });
+                    }
+                });
+
+            });
+        });
     });
 };
 

@@ -708,6 +708,25 @@ PedidosClienteModel.prototype.actualizar_en_uso_pedido = function(numero_pedido,
     });
 };
 
+
+PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(prefijo, numero, callback) {
+     var sql = " SELECT\
+                a.pedido_cliente_id as numero_pedido,\
+                b.numero_unidades as cantidad_solicitada,\
+                ((b.numero_unidades - b.cantidad_despachada)) as cantidad_pendiente,\
+                a.tipo_id_tercero,\
+                a.tercero_id,\
+                c.nombre_tercero,\
+                d.usuario,\
+                a.fecha_registro\
+                FROM ventas_ordenes_pedidos a\
+                inner JOIN ventas_ordenes_pedidos_d AS b ON a.pedido_cliente_id = b.pedido_cliente_id\
+                inner JOIN terceros as c ON (a.tipo_id_tercero = c.tipo_id_tercero) AND (a.tercero_id = c.tercero_id)\
+                JOIN system_usuarios as d ON (a.usuario_id = d.usuario_id)\
+                WHERE a.empresa_id = $1 and b.codigo_producto=$2 and a.estado = '1' and b.numero_unidades <> b.cantidad_despachada\
+                ORDER BY a.pedido_cliente_id; ";
+};
+
 PedidosClienteModel.$inject = ["m_productos"];
 
 

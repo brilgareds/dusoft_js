@@ -1555,16 +1555,20 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                     }
 
                     that.m_e008.generar_documento_despacho_clientes(documento_temporal_id, usuario_id, auditor_id, function(err, empresa_id, prefijo_documento, numero_documento) {
+                        
+                        that.m_pedidos_clientes.actualizar_despachos_pedidos_cliente(prefijo_documento, numero_documento, function(err){
+                            
+                            if (err) {
+                                console.log("========================================== generar documento despacho clientes error generado ============================");
+                                console.log(err);
+                                res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
+                                return;
+                            } else {
+                                console.log("========================================== generar documento despacho clientes satisfactorio ============================");
+                                res.send(G.utils.r(req.url, 'Se ha generado el documento', 200, {movimientos_bodegas: {prefijo_documento:prefijo_documento, numero_documento:numero_documento}}));
+                            }
+                        });
 
-                        if (err) {
-                            console.log("========================================== generar documento despacho clientes error generado ============================");
-                            console.log(err);
-                            res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
-                            return;
-                        } else {
-                            console.log("========================================== generar documento despacho clientes satisfactorio ============================");
-                            res.send(G.utils.r(req.url, 'Se ha generado el documento', 200, {movimientos_bodegas: {prefijo_documento:prefijo_documento, numero_documento:numero_documento}}));
-                        }
 
                     });
                 }

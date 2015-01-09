@@ -783,5 +783,42 @@ PedidosFarmaciasModel.prototype.calcular_cantidad_total_pendiente_producto = fun
     });
 };
 
+PedidosFarmaciasModel.prototype.actualizar_cantidad_pendiente_en_solicitud = function(numero_pedido, callback) {
+     var sql = " select b.codigo_producto, b.cantidad_solic, sum(coalesce(c.cantidad_despachada,0)) as cantidad_despachada,\
+                 b.cantidad_solic - sum(coalesce(c.cantidad_despachada,0)) as cantidad_pendiente from\
+                solicitud_productos_a_bodega_principal a\
+                inner join solicitud_productos_a_bodega_principal_detalle b ON a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id\
+                left join(\
+                select b.codigo_producto, sum(b.cantidad) AS cantidad_despachada, b.prefijo, b.numero \
+                from inv_bodegas_movimiento_despachos_farmacias a \
+                inner join inv_bodegas_movimiento_d b on a.empresa_id =b.empresa_id and a.prefijo = b.prefijo and a.numero = b.numero\
+                where a.solicitud_prod_a_bod_ppal_id = $1 group by 1,3,4\
+                ) as c on b.codigo_producto = c.codigo_producto\
+                where a.solicitud_prod_a_bod_ppal_id = $1 group by 1,2 ";
+    
+    
+    G.db.query(sql, [numero_pedido], function(err, rows, result) {
+       
+        
+        if(err){
+            callback(err, null);
+            return;
+        }
+        
+        var sql_detalle = "";
+        for(var i in rows){
+            var cantidad_pendiente = parsetInt(rows[i].cantidad_pendiente);
+             sql_detalle += "UPDATE solicitud_productos_a_bodega_principal_detalle\
+                             SET cantidad_pendiente= "+cantidad_pendiente+" WHERE solicitud_prod_a_bod_ppal_id="+numero_pedido+" AND\
+                             codigo_producto='"+rows[i].codigo_producto+"'; ";
+        }
+        
+         G.db.query(sql_detalle, [], function(err, rows, result) {
+              callback(err, rows);
+         });
+        
+    });
+};
+
 
 module.exports = PedidosFarmaciasModel;

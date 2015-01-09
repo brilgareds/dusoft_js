@@ -591,6 +591,8 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_farmacias = function(do
                 return;
             }
             
+            
+            
             // Asignar Auditor Como Responsable del Despacho.
             __asignar_responsable_despacho(empresa_id, prefijo_documento, numero_documento, auditor_id, function(err, result) {
                 
@@ -699,7 +701,6 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(doc
         });
     });
 };
-
 
 /*==================================================================================================================================================================
  * 

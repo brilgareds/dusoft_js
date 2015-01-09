@@ -361,6 +361,9 @@ MovimientosBodegasModel.prototype.crear_documento = function(documento_temporal_
     });
 };
 
+
+
+
 /*==================================================================================================================================================================
  * 
  *                                                          FUNCIONES PRIVADAS
@@ -533,7 +536,6 @@ function __eliminar_movimiento_bodega_temporal(documento_temporal_id, usuario_id
         callback(err, rows);
     });
 
-}
-;
+};
 
 module.exports = MovimientosBodegasModel;

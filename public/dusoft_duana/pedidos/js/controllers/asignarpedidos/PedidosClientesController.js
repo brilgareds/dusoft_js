@@ -231,8 +231,6 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
             //fin delegado grid
 
             $scope.modificar_estado_pedido_cliente = function(row) {
-                console.log('======== modificar_estado_pedido_cliente =========');
-                console.log(row);
                 
                 $scope.pedido_seleccionado = row;
 
@@ -256,12 +254,32 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                     controller: function($scope, $modalInstance) {
 
                         $scope.cambiar_estado_pedido = function() {
-                            console.log('======== cambiar estado clienets =========');
+                            
+                            var obj = {
+                                session: $scope.session,
+                                data: {
+                                    pedidos_clientes: {
+                                        numero_pedido: $scope.pedido_seleccionado.get_numero_pedido()
+                                    }
+                                }
+                            };
+
+                            Request.realizarRequest(API.PEDIDOS.ELIMINAR_RESPONSABLE_CLIENTE, "POST", obj, function(data) {
+
+                                AlertService.mostrarMensaje("warning", data.msj);
+
+                                if (data.status === 200) {
+
+                                    $scope.pedido_seleccionado = null;
+                                    $modalInstance.close();
+                                }
+                            });
                         };
+                        
                         $scope.close = function() {
                             $modalInstance.close();
                         };
-                    }                    
+                    }
                 };
                 var modalInstance = $modal.open($scope.opts);
             };

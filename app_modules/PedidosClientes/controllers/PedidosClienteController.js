@@ -196,7 +196,7 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
 
                 // Notificar que al operario los pedidos  fueron reasignados
                 if (responsable_estado_pedido.length > 0) {
-                    
+
                     responsable_estado_pedido = responsable_estado_pedido[0];
 
                     if (responsable !== responsable_estado_pedido.responsable_id) {
@@ -212,6 +212,128 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
                 res.send(G.utils.r(req.url, 'Asignacion de Resposables', 200, {}));
             }
         });
+    });
+};
+
+
+/**
+ * @api {post} /api/PedidosClientes/asignarResponsable Asignar Responsables 
+ * @apiName Asignar Responsables.
+ * @apiGroup PedidosClientes
+ * @apiDescription Asignar o delegar los pedidos a un operario de bodega para su correspondiente separacion.
+ * @apiDefinePermission autenticado Requiere Autenticacion
+ * Requiere que el usuario esté autenticado.
+ * @apiPermission autenticado
+ * @apiParam {String} usuario_id  Identificador del Usuario.
+ * @apiParam {String} auth_token  Token de Autenticación, este define si el usuario esta autenticado o no.
+ * @apiParam {String[]} pedidos Lista de pedidos 
+ * @apiParam {Number} estado_pedido ID del estado a asignar 
+ * @apiParam {Number} responsable Operario de Bodega al que se le asigna el pedido.
+ * @apiSuccessExample Ejemplo Válido del Request.
+ *     HTTP/1.1 200 OK
+ *     {  
+ *          session: {              
+ *              usuario_id: 'jhon.doe',
+ *              auth_token: 'asdf2hgt56hjjhgrt-mnjhbgfd-asdfgyh-ghjmnbgfd'
+ *          },
+ *          data : {
+ *              asignacion_pedidos :  { 
+ *                                      pedidos : [],
+ *                                      estado_pedido: '',
+ *                                      responsable : ''
+ *                                  }
+ *          }
+ *     }
+ * @apiSuccessExample Respuesta-Exitosa:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       service : '/api/PedidosClientes/asignarResponsable',   
+ *       msj : 'Asignacion de Resposables',
+ *       status: '200',
+ *       obj : {
+ *             }
+ *     }
+ * @apiErrorExample Respuesta-Error:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       service : '/api/PedidosClientes/asignarResponsable',   
+ *       msj : 'Mensaje Error',
+ *       status: 404,
+ *       obj : {},
+ *     }  
+ */
+
+PedidosCliente.prototype.eliminarResponsablesPedido = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.numero_pedido === undefined) {
+        res.send(G.utils.r(req.url, 'El numero_pedido no esta definido.', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_clientes.numero_pedido === '' || args.pedidos_clientes.numero_pedido === 0) {
+        res.send(G.utils.r(req.url, 'El numero_pedido no puede ser 0 o vacío', 404, {}));
+        return;
+    }
+
+    var numero_pedido = args.pedidos_clientes.numero_pedido;
+    var estado_pedido = '0'; // 0 = No asignado
+
+    that.m_pedidos_clientes.consultar_pedido(numero_pedido, function(err, pedido_cliente) {
+
+        if (err || pedido_cliente.length === 0) {
+
+        } else {
+            var pedido = pedido_cliente[0];
+
+
+            if ((pedido.estado_actual_pedido === '0' || pedido.estado_actual_pedido === '1') && pedido.estado_separacion === null) {
+
+                that.m_pedidos_clientes.obtener_responsables_del_pedido(numero_pedido, function(err, responsables_pedido) {
+
+                    if (err) {
+                        res.send(G.utils.r(req.url, 'Se ha generado un error interno code 0', 500, {}));
+                        return;
+                    } else {
+
+                        that.m_pedidos_clientes.eliminar_responsables_pedidos(numero_pedido, function(err, rows, resultado) {
+
+                            if (err) {
+                                res.send(G.utils.r(req.url, 'Se ha generado un error interno code 1', 500, {}));
+                                return;
+                            } else {
+                                that.m_pedidos_clientes.actualizar_estado_actual_pedido(numero_pedido, estado_pedido, function(err, rows, resultado) {
+
+                                    if (err) {
+                                        res.send(G.utils.r(req.url, 'Se ha generado un error interno code 2', 500, {}));
+                                        return;
+                                    } else {
+
+                                        // Notificando Pedidos Actualizados en Real Time
+                                        that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+
+                                        // Notificar que al operario los pedidos  fueron reasignados o eliminados
+                                        if (responsables_pedido.length > 0) {
+
+                                            var responsable_estado_pedido = responsables_pedido[0];
+
+                                            that.e_pedidos_clientes.onNotificacionOperarioPedidosReasignados({numero_pedidos: [numero_pedido], responsable: responsable_estado_pedido.responsable_id});
+                                        }
+
+                                        res.send(G.utils.r(req.url, 'El Pedido cambio de estado correctamente', 200, {}));
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            } else {
+                res.send(G.utils.r(req.url, 'El Pedido No puede cambbiar de estado', 200, {}));
+            }
+        }
     });
 };
 
@@ -361,41 +483,6 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
 
     });
 
-};
-
-PedidosCliente.prototype.actualizarEstadoActualPedido = function(req, res){
-    
-    var that = this;
-
-    var args = req.body.data;
-    
-    if (args.pedido_cliente === undefined || args.pedido_cliente.numero_pedido === undefined || args.pedido_cliente.estado === undefined) {
-        res.send(G.utils.r(req.url, 'numero_pedido o estado no están definidos', 404, {}));
-        return;
-    }
-    
-    if (args.pedido_cliente.numero_pedido === '' || args.pedido_cliente.estado === '') {
-        res.send(G.utils.r(req.url, 'numero_pedido o estado están vacios', 404, {}));
-        return;
-    }
-    
-    var numero_pedido = args.pedido_cliente.numero_pedido;
-    var estado = args.pedido_cliente.estado;
-    
-    that.m_pedidos_clientes.actualizar_en_uso_pedido(numero_pedido, estado, function(err, rows, result){
-        
-        if (err) {
-            res.send(G.utils.r(req.url, 'Se ha Generado un Error en la actualización del Estado', 500, {error: err}));
-            return;
-        }
-        else
-        {
-            res.send(G.utils.r(req.url, 'Estado actualizado exitosamente', 200, {}));
-            return;
-        }
-        
-    });
-    
 };
 
 PedidosCliente.$inject = ["m_pedidos_clientes", "e_pedidos_clientes", "m_productos"];

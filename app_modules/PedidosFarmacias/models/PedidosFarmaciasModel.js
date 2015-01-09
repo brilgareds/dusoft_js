@@ -633,6 +633,15 @@ PedidosFarmaciasModel.prototype.actualizar_responsables_pedidos = function(numer
     });
 };
 
+PedidosFarmaciasModel.prototype.eliminar_responsables_pedidos = function(numero_pedido, callback) {
+
+    var sql = "DELETE FROM solicitud_productos_a_bodega_principal_estado WHERE solicitud_prod_a_bod_ppal_id =$1 ; ";
+
+    G.db.query(sql, [numero_pedido], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
 
 // actualizacion el estado actual del pedido
 PedidosFarmaciasModel.prototype.actualizar_estado_actual_pedido = function(numero_pedido, estado_pedido, callback) {
@@ -810,8 +819,8 @@ PedidosFarmaciasModel.prototype.actualizar_cantidad_pendiente_en_solicitud = fun
         
         G.db.begin(function() {
             rows.forEach(function(row){
-
-                var cantidad_pendiente = parsetInt(row.cantidad_pendiente);
+                
+                var cantidad_pendiente = parseInt(row.cantidad_pendiente);
                  sql = "UPDATE solicitud_productos_a_bodega_principal_detalle\
                         SET cantidad_pendiente= $1 WHERE solicitud_prod_a_bod_ppal_id= $2 AND\
                         codigo_producto=$3; ";

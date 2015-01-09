@@ -593,7 +593,7 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_farmacias = function(do
                 return;
             }
             
-         
+                        
             // Asignar Auditor Como Responsable del Despacho.
             __asignar_responsable_despacho(empresa_id, prefijo_documento, numero_documento, auditor_id, function(err, result) {
                 
@@ -629,14 +629,9 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_farmacias = function(do
                                 }
                                 // Finalizar Transacción.
                                 G.db.commit(function(){
-                                    
-                                       
                                     that.m_pedidos_farmacias.actualizar_cantidad_pendiente_en_solicitud(numero_pedido, function(err, results){
-
                                         callback(err, empresa_id, prefijo_documento, numero_documento);
                                     });
-            
-                                    
                                 });
                             });
                         });
@@ -649,7 +644,7 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_farmacias = function(do
 
 
 
-DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(documento_temporal_id, usuario_id, auditor_id, callback) {
+DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(documento_temporal_id, numero_pedido, usuario_id, auditor_id, callback) {
 
     var that = this;
 
@@ -699,7 +694,9 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(doc
                                 }
                                 // Finalizar Transacción.
                                 G.db.commit(function(){
-                                    callback(err, empresa_id, prefijo_documento, numero_documento);
+                                     that.m_pedidos_clientes.actualizar_despachos_pedidos_cliente(numero_pedido, function(err){
+                                        callback(err, empresa_id, prefijo_documento, numero_documento);
+                                     });
                                 });
                             });
                         });

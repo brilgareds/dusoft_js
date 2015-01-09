@@ -405,6 +405,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                 
                 
                 if(parseInt(lote.cantidad_ingresada) >/* lote.disponible*/parseInt($scope.rootEditarProducto.producto.disponible)){
+                    lote.cantidad_ingresada = 0;
                     obj.valido  = false;
                     obj.mensaje = "La cantidad ingresada, NO PUEDE SER MAYOR A la Disponibilidad en BODEGA!!.";
                     console.log("lote.cantidad_ingresada ",lote.cantidad_ingresada, "$scope.rootEditarProducto.producto.disponible", $scope.rootEditarProducto.producto.disponible);
@@ -430,7 +431,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                 $scope.rootEditarProducto.validacionproducto.valido = true;
               
 
-                if($scope.rootEditarProducto.validacionlote.valido === false){
+                if($scope.rootEditarProducto.validacionlote.valido === false && parseInt($scope.rootEditarProducto.producto.disponible) > 0 ){
                     console.log("validacion lote ", $scope.rootEditarProducto.validacionlote);
                     $scope.rootEditarProducto.validacionproducto.valido = $scope.rootEditarProducto.validacionlote.valido;
                     $scope.rootEditarProducto.validacionproducto.mensaje = $scope.rootEditarProducto.validacionlote.mensaje;

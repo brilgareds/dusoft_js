@@ -258,31 +258,28 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                     controller: function($scope, $modalInstance) {
 
                         $scope.cambiar_estado_pedido = function() {
-                            
+
                             console.log('======== cambiar estado farmacias =========');
 
-                            /*var obj = {
+                            var obj = {
                                 session: $scope.session,
                                 data: {
-                                    ordenes_compras: {
-                                        numero_orden: $scope.orden_compra_seleccionada.get_numero_orden()
+                                    pedidos_farmacias: {
+                                        numero_pedido: $scope.pedido_seleccionado.get_numero_pedido()
                                     }
                                 }
                             };
 
-                            Request.realizarRequest(API.ORDENES_COMPRA.ANULAR_ORDEN_COMPRA, "POST", obj, function(data) {
+                            Request.realizarRequest(API.PEDIDOS.ELIMIAR_RESPONSABLE_FARMACIA, "POST", obj, function(data) {
 
                                 AlertService.mostrarMensaje("warning", data.msj);
 
                                 if (data.status === 200) {
 
-                                    $scope.orden_compra_seleccionada.set_estado('2');
-                                    $scope.orden_compra_seleccionada.set_descripcion_estado('Anulado');
-
-                                    $scope.orden_compra_seleccionada = '';
+                                    $scope.pedido_seleccionado = null;
+                                    $modalInstance.close();
                                 }
-                            });*/
-
+                            });
                         };
 
                         $scope.close = function() {

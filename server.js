@@ -52,8 +52,6 @@ else if (program.test)
     G.settings.setEnv(G.settings.envTesting());
 else if (program.prod)
     G.settings.setEnv(G.settings.envProduction());
-else if (program.eco)
-    G.settings.setEnv(G.settings.envExternalTesting());
 else
     G.settings.setEnv(G.settings.env);
 

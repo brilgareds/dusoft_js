@@ -498,6 +498,81 @@ PedidosFarmacias.prototype.asignarResponsablesPedido = function(req, res) {
     });
 };
 
+
+PedidosFarmacias.prototype.eliminarResponsablesPedido = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.pedidos_farmacias === undefined || args.pedidos_farmacias.numero_pedido === undefined) {
+        res.send(G.utils.r(req.url, 'El numero_pedido no esta definido.', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_farmacias.numero_pedido === '' || args.pedidos_farmacias.numero_pedido === 0) {
+        res.send(G.utils.r(req.url, 'El numero_pedido no puede ser 0 o vacío', 404, {}));
+        return;
+    }
+
+    var numero_pedido = args.pedidos_farmacias.numero_pedido;
+    var estado_pedido = '0'; // 0 = No asignado
+
+    that.m_pedidos_farmacias.consultar_pedido(numero_pedido, function(err, pedido_cliente) {
+
+        if (err || pedido_cliente.length === 0) {
+
+        } else {
+            var pedido = pedido_cliente[0];
+
+
+            if ((pedido.estado_actual_pedido === '0' || pedido.estado_actual_pedido === '1') && pedido.estado_separacion === null) {
+
+                that.m_pedidos_farmacias.obtener_responsables_del_pedido(numero_pedido, function(err, responsables_pedido) {
+
+                    if (err) {
+                        res.send(G.utils.r(req.url, 'Se ha generado un error interno code 0', 500, {}));
+                        return;
+                    } else {
+
+                        that.m_pedidos_farmacias.eliminar_responsables_pedidos(numero_pedido, function(err, rows, resultado) {
+
+                            if (err) {
+                                res.send(G.utils.r(req.url, 'Se ha generado un error interno code 1', 500, {}));
+                                return;
+                            } else {
+                                that.m_pedidos_farmacias.actualizar_estado_actual_pedido(numero_pedido, estado_pedido, function(err, rows, resultado) {
+
+                                    if (err) {
+                                        res.send(G.utils.r(req.url, 'Se ha generado un error interno code 2', 500, {}));
+                                        return;
+                                    } else {
+
+                                        // Notificando Pedidos Actualizados en Real Time
+                                        that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+
+                                        // Notificar que al operario los pedidos  fueron reasignados o eliminados
+                                        if (responsables_pedido.length > 0) {
+
+                                            var responsable_estado_pedido = responsables_pedido[0];
+
+                                            that.e_pedidos_farmacias.onNotificacionOperarioPedidosReasignados({numero_pedidos: [numero_pedido], responsable: responsable_estado_pedido.responsable_id});
+                                        }
+
+                                        res.send(G.utils.r(req.url, 'El Pedido cambio de estado correctamente', 200, {}));
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            } else {
+                res.send(G.utils.r(req.url, 'El Pedido No puede cambbiar de estado', 200, {}));
+            }
+        }
+    });
+};
+
 /**
  * @api {post} /api/PedidosFarmacias/listaPedidosOperarioBodega Listar Pedidos Operarios
  * @apiName listaPedidosOperarioBodega

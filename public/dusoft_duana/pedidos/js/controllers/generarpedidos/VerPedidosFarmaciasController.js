@@ -193,7 +193,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 pedido.setObservacion(obj.observacion);
 
-                pedido.setEnUso(obj.en_uso);
+                //pedido.setEnUso(obj.en_uso);
 
                 var farmacia = FarmaciaVenta.get(
                         obj.farmacia_id,
@@ -233,17 +233,25 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                                 <span class="glyphicon glyphicon-eye-open"></span>\n\
                                             </button>\n\
                                         </div>'*/
-                                cellTemplate: '<div class="btn-group">\
-                                 <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
-                                 <ul class="dropdown-menu dropdown-options">\
-                                 <li ng-show="!((row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1) || row.entity.estado_separacion != null || row.entity.en_uso != 0)"><a href="javascript:void(0);" ng-click="onEditarPedidoFarmacia(row.entity)">Modificar</a></li>\
-                                 <li class="divider" ng-show="!((row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1) || row.entity.estado_separacion != null || row.entity.en_uso != 0)"></li>\
-                                 <li><a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity)" >Ver</a></li>\
-                                 </ul>\n\
-                                 <button class="btn btn-default btn-xs" ng-if="row.entity.en_uso != 0">\n\
-                                    <span class="glyphicon glyphicon-eye-open"></span>\n\
-                                </button>\n\
-                                 </div>'
+                        /*cellTemplate: '<div class="btn-group">\
+                                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
+                                            <ul class="dropdown-menu dropdown-options">\
+                                                <li ng-show="!((row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1) || row.entity.estado_separacion != null || row.entity.en_uso != 0)"><a href="javascript:void(0);" ng-click="onEditarPedidoFarmacia(row.entity)">Modificar</a></li>\
+                                                <li class="divider" ng-show="!((row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1) || row.entity.estado_separacion != null || row.entity.en_uso != 0)"></li>\
+                                                <li><a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity)" >Ver</a></li>\
+                                            </ul>\n\
+                                            <button class="btn btn-default btn-xs" ng-if="row.entity.en_uso != 0">\n\
+                                               <span class="glyphicon glyphicon-eye-open"></span>\n\
+                                           </button>\n\
+                                        </div>'*/
+                        cellTemplate: '<div class="btn-group">\
+                                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
+                                            <ul class="dropdown-menu dropdown-options">\
+                                                <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)"><a href="javascript:void(0);" ng-click="onEditarPedidoFarmacia(row.entity)">Modificar</a></li>\
+                                                <li class="divider" ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)"></li>\
+                                                <li><a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity)" >Ver</a></li>\
+                                            </ul>\n\
+                                        </div>'
                     }
 
                 ]
@@ -287,7 +295,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 that.pedido.setDatos(datos_pedido);
                 that.pedido.setTipo(2);
                 that.pedido.setObservacion("");
-                that.pedido.setEnUso(0);
+                //that.pedido.setEnUso(0);
 
                 //Creación objeto farmacia
                 var farmacia = FarmaciaVenta.get(
@@ -307,7 +315,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 $scope.rootVerPedidosFarmacias.Empresa.getPedidoSeleccionado().vaciarProductos();
 
-                console.log(">>>>>>>>>>>>> Pedido Seleccionado En Uso: ", $scope.rootVerPedidosFarmacias.Empresa.getPedidoSeleccionado().getEnUso());
+                //console.log(">>>>>>>>>>>>> Pedido Seleccionado En Uso: ", $scope.rootVerPedidosFarmacias.Empresa.getPedidoSeleccionado().getEnUso());
 
                 $state.go('CreaPedidosFarmacias');
             };
@@ -346,7 +354,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 that.consultarEncabezadosPedidos(obj, function(data_encabezado) {
 
-                    pedido.setEnUso(data_encabezado.obj.pedidos_farmacias[0].en_uso);
+                    //pedido.setEnUso(data_encabezado.obj.pedidos_farmacias[0].en_uso);
 
                     var farmacia = FarmaciaVenta.get(
                             data.farmacia.farmacia_id,
@@ -363,7 +371,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                     PedidoVenta.pedidoseleccionado = data.numero_pedido;
 
-                    if ($scope.rootVerPedidosFarmacias.Empresa.getPedidoSeleccionado().getEnUso() === 0) {
+                    //if ($scope.rootVerPedidosFarmacias.Empresa.getPedidoSeleccionado().getEnUso() === 0) {
+                    if ($scope.rootVerPedidosFarmacias.Empresa.getPedidoSeleccionado().estado_actual_pedido === 0) {
                         //$scope.$emit('bloqueoModificarPedido', false);
                         $state.go('CreaPedidosFarmacias');
                         //$scope.$emit('bloqueoModificarPedido', false);
@@ -383,7 +392,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                         </div>\
                                         <div class="modal-body row">\
                                             <div class="col-md-12">\
-                                                <h4 >El Pedido ' + $scope.rootVerPedidosFarmacias.Empresa.getPedidoSeleccionado().numero_pedido + ' ha sido abierto por el usuario asignado. No puede modificarse!</h4>\
+                                                <h4 >El Pedido ' + $scope.rootVerPedidosFarmacias.Empresa.getPedidoSeleccionado().numero_pedido + ' ha sido asignado. No puede modificarse!</h4>\
                                             </div>\
                                         </div>\
                                         <div class="modal-footer">\
@@ -440,7 +449,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 that.consultarEncabezadosPedidos(obj, function(data_encabezado) {
 
-                    pedido.setEnUso(data_encabezado.obj.pedidos_farmacias[0].en_uso);
+                    //pedido.setEnUso(data_encabezado.obj.pedidos_farmacias[0].en_uso);
 
                     var farmacia = FarmaciaVenta.get(
                             data.farmacia.farmacia_id,

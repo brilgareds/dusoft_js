@@ -196,15 +196,24 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'farmacia.nombre_centro_utilidad', displayName: 'Centro Utilidad', width: "15%"},
                     {field: 'farmacia.nombre_bodega', displayName: 'Bodega', width: "15%"},
                     {field: 'observacion', displayName: 'Observación'},
-                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "11%",
-                        cellTemplate: ' <div>\n\
+                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center dropdown-button", width: "8%",
+                        /*cellTemplate: ' <div>\n\
                                             <button class="btn btn-default btn-xs" ng-click="onEditarPedidoFarmaciaTemp(row.entity)">\n\
                                                 <span class="glyphicon glyphicon-pencil">Modificar</span>\n\
                                             </button>\n\
                                             <button class="btn btn-default btn-xs" ng-click="onEliminarPedidoFarmaciaTemp(row.entity.farmacia.farmacia_id, row.entity.farmacia.centro_utilidad_id, row.entity.farmacia.bodega_id, row.rowIndex)">\n\
                                                 <span class="glyphicon glyphicon-remove">Eliminar</span>\n\
                                             </button>\n\
+                                        </div>'*/
+                        cellTemplate: '<div class="btn-group">\
+                                        <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
+                                        <ul class="dropdown-menu dropdown-options">\
+                                            <li><a href="javascript:void(0);" ng-click="onEditarPedidoFarmaciaTemp(row.entity)">Modificar</a></li>\
+                                            <li class="divider"></li>\
+                                            <li><a href="javascript:void(0);" ng-click="onEliminarPedidoFarmaciaTemp(row.entity.farmacia.farmacia_id, row.entity.farmacia.centro_utilidad_id, row.entity.farmacia.bodega_id, row.rowIndex)" >Eliminar</a></li>\
+                                        </ul>\n\
                                         </div>'
+                        
                     }
 
                 ]

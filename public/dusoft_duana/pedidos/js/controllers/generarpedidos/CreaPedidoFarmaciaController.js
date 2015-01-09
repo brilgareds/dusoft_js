@@ -84,7 +84,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 that.pedido.setDatos(datos_pedido);
                 that.pedido.setTipo(2);
                 that.pedido.setObservacion("");
-                that.pedido.setEnUso(0);
+                //that.pedido.setEnUso(0);
 
                 var farmacia = FarmaciaVenta.get();
 
@@ -488,7 +488,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     that.consultarEmpresasDe();
                     that.consultarEmpresasPara();
                     
-                    console.log("EN USO: ",$scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEnUso());
+                    //console.log("EN USO: ",$scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEnUso());
                 }
 
             };
@@ -675,7 +675,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         pedido.setDatos(datos_pedido);
                         pedido.setTipo(2);
                         pedido.setObservacion(data.obj.encabezado_pedido[0].observacion);
-                        pedido.setEnUso(data.obj.encabezado_pedido[0].en_uso);
+                        //pedido.setEnUso(data.obj.encabezado_pedido[0].en_uso);
 
                         $scope.rootCreaPedidoFarmacia.observacion = data.obj.encabezado_pedido[0].observacion;
 
@@ -845,10 +845,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     },
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "13%",
                         cellTemplate: ' <div class="row">\n\
-                                            <button class="btn btn-default btn-xs" ng-click="onModificarCantidad(row)" ng-disabled="row.entity.nueva_cantidad<=0 || row.entity.nueva_cantidad==null || !expreg.test(row.entity.nueva_cantidad) || rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEnUso()!=0 || !rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEditable()">\n\
+                                            <button class="btn btn-default btn-xs" ng-click="onModificarCantidad(row)" ng-disabled="row.entity.nueva_cantidad<=0 || row.entity.nueva_cantidad==null || !expreg.test(row.entity.nueva_cantidad) || rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido !=0 || !rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEditable()">\n\
                                                 <span class="glyphicon glyphicon-pencil">Modificar</span>\n\
                                             </button>\n\
-                                            <button class="btn btn-default btn-xs" ng-click="onEliminarProducto(row)" ng-disabled="rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEnUso()!=0 || !rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEditable()">\n\
+                                            <button class="btn btn-default btn-xs" ng-click="onEliminarProducto(row)" ng-disabled="rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido !=0 || !rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEditable()">\n\
                                                 <span class="glyphicon glyphicon-remove">Eliminar</span>\n\
                                             </button>\n\
                                         </div>'
@@ -872,9 +872,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 
                 that.consultarEncabezadoPedidoFinal(numero_pedido, function(data){
 
-                    $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().setEnUso(data.obj.encabezado_pedido[0].en_uso);
+                    //$scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().setEnUso(data.obj.encabezado_pedido[0].en_uso);
                     
-                    if($scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEnUso() === 0){
+                    if($scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido === 0){
                     
                         if(row.entity.nueva_cantidad >= row.entity.cantidad_solicitada){
 
@@ -970,7 +970,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                         </div>\
                                         <div class="modal-body row">\
                                             <div class="col-md-12">\
-                                                <h4 >El Pedido '+numero_pedido+' ha sido abierto por el usuario asignado. No puede modificarse!</h4>\
+                                                <h4 >El Pedido '+numero_pedido+' ha sido asignado. No puede modificarse!</h4>\
                                             </div>\
                                         </div>\
                                         <div class="modal-footer">\
@@ -1120,9 +1120,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 
                 that.consultarEncabezadoPedidoFinal(numero_pedido, function(data){
 
-                    $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().setEnUso(data.obj.encabezado_pedido[0].en_uso);
+                    //$scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().setEnUso(data.obj.encabezado_pedido[0].en_uso);
 
-                    if($scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEnUso() === 0){
+                    if($scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido === 0){
                 
                         var template = '<div class="modal-header">\
                                             <button type="button" class="close" ng-click="close()">&times;</button>\
@@ -1182,7 +1182,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                         </div>\
                                         <div class="modal-body row">\
                                             <div class="col-md-12">\
-                                                <h4 >El Pedido '+numero_pedido+' ha sido abierto por el usuario asignado. No puede modificarse!</h4>\
+                                                <h4 >El Pedido '+numero_pedido+' ha sido asignado. No puede modificarse!</h4>\
                                             </div>\
                                         </div>\
                                         <div class="modal-footer">\
@@ -1465,7 +1465,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 var para_seleccion_centro_utilidad = [];
                 var para_seleccion_bodega = [];
                 
-                console.log("EN USO - Valor Seleccionado: ",$scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEnUso());
+                //console.log("EN USO - Valor Seleccionado: ",$scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEnUso());
 
                 if ($scope.rootCreaPedidoFarmacia.para_seleccion_empresa)
                 {

@@ -7,9 +7,10 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
 
             OrdenCompraPedido.prototype = Object.create(OrdenCompra.getClass().prototype)
 
-            function OrdenCompraPedido(numero_orden, estado, observacion, fecha_registro) {
+            function OrdenCompraPedido(numero_orden, estado, observacion, fecha_registro, observacion_contrato) {
                 OrdenCompra.getClass().call(this, numero_orden, estado, observacion, fecha_registro);
                 
+                this.observacion_contrato = observacion_contrato || '';
                 this.productos = [];
             }
             
@@ -59,9 +60,18 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
                 return this.usuario;
             };
             
+            // Observacion del contrato del proveedor
+            OrdenCompraPedido.prototype.set_observacion_contrato = function(observacion) {
+                this.observacion_contrato = observacion;
+            };
+            
+            OrdenCompraPedido.prototype.get_observacion_contrato = function() {
+                return this.observacion_contrato;
+            };
+            
             // Observacion
             OrdenCompraPedido.prototype.set_observacion = function(observacion) {
-                this.observacion = observacion;
+                this.observacion = observacion;                
             };
             
             OrdenCompraPedido.prototype.get_observacion = function() {
@@ -123,8 +133,8 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
             };
 
             // Instancia
-            this.get = function(numero_orden, estado, observacion, fecha_registro) {
-                return new OrdenCompraPedido(numero_orden, estado, observacion, fecha_registro);
+            this.get = function(numero_orden, estado, observacion, fecha_registro, observacion_contrato) {
+                return new OrdenCompraPedido(numero_orden, estado, observacion, fecha_registro, observacion_contrato);
             };
 
             return this;

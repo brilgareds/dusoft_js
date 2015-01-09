@@ -87,6 +87,15 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             ProductoOrdenCompra.prototype.get_novedad = function() {
                 return this.novedad;
             };
+            
+            //politicas Producto           
+            ProductoOrdenCompra.prototype.set_politicas = function(politicas) {
+                this.politicas = politicas;
+            };
+
+            ProductoOrdenCompra.prototype.get_politicas = function() {
+                return this.politicas;
+            };
 
             return this;
         }]);

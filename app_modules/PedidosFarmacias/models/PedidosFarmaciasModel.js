@@ -810,8 +810,8 @@ PedidosFarmaciasModel.prototype.actualizar_cantidad_pendiente_en_solicitud = fun
         
         G.db.begin(function() {
             rows.forEach(function(row){
-
-                var cantidad_pendiente = parsetInt(row.cantidad_pendiente);
+                
+                var cantidad_pendiente = parseInt(row.cantidad_pendiente);
                  sql = "UPDATE solicitud_productos_a_bodega_principal_detalle\
                         SET cantidad_pendiente= $1 WHERE solicitud_prod_a_bod_ppal_id= $2 AND\
                         codigo_producto=$3; ";

@@ -593,7 +593,7 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_farmacias = function(do
                 return;
             }
             
-         
+                        
             // Asignar Auditor Como Responsable del Despacho.
             __asignar_responsable_despacho(empresa_id, prefijo_documento, numero_documento, auditor_id, function(err, result) {
                 
@@ -629,14 +629,9 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_farmacias = function(do
                                 }
                                 // Finalizar Transacción.
                                 G.db.commit(function(){
-                                    
-                                       
                                     that.m_pedidos_farmacias.actualizar_cantidad_pendiente_en_solicitud(numero_pedido, function(err, results){
-
                                         callback(err, empresa_id, prefijo_documento, numero_documento);
                                     });
-            
-                                    
                                 });
                             });
                         });

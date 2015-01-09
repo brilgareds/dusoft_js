@@ -43,12 +43,12 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                             termino_busqueda: termino,
                             empresa_id: $scope.seleccion,
                             pagina_actual: $scope.paginaactual,
-                            filtro:{}
+                            filtro: {}
                         }
                     }
                 };
 
-                if($scope.estadoseleccionado != ""){
+                if ($scope.estadoseleccionado != "") {
                     obj.data.pedidos_farmacias.filtro[$scope.estadoseleccionado] = true;
                 }
 
@@ -90,19 +90,27 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                         cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)' ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 || row.entity.estado_separacion'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
                     {field: 'descripcion_estado_actual_pedido', displayName: "Estado Actual", cellClass: "txt-center",
                         //cellTemplate: '<div  ng-class="agregarClase(row.entity.estado_actual_pedido)">{{row.entity.descripcion_estado_actual_pedido}}</div>'},
-                        cellTemplate: "<button type='button' ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},                        
+                        cellTemplate: "<button type='button' ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
                     {field: 'numero_pedido', displayName: 'Numero Pedido'},
                     {field: 'farmacia.nombre_farmacia', displayName: 'Zona'},
                     {field: 'farmacia.nombre_farmacia', displayName: 'Farmacia'},
                     {field: 'farmacia.nombre_bodega', displayName: 'Bodega'},
-                    {field: 'fecha_registro', displayName: "Fecha Registro"}
+                    {field: 'fecha_registro', displayName: "Fecha Registro"},
+                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",
+                        cellTemplate: '<div class="btn-group">\
+                                            <button ng-disabled="row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 || row.entity.estado_separacion" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
+                                            <ul class="dropdown-menu dropdown-options">\
+                                                <li><a href="javascript:void(0);" ng-click="modificar_estado_pedido_farmacia(row.entity);" >Cambiar Estado</a></li>\
+                                            </ul>\
+                                        </div>'
+                    }
                 ]
 
             };
 
 
             $scope.agregarClase = function(estado) {
-                if(estado == 6){
+                if (estado == 6) {
                     return estados[1];
                 }
                 return estados[estado];
@@ -137,9 +145,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
 
                 console.log($scope.pedidosSeleccionados);
             },
-            
-
-            $scope.quitarPedido = function(pedido) {
+                    $scope.quitarPedido = function(pedido) {
                 for (var i in $scope.pedidosSeleccionados) {
                     var _pedido = $scope.pedidosSeleccionados[i];
                     if (_pedido.numero_pedido == pedido.numero_pedido) {
@@ -159,9 +165,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
 
                 $scope.pedidosSeleccionados.push(pedido);
             },
-            
-
-            $scope.buscarSeleccion = function(row) {
+                    $scope.buscarSeleccion = function(row) {
                 var pedido = row.entity;
                 for (var i in $scope.pedidosSeleccionados) {
                     var _pedido = $scope.pedidosSeleccionados[i];
@@ -216,17 +220,85 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                 for (var i in $scope.Empresa.getPedidosFarmacia()) {
                     var _pedido = $scope.Empresa.getPedidosFarmacia()[i];
 
-                    if (pedido.numero_pedido == _pedido.numero_pedido) {  
+                    if (pedido.numero_pedido == _pedido.numero_pedido) {
 
                         console.log(pedido.numero_pedido);
                         _pedido.descripcion_estado_actual_pedido = pedido.descripcion_estado_actual_pedido;
                         _pedido.estado_actual_pedido = pedido.estado_actual_pedido;
-                        _pedido.estado_separacion = pedido.estado_separacion;                        
+                        _pedido.estado_separacion = pedido.estado_separacion;
                         break;
                     }
                 }
             };
 
+            $scope.modificar_estado_pedido_farmacia = function(row) {
+
+                console.log('======== modificar_estado_pedido_farmacia =========');
+                console.log(row);
+
+                $scope.pedido_seleccionado = row;
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <h4>Desea Cambiar el estado del pedido #' + $scope.pedido_seleccionado.get_numero_pedido() + '?? </h4> \
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-warning" ng-click="close()">No</button>\
+                                    <button class="btn btn-primary" ng-click="cambiar_estado_pedido()" ng-disabled="" >Si</button>\
+                                </div>',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.cambiar_estado_pedido = function() {
+                            
+                            console.log('======== cambiar estado farmacias =========');
+
+                            /*var obj = {
+                                session: $scope.session,
+                                data: {
+                                    ordenes_compras: {
+                                        numero_orden: $scope.orden_compra_seleccionada.get_numero_orden()
+                                    }
+                                }
+                            };
+
+                            Request.realizarRequest(API.ORDENES_COMPRA.ANULAR_ORDEN_COMPRA, "POST", obj, function(data) {
+
+                                AlertService.mostrarMensaje("warning", data.msj);
+
+                                if (data.status === 200) {
+
+                                    $scope.orden_compra_seleccionada.set_estado('2');
+                                    $scope.orden_compra_seleccionada.set_descripcion_estado('Anulado');
+
+                                    $scope.orden_compra_seleccionada = '';
+                                }
+                            });*/
+
+                        };
+
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+
+            };
+
+            $scope.cambiar_estado_pedido_farmacia = function() {
+
+
+
+            };
 
             $scope.abrirModalAsignar = function() {
 
@@ -301,14 +373,14 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
             };
 
 
-            $scope.seleccionEstado = function(){
+            $scope.seleccionEstado = function() {
                 $scope.paginaactual = 1;
                 $scope.buscarPedidosFarmacias($scope.termino_busqueda, true);
             };
 
 
-            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
-               $scope.Empresa.vaciarPedidosFarmacia();
+            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+                $scope.Empresa.vaciarPedidosFarmacia();
             });
 
 

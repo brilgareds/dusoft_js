@@ -14,8 +14,9 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.valor_cotizacion = "";
             this.lista_productos = [];
             this.tipo = 1;
-            this.observacion;
-            this.en_uso;
+            this.observacion = "";
+            this.en_uso = 0;
+            this.editable = true;
         };
 
         PedidoVenta.prototype = Object.create(Pedido.getClass().prototype);
@@ -70,6 +71,14 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         PedidoVenta.prototype.getEnUso = function() {
             return this.en_uso;
         };
+        
+        PedidoVenta.prototype.setEditable = function(valor_booleano) {
+            this.editable = valor_booleano;
+        };
+        
+        PedidoVenta.prototype.getEditable = function() {
+            return this.editable;
+        }
 
         this.get = function() {
             return new PedidoVenta();

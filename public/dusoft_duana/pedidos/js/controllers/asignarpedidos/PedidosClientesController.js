@@ -123,15 +123,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                 data: 'Empresa.getPedidos()',
                 enableColumnResize: true,
                 enableRowSelection: false,
-                //enableSorting:false,
-                //rowTemplate: '<div " style="height: 100%" ng-class="{red: !row.getProperty(\'isUploaded\')}" rel="{{row.entity.numero_pedido}}" ng-click="rowClicked($event, row)">' + 
-                // '<div ng-repeat="col in renderedColumns" ng-class="col.colIndex()" class="ngCell "  >' +
-                // '<div ng-cell ></div>' +
-                // '</div>' +
-                // '</div>', /*<input-check ng-model="row.entity.selected" ng-click="onEditarLote(row)"> />*/
                 columnDefs: [
-                    /* {field: '', cellClass: "checkseleccion", width: "60",
-                     cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)' ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 || row.entity.estado == 3 || row.entity.estado_separacion'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},*/
                     {field: '', cellClass: "checkseleccion", width: "60",
                         cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)'" +
                                 " ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 || row.entity.estado == 3 || " +
@@ -145,8 +137,15 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                     {field: 'cliente.telefono_cliente', displayName: 'Telefono'},
                     {field: 'nombre_vendedor', displayName: 'Vendedor'},
                     {field: 'descripcion_estado', displayName: "Estado"},
-                    {field: 'fecha_registro', displayName: "Fecha Registro"}
-
+                    {field: 'fecha_registro', displayName: "Fecha Registro"},
+                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",
+                        cellTemplate: '<div class="btn-group">\
+                                            <button ng-disabled="row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 || row.entity.estado == 3 || row.entity.estado_separacion " class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
+                                            <ul class="dropdown-menu dropdown-options">\
+                                                <li><a href="javascript:void(0);" ng-click="modificar_estado_pedido_cliente(row.entity);" >Cambiar Estado</a></li>\
+                                            </ul>\
+                                        </div>'
+                    }
                 ]
 
             };
@@ -231,6 +230,42 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
 
             //fin delegado grid
 
+            $scope.modificar_estado_pedido_cliente = function(row) {
+                console.log('======== modificar_estado_pedido_cliente =========');
+                console.log(row);
+                
+                $scope.pedido_seleccionado = row;
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <h4>Desea Cambiar el estado del pedido #' + $scope.pedido_seleccionado.get_numero_pedido() + '?? </h4> \
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-warning" ng-click="close()">No</button>\
+                                    <button class="btn btn-primary" ng-click="cambiar_estado_pedido()" ng-disabled="" >Si</button>\
+                                </div>',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.cambiar_estado_pedido = function() {
+                            console.log('======== cambiar estado clienets =========');
+                        };
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+                    }                    
+                };
+                var modalInstance = $modal.open($scope.opts);
+            };
+
             $scope.abrirModalAsignar = function() {
 
 
@@ -246,7 +281,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                             return $scope.pedidosSeleccionados;
                         },
                         url: function() {
-                            return API.PEDIDOS.ASIGNAR_RESPONSABLE_CLIENTE
+                            return API.PEDIDOS.ASIGNAR_RESPONSABLE_CLIENTE;
                         }
                     }
                 };

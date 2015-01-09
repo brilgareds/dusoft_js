@@ -192,14 +192,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
-                    {field: 'farmacia.nombre_farmacia', displayName: 'Farmacia'},
-                    {field: 'farmacia.nombre_centro_utilidad', displayName: 'Centro Utilidad'},
-                    {field: 'farmacia.nombre_bodega', displayName: 'Bodega'},
+                    {field: 'farmacia.nombre_farmacia', displayName: 'Farmacia', width: "15%"},
+                    {field: 'farmacia.nombre_centro_utilidad', displayName: 'Centro Utilidad', width: "15%"},
+                    {field: 'farmacia.nombre_bodega', displayName: 'Bodega', width: "15%"},
                     {field: 'observacion', displayName: 'Observación'},
-                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
+                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "11%",
                         cellTemplate: ' <div>\n\
                                             <button class="btn btn-default btn-xs" ng-click="onEditarPedidoFarmaciaTemp(row.entity)">\n\
                                                 <span class="glyphicon glyphicon-pencil">Modificar</span>\n\
+                                            </button>\n\
+                                            <button class="btn btn-default btn-xs" ng-click="onEliminarPedidoFarmaciaTemp(row.entity.farmacia.farmacia_id, row.entity.farmacia.centro_utilidad_id, row.entity.farmacia.bodega_id, row.rowIndex)">\n\
+                                                <span class="glyphicon glyphicon-remove">Eliminar</span>\n\
                                             </button>\n\
                                         </div>'
                     }
@@ -242,6 +245,119 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 //PedidoVenta.pedidoseleccionado = data.numero_pedido;
 
                 $state.go('CreaPedidosFarmacias');
+            };
+            
+            $scope.onEliminarPedidoFarmaciaTemp = function(farmacia_id, centro_utilidad_id, bodega_id, index){
+
+                //Eliminación Detalle Temporal
+                var obj_detalle = {
+                    session: $scope.rootVerPedidosTempFarmacias.session,
+                    data: {
+                        detalle_pedidos_farmacias: {
+                            empresa_id: farmacia_id,
+                            centro_utilidad_id: centro_utilidad_id,
+                            bodega_id: bodega_id
+                        }
+                    }
+                };
+                
+                var url_eliminar_detalle = API.PEDIDOS.ELIMINAR_DETALLE_PEDIDO_FARMACIA_TEMPORAL_COMPLETO;
+
+                Request.realizarRequest(url_eliminar_detalle, "POST", obj_detalle, function(data) {
+
+                    if (data.status === 200) {
+                        console.log("Eliminación del detalle Exitosa: ", data.msj);
+                        
+                        //Eliminación encabezado temporal
+                        var obj_encabezado = {
+                            session: $scope.rootVerPedidosTempFarmacias.session,
+                            data: {
+                                pedidos_farmacias: {
+                                    empresa_id: farmacia_id,
+                                    centro_utilidad_id: centro_utilidad_id,
+                                    bodega_id: bodega_id
+                                }
+                            }
+                        };
+
+                        var url_eliminar_encabezado = API.PEDIDOS.ELIMINAR_REGISTRO_PEDIDO_TEMPORAL;
+
+                        Request.realizarRequest(url_eliminar_encabezado, "POST", obj_encabezado, function(data) {
+
+                            if (data.status === 200) {
+                                console.log("Eliminación de encabezado Exitosa: ", data.msj);
+                                //$scope.rootVerPedidosTempFarmacias.Empresa.getPedidoSeleccionado().eliminarProducto(index);
+                                $scope.rootVerPedidosTempFarmacias.Empresa.eliminarPedidoTemporalFarmacia(index);
+                                //$state.go('VerPedidosFarmacias');
+                            }
+                            else{
+                                console.log("Eliminación de encabezado Fallida: ", data.msj);
+                            }
+                        });
+                        
+                        
+                    }
+                    else
+                    {
+                        console.log("Eliminación del detalle Fallida: ", data.msj);
+                    }
+                });
+            };  
+            
+            $scope.abrirViewPedidoFarmaciaTemp = function() {
+
+                PedidoVenta.pedidoseleccionado = "";
+                localStorageService.set("pedidoseleccionado", PedidoVenta.pedidoseleccionado);
+
+                /*Inicio - Creación de objeto*/
+
+                var datos_pedido = {
+                    numero_pedido: "",
+                    fecha_registro: "",
+                    descripcion_estado_actual_pedido: "",
+                    estado_actual_pedido: "",
+                    estado_separacion: ""
+                };
+
+                that.pedido.setDatos(datos_pedido);
+                that.pedido.setTipo(2);
+                that.pedido.setObservacion("");
+                that.pedido.setEnUso(0);
+
+                //Creación objeto farmacia
+                var farmacia = FarmaciaVenta.get(
+                        0,
+                        0,
+                        "",
+                        "",
+                        0,
+                        ""
+                        );
+
+                that.pedido.setFarmacia(farmacia);
+
+                $scope.rootVerPedidosTempFarmacias.Empresa.setPedidoSeleccionado(that.pedido);
+
+                /*Fin - Creación de objeto*/
+
+                $scope.rootVerPedidosTempFarmacias.Empresa.getPedidoSeleccionado().vaciarProductos();
+
+                $state.go('CreaPedidosFarmacias');
+            };            
+            
+            $scope.paginaAnteriorTemp = function() {
+                $scope.rootVerPedidosTempFarmacias.paginaactual--;
+                $scope.onBuscarPedidosFarmaciasTemp($scope.obtenerParametrosTemp(), true);
+            };
+
+            $scope.paginaSiguienteTemp = function() {
+                $scope.rootVerPedidosTempFarmacias.paginaactual++;
+                $scope.onBuscarPedidosFarmaciasTemp($scope.obtenerParametrosTemp(), true);
+            };            
+            
+            $scope.valorSeleccionadoTemp = function() {
+
+                $scope.onBuscarPedidosFarmaciasTemp($scope.obtenerParametrosTemp());
             };
 
             that.listarFarmacias();

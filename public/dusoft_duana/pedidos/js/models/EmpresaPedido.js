@@ -158,6 +158,14 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             this.pedidosTemporalesFarmacias = [];
         };
         
+        EmpresaPedido.eliminarPedidoTemporal = function(index) {
+            return this.pedidosTemporales.splice(index,1);
+        };
+        
+        EmpresaPedido.eliminarPedidoTemporalFarmacia = function(index) {
+            return this.pedidosTemporalesFarmacias.splice(index,1);
+        };
+        
         return EmpresaPedido;
 
     }]);

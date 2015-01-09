@@ -317,6 +317,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 if (PedidoVenta.pedidoseleccionado !== "") {
                     
 //                    console.log("Singleton Empresa: ", $scope.rootCreaPedidoFarmacia.Empresa);
+
+                    console.log(">>>>>>>>>>>>>>>>> ESTADO ACTUAL DEL PEDIDO: ",$scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido);
                     
                     $scope.rootCreaPedidoFarmacia.titulo_tab_1 = "Detalle Pedido";
                     $scope.rootCreaPedidoFarmacia.titulo_tab_2 = "";
@@ -330,6 +332,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 }
                 else if (localStorageService.get("pedidoseleccionado")) {
+                    
+                    
+                    console.log(">>>>>>>>>>>>>>>>> ESTADO ACTUAL DEL PEDIDO: ",$scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido);
                     
                     $scope.rootCreaPedidoFarmacia.titulo_tab_1 = "Detalle Pedido";
                     $scope.rootCreaPedidoFarmacia.titulo_tab_2 = "";
@@ -358,6 +363,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     var nombre_centro_utilidad = $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.nombre_centro_utilidad;
                     var para_bodega = $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.bodega_id;
                     var nombre_bodega = $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.nombre_bodega;                    
+                    
+                    
+                    console.log(">>>>>>>>>>>>>>>>> ESTADO ACTUAL DEL PEDIDO: ",$scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido);
 
                     /* Inicio - Llenado de DropDowns*/
                     that.consultarEmpresasDe(function(){
@@ -444,6 +452,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 }
                 else {
+                    
+                    console.log(">>>>>>>>>>>>>>>>> ESTADO ACTUAL DEL PEDIDO: ",$scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido);
                     
                     $scope.rootCreaPedidoFarmacia.titulo_tab_1 = "Incluir Producto Manual";
                     $scope.rootCreaPedidoFarmacia.titulo_tab_2 = "Cargar Archivo Plano";

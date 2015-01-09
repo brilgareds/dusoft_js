@@ -370,9 +370,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     $scope.rootVerPedidosFarmacias.Empresa.setPedidoSeleccionado(pedido);
 
                     PedidoVenta.pedidoseleccionado = data.numero_pedido;
+                    
+                    console.log(">>>>>>>>>>>>>>>>>>>> ESTADO ACTUAL PEDIDO: ", $scope.rootVerPedidosFarmacias.Empresa.getPedidoSeleccionado().estado_actual_pedido);
 
                     //if ($scope.rootVerPedidosFarmacias.Empresa.getPedidoSeleccionado().getEnUso() === 0) {
-                    if ($scope.rootVerPedidosFarmacias.Empresa.getPedidoSeleccionado().estado_actual_pedido === 0) {
+                    if ($scope.rootVerPedidosFarmacias.Empresa.getPedidoSeleccionado().estado_actual_pedido === '0') {
                         //$scope.$emit('bloqueoModificarPedido', false);
                         $state.go('CreaPedidosFarmacias');
                         //$scope.$emit('bloqueoModificarPedido', false);

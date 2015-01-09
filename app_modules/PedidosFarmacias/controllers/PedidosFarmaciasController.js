@@ -1239,9 +1239,9 @@ PedidosFarmacias.prototype.insertarPedidoFarmaciaDefinitivo = function(req, res)
     var observacion = args.pedidos_farmacias.observacion;
             
     var tipo_pedido = args.pedidos_farmacias.tipo_pedido;
-    var en_uso = args.pedidos_farmacias.en_uso;
+    //var en_uso = args.pedidos_farmacias.en_uso;
 
-    that.m_pedidos_farmacias.insertar_pedido_farmacia_definitivo(empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion, tipo_pedido, en_uso, function(err, id_pedido) {
+    that.m_pedidos_farmacias.insertar_pedido_farmacia_definitivo(empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion, tipo_pedido, function(err, id_pedido) {
         
         if (err) {
             res.send(G.utils.r(req.url, 'Se ha Generado un Error en el almacenamiento del Encabezado', 500, {error: err}));

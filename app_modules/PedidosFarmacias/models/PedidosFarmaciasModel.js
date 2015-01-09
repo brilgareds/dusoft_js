@@ -161,7 +161,7 @@ PedidosFarmaciasModel.prototype.eliminar_detalle_temporal_completo = function(em
 PedidosFarmaciasModel.prototype.insertar_pedido_farmacia_definitivo = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion, tipo_pedido, callback) {
     
     var sql = "INSERT INTO solicitud_productos_a_bodega_principal(farmacia_id, centro_utilidad, bodega, observacion, usuario_id, fecha_registro, empresa_destino, sw_despacho, estado, tipo_pedido) \
-                SELECT farmacia_id, centro_utilidad, bodega, $5, usuario_id, CURRENT_TIMESTAMP, empresa_destino, 0, 0, $6, $7 from solicitud_Bodega_principal_aux \
+                SELECT farmacia_id, centro_utilidad, bodega, $5, usuario_id, CURRENT_TIMESTAMP, empresa_destino, 0, 0, $6 from solicitud_Bodega_principal_aux \
                 WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and usuario_id = $4 \
                 RETURNING solicitud_prod_a_bod_ppal_id";
 

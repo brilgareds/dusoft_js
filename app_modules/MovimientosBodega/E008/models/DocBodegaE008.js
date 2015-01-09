@@ -644,7 +644,7 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_farmacias = function(do
 
 
 
-DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(documento_temporal_id, usuario_id, auditor_id, callback) {
+DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(documento_temporal_id, numero_pedido, usuario_id, auditor_id, callback) {
 
     var that = this;
 
@@ -694,7 +694,9 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(doc
                                 }
                                 // Finalizar Transacción.
                                 G.db.commit(function(){
-                                    callback(err, empresa_id, prefijo_documento, numero_documento);
+                                     that.m_pedidos_clientes.actualizar_despachos_pedidos_cliente(numero_pedido, function(err){
+                                        callback(err, empresa_id, prefijo_documento, numero_documento);
+                                     });
                                 });
                             });
                         });

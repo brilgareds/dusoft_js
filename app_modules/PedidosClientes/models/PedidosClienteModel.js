@@ -726,22 +726,57 @@ PedidosClienteModel.prototype.listar_pedidos_pendientes_by_producto = function(e
 };
 
 
-PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(prefijo, numero, callback) {
-     var sql = " SELECT\
-                a.pedido_cliente_id as numero_pedido,\
-                b.numero_unidades as cantidad_solicitada,\
-                ((b.numero_unidades - b.cantidad_despachada)) as cantidad_pendiente,\
-                a.tipo_id_tercero,\
-                a.tercero_id,\
-                c.nombre_tercero,\
-                d.usuario,\
-                a.fecha_registro\
-                FROM ventas_ordenes_pedidos a\
-                inner JOIN ventas_ordenes_pedidos_d AS b ON a.pedido_cliente_id = b.pedido_cliente_id\
-                inner JOIN terceros as c ON (a.tipo_id_tercero = c.tipo_id_tercero) AND (a.tercero_id = c.tercero_id)\
-                JOIN system_usuarios as d ON (a.usuario_id = d.usuario_id)\
-                WHERE a.empresa_id = $1 and b.codigo_producto=$2 and a.estado = '1' and b.numero_unidades <> b.cantidad_despachada\
-                ORDER BY a.pedido_cliente_id; ";
+/**
+ * @api {sql} actualizar_despachos_pedidos_cliente Pedidos clientes model
+ * @apiName Pedidos Clientes
+ * @apiGroup PedidosCliente (sql)
+ * @apiDescription se actualiza la cantidad despachada del pedido al genear el despacho
+ * @apiDefinePermission autenticado Requiere Autenticacion
+ * Requiere que el usuario esté autenticado.
+ * @apiPermission autenticado
+ * @apiParam {Number} numero_pedido Numero del pedido a asignar
+ * @apiParam {Function} callback Funcion de retorno de informacion.
+ */
+
+PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(numero_pedido, callback) {
+     var sql = "select b.codigo_producto, sum(b.cantidad) AS cantidad_despachada, b.prefijo, b.numero\
+                from inv_bodegas_movimiento_despachos_clientes a\
+                inner join inv_bodegas_movimiento_d b on a.empresa_id =b.empresa_id and a.prefijo = b.prefijo and a.numero = b.numero\
+                where a.pedido_cliente_id = $1 group by 1,3,4";
+    
+    
+    G.db.query(sql, [numero_pedido], function(err, rows, result) {
+
+        if(err){
+            callback(err, null);
+            return;
+        }
+        
+        var length = rows.length;
+        
+        G.db.begin(function() {
+            rows.forEach(function(row){
+
+                var cantidad_despachada = parseInt(row.cantidad_despachada);
+                 sql = "UPDATE ventas_ordenes_pedidos_d\
+                        SET cantidad_despachada=cantidad_despachada+$1\
+                        WHERE   pedido_cliente_id=$2\
+                        AND  codigo_producto=$3; ";
+
+
+                G.db.transaction(sql, [cantidad_despachada, numero_pedido, row.codigo_producto], function(err, rows, result) {
+
+                     if (--length === 0) {
+                         G.db.commit(function(){
+                            callback(err, rows);
+                            return;
+                         });
+                    }
+                });
+
+            });
+        });
+    });
 };
 
 PedidosClienteModel.$inject = ["m_productos"];

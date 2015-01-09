@@ -47,6 +47,11 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.asignarResponsablesPedido(req, res);
     });
     
+    // Eliminar responsables del pedido
+    app.post('/api/PedidosFarmacias/eliminarResponsablesPedido', function(req, res) {
+        c_pedidos_farmacias.eliminarResponsablesPedido(req, res);
+    });
+    
     // Seleccionar los pedidos de un operario de bodega
     app.post('/api/PedidosFarmacias/listaPedidosOperarioBodega', function(req, res) {
         c_pedidos_farmacias.listaPedidosOperariosBodega(req, res);

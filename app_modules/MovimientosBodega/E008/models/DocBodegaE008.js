@@ -1,6 +1,8 @@
-var DocuemntoBodegaE008 = function(movientos_bodegas) {
+var DocuemntoBodegaE008 = function(movientos_bodegas, m_pedidos_clientes, m_pedidos_farmacias) {
 
     this.m_movientos_bodegas = movientos_bodegas;
+    this.m_pedidos_clientes = m_pedidos_clientes;
+    this.m_pedidos_farmacias = m_pedidos_farmacias;
 
 };
 
@@ -576,7 +578,7 @@ DocuemntoBodegaE008.prototype.actualizarCajaDeTemporal = function(item_id, numer
 /*********************************************************************************************************************************
  * ============= DOCUMENTOS DESPACHO =============
  /*********************************************************************************************************************************/
-DocuemntoBodegaE008.prototype.generar_documento_despacho_farmacias = function(documento_temporal_id, usuario_id, auditor_id, callback) {
+DocuemntoBodegaE008.prototype.generar_documento_despacho_farmacias = function(documento_temporal_id,numero_pedido, usuario_id, auditor_id, callback) {
 
     var that = this;
 
@@ -591,8 +593,7 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_farmacias = function(do
                 return;
             }
             
-            
-            
+                        
             // Asignar Auditor Como Responsable del Despacho.
             __asignar_responsable_despacho(empresa_id, prefijo_documento, numero_documento, auditor_id, function(err, result) {
                 
@@ -628,7 +629,9 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_farmacias = function(do
                                 }
                                 // Finalizar Transacción.
                                 G.db.commit(function(){
-                                    callback(err, empresa_id, prefijo_documento, numero_documento);
+                                    that.m_pedidos_farmacias.actualizar_cantidad_pendiente_en_solicitud(numero_pedido, function(err, results){
+                                        callback(err, empresa_id, prefijo_documento, numero_documento);
+                                    });
                                 });
                             });
                         });
@@ -842,6 +845,6 @@ function __asignar_responsable_despacho(empresa_id, prefijo_documento, numero_do
 }
 ;
 
-DocuemntoBodegaE008.$inject = ["m_movientos_bodegas"];
+DocuemntoBodegaE008.$inject = ["m_movientos_bodegas", "m_pedidos_clientes", "m_pedidos_farmacias"];
 
 module.exports = DocuemntoBodegaE008;

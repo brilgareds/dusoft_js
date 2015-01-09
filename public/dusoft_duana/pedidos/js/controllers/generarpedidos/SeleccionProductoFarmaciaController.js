@@ -206,7 +206,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     //selectedItems: $scope.selectedRow,
                     multiSelect: false,
                     columnDefs: [
-                        {field: 'codigo_producto', displayName: 'Código', width: "9%"},
+                        {field: 'codigo_producto', displayName: 'Código', width: "10%",
+                            cellTemplate : '<div class="ngCellText" ng-class="col.colIndex()">\
+                                                <span class="label label-success" ng-show="row.entity.tipo_producto_id == 1" >N</span>\
+                                                <span class="label label-danger" ng-show="row.entity.tipo_producto_id == 2">A</span>\
+                                                <span class="label label-warning" ng-show="row.entity.tipo_producto_id == 3">C</span>\
+                                                <span class="label label-default" ng-show="row.entity.tipo_producto_id == 4">I</span>\
+                                                <span class="label label-info" ng-show="row.entity.tipo_producto_id == 5">Ne</span>\
+                                                <span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\
+                                            </div>'
+                        },
                         {field: 'nombre_producto', displayName: 'Descripción', width: "37%"},
                         //{field: 'descripcion_molecula', displayName: 'Molécula'},
                         {field: 'existencias_farmacia', displayName: 'Exist. Farmacia', width: "8%"},
@@ -237,7 +246,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     enableRowSelection: false,
                     multiSelect: false,
                     columnDefs: [
-                        {field: 'codigo_producto', displayName: 'Código', width: "9%"},
+                        {field: 'codigo_producto', displayName: 'Código', width: "9%",
+                            cellTemplate : '<div class="ngCellText" ng-class="col.colIndex()">\
+                                                    <span class="label label-success" ng-show="row.entity.tipo_producto_id == 1" >N</span>\
+                                                    <span class="label label-danger" ng-show="row.entity.tipo_producto_id == 2">A</span>\
+                                                    <span class="label label-warning" ng-show="row.entity.tipo_producto_id == 3">C</span>\
+                                                    <span class="label label-default" ng-show="row.entity.tipo_producto_id == 4">I</span>\
+                                                    <span class="label label-info" ng-show="row.entity.tipo_producto_id == 5">Ne</span>\
+                                                    <span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\
+                                                </div>'
+                        },
                         {field: 'descripcion', displayName: 'Descripción', width: "37%"},
                         {field: 'cantidad_solicitada', displayName: 'Solicitado'},
                         {field: 'cantidad_pendiente', displayName: 'Pendiente'},

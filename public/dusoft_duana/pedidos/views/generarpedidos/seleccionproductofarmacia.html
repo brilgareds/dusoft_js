@@ -16,10 +16,24 @@
                 <div class="panel-body">
                         
                     <div class="col-sm-12 col-md-12 col-lg-12">
+                        
+                        <div class="col-sm-12 col-md-6 col-lg-3 pull-left input-group">
+                            <div class="row" style="margin-bottom: 20px;">
+                                <div class="col-lg-12">
+                                    <h4>Convenciones</h4>
+                                    <div class="label label-success" style="position: relative;">Normales</div>
+                                    <div class="label label-danger" style="position: relative;">Alto Costo</div>
+                                    <div class="label label-warning" style="position: relative;">Controlados</div>
+                                    <div class="label label-default" style="position: relative;">Insumos</div>
+                                    <div class="label label-info" style="position: relative;">Nevera</div>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="col-sm-12 col-md-6 col-lg-6 pull-left">
                             <alert ng-show="rootSeleccionProductoFarmacia.no_incluir_producto == true" type="danger">El Producto que intenta Incluir ya fue INGRESADO. Elimínelo primero de los Productos Seleccionados.</alert>
                         </div>
-
+                        
                         <div class="col-sm-12 col-md-6 col-lg-3 pull-right input-group">
 
                             <input type="text" class="form-control pull-right" ng-keypress="onTeclaBuscarSeleccionProducto($event)" ng-model="rootSeleccionProductoFarmacia.termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">

@@ -595,7 +595,7 @@ PedidosClienteModel.prototype.eliminar_responsables_pedidos = function(numero_pe
     var sql = "DELETE FROM ventas_ordenes_pedidos_estado WHERE pedido_cliente_id=$1 ; ";
 
     G.db.query(sql, [numero_pedido], function(err, rows, result) {
-        callback(err, rows);
+        callback(err, rows, result);
     });
 };
 
@@ -630,7 +630,7 @@ PedidosClienteModel.prototype.actualizar_estado_actual_pedido = function(numero_
     var sql = "UPDATE ventas_ordenes_pedidos SET estado_pedido=$2 WHERE pedido_cliente_id=$1;";
 
     G.db.query(sql, [numero_pedido, estado_pedido], function(err, rows, result) {
-        callback(err, rows);
+        callback(err, rows, result);
     });
 };
 

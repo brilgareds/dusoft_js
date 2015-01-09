@@ -231,9 +231,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
             //fin delegado grid
 
             $scope.modificar_estado_pedido_cliente = function(row) {
-                console.log('======== modificar_estado_pedido_cliente =========');
-                console.log(row);
-
+                
                 $scope.pedido_seleccionado = row;
 
                 $scope.opts = {
@@ -256,19 +254,15 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                     controller: function($scope, $modalInstance) {
 
                         $scope.cambiar_estado_pedido = function() {
-                            console.log('======== cambiar estado clienets =========');
-
+                            
                             var obj = {
                                 session: $scope.session,
                                 data: {
                                     pedidos_clientes: {
-                                        numero_orden:  $scope.pedido_seleccionado.get_numero_pedido()
+                                        numero_pedido: $scope.pedido_seleccionado.get_numero_pedido()
                                     }
                                 }
                             };
-                            
-                            console.log(obj);
-                            return
 
                             Request.realizarRequest(API.PEDIDOS.ELIMINAR_RESPONSABLE_CLIENTE, "POST", obj, function(data) {
 
@@ -276,13 +270,12 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
 
                                 if (data.status === 200) {
 
-                                    $scope.orden_compra_seleccionada.set_estado('2');
-                                    $scope.orden_compra_seleccionada.set_descripcion_estado('Anulado');
-
-                                    $scope.orden_compra_seleccionada = '';
+                                    $scope.pedido_seleccionado = null;
+                                    $modalInstance.close();
                                 }
                             });
                         };
+                        
                         $scope.close = function() {
                             $modalInstance.close();
                         };

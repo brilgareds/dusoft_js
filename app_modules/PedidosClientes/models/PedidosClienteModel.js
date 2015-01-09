@@ -572,9 +572,36 @@ PedidosClienteModel.prototype.actualizar_responsables_pedidos = function(numero_
     });
 };
 
+
 /**
- * @api {sql} actualizar_responsables_pedidos Actualizar Responsables Pedido 
- * @apiName Actualizar Responsables Pedido
+ * @api {sql} eliminar_responsables_pedidos Eliminar el responsable de un pedido
+ * @apiName Eliminar Responsables Pedido
+ * @apiGroup PedidosClientes (sql)
+ * @apiDescription Permite eliminar el / los responsable de un pedido
+ * @apiDefinePermission autenticado Requiere Autenticacion
+ * Requiere que el usuario esté autenticado.
+ * @apiPermission autenticado
+ * @apiParam {Number} numero_pedido Numero del pedido a asignar
+ * @apiParam {Function} callback Funcion de retorno de informacion.
+ * @apiSuccessExample Este SQL se usa en:
+ *     Modulo : PedidosClientes
+ *     Accion : Modelo - asignar_responsables_pedidos();
+ * @apiSuccessExample SQL.
+ *          UPDATE ventas_ordenes_pedidos_estado SET responsable_id=$3, fecha=NOW(), usuario_id=$4  WHERE pedido_cliente_id=$1 AND estado=$2;
+ */
+
+PedidosClienteModel.prototype.eliminar_responsables_pedidos = function(numero_pedido, callback) {
+
+    var sql = "DELETE FROM ventas_ordenes_pedidos_estado WHERE pedido_cliente_id=$1 ; ";
+
+    G.db.query(sql, [numero_pedido], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+/**
+ * @api {sql} actualizar_estado_actual_pedido Actualizar Estado Actual del Peedido
+ * @apiName Actualizar Estado Actual
  * @apiGroup PedidosClientes (sql)
  * @apiDescription Permite cambiar el estado actual del pedido, dependiendo en momento o gestion determinada en donde se encuentre.
  * Los estados permitidos son:
@@ -694,16 +721,6 @@ PedidosClienteModel.prototype.listar_pedidos_pendientes_by_producto = function(e
                 ORDER BY a.pedido_cliente_id; ";
 
     G.db.query(sql, [empresa, codigo_producto], function(err, rows, result) {
-        callback(err, rows);
-    });
-};
-
-// Actualizacion el estado actual del pedido
-PedidosClienteModel.prototype.actualizar_en_uso_pedido = function(numero_pedido, estado_pedido, callback) {
-
-    var sql = "UPDATE ventas_ordenes_pedidos SET en_uso=$2 WHERE pedido_cliente_id = $1;";
-
-    G.db.query(sql, [numero_pedido, estado_pedido], function(err, rows, result) {
         callback(err, rows);
     });
 };

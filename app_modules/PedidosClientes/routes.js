@@ -21,14 +21,15 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/asignarResponsable', function(req, res) {
         c_pedidos_clientes.asignarResponsablesPedido(req, res);
     });
+    
+    // Asignar o seleccionar responsables del pedido
+    app.post('/api/PedidosClientes/eliminarResponsablesPedido', function(req, res) {
+        c_pedidos_clientes.eliminarResponsablesPedido(req, res);
+    });
 
     // Seleccionar los pedidos de un operario de bodega
     app.post('/api/PedidosClientes/listaPedidosOperarioBodega', function(req, res) {
         c_pedidos_clientes.listaPedidosOperariosBodega(req, res);
     });   
-    
-    // Actualiza estado campo en_uso para evitar que un pedido pueda modificarse si el pedido está abierto en la tablet
-    app.post('/api/PedidosClientes/actualizarEstadoActualPedido', function(req, res) {
-        c_pedidos_clientes.actualizarEstadoActualPedido(req, res);
-    });   
+           
 };

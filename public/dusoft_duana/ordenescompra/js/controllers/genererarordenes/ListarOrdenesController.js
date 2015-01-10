@@ -48,6 +48,7 @@ define(["angular", "js/controllers",
 
             $scope.orden_compra_seleccionada = '';
             $scope.mensaje_sistema = "";
+            $scope.datepicker_fecha_final = false;
 
             // Variable para paginacion
             $scope.paginas = 0;
@@ -202,6 +203,19 @@ define(["angular", "js/controllers",
 
                 $event.preventDefault();
                 $event.stopPropagation();
+                
+                $scope.datepicker_fecha_inicial = true;
+                $scope.datepicker_fecha_final = false;
+
+            };
+            
+            $scope.abrir_fecha_final = function($event) {
+
+                $event.preventDefault();
+                $event.stopPropagation();
+                
+                $scope.datepicker_fecha_inicial = false;
+                $scope.datepicker_fecha_final = true;                               
 
             };
 

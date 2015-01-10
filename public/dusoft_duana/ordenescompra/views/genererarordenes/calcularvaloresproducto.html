@@ -24,7 +24,7 @@
 
             <div class="form-group">
                 <label for="cantidad_ingresada">Cantidad.</label>
-                <input type="text" class="form-control" id="cantidad_ingresada" placeholder="" ng-model="$parent.cantidad">
+                <input type="text" class="form-control" id="cantidad_ingresada" placeholder="" ng-model="cantidad">
             </div>
         </div>
         <div class="col-md-4">
@@ -32,7 +32,7 @@
                 <label for="valor_presentacion">Presentacion.</label>
                 <div class="input-group">
                     <div class="input-group-addon">{{ producto_seleccionado.get_presentacion() }}</div>
-                    <input class="form-control" type="text" id="numero_unidades" placeholder="" ng-model="$parent.presentacion">
+                    <input class="form-control" type="text" id="numero_unidades" placeholder="" ng-model="presentacion">
                 </div>
             </div>
         </div>
@@ -41,9 +41,9 @@
                 <label for="valor_presentacion">Vlr. Presentación.</label>
                 <div class="input-group">
                     <div class="input-group-addon">$</div>
-                    <input class="form-control" type="text" id="valor_presentacion" placeholder="" ng-model="$parent.valor">
+                    <input class="form-control" type="text" id="valor_presentacion" placeholder="" ng-model="valor">
                     <span class="input-group-btn">
-                        <button class="btn btn-default" ng-click="calcular_precio_compra()" ng-disabled="cantidad==0 || cantidad=='' || presentacion=='' || valor==''" ><i class="glyphicon glyphicon-ok"></i></button>
+                        <button class="btn btn-default" ng-click="calcular_precio_compra()" ng-disabled="cantidad==0 || cantidad=='' || presentacion=='' || presentacion==0 || valor=='' || valor==0" ><i class="glyphicon glyphicon-ok"></i></button>
                     </span>
                 </div>
             </div>

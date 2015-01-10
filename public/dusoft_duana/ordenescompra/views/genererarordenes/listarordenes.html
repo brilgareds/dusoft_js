@@ -13,10 +13,10 @@
         <div class="col-md-3">
             <p class="input-group">
 
-                <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="fecha_inicial" is-open="abrirfechainicial" min="minDate"   readonly  close-text="Cerrar" ng-change="" clear-text="Borrar" current-text="Hoy" placeholder="Fecha Inicial" show-weeks="false" toggle-weeks-text="#"  />
+                <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="fecha_inicial" is-open="datepicker_fecha_inicial" min="minDate"   readonly  close-text="Cerrar" ng-change="" clear-text="Borrar" current-text="Hoy" placeholder="Fecha Inicial" show-weeks="false" toggle-weeks-text="#"  />
 
                 <span class="input-group-btn">
-                    <button class="btn btn-default" ng-click="abrir_fecha_inicial($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                    <button class="btn btn-default" ng-click="abrir_fecha_inicial($event);"><i class="glyphicon glyphicon-calendar"></i></button>
                 </span>
             </p>
         </div>
@@ -24,11 +24,11 @@
         <div class="col-md-3">
             <p class="input-group">
 
-                <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="fecha_final" is-open="abrirfechafinal" min="fecha_inicial"  readonly  close-text="Cerrar"
+                <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="fecha_final" is-open="datepicker_fecha_final" min="fecha_inicial"  readonly  close-text="Cerrar"
                        clear-text="Borrar"  placeholder="Fecha Final" current-text="Hoy" show-weeks="false" toggle-weeks-text="#" />
                 <span class="input-group-btn">
 
-                    <button class="btn btn-default"  ng-click=""><i class="glyphicon glyphicon-calendar"></i></button>
+                    <button class="btn btn-default"  ng-click="abrir_fecha_final($event);"><i class="glyphicon glyphicon-calendar"></i></button>
                 </span>
             </p>
         </div>

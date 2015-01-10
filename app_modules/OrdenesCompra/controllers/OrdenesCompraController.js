@@ -501,18 +501,35 @@ OrdenesCompra.prototype.eliminarProductoOrdenCompra = function(req, res) {
     var numero_orden = args.ordenes_compras.numero_orden;
     var codigo_producto = args.ordenes_compras.codigo_producto;
 
-    that.m_ordenes_compra.eliminar_producto_orden_compra(numero_orden, codigo_producto, function(err, rows, result) {
+    that.m_ordenes_compra.consultar_detalle_orden_compra(numero_orden, codigo_producto, 1, function(err, productos) {
 
-        console.log('====== resultado ========');
-        console.log(err, rows, result);
-        console.log('=========================');
-
-        if (err || result.rowCount === 0) {
-            res.send(G.utils.r(req.url, 'Error Eliminado el producto', 500, {ordenes_compras: []}));
+        if (err || productos.length === 0) {
+            res.send(G.utils.r(req.url, 'Se ha generado un erro consultado la orden de compra code 1', 404, {}));
             return;
         } else {
-            res.send(G.utils.r(req.url, 'Producto eliminado correctamente', 200, {ordenes_compras: []}));
-            return;
+            var producto = productos[0];
+
+            if (producto.novedad_id === null) {
+
+                that.m_ordenes_compra.eliminar_producto_orden_compra(numero_orden, codigo_producto, function(err, rows, result) {
+
+                    console.log('====== resultado ========');
+                    console.log(err, rows, result);
+                    console.log('=========================');
+
+                    if (err || result.rowCount === 0) {
+                        res.send(G.utils.r(req.url, 'Error Eliminado el producto', 500, {ordenes_compras: []}));
+                        return;
+                    } else {
+                        res.send(G.utils.r(req.url, 'Producto eliminado correctamente', 200, {ordenes_compras: []}));
+                        return;
+                    }
+                });
+            } else {
+                res.send(G.utils.r(req.url, 'El producto contiene una novedad diligenciada, No se puede borrar', 404, {}));
+                return;
+            }
+
         }
     });
 };

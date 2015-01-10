@@ -34,6 +34,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.codigo_proveedor_id = '';
             $scope.unidad_negocio_id = '';
             $scope.observacion = '';
+            $scope.observacion_contrato = '';
             $scope.descripcion_estado = '';
             $scope.producto_eliminar = '';
             $scope.cantidad_productos_orden_compra = 0;
@@ -104,7 +105,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                         var datos = data.obj.orden_compra[0];
 
-                        $scope.orden_compra = OrdenCompra.get(datos.numero_orden, datos.estado, datos.observacion, datos.fecha_registro);
+                        $scope.orden_compra = OrdenCompra.get(datos.numero_orden, datos.estado, datos.observacion, datos.fecha_registro, datos.observacion_contrato);
 
                         var unidad_negocio = ($scope.Empresa.get_unidad_negocio(datos.codigo_unidad_negocio).length > 0) ? $scope.Empresa.get_unidad_negocio(datos.codigo_unidad_negocio) : UnidadNegocio.get(datos.codigo_unidad_negocio, datos.descripcion)
 
@@ -117,6 +118,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                         $scope.codigo_proveedor_id = $scope.orden_compra.get_proveedor().get_codigo_proveedor();
                         $scope.unidad_negocio_id = $scope.orden_compra.get_unidad_negocio().get_codigo();
+                        $scope.observacion_contrato = $scope.orden_compra.get_observacion_contrato();
                         $scope.observacion = $scope.orden_compra.get_observacion();
                         $scope.descripcion_estado = $scope.orden_compra.get_descripcion_estado();
 
@@ -147,6 +149,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                     $scope.ultima_busqueda = $scope.termino_busqueda;
 
+                    
+
                     if (data.status === 200) {
 
 
@@ -172,9 +176,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                             var producto = Producto.get(data.codigo_producto, data.descripcion_producto, '', parseFloat(data.porc_iva).toFixed(2), data.valor);
                             producto.set_cantidad_seleccionada(data.cantidad_solicitada);
+                            producto.set_politicas(data.politicas_producto);
 
                             $scope.orden_compra.set_productos(producto);
 
+                            
                             // Totales                        
                             $scope.valor_subtotal += data.subtotal;
                             $scope.valor_iva += data.valor_iva;
@@ -367,7 +373,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.buscar_productos = function() {
 
                 if ($scope.numero_orden === 0) {
- 
+
                     that.set_orden_compra();
                 }
 
@@ -467,8 +473,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                         </div>\
                                     </div>',
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Codigo Producto', width: "20%"},
+                    {field: 'codigo_producto', displayName: 'Codigo Producto', width: "10%"},
                     {field: 'descripcion', displayName: 'Descripcion'},
+                    {field: 'politicas', displayName: 'Políticas'},
                     {field: 'cantidad_seleccionada', width: "7%", displayName: "Cantidad"},
                     {field: 'iva', width: "7%", displayName: "I.V.A (%)"},
                     {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "10%", cellFilter: "currency:'$ '"},
@@ -571,9 +578,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 } else {
                     // Crear OC y subir plano
-                    
+
                     that.set_orden_compra();
-                    
+
                     that.insertar_cabercera_orden_compra(function(continuar) {
 
                         if (continuar) {
@@ -585,7 +592,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                     codigo_proveedor_id: $scope.codigo_proveedor_id
                                 }
                             });
-                            
+
                             $scope.opciones_archivo.upload();
                         }
                     });

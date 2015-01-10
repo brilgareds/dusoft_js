@@ -50,6 +50,7 @@
                                 <legend>Observación</legend>                                 
                                 <div class="row">  
                                     <div class="col-md-12">  
+                                        <p style="padding-left: 18px;">{{ observacion_contrato }}</p>
                                         <textarea  class="col-lg-12 col-md-12 col-sm-12" rows="4" ng-model='observacion' ng-blur="modificar_observacion();" ng-disabled="vista_previa" name="" placeholder="Ingresar Observación"></textarea>
                                     </div>
                                 </div>
@@ -115,7 +116,7 @@
                                     </tab-heading>
 
                                     <div class="row col-md-8 col-md-offset-2" style="margin-top: 25px">    
-                                        
+
                                         <div flow-init="opciones_archivo"  flow-file-success="respuesta_archivo_plano($file, $message);" flow-file-added="!!{xls:1,xlsx:1}[$file.getExtension()]" flow-files-submitted="cargar_archivo_plano($flow)" class="ng-scope" flow-prevent-drop=""  flow-drag-enter="dropClass='drag-over'" flow-drag-leave="dropClass=''" >
                                             <div class="drop txt-center" flow-drop="" flow-drop-enabled="!(vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '')" ng-class="dropClass" >
 

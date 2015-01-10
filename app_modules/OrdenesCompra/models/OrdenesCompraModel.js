@@ -103,44 +103,48 @@ OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_prov
 OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, callback) {
 
     var sql = " SELECT \
-            a.orden_pedido_id as numero_orden,\
-            a.empresa_id,\
-            a.codigo_proveedor_id,\
-            a.codigo_unidad_negocio,\
-            d.descripcion,\
-            d.imagen,\
-            a.estado,\
-            CASE WHEN a.estado = 0 THEN 'Recibida'\
-            WHEN a.estado = 1 THEN 'Activa'\
-            WHEN a.estado = 2 THEN 'Anulado' END as descripcion_estado,\
-            CASE WHEN a.sw_orden_compra_finalizada = '0' THEN 'En Proceso ...'\
-            WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion,\
-            a.observacion,\
-            a.usuario_id,\
-            c.nombre,\
-            h.subtotal,\
-            h.valor_iva,\
-            h.total,\
-            To_char(a.fecha_orden, 'dd-mm-yyyy') as fecha_registro,\
-            CASE WHEN COALESCE (g.orden_pedido_id, 0) = 0 then 0 else 1 end as tiene_ingreso_temporal\
-            FROM compras_ordenes_pedidos a\
-            inner join terceros_proveedores b on a.codigo_proveedor_id = b.codigo_proveedor_id\
-            inner join system_usuarios c on a.usuario_id = c.usuario_id\
-            left join unidades_negocio d on a.codigo_unidad_negocio = d.codigo_unidad_negocio\
-            left join (\
-                select aa.orden_pedido_id from inv_bodegas_movimiento_tmp_ordenes_compra aa\
-            ) as g on a.orden_pedido_id = g.orden_pedido_id\
-            left join (\
-                select aa.numero_orden, SUM(subtotal) AS subtotal, SUM(valor_iva) AS valor_iva, SUM(total) AS total  from (\
-                    select\
-                    a.orden_pedido_id as numero_orden,\
-                    (a.numero_unidades::integer * a.valor) as subtotal,\
-                    ((a.porc_iva / 100) * (a.numero_unidades::integer * a.valor)) as valor_iva,\
-                    ((a.numero_unidades::integer * a.valor) + ((a.porc_iva / 100) * (a.numero_unidades::integer * a.valor))) as total\
-                    from compras_ordenes_pedidos_detalle as a\
-                ) aa GROUP BY 1\
-            ) as h on a.orden_pedido_id = h.numero_orden\
-            WHERE a.orden_pedido_id = $1";
+                a.orden_pedido_id as numero_orden,\
+                a.empresa_id,\
+                a.codigo_proveedor_id,\
+                a.codigo_unidad_negocio,\
+                d.descripcion,\
+                d.imagen,\
+                a.estado,\
+                CASE WHEN a.estado = 0 THEN 'Recibida'\
+                WHEN a.estado = 1 THEN 'Activa'\
+                WHEN a.estado = 2 THEN 'Anulado' END as descripcion_estado,\
+                CASE WHEN a.sw_orden_compra_finalizada = '0' THEN 'En Proceso ...'\
+                WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion,\
+                i.observacion_contrato,\
+                a.observacion,\
+                a.usuario_id,\
+                c.nombre,\
+                h.subtotal,\
+                h.valor_iva,\
+                h.total,\
+                To_char(a.fecha_orden, 'dd-mm-yyyy') as fecha_registro,\
+                CASE WHEN COALESCE (g.orden_pedido_id, 0) = 0 then 0 else 1 end as tiene_ingreso_temporal\
+                FROM compras_ordenes_pedidos a\
+                inner join terceros_proveedores b on a.codigo_proveedor_id = b.codigo_proveedor_id\
+                inner join system_usuarios c on a.usuario_id = c.usuario_id\
+                left join unidades_negocio d on a.codigo_unidad_negocio = d.codigo_unidad_negocio\
+                left join (\
+                    select aa.orden_pedido_id from inv_bodegas_movimiento_tmp_ordenes_compra aa\
+                ) as g on a.orden_pedido_id = g.orden_pedido_id\
+                left join (\
+                    select aa.numero_orden, SUM(subtotal) AS subtotal, SUM(valor_iva) AS valor_iva, SUM(total) AS total  from (\
+                        select\
+                        a.orden_pedido_id as numero_orden,\
+                        (a.numero_unidades::integer * a.valor) as subtotal,\
+                        ((a.porc_iva / 100) * (a.numero_unidades::integer * a.valor)) as valor_iva,\
+                        ((a.numero_unidades::integer * a.valor) + ((a.porc_iva / 100) * (a.numero_unidades::integer * a.valor))) as total\
+                        from compras_ordenes_pedidos_detalle as a\
+                    ) aa GROUP BY 1\
+                ) as h on a.orden_pedido_id = h.numero_orden\
+                left join (\
+                    select bb.codigo_proveedor_id, bb.observaciones as observacion_contrato from contratacion_produc_proveedor bb\
+                ) as i on a.codigo_proveedor_id = i.codigo_proveedor_id\
+                WHERE a.orden_pedido_id = $1 ";
 
     G.db.query(sql, [numero_orden], function(err, rows, result, total_records) {
         callback(err, rows);
@@ -162,6 +166,7 @@ OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_or
                     ((a.porc_iva/100) * (a.numero_unidades::integer * a.valor) ) as valor_iva,\
                     ( (a.numero_unidades::integer * a.valor) +  ((a.porc_iva/100) * (a.numero_unidades::integer * a.valor) )) as total,\
                     a.estado,\
+                    f.politicas_producto,\
                     b.id as novedad_id,\
                     b.descripcion as descripcion_novedad,\
                     c.id as id_observacion,\
@@ -169,12 +174,19 @@ OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_or
                     c.descripcion as descripcion_observacion,\
                     d.cantidad_archivos\
                     from compras_ordenes_pedidos_detalle a\
+                    inner join compras_ordenes_pedidos e on a.orden_pedido_id  = e.orden_pedido_id \
                     left join novedades_ordenes_compras b on a.item_id = b.item_id\
                     left join observaciones_ordenes_compras c on b.observacion_orden_compra_id = c.id\
                     left join (\
                        select a.novedad_orden_compra_id, count(a.*) as cantidad_archivos from archivos_novedades_ordenes_compras a\
                        group by 1\
                     ) as d on b.id = d.novedad_orden_compra_id\
+                    left join (\
+                        select a.codigo_proveedor_id ,  b.codigo_producto , c.politica as politicas_producto\
+                        from contratacion_produc_proveedor a \
+                        inner join contratacion_produc_prov_detalle b on a.contratacion_prod_id = b.contratacion_prod_id\
+                        left join contratacion_produc_proveedor_politicas c on b.contrato_produc_prov_det_id = c.contrato_produc_prov_det_id \
+                    ) as f on e.codigo_proveedor_id = f.codigo_proveedor_id and a.codigo_producto = f.codigo_producto\
                 ) AS a where a.numero_orden = $1 and a.estado = '1' and ( a.codigo_producto ilike $2 or  a.descripcion_producto ilike $2 ) ";
 
     G.db.query(sql, [numero_orden, "%" + termino_busqueda + "%"], function(err, rows, result, total_records) {

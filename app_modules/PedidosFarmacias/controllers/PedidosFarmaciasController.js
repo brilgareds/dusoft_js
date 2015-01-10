@@ -1215,8 +1215,8 @@ PedidosFarmacias.prototype.insertarPedidoFarmaciaDefinitivo = function(req, res)
         return;
     }
     
-    if (args.pedidos_farmacias.tipo_pedido === undefined || args.pedidos_farmacias.en_uso === undefined){
-        res.send(G.utils.r(req.url, 'tipo_pedido o en_uso no están definidos', 404, {}));
+    if (args.pedidos_farmacias.tipo_pedido === undefined){
+        res.send(G.utils.r(req.url, 'tipo_pedido no está definido', 404, {}));
         return;
     }
 
@@ -1225,8 +1225,8 @@ PedidosFarmacias.prototype.insertarPedidoFarmaciaDefinitivo = function(req, res)
         return;
     }
     
-    if (args.pedidos_farmacias.tipo_pedido === '' || args.pedidos_farmacias.en_uso === ''){
-        res.send(G.utils.r(req.url, 'tipo_pedido o en_uso están vacios', 404, {}));
+    if (args.pedidos_farmacias.tipo_pedido === ''){
+        res.send(G.utils.r(req.url, 'tipo_pedido está vacio', 404, {}));
         return;
     }
     

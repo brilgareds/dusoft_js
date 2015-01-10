@@ -45,14 +45,14 @@ define(["angular", "js/controllers",
                 that.buscar_productos();
                 that.buscar_laboratorios();
             });
-            
+
             $rootScope.$on('cerrar_gestion_productosCompleto', function(e, parametros) {
 
-                 $scope.Empresa.limpiar_productos();
-                 $scope.Empresa.limpiar_laboratorios();
-                 $scope.termino_busqueda = "";
-                 
-                 $scope.$$watchers = null;                
+                $scope.Empresa.limpiar_productos();
+                $scope.Empresa.limpiar_laboratorios();
+                $scope.termino_busqueda = "";
+
+                $scope.$$watchers = null;
             });
 
             that.buscar_laboratorios = function(termino) {
@@ -99,7 +99,7 @@ define(["angular", "js/controllers",
                 };
 
                 Request.realizarRequest(API.ORDENES_COMPRA.LISTAR_PRODUCTOS, "POST", obj, function(data) {
-                    
+
                     $scope.ultima_busqueda = $scope.termino_busqueda;
                     if (data.status === 200) {
 
@@ -211,7 +211,7 @@ define(["angular", "js/controllers",
 
 
             that.render_productos = function(productos) {
-                
+
                 $scope.Empresa.limpiar_productos();
                 productos.forEach(function(data) {
                     var producto = Producto.get(data.codigo_producto, data.descripcion_producto, '', data.iva, data.costo_ultima_compra, data.tiene_valor_pactado, data.presentacion, data.cantidad);
@@ -238,18 +238,19 @@ define(["angular", "js/controllers",
                 enableColumnResize: true,
                 enableRowSelection: false,
                 enableCellSelection: true,
-                enableCellEditOnFocus: true,
+                //enableCellEditOnFocus: true,
+                enableCellEdit: true,
                 enableHighlighting: true,
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Codigo Producto', width: "20%", enableCellEdit: false},
                     {field: 'descripcion', displayName: 'Descripcion', enableCellEdit: false},
-                    {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "15%", cellFilter: "currency:'$ '", enableCellEdit: false,
-                        cellTemplate : '<div class="ngCellText" ng-class="col.colIndex()">\
+                    {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "15%", cellFilter: "currency:'$ '", enableCellEdit: true,
+                        cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
                                             <span class="label label-primary" ng-show="row.entity.regulado == 1" >Reg</span>\
                                             <span class="label label-danger" ng-show="row.entity.tiene_valor_pactado == 0">S.C</span>\
                                             <span class="label label-success" ng-show="row.entity.tiene_valor_pactado == 1">C.C</span>\
                                             <span ng-cell-text class="pull-right" >{{COL_FIELD | currency:"$ "}}</span>\
-                                        </div>' },
+                                        </div>'},
                     {field: 'cantidad', width: "7%", displayName: "Cantidad", enableCellEdit: true, cellFilter: "number"},
                     {width: "7%", displayName: "Opcion", cellClass: "txt-center", enableCellEdit: false,
                         cellTemplate: '<div class="btn-toolbar">\
@@ -262,6 +263,8 @@ define(["angular", "js/controllers",
 
             $scope.$on('ngGridEventEndCellEdit', function(event) {
 
+                //console.log('=========== ngGridEventEndCellEdit ===========');
+                //console.log(event.targetScope.row.entity);
                 //var producto = event.targetScope.row.entity;
                 //producto.set_cantidad_seleccionada(event.targetScope.row.entity[event.targetScope.col.field]);
             });
@@ -270,21 +273,27 @@ define(["angular", "js/controllers",
 
                 var producto = row.entity;
 
-                producto.set_cantidad_seleccionada(producto.cantidad);
+                if (parseInt(producto.cantidad) > 0 && parseFloat(producto.costo_ultima_compra) > 0) {
+                    producto.set_cantidad_seleccionada(producto.cantidad);
 
-                $scope.producto_seleccionado = producto;
+                    $scope.producto_seleccionado = producto;
 
-                $scope.orden_compra.set_productos(producto);
+                    $scope.orden_compra.set_productos(producto);
 
-                $scope.gestionar_orden_compra(function(resultado) {
+                    $scope.gestionar_orden_compra(function(resultado) {
 
-                    if (resultado) {
-                        // Remover producto seleccionado
-                        var index = row.rowIndex;
-                        $scope.lista_productos.selectItem(index, false);
-                        $scope.Empresa.get_productos().splice(index, 1);
-                    }
-                });
+                        if (resultado) {
+                            // Remover producto seleccionado
+                            var index = row.rowIndex;
+                            $scope.lista_productos.selectItem(index, false);
+                            $scope.Empresa.get_productos().splice(index, 1);
+                        }
+                    });
+                } else {
+                    AlertService.mostrarMensaje("warning", "Cantidad solicitada o costo del producto es invalida");
+                    return;
+                }
+
             };
 
 
@@ -316,7 +325,7 @@ define(["angular", "js/controllers",
                     templateUrl: 'views/genererarordenes/calcularvaloresproducto.html',
                     controller: "CalcularValoresProductoController",
                     scope: $scope,
-                    resolve: {                        
+                    resolve: {
                         index: function() {
                             return index;
                         }

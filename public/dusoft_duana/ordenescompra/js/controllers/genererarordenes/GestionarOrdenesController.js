@@ -475,7 +475,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Codigo Producto', width: "10%"},
                     {field: 'descripcion', displayName: 'Descripcion'},
-                    {field: 'politicas', displayName: 'Políticas'},
+                    {field: 'politicas', displayName: 'Políticas', width: "20%"},
                     {field: 'cantidad_seleccionada', width: "7%", displayName: "Cantidad"},
                     {field: 'iva', width: "7%", displayName: "I.V.A (%)"},
                     {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "10%", cellFilter: "currency:'$ '"},

@@ -132,7 +132,7 @@ if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
         res.status(err.status || 500);
         console.log(err);
-        res.send(G.utils.r(req.url, 'Se ha generado un error interno code 1', 500, { msj : err}));
+        res.send(G.utils.r(req.url, 'Se ha generado un error interno code 1  ', 500, { msj : err}));
     });
 }
 
@@ -151,7 +151,6 @@ app.use(function(err, req, res, next) {
 ==========================================*/
 jsreport.bootstrapper().start().then(function(bootstrapper) {
 	G.jsreport =  bootstrapper;
-
 });
 
 /*=========================================
@@ -162,19 +161,6 @@ modulos.cargarRoutes(app, container, io);
 app.get('/api/configurarRoutes', function(req, res) {
     modulos.configurarRoutes(req, res, app, container);
 });
-
-app.post('/testing', function(req, res) {
-    console.log('=== ===');
-    res.send(200, {msj: ' Servicio de Prueba '});
-});
-
-app.get('/testing', function(req, res) {
-
-    x;
-    console.log('=== ===');
-    res.send(200, {msj: ' Servicio de Prueba '});
-});
-
 
 app.all('/dusoft_duana', function(req, res) {
     res.redirect('/dusoft_duana/login');

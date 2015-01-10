@@ -331,7 +331,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 that.pedido.setDatos(datos_pedido);
                 that.pedido.setTipo(2);
                 that.pedido.setObservacion("");
-                that.pedido.setEnUso(0);
+                //that.pedido.setEnUso(0);
 
                 //Creación objeto farmacia
                 var farmacia = FarmaciaVenta.get(

@@ -15,7 +15,6 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.lista_productos = [];
             this.tipo = 1;
             this.observacion = "";
-            this.en_uso = 0;
             this.editable = true;
         };
 
@@ -62,14 +61,6 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         
         PedidoVenta.prototype.getObservacion = function() {
             return this.observacion;
-        };
-        
-        PedidoVenta.prototype.setEnUso = function(en_uso) {
-            this.en_uso = en_uso;
-        };
-        
-        PedidoVenta.prototype.getEnUso = function() {
-            return this.en_uso;
         };
         
         PedidoVenta.prototype.setEditable = function(valor_booleano) {

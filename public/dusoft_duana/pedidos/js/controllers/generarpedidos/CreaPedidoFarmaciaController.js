@@ -798,19 +798,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 data: 'rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().lista_productos',
                 enableColumnResize: true,
                 enableRowSelection: false,
-                
-                //cellEditableCondition: true,
-                //enableCellSelection: false,
-                
-                //enableHighlighting: true,
-                //keepLastSelected: true,
+                enableCellSelection: false,
                 multiSelect: false,
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Código', width: "9%"},
                     {field: 'descripcion', displayName: 'Descripción', width: "37%"},
                     {field: 'cantidad_solicitada', displayName: 'Solicitado'},
                     {field: 'cantidad_pendiente', displayName: 'Pendiente'},
-                    {field: 'nueva_cantidad', displayName: 'Modificar Cantidad', enableCellEdit: true, width: "10%",
+                    {field: 'nueva_cantidad', displayName: 'Modificar Cantidad', width: "10%",
                                 cellTemplate: ' <div class="col-xs-12">\n\
                                                     <input type="text" ng-model="row.entity.nueva_cantidad" validacion-numero class="form-control grid-inline-input"'+
                                                     'ng-keyup="onTeclaModificarCantidad($event, row)" ng-model="row.entity.cantidad_ingresada" ng-disabled="!rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEditable()" />\n\
@@ -1564,17 +1559,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 
                 $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().lista_productos.forEach(function(producto){
                     
-                    if(producto.tipo_producto_id !== tipo_producto_anterior){
-                        if(tipo_producto_anterior !== '0'){
+                    if(producto.tipo_producto_id !== tipo_producto_anterior && tipo_producto_anterior !== '0'){
+
                             generar_pedido++;
-                            console.log("Incremento: ", generar_pedido);
-                        }
+
                     }
                     
                     tipo_producto_anterior = producto.tipo_producto_id;
-                    
-                    console.log("tipo_producto_anterior: ",tipo_producto_anterior);
-                    console.log("tipo_producto_actual: ", producto.tipo_producto_id);
                     
                 });
                 
@@ -1591,7 +1582,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                 bodega_id: $scope.rootCreaPedidoFarmacia.para_seleccion_bodega.split(",")[0],
                                 observacion: $scope.rootCreaPedidoFarmacia.observacion,
                                 tipo_pedido: 0, //Pedido Normal. Pedido General tiene un valor de 1
-                                en_uso: 0 //No está siendo visto aún en Tablet
                             }
                         }
                     };
@@ -1633,6 +1623,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                     PedidoVenta.pedidoseleccionado = numero_pedido_generado;
                                     $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().numero_pedido = numero_pedido_generado;
                                     $scope.rootCreaPedidoFarmacia.pedido.numero_pedido = PedidoVenta.pedidoseleccionado;
+                                    
+//***************--------          //Revisar si ésta línea es realmente útil para habilitar botones de Modificar y eliminar
+                                    $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido = 0;
+                                    $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().setEditable(true);
+                                    console.log(">>>>> Valor de Editable Pedido: ", $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEditable());
 
                                     /* Inicio - Objeto para Eliminar Detalle Completo */
                                     var obj_detalle = {

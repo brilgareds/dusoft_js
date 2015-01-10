@@ -15,8 +15,8 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
             }
             
             // Numero de Orden
-            OrdenCompraPedido.prototype.set_numero_orden = function(numero_orden) {
-                this.numero_orden_compra = numero_orden ;
+            OrdenCompraPedido.prototype.set_numero_orden = function(numero_orden) {       
+                this.numero_orden_compra = numero_orden ;    
             };
             
             OrdenCompraPedido.prototype.get_numero_orden = function() {

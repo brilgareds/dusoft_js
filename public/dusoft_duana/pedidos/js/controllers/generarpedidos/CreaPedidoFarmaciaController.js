@@ -841,8 +841,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 that.consultarEncabezadoPedidoFinal(numero_pedido, function(data){
 
                     //$scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().setEnUso(data.obj.encabezado_pedido[0].en_uso);
+                    $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido = data.obj.encabezado_pedido[0].estado;
+                    //console.log(">>>> Modificar - Estado del Pedido: ", data.obj.encabezado_pedido[0].estado);
+                    //console.log(">>>> Scope Modificar - Estado del Pedido: ",$scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido);
                     
-                    if($scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido === 0){
+                    if($scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido === '0'){
                     
                         if(row.entity.nueva_cantidad >= row.entity.cantidad_solicitada){
 
@@ -1089,8 +1092,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 that.consultarEncabezadoPedidoFinal(numero_pedido, function(data){
 
                     //$scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().setEnUso(data.obj.encabezado_pedido[0].en_uso);
+                    
+                    $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido = data.obj.encabezado_pedido[0].estado;
+                    
+                    //console.log(">>>>>> Eliminar - Estado del Pedido: ", data.obj.encabezado_pedido[0].estado);
 
-                    if($scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido === 0){
+                    if($scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido === '0'){
                 
                         var template = '<div class="modal-header">\
                                             <button type="button" class="close" ng-click="close()">&times;</button>\

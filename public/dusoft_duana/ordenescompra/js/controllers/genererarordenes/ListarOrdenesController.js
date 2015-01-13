@@ -122,7 +122,7 @@ define(["angular", "js/controllers",
                         $scope.orden_compra_seleccionada.set_estado('2');
                         $scope.orden_compra_seleccionada.set_descripcion_estado('Anulado');
 
-                        $scope.orden_compra_seleccionada = '';
+                        $scope.orden_compra_seleccionada = null;
                     }
                 });
 
@@ -179,6 +179,7 @@ define(["angular", "js/controllers",
                                             <ul class="dropdown-menu dropdown-options">\
                                                 <li><a href="javascript:void(0);" ng-click="vista_previa(row.entity);" >Vista Previa</a></li>\
                                                 <li><a href="javascript:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,0)" >Modificar</a></li>\
+                                                <li><a href="javascript:void(0);" ng-click="generar_reporte(row.entity,0)" >Ver PDF</a></li>\
                                                 <li class="divider"></li>\
                                                 <li><a href="javascript:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,1)" >Novedades</a></li>\
                                                 <li class="divider"></li>\
@@ -203,19 +204,19 @@ define(["angular", "js/controllers",
 
                 $event.preventDefault();
                 $event.stopPropagation();
-                
+
                 $scope.datepicker_fecha_inicial = true;
                 $scope.datepicker_fecha_final = false;
 
             };
-            
+
             $scope.abrir_fecha_final = function($event) {
 
                 $event.preventDefault();
                 $event.stopPropagation();
-                
+
                 $scope.datepicker_fecha_inicial = false;
-                $scope.datepicker_fecha_final = true;                               
+                $scope.datepicker_fecha_final = true;
 
             };
 
@@ -289,6 +290,40 @@ define(["angular", "js/controllers",
 
             };
 
+            $scope.generar_reporte = function(orden_compra) {
+
+
+                $scope.orden_compra_seleccionada = orden_compra;
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        ordenes_compras: {
+                            numero_orden: $scope.orden_compra_seleccionada.get_numero_orden()
+                        }
+                    }
+                };
+                
+                console.log('======== generar_reporte =========');
+                console.log(obj);
+                console.log('==================================');
+               // return;
+                
+                Request.realizarRequest(API.ORDENES_COMPRA.REPORTE_ORDEN_COMPRA, "POST", obj, function(data) {
+                    console.log('==================== Respuesta server =====================');
+                    console.log(data);
+                    console.log('===========================================================');
+                    
+                    if (data.status === 200) {
+                        var nombre_reporte = data.obj.ordenes_compras.nombre_reporte;
+                        console.log("reporte generado", nombre_reporte)
+                        $scope.visualizarReporte("/reports/" + nombre_reporte, "OrdenCompra"+$scope.orden_compra_seleccionada.get_numero_orden(), "blank");
+                    } else {
+
+                    }
+                });
+            }
+
             $scope.anular_orden_compra_seleccionada = function(orden_compra) {
 
                 var template = "";
@@ -315,10 +350,12 @@ define(["angular", "js/controllers",
                         $scope.anular = function() {
                             $scope.anular_orden_compra();
                             $modalInstance.close();
+                            $scope.orden_compra_seleccionada = null;
                         };
 
                         $scope.close = function() {
                             $modalInstance.close();
+                            $scope.orden_compra_seleccionada = null;
                         };
                     };
 

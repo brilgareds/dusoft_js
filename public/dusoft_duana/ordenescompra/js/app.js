@@ -9,8 +9,8 @@ define([
     "includes/classes/Usuario", "includes/http/Request", "dragndropfile",
     "controllers/genererarordenes/ListarOrdenesController",
     "controllers/genererarordenes/GestionarOrdenesController",
-    "controllers/novedadesordenes/GestionarNovedadesController"
-
+    "controllers/novedadesordenes/GestionarNovedadesController",
+    "includes/helpersdirectives/visualizarReporte"
 ], function(angular) {
     /* App Module and its dependencies */
 

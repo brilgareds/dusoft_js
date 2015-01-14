@@ -34,8 +34,15 @@ Productos.prototype.listar_productos = function(req, res) {
     var termino_busqueda = args.productos.termino_busqueda;
     var pagina_actual = args.productos.pagina_actual;
 
+    /* Inicio - Modificación para Tipo Producto */
+    var tipo_producto = '0';
 
-    this.m_productos.buscar_productos(empresa_id, centro_utilidad_id, bodega_id, termino_busqueda, pagina_actual, function(err, lista_productos) {
+    if(args.productos.tipo_producto !== undefined){
+        var tipo_producto = args.productos.tipo_producto;
+    }
+    /* Fin - Modificación para Tipo Producto */
+
+    this.m_productos.buscar_productos(empresa_id, centro_utilidad_id, bodega_id, termino_busqueda, pagina_actual, tipo_producto, function(err, lista_productos) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Listado de Productos', 500, {lista_productos: {}}));

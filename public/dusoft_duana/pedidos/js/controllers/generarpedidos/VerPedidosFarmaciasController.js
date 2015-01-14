@@ -516,14 +516,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             //referencia del socket io
             socket.on("onListarPedidosFarmacias", function(datos) {
 
-                console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-                console.log("ControladorPedidosFarmacias", datos);
-                console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
                 if (datos.status == 200) {
                     var obj = datos.obj.pedidos_farmacias[0];
                     var pedido = that.crearPedido(obj);
-                    console.log("objecto del socket");
-                    console.log(obj);
+
                     that.reemplazarPedidoEstado(pedido);
                     AlertService.mostrarMensaje("success", "pedido Asignado Correctamente!");
 
@@ -532,18 +528,23 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             
             that.reemplazarPedidoEstado = function(pedido) {
-                for (var i in $scope.rootVerPedidosFarmacias.Empresa.getPedidosFarmacia()) {
-                    var _pedido = $scope.rootVerPedidosFarmacias.Empresa.getPedidosFarmacia()[i];
+                
+                if($scope.rootVerPedidosFarmacias.Empresa != undefined){
+                
+                    for (var i in $scope.rootVerPedidosFarmacias.Empresa.getPedidosFarmacia()) {
+                        var _pedido = $scope.rootVerPedidosFarmacias.Empresa.getPedidosFarmacia()[i];
 
-                    if (pedido.numero_pedido == _pedido.numero_pedido) {
-                        _pedido.descripcion_estado_actual_pedido = pedido.descripcion_estado_actual_pedido;
-                        _pedido.estado_actual_pedido = pedido.estado_actual_pedido;
-                        _pedido.estado_separacion = pedido.estado_separacion;
-                        _pedido.en_uso = pedido.en_uso;
+                        if (pedido.numero_pedido == _pedido.numero_pedido) {
+                            _pedido.descripcion_estado_actual_pedido = pedido.descripcion_estado_actual_pedido;
+                            _pedido.estado_actual_pedido = pedido.estado_actual_pedido;
+                            _pedido.estado_separacion = pedido.estado_separacion;
 
-                        break;
+                            break;
+                        }
                     }
+                
                 }
+                
             };
 
 

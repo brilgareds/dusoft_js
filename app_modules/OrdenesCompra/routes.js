@@ -80,22 +80,9 @@ module.exports = function(app, di_container) {
     });
 
 
-    app.get('/testing', function(req, res) {
-
-        //x;
-        //console.log('=== ===');
-        //res.send(200, {msj: ' Servicio de Prueba '});
-
-
-        zz(1, function(result) {
-            console.log('========= result =============');
-            res.send(200, {msj: ' Servicio de Prueba '});
-        })
-
-        function zz(x, y, callback) {
-
-            callback(true);
-        }
-        ;
+    //Generar Reporte Orden Compra
+    app.post('/api/OrdenesCompra/reporteOrdenCompra', function(req, res) {
+        c_ordenes_compra.reporteOrdenCompra(req, res);
     });
+
 };

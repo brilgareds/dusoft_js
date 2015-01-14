@@ -22,8 +22,22 @@ ProductosModel.prototype.validar_producto = function(codigo_producto, callback) 
 // Calls       : PedidosFarmacias -> PedidosFarmaciasController -> listar_productos();
 //               
 
-ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad_id, bodega_id, termino_busqueda, pagina, callback) {
    
+
+ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad_id, bodega_id, termino_busqueda, pagina, tipo_producto, callback) {
+    
+    var where_tipo = "";
+    var array_parametros = [];
+
+    if(tipo_producto !== '0') {
+
+            where_tipo = " and b.tipo_producto_id = $5 ";
+            array_parametros = [empresa_id, centro_utilidad_id, bodega_id, "%" + termino_busqueda + "%", tipo_producto];
+    }
+    else{
+        array_parametros = [empresa_id, centro_utilidad_id, bodega_id, "%" + termino_busqueda + "%"];
+    }
+
     var sql = " select\
                 a.empresa_id, \
                 a.centro_utilidad,\
@@ -66,9 +80,10 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
                 inner join inv_clases_inventarios f ON e.grupo_id = f.grupo_id and e.clase_id = f.clase_id\
                 where a.empresa_id= $1 and a.centro_utilidad = $2 and a.bodega = $3 \
                 and ( b.codigo_producto ILIKE $4 or b.descripcion ILIKE $4 ) \
+                "+where_tipo+"\
                 ORDER BY 7 ASC ";
 
-    G.db.pagination(sql, [empresa_id, centro_utilidad_id, bodega_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result) {
+    G.db.pagination(sql, array_parametros, pagina, G.settings.limit, function(err, rows, result) {
         callback(err, rows);
     });
 

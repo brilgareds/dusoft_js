@@ -749,6 +749,51 @@ OrdenesCompra.prototype.consultarArchivosNovedades = function(req, res) {
     });
 };
 
+// Generar Reporte Orden Compra
+OrdenesCompra.prototype.reporteOrdenCompra = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.numero_orden === undefined) {
+        res.send(G.utils.r(req.url, 'numero_orden no esta definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.numero_orden === '' || args.ordenes_compras.numero_orden === 0 || args.ordenes_compras.numero_orden === '0') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero_orden', 404, {}));
+        return;
+    }
+
+    var numero_orden = args.ordenes_compras.numero_orden;
+
+    that.m_ordenes_compra.consultar_orden_compra(numero_orden, function(err, orden_compra) {
+
+        if (err || orden_compra.length === 0) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {orden_compra: []}));
+            return;
+        } else {
+
+            that.m_ordenes_compra.consultar_detalle_orden_compra(numero_orden, '', 0, function(err, lista_productos) {
+
+                if (err) {
+                    res.send(G.utils.r(req.url, 'Error Interno', 500, {lista_productos: []}));
+                    return;
+                } else {
+
+                    _generar_reporte_orden_compra({}, function(nombre_reporte) {
+
+                        //res.send(G.utils.r(req.url, 'Orden de Compra', 200, {orden_compra: orden_compra[0], lista_productos: lista_productos}));
+                        res.send(G.utils.r(req.url, 'Nombre Reporte', 200, {ordenes_compras : {nombre_reporte: nombre_reporte}}));
+                        return;
+                    });
+                }
+            });
+        }
+    });
+};
+
 
 
 // Subir Plano Orden de Compra
@@ -965,6 +1010,26 @@ function __validar_costo_productos_archivo_plano(contexto, empresa_id, codigo_pr
 }
 ;
 
+
+function _generar_reporte_orden_compra(rows, callback) {
+    G.jsreport.reporter.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/OrdenesCompra/reports/orden_compra.html', 'utf8'),
+            helpers: '',
+            recipe: "phantom-pdf",
+            engine: 'jsrender'
+        },
+        data: { style : G.dirname +"/public/stylesheets/bootstrap.min.css"}
+    }).then(function(response) {
+
+        var nombre_archivo = response.result.path;
+        var fecha_actual = new Date();
+        var nombre_reporte = G.random.randomKey(2, 5) + "_" + fecha_actual.toFormat('DD-MM-YYYY') + ".pdf";
+        G.fs.copySync(nombre_archivo, G.dirname + "/public/reports/" + nombre_reporte);
+
+        callback(nombre_reporte);
+    });
+}
 
 OrdenesCompra.$inject = ["m_ordenes_compra", "m_productos"];
 

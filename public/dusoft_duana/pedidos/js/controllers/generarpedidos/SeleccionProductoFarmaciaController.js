@@ -44,6 +44,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 $scope.rootSeleccionProductoFarmacia = {};
                 
+                //Arreglo para convenciones de tipo_producto
+                /*$scope.rootSeleccionProductoFarmacia.convenciones_tipo_producto = [
+                                {val:1,txt:'Normales', label:'label label-success'},
+                                {val:2,txt:'Alto Costo', label:'label label-danger'},
+                                {val:3,txt:'Controlados', label:'label label-warning'},
+                                {val:4,txt:'Insumos', label:'label label-default'},
+                                {val:5,txt:'Nevera', label:'label label-info'}
+                            ];*/
+                
+                //Variable Tipo Producto
+                $scope.rootSeleccionProductoFarmacia.tipoProducto = '0';
+
                 $scope.rootSeleccionProductoFarmacia.Empresa = EmpresaPedido;
 
                 $scope.rootSeleccionProductoFarmacia.session = {
@@ -123,6 +135,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             empresa_destino_id: $scope.rootSeleccionProductoFarmacia.para_empresa_id,
                             centro_utilidad_destino_id: $scope.rootSeleccionProductoFarmacia.para_centro_utilidad_id,
                             bodega_destino_id: $scope.rootSeleccionProductoFarmacia.para_bodega_id,
+                            tipo_producto: $scope.rootSeleccionProductoFarmacia.tipoProducto,
                             filtro: {}
                         }
                     }
@@ -211,7 +224,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                                 <span class="label label-success" ng-show="row.entity.tipo_producto_id == 1" >N</span>\
                                                 <span class="label label-danger" ng-show="row.entity.tipo_producto_id == 2">A</span>\
                                                 <span class="label label-warning" ng-show="row.entity.tipo_producto_id == 3">C</span>\
-                                                <span class="label label-default" ng-show="row.entity.tipo_producto_id == 4">I</span>\
+                                                <span class="label label-primary" ng-show="row.entity.tipo_producto_id == 4">I</span>\
                                                 <span class="label label-info" ng-show="row.entity.tipo_producto_id == 5">Ne</span>\
                                                 <span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\
                                             </div>'
@@ -251,7 +264,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                                     <span class="label label-success" ng-show="row.entity.tipo_producto_id == 1" >N</span>\
                                                     <span class="label label-danger" ng-show="row.entity.tipo_producto_id == 2">A</span>\
                                                     <span class="label label-warning" ng-show="row.entity.tipo_producto_id == 3">C</span>\
-                                                    <span class="label label-default" ng-show="row.entity.tipo_producto_id == 4">I</span>\
+                                                    <span class="label label-primary" ng-show="row.entity.tipo_producto_id == 4">I</span>\
                                                     <span class="label label-info" ng-show="row.entity.tipo_producto_id == 5">Ne</span>\
                                                     <span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\
                                                 </div>'

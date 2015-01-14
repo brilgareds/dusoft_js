@@ -744,8 +744,16 @@ PedidosFarmacias.prototype.listar_productos = function(req, res) {
     var empresa_destino_id = args.productos.empresa_destino_id;
     var centro_utilidad_destino_id = args.productos.centro_utilidad_destino_id;
     var bodega_destino_id = args.productos.bodega_destino_id;
+    
+    /* Inicio - Modificación para Tipo Producto */
+    var tipo_producto = '0';
+    
+    if(args.productos.tipo_producto !== undefined){
+	var tipo_producto = args.productos.tipo_producto;
+    }
+    /* Fin - Modificación para Tipo Producto */
 
-    that.m_productos.buscar_productos(empresa_id, centro_utilidad_id, bodega_id, termino_busqueda, pagina_actual, function(err, lista_productos) {
+    that.m_productos.buscar_productos(empresa_id, centro_utilidad_id, bodega_id, termino_busqueda, pagina_actual, tipo_producto, function(err, lista_productos) {
 
         var i = lista_productos.length;
         
@@ -760,7 +768,7 @@ PedidosFarmacias.prototype.listar_productos = function(req, res) {
 
                 producto.total_existencias_farmacias = (total_existencias_farmacias.length > 0 && total_existencias_farmacias[0].existencia != null) ? total_existencias_farmacias[0].existencia : 0;
 
-                that.m_productos.buscar_productos(empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id, producto.codigo_producto, pagina_actual, function(err, existencias_farmacia) {
+                that.m_productos.buscar_productos(empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id, producto.codigo_producto, pagina_actual, tipo_producto, function(err, existencias_farmacia) {
 
 
                     producto.existencias_farmacia = (existencias_farmacia.length > 0) ? existencias_farmacia[0].existencia : 0;
@@ -1367,9 +1375,17 @@ PedidosFarmacias.prototype.pedidoFarmaciaArchivoPlano = function(req, res) {
                     var numero_pedido = empresa_para.trim() + centro_utilidad_para.trim() + producto_valido.codigo_producto.trim();
                     
                     var usuario_id = session.usuario_id;
+                    
+                        /* Inicio - Modificación para Tipo Producto */
+                        var tipo_producto = '0';
+
+                        if(args.pedido_farmacia.tipo_producto !== undefined){
+                            var tipo_producto = args.pedido_farmacia.tipo_producto;
+                        }
+                        /* Fin - Modificación para Tipo Producto */
 
                     //Consultar tipo_producto_id y cantidad_pendiente
-                    that.m_productos.buscar_productos(empresa_id, centro_utilidad_id, bodega_id, producto_valido.codigo_producto, 1, function(err, lista_productos) {
+                    that.m_productos.buscar_productos(empresa_id, centro_utilidad_id, bodega_id, producto_valido.codigo_producto, 1, tipo_producto, function(err, lista_productos) {
 
                         var i = lista_productos.length;
 

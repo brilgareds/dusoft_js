@@ -1218,7 +1218,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                                     <span class="label label-success" ng-show="row.entity.tipo_producto_id == 1" >N</span>\
                                                     <span class="label label-danger" ng-show="row.entity.tipo_producto_id == 2">A</span>\
                                                     <span class="label label-warning" ng-show="row.entity.tipo_producto_id == 3">C</span>\
-                                                    <span class="label label-default" ng-show="row.entity.tipo_producto_id == 4">I</span>\
+                                                    <span class="label label-primary" ng-show="row.entity.tipo_producto_id == 4">I</span>\
                                                     <span class="label label-info" ng-show="row.entity.tipo_producto_id == 5">Ne</span>\
                                                     <span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\
                                                 </div>'
@@ -1634,7 +1634,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 //***************--------          //Revisar si ésta línea es realmente útil para habilitar botones de Modificar y eliminar
                                     $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido = 0;
                                     $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().setEditable(true);
-                                    console.log(">>>>> Valor de Editable Pedido: ", $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEditable());
+                                    //console.log(">>>>> Valor de Editable Pedido: ", $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEditable());
 
                                     /* Inicio - Objeto para Eliminar Detalle Completo */
                                     var obj_detalle = {
@@ -2097,6 +2097,74 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         console.log("Error: ", data.msj);
                     }
                 });
+            };
+            
+
+            that.crearPedido = function(obj) {
+
+                var pedido = PedidoVenta.get();
+
+                var datos_pedido = {
+                    numero_pedido: obj.numero_pedido,
+                    fecha_registro: obj.fecha_registro,
+                    descripcion_estado_actual_pedido: obj.descripcion_estado_actual_pedido,
+                    estado_actual_pedido: obj.estado_actual_pedido,
+                    estado_separacion: obj.estado_separacion
+                };
+
+                pedido.setDatos(datos_pedido);
+                pedido.setTipo(PedidoVenta.TIPO_FARMACIA);
+
+                pedido.setObservacion(obj.observacion);
+
+                //pedido.setEnUso(obj.en_uso);
+
+                var farmacia = FarmaciaVenta.get(
+                        obj.farmacia_id,
+                        obj.bodega_id,
+                        obj.nombre_farmacia,
+                        obj.nombre_bodega,
+                        obj.centro_utilidad,
+                        obj.nombre_centro_utilidad
+                        );
+
+                pedido.setFarmacia(farmacia);
+
+                return pedido;
+            };
+
+            //referencia del socket io
+            socket.on("onListarPedidosFarmacias", function(datos) {
+
+                if (datos.status == 200) {
+                    var obj = datos.obj.pedidos_farmacias[0];
+                    var pedido = that.crearPedido(obj);
+
+                    that.reemplazarPedidoEstado(pedido);
+                    AlertService.mostrarMensaje("success", "pedido Asignado Correctamente!");
+
+                }
+            });
+            
+            
+            that.reemplazarPedidoEstado = function(pedido) {
+                
+                if($scope.rootCreaPedidoFarmacia.Empresa != undefined){
+                
+                    for (var i in $scope.rootCreaPedidoFarmacia.Empresa.getPedidosFarmacia()) {
+                        var _pedido = $scope.rootCreaPedidoFarmacia.Empresa.getPedidosFarmacia()[i];
+
+                        if (pedido.numero_pedido == _pedido.numero_pedido) {
+                            _pedido.descripcion_estado_actual_pedido = pedido.descripcion_estado_actual_pedido;
+                            _pedido.estado_actual_pedido = pedido.estado_actual_pedido;
+                            _pedido.estado_separacion = pedido.estado_separacion;
+
+                            break;
+                        }
+                    }
+                
+                }
+                
             };
        
             that.buscarPedido("");

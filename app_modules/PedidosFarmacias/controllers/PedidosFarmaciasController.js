@@ -745,7 +745,6 @@ PedidosFarmacias.prototype.listar_productos = function(req, res) {
     var centro_utilidad_destino_id = args.productos.centro_utilidad_destino_id;
     var bodega_destino_id = args.productos.bodega_destino_id;
 
-
     that.m_productos.buscar_productos(empresa_id, centro_utilidad_id, bodega_id, termino_busqueda, pagina_actual, function(err, lista_productos) {
 
         var i = lista_productos.length;

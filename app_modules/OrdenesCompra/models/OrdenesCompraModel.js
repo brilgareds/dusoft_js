@@ -106,6 +106,11 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
                 a.orden_pedido_id as numero_orden,\
                 a.empresa_id,\
                 a.codigo_proveedor_id,\
+                e.tipo_id_tercero,\
+                e.tercero_id,\
+                e.nombre_tercero,\
+                e.direccion,\
+                e.telefono,\
                 a.codigo_unidad_negocio,\
                 d.descripcion,\
                 d.imagen,\
@@ -123,9 +128,10 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
                 h.valor_iva,\
                 h.total,\
                 To_char(a.fecha_orden, 'dd-mm-yyyy') as fecha_registro,\
-                CASE WHEN COALESCE (g.orden_pedido_id, 0) = 0 then 0 else 1 end as tiene_ingreso_temporal\
-                FROM compras_ordenes_pedidos a\
-                inner join terceros_proveedores b on a.codigo_proveedor_id = b.codigo_proveedor_id\
+                CASE WHEN COALESCE (g.orden_pedido_id, 0) = 0 then 0 else 1 end as tiene_ingreso_temporal \
+                FROM compras_ordenes_pedidos a \
+                inner join terceros_proveedores b on a.codigo_proveedor_id = b.codigo_proveedor_id \
+                inner join terceros e on b.tipo_id_tercero = e.tipo_id_tercero and b.tercero_id = e.tercero_id \
                 inner join system_usuarios c on a.usuario_id = c.usuario_id\
                 left join unidades_negocio d on a.codigo_unidad_negocio = d.codigo_unidad_negocio\
                 left join (\

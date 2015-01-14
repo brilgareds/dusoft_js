@@ -782,10 +782,13 @@ OrdenesCompra.prototype.reporteOrdenCompra = function(req, res) {
                     return;
                 } else {
 
-                    _generar_reporte_orden_compra({}, function(nombre_reporte) {
+                    console.log(req.session);
+                    console.log({orden_compra: orden_compra[0], lista_productos: lista_productos});
+                    //return;
+                    _generar_reporte_orden_compra({orden_compra: orden_compra[0], lista_productos: lista_productos, usuario_imprime : req.session.user.nombre_usuario}, function(nombre_reporte) {
 
                         //res.send(G.utils.r(req.url, 'Orden de Compra', 200, {orden_compra: orden_compra[0], lista_productos: lista_productos}));
-                        res.send(G.utils.r(req.url, 'Nombre Reporte', 200, {ordenes_compras : {nombre_reporte: nombre_reporte}}));
+                        res.send(G.utils.r(req.url, 'Nombre Reporte', 200, {ordenes_compras: {nombre_reporte: nombre_reporte}}));
                         return;
                     });
                 }
@@ -1013,13 +1016,19 @@ function __validar_costo_productos_archivo_plano(contexto, empresa_id, codigo_pr
 
 function _generar_reporte_orden_compra(rows, callback) {
     G.jsreport.reporter.render({
-        template: {
+        template : {
             content: G.fs.readFileSync('app_modules/OrdenesCompra/reports/orden_compra.html', 'utf8'),
             helpers: '',
             recipe: "phantom-pdf",
             engine: 'jsrender'
         },
-        data: { style : G.dirname +"/public/stylesheets/bootstrap.min.css"}
+        data: {
+            style: G.dirname + "/public/stylesheets/bootstrap.min.css", 
+            orden_compra: rows.orden_compra, 
+            lista_productos: rows.lista_productos, 
+            fecha_actual: new Date().toFormat('DD/MM/YYYY HH24:MI:SS'),
+            usuario_imprime : rows.usuario_imprime
+        }
     }).then(function(response) {
 
         var nombre_archivo = response.result.path;

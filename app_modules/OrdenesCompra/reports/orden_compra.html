@@ -47,7 +47,7 @@
             .box {
                 float: left;
                 width: 300px;
-                height: 100px;
+                height: 50px;
                 margin: 1em;
             }
             table, th, td {
@@ -71,24 +71,18 @@
 
                     <strong> NIT - 900786223-3  Duana LTDA & CIA. </strong>
                     <br />
-                    Calle 9A No. 42 - 115
-                    <br />
-                    Valle del Cauca, Cali
-                    <br />
-                    Colombia.
+                    Calle 9A No. 42 - 115 Valle del Cauca, Cali, Colombia. 
                 </div>                
             </div> 
             <hr />
             <div  class="row  pad-top-botm client-info">
                 <div class="col-lg-6 col-md-6 col-sm-6">
                     <h4>  <strong>Información Proveedor</strong></h4>
-                    <strong> {{:orden_compra.tipo_id_tercero}} - {{:orden_compra.tercero_id}} {{:orden_compra.nombre_tercero}}</strong>
-                    <br />
                     <b>Orden Compra :</b> {{:orden_compra.numero_orden }}
-                    <br />            
-                    <b>Dirección :</b> {{:orden_compra.direccion}}
                     <br />
-                    <b>Telefono :</b> {{:orden_compra.telefono}}
+                    <strong> {{:orden_compra.tipo_id_tercero}} - {{:orden_compra.tercero_id}} {{:orden_compra.nombre_tercero}}</strong>
+                    <br />            
+                    <b>Dirección :</b> {{:orden_compra.direccion}} <b>Telefono :</b> {{:orden_compra.telefono}}
                     <br />
                     <b>Estado Orden :</b> {{:orden_compra.descripcion_estado}}
                 </div>

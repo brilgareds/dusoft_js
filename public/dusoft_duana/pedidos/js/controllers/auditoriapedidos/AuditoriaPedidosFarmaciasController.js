@@ -93,6 +93,7 @@ define(["angular", "js/controllers",
                 data: 'Empresa.getDocumentoTemporal(2)',
                 enableColumnResize: true,
                 enableRowSelection:false,
+                enableHighlighting: true,
                 columnDefs: [
                     {field: 'pedido.numero_pedido', displayName: 'Numero Pedido', cellTemplate:"<div class='ngCellText ng-scope col1 colt1'>{{row.entity.pedido.numero_pedido}}"+
                         "<span  ng-show='row.entity.esDocumentoNuevo' class='label label-danger pull-right'>Nuevo</span></div>"},
@@ -104,9 +105,10 @@ define(["angular", "js/controllers",
                     {field: 'auditor.nombre_responsable', displayName: 'Auditor'},
                     {field: 'descripcion_estado_separacion', displayName: 'Estado Separación'},
                     {field: 'fecha_separacion_pedido', displayName: "Fecha Separación"},
-                    {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "7%", 
-                     cellTemplate: '<div>\
-                                      <button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Auditar</span></button>\
+                    {field: 'accion', displayName: "Accion", cellClass: "txt-center", width: "7%", 
+                     cellTemplate: '<div ng-switch="esAuditorCreador(row)">\
+                                      <button ng-switch-when="true" class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Auditar</span></button>\
+                                      <button ng-switch-when="false" disabled class="btn btn-default btn-xs"><span class="glyphicon glyphicon-zoom-in">Auditar</span></button>\
                                    </div>'
                     }
                 ]
@@ -114,7 +116,14 @@ define(["angular", "js/controllers",
             };
             
             
-            
+            $scope.esAuditorCreador = function(row){
+                console.log("usuario id ", row.entity.auditor, " session id ", $scope.session.usuario_id);
+                if(row.entity.auditor.usuario_id === 0){
+                    return true;
+                }
+                
+                return row.entity.auditor.usuario_id === $scope.session.usuario_id;
+            };
 
             $scope.onRowClick = function(row){
                 row.entity.esDocumentoNuevo = false;

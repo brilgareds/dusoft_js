@@ -23,7 +23,7 @@ ProductosModel.prototype.validar_producto = function(codigo_producto, callback) 
 //               
 
 ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad_id, bodega_id, termino_busqueda, pagina, callback) {
-
+   
     var sql = " select\
                 a.empresa_id, \
                 a.centro_utilidad,\

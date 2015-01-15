@@ -366,6 +366,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     
                     
                     console.log(">>>>>>>>>>>>>>>>> ESTADO ACTUAL DEL PEDIDO: ",$scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido);
+                    
+                    console.log(">>>>>>>>>> para_farmacia_id",para_farmacia_id);
+                    console.log(">>>>>>>>>> para_centro_utilidad",para_centro_utilidad);
+                    console.log(">>>>>>>>>> para_bodega",para_bodega);
 
                     /* Inicio - Llenado de DropDowns*/
                     that.consultarEmpresasDe(function(){
@@ -1760,9 +1764,68 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             $scope.abrirViewVerPedidosFarmacias = function()
             {
+                that.actualizarEncabezadoPedidoTemporal();
                 $state.go('VerPedidosFarmacias'); //Crear la URL para éste acceso y relacionarlo con el botón de "Cancelar en la View"
             };
             
+/**/
+            //Función que actualizar la observación si ya existe un encabezado
+            that.actualizarEncabezadoPedidoTemporal = function() {
+                
+                var obj_encabezado = {
+                    session: $scope.rootCreaPedidoFarmacia.session,
+                    data: {
+                        pedidos_farmacias: {
+                            empresa_id: $scope.rootCreaPedidoFarmacia.para_seleccion_empresa.split(",")[0],
+                            centro_utilidad_id: $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad.split(",")[0],
+                            bodega_id: $scope.rootCreaPedidoFarmacia.para_seleccion_bodega.split(",")[0],
+                            empresa_destino_id: $scope.rootCreaPedidoFarmacia.de_seleccion_empresa,
+                            centro_utilidad_destino_id: $scope.rootCreaPedidoFarmacia.de_seleccion_centro_utilidad,
+                            bodega_destino_id: $scope.rootCreaPedidoFarmacia.de_seleccion_bodega,
+                            observacion: $scope.rootCreaPedidoFarmacia.observacion
+                        }
+                    }
+                };
+
+                /* Inicio - Validar Existencia de encabezado */
+
+                var url_registros_encabezado = API.PEDIDOS.EXISTE_REGISTRO_PEDIDO_TEMPORAL;
+
+                Request.realizarRequest(url_registros_encabezado, "POST", obj_encabezado, function(data) {
+
+                    if (data.status === 200) {
+                        
+                        console.log(data.msj);
+
+                        if (data.obj.numero_registros[0].count > 0) {
+                            
+                            //Actualizar
+                            var url_actualizar_encabezado = API.PEDIDOS.ACTUALIZAR_ENCABEZADO_TEMPORAL_PEDIDO_FARMACIA;
+                            
+                            Request.realizarRequest(url_actualizar_encabezado, "POST", obj_encabezado, function(data_update) {
+                                
+                                if(data_update.status === 200) {
+                                    
+                                    console.log(data_update.msj);
+                                    
+                                }
+                                else {
+                                    console.log(data_update.msj);
+                                }
+                            });
+                        }
+                        else {
+                            console.log(">>>>> Encabezado Vacío");
+                        }
+                    }
+                    else {
+                        console.log(data.msj);
+                    }
+                });
+                
+                /* Fin - Validar Existencia de encabezado */
+            };
+/**/            
             $scope.abrirViewVerPedidosFarmaciasEliminarTemporal = function(){
 
                 //Eliminación Detalle Temporal

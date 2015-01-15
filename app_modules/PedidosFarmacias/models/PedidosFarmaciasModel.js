@@ -88,6 +88,15 @@ PedidosFarmaciasModel.prototype.existe_registro_detalle_temporal = function(empr
     });
 };
 
+PedidosFarmaciasModel.prototype.actualizar_registro_encabezado_temporal = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion, callback)
+{
+    var sql = "UPDATE solicitud_Bodega_principal_aux SET observacion = $5 WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and usuario_id = $4";
+
+    G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
 PedidosFarmaciasModel.prototype.listar_detalle_pedido_temporal = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback)
 {
     var sql = "SELECT codigo_producto, fc_descripcion_producto(codigo_producto) as descripcion, cantidad_solic::integer as cantidad_solicitada, cantidad_pendiente, tipo_producto as tipo_producto_id\

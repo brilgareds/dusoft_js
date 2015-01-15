@@ -11,6 +11,7 @@ var nodemailer = require('nodemailer');
 var date_utils = require('date-utils');
 var multipart = require('connect-multiparty');
 var jsreport  = require("jsreport");
+var accounting  = require("accounting");
 
 
 /*=========================================
@@ -27,6 +28,7 @@ G.auth = require('./lib/Authentication');
 G.fs = require('fs-extra');
 G.xlsx = require('node-xlsx');
 G.path = path;
+G.accounting = accounting;
 
 /*=========================================
  * Comandos del Servidor

@@ -6,11 +6,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
         "$filter", '$state', 'EmpresaKardex',
         'ProductoMovimiento', '$modal', "API",
         "AlertService", 'localStorageService', "Usuario",
-        "socket","CentroUtilidad","Bodega",
+        "socket","CentroUtilidad","Bodega","$timeout",
         function($scope, $rootScope, Request,
                  $filter, $state, Empresa, ProductoMovimiento, 
                  $modal, API, AlertService, localStorageService,
-                 Usuario, socket, CentroUtilidad, Bodega) {
+                 Usuario, socket, CentroUtilidad, Bodega, $timeout) {
             
             var that = this;
             $scope.Empresa = Empresa.get("DUANA LTDA", "03");
@@ -24,10 +24,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
             $scope.listaCentroUtilidad = [];
             $scope.listaBodegas = [];
             $scope.slideurl = "";
-            $scope.empresa_seleccion = "";
-            $scope.centro_seleccion = "";
-            $scope.bodega_seleccion = "";
 
+            $scope.filtro = {};
+            
           //  $scope.fechainicial = new Date((fechaActual.getMonth() + 1)+"/01/" + (fechaActual.getFullYear() -1));
             $scope.fechainicial = $filter('date')(new Date("01/01/" + fechaActual.getFullYear()), "yyyy-MM-dd");
             $scope.fechafinal = $filter('date')(fechaActual, "yyyy-MM-dd");
@@ -43,7 +42,22 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                 if($scope.ultima_busqueda !== $scope.termino_busqueda){
                     $scope.paginaactual = 0;
                 }
-
+                
+                if($scope.filtro.empresa_seleccion === ""){
+                    AlertService.mostrarMensaje("warning","Debe seleccionar una empresa");
+                    return;
+                }
+                
+                
+                if($scope.filtro.centro_seleccion === ""){
+                    AlertService.mostrarMensaje("warning","Debe seleccionar un centro de utilidad");
+                    return;
+                }
+                
+                if($scope.filtro.bodega_seleccion === ""){
+                    AlertService.mostrarMensaje("warning","Debe seleccionar una bodega");
+                    return;
+                }
                 Request.realizarRequest(
                         API.KARDEX.LISTAR_PRODUCTOS,
                         "POST",
@@ -53,9 +67,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                                 kardex: {
                                     termino_busqueda: termino_busqueda,
                                     pagina_actual:$scope.paginaactual,
-                                    empresa_id:$scope.empresa_seleccion,
-                                    centro_utilidad:$scope.centro_seleccion,
-                                    bodega_id:$scope.bodega_seleccion
+                                    empresa_id:$scope.filtro.empresa_seleccion,
+                                    centro_utilidad:$scope.filtro.centro_seleccion,
+                                    bodega_id:$scope.filtro.bodega_seleccion
                                 }
                             }
                         },
@@ -145,9 +159,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                             fecha_inicial: $filter('date')($scope.fechainicial, "yyyy-MM-dd") + " 00:00:00",
                             fecha_final: $filter('date')($scope.fechafinal, "yyyy-MM-dd")+ " 23:59:00",
                             codigo_producto: row.entity.codigo_producto,
-                            empresa_id:$scope.empresa_seleccion,
-                            centro_utilidad:$scope.centro_seleccion,
-                            bodega_id:$scope.bodega_seleccion
+                            empresa_id:$scope.filtro.empresa_seleccion,
+                            centro_utilidad:$scope.filtro.centro_seleccion,
+                            bodega_id:$scope.filtro.bodega_seleccion
                         }
                     }
                 };
@@ -175,7 +189,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
             };
             
             that.traerEmpresas = function(callback) {
-
+                
+                $scope.listaEmpresas = [];
+                $scope.listaCentroUtilidad = [];
+                $scope.listaBodegas = [];
+                
                 var obj = {
                     session: $scope.session,
                     data: {}
@@ -191,20 +209,27 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                             
                             $scope.listaEmpresas.push(empresa);
                         }
+                        
+                        if(callback)
+                            callback();
                     }
                     
                 });
 
             };
             
-            that.consultarCentrosUtilidadPorEmpresa = function() {
+            that.consultarCentrosUtilidadPorEmpresa = function(callback) {
 
                 $scope.listaCentroUtilidad = [];
+                $scope.listaBodegas = [];
+                $scope.filtro.centro_seleccion = "";
+                $scope.filtro.bodega_seleccion = "";
+                
                 var obj = {
                     session: $scope.session,
                     data: {
                         pedidos_farmacias: {
-                            empresa_id: $scope.empresa_seleccion
+                            empresa_id: $scope.filtro.empresa_seleccion
                         }
                     }
                 };
@@ -221,21 +246,23 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                             
                             $scope.listaCentroUtilidad.push(centroUtilidad);
                         }
+                        if(callback)
+                            callback();
                     }
 
                 });
             };
             
             
-            that.consultarBodegasPorEmpresa = function() {
+            that.consultarBodegasPorEmpresa = function(callback) {
 
                 $scope.listaBodegas = [];
                 var obj = {
                     session: $scope.session,
                     data: {
                         pedidos_farmacias: {
-                            empresa_id: $scope.empresa_seleccion,
-                            centro_utilidad_id:$scope.centro_seleccion
+                            empresa_id: $scope.filtro.empresa_seleccion,
+                            centro_utilidad_id:$scope.filtro.centro_seleccion
                         }
                     }
                 };
@@ -251,8 +278,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                             
                             $scope.listaBodegas.push(bodega);
                         }
+                        if(callback)
+                             callback();
                     }
-
                 });
             };
             
@@ -272,7 +300,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
 
             //eventos de widgets
             $scope.onKeyPress = function(ev, termino_busqueda) {
-                if (ev.which == 13) {
+                if (ev.which === 13) {
                     $scope.buscarProductos(termino_busqueda);
                 }
             };
@@ -298,7 +326,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
 
             $scope.fechainicialselected = function() {
                 if($scope.fechainicial > $scope.fechafinal){
-                    console.log($scope.fechafinal)
+                    console.log($scope.fechafinal);
                     $scope.fechafinal = $scope.fechainicial;
                 }
                 
@@ -323,8 +351,31 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
             //eventos del sistema
             $rootScope.$on("cerrarSesion", $scope.cerrarSesion);
 
-            $scope.buscarProductos("");
-            that.traerEmpresas();
+            
+            
+            that.traerEmpresas(function(){
+                $timeout(function(){
+                    $scope.filtro.empresa_seleccion = '03';
+                    that.consultarCentrosUtilidadPorEmpresa(function(){
+
+                        $timeout(function(){
+                            $scope.filtro.centro_seleccion = '1 ';
+                            that.consultarBodegasPorEmpresa(function(){
+                                
+                                $timeout(function(){
+                                    $scope.filtro.bodega_seleccion = '03';
+                                    $scope.buscarProductos("");
+                                });
+                                 
+                            });
+                        });
+
+
+                    });
+                      //alert("")
+                 });
+                
+            });
 
 
         }]);

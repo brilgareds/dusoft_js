@@ -116,8 +116,8 @@
                                     <td>{{:politicas_producto}}</td>
                                     <td>{{:cantidad_solicitada}}</td>
                                     <td>{{:porc_iva}}%</td>
-                                    <td>$ {{:valor}}</td>
-                                    <td>$ {{:total}}</td>
+                                    <td>{{:~formatMoney(valor)}}</td>
+                                    <td>{{:~formatMoney(total)}}</td>
                                 </tr>
                                 {{/for}}
 
@@ -125,13 +125,13 @@
                         </table>
                     </div>                    
                     <div class="ttl-amts">
-                        Subtotal : $ {{:orden_compra.subtotal}}
+                        Subtotal : {{:~formatMoney(orden_compra.subtotal)}}
                     </div>
                     <div class="ttl-amts">
-                        IVA : $ {{:orden_compra.valor_iva}}
+                        IVA : {{:~formatMoney(orden_compra.valor_iva)}}
                     </div>
                     <div class="ttl-amts">
-                        <strong style="font-size: 15px">Total : $ {{:orden_compra.total}}</strong> 
+                        <strong style="font-size: 15px">Total : {{:~formatMoney(orden_compra.total)}}</strong> 
                     </div>
                 </div>
             </div>

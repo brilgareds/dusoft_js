@@ -1,5 +1,5 @@
 
-var Kardex = function(kardex, pedidos_farmacias, pedidos_clientes, ordenes_compra) {
+var Kardex = function(kardex, pedidos_farmacias, pedidos_clientes, ordenes_compra, m_productos) {
 
     console.log("Modulo Kardex  Cargado ");
 
@@ -7,6 +7,7 @@ var Kardex = function(kardex, pedidos_farmacias, pedidos_clientes, ordenes_compr
     this.m_pedidos_farmacias = pedidos_farmacias;
     this.m_pedidos_clientes = pedidos_clientes;
     this.m_ordenes_compra = ordenes_compra;
+    this.m_productos = m_productos;
 };
 
 
@@ -15,7 +16,7 @@ Kardex.prototype.listar_productos = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.kardex === undefined || args.kardex.termino_busqueda === undefined || args.kardex.pagina_actual === undefined) {
+    if (args.kardex === undefined || args.kardex.termino_busqueda === undefined || args.kardex.pagina_actual === undefined || args.kardex.empresa_id === undefined || args.kardex.centro_utilidad === undefined || args.kardex.bodega_id === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
     }
@@ -24,12 +25,30 @@ Kardex.prototype.listar_productos = function(req, res) {
         res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
         return;
     }
+    
+    if (args.kardex.empresa_id === '') {
+        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {}));
+        return;
+    }
+    
+    if (args.kardex.centro_utilidad === '') {
+        res.send(G.utils.r(req.url, 'Se requiere centro de ', 404, {}));
+        return;
+    }
+    
+    if (args.kardex.bodega_id === '') {
+        res.send(G.utils.r(req.url, 'Se requiere la bodega', 404, {}));
+        return;
+    }
 
     var termino_busqueda = args.kardex.termino_busqueda;
     var pagina_actual = args.kardex.pagina_actual;
+    var empresa_id  = args.kardex.empresa_id;
+    var centro_utilidad = args.kardex.centro_utilidad;
+    var bodega_id = args.kardex.bodega_id;
 
 
-    this.m_kardex.buscar_productos(termino_busqueda, pagina_actual, function(err, lista_productos) {
+    this.m_productos.buscar_productos(empresa_id, centro_utilidad, bodega_id, termino_busqueda, pagina_actual,"0", function(err, lista_productos) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Listado de Productos', 500, {lista_productos: {}}));
@@ -47,7 +66,7 @@ Kardex.prototype.obtener_movimientos_producto = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.kardex === undefined || args.kardex.fecha_inicial === undefined || args.kardex.fecha_final === undefined || args.kardex.codigo_producto === undefined) {
+    if (args.kardex === undefined || args.kardex.fecha_inicial === undefined || args.kardex.fecha_final === undefined || args.kardex.codigo_producto === undefined || args.kardex.empresa_id === undefined || args.kardex.centro_utilidad === undefined || args.kardex.bodega_id === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
     }
@@ -56,14 +75,32 @@ Kardex.prototype.obtener_movimientos_producto = function(req, res) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios Estan Vacios', 404, {}));
         return;
     }
+    
+    
+    if (args.kardex.empresa_id === '') {
+        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {}));
+        return;
+    }
+    
+    if (args.kardex.centro_utilidad === '') {
+        res.send(G.utils.r(req.url, 'Se requiere centro de ', 404, {}));
+        return;
+    }
+    
+    if (args.kardex.bodega_id === '') {
+        res.send(G.utils.r(req.url, 'Se requiere la bodega', 404, {}));
+        return;
+    }
+    
 
-    var empresa_id = '03'; //req.query.empresa_id;
-    var centro_utilidad_id = '1'; //req.query.centro_utilidad_id;
-    var bodega_id = '03'; //req.query.bodega_id;
+    var empresa_id = args.kardex.empresa_id; //req.query.empresa_id;
+    var centro_utilidad_id = args.kardex.centro_utilidad; //req.query.centro_utilidad_id;
+    var bodega_id = args.kardex.bodega_id; //req.query.bodega_id;
     var codigo_producto = args.kardex.codigo_producto;//'198A0010042';//
     var fecha_inicial = args.kardex.fecha_inicial; //'2014-01-01';//
     var fecha_final = args.kardex.fecha_final; //'2014-01-31';//
-
+    
+    
     // Seleccionar los Movimientos del Producto
     this.m_kardex.obtener_movimientos_productos(empresa_id, centro_utilidad_id, bodega_id, codigo_producto, fecha_inicial, fecha_final, function(err, movimientos_producto) {
 
@@ -156,6 +193,6 @@ Kardex.prototype.obtener_movimientos_producto = function(req, res) {
     });
 };
 
-Kardex.$inject = ["m_kardex", "m_pedidos_farmacias", "m_pedidos_clientes", "m_ordenes_compra"];
+Kardex.$inject = ["m_kardex", "m_pedidos_farmacias", "m_pedidos_clientes", "m_ordenes_compra", "m_productos"];
 
 module.exports = Kardex;

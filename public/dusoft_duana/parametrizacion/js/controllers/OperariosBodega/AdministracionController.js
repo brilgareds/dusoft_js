@@ -46,7 +46,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
 
                              var obj = lista_usuarios[i];
 
-                             var usuario = {id: obj.usuario_id, nombre_usuario: obj.nombre, usuario: obj.usuario, estado: obj.activo}
+                             var usuario = {id: obj.usuario_id, nombre_usuario: obj.nombre, usuario: obj.usuario, estado: obj.activo};
 
                              $scope.usuarios.push(usuario);
                          }

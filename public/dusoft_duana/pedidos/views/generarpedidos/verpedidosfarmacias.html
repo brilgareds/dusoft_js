@@ -9,46 +9,45 @@
                 </tab-heading>
 
                 <div class="row">
-
-                    <div class="col-md-3">
-                        <p class="input-group">
+                    <br/>
+                    
+                    <div class="col-sm-1 col-md-1 col-lg-1">
+                        <div class="input-group">
                             <button type="button" class="btn btn-default btn-medium ng-scope" ng-click="abrirViewPedidoFarmacia()">
                                 <span class="glyphicon glyphicon-plus"></span> Crear Pedido
                             </button>
-                        </p>
+                        </div>
                     </div>
-
-                </div>
-
-                <div class="row">
-
-                    <div class="col-md-3">
-                        <p class="input-group">
+                    
+                    <div class="col-sm-4 col-md-4 col-lg-4 marginLeft">
+                        <div class="input-group">
                             <select ui-select2  class="pull-left anchoSeleccionEmpresa" ng-model="rootVerPedidosFarmacias.seleccion" data-placeholder="Seleccionar Farmacia" ng-change="valorSeleccionado()">
                                 <option ng-repeat="farmacia in  rootVerPedidosFarmacias.listado_farmacias"  ng-value="farmacia.empresa_id" >{{farmacia.razon_social}}</option>
                             </select>
                             <!--                    <select ui-select2  class="pull-left anchoSeleccionEmpresa" ng-model="farmacia_seleccionada" data-placeholder="Seleccionar Farmacia" ng-change="seleccion_farmacia()" 
                                                         data-ng-options="farmacia as farmacia.get_nombre_farmacia() for farmacia in rootVerPedidosFarmacias.Empresa.getFarmacias()">                        
                                                 </select>-->
-                        </p>
+                        </div>
                     </div>
-
-                    <div class="col-md-2 pull-right">
-                        <p class="input-group">
+                    
+                    <div class="col-sm-3 col-md-3 col-lg-3 pull-right">
+                        <div class="input-group">
                             <input type="text" class="form-control pull-right" ng-keypress="onTeclaBuscarPedidosFarmacias($event)" ng-model="rootVerPedidosFarmacias.termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
                             <span class="input-group-btn" >
                                 <button class="btn btn-default" type="submit" ng-click="onBuscarPedidosFarmacias(obtenerParametros())"><i class="glyphicon glyphicon-search"></i></button>
                             </span>
-                        </p>    
-                    </div>
+                        </div>    
+                    </div>                    
 
                 </div>
 
-                <div class="defaultGrid" ng-grid="rootVerPedidosFarmacias.lista_pedidos_farmacias"></div>
-
+                <!--<div class="row col-sm-12 col-md-12 col-lg-12">-->
                 <br/>
+                <div class="defaultGrid" ng-grid="rootVerPedidosFarmacias.lista_pedidos_farmacias"></div>
+                <!--</div>-->
 
-                <div class="row text-center">
+                <div class="row text-center col-sm-12 col-md-12 col-lg-12">
+                    <br/>
                     <button type="button" class="btn btn-default btn-medium" ng-disabled="rootVerPedidosFarmacias.paginaactual == 1" ng-click="paginaAnterior()">
                         <span class="glyphicon glyphicon-chevron-left" ></span>
                     </button>
@@ -66,43 +65,46 @@
                 </tab-heading>
                
                <div class="row">
-
-                    <div class="col-md-3">
-                        <p class="input-group">
+                   
+                   <br/>
+                   
+                    <div class="col-sm-1 col-md-1 col-lg-1">
+                        <div class="input-group">
                             <button type="button" class="btn btn-default btn-medium ng-scope" ng-click="abrirViewPedidoFarmaciaTemp()">
                                 <span class="glyphicon glyphicon-plus"></span> Crear Pedido
                             </button>
-                        </p>
+                        </div>
                     </div>
-
-                </div>
-
-                <div class="row">
-
-                    <div class="col-md-3">
-                        <p class="input-group">
+                   
+                    <div class="col-sm-4 col-md-4 col-lg-4 marginLeft">
+                        <div class="input-group">
                             <select ui-select2  class="pull-left anchoSeleccionEmpresa" ng-model="rootVerPedidosTempFarmacias.seleccion" data-placeholder="Seleccionar Farmacia" ng-change="valorSeleccionadoTemp()">
                                 <option ng-repeat="farmacia in  rootVerPedidosTempFarmacias.listado_farmacias"  ng-value="farmacia.empresa_id" >{{farmacia.razon_social}}</option>
                             </select>
-                        </p>
+                        </div>
                     </div>
 
-                    <div class="col-md-2 pull-right">
-                        <p class="input-group">
+                    <div class="col-sm-3 col-md-3 col-lg-3 pull-right">
+                        <div class="input-group">
                             <input type="text" class="form-control pull-right" ng-keypress="onTeclaBuscarPedidosFarmaciasTemp($event)" ng-model="rootVerPedidosFarmacias.termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
                             <span class="input-group-btn" >
                                 <button class="btn btn-default" type="submit" ng-click="onBuscarPedidosFarmaciasTemp(obtenerParametrosTemp())"><i class="glyphicon glyphicon-search"></i></button>
                             </span>
-                        </p>    
+                        </div>    
                     </div>
 
                 </div>
 
-                <div class="defaultGrid" ng-grid="rootVerPedidosTempFarmacias.lista_pedidos_temporales_farmacias"></div>
 
+                <!--<div class="row">-->
                 <br/>
+                <div class="defaultGrid" ng-grid="rootVerPedidosTempFarmacias.lista_pedidos_temporales_farmacias"></div>
+                <!--</div>-->
+
+                
 
                 <div class="row text-center">
+                    <br/>
                     <button type="button" class="btn btn-default btn-medium" ng-disabled="rootVerPedidosTempFarmacias.paginaactual == 1" ng-click="paginaAnteriorTemp()">
                         <span class="glyphicon glyphicon-chevron-left" ></span>
                     </button>

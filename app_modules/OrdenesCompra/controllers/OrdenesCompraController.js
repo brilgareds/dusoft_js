@@ -782,10 +782,9 @@ OrdenesCompra.prototype.reporteOrdenCompra = function(req, res) {
                     return;
                 } else {
 
-                    console.log(req.session);
-                    console.log({orden_compra: orden_compra[0], lista_productos: lista_productos});
-                    //return;
-                    _generar_reporte_orden_compra({orden_compra: orden_compra[0], lista_productos: lista_productos, usuario_imprime : req.session.user.nombre_usuario}, function(nombre_reporte) {
+                    var orden = orden_compra[0];                    
+                    
+                    _generar_reporte_orden_compra({orden_compra: orden, lista_productos: lista_productos, usuario_imprime : req.session.user.nombre_usuario}, function(nombre_reporte) {
 
                         //res.send(G.utils.r(req.url, 'Orden de Compra', 200, {orden_compra: orden_compra[0], lista_productos: lista_productos}));
                         res.send(G.utils.r(req.url, 'Nombre Reporte', 200, {ordenes_compras: {nombre_reporte: nombre_reporte}}));
@@ -1018,12 +1017,12 @@ function _generar_reporte_orden_compra(rows, callback) {
     G.jsreport.reporter.render({
         template : {
             content: G.fs.readFileSync('app_modules/OrdenesCompra/reports/orden_compra.html', 'utf8'),
-            helpers: '',
+            helpers: G.fs.readFileSync('app_modules/OrdenesCompra/reports/javascripts/helpers.js', 'utf8'),
             recipe: "phantom-pdf",
             engine: 'jsrender'
         },
         data: {
-            style: G.dirname + "/public/stylesheets/bootstrap.min.css", 
+            style: G.dirname + "/public/stylesheets/bootstrap.min.css",
             orden_compra: rows.orden_compra, 
             lista_productos: rows.lista_productos, 
             fecha_actual: new Date().toFormat('DD/MM/YYYY HH24:MI:SS'),

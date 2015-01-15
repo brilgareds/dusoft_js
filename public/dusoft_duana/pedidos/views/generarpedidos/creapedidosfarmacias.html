@@ -4,12 +4,18 @@
 
         <div class="row marginBottom5"> <!--Div Row Superior-->
 
-            <div class="col-sm-12 col-md-12 marginBottom5">
+            <div class="col-sm-12 col-md-12 col-lg-12 marginBottom5">
 
                 <div class="panel panel-default marginBottom0 paddingBottomZero"> <!--Div Panel Principal Superior-->
 
-                    <div class="panel-heading">
-                        <h4 class="h4MarginTopBottom">Información General</h4></br>
+                    <div class="panel-heading col-sm-12 col-md-12 col-lg-12">
+                        <div class="col-sm-6 col-md-6 col-lg-6">
+                            <h3 class="h4MarginTopBottom">Información General</h3></br>
+                        </div>
+                        
+                        <div class="col-sm-6 col-md-6 col-lg-6">
+                            <h3 class="h4MarginTopBottom">Pedido N°: {{rootCreaPedidoFarmacia.pedido.numero_pedido}}</h3>
+                        </div>
                     </div>
 
                     <div class="panel-body marginBottom0 paddingBottomZero marginRightZero"> <!--Div Panel Body-->
@@ -18,11 +24,11 @@
 
                             <div class="col-sm-12 col-md-6 paddingRightZero paddingLeftZero marginBottom0 paddingBottomZero"> <!--Div Contenedor Izquierdo-->
 
-                                <div class="panel panel-default marginBottom0 col-sm-12 col-md-12 paddingBottomtZero"> <!--Div Encabezado-->
+                                <div class="marginBottom0 col-sm-12 col-md-12 paddingBottomtZero"> <!--Div Encabezado-->
                                     <h4><b><i>De</i></b></h4>
                                 </div> <!--/Div Encabezado-->
 
-                                <div class="panel panel-default marginTop0 col-sm-12 col-md-12 paddingTopZero marginBottom0 paddingBottomZero altoSeleccionBodega"> <!--Div Cuerpo-->
+                                <div class="marginTop0 col-sm-12 col-md-12 paddingTopZero marginBottom0 paddingBottomZero altoSeleccionBodega"> <!--Div Cuerpo-->
                                     <div class="row">
                                         <div class="col-md-6">
                                             </br>
@@ -65,19 +71,17 @@
 
                             <div class="col-sm-12 col-md-6 paddingLeftZero paddingRightZero marginBottom0 paddingBottomZero"> <!--/Div Contenedor Derecho-->
 
-                                <div class="panel panel-default marginBottom0 col-sm-12 col-md-12 paddingBottomZero"> <!--Div Encabezado-->
+                                <div class="marginBottom0 col-sm-12 col-md-12 paddingBottomZero"> <!--Div Encabezado-->
 
                                     <div class="pull-left col-sm-12 col-md-6"> <!--Div Izquierdo-->
                                         <h4><b><i>Para</i></b></h4>
                                     </div> <!--/Div Izquierdo-->
 
-                                    <div class="pull-right col-sm-12 col-md-6"> <!--Div Derecho-->
-                                        <h3 class="h4MarginTopBottom"><font color="blue">Pedido N°: {{rootCreaPedidoFarmacia.pedido.numero_pedido}}</font></h3>
-                                    </div> <!--/Div Derecho-->
+                                    <!--/Div Derecho-->
 
                                 </div> <!--/Div Encabezado-->
 
-                                <div class="panel panel-default marginTop0 col-sm-12 col-md-12 paddingTopZero marginBottom0 paddingBottomZero altoSeleccionBodega"> <!--Div Cuerpo-->
+                                <div class="marginTop0 col-sm-12 col-md-12 paddingTopZero marginBottom0 paddingBottomZero altoSeleccionBodega"> <!--Div Cuerpo-->
 
                                     <div class="row">
                                         <div class="col-md-6">
@@ -119,7 +123,7 @@
 
                             </div> <!--/Div Contenedor Derecho-->
 
-                            <div class="panel panel-default marginTop0 paddingTopZero paddingBottomZero marginBottom0 col-sm-12 col-md-12 col-lg-12 altoObservacion"> <!--Div Contenedor Inferior-->
+                            <div class="marginTop0 paddingTopZero paddingBottomZero marginBottom0 col-sm-12 col-md-12 col-lg-12 altoObservacion"> <!--Div Contenedor Inferior-->
                                 </br>
                                 <h4 class="h4MarginTopBottom">Observación:</h4></br>
                                 <textarea  class="col-lg-12 col-md-12 col-sm-12" rows="4" name="" ng-model="rootCreaPedidoFarmacia.observacion" placeholder="Ingresar Observación"></textarea>

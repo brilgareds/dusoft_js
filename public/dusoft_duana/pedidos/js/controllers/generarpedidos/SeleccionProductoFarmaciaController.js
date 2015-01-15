@@ -112,6 +112,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 $scope.rootSeleccionProductoFarmacia.observacion_encabezado = observacion;
                 $scope.rootSeleccionProductoFarmacia.pedido = pedido;
+                
+                that.actualizarEncabezadoPedidoTemporal();
 
                 $scope.onBuscarSeleccionProducto($scope.obtenerParametros(), "");
             });
@@ -296,6 +298,63 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         that.insertarProducto(row);
                     }
                 }
+            };
+
+            //Función que actualizar la observación si ya existe un encabezado
+            that.actualizarEncabezadoPedidoTemporal = function() {
+                
+                var obj_encabezado = {
+                    session: $scope.rootSeleccionProductoFarmacia.session,
+                    data: {
+                        pedidos_farmacias: {
+                            empresa_id: $scope.rootSeleccionProductoFarmacia.para_empresa_id,
+                            centro_utilidad_id: $scope.rootSeleccionProductoFarmacia.para_centro_utilidad_id,
+                            bodega_id: $scope.rootSeleccionProductoFarmacia.para_bodega_id,
+                            empresa_destino_id: $scope.rootSeleccionProductoFarmacia.de_empresa_id,
+                            centro_utilidad_destino_id: $scope.rootSeleccionProductoFarmacia.de_centro_utilidad_id,
+                            bodega_destino_id: $scope.rootSeleccionProductoFarmacia.de_bodega_id,
+                            observacion: $scope.rootSeleccionProductoFarmacia.observacion_encabezado
+                        }
+                    }
+                };
+
+                /* Inicio - Validar Existencia de encabezado */
+
+                var url_registros_encabezado = API.PEDIDOS.EXISTE_REGISTRO_PEDIDO_TEMPORAL;
+
+                Request.realizarRequest(url_registros_encabezado, "POST", obj_encabezado, function(data) {
+
+                    if (data.status === 200) {
+                        
+                        console.log(data.msj);
+
+                        if (data.obj.numero_registros[0].count > 0) {
+                            
+                            //Actualizar
+                            var url_actualizar_encabezado = API.PEDIDOS.ACTUALIZAR_ENCABEZADO_TEMPORAL_PEDIDO_FARMACIA;
+                            
+                            Request.realizarRequest(url_actualizar_encabezado, "POST", obj_encabezado, function(data_update) {
+                                
+                                if(data_update.status === 200) {
+                                    
+                                    console.log(data_update.msj);
+                                    
+                                }
+                                else {
+                                    console.log(data_update.msj);
+                                }
+                            });
+                        }
+                        else {
+                            console.log(">>>>> Encabezado Vacío");
+                        }
+                    }
+                    else {
+                        console.log(data.msj);
+                    }
+                });
+                
+                /* Fin - Validar Existencia de encabezado */
             };
             
             //Función que inserta el encabezado del pedido temporal

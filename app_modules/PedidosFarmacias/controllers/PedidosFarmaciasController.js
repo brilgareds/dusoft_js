@@ -927,6 +927,45 @@ PedidosFarmacias.prototype.existeRegistroDetalleTemporal = function(req, res) {
 
 }
 
+PedidosFarmacias.prototype.actualizarRegistroEncabezadoTemporal = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;    
+    
+    if (args.pedidos_farmacias === undefined || args.pedidos_farmacias.empresa_id === undefined || args.pedidos_farmacias.centro_utilidad_id === undefined || args.pedidos_farmacias.bodega_id === undefined) {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id no estan definidos', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_farmacias.empresa_id === '' || args.pedidos_farmacias.centro_utilidad_id === '' || args.pedidos_farmacias.bodega_id === '') {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id no estan vacios', 404, {}));
+        return;
+    }
+    
+    var empresa_id = args.pedidos_farmacias.empresa_id;
+    var centro_utilidad_id = args.pedidos_farmacias.centro_utilidad_id;
+    var bodega_id = args.pedidos_farmacias.bodega_id;
+    
+    var observacion = args.pedidos_farmacias.observacion;
+   
+    var usuario_id = req.session.user.usuario_id;
+
+    that.m_pedidos_farmacias.actualizar_registro_encabezado_temporal(empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion, function(err, registros) {
+        
+        if (err) {
+            res.send(G.utils.r(req.url, 'Se ha Generado un Error en la actualización', 500, {error: err}));
+            return;
+        }
+        else
+        {
+            res.send(G.utils.r(req.url, 'Actualización Exitosa!', 200, {registros: registros}));
+            return;
+        }
+        
+    });    
+};
+
 PedidosFarmacias.prototype.crearPedidoTemporal = function(req, res) {
 
     var that = this;

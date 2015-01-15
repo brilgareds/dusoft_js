@@ -1,53 +1,82 @@
 <div>
 
-	<!--route 1 {{welcomemsg}} got to child  <a ui-sref="route1.item">Route item</a>-->
-
-	<div class="row">
-    <div class="col-md-3">
-        <p class="input-group">
-
-          <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="fechainicial" is-open="abrirfechainicial" min="minDate"   readonly  close-text="Cerrar" ng-change="fechainicialselected()" clear-text="Borrar" current-text="Hoy" placeholder="Fecha inicio" show-weeks="false" toggle-weeks-text="#"  />
-          <!--input type="text" ng-datepickerange /-->
-          <span class="input-group-btn">
-
-            <button class="btn btn-default" ng-click="abrirFechaInicial($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-          </span>
+    <!--route 1 {{welcomemsg}} got to child  <a ui-sref="route1.item">Route item</a>-->
+     <div class="col-md-2">
+        <p class="input-group contenedorfiltrocombobox">
+            <select ui-select2="seleccionempresa" ng-model='empresa_seleccion'  class="form-control selectgeneral pull-left"   placeholder="Seleccionar Empresa" ng-change='onEmpresaSeleccionada()' >
+                <option></option>
+                <option ng-repeat="empresa in  listaEmpresas"  ng-value="empresa.codigo" >
+                    {{empresa.nombre}}</option>
+            </select>
         </p>
     </div>
 
-    <div class="col-md-3">
-        <p class="input-group">
-
-          <input type="text" class="form-control readonlyinput" name="fechain" datepicker-popup="{{format}}" ng-model="fechafinal" is-open="abrirfechafinal" min="fechainicial"  readonly  close-text="Cerrar"
-          clear-text="Borrar"  placeholder="Fecha fin:" current-text="Hoy" show-weeks="false" toggle-weeks-text="#" />
-          <span class="input-group-btn">
-
-            <button class="btn btn-default"  ng-click="abrirFechaFinal($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-          </span>
+    <div class="col-md-2">
+        <p class="input-group contenedorfiltrocombobox">
+            <select ui-select2="seleccioncentro" ng-model='centro_seleccion'  class="form-control selectgeneral pull-left"   placeholder="Seleccionar Farmacia" ng-change='onCentroSeleccionado()' >
+                <option></option>
+                <option ng-repeat="centro in  listaCentroUtilidad"  ng-value="centro.codigo" >
+                    {{centro.nombre}}</option>
+            </select>
         </p>
     </div>
 
-     
-
-	 <div class="col-md-3 pull-right">
-        <p class="input-group">
-
-          <input type="text" class="form-control" ng-keypress="onKeyPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term" />
-          <span class="input-group-btn">
-
-            <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
-          </span>
+   <div class="col-md-2">
+        <p class="input-group contenedorfiltrocombobox">
+            <select ui-select2="seleccionbodega" ng-model='bodega_seleccion'  class="form-control selectgeneral pull-left"   placeholder="Seleccionar Farmacia" >
+                <option></option>
+                <option ng-repeat="bodega in  listaBodegas"  ng-value="bodega.codigo" >
+                    {{bodega.nombre}}</option>
+            </select>
         </p>
     </div>
-     
-</div>
+    
+    <div class="row">
+        <div class="col-md-2">
+            <p class="input-group">
+
+                <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="fechainicial" is-open="abrirfechainicial" min="minDate"   readonly  close-text="Cerrar" ng-change="fechainicialselected()" clear-text="Borrar" current-text="Hoy" placeholder="Fecha inicio" show-weeks="false" toggle-weeks-text="#"  />
+                <!--input type="text" ng-datepickerange /-->
+                <span class="input-group-btn">
+
+                    <button class="btn btn-default" ng-click="abrirFechaInicial($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                </span>
+            </p>
+        </div>
+
+        <div class="col-md-2">
+            <p class="input-group">
+
+                <input type="text" class="form-control readonlyinput" name="fechain" datepicker-popup="{{format}}" ng-model="fechafinal" is-open="abrirfechafinal" min="fechainicial"  readonly  close-text="Cerrar"
+                       clear-text="Borrar"  placeholder="Fecha fin:" current-text="Hoy" show-weeks="false" toggle-weeks-text="#" />
+                <span class="input-group-btn">
+
+                    <button class="btn btn-default"  ng-click="abrirFechaFinal($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                </span>
+            </p>
+        </div>
+
+       
+
+        <div class="col-md-2 pull-right">
+            <p class="input-group">
+
+                <input type="text" class="form-control" ng-keypress="onKeyPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term" />
+                <span class="input-group-btn">
+
+                    <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                </span>
+            </p>
+        </div>
+
+    </div>
 
 
-	<div class="defaultGrid" ng-grid="gridOptions">
-  </div>
+    <div class="defaultGrid" ng-grid="gridOptions">
+    </div>
 
     </br>
-     <div class="row text-center">
+    <div class="row text-center">
         <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 0" ng-click="paginaAnterior()">
             <span class="glyphicon glyphicon-chevron-left" ></span>
         </button>
@@ -56,8 +85,8 @@
         </button>
     </div>
 
-  <div  class="kardex slide" slide-content open-callback="mostrardetallekardex" close-callback="cerrardetallekardex"   >
-      <div ng-include src="slideurl"  ng-controller="MovimientoController"></div>
-  </div>
+    <div  class="kardex slide" slide-content open-callback="mostrardetallekardex" close-callback="cerrardetallekardex"   >
+        <div ng-include src="slideurl"  ng-controller="MovimientoController"></div>
+    </div>
 
 </div>

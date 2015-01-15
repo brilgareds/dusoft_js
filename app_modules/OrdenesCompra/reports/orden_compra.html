@@ -15,19 +15,19 @@
 
             body {
                 font-family: 'Open Sans', sans-serif;
-                font-size:16px;
-                line-height:30px;
+                font-size:10px;
+                line-height:15px;
             }
             .pad-top-botm {
                 padding-bottom:0px;
-                padding-top:15px;
+                padding-top:10px;
             }
             h4 {
                 text-transform:uppercase;
             }
 
             .contact-info span {
-                font-size:14px;
+                /*font-size:10px;*/
                 padding:0px 50px 0px 50px;
             }
 
@@ -37,7 +37,11 @@
             }
 
             .client-info {
-                font-size:15px;
+                /*font-size:10px;*/
+            }
+            
+            .footer-info {
+                font-size:8px;
             }
 
             .ttl-amts {
@@ -47,15 +51,15 @@
             .box {
                 float: left;
                 width: 300px;
-                height: 100px;
-                margin: 1em;
+                height: 50px;
+                /*margin: 1em;*/
             }
             table, th, td {
                 border: 1px solid black;                
                 border-collapse: collapse;
             }
             td {
-                font-size: 13px;
+                /*font-size: 8px;*/
             }
         </style>
     </head>
@@ -65,91 +69,84 @@
             <div class="row pad-top-botm ">
                 <!--div class="col-lg-6 col-md-6 col-sm-6 "-->
                 <div class="box">
-                    <img src="http://duanaltda.com/images/logo.png" style="padding-bottom:20px;" /> 
+                    <img src="http://duanaltda.com/images/logo.png" style="padding-bottom:20px;"  width="200px" height="50px"/> 
                 </div>
                 <div class="col-lg-6 col-md-6 col-sm-6">                   
 
                     <strong> NIT - 900786223-3  Duana LTDA & CIA. </strong>
                     <br />
-                    Calle 9A No. 42 - 115
-                    <br />
-                    Valle del Cauca, Cali
-                    <br />
-                    Colombia.
+                    Calle 9A No. 42 - 115 Valle del Cauca, Cali, Colombia. 
                 </div>                
             </div> 
             <hr />
             <div  class="row  pad-top-botm client-info">
                 <div class="col-lg-6 col-md-6 col-sm-6">
                     <h4>  <strong>Información Proveedor</strong></h4>
-                    <strong>  NIT - 900786223-3 Jhon Deo Chuixae</strong>
-                    <br />
-                    <b>Orden Compra :</b> 27698
+                    <b>Orden Compra :</b> {{:orden_compra.numero_orden }} <strong> {{:orden_compra.tipo_id_tercero}} - {{:orden_compra.tercero_id}} {{:orden_compra.nombre_tercero}}</strong>                    
                     <br />            
-                    <b>Dirección :</b> PAR INDUSTRIAL CAUCADESA KM 43 VIA PANAMERICANA
+                    <b>Dirección :</b> {{:orden_compra.direccion}} <b>Telefono :</b> {{:orden_compra.telefono}}
                     <br />
-                    <b>Telefono :</b> +90-908-567-0987
-                    <br />
-                    <b>Estado Orden :</b> info@clientdomain.com
+                    <b>Estado Orden :</b> {{:orden_compra.descripcion_estado}}
                 </div>
                 <div class="col-lg-6 col-md-6 col-sm-6 ">            
                     <h4>  <strong>Observaciones</strong></h4>
-                    PAGO 5% 30 DIAS
-                    ENVIAR CERTIFICADOS DE CALIDAD FECHA DE VENCIMIENTO NO MENOR A 2 AÑOS MARCAR USO INSTITUCIONAL PROHIBIDA SU VENTA
+                    {{:orden_compra.observacion_contrato}} -- {{:orden_compra.observacion}}                     
                 </div>
             </div>
             <div class="row pad-top-botm">
                 <div class="col-lg-12 col-md-12 col-sm-12">
-                    <div class="table-responsive">
-                        <table class="table"  width='100%'>
+                    <div class="">
+                        <table class="table table-striped" width='100%'>
                             <thead>
                                 <tr>
-                                    <th width='13%'>Código</th>
+                                    <th width='10%'>Código</th>
                                     <th width='30%'>Descripcion</th>
-                                    <th>Observación</th>
-                                    <th width='7%'>Cant</th>
-                                    <th width='7%'>IVA</th>
-                                    <th width='7%'>Valor</th>
-                                    <th width='10%'>Total</th>
+                                    <th width='15%'>Observación</th>
+                                    <th width='10%'>Cant</th>
+                                    <th width='10%'>IVA</th>
+                                    <th width='10%'>Valor</th>
+                                    <th width='15%'>Total</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                {{for lista_productos}}
                                 <tr>
-                                    <td>114E0381852</td>
-                                    <td>NEXIUM MUPS 40mg TABLETA | CAJA X 28. ASTRA ZENECA</td>
-                                    <td>POR CADA 3 CAJAS BONIFICAR 2 Y UN PLAY 4</td>
-                                    <td>100</td>
-                                    <td>0.0%</td>
-                                    <td>$ 1.200</td>
-                                    <td>$ 11.320.000</td>
-                                </tr>                                
+                                    <td>{{:codigo_producto}}</td>
+                                    <td>{{:descripcion_producto}}</td>
+                                    <td>{{:politicas_producto}}</td>
+                                    <td>{{:cantidad_solicitada}}</td>
+                                    <td>{{:porc_iva}}%</td>
+                                    <td>$ {{:valor}}</td>
+                                    <td>$ {{:total}}</td>
+                                </tr>
+                                {{/for}}
+
                             </tbody>
                         </table>
                     </div>                    
                     <div class="ttl-amts">
-                        Subtotal : $ 850.679
+                        Subtotal : $ {{:orden_compra.subtotal}}
                     </div>
                     <div class="ttl-amts">
-                        IVA : $ 7.850
+                        IVA : $ {{:orden_compra.valor_iva}}
                     </div>
                     <div class="ttl-amts">
-                        <strong style="font-size: 20px">Total : $ 1.659.635,2</strong> 
+                        <strong style="font-size: 15px">Total : $ {{:orden_compra.total}}</strong> 
                     </div>
                 </div>
             </div>
-            <div  class="row text-center contact-info pad-top-botm">
-                <div class="col-lg-12 col-md-12 col-sm-12">
+            <div  class="row contact-info pad-top-botm footer-info">
+                <div class="col-md-12">
                     <hr />
                     <span>
-                        <strong>Realiza : </strong>  Mauricio Barrios 
+                        <strong>Realiza : </strong>  {{:orden_compra.nombre}} 
                     </span>
                     <span>
-                        <strong>Imprime : </strong>  Edwin Camilo Orozco  
-                    </span>
+                        <strong>Imprime : </strong>  {{:usuario_imprime}} 
+                    </span>                    
                     <span>
-                        <strong>Fecha Impresión : </strong>  13/01/2015
+                        <strong>Fecha Impresión : </strong>{{:fecha_actual}}                        
                     </span>
-                    <hr />
                 </div>
             </div>      
         </div>

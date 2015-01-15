@@ -22,7 +22,9 @@ requirejs.config({
         httpinterceptor:"../includes/http/HttpInterceptor",
         storage:"../../javascripts/angular/storage",
         socket:"../includes/socket/socket.io/socket.io",
-        socketservice:"../includes/socket/socket"
+        socketservice:"../includes/socket/socket",
+        uiselect2:"../../javascripts/uiselect2",
+        select:"../../javascripts/select2"
     },
     shim: {
         "angular": {
@@ -58,6 +60,9 @@ requirejs.config({
         },
         "transition":{
             deps:["jquery"]
+        },
+        "uiselect2":{
+            deps:["angular","select"]
         }
     }
 });

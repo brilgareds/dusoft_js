@@ -3,27 +3,35 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
 
     var fo = controllers.controller('productoscontroller', [
         '$scope', '$rootScope', "Request",
-        "$filter", '$state', 'Empresa',
+        "$filter", '$state', 'EmpresaKardex',
         'ProductoMovimiento', '$modal', "API",
         "AlertService", 'localStorageService', "Usuario",
-        "socket",
-        function($scope, $rootScope, Request, $filter, $state, Empresa, ProductoMovimiento, $modal, API, AlertService, localStorageService, Usuario, socket) {
-
-            $scope.Empresa = Empresa;
+        "socket","CentroUtilidad","Bodega",
+        function($scope, $rootScope, Request,
+                 $filter, $state, Empresa, ProductoMovimiento, 
+                 $modal, API, AlertService, localStorageService,
+                 Usuario, socket, CentroUtilidad, Bodega) {
+            
+            var that = this;
+            $scope.Empresa = Empresa.get("DUANA LTDA", "03");
             var fechaActual = new Date();
             $scope.paginas = 0;
             $scope.items = 0;
             $scope.paginaactual = 0;
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda  = "";
-
+            $scope.listaEmpresas = [];
+            $scope.listaCentroUtilidad = [];
+            $scope.listaBodegas = [];
             $scope.slideurl = "";
-
+            $scope.empresa_seleccion = "";
+            $scope.centro_seleccion = "";
+            $scope.bodega_seleccion = "";
 
           //  $scope.fechainicial = new Date((fechaActual.getMonth() + 1)+"/01/" + (fechaActual.getFullYear() -1));
             $scope.fechainicial = $filter('date')(new Date("01/01/" + fechaActual.getFullYear()), "yyyy-MM-dd");
             $scope.fechafinal = $filter('date')(fechaActual, "yyyy-MM-dd");
-            $scope.abrirfechafinal = false;
+            $scope.abrirfechafinal = false; 
             
             $scope.session = {
                 usuario_id: Usuario.usuario_id,
@@ -32,7 +40,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
 
             $scope.buscarProductos = function(termino_busqueda,paginando) {
 
-                if($scope.ultima_busqueda != $scope.termino_busqueda){
+                if($scope.ultima_busqueda !== $scope.termino_busqueda){
                     $scope.paginaactual = 0;
                 }
 
@@ -44,12 +52,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                             data: {
                                 kardex: {
                                     termino_busqueda: termino_busqueda,
-                                    pagina_actual:$scope.paginaactual 
+                                    pagina_actual:$scope.paginaactual,
+                                    empresa_id:$scope.empresa_seleccion,
+                                    centro_utilidad:$scope.centro_seleccion,
+                                    bodega_id:$scope.bodega_seleccion
                                 }
                             }
                         },
                 function(data) {
-                    if (data.status == 200) {
+                    if (data.status === 200) {
                         $scope.ultima_busqueda = $scope.termino_busqueda;
                         $scope.renderProductos(data.obj, paginando);
                     }
@@ -62,7 +73,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
 
                 $scope.items = data.lista_productos.length;
                 //se valida que hayan registros en una siguiente pagina
-                if(paginando && $scope.items == 0){
+                if(paginando && $scope.items === 0){
                     if($scope.paginaactual > 0){
                         $scope.paginaactual--;
                     }
@@ -122,7 +133,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                 //console.log($filter('date')($scope.fechafinal, "yyyy-MM-dd"));
                 $scope.slideurl = "views/kardex.html?time="+new Date().getTime();
 
-                if ($scope.fechafinal == null || $scope.fechainicial == null) {
+                if ($scope.fechafinal === null || $scope.fechainicial === null) {
                     AlertService.mostrarMensaje("danger", "Las fechas son invalidas");
                     return;
                 }
@@ -133,7 +144,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                         kardex: {
                             fecha_inicial: $filter('date')($scope.fechainicial, "yyyy-MM-dd") + " 00:00:00",
                             fecha_final: $filter('date')($scope.fechafinal, "yyyy-MM-dd")+ " 23:59:00",
-                            codigo_producto: row.entity.codigo_producto
+                            codigo_producto: row.entity.codigo_producto,
+                            empresa_id:$scope.empresa_seleccion,
+                            centro_utilidad:$scope.centro_seleccion,
+                            bodega_id:$scope.bodega_seleccion
                         }
                     }
                 };
@@ -143,7 +157,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                         "POST",
                         obj,
                         function(data) {
-                            if (data.status == 200) {
+                            if (data.status === 200) {
                                 if (data.obj.movimientos_producto.length > 0) {
                                     
                                     /*console.log('===== data.obj ======');
@@ -158,6 +172,96 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                         }
                 );
 
+            };
+            
+            that.traerEmpresas = function(callback) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {}
+                };
+
+                Request.realizarRequest(API.KARDEX.LISTAR_EMPRESAS, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        for(var i in data.obj.lista_farmacias){
+                            var empresa = Empresa.get(
+                                data.obj.lista_farmacias[i].nombre_empresa,
+                                data.obj.lista_farmacias[i].empresa_id
+                            );
+                            
+                            $scope.listaEmpresas.push(empresa);
+                        }
+                    }
+                    
+                });
+
+            };
+            
+            that.consultarCentrosUtilidadPorEmpresa = function() {
+
+                $scope.listaCentroUtilidad = [];
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_farmacias: {
+                            empresa_id: $scope.empresa_seleccion
+                        }
+                    }
+                };
+                
+                Request.realizarRequest(API.KARDEX.CENTROS_UTILIDAD_EMPRESAS, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        console.log("centros de utilidad ", data);
+                        for(var i in data.obj.lista_centros_utilidad){
+                            var centroUtilidad = CentroUtilidad.get(
+                                data.obj.lista_centros_utilidad[i].nombre_centro_utilidad,
+                                data.obj.lista_centros_utilidad[i].centro_utilidad_id
+                            );
+                            
+                            $scope.listaCentroUtilidad.push(centroUtilidad);
+                        }
+                    }
+
+                });
+            };
+            
+            
+            that.consultarBodegasPorEmpresa = function() {
+
+                $scope.listaBodegas = [];
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_farmacias: {
+                            empresa_id: $scope.empresa_seleccion,
+                            centro_utilidad_id:$scope.centro_seleccion
+                        }
+                    }
+                };
+                
+                Request.realizarRequest(API.KARDEX.BODEGAS_EMPRESA, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        for(var i in data.obj.lista_bodegas){
+                            var bodega = Bodega.get(
+                                data.obj.lista_bodegas[i].nombre_bodega,
+                                data.obj.lista_bodegas[i].bodega_id
+                            );
+                            
+                            $scope.listaBodegas.push(bodega);
+                        }
+                    }
+
+                });
+            };
+            
+            $scope.onEmpresaSeleccionada = function(){
+                that.consultarCentrosUtilidadPorEmpresa();
+            };
+            
+            $scope.onCentroSeleccionado = function(){
+                that.consultarBodegasPorEmpresa();
             };
 
             $scope.cerrar = function() {
@@ -220,6 +324,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
             $rootScope.$on("cerrarSesion", $scope.cerrarSesion);
 
             $scope.buscarProductos("");
+            that.traerEmpresas();
 
 
         }]);

@@ -1,37 +1,37 @@
 
 define(["angular", "js/models"], function(angular, models) {
 
-    models.factory('Empresa', function() {
+    models.factory('CentroUtilidad', function() {
 
-        function Empresa(nombre, codigo) {
+        function CentroUtilidad (nombre, codigo) {
             this.nombre = nombre || "";
             this.codigo = codigo || "";
             //this.clientes = []; 
             //this.proveedores = [];
         };
 
-        Empresa.prototype.setNombre = function(nombre) {
+        CentroUtilidad.prototype.setNombre = function(nombre) {
             this.nombre = nombre;
         };
 
-        Empresa.prototype.getNombre = function() {
+        CentroUtilidad.prototype.getNombre = function() {
             return this.nombre;
         };
 
-        Empresa.prototype.setCodigo = function(codigo) {
+        CentroUtilidad.prototype.setCodigo = function(codigo) {
             this.codigo = codigo;
         };
 
-        Empresa.prototype.getCodigo = function() {
+        CentroUtilidad.prototype.getCodigo = function() {
             return this.codigo;
         };
 
-        this.get = function() {
-            return new Empresa();
+        this.get = function(nombre, codigo) {
+            return new CentroUtilidad(nombre, codigo);
         };
 
         this.getClass = function(){
-            return Empresa;
+            return CentroUtilidad;
         };
 
         return this;

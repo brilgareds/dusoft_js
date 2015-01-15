@@ -28,28 +28,31 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             
             
             $modalInstance.opened.then(function() {
-               $scope.session = {
-                    usuario_id: Usuario.usuario_id,
-                    auth_token: Usuario.token
-                };
+                $timeout(function(){
+                    
+                    $scope.session = {
+                         usuario_id: Usuario.usuario_id,
+                         auth_token: Usuario.token
+                     };
 
-                Request.realizarRequest(API.USUARIOS.LISTAR_USUARIOS, "POST", { session: $scope.session, data: { lista_usuarios : { termino_busqueda: '' , estado_registro : '1' } }}, function(data) {
+                     Request.realizarRequest(API.USUARIOS.LISTAR_USUARIOS, "POST", { session: $scope.session, data: { lista_usuarios : { termino_busqueda: '' , estado_registro : '1' } }}, function(data) {
 
-                    var lista_usuarios = data.obj.lista_usuarios;
+                         var lista_usuarios = data.obj.lista_usuarios;
 
-                    $scope.usuarios = [];
+                         $scope.usuarios = [];
 
-                    var data = data.obj;
+                         var data = data.obj;
+                         for (var i in lista_usuarios) {
 
-                    for (var i in lista_usuarios) {
+                             var obj = lista_usuarios[i];
 
-                        var obj = lista_usuarios[i];
+                             var usuario = {id: obj.usuario_id, nombre_usuario: obj.nombre, usuario: obj.usuario, estado: obj.activo}
 
-                        var usuario = {id: obj.usuario_id, nombre_usuario: obj.nombre, usuario: obj.usuario, estado: obj.activo}
-
-                        $scope.usuarios.push(usuario);
-                    }
-                });
+                             $scope.usuarios.push(usuario);
+                         }
+                     });
+                }, 400);
+                
            });
             
 

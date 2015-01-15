@@ -22,6 +22,8 @@ ProductosModel.prototype.validar_producto = function(codigo_producto, callback) 
 // Calls       : PedidosFarmacias -> PedidosFarmaciasController -> listar_productos();
 //               
 
+   
+
 ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad_id, bodega_id, termino_busqueda, pagina, tipo_producto, callback) {
     
     var where_tipo = "";

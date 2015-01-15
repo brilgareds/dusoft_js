@@ -2,9 +2,10 @@
  define(["angular", "route", "bootstrap","js/controllers",
   "js/services", "js/models", "nggrid",
   "js/directive", "controllers/productoscontroller","controllers/empresacontroller", 
-  "models/Empresa", "includes/menu/menucontroller",  "url", "includes/header/HeaderController",
+  "models/EmpresaKardex", "includes/menu/menucontroller",  "url", "includes/header/HeaderController",
   "loader","models/ProductoMovimiento",  "includes/alert/Alert", "i18n", "httpinterceptor", "storage",
-  "includes/classes/Usuario", "socketservice", "includes/http/Request"
+  "includes/classes/Usuario", "socketservice", "includes/http/Request","uiselect2",
+  "includes/classes/CentroUtilidad","includes/classes/Bodega"
   ], function(angular,Agencia){
   /* App Module and its dependencies */
       var Kardex = angular.module('Kardex', [
@@ -16,7 +17,8 @@
           'ngGrid',
           'Url',
           "services",
-          'LocalStorageModule'
+          'LocalStorageModule',
+          'ui.select2'
       ]); 
 
       Kardex.config(["$stateProvider", "$urlRouterProvider", "$httpProvider", function($stateProvider, $urlRouterProvider,$httpProvider){

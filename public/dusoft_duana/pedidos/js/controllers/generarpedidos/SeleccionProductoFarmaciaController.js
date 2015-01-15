@@ -679,6 +679,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $scope.rootSeleccionProductoFarmacia.paginaactual++;
                 $scope.onBuscarSeleccionProducto($scope.obtenerParametros(), true);
             };
+            
+           /* $scope.onTipoProducto = function($event, valor) {
+                $scope.rootSeleccionProductoFarmacia.tipoProducto = valor;
+            };*/
 
         }]);
 });

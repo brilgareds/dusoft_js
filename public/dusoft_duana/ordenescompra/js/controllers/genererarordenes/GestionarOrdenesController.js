@@ -278,6 +278,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     if (data.status === 200) {
 
                         $scope.orden_compra.set_unidad_negocio($scope.Empresa.get_unidad_negocio($scope.unidad_negocio_id));
+                    }else{
+                        $scope.unidad_negocio_id = $scope.orden_compra.get_unidad_negocio().get_codigo();
                     }
                 });
             };

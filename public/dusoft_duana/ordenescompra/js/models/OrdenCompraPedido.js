@@ -105,8 +105,13 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
             };
             
             // Estado de Digitacion Orden Compra
-            OrdenCompraPedido.prototype.set_estado_digitacion = function(estado_digitacion) {
-                this.estado_digitacion = estado_digitacion;
+            OrdenCompraPedido.prototype.set_estado_digitacion = function(sw_estado_digitacion, descripcion_estado_digitacion) {
+                this.sw_estado_digitacion = sw_estado_digitacion;
+                this.estado_digitacion = descripcion_estado_digitacion;
+            };
+            
+            OrdenCompraPedido.prototype.get_sw_estado_digitacion = function() {
+                return this.sw_estado_digitacion ;
             };
             
             OrdenCompraPedido.prototype.get_estado_digitacion = function() {

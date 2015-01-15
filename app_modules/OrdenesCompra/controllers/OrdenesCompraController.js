@@ -417,14 +417,33 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
      console.log('==========================');
      return;*/
 
-    that.m_ordenes_compra.insertar_detalle_orden_compra(numero_orden, codigo_producto, cantidad_solicitada, valor, iva, function(err, rows, result) {
+    //validar que la OC no tenga NINGUN ingreso temporal y este Activa.
+    that.m_ordenes_compra.consultar_orden_compra(numero_orden, function(err, orden_compra) {
 
-        if (err || result.rowCount === 0) {
-            res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
+        if (err || orden_compra.length === 0) {
+            res.send(G.utils.r(req.url, 'La orden de compra no existe', 500, {orden_compra: []}));
             return;
         } else {
-            res.send(G.utils.r(req.url, 'Producto regitrado correctamente', 200, {ordenes_compras: {}}));
-            return;
+
+            orden_compra = orden_compra[0];
+
+            if (orden_compra.tiene_ingreso_temporal === 0 && orden_compra.estado === '1') {
+
+                that.m_ordenes_compra.insertar_detalle_orden_compra(numero_orden, codigo_producto, cantidad_solicitada, valor, iva, function(err, rows, result) {
+
+                    if (err || result.rowCount === 0) {
+                        res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
+                        return;
+                    } else {
+                        res.send(G.utils.r(req.url, 'Producto regitrado correctamente', 200, {ordenes_compras: {}}));
+                        return;
+                    }
+                });
+
+            } else {
+                res.send(G.utils.r(req.url, 'No se pudo actualizar, la orde de compra esta siendo ingresada.', 403, {orden_compra: []}));
+                return;
+            }
         }
     });
 };
@@ -501,35 +520,53 @@ OrdenesCompra.prototype.eliminarProductoOrdenCompra = function(req, res) {
     var numero_orden = args.ordenes_compras.numero_orden;
     var codigo_producto = args.ordenes_compras.codigo_producto;
 
-    that.m_ordenes_compra.consultar_detalle_orden_compra(numero_orden, codigo_producto, 1, function(err, productos) {
+    //validar que la OC no tenga NINGUN ingreso temporal.
+    that.m_ordenes_compra.consultar_orden_compra(numero_orden, function(err, orden_compra) {
 
-        if (err || productos.length === 0) {
-            res.send(G.utils.r(req.url, 'Se ha generado un erro consultado la orden de compra code 1', 404, {}));
+        if (err || orden_compra.length === 0) {
+            res.send(G.utils.r(req.url, 'La orden de compra no existe', 500, {orden_compra: []}));
             return;
         } else {
-            var producto = productos[0];
 
-            if (producto.novedad_id === null) {
+            orden_compra = orden_compra[0];
 
-                that.m_ordenes_compra.eliminar_producto_orden_compra(numero_orden, codigo_producto, function(err, rows, result) {
+            if (orden_compra.tiene_ingreso_temporal === 0 && orden_compra.estado === '1') {
 
-                    console.log('====== resultado ========');
-                    console.log(err, rows, result);
-                    console.log('=========================');
+                that.m_ordenes_compra.consultar_detalle_orden_compra(numero_orden, codigo_producto, 1, function(err, productos) {
 
-                    if (err || result.rowCount === 0) {
-                        res.send(G.utils.r(req.url, 'Error Eliminado el producto', 500, {ordenes_compras: []}));
+                    if (err || productos.length === 0) {
+                        res.send(G.utils.r(req.url, 'Se ha generado un erro consultado la orden de compra code 1', 404, {}));
                         return;
                     } else {
-                        res.send(G.utils.r(req.url, 'Producto eliminado correctamente', 200, {ordenes_compras: []}));
-                        return;
+                        var producto = productos[0];
+
+                        if (producto.novedad_id === null) {
+
+                            that.m_ordenes_compra.eliminar_producto_orden_compra(numero_orden, codigo_producto, function(err, rows, result) {
+
+                                console.log('====== resultado ========');
+                                console.log(err, rows, result);
+                                console.log('=========================');
+
+                                if (err || result.rowCount === 0) {
+                                    res.send(G.utils.r(req.url, 'Error Eliminado el producto', 500, {ordenes_compras: []}));
+                                    return;
+                                } else {
+                                    res.send(G.utils.r(req.url, 'Producto eliminado correctamente', 200, {ordenes_compras: []}));
+                                    return;
+                                }
+                            });
+                        } else {
+                            res.send(G.utils.r(req.url, 'El producto contiene una novedad diligenciada, No se puede borrar', 404, {}));
+                            return;
+                        }
+
                     }
                 });
             } else {
-                res.send(G.utils.r(req.url, 'El producto contiene una novedad diligenciada, No se puede borrar', 404, {}));
+                res.send(G.utils.r(req.url, 'No se pudo actualizar, la orden de compra esta siendo o ya fue ingresada.', 403, {orden_compra: []}));
                 return;
             }
-
         }
     });
 };
@@ -782,9 +819,9 @@ OrdenesCompra.prototype.reporteOrdenCompra = function(req, res) {
                     return;
                 } else {
 
-                    var orden = orden_compra[0];                    
-                    
-                    _generar_reporte_orden_compra({orden_compra: orden, lista_productos: lista_productos, usuario_imprime : req.session.user.nombre_usuario}, function(nombre_reporte) {
+                    var orden = orden_compra[0];
+
+                    _generar_reporte_orden_compra({orden_compra: orden, lista_productos: lista_productos, usuario_imprime: req.session.user.nombre_usuario}, function(nombre_reporte) {
 
                         //res.send(G.utils.r(req.url, 'Orden de Compra', 200, {orden_compra: orden_compra[0], lista_productos: lista_productos}));
                         res.send(G.utils.r(req.url, 'Nombre Reporte', 200, {ordenes_compras: {nombre_reporte: nombre_reporte}}));
@@ -1015,7 +1052,7 @@ function __validar_costo_productos_archivo_plano(contexto, empresa_id, codigo_pr
 
 function _generar_reporte_orden_compra(rows, callback) {
     G.jsreport.reporter.render({
-        template : {
+        template: {
             content: G.fs.readFileSync('app_modules/OrdenesCompra/reports/orden_compra.html', 'utf8'),
             helpers: G.fs.readFileSync('app_modules/OrdenesCompra/reports/javascripts/helpers.js', 'utf8'),
             recipe: "phantom-pdf",
@@ -1023,10 +1060,10 @@ function _generar_reporte_orden_compra(rows, callback) {
         },
         data: {
             style: G.dirname + "/public/stylesheets/bootstrap.min.css",
-            orden_compra: rows.orden_compra, 
-            lista_productos: rows.lista_productos, 
+            orden_compra: rows.orden_compra,
+            lista_productos: rows.lista_productos,
             fecha_actual: new Date().toFormat('DD/MM/YYYY HH24:MI:SS'),
-            usuario_imprime : rows.usuario_imprime
+            usuario_imprime: rows.usuario_imprime
         }
     }).then(function(response) {
 

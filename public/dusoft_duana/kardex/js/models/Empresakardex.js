@@ -1,7 +1,7 @@
 
 define(["angular", "js/models","includes/classes/Empresa"], function(angular, models) {
 
-    models.factory('EmpresaKardex',['Empresa', function(Empresa) {
+    models.factory('EmpresaKardex',['Empresa', function(Empresa) { 
        
        function EmpresaKardex(nombre, codigo){
            Empresa.getClass().call(this,nombre, codigo);

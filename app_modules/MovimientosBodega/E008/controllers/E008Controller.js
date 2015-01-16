@@ -864,6 +864,7 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalClientes = function(req,
     });
 };
 
+//validar auditor
 // Actualizar bodegas_doc_id en documento temporal farmacias.
 E008Controller.prototype.actualizarTipoDocumentoTemporalFarmacias = function(req, res) {
 
@@ -899,7 +900,7 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalFarmacias = function(req
     var usuario_id = req.session.user.usuario_id;
     var auditor = 0;
     var estado = '2';
-    var estado_pedido = '6'; // En auditoria
+    var estado_pedido = '7'; // En auditoria
     
     //seleccionar el auditor
     that.m_terceros.seleccionar_operario_por_usuario_id(usuario_id, function(err, operario) {

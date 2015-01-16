@@ -45,7 +45,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             $scope.rootVerPedidosFarmacias.listado_farmacias = [];
 
-            var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
+            var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-default btn-xs", "btn btn-separacionfinalizada btn-xs", "btn btn-enauditoria btn-xs"];
 
             that.listarFarmacias = function() {
 
@@ -260,9 +260,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             $scope.agregarClase = function(estado) {
 
-                if (estado == 6) {
+                /*if (estado === 6) {
                     return estados[1];
-                }
+                }*/
 
                 return estados[estado];
             };

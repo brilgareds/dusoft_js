@@ -193,3 +193,99 @@ label.lbl_editar_producto{
 .anchoSeleccionEmpresa{
     width: 300px;
 }
+
+/* Botón Separación Finalizada */
+
+.btn-separacionfinalizada { 
+  color: #FFFFFF; 
+  background-color: #F28EF2; 
+  border-color: #F28EF2; 
+} 
+ 
+.btn-separacionfinalizada:hover, 
+.btn-separacionfinalizada:focus, 
+.btn-separacionfinalizada:active, 
+.btn-separacionfinalizada.active, 
+.open .dropdown-toggle.btn-separacionfinalizada { 
+  color: #FFFFFF; 
+  background-color: #D954D0; 
+  border-color: #F28EF2; 
+} 
+ 
+.btn-separacionfinalizada:active, 
+.btn-separacionfinalizada.active, 
+.open .dropdown-toggle.btn-separacionfinalizada { 
+  background-image: none; 
+} 
+ 
+.btn-separacionfinalizada.disabled, 
+.btn-separacionfinalizada[disabled], 
+fieldset[disabled] .btn-separacionfinalizada, 
+.btn-separacionfinalizada.disabled:hover, 
+.btn-separacionfinalizada[disabled]:hover, 
+fieldset[disabled] .btn-separacionfinalizada:hover, 
+.btn-separacionfinalizada.disabled:focus, 
+.btn-separacionfinalizada[disabled]:focus, 
+fieldset[disabled] .btn-separacionfinalizada:focus, 
+.btn-separacionfinalizada.disabled:active, 
+.btn-separacionfinalizada[disabled]:active, 
+fieldset[disabled] .btn-separacionfinalizada:active, 
+.btn-separacionfinalizada.disabled.active, 
+.btn-separacionfinalizada[disabled].active, 
+fieldset[disabled] .btn-separacionfinalizada.active { 
+  background-color: #F28EF2; 
+  border-color: #F28EF2; 
+} 
+ 
+.btn-separacionfinalizada .badge { 
+  color: #F28EF2; 
+  background-color: #FFFFFF; 
+}
+
+/* Botón En Auditoria */
+
+.btn-enauditoria { 
+  color: #FFFFFF; 
+  background-color: #CFDB78; 
+  border-color: #CFDB78; 
+} 
+ 
+.btn-enauditoria:hover, 
+.btn-enauditoria:focus, 
+.btn-enauditoria:active, 
+.btn-enauditoria.active, 
+.open .dropdown-toggle.btn-enauditoria { 
+  color: #FFFFFF; 
+  background-color: #BCC483; 
+  border-color: #CFDB78; 
+} 
+ 
+.btn-enauditoria:active, 
+.btn-enauditoria.active, 
+.open .dropdown-toggle.btn-enauditoria { 
+  background-image: none; 
+} 
+ 
+.btn-enauditoria.disabled, 
+.btn-enauditoria[disabled], 
+fieldset[disabled] .btn-enauditoria, 
+.btn-enauditoria.disabled:hover, 
+.btn-enauditoria[disabled]:hover, 
+fieldset[disabled] .btn-enauditoria:hover, 
+.btn-enauditoria.disabled:focus, 
+.btn-enauditoria[disabled]:focus, 
+fieldset[disabled] .btn-enauditoria:focus, 
+.btn-enauditoria.disabled:active, 
+.btn-enauditoria[disabled]:active, 
+fieldset[disabled] .btn-enauditoria:active, 
+.btn-enauditoria.disabled.active, 
+.btn-enauditoria[disabled].active, 
+fieldset[disabled] .btn-enauditoria.active { 
+  background-color: #CFDB78; 
+  border-color: #CFDB78; 
+} 
+ 
+.btn-enauditoria .badge { 
+  color: #CFDB78; 
+  background-color: #FFFFFF; 
+}

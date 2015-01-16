@@ -13,6 +13,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 {estado:"", nombre:"Todos"},
                 {estado:"no_asignados", nombre:"No Asignado"},
                 {estado:"asignados", nombre:"Asignado"},
+                {estado:"separacion_finalizada", nombre:"Separacion Finalizada"},
+                {estado:"en_auditoria", nombre:"En Auditoría"},
                 {estado:"auditados", nombre:"Auditado"},
                 {estado:"en_zona_despacho", nombre:"En zona de despacho"},
                 {estado:"despachado", nombre:"Despachado"},

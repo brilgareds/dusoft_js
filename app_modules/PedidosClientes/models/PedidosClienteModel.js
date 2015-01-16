@@ -105,6 +105,14 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
         if (filtro.despachado_pendientes) {
             sql_aux = " AND a.estado_pedido = '5' ";
         }
+        
+        if (filtro.separacion_finalizada) {
+            sql_aux = " AND a.estado_pedido = '6' ";
+        }
+        
+        if (filtro.en_auditoria) {
+            sql_aux = " AND a.estado_pedido = '7' ";
+        }
     }
 
     var sql = " select \
@@ -126,10 +134,11 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
                 case when a.estado_pedido = 0 then 'No Asignado' \
                 when a.estado_pedido = 1 then 'Asignado' \
                 when a.estado_pedido = 2 then 'Auditado' \
-                when a.estado_pedido = 3 then 'En Despacho' \
+                when a.estado_pedido = 3 then 'En Zona Despacho' \
                 when a.estado_pedido = 4 then 'Despachado' \
                 when a.estado_pedido = 5 then 'Despachado con Pendientes' \
-                when a.estado_pedido = 6 then 'En Auditoria' end as descripcion_estado_actual_pedido, \
+                when a.estado_pedido = 6 then 'Separacion Finalizada' \
+                when a.estado_pedido = 7 then 'En Auditoria' end as descripcion_estado_actual_pedido, \
                 d.estado as estado_separacion, \
                 to_char(a.fecha_registro, 'dd-mm-yyyy') as fecha_registro \
                 from ventas_ordenes_pedidos a \
@@ -220,10 +229,11 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
                 case when a.estado_pedido = 0 then 'No Asignado' \
                      when a.estado_pedido = 1 then 'Asignado' \
                      when a.estado_pedido = 2 then 'Auditado' \
-                     when a.estado_pedido = 3 then 'En Despacho' \
+                     when a.estado_pedido = 3 then 'En Zona Despacho' \
                      when a.estado_pedido = 4 then 'Despachado' \
                      when a.estado_pedido = 5 then 'Despachado con Pendientes' \
-                     when a.estado_pedido = 6 then 'En Auditoria' end as descripcion_estado_actual_pedido, \
+                     when a.estado_pedido = 6 then 'Separacion Finalizada' \
+                     when a.estado_pedido = 7 then 'En Auditoria' end as descripcion_estado_actual_pedido, \
                 d.estado as estado_separacion, \
                 a.fecha_registro \
                 from ventas_ordenes_pedidos a \
@@ -416,10 +426,11 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
                 case when a.estado_pedido = 0 then 'No Asignado' \
                      when a.estado_pedido = 1 then 'Asignado' \
                      when a.estado_pedido = 2 then 'Auditado' \
-                     when a.estado_pedido = 3 then 'En Despacho' \
+                     when a.estado_pedido = 3 then 'En Zona Despacho' \
                      when a.estado_pedido = 4 then 'Despachado' \
                      when a.estado_pedido = 5 then 'Despachado con Pendientes' \
-                     when a.estado_pedido = 6 then 'En Auditoria' end as descripcion_estado_actual_pedido, \
+                     when a.estado_pedido = 6 then 'Separacion Finalizada' \
+                     when a.estado_pedido = 7 then 'En Auditoria' end as descripcion_estado_actual_pedido, \
                 f.estado as estado_separacion,     \
                 case when f.estado = '0' then 'Separacion en Proceso' \
                      when f.estado = '1' then 'Separacion Finalizada' end as descripcion_estado_separacion,\
@@ -666,10 +677,11 @@ PedidosClienteModel.prototype.obtener_responsables_del_pedido = function(numero_
                 case when a.estado=0 then 'No Asignado'\
                      when a.estado=1 then 'Asignado'\
                      when a.estado=2 then 'Auditado'\
-                     when a.estado=3 then 'En Despacho' \
+                     when a.estado=3 then 'En Zona Despacho' \
                      when a.estado=4 then 'Despachado'\
                      when a.estado=5 then 'Despachado con Pendientes' \
-                     when a.estado=6 then 'En Auditoria' end as descripcion_estado,\
+                     when a.estado=6 then 'Separacion Finalizada' \
+                     when a.estado=7 then 'En Auditoria' end as descripcion_estado,\
                 b.operario_id,\
                 b.nombre as nombre_responsable,\
                 b.usuario_id as usuario_id_responsable,\

@@ -773,7 +773,8 @@ PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(nu
                  sql = "UPDATE ventas_ordenes_pedidos_d\
                         SET cantidad_despachada=cantidad_despachada+$1\
                         WHERE   pedido_cliente_id=$2\
-                        AND  codigo_producto=$3; ";
+                        AND  codigo_producto=$3\
+                        AND cantidad_despachada < numero_unidades ";
 
 
                 G.db.transaction(sql, [cantidad_despachada, numero_pedido, row.codigo_producto], function(err, rows, result) {

@@ -77,7 +77,7 @@ define(["angular", "js/controllers", 'models/Separador'], function(angular, cont
                     "POST",
                     obj,
                     function(data) {
-                        if(data.status == 200){
+                        if(data.status === 200){
                             $modalInstance.close();
                             $rootScope.$emit("refrescarPedidos");
                         }                  
@@ -90,8 +90,8 @@ define(["angular", "js/controllers", 'models/Separador'], function(angular, cont
                 
                  for (var i  in pedidosSeleccionados) {
                     var pedido = pedidosSeleccionados[i];
-                    if((pedido.estado_actual_pedido !== '0' && pedido.estado_actual_pedido !== '1') || pedido.estado === '3' || pedido.estado_separacion){
-                        console.log("pedido sacado ", pedido)
+                    if((pedido.estado_actual_pedido !== '0' && pedido.estado_actual_pedido !== '1' && pedido.estado_actual_pedido !== '5') 
+                        || pedido.estado === '3' || pedido.estado_separacion){
                         pedidosSeleccionados.splice(i, 1);
                         $scope.validarEstado(pedidosSeleccionados);
                         break;

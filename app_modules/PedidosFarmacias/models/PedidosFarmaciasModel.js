@@ -341,6 +341,14 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
         if (filtro.despachado_pendientes) {
             sql_aux = " AND a.estado = '5' ";
         }
+        
+        if (filtro.separacion_finalizada) {
+            sql_aux = " AND a.estado = '6' ";
+        }
+        
+        if (filtro.en_auditoria) {
+            sql_aux = " AND a.estado = '7' ";
+        }
     }
 
     var sql = " select \
@@ -357,10 +365,11 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
                 case when a.estado = 0 then 'No Asignado' \
                      when a.estado = 1 then 'Asignado' \
                      when a.estado = 2 then 'Auditado' \
-                     when a.estado = 3 then 'En Despacho' \
+                     when a.estado = 3 then 'En Zona Despacho' \
                      when a.estado = 4 then 'Despachado' \
                      when a.estado = 5 then 'Despachado con Pendientes' \
-                     when a.estado = 6 then 'En Auditoria' end as descripcion_estado_actual_pedido, \
+                     when a.estado = 6 then 'Separacion Finalizada' \
+                     when a.estado = 7 then 'En Auditoria' end as descripcion_estado_actual_pedido, \
                 f.estado as estado_separacion, \
                 to_char(a.fecha_registro, 'dd-mm-yyyy') as fecha_registro,\
                 c.descripcion as nombre_centro_utilidad,\
@@ -435,10 +444,11 @@ PedidosFarmaciasModel.prototype.consultar_pedido = function(numero_pedido, callb
                 case when a.estado = 0 then 'No Asignado' \
                      when a.estado = 1 then 'Asignado' \
                      when a.estado = 2 then 'Auditado' \
-                     when a.estado = 3 then 'En Despacho' \
+                     when a.estado = 3 then 'En Zona Despacho' \
                      when a.estado = 4 then 'Despachado' \
                      when a.estado = 5 then 'Despachado con Pendientes' \
-                     when a.estado = 6 then 'En Auditoria' end as descripcion_estado_actual_pedido, \
+                     when a.estado = 6 then 'Separacion Finalizada'  \
+                     when a.estado = 7 then 'En auditoria' end as descripcion_estado_actual_pedido, \
                 f.estado as estado_separacion, \
                 to_char(a.fecha_registro, 'dd-mm-yyyy HH24:MI:SS.MS') as fecha_registro, \
                 a.fecha_registro as fecha_registro_pedido\
@@ -548,10 +558,11 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                 case when a.estado = 0 then 'No Asignado' \
                      when a.estado = 1 then 'Asignado' \
                      when a.estado = 2 then 'Auditado' \
-                     when a.estado = 3 then 'En Despacho' \
+                     when a.estado = 3 then 'En Zona Despacho' \
                      when a.estado = 4 then 'Despachado' \
                      when a.estado = 5 then 'Despachado con Pendientes' \
-                     when a.estado = 6 then 'En Auditoria' end as descripcion_estado_actual_pedido, \
+                     when a.estado = 6 then 'Separacion Finalizada' \
+                     when a.estado = 7 then 'En Auditoria' end as descripcion_estado_actual_pedido, \
                 h.estado as estado_separacion,     \
                 case when h.estado = '0' then 'Separacion en Proceso' \
                      when h.estado = '1' then 'Separacion Finalizada' \
@@ -673,10 +684,11 @@ PedidosFarmaciasModel.prototype.obtener_responsables_del_pedido = function(numer
                 case when a.estado=0 then 'Registrado'\
                      when a.estado=1 then 'Asignado'\
                      when a.estado=2 then 'Auditado'\
-                     when a.estado=3 then 'En Despacho' \
+                     when a.estado=3 then 'En Zona Despacho' \
                      when a.estado=4 then 'Despachado' \
                      when a.estado=5 then 'Despachado con Pendientes' \
-                     when a.estado=6 then 'En Auditoria' end as descripcion_estado,\
+                     when a.estado=6 then 'Separacion Finalizada' \
+                     when a.estado=7 then 'En Auditoria' end as descripcion_estado,\
                 b.operario_id,\
                 b.nombre as nombre_responsable,\
                 b.usuario_id as usuario_id_responsable,\

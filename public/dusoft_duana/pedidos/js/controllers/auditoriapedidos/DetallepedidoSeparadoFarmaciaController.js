@@ -248,7 +248,8 @@ define(["angular", "js/controllers",'models/Farmacia',
                             documento_temporal_id: $scope.DocumentoTemporal.documento_temporal_id, 
                             usuario_id: $scope.usuario_id,
                             bodegas_doc_id: $scope.seleccion,
-                            numero_pedido:$scope.numero_pedido
+                            numero_pedido:$scope.numero_pedido,
+                            auditor:$scope.DocumentoTemporal.auditor.usuario_id
                         }
                     }
                 };
@@ -256,6 +257,7 @@ define(["angular", "js/controllers",'models/Farmacia',
                 $scope.validarDocumentoUsuario(obj, 2, function(data){
                     if(data.status === 200){
                         $scope.DocumentoTemporal.bodegas_doc_id = $scope.seleccion;
+                        $scope.DocumentoTemporal.auditor.usuario_id = $scope.session.usuario_id;
                         AlertService.mostrarMensaje("success", data.msj);
                     } else {
                         AlertService.mostrarMensaje("warning", data.msj);

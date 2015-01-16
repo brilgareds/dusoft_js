@@ -284,12 +284,13 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
-                    callback(data);
+                    console.log("documento actualizado ",data)
                     if(data.status === 200){
                         AlertService.mostrarMensaje("success", data.msj);
                     } else {
                         AlertService.mostrarMensaje("warning", data.msj);
                     }
+                    callback(data);
                 });
                 
                 /* Fin Request */

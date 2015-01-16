@@ -75,7 +75,7 @@ define(["angular", "js/controllers",
             
             
             $scope.esAuditorCreador = function(row){
-                console.log("usuario id ", row.entity.auditor, " session id ", $scope.session.usuario_id);
+              //  console.log("usuario id ", row.entity.auditor, " session id ", $scope.session.usuario_id);
                 if(row.entity.auditor.usuario_id === 0){
                     return true;
                 }

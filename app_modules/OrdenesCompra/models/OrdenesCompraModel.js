@@ -21,6 +21,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
                 CASE WHEN a.estado = 0 THEN 'Recibida' \
                      WHEN a.estado = 1 THEN 'Activa' \
                      WHEN a.estado = 2 THEN 'Anulado' END as descripcion_estado, \
+                a.sw_orden_compra_finalizada,\
                 CASE WHEN a.sw_orden_compra_finalizada = '0' THEN 'En Proceso ...' \
                      WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion, \
                 a.observacion,\
@@ -116,10 +117,11 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
                 d.imagen,\
                 a.estado,\
                 CASE WHEN a.estado = 0 THEN 'Recibida'\
-                WHEN a.estado = 1 THEN 'Activa'\
-                WHEN a.estado = 2 THEN 'Anulado' END as descripcion_estado,\
+                     WHEN a.estado = 1 THEN 'Activa'\
+                     WHEN a.estado = 2 THEN 'Anulado' END as descripcion_estado,\
+                a.sw_orden_compra_finalizada,\
                 CASE WHEN a.sw_orden_compra_finalizada = '0' THEN 'En Proceso ...'\
-                WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion,\
+                     WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion,\
                 i.observacion_contrato,\
                 a.observacion,\
                 a.usuario_id,\

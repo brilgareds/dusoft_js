@@ -13,7 +13,7 @@ define(["angular","js/models"], function(angular, models){
             
             for(var i in datos){
                 if(parseInt(datos[i].estado) === 6){
-                    console.log("set datos auditor ",datos);
+                    //console.log("set datos auditor ",datos);
                     this.nombre_responsable = datos[i].nombre_responsable;
                     this.operario_id     = datos[i].operario_id;
                     this.estado          = datos[i].estado;

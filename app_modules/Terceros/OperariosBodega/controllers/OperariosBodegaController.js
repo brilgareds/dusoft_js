@@ -28,7 +28,12 @@ OperariosBodega.prototype.listarOperariosBodega = function(req, res) {
         if (err)
             res.send(G.utils.r(req.url, 'Error Listado Los Operarios de Bodega', 500, {}));
         else {
-
+            
+            if(lista_operarios.length === 0){
+                res.send(G.utils.r(req.url, 'Lista Operarios Bodega', 200, {lista_operarios: lista_operarios}));
+                return
+            }
+            
             var i = lista_operarios.length;
 
             lista_operarios.forEach(function(operario_bodega) {
@@ -55,9 +60,6 @@ OperariosBodega.prototype.listarOperariosBodega = function(req, res) {
 
                     });
                 });
-
-
-
             });
         }
     });

@@ -148,7 +148,7 @@ define(["angular", "js/controllers",
 
                     orden_compra.set_ingreso_temporal(orden.tiene_ingreso_temporal);
 
-                    orden_compra.set_estado_digitacion(orden.estado_digitacion);
+                    orden_compra.set_estado_digitacion(orden.sw_orden_compra_finalizada, orden.estado_digitacion);
 
                     $scope.Empresa.set_ordenes_compras(orden_compra);
 
@@ -180,6 +180,7 @@ define(["angular", "js/controllers",
                                                 <li><a href="javascript:void(0);" ng-click="vista_previa(row.entity);" >Vista Previa</a></li>\
                                                 <li><a href="javascript:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,0)" >Modificar</a></li>\
                                                 <li><a href="javascript:void(0);" ng-click="generar_reporte(row.entity,0)" >Ver PDF</a></li>\
+                                                <li><a href="javascript:void(0);" ng-disabled="true" ng-click="enviar_email(row.entity,0)" >Enviar por Email</a></li>\
                                                 <li class="divider"></li>\
                                                 <li><a href="javascript:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,1)" >Novedades</a></li>\
                                                 <li class="divider"></li>\
@@ -240,11 +241,11 @@ define(["angular", "js/controllers",
                 // Opcion => 1 = Novedades
 
 
-                if (orden_compra.estado === '0' || orden_compra.estado === '2' || orden_compra.get_ingreso_temporal()) {
+                if (orden_compra.get_estado() === '0' || orden_compra.get_estado() === '2' || orden_compra.get_ingreso_temporal()) {
 
-                    if (orden_compra.estado === '0')
+                    if (orden_compra.get_estado() === '0')
                         $scope.mensaje_sistema = "La Orden de Compra [ OC #" + orden_compra.get_numero_orden() + " ] ya fue Ingresada en bodega";
-                    else if (orden_compra.estado === '2')
+                    else if (orden_compra.get_estado() === '2')
                         $scope.mensaje_sistema = "La Orden de Compra [ OC #" + orden_compra.get_numero_orden() + " ] está anulada.";
                     else if (orden_compra.get_ingreso_temporal())
                         $scope.mensaje_sistema = "La Orden de Compra [ OC #" + orden_compra.get_numero_orden() + " ] esta siendo Ingresa en Bodega";
@@ -303,26 +304,53 @@ define(["angular", "js/controllers",
                         }
                     }
                 };
-                
-                console.log('======== generar_reporte =========');
-                console.log(obj);
-                console.log('==================================');
-               // return;
-                
+
                 Request.realizarRequest(API.ORDENES_COMPRA.REPORTE_ORDEN_COMPRA, "POST", obj, function(data) {
-                    console.log('==================== Respuesta server =====================');
-                    console.log(data);
-                    console.log('===========================================================');
-                    
+
                     if (data.status === 200) {
                         var nombre_reporte = data.obj.ordenes_compras.nombre_reporte;
                         console.log("reporte generado", nombre_reporte)
-                        $scope.visualizarReporte("/reports/" + nombre_reporte, "OrdenCompra"+$scope.orden_compra_seleccionada.get_numero_orden(), "blank");
+                        $scope.visualizarReporte("/reports/" + nombre_reporte, "OrdenCompra" + $scope.orden_compra_seleccionada.get_numero_orden(), "blank");
                     } else {
 
                     }
                 });
             }
+
+            $scope.enviar_email = function(orden_compra) {
+
+                $scope.orden_compra_seleccionada = orden_compra;
+
+                if (orden_compra.get_sw_estado_digitacion() === '1') {
+                    $scope.opts = {
+                        backdrop: true,
+                        backdropClick: true,
+                        dialogFade: false,
+                        keyboard: true,
+                        template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <h4> Enviar Orden de Compra por Email </h4>\
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-primary" ng-click="close()">Aceptar</button>\
+                                </div>',
+                        scope: $scope,
+                        controller: function($scope, $modalInstance) {
+
+                            $scope.close = function() {
+                                $modalInstance.close();
+                            };
+                        }
+                    };
+                    var modalInstance = $modal.open($scope.opts);
+                } else {
+                    AlertService.mostrarMensaje("warning", "La ordend de compra No. "+orden_compra.get_numero_orden()+" no ha sido finalizada!!.");
+                    return;
+                }
+            };
 
             $scope.anular_orden_compra_seleccionada = function(orden_compra) {
 

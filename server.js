@@ -151,7 +151,7 @@ app.use(function(err, req, res, next) {
 /*========================================
     Carga libreria de reportes
 ==========================================*/
-jsreport.bootstrapper().start().then(function(bootstrapper) {
+jsreport.bootstrapper().start().then(function(bootstrapper) {    
 	G.jsreport =  bootstrapper;
 });
 

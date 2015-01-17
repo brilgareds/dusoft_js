@@ -1983,7 +1983,7 @@ function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento
                     detalle_pedido = __unificarLotesDetalle(detalle_pedido);
 
                      console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", detalle_pedido);
-                     
+
 
                     detalle_pedido.forEach(function(producto_pedido) {
 

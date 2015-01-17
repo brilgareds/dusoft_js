@@ -88,7 +88,7 @@ E008Controller.prototype.finalizarDocumentoTemporalClientes = function(req, res)
     }
 
     var numero_pedido = args.documento_temporal.numero_pedido;
-    var estado = '1';
+    var estado = '7';
 
     that.m_e008.actualizar_estado_documento_temporal_clientes(numero_pedido, estado, function(err, rows, result) {
         if (err || result.rowCount === 0) {
@@ -179,7 +179,7 @@ E008Controller.prototype.finalizarDocumentoTemporalFarmacias = function(req, res
     }
 
     var numero_pedido = args.documento_temporal.numero_pedido;
-    var estado = '1';
+    var estado = '7';
 
     that.m_e008.actualizar_estado_documento_temporal_farmacias(numero_pedido, estado, function(err, rows) {
         if (err) {

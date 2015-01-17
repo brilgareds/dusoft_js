@@ -28,13 +28,13 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
             $scope.buscarPedidosFarmacias = function(termino, paginando) {
 
                 //valida si cambio el termino de busqueda
-                if ($scope.ultima_busqueda.termino_busqueda != $scope.termino_busqueda
-                        || $scope.ultima_busqueda.seleccion != $scope.seleccion) {
+                if ($scope.ultima_busqueda.termino_busqueda !== $scope.termino_busqueda
+                        || $scope.ultima_busqueda.seleccion !== $scope.seleccion) {
                     $scope.paginaactual = 1;
                 }
 
                 console.log($scope.ultima_busqueda);
-                console.log($scope.termino_busqueda + " " + $scope.seleccion)
+                console.log($scope.termino_busqueda + " " + $scope.seleccion);
 
                 var obj = {
                     session: $scope.session,
@@ -48,12 +48,12 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                     }
                 };
 
-                if ($scope.estadoseleccionado != "") {
+                if ($scope.estadoseleccionado !== "") {
                     obj.data.pedidos_farmacias.filtro[$scope.estadoseleccionado] = true;
                 }
 
                 Request.realizarRequest(API.PEDIDOS.LISTAR_PEDIDOS_FARMACIAS, "POST", obj, function(data) {
-                    if (data.status == 200) {
+                    if (data.status === 200) {
                         $scope.ultima_busqueda = {
                             termino_busqueda: $scope.termino_busqueda,
                             seleccion: $scope.seleccion
@@ -72,7 +72,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                 };
 
                 Request.realizarRequest(API.PEDIDOS.LISTAR_EMPRESAS, "POST", obj, function(data) {
-                    if (data.status == 200) {
+                    if (data.status === 200) {
                         $scope.empresas = data.obj.empresas;
                         //console.log(JSON.stringify($scope.empresas))
                     }
@@ -83,11 +83,11 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
             $scope.lista_pedidos_farmacias = {
                 data: 'Empresa.getPedidosFarmacia()',
                 enableColumnResize: true,
-                enableColumnResize: true,
-                        enableRowSelection: false,
+                enableRowSelection: false,
+                enablehightlight:true,
                 columnDefs: [
                     {field: '', cellClass: "checkseleccion", width: "60",
-                        cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)' ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 || row.entity.estado_separacion'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
+                        cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)' ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 && row.entity.estado_actual_pedido != 5 || row.entity.estado_separacion'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
                     {field: 'descripcion_estado_actual_pedido', displayName: "Estado Actual", cellClass: "txt-center",
                         //cellTemplate: '<div  ng-class="agregarClase(row.entity.estado_actual_pedido)">{{row.entity.descripcion_estado_actual_pedido}}</div>'},
                         cellTemplate: "<button type='button' ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
@@ -98,7 +98,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                     {field: 'fecha_registro', displayName: "Fecha Registro"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
-                                            <button ng-disabled="row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 || row.entity.estado_separacion" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
+                                            <button ng-disabled="row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 && row.entity.estado_actual_pedido != 5 || row.entity.estado_separacion" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
                                                 <li><a href="javascript:void(0);" ng-click="modificar_estado_pedido_farmacia(row.entity);" >Cambiar Estado</a></li>\
                                             </ul>\
@@ -110,7 +110,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
 
 
             $scope.agregarClase = function(estado) {
-                if (estado == 6) {
+                if (estado === 6) {
                     return estados[1];
                 }
                 return estados[estado];
@@ -148,7 +148,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                     $scope.quitarPedido = function(pedido) {
                 for (var i in $scope.pedidosSeleccionados) {
                     var _pedido = $scope.pedidosSeleccionados[i];
-                    if (_pedido.numero_pedido == pedido.numero_pedido) {
+                    if (_pedido.numero_pedido === pedido.numero_pedido) {
                         $scope.pedidosSeleccionados.splice(i, true);
                     }
                 }
@@ -158,7 +158,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                 //valida que no exista el pedido en el array
                 for (var i in $scope.pedidosSeleccionados) {
                     var _pedido = $scope.pedidosSeleccionados[i];
-                    if (_pedido.numero_pedido == pedido.numero_pedido) {
+                    if (_pedido.numero_pedido === pedido.numero_pedido) {
                         return false;
                     }
                 }
@@ -169,7 +169,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                 var pedido = row.entity;
                 for (var i in $scope.pedidosSeleccionados) {
                     var _pedido = $scope.pedidosSeleccionados[i];
-                    if (_pedido.numero_pedido == pedido.numero_pedido) {
+                    if (_pedido.numero_pedido === pedido.numero_pedido) {
                         //console.log("buscarSeleccion encontrado **************");
                         //console.log(pedido);
                         row.selected = true;

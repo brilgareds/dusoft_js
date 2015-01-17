@@ -582,7 +582,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                 left join inv_bodegas_movimiento_tmp_despachos_farmacias h on a.solicitud_prod_a_bod_ppal_id = h.solicitud_prod_a_bod_ppal_id \
                 left join inv_bodegas_movimiento_tmp i on h.doc_tmp_id = i.doc_tmp_id and h.usuario_id = i.usuario_id \
                 where g.usuario_id = $1 " + sql_aux + " \
-                and a.estado = '1' AND a.sw_despacho = 0 \
+                and a.estado = '1' /*AND a.sw_despacho = 0*/ \
                 and (\
                     a.solicitud_prod_a_bod_ppal_id ilike $2 or\
                     d.razon_social ilike  $2 or\

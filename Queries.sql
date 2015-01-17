@@ -365,3 +365,13 @@ IS 'Usuario que registra el archivo';
 COMMENT ON COLUMN "public"."archivos_novedades_ordenes_compras"."fecha_registro"
 IS 'Fech en que se registra el archivo';
 
+
+
+
+ALTER TABLE "public"."solicitud_productos_a_bodega_principal_estado"
+  ADD COLUMN "sw_terminado" CHAR(1);
+
+
+
+ALTER TABLE "public"."ventas_ordenes_pedidos_estado"
+  ADD COLUMN "sw_terminado" CHAR(1);

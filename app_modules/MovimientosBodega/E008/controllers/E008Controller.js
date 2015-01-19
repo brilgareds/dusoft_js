@@ -1,5 +1,5 @@
 
-var E008Controller = function(movientos_bodegas, m_e008, e_e008, pedidos_clientes, pedidos_farmacias, eventos_pedidos_clientes, eventos_pedidos_farmacias, terceros) {
+var E008Controller = function(movientos_bodegas, m_e008, e_e008, pedidos_clientes, pedidos_farmacias, eventos_pedidos_clientes, eventos_pedidos_farmacias, terceros, m_pedidos) {
 
     console.log("Modulo E008 Cargado ");
 
@@ -15,7 +15,7 @@ var E008Controller = function(movientos_bodegas, m_e008, e_e008, pedidos_cliente
     this.e_pedidos_farmacias = eventos_pedidos_farmacias;
 
     this.m_terceros = terceros;
-
+    this.m_pedidos = m_pedidos;
 };
 
 // Generar Cabecera del Documento Temporal de CLIENTES
@@ -1368,7 +1368,7 @@ E008Controller.prototype.auditoriaProductosClientes = function(req, res) {
                 var count = detalle_documento_temporal.length;
 
                 //se unifica el detalle
-                productos_pedidos = __unificarLotesDetalle(productos_pedidos);
+                productos_pedidos = that.m_pedidos.unificarLotesDetalle(productos_pedidos); 
 
                 detalle_documento_temporal.forEach(function(detalle) {
 
@@ -1475,7 +1475,7 @@ E008Controller.prototype.auditoriaProductosFarmacias = function(req, res) {
 
                 var count = detalle_documento_temporal.length;
 
-                productos_pedidos = __unificarLotesDetalle(productos_pedidos);
+                productos_pedidos = that.m_pedidos.unificarLotesDetalle(productos_pedidos);
 
                 detalle_documento_temporal.forEach(function(detalle) {
 
@@ -2059,7 +2059,7 @@ function __validar_productos_pedidos_clientes(contexto, numero_pedido, documento
 
 
 
-                    detalle_pedido = __unificarLotesDetalle(detalle_pedido);
+                    detalle_pedido = that.m_pedidos.unificarLotesDetalle(detalle_pedido);
 
                     console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", detalle_pedido);
 
@@ -2148,7 +2148,7 @@ function __validar_productos_pedidos_farmacias(contexto, numero_pedido, document
 
 
 
-                    detalle_pedido = __unificarLotesDetalle(detalle_pedido);
+                    detalle_pedido = that.m_pedidos.unificarLotesDetalle(detalle_pedido);
 
                     detalle_pedido.forEach(function(producto_pedido) {
 
@@ -2208,36 +2208,6 @@ function __validar_productos_pedidos_farmacias(contexto, numero_pedido, document
     });
 }
 ;
-
-//se encarga de unificar todos los lotes con el mismo producto 
-function __unificarLotesDetalle(detalle) {
-
-    for (var i in detalle) {
-        var lote = detalle[i];
-
-        for (var ii in detalle) {
-            var _lote = detalle[ii];
-            //se unifica el lote
-            if (_lote.codigo_producto === lote.codigo_producto && lote.item_id !== _lote.item_id) {
-                lote.cantidad_ingresada += _lote.cantidad_ingresada;
-                lote.cantidad_pendiente -= _lote.cantidad_ingresada;
-
-                if (lote.auditado === '1') {
-                    lote.auditado = _lote.auditado;
-                }
-
-                detalle.splice(ii, 1);
-                __unificarLotesDetalle(detalle);
-                break;
-            }
-        }
-
-    }
-
-    return detalle;
-}
-;
-
 
 function __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, callback) {
 
@@ -2351,6 +2321,6 @@ function __validar_responsable_pedidos_farmacias(contexto, numero_pedido, respon
 
 
 
-E008Controller.$inject = ["m_movientos_bodegas", "m_e008", "e_e008", "m_pedidos_clientes", "m_pedidos_farmacias", "e_pedidos_clientes", "e_pedidos_farmacias", "m_terceros"];
+E008Controller.$inject = ["m_movientos_bodegas", "m_e008", "e_e008", "m_pedidos_clientes", "m_pedidos_farmacias", "e_pedidos_clientes", "e_pedidos_farmacias", "m_terceros","m_pedidos"];
 
 module.exports = E008Controller;

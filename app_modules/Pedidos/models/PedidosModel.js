@@ -161,6 +161,34 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
 
 };
 
+
+PedidosModel.prototype.unificarLotesDetalle = function(detalle) {
+    var that = this;
+    for (var i in detalle) {
+        var lote = detalle[i];
+
+        for (var ii in detalle) {
+            var _lote = detalle[ii];
+            //se unifica el lote
+            if (_lote.codigo_producto === lote.codigo_producto && lote.item_id !== _lote.item_id) {
+                lote.cantidad_ingresada += _lote.cantidad_ingresada;
+                lote.cantidad_pendiente -= _lote.cantidad_ingresada;
+
+                if (lote.auditado === '1') {
+                    lote.auditado = _lote.auditado;
+                }
+
+                detalle.splice(ii, 1);
+                that.unificarLotesDetalle(detalle);
+                break;
+            }
+        }
+
+    }
+
+    return detalle;
+};
+
 // Funion que calcula cuales han sido los ultimo pedidos (Clientes / Farmacias ) en donde se 
 // ha solicitado un producto deteminado
 function consultar_cantidad_total_solicitada_producto(empresa_id, codigo_producto, fecha_registro_pedido, callback) {
@@ -213,6 +241,9 @@ function consultar_cantidad_total_productos_despachados(empresa_id, codigo_produ
     });
 }
 ;
+
+
+
 
 
 PedidosModel.$inject = ["m_productos", "m_pedidos_clientes", "m_pedidos_farmacias"];

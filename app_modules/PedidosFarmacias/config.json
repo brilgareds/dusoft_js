@@ -28,6 +28,11 @@
                     "module": "PedidosClientes",
                     "model": "PedidosClienteModel",
                     "alias": "m_pedidos_clientes"
+                },
+                "pedidos_model": {
+                    "module": "Pedidos",
+                    "model": "PedidosModel",
+                    "alias": "m_pedidos"
                 }
             }],
         "events": [{

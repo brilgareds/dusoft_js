@@ -1,5 +1,5 @@
 
-var PedidosFarmacias = function(pedidos_farmacias, eventos_pedidos_farmacias, productos, pedidos_clientes) {
+var PedidosFarmacias = function(pedidos_farmacias, eventos_pedidos_farmacias, productos, pedidos_clientes, m_pedidos) {
 
     console.log("Modulo Pedidos Farmacias  Cargado ");
 
@@ -7,6 +7,7 @@ var PedidosFarmacias = function(pedidos_farmacias, eventos_pedidos_farmacias, pr
     this.m_pedidos_clientes = pedidos_clientes;
     this.e_pedidos_farmacias = eventos_pedidos_farmacias;
     this.m_productos = productos;
+    this.m_pedidos = m_pedidos;
 
 };
 
@@ -639,7 +640,7 @@ PedidosFarmacias.prototype.eliminarResponsablesPedido = function(req, res) {
  *     }  
  */
 
-PedidosFarmacias.prototype.listaPedidosOperariosBodega = function(req, res) {
+PedidosFarmacias.prototype.listaPedidosOperariosBodega = function(req, res) { 
 
     var that = this;
 
@@ -690,8 +691,10 @@ PedidosFarmacias.prototype.listaPedidosOperariosBodega = function(req, res) {
             pedido.tiempo_separacion = tiempo_separacion;
 
             that.m_pedidos_farmacias.consultar_detalle_pedido(pedido.numero_pedido, function(err, detalle_pedido) {
+                
+                detalle_pedido = that.m_pedidos.unificarLotesDetalle(detalle_pedido);
                 pedido.lista_productos = detalle_pedido;
-
+                
                 if (--i === 0) {
                     res.send(G.utils.r(req.url, 'Lista Pedidos Farmacias', 200, {pedidos_farmacias: lista_pedidos_farmacias, total_registros: total_registros}));
                 }
@@ -1697,6 +1700,6 @@ function _generarDocumentoPedido(obj,callback){
         });
 };
 
-PedidosFarmacias.$inject = ["m_pedidos_farmacias", "e_pedidos_farmacias", "m_productos", "m_pedidos_clientes"];
+PedidosFarmacias.$inject = ["m_pedidos_farmacias", "e_pedidos_farmacias", "m_productos", "m_pedidos_clientes", "m_pedidos"];
 
 module.exports = PedidosFarmacias;

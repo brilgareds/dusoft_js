@@ -1420,6 +1420,10 @@ PedidosFarmacias.prototype.insertarPedidoFarmaciaDefinitivo = function(req, res)
         else
         {
             console.log(">>>>>>>>>>>>>>>>>>>> INSERTAR PEDIDO FARMACIA DEFINITIVO - EJECUTADO");
+            console.log(">>>>>>>>>>>>>>>>>>>> ID PEDIDO: ", id_pedido);
+            
+            var numero_pedido = id_pedido[0].solicitud_prod_a_bod_ppal_id;
+            
             /*res.send(G.utils.r(req.url, 'Encabezado del pedido almacenado exitosamente', 200, {numero_pedido: id_pedido}));
             return;*/
             
@@ -1437,7 +1441,7 @@ PedidosFarmacias.prototype.insertarPedidoFarmaciaDefinitivo = function(req, res)
                     
                     var responsable = operario_array[0].operario_id;
 
-                    that.m_pedidos_farmacias.asignar_responsables_pedidos(id_pedido, '0', responsable, usuario_id, function(err, rows, responsable_estado_pedido) {
+                    that.m_pedidos_farmacias.asignar_responsables_pedidos(numero_pedido, '0', responsable, usuario_id, function(err, rows, responsable_estado_pedido) {
 
                         if (err) {
                             res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Asignacion de Resposables', 500, {}));

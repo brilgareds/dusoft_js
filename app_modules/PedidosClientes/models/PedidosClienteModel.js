@@ -693,7 +693,7 @@ PedidosClienteModel.prototype.obtener_responsables_del_pedido = function(numero_
                 from ventas_ordenes_pedidos_estado a \
                 inner join system_usuarios c on a.usuario_id = c.usuario_id\
                 left join operarios_bodega b on a.responsable_id = b.operario_id\
-                where a.pedido_cliente_id=$1";
+                where a.pedido_cliente_id=$1 order by a.fecha_registro DESC; ";
 
     G.db.query(sql, [numero_pedido], function(err, rows, result) {
         callback(err, rows);

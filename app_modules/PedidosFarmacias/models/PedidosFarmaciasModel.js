@@ -473,9 +473,11 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                 a.codigo_producto,\
                 fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
                 a.cantidad_solic::integer as cantidad_solicitada,\
+                (a.cantidad_solic - a.cantidad_pendiente)::integer as cantidad_despachada_real,\
+                a.cantidad_pendiente::integer as cantidad_pendiente_real,\
+                COALESCE(b.cantidad_temporalmente_separada,0)::integer as cantidad_temporalmente_separada,\
                 ABS( (a.cantidad_solic - a.cantidad_pendiente) +  COALESCE(b.cantidad_temporalmente_separada,0) )::integer as cantidad_despachada,\
                 (a.cantidad_solic - ABS( (a.cantidad_solic - a.cantidad_pendiente) +  COALESCE(b.cantidad_temporalmente_separada,0) ))::integer as cantidad_pendiente,\
-                a.cantidad_pendiente as cantidad_pendiente_real,\
                 f.costo as valor_unitario,\
                 c.porc_iva as porcentaje_iva,\
                 (f.costo+(f.costo*(c.porc_iva/100)))as valor_unitario_con_iva,\

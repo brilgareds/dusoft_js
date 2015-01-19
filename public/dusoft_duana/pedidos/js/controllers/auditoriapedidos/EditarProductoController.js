@@ -465,7 +465,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                 for(var i in $scope.rootEditarProducto.producto.lotesSeleccionados){
                     var lote = $scope.rootEditarProducto.producto.lotesSeleccionados[i];
                     console.log("validando caja en ", lote);
-                    if(lote.seleccionado && (lote.numero_caja === 0 || isNaN(lote.numero_caja)) || !lote.numero_caja){
+                    if(lote.seleccionado && (lote.numero_caja === 0 || isNaN(lote.numero_caja) || !lote.numero_caja) ){
                         $scope.rootEditarProducto.validacionproducto.valido = false;
                         $scope.rootEditarProducto.validacionproducto.mensaje = "El lote codigo: "+lote.codigo_lote+ ", esta seleccionado y no tiene caja asignada.";
                         return;

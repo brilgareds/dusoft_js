@@ -607,7 +607,7 @@ PedidosFarmaciasModel.prototype.asignar_responsables_pedidos = function(numero_p
     var that = this;
 
     // Validar si existen responsables asigandos
-    var sql = " SELECT * FROM solicitud_productos_a_bodega_principal_estado a WHERE a.solicitud_prod_a_bod_ppal_id = $1 AND a.estado = $2                and (a.sw_terminado is null or a.sw_terminado = '0');";
+    var sql = " SELECT * FROM solicitud_productos_a_bodega_principal_estado a WHERE a.solicitud_prod_a_bod_ppal_id = $1 AND a.estado = $2 and (a.sw_terminado is null or a.sw_terminado = '0');";
 
     G.db.query(sql, [numero_pedido, estado_pedido], function(err, responsable_estado_pedido, result) {
         if (responsable_estado_pedido.length > 0) {
@@ -648,7 +648,7 @@ PedidosFarmaciasModel.prototype.insertar_responsables_pedidos = function(numero_
 PedidosFarmaciasModel.prototype.actualizar_responsables_pedidos = function(numero_pedido, estado_pedido, responsable, usuario, callback) {
 
     var sql = "UPDATE solicitud_productos_a_bodega_principal_estado SET responsable_id=$3, fecha=NOW(), usuario_id=$4 " +
-            "WHERE solicitud_prod_a_bod_ppal_id=$1 AND estado=$2;";
+            "WHERE solicitud_prod_a_bod_ppal_id=$1 AND estado=$2 and (sw_terminado is null or sw_terminado = '0'); ";
 
     G.db.query(sql, [numero_pedido, estado_pedido, responsable, usuario], function(err, rows, result) {
         callback(err, rows);
@@ -657,7 +657,7 @@ PedidosFarmaciasModel.prototype.actualizar_responsables_pedidos = function(numer
 
 PedidosFarmaciasModel.prototype.eliminar_responsables_pedidos = function(numero_pedido, callback) {
 
-    var sql = "DELETE FROM solicitud_productos_a_bodega_principal_estado WHERE solicitud_prod_a_bod_ppal_id =$1 ; ";
+    var sql = "DELETE FROM solicitud_productos_a_bodega_principal_estado WHERE solicitud_prod_a_bod_ppal_id =$1 and (sw_terminado is null or sw_terminado = '0') ; ";
 
     G.db.query(sql, [numero_pedido], function(err, rows, result) {
         callback(err, rows, result);

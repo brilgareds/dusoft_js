@@ -408,6 +408,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                 
                 
                 if(cantidad_ingresada > $scope.rootEditarProducto.producto.cantidad_pendiente){
+                    console.log("cantidad_ingresada ",cantidad_ingresada ," pendiente ",$scope.rootEditarProducto.producto.cantidad_pendiente );
                     obj.valido  = false;
                     obj.mensaje = "La cantidad ingresada, debe ser menor o igual a la cantidad pendiente!!.";
                     return obj;

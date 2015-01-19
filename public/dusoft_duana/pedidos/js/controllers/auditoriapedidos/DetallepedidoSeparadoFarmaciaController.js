@@ -146,6 +146,7 @@ define(["angular", "js/controllers",'models/Farmacia',
                     {field: 'descripcion', displayName: 'Nombre Producto', width:500},
                     {field: 'cantidad_pendiente', displayName: 'Pendiente' },
                     {field: 'cantidad_separada', displayName: "Ingresado"},
+                    {field: 'cantidad_solicitada', displayName: "Solicitado"},
                     {field: 'observacion', displayName: "Observación", width:350},
                     {field: 'opciones', displayName: "", cellClass: "txt-center" , width:40,
                         cellTemplate: ' <div class="row">\n\

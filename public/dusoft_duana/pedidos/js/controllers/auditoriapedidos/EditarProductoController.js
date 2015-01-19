@@ -73,6 +73,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
            
         $modalInstance.result.then(function() {
             $scope.rootEditarProducto.producto.cantidad_separada = $scope.rootEditarProducto.producto.obtenerCantidadSeleccionada();
+            $scope.rootEditarProducto.producto.cantidad_solicitada = $scope.rootEditarProducto.producto.cantidad_pendiente;
             $scope.rootEditarProducto.producto.lotesSeleccionados = [];
             
         }, function() {
@@ -406,9 +407,9 @@ define(["angular", "js/controllers",'models/ClientePedido',
                 }
                 
                 
-                if(cantidad_ingresada > $scope.rootEditarProducto.producto.cantidad_solicitada){
+                if(cantidad_ingresada > $scope.rootEditarProducto.producto.cantidad_pendiente){
                     obj.valido  = false;
-                    obj.mensaje = "La cantidad ingresada, debe ser menor o igual a la cantidad solicitada!!.";
+                    obj.mensaje = "La cantidad ingresada, debe ser menor o igual a la cantidad pendiente!!.";
                     return obj;
                     
                 }
@@ -458,12 +459,13 @@ define(["angular", "js/controllers",'models/ClientePedido',
                     return;
                 }
                 
+               console.log("lotes seleccionados >>>>>>>>>>>>>>>>>",$scope.rootEditarProducto.producto.lotesSeleccionados);
                 
                 //validar que los productos seleccionados tengan cajas
                 for(var i in $scope.rootEditarProducto.producto.lotesSeleccionados){
                     var lote = $scope.rootEditarProducto.producto.lotesSeleccionados[i];
                     console.log("validando caja en ", lote);
-                    if(lote.seleccionado && (lote.numero_caja === 0 || isNaN(lote.numero_caja))){
+                    if(lote.seleccionado && (lote.numero_caja === 0 || isNaN(lote.numero_caja)) || !lote.numero_caja){
                         $scope.rootEditarProducto.validacionproducto.valido = false;
                         $scope.rootEditarProducto.validacionproducto.mensaje = "El lote codigo: "+lote.codigo_lote+ ", esta seleccionado y no tiene caja asignada.";
                         return;
@@ -479,12 +481,11 @@ define(["angular", "js/controllers",'models/ClientePedido',
                     that.justificarPendiente();
                 }
                 
-                
-   
             };
             
             that.justificarPendiente = function(){
-                var cantidad_pendiente = $scope.rootEditarProducto.producto.cantidad_solicitada - $scope.rootEditarProducto.producto.obtenerCantidadSeleccionada();
+                //var cantidad_pendiente = $scope.rootEditarProducto.producto.cantidad_solicitada - $scope.rootEditarProducto.producto.obtenerCantidadSeleccionada();
+                  var cantidad_pendiente = $scope.rootEditarProducto.producto.cantidad_pendiente;
                     var obj = {
                         session:$scope.session,
                         data:{
@@ -533,7 +534,8 @@ define(["angular", "js/controllers",'models/ClientePedido',
                     
                 if(lote.seleccionado){
 
-                    var cantidad_pendiente = $scope.rootEditarProducto.producto.cantidad_solicitada - $scope.rootEditarProducto.producto.obtenerCantidadSeleccionada();
+                   // var cantidad_pendiente = $scope.rootEditarProducto.producto.cantidad_solicitada - $scope.rootEditarProducto.producto.obtenerCantidadSeleccionada();
+                   var cantidad_pendiente = $scope.rootEditarProducto.producto.cantidad_pendiente;
                     var obj = {
                         session:$scope.session,
                         data:{
@@ -578,11 +580,16 @@ define(["angular", "js/controllers",'models/ClientePedido',
                 console.log("separada ",$scope.rootEditarProducto.producto.cantidad_separada, " solicitada ",$scope.rootEditarProducto.producto.cantidad_solicitada
                     , " lengt just",$scope.rootEditarProducto.producto.lote.justificacion_auditor.length, " justificacion auditor ",$scope.rootEditarProducto.producto.lote.justificacion_auditor);
                     
-                //alert($scope.rootEditarProducto.producto.obtenerCantidadSeleccionada() + "  '''' " + $scope.rootEditarProducto.producto.cantidad_solicitada)
-                if($scope.rootEditarProducto.producto.obtenerCantidadSeleccionada() < $scope.rootEditarProducto.producto.cantidad_solicitada ){
-                        
+                
+                /*if($scope.rootEditarProducto.producto.obtenerCantidadSeleccionada() < 
+                    $scope.rootEditarProducto.producto.cantidad_solicitada ){
+
                         return true;
 
+                }*/
+                
+                if($scope.rootEditarProducto.producto.cantidad_pendiente > 0){
+                    return true;
                 }
 
                 return false;

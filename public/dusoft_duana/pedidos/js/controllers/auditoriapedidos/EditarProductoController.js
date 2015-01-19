@@ -27,7 +27,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
            var that = this;
            
-
+           console.log("detalle producto ",$scope.rootEditarProducto.producto  );
             $scope.session = {
                 usuario_id: Usuario.usuario_id,
                 auth_token: Usuario.token

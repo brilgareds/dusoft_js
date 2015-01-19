@@ -23,6 +23,11 @@
                     "module": "Productos",
                     "model": "ProductosModel",
                     "alias": "m_productos"
+                },
+                "pedidos_model": {
+                    "module": "Pedidos",
+                    "model": "PedidosModel",
+                    "alias": "m_pedidos"
                 }
             }],
         "events": [{

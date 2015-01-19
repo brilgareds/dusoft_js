@@ -1,12 +1,12 @@
 
-var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, productos) {
+var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, productos, m_pedidos) {
 
     console.log("Modulo Pedidos Cliente  Cargado ");
 
     this.m_pedidos_clientes = pedidos_clientes;
     this.e_pedidos_clientes = eventos_pedidos_clientes;
     this.m_productos = productos;
-
+    this.m_pedidos = m_pedidos;
 };
 
 /**
@@ -469,6 +469,7 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
             pedido.tiempo_separacion = tiempo_separacion;
 
             that.m_pedidos_clientes.consultar_detalle_pedido(pedido.numero_pedido, function(err, detalle_pedido) {
+                detalle_pedido = that.m_pedidos.unificarLotesDetalle(detalle_pedido);
                 pedido.lista_productos = detalle_pedido;
 
                 if (--i === 0) {
@@ -485,6 +486,6 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
 
 };
 
-PedidosCliente.$inject = ["m_pedidos_clientes", "e_pedidos_clientes", "m_productos"];
+PedidosCliente.$inject = ["m_pedidos_clientes", "e_pedidos_clientes", "m_productos", "m_pedidos"];
 
 module.exports = PedidosCliente;

@@ -33,6 +33,11 @@
                     "module": "Terceros/OperariosBodega",
                     "model": "OperariosBodegaModel",
                     "alias": "m_terceros"
+                },
+                "pedidos_model": {
+                    "module": "Pedidos",
+                    "model": "PedidosModel",
+                    "alias": "m_pedidos"
                 }
             }],
         "events": [{

@@ -688,7 +688,8 @@ PedidosClienteModel.prototype.obtener_responsables_del_pedido = function(numero_
                 a.usuario_id,\
                 c.nombre as nombre_usuario,\
                 a.fecha as fecha_asignacion,\
-                a.fecha_registro    \
+                a.fecha_registro,    \
+                COALESCE(a.sw_terminado,'0') as sw_terminado\
                 from ventas_ordenes_pedidos_estado a \
                 inner join system_usuarios c on a.usuario_id = c.usuario_id\
                 left join operarios_bodega b on a.responsable_id = b.operario_id\
@@ -699,6 +700,18 @@ PedidosClienteModel.prototype.obtener_responsables_del_pedido = function(numero_
     });
 };
 
+
+PedidosClienteModel.prototype.terminar_estado_pedido = function(numero_pedido,estados,terminado,callback) {
+    
+    estados = estados.join(",");
+    
+    var sql = "update solicitud_productos_a_bodega_principal_estado set sw_terminado = $3\
+               where solicitud_prod_a_bod_ppal_id = $1 and estado in($2) and (sw_terminado is null or sw_terminado = '0')";
+
+    G.db.query(sql, [numero_pedido, estados, terminado], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
 
 // obtiene informacion del rotulo para imprimir
 PedidosClienteModel.prototype.obtenerDetalleRotulo = function(numero_pedido, numero_caja, callback) {

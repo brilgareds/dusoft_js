@@ -16,7 +16,8 @@ define(["angular", "js/controllers",'models/ClientePedido',
                     documento_despacho) {
             
            $scope.rootEditarProducto = {}; 
-           $scope.rootEditarProducto.producto = angular.copy(producto);
+           //$scope.rootEditarProducto.producto = angular.copy(producto);
+           $scope.rootEditarProducto.producto  = producto;
            //console.log("lote por producto ", $scope.rootEditarProducto.producto)
             //$scope.rootEditarProducto.producto.cantidad_solicitada = 120;
            $scope.rootEditarProducto.pedido   = angular.copy(documento.getPedido());
@@ -27,7 +28,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
            var that = this;
            
-           console.log("detalle producto ",$scope.rootEditarProducto.producto  );
+
             $scope.session = {
                 usuario_id: Usuario.usuario_id,
                 auth_token: Usuario.token
@@ -70,6 +71,13 @@ define(["angular", "js/controllers",'models/ClientePedido',
                
            });
            
+        $modalInstance.result.then(function() {
+            $scope.rootEditarProducto.producto.cantidad_separada = $scope.rootEditarProducto.producto.obtenerCantidadSeleccionada();
+            $scope.rootEditarProducto.producto.lotesSeleccionados = [];
+            
+        }, function() {
+        });
+
            
            that.traerItemsAuditados = function(callback){
                
@@ -292,8 +300,10 @@ define(["angular", "js/controllers",'models/ClientePedido',
                         that.traerDisponibles(function(data){
                       
                             if(data.status === 200){
-   
+                                
+                               $scope.rootEditarProducto.producto.cantidad_pendiente += parseInt(lote.cantidad_ingresada);
                                $scope.rootEditarProducto.producto.disponible = data.obj.disponibilidad_bodega;
+                               console.log("datos retirados ",$scope.rootEditarProducto.producto);
 
                             } 
 
@@ -364,7 +374,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                         that.traerDisponibles(function(data){
                       
                             if(data.status === 200){
-   
+                               $scope.rootEditarProducto.producto.cantidad_pendiente -= parseInt(lote.cantidad_ingresada);
                                $scope.rootEditarProducto.producto.disponible = data.obj.disponibilidad_bodega;
 
                             } 
@@ -381,8 +391,8 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
             that.esCantidadIngresadaValida = function(lote){
                 var obj = { valido : true};
-                //var cantidad_ingresada = parseInt(lote.cantidad_ingresada);
-                var cantidad_ingresada = $scope.rootEditarProducto.producto.obtenerCantidadSeleccionada();
+                var cantidad_ingresada = parseInt(lote.cantidad_ingresada);
+                //var cantidad_ingresada = $scope.rootEditarProducto.producto.obtenerCantidadSeleccionada();
                 var cantidad_por_lote  = $scope.rootEditarProducto.producto.obtenerCantidadSeleccionadaPorLote(lote.codigo_lote);
                 
                 console.log("cantidad ingresada >>>>>>> ", cantidad_ingresada, " solicitada ",$scope.rootEditarProducto.producto.cantidad_solicitada, " por lote ",cantidad_por_lote, " disponible ", $scope.rootEditarProducto.producto.disponible);
@@ -568,10 +578,9 @@ define(["angular", "js/controllers",'models/ClientePedido',
                 console.log("separada ",$scope.rootEditarProducto.producto.cantidad_separada, " solicitada ",$scope.rootEditarProducto.producto.cantidad_solicitada
                     , " lengt just",$scope.rootEditarProducto.producto.lote.justificacion_auditor.length, " justificacion auditor ",$scope.rootEditarProducto.producto.lote.justificacion_auditor);
                     
-                
-                if($scope.rootEditarProducto.producto.obtenerCantidadSeleccionada() < 
-                    $scope.rootEditarProducto.producto.cantidad_solicitada ){
-
+                //alert($scope.rootEditarProducto.producto.obtenerCantidadSeleccionada() + "  '''' " + $scope.rootEditarProducto.producto.cantidad_solicitada)
+                if($scope.rootEditarProducto.producto.obtenerCantidadSeleccionada() < $scope.rootEditarProducto.producto.cantidad_solicitada ){
+                        
                         return true;
 
                 }

@@ -144,8 +144,8 @@ define(["angular", "js/controllers",'models/Farmacia',
                 columnDefs: [                
                     {field: 'codigo_producto', displayName: 'Código' , width:100},
                     {field: 'descripcion', displayName: 'Nombre Producto', width:500},
-                    {field: 'cantidad_solicitada', displayName: 'Solicitado' },
-                    {field: 'cantidad_separada', displayName: "Separado"},
+                    {field: 'cantidad_pendiente', displayName: 'Pendiente' },
+                    {field: 'cantidad_separada', displayName: "Ingresado"},
                     {field: 'observacion', displayName: "Observación", width:350},
                     {field: 'opciones', displayName: "", cellClass: "txt-center" , width:40,
                         cellTemplate: ' <div class="row">\n\

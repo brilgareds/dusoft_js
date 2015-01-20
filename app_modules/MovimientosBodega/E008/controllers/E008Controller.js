@@ -110,8 +110,6 @@ E008Controller.prototype.finalizarDocumentoTemporalClientes = function(req, res)
                     return;
                 }
                 
-                console.log("terminar estado pedido  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", results);
-                return;
 
                 that.m_e008.actualizar_estado_documento_temporal_clientes(numero_pedido, '1', function(err, rows, result) {
                     if (err || result.rowCount === 0) {

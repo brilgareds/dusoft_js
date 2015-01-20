@@ -153,7 +153,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
                         or b.telefono ilike $2   \
                         or c.vendedor_id ilike $2 \
                         or c.nombre ilike $2) \
-                AND (a.estado IN ('0','1','2','3')) order by 1 desc ";
+                /*AND (a.estado IN ('0','1','2','3'))*/  order by 1 desc ";
 
     G.db.pagination(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
         callback(err, rows);
@@ -241,7 +241,7 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
                 inner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id \
                 left join inv_bodegas_movimiento_tmp_despachos_clientes d on a.pedido_cliente_id = d.pedido_cliente_id\
                 where a.pedido_cliente_id = $1  \
-                AND (a.estado IN ('0','1','2','3')) order by 1 desc; ";
+                /*AND (a.estado IN ('0','1','2','3'))*/ order by 1 desc; ";
 
     G.db.query(sql, [numero_pedido], function(err, rows, result) {
         callback(err, rows);
@@ -281,48 +281,51 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
 PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido, callback) {
     
         var sql = " select\
-                a.pedido_cliente_id as numero_pedido,\
-                a.codigo_producto,\
-                fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
-                a.numero_unidades::integer as cantidad_solicitada,\
-                ABS((a.numero_unidades - (a.numero_unidades - a.cantidad_despachada) - COALESCE(b.cantidad_temporalmente_separada,0))::integer) as cantidad_despachada,\
-                (a.numero_unidades - a.cantidad_despachada - COALESCE(b.cantidad_temporalmente_separada,0))::integer as cantidad_pendiente,\
-                a.cantidad_facturada::integer,\
-                a.valor_unitario,\
-                a.porc_iva as porcentaje_iva,\
-                (a.valor_unitario+(a.valor_unitario*(a.porc_iva/100)))as valor_unitario_con_iva,\
-                (a.numero_unidades*(a.valor_unitario*(a.porc_iva/100))) as valor_iva,\
-                COALESCE(b.justificacion, '') as justificacion, \
-                COALESCE(b.justificacion_auditor, '') as justificacion_auditor, \
-                COALESCE(b.lote, '') as lote,\
-                b.fecha_vencimiento,\
-                b.item_id,\
-                b.tipo_estado_auditoria,\
-                b.cantidad_ingresada,\
-                COALESCE(b.auditado, '0') as auditado\
-                from ventas_ordenes_pedidos_d a \
-                inner join inventarios_productos c on a.codigo_producto = c.codigo_producto \
-                inner join inv_subclases_inventarios d on c.grupo_id = d.grupo_id and c.clase_id = d.clase_id and c.subclase_id = d.subclase_id \
-                inner join inv_clases_inventarios e on d.grupo_id = e.grupo_id and d.clase_id = e.clase_id \
-                left join (\
-                    select a.numero_pedido, a.codigo_producto, a.justificacion, a.justificacion_auditor, sum(a.cantidad_temporalmente_separada) as cantidad_temporalmente_separada,\
-                    a.lote, a.fecha_vencimiento, a.item_id, a.tipo_estado_auditoria, a.cantidad_ingresada, a.auditado\
-                    from (\
-                            select a.pedido_cliente_id as numero_pedido,  b.codigo_producto,  c.observacion as justificacion, c.justificacion_auditor, SUM(b.cantidad) as cantidad_temporalmente_separada, b.lote, to_char(b.fecha_vencimiento, 'dd-mm-yyyy') as fecha_vencimiento, b.item_id, '2' as tipo_estado_auditoria, b.cantidad :: integer as cantidad_ingresada, b.auditado\
-                            from inv_bodegas_movimiento_tmp_despachos_clientes a \
-                            inner join inv_bodegas_movimiento_tmp_d b on a.usuario_id = b.usuario_id and a.doc_tmp_id = b.doc_tmp_id\
-                            left join inv_bodegas_movimiento_tmp_justificaciones_pendientes c on b.doc_tmp_id = c.doc_tmp_id and b.usuario_id = c.usuario_id and b.codigo_producto = c.codigo_producto\
-                            group by 1,2,3,4,6, 7, 8, 9, 10, 11\
-                            union \
-                            select a.pedido_cliente_id  as numero_pedido, b.codigo_producto, b.observacion as justificacion, b.justificacion_auditor, 0 as cantidad_temporalmente_separada, '' as lote, null as fecha_vencimiento, 0 as item_id, '3' as tipo_estado_auditoria, 0 as  cantidad_ingresada, '0' as auditado\
-                            from inv_bodegas_movimiento_tmp_despachos_clientes a \
-                            left join inv_bodegas_movimiento_tmp_justificaciones_pendientes b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
-                            and b.codigo_producto not in(\
-                                  select aa.codigo_producto from inv_bodegas_movimiento_tmp_d aa where aa.doc_tmp_id = b.doc_tmp_id and aa.usuario_id = b.usuario_id\
-                            )\
-                    ) a group by 1,2,3,4,6, 7, 8, 9, 10, 11 \
-                ) as b on a.pedido_cliente_id = b.numero_pedido and a.codigo_producto = b.codigo_producto\
-                where a.pedido_cliente_id = $1  order by e.descripcion ;";
+                    a.pedido_cliente_id as numero_pedido,\
+                    a.codigo_producto,\
+                    fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
+                    a.numero_unidades::integer as cantidad_solicitada,\
+                    a.cantidad_despachada::integer as cantidad_despachada_real,\
+                    (a.numero_unidades - a.cantidad_despachada)::integer as cantidad_pendiente_real,\
+                    COALESCE(b.cantidad_temporalmente_separada,0)::integer as cantidad_temporalmente_separada,\
+                    ABS( a.cantidad_despachada +  COALESCE(b.cantidad_temporalmente_separada,0) )::integer as cantidad_despachada,\
+                    (a.numero_unidades - ABS( a.cantidad_despachada +  COALESCE(b.cantidad_temporalmente_separada,0) ) )::integer as cantidad_pendiente,\
+                    a.cantidad_facturada::integer,\
+                    a.valor_unitario,\
+                    a.porc_iva as porcentaje_iva,\
+                    (a.valor_unitario+(a.valor_unitario*(a.porc_iva/100)))as valor_unitario_con_iva,\
+                    (a.numero_unidades*(a.valor_unitario*(a.porc_iva/100))) as valor_iva,\
+                    COALESCE(b.justificacion, '') as justificacion, \
+                    COALESCE(b.justificacion_auditor, '') as justificacion_auditor, \
+                    COALESCE(b.lote, '') as lote,\
+                    b.fecha_vencimiento,\
+                    b.item_id,\
+                    b.tipo_estado_auditoria,\
+                    b.cantidad_ingresada,\
+                    COALESCE(b.auditado, '0') as auditado\
+                    from ventas_ordenes_pedidos_d a \
+                    inner join inventarios_productos c on a.codigo_producto = c.codigo_producto \
+                    inner join inv_subclases_inventarios d on c.grupo_id = d.grupo_id and c.clase_id = d.clase_id and c.subclase_id = d.subclase_id \
+                    inner join inv_clases_inventarios e on d.grupo_id = e.grupo_id and d.clase_id = e.clase_id \
+                    left join (\
+                        select a.numero_pedido, a.codigo_producto, a.justificacion, a.justificacion_auditor, sum(a.cantidad_temporalmente_separada) as cantidad_temporalmente_separada,\
+                        a.lote, a.fecha_vencimiento, a.item_id, a.tipo_estado_auditoria, a.cantidad_ingresada, a.auditado\
+                        from (\
+                                select a.pedido_cliente_id as numero_pedido,  b.codigo_producto,  c.observacion as justificacion, c.justificacion_auditor, SUM(b.cantidad) as cantidad_temporalmente_separada, b.lote, to_char(b.fecha_vencimiento, 'dd-mm-yyyy') as fecha_vencimiento, b.item_id, '2' as tipo_estado_auditoria, b.cantidad :: integer as cantidad_ingresada, b.auditado\
+                                from inv_bodegas_movimiento_tmp_despachos_clientes a \
+                                inner join inv_bodegas_movimiento_tmp_d b on a.usuario_id = b.usuario_id and a.doc_tmp_id = b.doc_tmp_id\
+                                left join inv_bodegas_movimiento_tmp_justificaciones_pendientes c on b.doc_tmp_id = c.doc_tmp_id and b.usuario_id = c.usuario_id and b.codigo_producto = c.codigo_producto\
+                                group by 1,2,3,4,6, 7, 8, 9, 10, 11\
+                                union \
+                                select a.pedido_cliente_id  as numero_pedido, b.codigo_producto, b.observacion as justificacion, b.justificacion_auditor, 0 as cantidad_temporalmente_separada, '' as lote, null as fecha_vencimiento, 0 as item_id, '3' as tipo_estado_auditoria, 0 as  cantidad_ingresada, '0' as auditado\
+                                from inv_bodegas_movimiento_tmp_despachos_clientes a \
+                                left join inv_bodegas_movimiento_tmp_justificaciones_pendientes b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
+                                and b.codigo_producto not in(\
+                                      select aa.codigo_producto from inv_bodegas_movimiento_tmp_d aa where aa.doc_tmp_id = b.doc_tmp_id and aa.usuario_id = b.usuario_id\
+                                )\
+                        ) a group by 1,2,3,4,6, 7, 8, 9, 10, 11 \
+                    ) as b on a.pedido_cliente_id = b.numero_pedido and a.codigo_producto = b.codigo_producto\
+                    where a.pedido_cliente_id = $1  order by e.descripcion ;";
 
     G.db.query(sql, [numero_pedido], function(err, rows, result) {
         callback(err, rows);
@@ -448,7 +451,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
                 left join inv_bodegas_movimiento_tmp g on f.usuario_id = g.usuario_id and f.doc_tmp_id = g.doc_tmp_id \
                 where e.usuario_id = $1 " + sql_aux + " \
                 and a.estado_pedido = '1' \
-                AND (a.estado IN ('1'))   \
+                /*AND (a.estado IN ('1'))*/   \
                 and (\
                         a.pedido_cliente_id ilike $2 or\
                         b.tercero_id ilike $2 or\
@@ -705,11 +708,11 @@ PedidosClienteModel.prototype.terminar_estado_pedido = function(numero_pedido,es
     
     estados = estados.join(",");
     
-    var sql = "update solicitud_productos_a_bodega_principal_estado set sw_terminado = $2\
-               where solicitud_prod_a_bod_ppal_id = $1 and estado in("+estados+") and (sw_terminado is null or sw_terminado = '0')";
+    var sql = "update ventas_ordenes_pedidos_estado set sw_terminado = $2\
+               where  pedido_cliente_id = $1 and estado in("+estados+") and (sw_terminado is null or sw_terminado = '0')";
 
     G.db.query(sql, [numero_pedido, terminado], function(err, rows, result) {
-        callback(err, rows);
+        callback(err, rows, result);
     });
 };
 

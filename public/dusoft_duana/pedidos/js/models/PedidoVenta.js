@@ -69,7 +69,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         
         PedidoVenta.prototype.getEditable = function() {
             return this.editable;
-        }
+        };
 
         this.get = function() {
             return new PedidoVenta();

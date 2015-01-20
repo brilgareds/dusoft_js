@@ -19,9 +19,13 @@
                 </div>
 
             </div>
-            <div class="defaultGrid" ng-grid="lista_pedidos_clientes">
 
+            <div class="table-responsive" >
+                <div class="defaultGrid grid-responsive" ng-grid="lista_pedidos_clientes">
+
+                </div>
             </div>
+            
             <br/>
             <button type="button" class="btn btn-default btn-medium pull-right" ng-disabled="pedidosSeleccionados.length == 0" ng-click="abrirModalAsignar()">
                 <span class="glyphicon glyphicon-ok" ></span> Asignar Responsables
@@ -41,41 +45,47 @@
         <tab heading="Farmacias" ng-controller="PedidosFarmaciasController">
 
 
-                <!--div class="col-sm-12 col-md-3">
+            <!--div class="col-sm-12 col-md-3">
 
-                        <label class="control-label col-md-3">fooo</label>
-                        <div class="col-md-9 col-sm-12">
-                            <select ui-select2  class="form-control selectgeneral"  ng-model="seleccion" data-placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
-                                <option ng-repeat="empresa in  empresas"  ng-value="empresa.empresa_id" >{{empresa.razon_social}}</option>
-                            </select>
-                        </div>
-                </div-->
-
-                <div class="col-sm-12 col-md-3">
-                    <select ui-select2  class="form-control selectgeneral"  ng-model="seleccion" data-placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
-                        <option ng-repeat="empresa in  empresas"  value="{{empresa.empresa_id}}" >{{empresa.razon_social}}</option>
-                    </select>
-                </div>
-
-                <div class="col-sm-12 col-md-3">
-                     <select ui-select2="selectestados"  class="form-control selectgeneral"  ng-model="estadoseleccionado"  ng-change="seleccionEstado()">
-                        <option></option>
-                        <option ng-repeat="estado_pedido in  estados_pedido"  value="{{estado_pedido.estado}}" >{{estado_pedido.nombre}}</option>
-                    </select>
-                </div>
-
-                <div class="input-group navbar-form buscadorgeneral">
-
-                    <input type="text" class="form-control pull-right" ng-keypress="onKeyPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
-                    <div class="input-group-btn" >
-                        <button class="btn btn-default" type="submit" ng-click="buscarPedidosFarmacias(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                    <label class="control-label col-md-3">fooo</label>
+                    <div class="col-md-9 col-sm-12">
+                        <select ui-select2  class="form-control selectgeneral"  ng-model="seleccion" data-placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
+                            <option ng-repeat="empresa in  empresas"  ng-value="empresa.empresa_id" >{{empresa.razon_social}}</option>
+                        </select>
                     </div>
+            </div-->
 
+            <div class="col-sm-12 col-md-3">
+                <select ui-select2  class="form-control selectgeneral"  ng-model="seleccion" data-placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
+                    <option ng-repeat="empresa in  empresas"  value="{{empresa.empresa_id}}" >{{empresa.razon_social}}</option>
+                </select>
+            </div>
+
+            <div class="col-sm-12 col-md-3">
+                <select ui-select2="selectestados"  class="form-control selectgeneral"  ng-model="estadoseleccionado"  ng-change="seleccionEstado()">
+                    <option></option>
+                    <option ng-repeat="estado_pedido in  estados_pedido"  value="{{estado_pedido.estado}}" >{{estado_pedido.nombre}}</option>
+                </select>
+            </div>
+
+            <div class="input-group  navbar-form buscadorgeneral">
+
+                <input type="text" class="form-control pull-right" ng-keypress="onKeyPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
+                <div class="input-group-btn" >
+                    <button class="btn btn-default" type="submit" ng-click="buscarPedidosFarmacias(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
                 </div>
-
-            <div class="defaultGrid" ng-grid="lista_pedidos_farmacias">
 
             </div>
+
+
+
+            <div class="table-responsive" >
+
+                <div class="defaultGrid grid-responsive" ng-grid="lista_pedidos_farmacias">
+
+                </div>
+            </div>
+            
             <br/>
 
             <button type="button" class="btn btn-default btn-medium pull-right" ng-disabled="pedidosSeleccionados.length == 0" ng-click="abrirModalAsignar()">

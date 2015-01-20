@@ -24,11 +24,11 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
             var that = this;
 
             //var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
-            var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-default btn-xs", "btn btn-separacionfinalizada btn-xs", "btn btn-enauditoria btn-xs"];
+            var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs"];
 
             that.buscarPedidosCliente = function(termino, paginando) {
                 //valida si cambio el termino de busqueda
-                if ($scope.ultima_busqueda != $scope.termino_busqueda) {
+                if ($scope.ultima_busqueda !== $scope.termino_busqueda) {
                     $scope.paginaactual = 1;
                 }
 
@@ -43,7 +43,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                     }
                 };
 
-                if ($scope.estadoseleccionado != "") {
+                if ($scope.estadoseleccionado !== "") {
                     obj.data.pedidos_clientes.filtro[$scope.estadoseleccionado] = true;
                 }
 
@@ -60,7 +60,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
 
                 $scope.items = data.pedidos_clientes.length;
                 //se valida que hayan registros en una siguiente pagina
-                if (paginando && $scope.items == 0) {
+                if (paginando && $scope.items === 0) {
                     if ($scope.paginaactual > 1) {
                         $scope.paginaactual--;
                     }
@@ -107,7 +107,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                 for (var i in $scope.Empresa.getPedidos()) {
                     var _pedido = $scope.Empresa.getPedidos()[i];
 
-                    if (pedido.numero_pedido == _pedido.numero_pedido) {
+                    if (pedido.numero_pedido === _pedido.numero_pedido) {
                         _pedido.descripcion_estado_actual_pedido = pedido.descripcion_estado_actual_pedido;
                         _pedido.estado_actual_pedido = pedido.estado_actual_pedido;
                         _pedido.estado_separacion = pedido.estado_separacion;
@@ -127,21 +127,22 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                 columnDefs: [
                     {field: '', cellClass: "checkseleccion", width: "60",
                         cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)'" +
-                                " ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 || row.entity.estado == 3 || " +
+                                " ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1  && row.entity.estado_actual_pedido != 5 || " +
+                                " row.entity.estado == 2 || "+
                                 "row.entity.estado_separacion'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
                     {field: 'descripcion_estado_actual_pedido', displayName: "Estado Actual", cellClass: "txt-center",
                         //cellTemplate: '<div ng-class="agregarClase(row.entity.estado_actual_pedido)" >{{row.entity.descripcion_estado_actual_pedido}}</div>'},
                         cellTemplate: "<button type='button' ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
-                    {field: 'numero_pedido', displayName: 'Numero Pedido'},
+                    {field: 'numero_pedido', displayName: 'Pedido'},
                     {field: 'cliente.nombre_tercero', displayName: 'Cliente'},
-                    {field: 'cliente.direccion_cliente', displayName: 'Ubicacion'},
-                    {field: 'cliente.telefono_cliente', displayName: 'Telefono'},
+                   // {field: 'cliente.direccion_cliente', displayName: 'Ubicacion'},
+                    //{field: 'cliente.telefono_cliente', displayName: 'Telefono'},
                     {field: 'nombre_vendedor', displayName: 'Vendedor'},
                     {field: 'descripcion_estado', displayName: "Estado"},
-                    {field: 'fecha_registro', displayName: "Fecha Registro"},
+                    {field: 'fecha_registro', displayName: "Fecha Registro",width:"110"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
-                                            <button ng-disabled="row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 || row.entity.estado == 3 || row.entity.estado_separacion " class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
+                                            <button ng-disabled="row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 && row.entity.estado_actual_pedido != 5 || row.entity.estado == 2 || row.entity.estado_separacion " class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
                                                 <li><a href="javascript:void(0);" ng-click="modificar_estado_pedido_cliente(row.entity);" >Cambiar Estado</a></li>\
                                             </ul>\
@@ -154,7 +155,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
             // Agregar Clase de acuerdo al estado del pedido
             $scope.agregarClase = function(estado) {
 
-                if (estado == 6) {
+                if (estado === 6) {
                     return estados[1];
                 }
 
@@ -175,9 +176,9 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
             //fin delegado grid pedidos //
 
             $scope.onPedidoSeleccionado = function(check, row) {
-                console.log("agregar!!!!!");
+               /* console.log("agregar!!!!!");
                 console.log(check);
-                console.log(row);
+                console.log(row);*/
 
                 row.selected = check;
                 if (check) {
@@ -194,7 +195,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
             that.quitarPedido = function(pedido) {
                 for (var i in $scope.pedidosSeleccionados) {
                     var _pedido = $scope.pedidosSeleccionados[i];
-                    if (_pedido.numero_pedido == pedido.numero_pedido) {
+                    if (_pedido.numero_pedido === pedido.numero_pedido) {
                         $scope.pedidosSeleccionados.splice(i, true);
                         break;
                     }
@@ -205,19 +206,20 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                 //valida que no exista el pedido en el array
                 for (var i in $scope.pedidosSeleccionados) {
                     var _pedido = $scope.pedidosSeleccionados[i];
-                    if (_pedido.numero_pedido == pedido.numero_pedido) {
+                    if (_pedido.numero_pedido === pedido.numero_pedido) {
                         return false;
                     }
                 }
-
+                
                 $scope.pedidosSeleccionados.push(pedido);
+                console.log("guardando pedido ", $scope.pedidosSeleccionados);
             };
 
             $scope.buscarSeleccion = function(row) {
                 var pedido = row.entity;
                 for (var i in $scope.pedidosSeleccionados) {
                     var _pedido = $scope.pedidosSeleccionados[i];
-                    if (_pedido.numero_pedido == pedido.numero_pedido) {
+                    if (_pedido.numero_pedido === pedido.numero_pedido) {
                         //console.log("buscarSeleccion encontrado **************");
                         //console.log(pedido);
                         row.selected = true;
@@ -286,7 +288,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
             };
 
             $scope.abrirModalAsignar = function() {
-
+                console.log($scope.pedidosSeleccionados, " pedidos seleccionados ", $scope.pedidosSeleccionados.length);
 
                 $scope.opts = {
                     backdrop: true,
@@ -323,7 +325,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
 
             //delegados del socket io
             socket.on("onListarPedidosClientes", function(datos) {
-                if (datos.status == 200) {
+                if (datos.status === 200) {
                     var obj = datos.obj.pedidos_clientes[0];
                     var pedido = that.crearPedido(obj);
                     console.log("objecto del socket");
@@ -339,7 +341,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
             //eventos de widgets
             $scope.onKeyPress = function(ev, termino_busqueda) {
                 //Empresa.getPedidos()[0].numero_pedido = 0000;
-                if (ev.which == 13) {
+                if (ev.which === 13) {
                     that.buscarPedidosCliente(termino_busqueda);
                 }
             };

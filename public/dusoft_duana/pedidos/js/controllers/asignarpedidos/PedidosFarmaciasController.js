@@ -10,7 +10,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
 
             $scope.Empresa = Empresa;
             //var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
-            var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-default btn-xs", "btn btn-separacionfinalizada btn-xs", "btn btn-enauditoria btn-xs"];
+            var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs"];
             $scope.pedidosSeleccionados = [];
             $scope.empresas = [];
             $scope.seleccion = "FD";
@@ -91,7 +91,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                         cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)' ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 && row.entity.estado_actual_pedido != 5 || row.entity.estado_separacion'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
                     {field: 'descripcion_estado_actual_pedido', displayName: "Estado Actual", cellClass: "txt-center",
                         //cellTemplate: '<div  ng-class="agregarClase(row.entity.estado_actual_pedido)">{{row.entity.descripcion_estado_actual_pedido}}</div>'},
-                        cellTemplate: "<button type='button' ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
+                        cellTemplate: "<button  ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
                     {field: 'numero_pedido', displayName: 'Numero Pedido'},
                     {field: 'farmacia.nombre_farmacia', displayName: 'Zona'},
                     {field: 'farmacia.nombre_farmacia', displayName: 'Farmacia'},
@@ -109,11 +109,13 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
 
             };
 
-
             $scope.agregarClase = function(estado) {
+                estado = parseInt(estado);
                 if (estado === 6) {
                     return estados[1];
                 }
+                
+                
                 return estados[estado];
             };
 

@@ -20,6 +20,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             //propiedades pendientes
             this.existencia_lotes = "";
             this.porcentaje_gravament = "0";
+            this.cantidad_despachada = 0;
             
             //Objeto Lote
             this.lote = {};
@@ -59,6 +60,18 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 var lote = this.lotesSeleccionados[i];
                 if(lote.seleccionado && lote.codigo_lote === codigo_lote){
                       cantidad += parseInt(this.lotesSeleccionados[i].cantidad_ingresada);
+                }
+            }
+            
+            return cantidad;
+        };
+        
+        ProductoPedido.prototype.obtenerCantidadPendientePorLote = function(codigo_lote) {
+            var cantidad = 0;
+            for(var i in this.lotesSeleccionados){
+                var lote = this.lotesSeleccionados[i];
+                if(lote.seleccionado && lote.codigo_lote === codigo_lote){
+                      cantidad += parseInt(this.lotesSeleccionados[i].cantidad_pendiente);
                 }
             }
             

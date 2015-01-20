@@ -494,7 +494,7 @@ PedidosClienteModel.prototype.asignar_responsables_pedidos = function(numero_ped
     var that = this;
 
     // Validar si existen responsables asignados
-    var sql = " SELECT * FROM ventas_ordenes_pedidos_estado a WHERE a.pedido_cliente_id=$1 AND a.estado = $2 ;";
+    var sql = " SELECT * FROM ventas_ordenes_pedidos_estado a WHERE a.pedido_cliente_id=$1 AND a.estado = $2 and (a.sw_terminado is null or a.sw_terminado = '0');";
 
     G.db.query(sql, [numero_pedido, estado_pedido], function(err, responsable_estado_pedido, result) {
         if (responsable_estado_pedido.length > 0) {
@@ -576,7 +576,7 @@ PedidosClienteModel.prototype.insertar_responsables_pedidos = function(numero_pe
 PedidosClienteModel.prototype.actualizar_responsables_pedidos = function(numero_pedido, estado_pedido, responsable, usuario, callback) {
 
     var sql = "UPDATE ventas_ordenes_pedidos_estado SET responsable_id=$3, fecha=NOW(), usuario_id=$4 " +
-              "WHERE pedido_cliente_id=$1 AND estado=$2;";
+              "WHERE pedido_cliente_id=$1 AND estado=$2 and (sw_terminado is null or sw_terminado = '0');";
 
     G.db.query(sql, [numero_pedido, estado_pedido, responsable, usuario], function(err, rows, result) {
         callback(err, rows);
@@ -603,7 +603,7 @@ PedidosClienteModel.prototype.actualizar_responsables_pedidos = function(numero_
 
 PedidosClienteModel.prototype.eliminar_responsables_pedidos = function(numero_pedido, callback) {
 
-    var sql = "DELETE FROM ventas_ordenes_pedidos_estado WHERE pedido_cliente_id=$1 ; ";
+    var sql = "DELETE FROM ventas_ordenes_pedidos_estado WHERE pedido_cliente_id=$1 and (sw_terminado is null or sw_terminado = '0'); ; ";
 
     G.db.query(sql, [numero_pedido], function(err, rows, result) {
         callback(err, rows, result);
@@ -693,7 +693,7 @@ PedidosClienteModel.prototype.obtener_responsables_del_pedido = function(numero_
                 from ventas_ordenes_pedidos_estado a \
                 inner join system_usuarios c on a.usuario_id = c.usuario_id\
                 left join operarios_bodega b on a.responsable_id = b.operario_id\
-                where a.pedido_cliente_id=$1";
+                where a.pedido_cliente_id=$1 order by a.fecha_registro DESC; ";
 
     G.db.query(sql, [numero_pedido], function(err, rows, result) {
         callback(err, rows);
@@ -705,10 +705,10 @@ PedidosClienteModel.prototype.terminar_estado_pedido = function(numero_pedido,es
     
     estados = estados.join(",");
     
-    var sql = "update solicitud_productos_a_bodega_principal_estado set sw_terminado = $3\
-               where solicitud_prod_a_bod_ppal_id = $1 and estado in($2) and (sw_terminado is null or sw_terminado = '0')";
+    var sql = "update solicitud_productos_a_bodega_principal_estado set sw_terminado = $2\
+               where solicitud_prod_a_bod_ppal_id = $1 and estado in("+estados+") and (sw_terminado is null or sw_terminado = '0')";
 
-    G.db.query(sql, [numero_pedido, estados, terminado], function(err, rows, result) {
+    G.db.query(sql, [numero_pedido, terminado], function(err, rows, result) {
         callback(err, rows);
     });
 };

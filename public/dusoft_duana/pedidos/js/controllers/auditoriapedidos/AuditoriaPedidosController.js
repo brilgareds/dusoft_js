@@ -204,8 +204,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 }
 
-                console.log("productos creados >>>>>>>>>>>>>");
-                console.log(documento.getPedido().getProductos());
+               // console.log("productos creados >>>>>>>>>>>>>");
+                //console.log(documento.getPedido().getProductos());
             };
 
 
@@ -246,6 +246,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                                                     obj.observacion_cambio);
                                                                     
                 producto_pedido_separado.porcentaje_gravament = obj.porcentaje_iva || 0;
+                producto_pedido_separado.cantidad_pendiente   = obj.cantidad_pendiente;
+                producto_pedido_separado.cantidad_despachada = obj.cantidad_despachada;
+                 producto_pedido_separado.cantidad_solicitada = producto_pedido_separado.cantidad_solicitada - obj.cantidad_despachada;
                                                                     
                 //console.log("producto >>>>>>>>>>>>>>>>>>");
               //  console.log(producto_pedido_separado);                                                      

@@ -473,9 +473,11 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                 a.codigo_producto,\
                 fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
                 a.cantidad_solic::integer as cantidad_solicitada,\
+                (a.cantidad_solic - a.cantidad_pendiente)::integer as cantidad_despachada_real,\
+                a.cantidad_pendiente::integer as cantidad_pendiente_real,\
+                COALESCE(b.cantidad_temporalmente_separada,0)::integer as cantidad_temporalmente_separada,\
                 ABS( (a.cantidad_solic - a.cantidad_pendiente) +  COALESCE(b.cantidad_temporalmente_separada,0) )::integer as cantidad_despachada,\
                 (a.cantidad_solic - ABS( (a.cantidad_solic - a.cantidad_pendiente) +  COALESCE(b.cantidad_temporalmente_separada,0) ))::integer as cantidad_pendiente,\
-                a.cantidad_pendiente as cantidad_pendiente_real,\
                 f.costo as valor_unitario,\
                 c.porc_iva as porcentaje_iva,\
                 (f.costo+(f.costo*(c.porc_iva/100)))as valor_unitario_con_iva,\
@@ -605,7 +607,7 @@ PedidosFarmaciasModel.prototype.asignar_responsables_pedidos = function(numero_p
     var that = this;
 
     // Validar si existen responsables asigandos
-    var sql = " SELECT * FROM solicitud_productos_a_bodega_principal_estado a WHERE a.solicitud_prod_a_bod_ppal_id = $1 AND a.estado = $2                and (a.sw_terminado is null or a.sw_terminado = '0');";
+    var sql = " SELECT * FROM solicitud_productos_a_bodega_principal_estado a WHERE a.solicitud_prod_a_bod_ppal_id = $1 AND a.estado = $2 and (a.sw_terminado is null or a.sw_terminado = '0');";
 
     G.db.query(sql, [numero_pedido, estado_pedido], function(err, responsable_estado_pedido, result) {
         if (responsable_estado_pedido.length > 0) {
@@ -646,7 +648,7 @@ PedidosFarmaciasModel.prototype.insertar_responsables_pedidos = function(numero_
 PedidosFarmaciasModel.prototype.actualizar_responsables_pedidos = function(numero_pedido, estado_pedido, responsable, usuario, callback) {
 
     var sql = "UPDATE solicitud_productos_a_bodega_principal_estado SET responsable_id=$3, fecha=NOW(), usuario_id=$4 " +
-            "WHERE solicitud_prod_a_bod_ppal_id=$1 AND estado=$2;";
+            "WHERE solicitud_prod_a_bod_ppal_id=$1 AND estado=$2 and (sw_terminado is null or sw_terminado = '0'); ";
 
     G.db.query(sql, [numero_pedido, estado_pedido, responsable, usuario], function(err, rows, result) {
         callback(err, rows);
@@ -655,7 +657,7 @@ PedidosFarmaciasModel.prototype.actualizar_responsables_pedidos = function(numer
 
 PedidosFarmaciasModel.prototype.eliminar_responsables_pedidos = function(numero_pedido, callback) {
 
-    var sql = "DELETE FROM solicitud_productos_a_bodega_principal_estado WHERE solicitud_prod_a_bod_ppal_id =$1 ; ";
+    var sql = "DELETE FROM solicitud_productos_a_bodega_principal_estado WHERE solicitud_prod_a_bod_ppal_id =$1 and (sw_terminado is null or sw_terminado = '0') ; ";
 
     G.db.query(sql, [numero_pedido], function(err, rows, result) {
         callback(err, rows, result);
@@ -700,7 +702,7 @@ PedidosFarmaciasModel.prototype.obtener_responsables_del_pedido = function(numer
                 from solicitud_productos_a_bodega_principal_estado a \
                 inner join system_usuarios c on a.usuario_id = c.usuario_id\
                 left join operarios_bodega b on a.responsable_id = b.operario_id\
-                where a.solicitud_prod_a_bod_ppal_id=$1 ";
+                where a.solicitud_prod_a_bod_ppal_id=$1 order by a.fecha_registro DESC; ";
 
     G.db.query(sql, [numero_pedido], function(err, rows, result) {
         callback(err, rows);
@@ -711,11 +713,11 @@ PedidosFarmaciasModel.prototype.terminar_estado_pedido = function(numero_pedido,
     
     estados = estados.join(",");
     
-    var sql = "update solicitud_productos_a_bodega_principal_estado set sw_terminado = $3\
-               where solicitud_prod_a_bod_ppal_id = $1 and estado in($2) and (sw_terminado is null or sw_terminado = '0')";
+    var sql = "update solicitud_productos_a_bodega_principal_estado set sw_terminado = $2\
+               where solicitud_prod_a_bod_ppal_id = $1 and estado in("+estados+") and (sw_terminado is null or sw_terminado = '0')";
 
-    G.db.query(sql, [numero_pedido, estados, terminado], function(err, rows, result) {
-        callback(err, rows);
+    G.db.query(sql, [numero_pedido, terminado], function(err, rows, result) {
+        callback(err, rows, result);
     });
 };
 // Pedidos en Donde esta pendiente por entregar el Producto

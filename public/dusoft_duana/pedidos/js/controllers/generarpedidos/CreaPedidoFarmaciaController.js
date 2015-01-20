@@ -2162,11 +2162,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     data: {
                         encabezado_pedido_farmacia: {
                             numero_pedido: numero_pedido,
+                            empresa_origen_id: $scope.rootCreaPedidoFarmacia.Empresa.getCodigo(), //Nuevo
                             empresa_origen: nombre_empresa_origen,
                             centro_utilidad_origen: nombre_centro_utilidad_origen,
                             bodega_origen: nombre_bodega_origen,
+                            empresa_destino_id: $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.farmacia_id, //Nuevo
                             empresa_destino: $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.nombre_farmacia,//$scope.rootCreaPedidoFarmacia.para_seleccion_empresa.split(",")[1],
+                            centro_utilidad_destino_id: $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.centro_utilidad_id, //Nuevo
                             centro_utilidad_destino: $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.nombre_centro_utilidad,
+                            bodega_destino_id: $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.bodega_id, //Nuevo
                             bodega_destino: $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.nombre_bodega,
                             fecha_registro: $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().fecha_registro,
                             observacion: $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getObservacion()
@@ -2179,9 +2183,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 //                console.log("Observación: ",$scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getObservacion);
 //                console.log("Objeto PDF: ",obj_pdf);
 
-                var url_eliminar_detalle = API.PEDIDOS.IMPRIMIR_PEDIDO_FARMACIA;
+                var url_imprimir_dedido_pdf = API.PEDIDOS.IMPRIMIR_PEDIDO_FARMACIA;
 
-                Request.realizarRequest(url_eliminar_detalle, "POST", obj_pdf, function(data) {
+                Request.realizarRequest(url_imprimir_dedido_pdf, "POST", obj_pdf, function(data) {
 
                     if (data.status === 200) {
                         //console.log("Eliminación de detalle Exitosa: ", data.msj);

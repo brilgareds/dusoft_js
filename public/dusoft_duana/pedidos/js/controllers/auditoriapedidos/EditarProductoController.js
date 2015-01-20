@@ -549,7 +549,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                     };
 
 
-                    if($scope.rootEditarProducto.producto.lote.justificacion_auditor.length >= 10 && $scope.rootEditarProducto.producto.lote.cantidad_pendiente > 0 ){
+                    if($scope.rootEditarProducto.producto.lote.justificacion_auditor.length >= 10 && cantidad_pendiente> 0 ){
                         obj.data.documento_temporal.justificacion = {
                             documento_temporal_id:$scope.rootEditarProducto.documento.documento_temporal_id,
                             codigo_producto:$scope.rootEditarProducto.producto.codigo_producto,

@@ -448,7 +448,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
                 left join inv_bodegas_movimiento_tmp g on f.usuario_id = g.usuario_id and f.doc_tmp_id = g.doc_tmp_id \
                 where e.usuario_id = $1 " + sql_aux + " \
                 and a.estado_pedido = '1' \
-                AND (a.estado IN ('1'))   \
+                /*AND (a.estado IN ('1'))*/   \
                 and (\
                         a.pedido_cliente_id ilike $2 or\
                         b.tercero_id ilike $2 or\

@@ -83,6 +83,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
 
             $scope.lista_pedidos_farmacias = {
                 data: 'Empresa.getPedidosFarmacia()',
+                enableColumnResize: true,
                 enablehightlight:true,
                 columnDefs: [
                     {field: '', cellClass: "checkseleccion", width: "60",

@@ -127,7 +127,8 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                 columnDefs: [
                     {field: '', cellClass: "checkseleccion", width: "60",
                         cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)'" +
-                                " ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 || row.entity.estado == 3 || " +
+                                " ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1  && row.entity.estado_actual_pedido != 5 || " +
+                                " row.entity.estado == 2 || "+
                                 "row.entity.estado_separacion'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
                     {field: 'descripcion_estado_actual_pedido', displayName: "Estado Actual", cellClass: "txt-center",
                         //cellTemplate: '<div ng-class="agregarClase(row.entity.estado_actual_pedido)" >{{row.entity.descripcion_estado_actual_pedido}}</div>'},
@@ -141,7 +142,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                     {field: 'fecha_registro', displayName: "Fecha Registro",width:"110"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
-                                            <button ng-disabled="row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 || row.entity.estado == 3 || row.entity.estado_separacion " class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
+                                            <button ng-disabled="row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 && row.entity.estado_actual_pedido != 5 || row.entity.estado == 2 || row.entity.estado_separacion " class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
                                                 <li><a href="javascript:void(0);" ng-click="modificar_estado_pedido_cliente(row.entity);" >Cambiar Estado</a></li>\
                                             </ul>\
@@ -175,9 +176,9 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
             //fin delegado grid pedidos //
 
             $scope.onPedidoSeleccionado = function(check, row) {
-                console.log("agregar!!!!!");
+               /* console.log("agregar!!!!!");
                 console.log(check);
-                console.log(row);
+                console.log(row);*/
 
                 row.selected = check;
                 if (check) {
@@ -209,8 +210,9 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                         return false;
                     }
                 }
-
+                
                 $scope.pedidosSeleccionados.push(pedido);
+                console.log("guardando pedido ", $scope.pedidosSeleccionados);
             };
 
             $scope.buscarSeleccion = function(row) {
@@ -286,7 +288,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
             };
 
             $scope.abrirModalAsignar = function() {
-
+                console.log($scope.pedidosSeleccionados, " pedidos seleccionados ", $scope.pedidosSeleccionados.length);
 
                 $scope.opts = {
                     backdrop: true,

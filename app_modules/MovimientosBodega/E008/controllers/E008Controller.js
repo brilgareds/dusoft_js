@@ -104,11 +104,14 @@ E008Controller.prototype.finalizarDocumentoTemporalClientes = function(req, res)
                 return;
             }
 
-            that.m_pedidos_clientes.terminar_estado_pedido(numero_pedido, ['1', '6'], '1', function(err, rows) {
+            that.m_pedidos_clientes.terminar_estado_pedido(numero_pedido, ['1', '6'], '1', function(err, rows, results) {
                 if (err) {
                     res.send(G.utils.r(req.url, 'Error Finalizando el Documento Temporal Farmacias', 500, {documento_temporal: {}}));
                     return;
                 }
+                
+                console.log("terminar estado pedido  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", results);
+                return;
 
                 that.m_e008.actualizar_estado_documento_temporal_clientes(numero_pedido, '1', function(err, rows, result) {
                     if (err || result.rowCount === 0) {

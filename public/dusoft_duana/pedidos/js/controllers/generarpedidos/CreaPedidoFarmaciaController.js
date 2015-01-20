@@ -1450,47 +1450,35 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 
             };
 
-            $scope.valorSeleccionado = function() {
+            $scope.valorSeleccionado = function(valor) {
 
-                var para_seleccion_empresa = [];
-                var para_seleccion_centro_utilidad = [];
-                var para_seleccion_bodega = [];
+                var para_seleccion_empresa = ['0'];
+                var para_seleccion_centro_utilidad = ['0'];
+                var para_seleccion_bodega = ['0'];
                 
-                //console.log("EN USO - Valor Seleccionado: ",$scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEnUso());
-                
-                //var contador = 3;
-
-                if ($scope.rootCreaPedidoFarmacia.para_seleccion_empresa)
-                {
-                    para_seleccion_empresa = $scope.rootCreaPedidoFarmacia.para_seleccion_empresa.split(',');
-                    //$scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad = "0,";
-                }
-
-                if ($scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad)
-                {
-                    para_seleccion_centro_utilidad = $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad.split(',');
-                    
-                    /*if($scope.rootCreaPedidoFarmacia.para_seleccion_bodega.split(',')[0]!=='0'){
-                        
-                    }*/
-                    //$scope.rootCreaPedidoFarmacia.para_seleccion_bodega = "0,";
-                }
-
-                if ($scope.rootCreaPedidoFarmacia.para_seleccion_bodega)
-                {
-                    para_seleccion_bodega = $scope.rootCreaPedidoFarmacia.para_seleccion_bodega.split(',');
+                if($scope.rootCreaPedidoFarmacia.de_seleccion_empresa && valor === 1){
+                    $scope.rootCreaPedidoFarmacia.de_seleccion_centro_utilidad = 0;
+                    $scope.rootCreaPedidoFarmacia.de_seleccion_bodega = 0;
                 }
                 
+                if($scope.rootCreaPedidoFarmacia.de_seleccion_centro_utilidad && valor === 2){
+                    $scope.rootCreaPedidoFarmacia.de_seleccion_bodega = 0;
+                }
                 
-                /* INICIO - BORRAR LUEGO */
-//                console.log(">>> de_seleccion_empresa: ",$scope.rootCreaPedidoFarmacia.de_seleccion_empresa);
-//                console.log(">>> de_seleccion_centro_utilidad: ",$scope.rootCreaPedidoFarmacia.de_seleccion_centro_utilidad);
-//                console.log(">>> de_seleccion_bodega: ",$scope.rootCreaPedidoFarmacia.de_seleccion_bodega);
-//                console.log(">>> para_seleccion_empresa: ",para_seleccion_empresa[0]);
-//                console.log(">>> para_seleccion_centro_utilidad: ",para_seleccion_centro_utilidad[0]);
-//                console.log(">>> para_seleccion_bodega: ",para_seleccion_bodega[0]);
+                if ($scope.rootCreaPedidoFarmacia.para_seleccion_empresa && valor === 4)
+                {
+                    $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad = '0,';
+                    $scope.rootCreaPedidoFarmacia.para_seleccion_bodega = '0,';
+                }
 
-                /* FIN - BORRAR LUEGO */
+                if ($scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad && valor === 5)
+                {
+                    $scope.rootCreaPedidoFarmacia.para_seleccion_bodega = '0,';
+                }
+                
+                para_seleccion_empresa = $scope.rootCreaPedidoFarmacia.para_seleccion_empresa.split(',');
+                para_seleccion_centro_utilidad = $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad.split(',');
+                para_seleccion_bodega = $scope.rootCreaPedidoFarmacia.para_seleccion_bodega.split(',');
                 
                 /* Validaciones DropDown DE */
 
@@ -1511,37 +1499,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 if (para_seleccion_empresa[0] !== '0')
                 {
                     that.consultarCentrosUtilidadPara();
-                    $scope.rootCreaPedidoFarmacia.bloqueo_centro_utilidad_para = false;
-                    
-                    console.log(">>>>>>>>>>>>>>>>> para_seleccion_empresa: ",para_seleccion_empresa[0]);
-                    console.log(">>>>>>>>>>>>>>>>> rootCreaPedidoFarmacia.para_seleccion_empresa_anterior: ",$scope.rootCreaPedidoFarmacia.para_seleccion_empresa_anterior);
-                    
-                    if(para_seleccion_empresa[0] !== $scope.rootCreaPedidoFarmacia.para_seleccion_empresa_anterior){
-                        $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad[0] = '0';
-                        $scope.rootCreaPedidoFarmacia.para_seleccion_bodega[0] = '0';
-                        $scope.rootCreaPedidoFarmacia.para_seleccion_empresa_anterior = para_seleccion_empresa[0];
-                        /*$scope.rootCreaPedidoFarmacia.bloquear_tab = true;
-                        $scope.rootCreaPedidoFarmacia.bloquear_boton_incluir = true;
-                        $scope.rootCreaPedidoFarmacia.bloqueo_upload = true;*/
-                    }
-                    
+                    $scope.rootCreaPedidoFarmacia.bloqueo_centro_utilidad_para = false;                    
                 }
 
                 if (para_seleccion_centro_utilidad[0] !== '0')
                 {
                     that.consultarBodegaPara();
                     $scope.rootCreaPedidoFarmacia.bloqueo_bodega_para = false;
-                    
-                    console.log(">>>>>>>>>>>>>>>>>> para_seleccion_centro_utilidad: ",para_seleccion_centro_utilidad[0]);
-                    console.log(">>>>>>>>>>>>>>>>>> rootCreaPedidoFarmacia.para_seleccion_centro_utilidad_anterior: ",$scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad_anterior[0]);
-                    
-                    if(para_seleccion_centro_utilidad[0] !== $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad_anterior){
-                        $scope.rootCreaPedidoFarmacia.para_seleccion_bodega[0] = '0';
-                        $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad_anterior = para_seleccion_centro_utilidad[0];
-                        /*$scope.rootCreaPedidoFarmacia.bloquear_tab = true;
-                        $scope.rootCreaPedidoFarmacia.bloquear_boton_incluir = true;
-                        $scope.rootCreaPedidoFarmacia.bloqueo_upload = true;*/
-                    }
                 }
 
                 /******************************** Validaciones bloqueos ****************************************/
@@ -1572,24 +1536,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 {
 
                     $scope.rootCreaPedidoFarmacia.bloqueo_upload = false;
-                    
-                    /* Inicio - Impresión Validadores */
-                    
-//                    console.log("bloquear_tab: ",$scope.rootCreaPedidoFarmacia.bloquear_tab);
-//                    console.log("bloquear_boton_incluir: ",$scope.rootCreaPedidoFarmacia.bloquear_boton_incluir);
-//
-//                    console.log("bloqueo_producto_incluido: ",$scope.rootCreaPedidoFarmacia.bloqueo_producto_incluido);
-//                    console.log("bloqueo_generar_pedido: ",$scope.rootCreaPedidoFarmacia.bloqueo_generar_pedido);
-//                    console.log("bloqueo_upload: ",$scope.rootCreaPedidoFarmacia.bloqueo_upload);
-//
-//                    console.log("bloqueo_centro_utilidad_de: ",$scope.rootCreaPedidoFarmacia.bloqueo_centro_utilidad_de);
-//                    console.log("bloqueo_bodega_de: ", $scope.rootCreaPedidoFarmacia.bloqueo_bodega_de);
-//                    console.log("bloqueo_centro_utilidad_para: ", $scope.rootCreaPedidoFarmacia.bloqueo_centro_utilidad_para);
-//                    console.log("bloqueo_bodega_para: ", $scope.rootCreaPedidoFarmacia.bloqueo_bodega_para);
-//
-//                    console.log("grid_pedido_generado_visible: ",$scope.rootCreaPedidoFarmacia.grid_pedido_generado_visible);
-                    
-                    /* Fin - Impresión Validadores */
                 }
                 else {
 

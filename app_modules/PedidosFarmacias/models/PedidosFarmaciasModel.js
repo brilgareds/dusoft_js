@@ -702,7 +702,7 @@ PedidosFarmaciasModel.prototype.obtener_responsables_del_pedido = function(numer
                 from solicitud_productos_a_bodega_principal_estado a \
                 inner join system_usuarios c on a.usuario_id = c.usuario_id\
                 left join operarios_bodega b on a.responsable_id = b.operario_id\
-                where a.solicitud_prod_a_bod_ppal_id=$1 ";
+                where a.solicitud_prod_a_bod_ppal_id=$1 order by a.fecha_registro DESC; ";
 
     G.db.query(sql, [numero_pedido], function(err, rows, result) {
         callback(err, rows);

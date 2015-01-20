@@ -84,7 +84,6 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
             $scope.lista_pedidos_farmacias = {
                 data: 'Empresa.getPedidosFarmacia()',
                 enableColumnResize: true,
-                enableRowSelection: false,
                 enablehightlight:true,
                 columnDefs: [
                     {field: '', cellClass: "checkseleccion", width: "60",
@@ -92,7 +91,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                     {field: 'descripcion_estado_actual_pedido', displayName: "Estado Actual", cellClass: "txt-center",
                         //cellTemplate: '<div  ng-class="agregarClase(row.entity.estado_actual_pedido)">{{row.entity.descripcion_estado_actual_pedido}}</div>'},
                         cellTemplate: "<button  ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
-                    {field: 'numero_pedido', displayName: 'Numero Pedido'},
+                    {field: 'numero_pedido', displayName: 'Pedido', width: "60"},
                     {field: 'farmacia.nombre_farmacia', displayName: 'Zona'},
                     {field: 'farmacia.nombre_farmacia', displayName: 'Farmacia'},
                     {field: 'farmacia.nombre_bodega', displayName: 'Bodega'},

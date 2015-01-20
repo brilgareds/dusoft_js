@@ -708,11 +708,11 @@ PedidosClienteModel.prototype.terminar_estado_pedido = function(numero_pedido,es
     
     estados = estados.join(",");
     
-    var sql = "update solicitud_productos_a_bodega_principal_estado set sw_terminado = $2\
-               where solicitud_prod_a_bod_ppal_id = $1 and estado in("+estados+") and (sw_terminado is null or sw_terminado = '0')";
+    var sql = "update ventas_ordenes_pedidos_estado set sw_terminado = $2\
+               where  pedido_cliente_id = $1 and estado in("+estados+") and (sw_terminado is null or sw_terminado = '0')";
 
     G.db.query(sql, [numero_pedido, terminado], function(err, rows, result) {
-        callback(err, rows);
+        callback(err, rows, result);
     });
 };
 

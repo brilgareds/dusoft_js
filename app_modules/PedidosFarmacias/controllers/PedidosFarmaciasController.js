@@ -1715,11 +1715,12 @@ PedidosFarmacias.prototype.imprimirPedidoFarmacia = function(req, res){
             //Si las anteriores validaciones pasaron, entonces se adiciona a cada elemento del objeto su disponibilidad
             /* Inicio - Disponibilidad */
             
+            var numero_pedido = args.encabezado_pedido_farmacia.numero_pedido;
             var empresa_id = args.encabezado_pedido_farmacia.empresa_origen_id;
 
-            var empresa_destino_id = args.encabezado_pedido_farmacia.empresa_destino_id;
-            var centro_utilidad_destino_id = args.encabezado_pedido_farmacia.centro_utilidad_destino_id;
-            var bodega_destino_id = args.encabezado_pedido_farmacia.bodega_destino_id;
+//            var empresa_destino_id = args.encabezado_pedido_farmacia.empresa_destino_id;
+//            var centro_utilidad_destino_id = args.encabezado_pedido_farmacia.centro_utilidad_destino_id;
+//            var bodega_destino_id = args.encabezado_pedido_farmacia.bodega_destino_id;
 
             //var tipo_producto = args.productos.tipo_producto;
 
@@ -1768,24 +1769,48 @@ PedidosFarmacias.prototype.imprimirPedidoFarmacia = function(req, res){
 //
 //                                producto.disponibilidad_bodega = (disponibilidad_bodega < 0)? 0 : disponibilidad_bodega;
 
-
-                                if (--i === 0) {
-
-                                    if (err) {
-                                        res.send(G.utils.r(req.url, 'Se ha Generado un Error en la consulta de Productos', 500, {}));
-                                        return;
-                                    }
-                                    else
-                                    {
-                                        /*res.send(G.utils.r(req.url, 'Listado de Productos', 200, {lista_productos: lista_productos}));
-                                        return;*/
-                                        
-                                        _generarDocumentoPedido(args, function(nombreTmp){
-                                            res.send(G.utils.r(req.url, 'Url reporte pedido', 200, {reporte_pedido: {nombre_reporte: nombreTmp}}));
-                                            return;
-                                       });
-                                    }
+                            var identificador = 'FM'; // Farmacias
+                            
+                            console.log(">>>> Identificador: ",identificador);
+                            console.log(">>>> Empresa Id: ",empresa_id);
+                            console.log(">>>> numero_pedido: ",numero_pedido);
+                            console.log(">>>> codigo_producto: ", producto.codigo_producto);
+                            
+                            that.m_pedidos.calcular_disponibilidad_producto(identificador, empresa_id, numero_pedido, producto.codigo_producto, function(err, disponibilidad) {
+                                
+                                
+                                
+                                if (err) {
+                                    res.send(G.utils.r(req.url, 'Error en cálculo de disponibilidad', 500, {}));
+                                    return;
                                 }
+                                else {
+                                    //res.send(G.utils.r(req.url, 'Lista Existencias Producto', 200, {existencias_producto: existencias_productos, disponibilidad_bodega: disponibilidad.disponible_bodega}));
+
+                                    producto.disponibilidad = disponibilidad.disponible_bodega;
+                                    console.log(">>>>>>>>>> Resultado Disponibilidad: ", disponibilidad);
+
+                                    if (--i === 0) {
+
+                                        if (err) {
+                                            res.send(G.utils.r(req.url, 'Se ha Generado un Error en la consulta de Productos', 500, {}));
+                                            return;
+                                        }
+                                        else
+                                        {
+                                            /*res.send(G.utils.r(req.url, 'Listado de Productos', 200, {lista_productos: lista_productos}));
+                                            return;*/
+
+                                            _generarDocumentoPedido(args, function(nombreTmp){
+                                                res.send(G.utils.r(req.url, 'Url reporte pedido', 200, {reporte_pedido: {nombre_reporte: nombreTmp}}));
+                                                return;
+                                           });
+                                        }
+                                    }
+                                
+                                }
+                                
+                            });
 
 //                            });
 //                        });

@@ -1,62 +1,158 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 
-<head>
-<style>
-  t1 {background-color:lightgray}
-  h1   {color:blue}
-  p    {color:green}
-</style>
-<h1>Pedido No {{:encabezado_pedido_farmacia.numero_pedido}}</h1>
+    <head>
+        <style>
+            body {
+                font-family: 'Open Sans', sans-serif;
+                font-size:10px;
+                line-height:15px;
+            }
+            .pad-top-botm {
+                padding-bottom:0px;
+                padding-top:10px;
+            }
+            h4 {
+                text-transform:uppercase;
+            }
 
-<table style='border-style:solid' width="100%">
-    <tr>
-        <th></th>
-        <th>Empresa</th>
-        <th>Centro Utilidad</th>
-        <th>Bodega</th>
-    </tr>
-    <tr>
-        <th style='border-style:solid'>Origen</th>
-        <td><center>{{:encabezado_pedido_farmacia.empresa_origen}}</center></td>
-        <td><center>{{:encabezado_pedido_farmacia.centro_utilidad_origen}}</center></td>
-        <td><center>{{:encabezado_pedido_farmacia.bodega_origen}}</center></td>
-    </tr>
-    <tr>
-        <th style='border-style:solid'>Destino</th>
-        <td><center>{{:encabezado_pedido_farmacia.empresa_destino}}</center></td>
-        <td><center>{{:encabezado_pedido_farmacia.centro_utilidad_destino}}</center></td>
-        <td><center>{{:encabezado_pedido_farmacia.bodega_destino}}</center></td>
-    </tr>
-</table>
+            .contact-info span {
+                /*font-size:10px;*/
+                padding:0px 50px 0px 50px;
+            }
 
-</br>
+            .contact-info hr {
+                margin-top: 0px;
+                margin-bottom: 0px;
+            }
 
-<table>
-    <tr>
-        <th>Observaci&oacute;n:</th>
-        <td>{{:encabezado_pedido_farmacia.observacion}}</td>
-    </tr>
-</table>
+            .client-info {
+                /*font-size:10px;*/
+            }
 
-</br>
+            .footer-info {
+                font-size:8px;
+            }
 
-<table border=1 style='border-style:solid' width="100%">
-    <tr>
-        <th>C&oacute;digo Producto</th>
-        <th>Descripci&oacute;n</th>
-        <th>Cantidad Solicitada</th>
-        <th>Cantidad Pendiente</th>
-        <th>Disponible</th>
-    </tr>
-    {{for detalle_pedido_farmacia}}
-        <tr>
-            <td>{{:codigo_producto}}</td>
-            <td>{{:descripcion}}</td>
-            <td>{{:cantidad_solicitada}}</td>
-            <td>{{:cantidad_pendiente}}</td>
-            <td>{{:disponibilidad_bodega}}</td>
-        </tr>
-    {{/for}}
-</table>
+            .ttl-amts {
+                text-align:right;
+                padding-right:50px;
+            }
+            .box {
+                float: left;
+                width: 300px;
+                height: 50px;
+                /*margin: 1em;*/
+            }
+            table, th, td {
+                border: 1px solid black;                
+                border-collapse: collapse;
+            }
+            td {
+                /*font-size: 8px;*/
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            
+            <div class="row pad-top-botm ">
+                <!--div class="col-lg-6 col-md-6 col-sm-6 "-->
+                <div class="box">
+                    <img src="http://duanaltda.com/images/logo.png" style="padding-bottom:20px;"  width="200px" height="50px"/> 
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6">                   
+
+                    <strong> NIT - 900786223-3  Duana LTDA & CIA. </strong>
+                    <br />
+                    Calle 9A No. 42 - 115 Valle del Cauca, Cali, Colombia. 
+                </div>                
+            </div> 
+            
+            <hr/>
+            <div  class="row  pad-top-botm client-info">
+                <h1>Pedido No {{:encabezado_pedido_farmacia.numero_pedido}}</h1>
+
+                <table class="table table-striped" width='100%'>
+                    <tr>
+                        <th></th>
+                        <th>Empresa</th>
+                        <th>Centro Utilidad</th>
+                        <th>Bodega</th>
+                    </tr>
+                    <tr>
+                        <th style='border-style:solid'>Origen</th>
+                        <td><center>{{:encabezado_pedido_farmacia.empresa_origen}}</center></td>
+                        <td><center>{{:encabezado_pedido_farmacia.centro_utilidad_origen}}</center></td>
+                        <td><center>{{:encabezado_pedido_farmacia.bodega_origen}}</center></td>
+                    </tr>
+                    <tr>
+                        <th style='border-style:solid'>Destino</th>
+                        <td><center>{{:encabezado_pedido_farmacia.empresa_destino}}</center></td>
+                        <td><center>{{:encabezado_pedido_farmacia.centro_utilidad_destino}}</center></td>
+                        <td><center>{{:encabezado_pedido_farmacia.bodega_destino}}</center></td>
+                    </tr>
+                </table>
+            </div>
+            </br>
+            
+            <div  class="row  pad-top-botm client-info">
+                <table class="table table-striped" width='100%'>
+                    <tr>
+                        <th width='14%'>Observaci&oacute;n:</th>
+                        <td width='86%'>{{:encabezado_pedido_farmacia.observacion}}</td>
+                    </tr>
+                </table>
+            </div>
+                    
+            </br>
+            <div class="row pad-top-botm">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <table class="table table-striped" width='100%'>
+                        <thead>
+                            <tr>
+                                <th width='14%'>C&oacute;digo Producto</th>
+                                <th>Descripci&oacute;n</th>
+                                <th>Cantidad Solicitada</th>
+                                <th>Disponible</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{for detalle_pedido_farmacia}}
+                                <tr>
+                                    <td>{{:codigo_producto}}</td>
+                                    <td>{{:descripcion}}</td>
+                                    <td>{{:cantidad_solicitada}}</td>
+                                    <td>{{:disponibilidad}}</td>
+                                </tr>
+                            {{/for}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="">
+                <br/>
+                <br/>
+                ______________________________________<br/>
+                FIRMA Y SELLO AUTORIZADO
+            </div>  
+            
+            <div  class="row contact-info pad-top-botm footer-info">
+                <div class="col-md-12">
+                    <hr />
+                    <span>
+                        <strong>Realiza : </strong>  {{:encabezado_pedido_farmacia.nombre_usuario}} 
+                    </span>
+                    <span>
+                        <strong>Imprime : </strong>  {{:encabezado_pedido_farmacia.usuario_imprime}} 
+                    </span>                    
+                    <span>
+                        <strong>Fecha Impresión : </strong>{{:encabezado_pedido_farmacia.fecha_actual}}                        
+                    </span>
+                </div>
+            </div> 
+        </div>
+    </body>
 </html>

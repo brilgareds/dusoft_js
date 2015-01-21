@@ -375,3 +375,12 @@ ALTER TABLE "public"."solicitud_productos_a_bodega_principal_estado"
 
 ALTER TABLE "public"."ventas_ordenes_pedidos_estado"
   ADD COLUMN "sw_terminado" CHAR(1);
+
+
+
+
+ALTER TABLE "public"."inv_rotulo_caja"
+  ADD COLUMN "sw_despachado" CHAR(1);
+
+ALTER TABLE "public"."inv_rotulo_caja"
+  ALTER COLUMN "sw_despachado" SET DEFAULT 0;

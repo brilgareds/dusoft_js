@@ -766,14 +766,14 @@ PedidosClienteModel.prototype.listar_pedidos_pendientes_by_producto = function(e
  * @apiParam {Function} callback Funcion de retorno de informacion.
  */
 
-PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(numero_pedido, callback) {
+PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(numero_pedido,prefijo_documento, numero_documento, callback) {
      var sql = "select b.codigo_producto, sum(b.cantidad) AS cantidad_despachada, b.prefijo, b.numero\
                 from inv_bodegas_movimiento_despachos_clientes a\
                 inner join inv_bodegas_movimiento_d b on a.empresa_id =b.empresa_id and a.prefijo = b.prefijo and a.numero = b.numero\
-                where a.pedido_cliente_id = $1 group by 1,3,4";
+                where a.pedido_cliente_id = $1 and a.numero= $3 and a.prefijo= $2 group by 1,3,4";
     
     
-    G.db.query(sql, [numero_pedido], function(err, rows, result) {
+    G.db.query(sql, [numero_pedido, prefijo_documento,numero_documento ], function(err, rows, result) {
 
         if(err){
             callback(err, null);

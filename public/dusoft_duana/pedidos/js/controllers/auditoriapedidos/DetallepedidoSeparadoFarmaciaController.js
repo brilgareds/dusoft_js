@@ -273,6 +273,7 @@ define(["angular", "js/controllers",'models/Farmacia',
                     var doc = $scope.documentos_usuarios[i];
                     if(bodega_doc_id === doc.bodegas_doc_id){
                         $scope.documento_despacho = doc;
+                         console.log("documento seleccionado ", doc);
                         break;
                     }
                 }

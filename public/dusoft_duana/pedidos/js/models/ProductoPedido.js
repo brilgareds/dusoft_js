@@ -21,6 +21,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.existencia_lotes = "";
             this.porcentaje_gravament = "0";
             this.cantidad_despachada = 0;
+            this.cantidad_solicitada_real = 0;
             
             //Objeto Lote
             this.lote = {};

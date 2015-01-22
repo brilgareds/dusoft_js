@@ -2289,7 +2289,7 @@ function __validar_responsable_pedidos_clientes(contexto, numero_pedido, respons
         } else {
 
             var responsable = responsables.filter(function(responsable) {
-                return responsable.usuario_id_responsable === parseInt(responsable_pedido) && responsable.estado === estado_pedido;
+                return responsable.usuario_id_responsable === parseInt(responsable_pedido) && responsable.estado === estado_pedido && responsable.sw_terminado === '0';
             });
 
             if (responsable.length > 0) {
@@ -2319,7 +2319,7 @@ function __validar_responsable_pedidos_farmacias(contexto, numero_pedido, respon
 
             var responsable = responsables.filter(function(data) {
 
-                return data.usuario_id_responsable === parseInt(responsable_pedido) && data.estado === estado_pedido;
+                return data.usuario_id_responsable === parseInt(responsable_pedido) && data.estado === estado_pedido && data.sw_terminado === '0';
             });
 
             if (responsable.length > 0) {

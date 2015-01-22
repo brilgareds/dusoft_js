@@ -533,17 +533,17 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
     if (filtro !== undefined) {
 
         if (filtro.asignados) {
-            sql_aux = "  h.doc_tmp_id IS NULL ";
+            sql_aux = "  h.doc_tmp_id IS NULL and ";
         }
 
         if (filtro.temporales) {
-            sql_aux = "  h.doc_tmp_id IS NOT NULL AND h.estado = '0' ";
+            sql_aux = "  h.doc_tmp_id IS NOT NULL AND h.estado = '0' and ";
         }
         
         //filtro para traer los pedidos que estan  en auditoria
         if (filtro.finalizados) {
             estado_pedido = '7';
-            sql_aux = " g.usuario_id = (select usuario_id from operarios_bodega where operario_id = f.responsable_id )";
+            sql_aux = " g.usuario_id = (select usuario_id from operarios_bodega where operario_id = f.responsable_id ) and";
         }
     }
 
@@ -587,7 +587,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                 left join inv_bodegas_movimiento_tmp_despachos_farmacias h on a.solicitud_prod_a_bod_ppal_id = h.solicitud_prod_a_bod_ppal_id \
                 left join inv_bodegas_movimiento_tmp i on h.doc_tmp_id = i.doc_tmp_id and h.usuario_id = i.usuario_id \
                 where " + sql_aux + " \
-                and a.estado = "+estado_pedido+" /*AND a.sw_despacho = 0*/ \
+                 a.estado = "+estado_pedido+" /*AND a.sw_despacho = 0*/ \
                 and i.usuario_id = $1\
                 and (\
                     a.solicitud_prod_a_bod_ppal_id ilike $2 or\

@@ -533,11 +533,11 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
     if (filtro !== undefined) {
 
         if (filtro.asignados) {
-            sql_aux = "  AND h.doc_tmp_id IS NULL ";
+            sql_aux = "  h.doc_tmp_id IS NULL ";
         }
 
         if (filtro.temporales) {
-            sql_aux = "  AND h.doc_tmp_id IS NOT NULL AND h.estado = '0' ";
+            sql_aux = "  h.doc_tmp_id IS NOT NULL AND h.estado = '0' ";
         }
         
         //filtro para traer los pedidos que estan  en auditoria

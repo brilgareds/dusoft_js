@@ -118,7 +118,8 @@ E008Controller.prototype.finalizarDocumentoTemporalClientes = function(req, res)
                     } else {
 
                         // Emitir evento para actualizar la lista de Documentos Temporales
-                        that.e_e008.onNotificarDocumentosTemporalesClientes({numero_pedido: numero_pedido});
+                        that.e_e008.onNotificarDocumentosTemporalesClientes({numero_pedido: numero_pedido});  
+                        that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
 
                         res.send(G.utils.r(req.url, 'Documento Temporal Clientes Finalizado Correctamente', 200, {documento_temporal: {}}));
                         return;
@@ -239,6 +240,8 @@ E008Controller.prototype.finalizarDocumentoTemporalFarmacias = function(req, res
                         res.send(G.utils.r(req.url, 'Error Finalizando el Documento Temporal Farmacias', 500, {documento_temporal: {}}));
                         return;
                     } else {
+                        
+                        that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
 
                         // Emitir evento para actualizar la lista de Documentos Temporales
                         that.e_e008.onNotificarDocumentosTemporalesFarmacias({numero_pedido: numero_pedido});

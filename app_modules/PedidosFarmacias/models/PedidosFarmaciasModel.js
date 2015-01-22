@@ -529,22 +529,25 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
     // asignados al operario de bodega y saber si el pedido tiene temporales o 
     // fue finalizado correctamente.
     /*=========================================================================*/
-
+    var estado_pedido = '1';
     if (filtro !== undefined) {
 
         if (filtro.asignados) {
-            sql_aux = " AND h.doc_tmp_id IS NULL ";
+            sql_aux = "  AND h.doc_tmp_id IS NULL ";
         }
 
         if (filtro.temporales) {
-            sql_aux = " AND h.doc_tmp_id IS NOT NULL AND h.estado = '0' ";
+            sql_aux = "  AND h.doc_tmp_id IS NOT NULL AND h.estado = '0' ";
         }
+        
+        //filtro para traer los pedidos que estan  en auditoria
         if (filtro.finalizados) {
-            sql_aux = " AND h.estado = '1' ";
+            estado_pedido = '7';
+            sql_aux = " g.usuario_id = (select usuario_id from operarios_bodega where operario_id = f.responsable_id )";
         }
     }
 
-    var sql = " select \
+    var sql = " select distinct\
                 h.doc_tmp_id as documento_temporal_id,\
                 h.usuario_id,\
                 a.solicitud_prod_a_bod_ppal_id as numero_pedido, \
@@ -579,12 +582,13 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                 inner join centros_utilidad c on b.empresa_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad \
                 inner join empresas d ON c.empresa_id = d.empresa_id \
                 inner join system_usuarios e ON a.usuario_id = e.usuario_id \
-                inner join solicitud_productos_a_bodega_principal_estado f on a.solicitud_prod_a_bod_ppal_id = f.solicitud_prod_a_bod_ppal_id and a.estado = f.estado and (f.sw_terminado is null or f.sw_terminado = '0')\
+                inner join solicitud_productos_a_bodega_principal_estado f on a.solicitud_prod_a_bod_ppal_id = f.solicitud_prod_a_bod_ppal_id and a.estado = f.estado \
                 inner join operarios_bodega g on f.responsable_id = g.operario_id\
                 left join inv_bodegas_movimiento_tmp_despachos_farmacias h on a.solicitud_prod_a_bod_ppal_id = h.solicitud_prod_a_bod_ppal_id \
                 left join inv_bodegas_movimiento_tmp i on h.doc_tmp_id = i.doc_tmp_id and h.usuario_id = i.usuario_id \
-                where g.usuario_id = $1 " + sql_aux + " \
-                and a.estado = '1' /*AND a.sw_despacho = 0*/ \
+                where " + sql_aux + " \
+                and a.estado = "+estado_pedido+" /*AND a.sw_despacho = 0*/ \
+                and i.usuario_id = $1\
                 and (\
                     a.solicitud_prod_a_bod_ppal_id ilike $2 or\
                     d.razon_social ilike  $2 or\

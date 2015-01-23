@@ -19,20 +19,21 @@ Clientes.prototype.listarClientes = function(req, res) {
       pagina_actual: $scope.rootSeleccionCliente.paginaactual,
      */
 
-    if (args.clientes === undefined || args.clientes.pagina_actual === undefined) {
-        res.send(G.utils.r(req.url, 'Se requiere la página. No está definida.', 404, {}));
+    if (args.clientes === undefined || args.clientes.empresa_id === undefined || args.clientes.pagina_actual === undefined) {
+        res.send(G.utils.r(req.url, 'empresa_id o pagina_actual no están definidas.', 404, {}));
         return;
     }
     
-    if (args.clientes.pagina_actual === '' || args.clientes.pagina_actual === '0') {
-        res.send(G.utils.r(req.url, 'La página no puede ser ni vacía ni 0.', 404, {}));
+    if (args.clientes.empresa_id === '' || args.clientes.pagina_actual === '' || args.clientes.pagina_actual === '0') {
+        res.send(G.utils.r(req.url, 'empresa_id está vacio o pagina_actual es vacio o 0.', 404, {}));
         return;
     }
 
+    var empresa_id = args.clientes.empresa_id;
     var termino_busqueda = (args.clientes.termino_busqueda === undefined) ? '' : args.clientes.termino_busqueda;
     var pagina_actual = args.clientes.pagina_actual;
     
-    this.m_clientes.listar_clientes( termino_busqueda, pagina_actual, function(err, listado_clientes) {
+    this.m_clientes.listar_clientes( empresa_id,termino_busqueda, pagina_actual, function(err, listado_clientes) {
         if(err)
             res.send(G.utils.r(req.url, 'Error Consultando Clientes', 500, {}));
         else

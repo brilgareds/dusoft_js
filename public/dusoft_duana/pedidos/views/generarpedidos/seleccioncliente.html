@@ -13,19 +13,31 @@
                 <div class="panel-heading">
                   <h4 class="h4MarginTopBottom" align="center">Seleccionar Cliente</h4>
                 </div>
+                
                 <div class="panel-body">
                     
                     <div class="input-group navbar-form paddingRightZero">
-                        <input type="text" class="form-control pull-right" ng-keypress="onKeySeleccionClientePress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar Cliente" name="srch-term" id="srch-term">
+                        <input type="text" class="form-control pull-right" ng-keypress="onKeySeleccionClientePress($event)" ng-model="rootSeleccionCliente.termino_busqueda" placeholder="Buscar Cliente" name="srch-term" id="srch-term">
                         <div class="input-group-btn" >
-                            <button class="btn btn-default pull-right" type="submit" ng-click="buscarSeleccionCliente(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                            <button class="btn btn-default pull-right" type="submit" ng-click="onBuscarSeleccionCliente(obtenerParametros(),true)" ng-model="rootSeleccionCliente.termino_busqueda"><i class="glyphicon glyphicon-search"></i></button>
                         </div>
                     </div>
                     
                 </div>
+                
                 <div class="panel-body" ng-if="rootSeleccionCliente.Empresa.getClientes().length > 0">
                     <div class="defaultGrid" ng-grid="rootSeleccionCliente.grid_clientes"></div>
                 </div>
+                
+                <div class="row text-center">
+                    <button type="button" class="btn btn-default btn-medium" ng-disabled="rootSeleccionCliente.paginaactual == 1" ng-click="paginaAnterior()">
+                        <span class="glyphicon glyphicon-chevron-left" ></span>
+                    </button>
+                    <button type="button" class="btn btn-default btn-medium" ng-disabled="rootSeleccionCliente.items == 0" ng-click="paginaSiguiente()">
+                        <span class="glyphicon glyphicon-chevron-right" ></span>
+                    </button>
+                </div>
+                
             </div>
               
         </div>    

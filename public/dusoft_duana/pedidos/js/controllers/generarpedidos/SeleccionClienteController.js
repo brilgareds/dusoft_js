@@ -57,6 +57,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     session: $scope.rootSeleccionCliente.session,
                     data: {
                         clientes: {
+                            empresa_id: '03',
                             termino_busqueda: $scope.rootSeleccionCliente.termino_busqueda,
                             pagina_actual: $scope.rootSeleccionCliente.paginaactual,
                         }
@@ -79,6 +80,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         };
 
                         that.renderClientes(data.obj, paginando);
+                    }
+                    else{
+                        console.log("Error en consulta de Clientes: ", data.msj);
                     }
 
                 });
@@ -193,22 +197,22 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             });
             
             //eventos de widgets
-            $scope.onKeySeleccionClientePress = function(ev, termino_busqueda) {
+            $scope.onKeySeleccionClientePress = function(ev) {
                  //if(!$scope.buscarVerPedidosFarmacias($scope.DocumentoTemporal.bodegas_doc_id)) return;
 
                  if (ev.which == 13) {
-                     $scope.buscarSeleccionCliente(termino_busqueda);
+                     $scope.onBuscarSeleccionCliente($scope.obtenerParametros(),"");
                  }
             };
 
             $scope.paginaAnterior = function() {
-                 $scope.paginaactual--;
-                 $scope.buscarSeleccionCliente($scope.termino_busqueda, true);
+                 $scope.rootSeleccionCliente.paginaactual--;
+                 $scope.onBuscarSeleccionCliente($scope.obtenerParametros(), true);
             };
 
             $scope.paginaSiguiente = function() {
-                 $scope.paginaactual++;
-                 $scope.buscarSeleccionCliente($scope.termino_busqueda, true);
+                 $scope.rootSeleccionCliente.paginaactual++;
+                 $scope.onBuscarSeleccionCliente($scope.obtenerParametros(), true);
             };
 
             $scope.valorSeleccionado = function() {

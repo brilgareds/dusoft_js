@@ -1330,10 +1330,27 @@ PedidosFarmacias.prototype.insertarPedidoFarmaciaDefinitivo = function(req, res)
                             return;
                         }
                         
-                        console.log(">>>>>>>>>>>>>>>>>>>> ASIGNAR RESPONSABLE PEDIDOS - EJECUTADO");
+                        /*Inicio - Actualización sw_terminado*/
+                        that.m_pedidos_farmacias.terminar_estado_pedido(numero_pedido, ['0'], '1', function(err, rows, results) {
+                            
+                            if (err) {
+                                res.send(G.utils.r(req.url, 'Error Finalizando el Documento Temporal Farmacias', 500, {documento_temporal: {}}));
+                                return;
+                            }
+                            
+                            console.log(">>>>>>>>>>>>>>>>>>>> TERMINAR ESTADO PEDIDO - EJECUTADO");
+                            
+                            res.send(G.utils.r(req.url, 'Encabezado del pedido almacenado exitosamente', 200, {numero_pedido: id_pedido}));
+                            return;
+
+                        });
+                        /*Fin - Actualización sw_terminado*/
+                        
+                        //console.log(">>>>>>>>>>>>>>>>>>>> ASIGNAR RESPONSABLE PEDIDOS - EJECUTADO");
                         //res.send(G.utils.r(req.url, 'Asignacion de Resposables', 200, {}));
-                        res.send(G.utils.r(req.url, 'Encabezado del pedido almacenado exitosamente', 200, {numero_pedido: id_pedido}));
-                        return;
+                        
+                        /*res.send(G.utils.r(req.url, 'Encabezado del pedido almacenado exitosamente', 200, {numero_pedido: id_pedido}));
+                        return;*/
 
                     });
                 

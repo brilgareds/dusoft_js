@@ -6,6 +6,7 @@ define(["angular", "js/models", "includes/classes/Cliente"], function(angular, m
         function ClientePedido(nombre, direccion, tipo_id, id, telefono) {
             Cliente.getClass().call(this,nombre, direccion, tipo_id, id, telefono);
             
+            this.tipoid_con_id
             this.ubicacion;
         }
 

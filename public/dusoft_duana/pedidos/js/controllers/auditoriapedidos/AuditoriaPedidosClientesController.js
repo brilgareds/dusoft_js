@@ -96,6 +96,11 @@ define(["angular", "js/controllers",
                 AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
             });
             
+            
+            $rootScope.$on("cerrardetalleclienteCompleto",function(e){
+                $scope.buscarPedidosSeparados(that.obtenerParametros(),1, false, $scope.renderPedidosSeparados);
+            });
+            
 
             $scope.onRowClick = function(row) {
                 row.entity.esDocumentoNuevo = false;

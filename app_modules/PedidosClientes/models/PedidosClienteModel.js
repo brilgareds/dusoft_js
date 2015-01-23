@@ -394,18 +394,19 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
     // asignados al operario de bodega y saber si el pedido tiene temporales o 
     // fue finalizado correctamente.
     /*=========================================================================*/
-
+    var estado_pedido = '1';
     if (filtro !== undefined) {
 
         if (filtro.asignados) {
-            sql_aux = " AND f.doc_tmp_id IS NULL ";
+            sql_aux = "  f.doc_tmp_id IS NULL and  e.usuario_id = "+responsable+" and  ";
         }
 
         if (filtro.temporales) {
-            sql_aux = " AND f.doc_tmp_id IS NOT NULL AND f.estado = '0'";
+            sql_aux = "  f.doc_tmp_id IS NOT NULL AND f.estado = '0' and  e.usuario_id = "+responsable+" and ";
         }
         if (filtro.finalizados) {
-            sql_aux = " AND f.estado = '1' ";
+            estado_pedido = '7';
+            sql_aux = " e.usuario_id = (select usuario_id from operarios_bodega where operario_id = d.responsable_id ) and  g.usuario_id = "+responsable+" and ";
         }
     }
 
@@ -445,12 +446,12 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
                 from ventas_ordenes_pedidos a \
                 inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id \
                 inner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id \
-                inner join ventas_ordenes_pedidos_estado d on a.pedido_cliente_id = d.pedido_cliente_id and a.estado_pedido = d.estado\
+                inner join ventas_ordenes_pedidos_estado d on a.pedido_cliente_id = d.pedido_cliente_id and a.estado_pedido = d.estado and (d.sw_terminado is null or d.sw_terminado = '0')\
                 inner join operarios_bodega e on d.responsable_id = e.operario_id\
                 left join inv_bodegas_movimiento_tmp_despachos_clientes f on a.pedido_cliente_id = f.pedido_cliente_id\
                 left join inv_bodegas_movimiento_tmp g on f.usuario_id = g.usuario_id and f.doc_tmp_id = g.doc_tmp_id \
-                where e.usuario_id = $1 " + sql_aux + " \
-                and a.estado_pedido = '1' \
+                where " + sql_aux + " \
+                a.estado_pedido = "+estado_pedido+" \
                 /*AND (a.estado IN ('1'))*/   \
                 and (\
                         a.pedido_cliente_id ilike $2 or\
@@ -766,14 +767,14 @@ PedidosClienteModel.prototype.listar_pedidos_pendientes_by_producto = function(e
  * @apiParam {Function} callback Funcion de retorno de informacion.
  */
 
-PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(numero_pedido, callback) {
+PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(numero_pedido,prefijo_documento, numero_documento, callback) {
      var sql = "select b.codigo_producto, sum(b.cantidad) AS cantidad_despachada, b.prefijo, b.numero\
                 from inv_bodegas_movimiento_despachos_clientes a\
                 inner join inv_bodegas_movimiento_d b on a.empresa_id =b.empresa_id and a.prefijo = b.prefijo and a.numero = b.numero\
-                where a.pedido_cliente_id = $1 group by 1,3,4";
+                where a.pedido_cliente_id = $1 and a.numero= $3 and a.prefijo= $2 group by 1,3,4";
     
     
-    G.db.query(sql, [numero_pedido], function(err, rows, result) {
+    G.db.query(sql, [numero_pedido, prefijo_documento,numero_documento ], function(err, rows, result) {
 
         if(err){
             callback(err, null);

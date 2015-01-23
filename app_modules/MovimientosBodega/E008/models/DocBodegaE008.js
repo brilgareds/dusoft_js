@@ -531,11 +531,11 @@ DocuemntoBodegaE008.prototype.actualizar_estado_documento_temporal_farmacias = f
 };
 
 // Consultar el rotulo de una caja 
-DocuemntoBodegaE008.prototype.consultar_rotulo_caja = function(documento_id, numero_caja, callback) {
+DocuemntoBodegaE008.prototype.consultar_rotulo_caja = function(documento_id, numero_caja, numero_pedido, callback) {
 
-    var sql = " select * from inv_rotulo_caja a where a.documento_id = $1 and numero_caja = $2; ";
+    var sql = " select * from inv_rotulo_caja a where a.documento_id = $1 and numero_caja = $2 and solicitud_prod_a_bod_ppal_id = $3 and (sw_despachado = '0' or sw_despachado is null); ";
 
-    G.db.query(sql, [documento_id, numero_caja], function(err, rows, result) {
+    G.db.query(sql, [documento_id, numero_caja, numero_pedido], function(err, rows, result) {
 
         callback(err, rows, result);
     });
@@ -549,6 +549,15 @@ DocuemntoBodegaE008.prototype.generar_rotulo_caja = function(documento_id, numer
 
 
     G.db.query(sql, [documento_id, numero_pedido, cliente, direccion, cantidad, ruta, contenido, usuario_id, numero_caja], function(err, rows, result) {
+
+        callback(err, rows, result);
+    });
+};
+
+DocuemntoBodegaE008.prototype.marcar_cajas_como_despachadas = function(documento_id, numero_pedido, callback){
+    var sql = " UPDATE inv_rotulo_caja SET sw_despachado='1' WHERE documento_id = $1 and solicitud_prod_a_bod_ppal_id = $2; ";
+
+    G.db.query(sql, [documento_id, numero_pedido], function(err, rows, result) {
 
         callback(err, rows, result);
     });
@@ -599,7 +608,7 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_farmacias = function(do
             
                         
             // Asignar Auditor Como Responsable del Despacho.
-            __asignar_responsable_despacho(empresa_id, prefijo_documento, numero_documento, auditor_id, function(err, result) {
+            __asignar_responsable_despacho(empresa_id, prefijo_documento, numero_documento, usuario_id, function(err, result) {
                 
                 if(err){
                     callback(err);
@@ -664,7 +673,7 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(doc
             }
             
             // Asignar Auditor Como Responsable del Despacho.
-            __asignar_responsable_despacho(empresa_id, prefijo_documento, numero_documento, auditor_id, function(err, result) {
+            __asignar_responsable_despacho(empresa_id, prefijo_documento, numero_documento, usuario_id, function(err, result) {
                 
                 if(err){
                     callback(err);
@@ -698,7 +707,7 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(doc
                                 }
                                 // Finalizar Transacción.
                                 G.db.commit(function(){
-                                     that.m_pedidos_clientes.actualizar_despachos_pedidos_cliente(numero_pedido, function(err){
+                                     that.m_pedidos_clientes.actualizar_despachos_pedidos_cliente(numero_pedido,prefijo_documento, numero_documento, function(err){
                                         callback(err, empresa_id, prefijo_documento, numero_documento);
                                      });
                                 });
@@ -727,10 +736,10 @@ function __errorGenerandoDocumento(err, callback){
 //Ingresar cabecera documento despacho farmacias
 function __ingresar_documento_despacho_farmacias(documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento, auditor_id, callback) {
     var sql = " INSERT INTO inv_bodegas_movimiento_despachos_farmacias(empresa_id, prefijo, numero, farmacia_id, solicitud_prod_a_bod_ppal_id, usuario_id,fecha_registro,rutaviaje_destinoempresa_id, sw_revisado, sw_entregado_off )\
-                SELECT $3 as empresa_id, $4 as prefijo, $5 as numero, a.farmacia_id, a.solicitud_prod_a_bod_ppal_id, $6 as usuario_id, NOW() as fecha_registro, a.rutaviaje_destinoempresa_id, '1' as sw_revisado, '1' as sw_entregado_off\
+                SELECT $3 as empresa_id, $4 as prefijo, $5 as numero, a.farmacia_id, a.solicitud_prod_a_bod_ppal_id, $2 as usuario_id, NOW() as fecha_registro, a.rutaviaje_destinoempresa_id, '1' as sw_revisado, '1' as sw_entregado_off\
                 FROM inv_bodegas_movimiento_tmp_despachos_farmacias a WHERE a.doc_tmp_id =$1 AND a.usuario_id =$2 ";
 
-    G.db.transaction(sql, [documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento, auditor_id], callback);  
+    G.db.transaction(sql, [documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento], callback);  
 };
 
 
@@ -740,10 +749,10 @@ function __ingresar_documento_despacho_clientes(documento_temporal_id, usuario_i
 
 
     var sql = " INSERT INTO inv_bodegas_movimiento_despachos_clientes(empresa_id, prefijo, numero, tipo_id_tercero, tercero_id, pedido_cliente_id, rutaviaje_destinoempresa_id, observacion, fecha_registro, usuario_id )\
-                SELECT $3 as empresa_id, $4 as prefijo, $5 as numero, a.tipo_id_tercero, a.tercero_id, a.pedido_cliente_id, a.rutaviaje_destinoempresa_id, a.observacion, NOW() as fecha_registro,$6 as usuario_id \
+                SELECT $3 as empresa_id, $4 as prefijo, $5 as numero, a.tipo_id_tercero, a.tercero_id, a.pedido_cliente_id, a.rutaviaje_destinoempresa_id, a.observacion, NOW() as fecha_registro,$2 as usuario_id \
                 FROM inv_bodegas_movimiento_tmp_despachos_clientes a WHERE a.doc_tmp_id =$1 AND a.usuario_id =$2 ";
 
-    G.db.transaction(sql, [documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento, auditor_id], callback);
+    G.db.transaction(sql, [documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento], callback);
 };
 
 // Ingresar Justificacion despacho

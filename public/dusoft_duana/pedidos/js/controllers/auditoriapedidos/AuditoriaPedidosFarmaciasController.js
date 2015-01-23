@@ -68,6 +68,10 @@ define(["angular", "js/controllers",
                 AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
             });
             
+            $rootScope.$on("cerrardetallefarmaciaCompleto",function(e){
+               $scope.buscarPedidosSeparados(that.obtenerParametros(),2, false, $scope.renderPedidosSeparados);
+            });
+            
 
 
             $scope.listarEmpresas = function() {

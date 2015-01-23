@@ -146,6 +146,7 @@ define(["angular", "js/controllers",'models/Farmacia',
                     {field: 'descripcion', displayName: 'Nombre Producto', width:500},
                     {field: 'cantidad_pendiente', displayName: 'Pendiente' },
                     {field: 'cantidad_separada', displayName: "Ingresado"},
+                    {field:'cantidad_solicitada_real', displayName: "Solicitado"},
                     //{field: 'cantidad_solicitada', displayName: "Solicitado"},
                     {field: 'observacion', displayName: "Observación", width:350},
                     {field: 'opciones', displayName: "", cellClass: "txt-center" , width:40,
@@ -273,6 +274,7 @@ define(["angular", "js/controllers",'models/Farmacia',
                     var doc = $scope.documentos_usuarios[i];
                     if(bodega_doc_id === doc.bodegas_doc_id){
                         $scope.documento_despacho = doc;
+                         console.log("documento seleccionado ", doc);
                         break;
                     }
                 }

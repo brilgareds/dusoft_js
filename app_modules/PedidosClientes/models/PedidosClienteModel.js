@@ -394,18 +394,19 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
     // asignados al operario de bodega y saber si el pedido tiene temporales o 
     // fue finalizado correctamente.
     /*=========================================================================*/
-
+    var estado_pedido = '1';
     if (filtro !== undefined) {
 
         if (filtro.asignados) {
-            sql_aux = " AND f.doc_tmp_id IS NULL ";
+            sql_aux = "  f.doc_tmp_id IS NULL and  e.usuario_id = "+responsable+" and  ";
         }
 
         if (filtro.temporales) {
-            sql_aux = " AND f.doc_tmp_id IS NOT NULL AND f.estado = '0'";
+            sql_aux = "  f.doc_tmp_id IS NOT NULL AND f.estado = '0' and  e.usuario_id = "+responsable+" and ";
         }
         if (filtro.finalizados) {
-            sql_aux = " AND f.estado = '1' ";
+            estado_pedido = '7';
+            sql_aux = " e.usuario_id = (select usuario_id from operarios_bodega where operario_id = d.responsable_id ) and  g.usuario_id = "+responsable+" and ";
         }
     }
 
@@ -449,8 +450,8 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
                 inner join operarios_bodega e on d.responsable_id = e.operario_id\
                 left join inv_bodegas_movimiento_tmp_despachos_clientes f on a.pedido_cliente_id = f.pedido_cliente_id\
                 left join inv_bodegas_movimiento_tmp g on f.usuario_id = g.usuario_id and f.doc_tmp_id = g.doc_tmp_id \
-                where e.usuario_id = $1 " + sql_aux + " \
-                and a.estado_pedido = '1' \
+                where " + sql_aux + " \
+                a.estado_pedido = "+estado_pedido+" \
                 /*AND (a.estado IN ('1'))*/   \
                 and (\
                         a.pedido_cliente_id ilike $2 or\

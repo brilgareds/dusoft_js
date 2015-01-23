@@ -4,13 +4,14 @@ define(["angular", "js/models","includes/classes/Tercero"], function(angular, mo
     models.factory('Cliente', ["Tercero", function(Tercero) {
 
         function Cliente(nombre, direccion, tipo_id, id, telefono) {
-            Tercero.getClass().call(this,nombre, tipo_id, id, direccion, telefono);
-            //this.direccion_cliente = direccion || "";
-            //this.telefono_cliente = telefono || "";
             
+            Tercero.getClass().call(this,nombre, tipo_id, id, direccion, telefono);
+            
+            //this.ubicacion = pais+"-"+departamento+"-"+municipio;
         };
 
         this.get = function(nombre, direccion, tipo_id, id, telefono) {
+
             return new Cliente(nombre, direccion, tipo_id, id, telefono);
         };
 

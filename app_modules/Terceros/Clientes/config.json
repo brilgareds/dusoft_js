@@ -1,0 +1,26 @@
+{
+    "module": "Clientes",
+    "dependency": {
+        "controllers": [{
+                "clientes_controller": {
+                    "module": "Terceros/Clientes",
+                    "controller": "ClientesController",
+                    "alias": "c_clientes"
+                }
+            }],
+        "models": [{
+                "pedidos_clientes_model": {
+                    "module": "PedidosClientes",
+                    "model": "PedidosClienteModel",
+                    "alias": "m_pedidos_clientes"
+                },
+                "clientes_model": {
+                    "module": "Terceros/Clientes",
+                    "model": "ClientesModel",
+                    "alias": "m_clientes"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

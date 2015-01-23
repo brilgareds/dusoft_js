@@ -23,8 +23,8 @@
                     </div>
                     
                 </div>
-                <div class="panel-body" ng-if="listado_clientes.length > 0">
-                    <div class="auditadosGrid" ng-grid="grid_clientes"></div>
+                <div class="panel-body" ng-if="rootSeleccionCliente.Empresa.getClientes().length > 0">
+                    <div class="defaultGrid" ng-grid="rootSeleccionCliente.grid_clientes"></div>
                 </div>
             </div>
               

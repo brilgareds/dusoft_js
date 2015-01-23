@@ -53,15 +53,30 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.$on('cargarClienteSlide', function(event, data) {
                 //console.log("La Información Llega a la Grid ", data);
                 //console.log("Después: ", data);
+                
+                /*
+                                 var cliente = ClientePedido.get(
+                                    obj.nombre_tercero,  //nombre_tercero
+                                    obj.direccion,       //direccion
+                                    obj.tipo_id_tercero, //tipo_id_tercero
+                                    obj.tercero_id,      //id
+                                    obj.telefono         //telefono
+                                );
+                                    
+                cliente.setPais(obj.pais);                  //pais
+                cliente.setDepartamento(obj.departamento);  //departamento
+                cliente.setMunicipio(obj.municipio);        //municipio
+                cliente.setUbicacion();                     //ubicacion = pais + departamento + municipio
+                 */
 
                 $scope.datos_cliente = data;
 
-                if ($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.seleccion_vendedor != 0)
+                if ($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre_tercero != '' && $scope.seleccion_vendedor != 0)
                 {
                     $scope.bloquear = false;
                 }
 
-                if ($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.seleccion_vendedor != 0 && $scope.listado_productos.length == 0) {
+                if ($scope.datos_cliente.id != '' && $scope.datos_cliente.nombre_tercero != '' && $scope.seleccion_vendedor != 0 && $scope.listado_productos.length == 0) {
 
                     $scope.bloquear_upload = false;
                 }

@@ -75,7 +75,8 @@ define(["angular"], function(angular) {
 	    'TERCEROS':{
 	    	'LISTAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/listar",
 	    	'CREAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/crear",
-	    	'MODIFICAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/modificar"
+	    	'MODIFICAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/modificar",
+                'LISTAR_CLIENTES':BASE_URL+"/Terceros/Clientes/listarClientes"
 	    },
 	    'USUARIOS':{
 	    	'LISTAR_USUARIOS':BASE_URL+"/Usuarios/listar"

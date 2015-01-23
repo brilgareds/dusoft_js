@@ -454,15 +454,15 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
                 a.estado_pedido = "+estado_pedido+" \
                 /*AND (a.estado IN ('1'))*/   \
                 and (\
-                        a.pedido_cliente_id ilike $2 or\
-                        b.tercero_id ilike $2 or\
-                        b.nombre_tercero  ilike $2 or\
-                        c.vendedor_id ilike $2 or\
-                        c.nombre ilike $2\
+                        a.pedido_cliente_id ilike $1 or\
+                        b.tercero_id ilike $1 or\
+                        b.nombre_tercero  ilike $1 or\
+                        c.vendedor_id ilike $1 or\
+                        c.nombre ilike $1\
                     )\
                 order by d.fecha asc ";
 
-    G.db.pagination(sql, [responsable, "%" + termino_busqueda + "%"], pagina, limite, function(err, rows, result, total_records) {
+    G.db.pagination(sql, ["%" + termino_busqueda + "%"], pagina, limite, function(err, rows, result, total_records) {
         callback(err, rows, total_records);
     });
 

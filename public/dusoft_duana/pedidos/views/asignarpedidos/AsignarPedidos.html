@@ -5,6 +5,11 @@
     <tabset  class="">
         <tab heading="Clientes" ng-controller="PedidosClientesController">
 
+            <div class="col-md-1">
+                <button type="button" class="form-control btn btn-default btn-sm" ng-disabled="pedidosSeleccionados.length == 0" ng-click="abrirModalAsignar()">
+                    <span class="glyphicon glyphicon-ok" ></span> Asignar
+                </button>
+            </div>    
             <div class="col-sm-12 col-md-3">
                 <select ui-select2="selectestados"  class="form-control selectgeneral"  ng-model="estadoseleccionado"  ng-change="seleccionEstado()">
                     <option></option>
@@ -13,11 +18,6 @@
 
             </div>
 
-            <div class="col-md-1">
-                <button type="button" class="form-control btn btn-default btn-sm" ng-disabled="pedidosSeleccionados.length == 0" ng-click="abrirModalAsignar()">
-                    <span class="glyphicon glyphicon-ok" ></span> Asignar
-                </button>
-            </div>    
             <div class="input-group navbar-form">
 
                 <input type="text" class="form-control pull-right" ng-keypress="onKeyPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
@@ -59,6 +59,12 @@
                         </select>
                     </div>
             </div-->
+            <div class="col-md-1">
+
+                <button type="button" class="form-control btn btn-default btn-sm" ng-disabled="pedidosSeleccionados.length == 0" ng-click="abrirModalAsignar()">
+                    <span class="glyphicon glyphicon-ok" ></span> Asignar
+                </button>
+            </div> 
 
             <div class="col-sm-12 col-md-3">
                 <select ui-select2  class="form-control selectgeneral"  ng-model="seleccion" data-placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
@@ -73,12 +79,6 @@
                 </select>
             </div>
 
-            <div class="col-md-1">
-
-                <button type="button" class="form-control btn btn-default btn-sm" ng-disabled="pedidosSeleccionados.length == 0" ng-click="abrirModalAsignar()">
-                    <span class="glyphicon glyphicon-ok" ></span> Asignar
-                </button>
-            </div> 
 
             <div class="input-group  navbar-form buscadorgeneral">
 

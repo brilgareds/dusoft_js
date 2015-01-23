@@ -7,101 +7,175 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
         '$scope', '$rootScope', 'Request',
         'EmpresaPedido', 'ClientePedido', 'PedidoVenta',
         'API', "socket", "AlertService",
-        '$state',
+        '$state', 'Usuario',
 
-        function($scope, $rootScope, Request, Empresa, Cliente, PedidoVenta, API, socket, AlertService, $state) {
+        function($scope, $rootScope, Request, EmpresaPedido, ClientePedido, PedidoVenta, API, socket, AlertService, $state, Usuario) {
 
+            $scope.expreg = new RegExp("^[0-9]*$");
 
-            $scope.paginas = 0;
-            $scope.items = 0;
-            $scope.termino_busqueda = "";
-            $scope.ultima_busqueda = "";
-            $scope.paginaactual = 1;
-            $scope.listado_clientes = [];
-
-            $scope.grid_clientes = {
-                data: 'listado_clientes',
-                enableColumnResize: true,
-                enableRowSelection: false,
-                columnDefs: [
-                        {field: 'nit', displayName: 'Nit'},
-                        {field: 'razon_social', displayName: 'Razón Social'},
-                        {field: 'ciudad', displayName: 'Ciudad'},
-                        {field: 'direccion', displayName: 'Dirección'},
-                        {field: 'fecha_creacion', displayName: 'Fecha Creación'},
-                        {field: 'telefono', displayName: 'Telefono'},
-                        {field: 'email', displayName: 'E-Mail'},
-                        {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
-                            cellTemplate: ' <div>\n\
-                                                <button class="btn btn-default btn-xs" ng-click="onRowClick(row)">\n\
-                                                    <span class="glyphicon glyphicon-zoom-in">Activar</span>\n\
-                                                </button>\n\
-                                            </div>'
-                        }
-
-                    ]
-            };
-
-            
-
-            var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
+            var that = this;
             
             $scope.cerrar = function(){
                $scope.$emit('cerrarseleccioncliente', {animado:true});
                
-               $scope.listado_clientes = [];
+               $scope.rootSeleccionCliente = {};
             };
             
             
             $rootScope.$on("mostrarseleccioncliente", function(e) {
-            
-                $scope.buscarSeleccionCliente("");
+                
+                $scope.rootSeleccionCliente = {};
+                
+                $scope.rootSeleccionCliente.Empresa = EmpresaPedido;
+                
+                $scope.rootSeleccionCliente.paginas = 0;
+                $scope.rootSeleccionCliente.items = 0;
+                $scope.rootSeleccionCliente.termino_busqueda = "";
+                $scope.rootSeleccionCliente.ultima_busqueda = "";
+                $scope.rootSeleccionCliente.paginaactual = 1;
+                
+                $scope.rootSeleccionCliente.session = {
+                    usuario_id: Usuario.usuario_id,
+                    auth_token: Usuario.token
+                };
+                
+                $scope.rootSeleccionCliente.ultima_busqueda = {};
+                $scope.rootSeleccionCliente.ultima_busqueda.termino_busqueda = "";
+                
+                $scope.onBuscarSeleccionCliente($scope.obtenerParametros(), "");
             });
             
 
-            $scope.buscarSeleccionCliente = function(termino, paginando) {
+            $scope.obtenerParametros = function() {
 
-
-                for(i=1; i<=10; i++)
-                {
-                    
-                    obj = { 
-                            nit: '123456'+i+'-1',
-                            razon_social: 'Drogueria la '+i,
-                            ciudad: 'Manizales'+i,
-                            direccion: 'Cra 1 # 12 - '+i,
-                            fecha_creacion: '0'+i+'-09-2014',
-                            telefono: i+'251118',
-                            email: 'cliente'+i+'@clientes.com'
-                        }
-                    
-                    $scope.listado_clientes.push(obj);
-                        
+                //valida si cambio el termino de busqueda
+                if ($scope.rootSeleccionCliente.ultima_busqueda.termino_busqueda !== $scope.rootSeleccionCliente.termino_busqueda) {
+                    $scope.rootSeleccionCliente.paginaactual = 1;
                 }
+
+                var obj = {
+                    session: $scope.rootSeleccionCliente.session,
+                    data: {
+                        clientes: {
+                            termino_busqueda: $scope.rootSeleccionCliente.termino_busqueda,
+                            pagina_actual: $scope.rootSeleccionCliente.paginaactual,
+                        }
+                    }
+                };
+
+                return obj;
+            };
+            
+            $scope.onBuscarSeleccionCliente = function(obj, paginando) {
+
+                var url = API.TERCEROS.LISTAR_CLIENTES;
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+
+                        $scope.rootSeleccionCliente.ultima_busqueda = {
+                            termino_busqueda: $scope.rootSeleccionCliente.termino_busqueda
+                        };
+
+                        that.renderClientes(data.obj, paginando);
+                    }
+
+                });
+
+                that.renderGrid();
+            }; 
+            
+            that.renderClientes = function(data, paginando) {
+
+                $scope.rootSeleccionCliente.items = data.listado_clientes.length;
+
+                //se valida que hayan registros en una siguiente pagina
+                if (paginando && $scope.rootSeleccionCliente.items === 0) {
+                    if ($scope.rootSeleccionCliente.paginaactual > 1) {
+                        $scope.rootSeleccionCliente.paginaactual--;
+                    }
+                    AlertService.mostrarMensaje("warning", "No se encontraron más registros");
+                    return;
+                }
+
+                $scope.rootSeleccionCliente.Empresa.vaciarClientes();
                 
+                var cliente_obj = {};
+                
+                data.listado_clientes.forEach(function(cliente){
+                    
+                    cliente_obj = that.crearCliente(cliente);
+                    
+                    $scope.rootSeleccionCliente.Empresa.agregarCliente(cliente_obj);
+                    
+                });
+                
+                //console.log(">>>>>>>> Listado Clientes: ", $scope.rootSeleccionCliente.Empresa.getClientes());
+
+            };     
+
+            that.crearCliente = function(obj) {
+                
+                var cliente = ClientePedido.get(
+                                    obj.nombre_tercero,  //nombre_tercero
+                                    obj.direccion,       //direccion
+                                    obj.tipo_id_tercero, //tipo_id_tercero
+                                    obj.tercero_id,      //id
+                                    obj.telefono         //telefono
+                                );
+                                    
+                cliente.setPais(obj.pais);                  //pais
+                cliente.setDepartamento(obj.departamento);  //departamento
+                cliente.setMunicipio(obj.municipio);        //municipio
+                cliente.setUbicacion();                     //ubicacion = pais + departamento + municipio
+
+                return cliente;
+            };
+
+            /*  Construcción de Grid    */
+
+            that.renderGrid = function() {
+
+                $scope.rootSeleccionCliente.grid_clientes = {
+                    data: 'rootSeleccionCliente.Empresa.getClientes()',
+                    enableColumnResize: true,
+                    enableRowSelection: false,
+                    enableCellSelection: false,
+                    //selectedItems: $scope.selectedRow,
+                    multiSelect: false,
+                    columnDefs: [
+                        {field: 'tipo_id_tercero', displayName: 'Tipo Id', width: "5%"},
+                        {field: 'id', displayName: 'Identificación', width: "10%"},
+                        {field: 'nombre_tercero', displayName: 'Nombre Cliente'},
+                        {field: 'ubicacion', displayName: 'Ubicación'},
+                        {field: 'direccion', displayName: 'Dirección'},
+                        {field: 'telefono', displayName: 'Teléfono', width: "11%"},
+                        {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
+                        cellTemplate: ' <div class="row">\n\
+                                            <button class="btn btn-default btn-xs" ng-click="onSeleccionarCliente(row)">\n\
+                                                <span class="">Seleccionar</span>\n\
+                                            </button>\n\
+                                        </div>'
+                    }
+                    ]
+                };
 
             };
             
-            $scope.onRowClick = function(row){
+            $scope.onSeleccionarCliente = function(row){
                 
-                var obj_sel = { 
-                                nit: row.entity.nit,
-                                nombre: row.entity.razon_social,
-                                direccion: row.entity.direccion,
-                                telefono: row.entity.telefono,
-                                ubicacion: row.entity.ciudad
-                            }
+                //var pedido = $scope.rootSeleccionCliente.Empresa.getPedidoSeleccionado();
+                
+                //pedido.setCliente(row.entity);
+                
+                console.log(">>>> Cliente Seleccionado: ", row.entity);
 
-                    //$scope.listado_productos_seleccionados.push(obj_sel);
-                    //--$scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.unshift(obj_sel);
+                $scope.$emit('cargarClienteSlide', row.entity);
                     
-                    console.log("Antes: ",obj_sel);
-                    
-                    $scope.$emit('cargarClienteSlide', obj_sel);
-                    
-                    $scope.$emit('cerrarseleccioncliente', {animado:true});
+                $scope.$emit('cerrarseleccioncliente', {animado:true});
                
-                    $scope.listado_clientes = [];
+                    //$scope.listado_clientes = [];
                 //return
                 
             };
@@ -113,7 +187,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                
                 //Este evento no funciona para los Slides, así que toca liberar memoria con el emit al cerrar el slide
                 //Las siguientes líneas son efectivas si se usa la view sin el slide
-                $scope.listado_clientes = [];
+                $scope.rootSeleccionCliente = {};
+                $scope.$$watchers = null;
 
             });
             

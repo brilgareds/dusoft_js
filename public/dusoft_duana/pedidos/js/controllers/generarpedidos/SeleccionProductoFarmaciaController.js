@@ -69,7 +69,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 $scope.rootSeleccionProductoFarmacia.items = 0;
                 $scope.rootSeleccionProductoFarmacia.termino_busqueda = "";
-                $scope.rootSeleccionProductoFarmacia.ultima_busqueda = "";
+                //$scope.rootSeleccionProductoFarmacia.ultima_busqueda = "";
                 $scope.rootSeleccionProductoFarmacia.paginaactual = 1;
 
                 $scope.rootSeleccionProductoFarmacia.ultima_busqueda = {};

@@ -6,7 +6,7 @@ define(["angular", "js/models", "includes/classes/Cliente"], function(angular, m
         function ClientePedido(nombre, direccion, tipo_id, id, telefono) {
             Cliente.getClass().call(this,nombre, direccion, tipo_id, id, telefono);
             
-            this.tipoid_con_id
+            this.identificacion;
             this.ubicacion;
         }
 
@@ -15,6 +15,14 @@ define(["angular", "js/models", "includes/classes/Cliente"], function(angular, m
         }
 
         ClientePedido.prototype = Object.create(Cliente.getClass().prototype);
+        
+        ClientePedido.prototype.setIdentificacion = function() {
+            this.identificacion = this.tipo_id_tercero+"-"+this.id;
+        };
+        
+        ClientePedido.prototype.getIdentificacion = function() {
+            return this.identificacion;
+        };
         
         ClientePedido.prototype.setUbicacion = function() {
             this.ubicacion = this.pais+"-"+this.departamento+"-"+this.municipio;

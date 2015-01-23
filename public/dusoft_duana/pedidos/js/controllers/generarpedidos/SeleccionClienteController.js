@@ -128,7 +128,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                     obj.tercero_id,      //id
                                     obj.telefono         //telefono
                                 );
-                                    
+                
+                cliente.setIdentificacion();                //identificacion = tipo_id_tercero + id
                 cliente.setPais(obj.pais);                  //pais
                 cliente.setDepartamento(obj.departamento);  //departamento
                 cliente.setMunicipio(obj.municipio);        //municipio
@@ -146,11 +147,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     enableColumnResize: true,
                     enableRowSelection: false,
                     enableCellSelection: false,
-                    //selectedItems: $scope.selectedRow,
                     multiSelect: false,
                     columnDefs: [
-                        {field: 'tipo_id_tercero', displayName: 'Tipo Id', width: "5%"},
-                        {field: 'id', displayName: 'Identificación', width: "10%"},
+                        {field: 'identificacion', displayName: 'Identificación', width: "8%"},
                         {field: 'nombre_tercero', displayName: 'Nombre Cliente'},
                         {field: 'ubicacion', displayName: 'Ubicación'},
                         {field: 'direccion', displayName: 'Dirección'},

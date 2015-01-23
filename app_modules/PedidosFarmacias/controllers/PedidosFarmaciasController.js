@@ -1301,13 +1301,8 @@ PedidosFarmacias.prototype.insertarPedidoFarmaciaDefinitivo = function(req, res)
         }
         else
         {
-            console.log(">>>>>>>>>>>>>>>>>>>> INSERTAR PEDIDO FARMACIA DEFINITIVO - EJECUTADO");
-            console.log(">>>>>>>>>>>>>>>>>>>> ID PEDIDO: ", id_pedido);
             
             var numero_pedido = id_pedido[0].solicitud_prod_a_bod_ppal_id;
-            
-            /*res.send(G.utils.r(req.url, 'Encabezado del pedido almacenado exitosamente', 200, {numero_pedido: id_pedido}));
-            return;*/
             
             /*Inicio - Modificación para estados*/
             
@@ -1318,9 +1313,7 @@ PedidosFarmacias.prototype.insertarPedidoFarmaciaDefinitivo = function(req, res)
                     return;
                 }
                 else{
-                    
-                    console.log(">>>>>>>>>>>>>>>>>>>> SELECCIONAR OPERARIO POR USUARIO - EJECUTADO");
-                    
+
                     var responsable = operario_array[0].operario_id;
 
                     that.m_pedidos_farmacias.asignar_responsables_pedidos(numero_pedido, '0', responsable, usuario_id, function(err, rows, responsable_estado_pedido) {
@@ -1338,19 +1331,11 @@ PedidosFarmacias.prototype.insertarPedidoFarmaciaDefinitivo = function(req, res)
                                 return;
                             }
                             
-                            console.log(">>>>>>>>>>>>>>>>>>>> TERMINAR ESTADO PEDIDO - EJECUTADO");
-                            
                             res.send(G.utils.r(req.url, 'Encabezado del pedido almacenado exitosamente', 200, {numero_pedido: id_pedido}));
                             return;
 
                         });
                         /*Fin - Actualización sw_terminado*/
-                        
-                        //console.log(">>>>>>>>>>>>>>>>>>>> ASIGNAR RESPONSABLE PEDIDOS - EJECUTADO");
-                        //res.send(G.utils.r(req.url, 'Asignacion de Resposables', 200, {}));
-                        
-                        /*res.send(G.utils.r(req.url, 'Encabezado del pedido almacenado exitosamente', 200, {numero_pedido: id_pedido}));
-                        return;*/
 
                     });
                 

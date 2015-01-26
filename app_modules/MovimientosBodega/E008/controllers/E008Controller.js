@@ -118,7 +118,7 @@ E008Controller.prototype.finalizarDocumentoTemporalClientes = function(req, res)
                     } else {
 
                         // Emitir evento para actualizar la lista de Documentos Temporales
-                        that.e_e008.onNotificarDocumentosTemporalesClientes({numero_pedido: numero_pedido});  
+                        that.e_e008.onNotificarDocumentosTemporalesClientes({numero_pedido: numero_pedido});
                         that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
 
                         res.send(G.utils.r(req.url, 'Documento Temporal Clientes Finalizado Correctamente', 200, {documento_temporal: {}}));
@@ -240,7 +240,7 @@ E008Controller.prototype.finalizarDocumentoTemporalFarmacias = function(req, res
                         res.send(G.utils.r(req.url, 'Error Finalizando el Documento Temporal Farmacias', 500, {documento_temporal: {}}));
                         return;
                     } else {
-                        
+
                         that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
 
                         // Emitir evento para actualizar la lista de Documentos Temporales
@@ -1695,6 +1695,11 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
 
                                 that.m_e008.generar_documento_despacho_clientes(documento_temporal_id, numero_pedido, usuario_id, auditor_id, function(err, empresa_id, prefijo_documento, numero_documento) {
 
+                                    if (err) {
+                                        res.send(G.utils.r(req.url, err.toString(), 500, {movimientos_bodegas: {}}));
+                                        return;
+                                    }
+
                                     that.m_pedidos_clientes.consultar_detalle_pedido(numero_pedido, function(err, detalle_pedido) {
 
                                         if (err) {
@@ -1858,7 +1863,7 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
 
                                         if (err) {
                                             console.log("error cambiando estado del pedido ", err);
-                                            res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
+                                            res.send(G.utils.r(req.url, err.toString(), 500, {movimientos_bodegas: {}}));
                                             return;
                                         }
                                         that.m_pedidos_farmacias.consultar_detalle_pedido(numero_pedido, function(err, detalle_pedido) {

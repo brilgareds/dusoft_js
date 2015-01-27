@@ -9,11 +9,12 @@ a {
 }
 
 .alertcontenido{
-    max-width: 500px;
+    /*max-width: 500px;*/
     width: auto;
     margin: 0 auto;
     height: 30px;
     line-height: 1px;
+    display: table;
 }
 
 .alertcontenido .modal-body {

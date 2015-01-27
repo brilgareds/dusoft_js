@@ -1,28 +1,35 @@
-define(["angular","js/models"], function(angular, models){
-	models.factory('Detalle', function() {
+define(["angular", "js/models"], function(angular, models) {
+    models.factory('Detalle', function() {
 
-		function Detalle(detalle){
-			this.objectodetalle = detalle;
-			this.detalle = "";
-			this.armarStringDetalle();
-		}
+        function Detalle(detalle) {
+            this.objectodetalle = detalle;
+            this.detalle = "";
 
-		Detalle.prototype.armarStringDetalle = function(){
+            this.armarStringDetalle();
+        }
 
-			for(var i in this.objectodetalle){
-				this.detalle += "<p><strong>"+i +"</strong> "+this.objectodetalle[i] || ""+"</p>"; 
-			}
+        Detalle.prototype.armarStringDetalle = function() {
 
-		};
+            for (var i in this.objectodetalle) {
+                this.detalle += "<p><strong>" + i + "</strong> " + this.objectodetalle[i] || "" + "</p>";
+            }
 
-		Detalle.prototype.getDetalle = function(){
-			return this.detalle;
-		};
+        };
 
-		this.get = function(detalle){
-			return new Detalle(detalle);
-		}
+        Detalle.prototype.getDetalle = function() {
+            return this.detalle;
+        };
 
-		return this;
-	});
+        Detalle.prototype.setDetalle = function(detalle) {
+            console.log("set detalle >>>>>>>>>>>>", detalle);
+            this.detalle = detalle;
+            return this;
+        };
+
+        this.get = function(detalle) {
+            return new Detalle(detalle);
+        };
+
+        return this;
+    });
 });

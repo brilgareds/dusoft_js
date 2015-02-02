@@ -54,14 +54,16 @@ define([
                         multiSelect: false,
                         rowHeight: 200,
                         enableHighlighting: true,
+                        enableRowSelection:false,
                         filterOptions: $scope.filterOptions,
+                        showFilter:true,
                         sortInfo: {fields: ['fecha'], directions: ['desc']},
                         columnDefs: [
                             {field: 'tipo_movimiento', displayName: 'T M', width: "50"},
                             {field: 'fecha', displayName: 'Fecha', cellTemplate: "<div> {{formatearFecha(row.entity.fecha)}} </div>", width: "9%"},
                             {field: 'numero', displayName: 'Numero', cellTemplate: "<div>{{row.entity.prefijo}} - {{row.entity.numero}} </div>", width: "10%"},
                             {field: 'factura', displayName: 'Factura', width: "9%"},
-                            {field: 'detalle.getDetalle()', height: "200px", displayName: 'Terceros', cellTemplate: "<div class='largeCell' ng-bind-html=\"validarHtml(row.entity.detalle.getDetalle())\"></div>"},
+                            {field: 'detalle.detalle', height: "200px", displayName: 'Terceros', cellTemplate: "<div class='largeCell' ng-bind-html=\"validarHtml(row.entity.detalle.getDetalle())\"></div>"},
                             {field: 'cantidad_entradas', displayName: 'Entradas', width: "6%"},
                             {field: 'cantidad_salidas', displayName: 'Salidas', width: "6%"},
                             {field: 'stock_actual', displayName: 'Existencia', width: "6%"},
@@ -72,7 +74,7 @@ define([
                         ]
 
                     };
-
+                    
 
                     $scope.lista_pendientes_farmacia = {
                         data: "producto.getPendientesFarmacia()",
@@ -144,7 +146,7 @@ define([
 
                     });
                     //eventos personalizados
-                    $rootScope.$on("mostrardetallekardexCompleto", function(e, datos) {
+                    $rootScope.$on("mostrardetallekardexCompleto", function(e, datos) {  
 
                         var producto = datos[1];
                         var movimientos = datos[2];
@@ -163,7 +165,7 @@ define([
 
                             $scope.producto.agregarMovimiento(movimiento);
 
-                            if (movimiento.tipo_movimiento == "E") {
+                            if (movimiento.tipo_movimiento === "E") {
                                 $scope.cantidad_salidas = $scope.cantidad_salidas + movimiento.cantidad_salidas;
                             } else {
                                 $scope.cantidad_entradas = $scope.cantidad_entradas + movimiento.cantidad_entradas;

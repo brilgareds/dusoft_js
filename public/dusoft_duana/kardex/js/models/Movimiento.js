@@ -1,51 +1,49 @@
 
-define(["angular","js/models", "js/models/Detalle"], function(angular, models){
+define(["angular", "js/models", "js/models/Detalle"], function(angular, models) {
 
-	 models.factory('Movimiento', ["Detalle", function(Detalle) {
+    models.factory('Movimiento', ["Detalle", function(Detalle) {
 
-		function Movimiento(){
-		}
+            function Movimiento() {
+            }
 
-		Movimiento.prototype.setDatos = function(datos){
+            Movimiento.prototype.setDatos = function(datos) {
+                // console.log("movimiento >>>>>>>>> ",datos.detalle);
+                datos.cantidad = parseInt(datos.cantidad);
+                datos.stock_actual = parseInt(datos.stock_actual);
 
-			datos.cantidad = parseInt(datos.cantidad);
-			datos.stock_actual = parseInt(datos.stock_actual);
-                        
-			this.bodegas_doc_id  = datos.bodegas_doc_id;
-			this.cantidad_entradas = 0;
-			this.cantidad_salidas  = 0;
-			this.costo = datos.costo;
-			this.factura = datos.factura;
-			this.fecha = datos.fecha; 
-			this.fecha_registro = datos.fecha_registro;
-			this.fecha_vencimiento = datos.fecha_vencimiento;
-			this.lote = datos.lote;
-			this.nombre = datos.nombre;
-			this.numero = datos.numero;
-			this.observacion = datos.observacion;
-			this.prefijo = datos.prefijo;
-			this.tipo = datos.tipo;
-			this.tipo_movimiento = datos.tipo_movimiento;
-			this.usuario = datos.usuario;
-			this.valor = datos.valor;
-			this.detalle = Detalle.get(datos.detalle);
-                        this.stock_actual = datos.stock_actual;
+                this.bodegas_doc_id = datos.bodegas_doc_id;
+                this.cantidad_entradas = 0;
+                this.cantidad_salidas = 0;
+                this.costo = datos.costo;
+                this.factura = datos.factura || "";
+                this.fecha = datos.fecha;
+                this.fecha_registro = datos.fecha_registro;
+                this.fecha_vencimiento = datos.fecha_vencimiento;
+                this.lote = datos.lote;
+                this.nombre = datos.nombre;
+                this.numero = datos.numero;
+                this.observacion = datos.observacion || "";
+                this.prefijo = datos.prefijo;
+                this.tipo = datos.tipo;
+                this.tipo_movimiento = datos.tipo_movimiento;
+                this.usuario = datos.usuario;
+                this.valor = datos.valor;
+                this.detalle = (datos.detalle) ? Detalle.get(datos.detalle) : Detalle.get().setDetalle(this.observacion);
+                this.stock_actual = datos.stock_actual;
 
-			if(this.tipo_movimiento == "E"){
-				this.cantidad_salidas = datos.cantidad;
-			} else {
-				this.cantidad_entradas = datos.cantidad;
-			}
- 
+                if (this.tipo_movimiento === "E") {
+                    this.cantidad_salidas = datos.cantidad;
+                } else {
+                    this.cantidad_entradas = datos.cantidad;
+                }
 
-			
-		};
+            };
 
-		this.get = function(nombre, tipo){
-	    	return new Movimiento(nombre, tipo);
-	    };
+            this.get = function(nombre, tipo) {
+                return new Movimiento(nombre, tipo);
+            };
 
-	    return this;
+            return this;
 
-	}]);
+        }]);
 });

@@ -1,7 +1,7 @@
 <div>
 
     <!--route 1 {{welcomemsg}} got to child  <a ui-sref="route1.item">Route item</a>-->
-     <div class="col-md-2">
+    <div class="col-md-2">
         <p class="input-group contenedorfiltrocombobox">
             <select ui-select2="" ng-model='filtro.empresa_seleccion' style='width:210px'  class="form-control selectgeneral"   placeholder="Seleccionar Empresa" ng-change='onEmpresaSeleccionada()' >
                 <option></option>
@@ -21,7 +21,7 @@
         </p>
     </div>
 
-   <div class="col-md-2">
+    <div class="col-md-2">
         <p class="input-group contenedorfiltrocombobox">
             <select ui-select2 ng-model='filtro.bodega_seleccion' style='width:210px'  class="form-control selectgeneral"   placeholder="Seleccionar Bodega" >
                 <option></option>
@@ -30,7 +30,7 @@
             </select>
         </p>
     </div>
-    
+
     <div class="row">
         <div class="col-md-2">
             <p class="input-group">
@@ -56,7 +56,7 @@
             </p>
         </div>
 
-       
+
 
         <div class="col-md-2 pull-right">
             <p class="input-group">
@@ -71,10 +71,10 @@
 
     </div>
 
-
-    <div class="defaultGrid" ng-grid="gridOptions">
+    <div class="table-responsive" >
+        <div class="defaultGrid grid-responsive" ng-grid="gridOptions">
+        </div>
     </div>
-
     </br>
     <div class="row text-center">
         <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 0" ng-click="paginaAnterior()">

@@ -124,6 +124,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                 data: 'Empresa.getProductos()',
                 multiSelect: false,
                 enableHighlighting:true,
+                showFilter:true,
                 /*afterSelectionChange:function(row){
                     if(row.selected){
                         $scope.onRowClick(row)

@@ -1,76 +1,85 @@
 <div style="padding:10px;">
 
-	<center><h4>{{titulo}} {{nombreProducto}}</h4></center>
-	<button ng-click="cerrar()" class="pull-right btn btn-default btn-xs" style="margin-right:15px"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>
+    <center><h5>{{titulo}} {{nombreProducto}}</h5></center>
+    <button ng-click="cerrar()" class="pull-right btn btn-default btn-xs" style="margin-right:15px"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>
 
-	    <tabset  class="tabkardex">
-	        <tab heading="Movimientos">
+    <tabset  class="tabkardex">
+        <tab heading="Movimientos">
 
-	        	
-	        	<div class="row" style="padding:10px">
-				   <div class="list-group col-md-4 grupodefault" style="width:113px">
-					 <a href="#" class="list-group-item">
-				        <h5 class="list-group-item-heading">Entradas:</h5>
-				        <p class="list-group-item-text">{{cantidad_entradas}}</p>
-				      </a>
-				      
-					</div>
 
-					<div class="list-group col-md-4 grupodefault" style="width:113px">
-						<a href="#" class="list-group-item">
-					        <h5 class="list-group-item-heading">Salidas:</h5>
-					        <p class="list-group-item-text">{{cantidad_salidas}}</p>
-					    </a>
-				    </div>
-				    <div class="list-group col-md-4 grupodefault" style="width:113px">
-						<a href="#" class="list-group-item">
-					        <h5 class="list-group-item-heading">Existencia:</h5>
-					        <p class="list-group-item-text">{{existencia}}</p>
-					    </a>
-				    </div>
-				    <div class="list-group col-md-4 grupodefault" style="width:113px">
-						<a href="#" class="list-group-item">
-					        <h5 class="list-group-item-heading">Descuadre:</h5>
-					        <p class="list-group-item-text">{{descuadre}}</p>
-					    </a>
-				    </div>
+            <div class="row" style="padding:10px">
+                <div class="list-group col-md-4 grupodefault" style="width:113px">
+                    <a href="#" class="list-group-item">
+                        <h5 class="list-group-item-heading">Entradas:</h5>
+                        <p class="list-group-item-text">{{cantidad_entradas}}</p>
+                    </a>
 
-				    <div class="col-md-3">
-				        <p class="input-group">
-				        	<span class="list-group-item-heading">Filtrar Movimientos:</span>
-				          <select class="form-control" placeholder="Filtrar" ng-model="selemovimiento" ng-options="opt.descripcion for opt in movimientos" ng-change="filtrar_movimiento(selemovimiento)"></select>
-				        </p>
-				    </div>
+                </div>
 
-			 </div>
-	            <div class="defaultGrid" ng-grid="lista_movimientos">
+                <div class="list-group col-md-4 grupodefault" style="width:113px">
+                    <a href="#" class="list-group-item">
+                        <h5 class="list-group-item-heading">Salidas:</h5>
+                        <p class="list-group-item-text">{{cantidad_salidas}}</p>
+                    </a>
+                </div>
+                <div class="list-group col-md-4 grupodefault" style="width:113px">
+                    <a href="#" class="list-group-item">
+                        <h5 class="list-group-item-heading">Existencia:</h5>
+                        <p class="list-group-item-text">{{existencia}}</p>
+                    </a>
+                </div>
+                <div class="list-group col-md-4 grupodefault" style="width:113px">
+                    <a href="#" class="list-group-item">
+                        <h5 class="list-group-item-heading">Descuadre:</h5>
+                        <p class="list-group-item-text">{{descuadre}}</p>
+                    </a>
+                </div>
 
-	            </div>
+                <div class="col-md-3">
+                    <p class="input-group">
+                        <span class="list-group-item-heading">Filtrar Movimientos:</span>
+                        <select class="form-control" placeholder="Filtrar" ng-model="selemovimiento" ng-options="opt.descripcion for opt in movimientos" ng-change="filtrar_movimiento(selemovimiento)"></select>
+                    </p>
+                </div>
 
-	        </tab>
+            </div>
+            <div class="table-responsive" >
+                <div class="defaultGrid grid-responsive" ng-grid="lista_movimientos">
 
-	        <tab heading="Pendientes Farmacias">
-	        	 <div class="defaultGrid" ng-grid="lista_pendientes_farmacia">
+                </div>
+            </div>   
 
-	            </div>
 
-	        </tab>
+        </tab>
 
-	        <tab heading="Pendientes Clientes">
+        <tab heading="Pendientes Farmacias">
 
-	        	<div class="defaultGrid" ng-grid="lista_pendientes_cliente">
+            <div class="table-responsive" >
+                <div class="defaultGrid grid-responsive" ng-grid="lista_pendientes_farmacia">
 
-	            </div>
+                </div>
+            </div>
 
-	        </tab>
+        </tab>
 
-	        <tab heading="Pendientes Ordenes De Compra">
+        <tab heading="Pendientes Clientes">
+            <div class="table-responsive" >
+                <div class="defaultGrid grid-responsive" ng-grid="lista_pendientes_cliente">
 
-	        	<div class="defaultGrid" ng-grid="lista_pendientes_ordenes">
+                </div>
+            </div>
 
-	            </div>
+        </tab>
 
-	        </tab>
+        <tab heading="Pendientes Ordenes De Compra">
+            <div class="table-responsive" >
+
+                <div class="defaultGrid grid-responsive" ng-grid="lista_pendientes_ordenes">
+
+                </div>
+            </div>
+
+        </tab>
 
 
 

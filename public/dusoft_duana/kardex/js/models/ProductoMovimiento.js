@@ -61,7 +61,7 @@ define(["angular","js/models","includes/classes/Producto"], function(angular, mo
 
 		this.get = function(codigo, nombre, existencia, precio, existencia_total, costo, costo_ultima_compra, porc_iva){
 			return new ProductoMovimiento(codigo, nombre, existencia, precio, existencia_total, costo, costo_ultima_compra, porc_iva);
-		}
+		};
 
 		return this;
 	}]);

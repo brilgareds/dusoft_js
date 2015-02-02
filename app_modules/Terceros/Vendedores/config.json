@@ -1,0 +1,26 @@
+{
+    "module": "Vendedores",
+    "dependency": {
+        "controllers": [{
+                "clientes_controller": {
+                    "module": "Terceros/Vendedores",
+                    "controller": "VendedoresController",
+                    "alias": "c_vendedores"
+                }
+            }],
+        "models": [{
+                "pedidos_clientes_model": {
+                    "module": "PedidosClientes",
+                    "model": "PedidosClienteModel",
+                    "alias": "m_pedidos_clientes"
+                },
+                "clientes_model": {
+                    "module": "Terceros/Vendedores",
+                    "model": "VendedoresModel",
+                    "alias": "m_vendedores"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

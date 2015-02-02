@@ -13,7 +13,7 @@
                         
                         <div class="row col-sm-6 col-md-12"> <!--Div Panel Superior-->
                             <!--class="btn btn-accion btn-primary pull-left"-->
-                            <button type="button" class="btn btn-default btn-sm" ng-disabled="bloqueo_producto_incluido" ng-click="onRowClickSelectCliente()">
+                            <button type="button" class="btn btn-default btn-sm" ng-disabled="rootCreaCotizaciones.bloqueo_producto_incluido" ng-click="onRowClickSelectCliente()">
                                 <span class="glyphicon glyphicon-user"></span> Seleccionar Cliente
                             </button>
                             <div class="pull-right"><h3><font color="blue">Cotización N°: 123456</font></h3></div>
@@ -24,17 +24,17 @@
                                 
                                 <div class="col-md-4"> <!--Contenedor Izquierdo-->
                                     <h4 class="h4MarginTopBottom">Cliente:</h4></br>
-                                    {{datos_cliente.nombre_tercero}}
+                                    {{rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().nombre_tercero}}
                                 </div> <!--/Contenedor Izq-->
                                 
                                 <div class="col-md-4"> <!--Contenedor Centro-->
                                     <h4 class="h4MarginTopBottom">Nit:</h4></br>
-                                    {{datos_cliente.id}}
+                                    {{rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().id}}
                                 </div> <!--/Contenedor Centro-->
                                 
                                 <div class="col-md-4"> <!--Contenedor Derecho-->
                                     <h4 class="h4MarginTopBottom">Dirección:</h4></br>
-                                    {{datos_cliente.direccion}}
+                                    {{rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().direccion}}
                                 </div> <!--/Contenedor Der-->
                                 
                             </div>  <!--/Div Fila 1-->
@@ -44,22 +44,22 @@
                                         </br></br>
                                         <h4 class="h4MarginTopBottom">Vendedor: </h4>
 
-                                        <select ui-select2="seleccioncliente"  class="form-control selectgeneral pull-left" ng-disabled="bloqueo_producto_incluido" ng-model="seleccion_vendedor"  placeholder="Seleccionar Documento" ng-change="valorSeleccionado()">
+                                        <select ui-select2="seleccionvendedor"  class="form-control selectgeneral pull-left" ng-disabled="rootCreaCotizaciones.bloqueo_producto_incluido" ng-model="rootCreaCotizaciones.seleccion_vendedor"  placeholder="Seleccionar Documento" ng-change="valorSeleccionado()">
                                             <option></option>
-                                            <option ng-repeat="vendedor in lista_vendedores"  ng-value="vendedor.id" >{{vendedor.nombre}}</option>
+                                            <option ng-repeat="vendedor in rootCreaCotizaciones.Empresa.getVendedores()"  ng-value="vendedor.id" >{{vendedor.nombre_tercero}}</option>
                                         </select>
                                 </div> <!--/Contenedor Izquierdo-->
                                 
                                 <div class="col-md-4"> <!--Contenedor Centro-->
                                     </br></br>
                                     <h4 class="h4MarginTopBottom">Ubicación:</h4></br>
-                                    {{datos_cliente.ubicacion}}
+                                    {{rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getUbicacion()}}
                                 </div> <!--/Contenedor Centro-->
                                 
                                 <div class="col-md-4"> <!--Contenedor Derecho-->
                                     </br></br>
                                     <h4 class="h4MarginTopBottom">Teléfono:</h4></br>
-                                    {{datos_cliente.telefono}}
+                                    {{rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().telefono}}
                                 </div> <!--/Contenedor Der-->
                                 
                             </div> <!--/Div Fila 2-->
@@ -117,7 +117,7 @@
                             </div>
                         </div>
                         <div class="panel-body">
-                            <div class="auditadosGrid" ng-grid="lista_productos"></div>
+                            <div class="auditadosGrid" ng-grid="rootCreaCotizaciones.lista_productos"></div>
                         </div>
                         
                     </tab>
@@ -165,7 +165,7 @@
     </div> <!-- / end class row --> 
     
     <div class="col-sm-12 btn-toolbar">
-        <button type="submit" ng-disabled="!bloqueo_producto_incluido" class="btn btn-accion btn-success pull-right">Generar Cotización</button>
+        <button type="submit" ng-disabled="!rootCreaCotizaciones.bloqueo_producto_incluido" class="btn btn-accion btn-success pull-right">Generar Cotización</button>
         <button type="submit" class="btn btn-accion btn-danger pull-right">Eliminar Cotización</button>
         <button type="submit" class="btn btn-accion btn-warning pull-right" ng-click="abrirViewPedidosClientes()">Cancelar Cotización</button>
     </div>

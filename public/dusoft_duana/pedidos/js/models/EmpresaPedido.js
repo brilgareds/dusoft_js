@@ -15,6 +15,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
         EmpresaPedido.pedidosTemporales = [];
         EmpresaPedido.pedidosTemporalesFarmacias = [];
         EmpresaPedido.lista_clientes = [];
+        EmpresaPedido.lista_vendedores = [];
 
         //Agregar farmacia
         EmpresaPedido.agregarFarmacias = function(farmacia){
@@ -178,6 +179,18 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
         EmpresaPedido.vaciarClientes = function() {
             this.lista_clientes = [];
         };
+        
+        EmpresaPedido.agregarVendedor = function(vendedor){
+            this.lista_vendedores.push(vendedor);
+        };
+        
+        EmpresaPedido.getVendedores = function(){
+            return this.lista_vendedores;
+        };
+        
+        EmpresaPedido.vaciarVendedores = function() {
+            this.lista_vendedores = [];
+        };        
         
         return EmpresaPedido;
 

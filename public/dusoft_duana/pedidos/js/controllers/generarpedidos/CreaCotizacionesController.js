@@ -1,14 +1,14 @@
 //Controlador de la View cotizacioncliente.html
 
 define(["angular", "js/controllers", 'includes/slide/slideContent',
-    'models/ClientePedido', 'models/PedidoVenta'], function(angular, controllers) {
+    'models/ClientePedido', 'models/PedidoVenta', 'models/VendedorPedido'], function(angular, controllers) {
 
     var fo = controllers.controller('CreaCotizacionesController', [
         '$scope', '$rootScope', 'Request',
         'EmpresaPedido', 'ClientePedido', 'PedidoVenta',
         'API', "socket", "AlertService",
-        '$state',
-        function($scope, $rootScope, Request, Empresa, Cliente, PedidoVenta, API, socket, AlertService, $state) {
+        '$state','VendedorPedido', 'Usuario',
+        function($scope, $rootScope, Request, EmpresaPedido, ClientePedido, PedidoVenta, API, socket, AlertService, $state, VendedorPedido, Usuario) {
 
             //$scope.Empresa = Empresa;
 
@@ -16,23 +16,35 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 //                usuario_id: Usuario.usuario_id,
 //                auth_token: Usuario.token
 //            };
-            $scope.paginas = 0;
-            $scope.items = 0;
-            $scope.termino_busqueda = "";
-            $scope.ultima_busqueda = "";
-            $scope.paginaactual = 1;
-            $scope.bloquear = true; //Default True
-            $scope.bloqueo_producto_incluido = false;
-            $scope.bloquear_upload = true;
+
+            var that = this;
+            
+            $scope.rootCreaCotizaciones = {};
+
+            $scope.rootCreaCotizaciones.Empresa = EmpresaPedido;
+            $scope.rootCreaCotizaciones.paginas = 0;
+            $scope.rootCreaCotizaciones.items = 0;
+            $scope.rootCreaCotizaciones.termino_busqueda = "";
+            $scope.rootCreaCotizaciones.ultima_busqueda = "";
+            $scope.rootCreaCotizaciones.paginaactual = 1;
+            $scope.rootCreaCotizaciones.bloquear = true; //Default True
+            $scope.rootCreaCotizaciones.bloqueo_producto_incluido = false;
+            $scope.rootCreaCotizaciones.bloquear_upload = true;
+            
+            $scope.rootCreaCotizaciones.session = {
+                    usuario_id: Usuario.usuario_id,
+                    auth_token: Usuario.token
+                };
+            
             //$scope.tab_activo = true;
 
             //$scope.numero_pedido = "";
             //$scope.obj = {};
-            $scope.listado_productos = [];
+            $scope.rootCreaCotizaciones.listado_productos = [];
 
             //$scope.ruta_upload = {target: '/subida'}; //ruta del servidor para subir el archivo
 
-            $scope.seleccion_vendedor = 0;
+            $scope.rootCreaCotizaciones.seleccion_vendedor = 0;
 
             $scope.datos_cliente = {
                 nit: '',
@@ -42,187 +54,168 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 ubicacion: ''
             };
 
-            $scope.lista_vendedores = [{id: 1, nombre: 'Oscar Huerta'},
+            /*$scope.rootCreaCotizaciones.lista_vendedores = [{id: 1, nombre: 'Oscar Huerta'},
                 {id: 2, nombre: 'Bruce Wayn'},
                 {id: 3, nombre: 'John Malcovich'},
                 {id: 4, nombre: 'Patricia Salgado'},
                 {id: 5, nombre: 'Sofia Vergara'},
                 {id: 6, nombre: 'Salma Hayec'}
-            ];
-
-            $scope.$on('cargarClienteSlide', function(event, data) {
-                //console.log("La Información Llega a la Grid ", data);
-                //console.log("Después: ", data);
+            ];*/
+            
+            that.cargarListadoVendedores = function(){
                 
-                /*
-                                 var cliente = ClientePedido.get(
-                                    obj.nombre_tercero,  //nombre_tercero
-                                    obj.direccion,       //direccion
-                                    obj.tipo_id_tercero, //tipo_id_tercero
-                                    obj.tercero_id,      //id
-                                    obj.telefono         //telefono
+                var obj_vendedores = {
+                    session: $scope.rootCreaCotizaciones.session,
+                    data: {
+                    }
+                };
+                
+                var url = API.TERCEROS.LISTAR_VENDEDORES;
+                
+                Request.realizarRequest(url, "POST", obj_vendedores, function(data) {
+
+                    if (data.status === 200) {
+                        console.log(">>>> Vendedores: ",data);
+                        that.renderVendedores(data.obj);
+                    }
+                    else{
+                        console.log("Error en consulta de Vendedores: ", data.msj);
+                    }
+
+                });
+                
+            };
+            
+            that.renderVendedores = function(data) {
+
+                $scope.rootCreaCotizaciones.Empresa.vaciarVendedores();
+                
+                var vendedor_obj = {};
+                
+                data.listado_vendedores.forEach(function(vendedor){
+                    
+                    vendedor_obj = that.crearVendedor(vendedor);
+                    
+                    $scope.rootCreaCotizaciones.Empresa.agregarVendedor(vendedor_obj);
+                    
+                });
+            };
+            
+            that.crearVendedor = function(obj) {
+                
+                var vendedor = VendedorPedido.get(
+                                    obj.nombre,           //nombre_tercero
+                                    obj.tipo_id_vendedor, //tipo_id_tercero
+                                    obj.vendedor_id,      //id
+                                    obj.telefono          //telefono
                                 );
-                                    
-                cliente.setPais(obj.pais);                  //pais
-                cliente.setDepartamento(obj.departamento);  //departamento
-                cliente.setMunicipio(obj.municipio);        //municipio
-                cliente.setUbicacion();                     //ubicacion = pais + departamento + municipio
-                 */
 
-                $scope.datos_cliente = data;
+                return vendedor;
+            };
+            
+            that.crearPedidoVacio = function() {
+                
+                var pedido = PedidoVenta.get();
+                        
+                var datos_pedido = {
+                    numero_pedido: "",
+                    fecha_registro: "",
+                    descripcion_estado_actual_pedido: "",
+                    estado_actual_pedido: "",
+                    estado_separacion: ""
+                };
 
-                if ($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre_tercero != '' && $scope.seleccion_vendedor != 0)
-                {
-                    $scope.bloquear = false;
+                pedido.setDatos(datos_pedido);
+                pedido.setTipo(PedidoVenta.TIPO_CLIENTE);
+                pedido.setObservacion("");
+                
+               //$scope.rootCreaCotizaciones.Empresa.setPedidoSeleccionado(pedido);
+               
+                return pedido;
+                
+            };
+            
+            that.crearPedidoSeleccionadoEmpresa = function(pedido){
+                
+                 $scope.rootCreaCotizaciones.Empresa.setPedidoSeleccionado(pedido);
+                
+            };
+            
+            that.buscarPedido = function(termino, paginando) {
+
+                //valida si cambio el termino de busqueda
+                if ($scope.rootCreaCotizaciones.ultima_busqueda !== $scope.rootCreaCotizaciones.termino_busqueda) {
+                    $scope.rootCreaCotizaciones.paginaactual = 1;
                 }
 
-                if ($scope.datos_cliente.id != '' && $scope.datos_cliente.nombre_tercero != '' && $scope.seleccion_vendedor != 0 && $scope.listado_productos.length == 0) {
+                /*if (PedidoVenta.pedidoseleccionado !== "") {
+                    
+                }   */
+            };
+            
+            //Trae el cliente con el evento "cargarClienteSlide" y lo asigna como objeto cliente para el objeto pedido
+            $scope.$on('cargarClienteSlide', function(event, data) {
+                
+                //console.log(">>>>> Evento: ", event);
 
-                    $scope.bloquear_upload = false;
+                $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setCliente(data);
+
+                if ($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().id !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().nombre_tercero != ''
+                    && $scope.rootCreaCotizaciones.seleccion_vendedor != 0)
+                {
+                    $scope.rootCreaCotizaciones.bloquear = false;
+                }
+
+                if ($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().id != '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().nombre_tercero != ''
+                    && $scope.rootCreaCotizaciones.seleccion_vendedor != 0 && $scope.rootCreaCotizaciones.listado_productos.length == 0)
+                {
+
+                    $scope.rootCreaCotizaciones.bloquear_upload = false;
                 }
                 else {
 
-                    $scope.bloquear_upload = true;
+                    $scope.rootCreaCotizaciones.bloquear_upload = true;
                 }
 
             });
 
             $scope.$on('cargarGridPrincipal', function(event, data) {
                 //console.log("La Información Llega a la Grid ", data);
-                $scope.listado_productos = data;
+                $scope.rootCreaCotizaciones.listado_productos = data;
 
-                if ($scope.listado_productos.length) {
-                    $scope.bloqueo_producto_incluido = true;
+                if ($scope.rootCreaCotizaciones.listado_productos.length) {
+                    $scope.rootCreaCotizaciones.bloqueo_producto_incluido = true;
                 }
                 else {
-                    $scope.bloqueo_producto_incluido = false;
+                    $scope.rootCreaCotizaciones.bloqueo_producto_incluido = false;
                 }
 
-                if ($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.seleccion_vendedor != 0 && $scope.listado_productos.length == 0) {
+                if ($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.rootCreaCotizaciones.seleccion_vendedor != 0 && $scope.rootCreaCotizaciones.listado_productos.length == 0) {
 
-                    $scope.bloquear_upload = false;
+                    $scope.rootCreaCotizaciones.bloquear_upload = false;
                 }
                 else {
-                    $scope.bloquear_upload = true;
+                    $scope.rootCreaCotizaciones.bloquear_upload = true;
                 }
 
             });
-
-//            $scope.$on('flow::fileAdded', function (event, $flow, flowFile) {
-//                    event.preventDefault();//prevent file from uploading
-//                });
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
 
             $scope.buscarCotizaciones = function(termino, paginando) {
 
                 //valida si cambio el termino de busqueda
-                if ($scope.ultima_busqueda != $scope.termino_busqueda) {
-                    $scope.paginaactual = 1;
+                if ($scope.rootCreaCotizaciones.ultima_busqueda != $scope.rootCreaCotizaciones.termino_busqueda) {
+                    $scope.rootCreaCotizaciones.paginaactual = 1;
                 }
-
-//                for(i=0; i<10; i++)
-//                {
-//                    //var pedido = Pedido.get();
-//                    
-//                    obj = { 
-//                            codigo_producto: '123456'+i,
-//                            descripcion: 'TRIPARTYCINA X '+i,
-//                            cantidad_solicitada: 10*i,
-//                            iva: 16,
-//                            precio_venta: '60'+i,
-//                            total_sin_iva: 100, //cantidad*precio_venta
-//                            total_con_iva: 116 //cantidad*precio_venta + cantidad*precio_venta*iva
-//                        }
-//                    
-//                    $scope.listado_productos.push(obj);
-//                        
-//                }
-
-
-//                var obj = {
-//                    session: $scope.session,
-//                    data: {
-//                        documento_temporal: {
-//                            termino_busqueda: termino,
-//                            pagina_actual: $scope.paginaactual,
-//                            filtro: {
-//                                finalizados: true
-//                            }
-//                        }
-//                    }
-//                };
-//
-//                Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.LISTAR_DOCUMENTOS_TEMPORALES_CLIENTES, "POST", obj, function(data) {
-//                    $scope.ultima_busqueda = $scope.termino_busqueda;
-//                    
-//                    if(data.obj.documentos_temporales != undefined) {
-//                        $scope.renderPedidosSeparadosCliente(data.obj, paginando);
-//                    }
-//
-//                });
 
             };
 
-//            $scope.renderPedidosSeparadosCliente = function(data, paginando) {
-//
-//                $scope.items = data.documentos_temporales.length;
-//                //se valida que hayan registros en una siguiente pagina
-//                if(paginando && $scope.items == 0){
-//                    if($scope.paginaactual > 1){
-//                        $scope.paginaactual--;
-//                    }
-//                    AlertService.mostrarMensaje("warning","No se encontraron mas registros");
-//                    return;
-//                }
-//
-//                $scope.Empresa.vaciarDocumentoTemporal("Cliente");
-//               
-//                for (var i in data.documentos_temporales) {
-//
-//                    var obj = data.documentos_temporales[i];
-//                    
-//                    var documento_temporal = $scope.crearDocumentoTemporal(obj);
-//
-//                    $scope.Empresa.agregarDocumentoTemporal(
-//                        documento_temporal, "Cliente"
-//                    );
-//
-//
-//                }
-//
-//            };
-
-//            $scope.crearDocumentoTemporal = function(obj) {
-//                var documento_temporal = DocumentoTemporal.get();
-//                documento_temporal.setDatos(obj);
-//
-//                var pedido = Pedido.get(obj);
-//                pedido.setDatos(obj);
-//                        
-//                var cliente = Cliente.get(
-//                        obj.nombre_cliente,
-//                        obj.direccion_cliente,
-//                        obj.tipo_id_cliente,
-//                        obj.identificacion_cliente,
-//                        obj.telefono_cliente
-//                        );
-//
-//                pedido.setCliente(cliente);
-//                
-//                documento_temporal.setPedido(pedido);
-//                
-//                var separador = Separador.get(obj.responsable_pedido, obj.responsable_id, 1);
-//                
-//                documento_temporal.setSeparador(separador);
-//                
-//                return documento_temporal;
-//            };
 
             //definicion y delegados del Tabla de pedidos clientes
 
-            $scope.lista_productos = {
-                data: 'listado_productos',
+            $scope.rootCreaCotizaciones.lista_productos = {
+                data: 'rootCreaCotizaciones.listado_productos',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 //enableCellSelection: true,
@@ -239,25 +232,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 ]
 
             };
-            /**************** Antigua Grid *********/
-//            $scope.lista_productos = {
-//                data: 'listado_productos',
-//                enableColumnResize: true,
-//                enableRowSelection: false,
-//                columnDefs: [
-//                    {field: 'numero_producto', displayName: 'Número Producto'},
-//                    {field: 'nombre_producto', displayName: 'Nombre Producto'},
-//                    {field: 'nombre_vendedor', displayName: 'Vendedor'},
-//                    {field: 'fecha_cotizacion', displayName: 'Fecha'},
-//                    {field: 'valor_cotizacion', displayName: 'Valor'},
-//                    {field: 'estado', displayName: 'Estado'},
-//                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Activar</span></button></div>'}
-//
-//                ]
-//
-//            };
-            /**************** Antigua Grid *********/
-
 
             $scope.abrirViewPedidosClientes = function()
             {
@@ -273,7 +247,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $scope.slideurl = "views/generarpedidos/seleccionproductocliente.html?time=" + new Date().getTime();
                 $scope.$emit('mostrarseleccionproducto', tipo_cliente);
 
-                $scope.$broadcast('cargarGridSeleccionadoSlide', $scope.listado_productos);
+                $scope.$broadcast('cargarGridSeleccionadoSlide', $scope.rootCreaCotizaciones.listado_productos);
             };
 
 //            $scope.onClickTab = function() {
@@ -284,16 +258,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 console.log("Valor Seleccionado: ", $scope.seleccion_vendedor);
 
-                if ($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.seleccion_vendedor != 0)
+                if ($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.rootCreaCotizaciones.seleccion_vendedor != 0)
                 {
-                    $scope.bloquear = false;
+                    $scope.rootCreaCotizaciones.bloquear = false;
                 }
 
-                if ($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.seleccion_vendedor != 0 && $scope.listado_productos.length == 0) {
-                    $scope.bloquear_upload = false;
+                if ($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.rootCreaCotizaciones.seleccion_vendedor != 0 && $scope.rootCreaCotizaciones.listado_productos.length == 0) {
+                    $scope.rootCreaCotizaciones.bloquear_upload = false;
                 }
                 else {
-                    $scope.bloquear_upload = true;
+                    $scope.rootCreaCotizaciones.bloquear_upload = true;
                 }
 
             };
@@ -312,11 +286,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 //alert("En éste momento debo limpiar algo");
 
-                $scope.listado_productos = [];
-                $scope.lista_vendedores = [];
+                $scope.rootCreaCotizaciones = {};
+                
+                //$scope.rootCreaCotizaciones.listado_productos = [];
+                //$scope.rootCreaCotizaciones.lista_vendedores = [];
 
             });
 
+            //that.crearPedidoVacio();
+            that.cargarListadoVendedores();
+            that.crearPedidoSeleccionadoEmpresa(that.crearPedidoVacio());
             $scope.buscarCotizaciones("");
 
         }]);

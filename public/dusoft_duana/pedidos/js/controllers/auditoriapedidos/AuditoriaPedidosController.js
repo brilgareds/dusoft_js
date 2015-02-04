@@ -1,25 +1,25 @@
-define(["angular", "js/controllers",'includes/slide/slideContent',
-        'models/ClientePedido', 'models/PedidoAuditoria', 'models/Separador', 'models/Auditor',
-        'models/DocumentoTemporal', "controllers/auditoriapedidos/AuditoriaPedidosClientesController","controllers/auditoriapedidos/AuditoriaPedidosFarmaciasController",
-        "controllers/auditoriapedidos/EditarProductoController"], function(angular, controllers) {
+define(["angular", "js/controllers", 'includes/slide/slideContent',
+    'models/ClientePedido', 'models/PedidoAuditoria', 'models/Separador', 'models/Auditor',
+    'models/DocumentoTemporal', "controllers/auditoriapedidos/AuditoriaPedidosClientesController", "controllers/auditoriapedidos/AuditoriaPedidosFarmaciasController",
+    "controllers/auditoriapedidos/EditarProductoController"], function(angular, controllers) {
 
     var fo = controllers.controller('AuditoriaPedidosController', [
         '$scope', '$rootScope', 'Request',
         'EmpresaPedido', 'Cliente', 'Farmacia', 'PedidoAuditoria',
         'Separador', 'DocumentoTemporal', 'API',
         "socket", "AlertService", "ProductoPedido", "LoteProductoPedido",
-        "$modal", 'Auditor','Usuario',
-        function($scope, $rootScope, Request, 
-                 Empresa, Cliente, Farmacia, 
-                 PedidoAuditoria, Separador, DocumentoTemporal,
-                 API, socket, AlertService,
-                 ProductoPedido, LoteProductoPedido, $modal, Auditor, Usuario) {
+        "$modal", 'Auditor', 'Usuario',
+        function($scope, $rootScope, Request,
+                Empresa, Cliente, Farmacia,
+                PedidoAuditoria, Separador, DocumentoTemporal,
+                API, socket, AlertService,
+                ProductoPedido, LoteProductoPedido, $modal, Auditor, Usuario) {
 
             $scope.Empresa = Empresa;
 
             $scope.session = {
-               usuario_id:Usuario.usuario_id,
-               auth_token:Usuario.token
+                usuario_id: Usuario.usuario_id,
+                auth_token: Usuario.token
             };
 
             $scope.termino_busqueda = "";
@@ -31,35 +31,35 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.notificacionclientes = 0;
             $scope.notificacionfarmacias = 0;
             $scope.filtro = {
-                codigo_barras:false
+                codigo_barras: false
             };
-            
+
             var obj = {
                 session: $scope.session,
                 data: {
                     documento_temporal: {
-                        documento_temporal_id : 1,
+                        documento_temporal_id: 1,
                         usuario_id: 1350,
-                        filtro:{busqueda:true},
-                        numero_pedido:8000
+                        filtro: {busqueda: true},
+                        numero_pedido: 8000
                     }
                 }
             };
-            
+
 
             var that = this;
 
             $scope.buscarPedidosSeparados = function(obj, tipo, paginando, callback) {
                 var url = API.DOCUMENTOS_TEMPORALES.LISTAR_DOCUMENTOS_TEMPORALES_CLIENTES;
 
-                if(tipo === 2){
+                if (tipo === 2) {
                     url = API.DOCUMENTOS_TEMPORALES.LISTAR_DOCUMENTOS_TEMPORALES_FARMACIAS;
                 }
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     $scope.ultima_busqueda = $scope.termino_busqueda;
-                    
-                    if(data.obj.documentos_temporales !== undefined) {
+
+                    if (data.obj.documentos_temporales !== undefined) {
                         callback(data.obj, paginando, tipo);
                     }
 
@@ -67,7 +67,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
             };
 
-                
+
             that.crearDocumentoTemporal = function(obj, tipo) {
                 //console.log("datos obj ",obj)
                 var documento_temporal = DocumentoTemporal.get();
@@ -76,46 +76,46 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 var pedido = PedidoAuditoria.get(obj);
                 pedido.setDatos(obj);
                 pedido.setTipo(tipo);
-                
+
                 documento_temporal.empresa_id = obj.empresa_id;
                 documento_temporal.centro_utilidad = obj.centro_utilidad || '1';
                 documento_temporal.bodega_id = obj.bodega_id || '03';
-                
-                
-                if(tipo === 1){
+
+
+                if (tipo === 1) {
                     var cliente = Cliente.get(
-                        obj.nombre_cliente,
-                        obj.direccion_cliente,
-                        obj.tipo_id_cliente,
-                        obj.identificacion_cliente,
-                        obj.telefono_cliente
-                    );
-                    
+                            obj.nombre_cliente,
+                            obj.direccion_cliente,
+                            obj.tipo_id_cliente,
+                            obj.identificacion_cliente,
+                            obj.telefono_cliente
+                            );
+
                     pedido.setCliente(cliente);
-                    
+
                 } else {
                     var farmacia = Farmacia.get(
-                        obj.farmacia_id,
-                        obj.bodega_id,
-                        obj.nombre_farmacia,
-                        obj.nombre_bodega
-                    );
-                
+                            obj.farmacia_id,
+                            obj.bodega_id,
+                            obj.nombre_farmacia,
+                            obj.nombre_bodega
+                            );
+
                     pedido.setFarmacia(farmacia);
                 }
-                
-                
+
+
                 documento_temporal.setPedido(pedido);
-                
+
                 var separador = Separador.get();
                 separador.setDatos(obj.responsables);
 
                 var auditor = Auditor.get();
                 auditor.setDatos(obj.responsables);
-                
+
                 documento_temporal.setSeparador(separador);
                 documento_temporal.setAuditor(auditor);
-                
+
                 //console.log("documento >>>>>>>>>>>>>>", documento_temporal)
                 return documento_temporal;
             };
@@ -123,26 +123,26 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
 
             $scope.renderPedidosSeparados = function(data, paginando, tipo) {
-                
+
                 var items = data.documentos_temporales.length;
-                var evento = (tipo === 1)?"Cliente":"Farmacia";
-                
-                $scope.$broadcast("onPedidosSeparadosRender"+evento, items);
+                var evento = (tipo === 1) ? "Cliente" : "Farmacia";
+
+                $scope.$broadcast("onPedidosSeparadosRender" + evento, items);
 
                 //se valida que hayan registros en una siguiente pagina
                 if (paginando && items === 0) {
-                    $scope.$broadcast("onPedidosSeparadosNoEncotrados"+evento, items);
+                    $scope.$broadcast("onPedidosSeparadosNoEncotrados" + evento, items);
                     return;
                 }
-                
+
                 $scope.Empresa.vaciarDocumentoTemporal(tipo);
 
                 for (var i in data.documentos_temporales) {
 
                     var obj = data.documentos_temporales[i];
-                    
-                    var documento_temporal = that.crearDocumentoTemporal(obj,tipo);
-                   // documento_temporal.esDocumentoNuevo = true;  
+
+                    var documento_temporal = that.crearDocumentoTemporal(obj, tipo);
+                    // documento_temporal.esDocumentoNuevo = true;  
                     $scope.Empresa.agregarDocumentoTemporal(documento_temporal, tipo);
                 }
             };
@@ -151,84 +151,84 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
             //logica detalle
 
-            $scope.buscarDetalleDocumentoTemporal = function(obj, paginando,tipo, callback){
+            $scope.buscarDetalleDocumentoTemporal = function(obj, paginando, tipo, callback) {
                 var url = API.DOCUMENTOS_TEMPORALES.CONSULTAR_DOCUMENTO_TEMPORAL_CLIENTES;
 
-                if(tipo === 2){
+                if (tipo === 2) {
                     url = API.DOCUMENTOS_TEMPORALES.CONSULTAR_DOCUMENTO_TEMPORAL_FARMACIAS;
                 }
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
-                     
-                    if(data.status === 200) { 
+
+                    if (data.status === 200) {
                         //console.log("detalle ", data)
-                        if(data.obj.documento_temporal !== undefined) {
+                        if (data.obj.documento_temporal !== undefined) {
                             callback(data, paginando);
                         }
                     }
                 });
-                
+
             };
 
-            that.buscarProductosSeparadosEnDocumento = function(obj, tipo, callback){
+            that.buscarProductosSeparadosEnDocumento = function(obj, tipo, callback) {
 
                 var url = API.DOCUMENTOS_TEMPORALES.CONSULTAR_PRODUCTOS_AUDITADOS_CLIENTE;
 
-                if(tipo === 2){
+                if (tipo === 2) {
                     url = API.DOCUMENTOS_TEMPORALES.CONSULTAR_PRODUCTOS_AUDITADOS_FARMACIA;
                 }
-                
-                 Request.realizarRequest(url, "POST", obj, function(data) {
-                     
-                    if(data.status === 200) { 
 
-                        if(data.obj.movimientos_bodegas !== undefined) {
+                Request.realizarRequest(url, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+
+                        if (data.obj.movimientos_bodegas !== undefined) {
                             callback(data);
                         }
                     }
                 });
             };
 
-            that.renderDetalleDocumentoTemporal = function(documento , productos, tipo) {
+            that.renderDetalleDocumentoTemporal = function(documento, productos, tipo) {
                 //Vaciar el listado de Productos
-                
+
                 documento.getPedido().vaciarProductos();
 
                 for (var i in productos) {
 
                     var obj = productos[i];
-                    
+
                     var producto_pedido_separado = this.crearProductoPedidoDocumentoTemporal(obj, tipo);
-                    
+
                     documento.getPedido().agregarProducto(producto_pedido_separado, true);
 
                 }
 
-               // console.log("productos creados >>>>>>>>>>>>>");
+                // console.log("productos creados >>>>>>>>>>>>>");
                 //console.log(documento.getPedido().getProductos());
             };
 
 
-            $scope.onKeyDocumentosSeparadosPress = function(ev, documento, params, tipo){
-                
+            $scope.onKeyDocumentosSeparadosPress = function(ev, documento, params, tipo) {
 
-                that.buscarProductosSeparadosEnDocumento(params, tipo ,function(data){
-                    if(data.status === 200){
+
+                that.buscarProductosSeparadosEnDocumento(params, tipo, function(data) {
+                    if (data.status === 200) {
                         var productos = data.obj.movimientos_bodegas.lista_productos_auditados;
-                        console.log("productos encontrados ",productos);
+                        console.log("productos encontrados ", productos);
 
-                        that.renderDetalleDocumentoTemporal(documento , productos, 1);
+                        that.renderDetalleDocumentoTemporal(documento, productos, 1);
                     }
                 });
             };
 
             that.crearProductoPedidoDocumentoTemporal = function(obj, tipo) {
-               //console.log("=============================================== code 1 ",obj);
-               
+                //console.log("=============================================== code 1 ",obj);
+
                 var lote_pedido = LoteProductoPedido.get(obj.lote, obj.fecha_vencimiento);
-                
-                 
-                if(tipo === 1){
+
+
+                if (tipo === 1) {
                     var justificaciones = obj.justificaciones[0] || {};
                     lote_pedido.justificacion_separador = justificaciones.observacion || "";
                     lote_pedido.justificacion_auditor = justificaciones.justificacion_auditor || "";
@@ -236,145 +236,145 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     lote_pedido.justificacion_separador = obj.justificacion || "";
                     lote_pedido.justificacion_auditor = obj.justificacion_auditor || "";
                 }
-                
-                
+
+
                 lote_pedido.cantidad_pendiente = obj.cantidad_pendiente || 0;
                 lote_pedido.item_id = obj.item_id;
-        
-                var producto_pedido_separado = ProductoPedido.get(  obj.codigo_producto, obj.descripcion_producto, "",
-                                                                    obj.valor_unitario, obj.cantidad_solicitada, obj.cantidad_ingresada,
-                                                                    obj.observacion_cambio);
-                                                                    
+
+                var producto_pedido_separado = ProductoPedido.get(obj.codigo_producto, obj.descripcion_producto, "",
+                        obj.valor_unitario, obj.cantidad_solicitada, obj.cantidad_ingresada,
+                        obj.observacion_cambio);
+
                 producto_pedido_separado.porcentaje_gravament = obj.porcentaje_iva || 0;
-                producto_pedido_separado.cantidad_pendiente   = obj.cantidad_pendiente;
+                producto_pedido_separado.cantidad_pendiente = obj.cantidad_pendiente;
                 producto_pedido_separado.cantidad_despachada = obj.cantidad_despachada;
                 producto_pedido_separado.cantidad_solicitada = producto_pedido_separado.cantidad_solicitada - obj.cantidad_despachada;
                 producto_pedido_separado.cantidad_solicitada_real = obj.cantidad_solicitada;
-                                                                    
+
                 //console.log("producto >>>>>>>>>>>>>>>>>>");
-              //  console.log(producto_pedido_separado);                                                      
-                                                                    
+                //  console.log(producto_pedido_separado);                                                      
+
                 producto_pedido_separado.setLote(lote_pedido);
-                
-                
+
+
                 //console.log("Estructura del Objeto Producto", producto_pedido_separado, obj);
-                
+
                 return producto_pedido_separado;
 
             };
 
 
-              //Trae el Listado de Documentos de Usuario
+            //Trae el Listado de Documentos de Usuario
             $scope.traerListadoDocumentosUsuario = function(obj, callback) {
 
-                
+
                 Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.CONSULTAR_DOCUMENTOS_USUARIOS, "POST", obj, function(data) {
-                    
-                    if(data.status === 200){
+
+                    if (data.status === 200) {
                         callback(data);
                     }
 
                 });
-                
+
             };
 
 
             $scope.validarDocumentoUsuario = function(obj, tipo, callback) {
                 var url = API.DOCUMENTOS_TEMPORALES.ACTUALIZAR_TIPO_DOCUMENTO_TEMPORAL_CLIENTES;
 
-                if(tipo === 2){
+                if (tipo === 2) {
                     url = API.DOCUMENTOS_TEMPORALES.ACTUALIZAR_TIPO_DOCUMENTO_TEMPORAL_FARMACIAS;
                 }
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
-                    console.log("documento actualizado ",data)
-                    if(data.status === 200){
+                    console.log("documento actualizado ", data)
+                    if (data.status === 200) {
                         AlertService.mostrarMensaje("success", data.msj);
                     } else {
                         AlertService.mostrarMensaje("warning", data.msj);
                     }
                     callback(data);
                 });
-                
+
                 /* Fin Request */
             };
 
-            $scope.esDocumentoBodegaValido = function(bodega_id){
-                return (!bodega_id > 0)?false:true;
+            $scope.esDocumentoBodegaValido = function(bodega_id) {
+                return (!bodega_id > 0) ? false : true;
             };
 
 
-            $scope.onEditarRow = function(documento,documento_despacho,  row){
-                
+            $scope.onEditarRow = function(documento, documento_despacho, row) {
+
                 console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> documento_despacho ");
                 console.log(documento_despacho);
                 //almacenar lotes del mismo producto
                 var productos = [];
-                var producto =  row.entity;
-                
-                for(var i in documento.getPedido().getProductos()){
-                    
+                var producto = row.entity;
+
+                for (var i in documento.getPedido().getProductos()) {
+
                     var _producto = documento.getPedido().getProductos()[i];
-                    
-                    if(_producto.codigo_producto === producto.codigo_producto){
+
+                    if (_producto.codigo_producto === producto.codigo_producto) {
                         //console.log(_producto, "productos en la lista ");
                         _producto.lote.cantidad_ingresada = _producto.cantidad_separada;
                         productos.push(_producto);
                     }
-                    
+
                 }
-                
-                
+
+
                 $scope.opts = {
                     //backdrop: true,
                     size: 'lg',
-                    backdrop :'static',
-                    dialogClass:"editarproductomodal",
+                    backdrop: 'static',
+                    dialogClass: "editarproductomodal",
                     templateUrl: 'views/auditoriapedidos/editarproducto.html',
                     controller: "EditarProductoController",
-                    resolve :{
-                          documento : function(){
+                    resolve: {
+                        documento: function() {
                             return documento;
-                          },
-                          producto : function(){
-                              return producto;
-                          }, 
-                          productos : function(){
-                              return  productos;
-                          },
-                          documento_despacho:function(){
-                              return documento_despacho;
-                          }
+                        },
+                        producto: function() {
+                            return producto;
+                        },
+                        productos: function() {
+                            return  productos;
+                        },
+                        documento_despacho: function() {
+                            return documento_despacho;
+                        }
                     }
                 };
-                 
+
                 var modalInstance = $modal.open($scope.opts);
-                
+
             };
 
 
-             $scope.traerProductosAuditatos = function(obj){
+            $scope.traerProductosAuditatos = function(obj) {
 
                 Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.CONSULTAR_PRODUCTOS_AUDITADOS, "POST", obj, function(data) {
-                    
-                    if(data.status === 200){
+
+                    if (data.status === 200) {
                         console.log(data, "productos auditados");
                         that.renderProductosAuditados(data.obj.movimientos_bodegas.lista_productos_auditados, $scope.productosAuditados);
                     }
 
                 });
-                
+
             };
 
-            that.renderProductosAuditados = function(data, arreglo){
+            that.renderProductosAuditados = function(data, arreglo) {
 
-                for(var i in data){
+                for (var i in data) {
                     var obj = data[i];
                     var producto = ProductoPedido.get(
-                        obj.codigo_producto, obj.descripcion_producto,0,0,obj.cantidad_solicitada,
-                        obj.cantidad_ingresada, obj.observacion_cambio
-                    );
+                            obj.codigo_producto, obj.descripcion_producto, 0, 0, obj.cantidad_solicitada,
+                            obj.cantidad_ingresada, obj.observacion_cambio
+                            );
                     var lote = LoteProductoPedido.get(obj.lote, obj.fecha_vencimiento);
                     lote.item_id = obj.item_id;
 
@@ -387,12 +387,12 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
 
 
-            that.sacarProductoAuditados = function(_producto){
+            that.sacarProductoAuditados = function(_producto) {
                 var count = 0;
-                for(var i in $scope.productosAuditados){
+                for (var i in $scope.productosAuditados) {
                     var producto = $scope.productosAuditados[i];
-                    if(producto.codigo_producto === _producto.codigo_producto && producto.lote.item_id === _producto.lote.item_id){
-                        $scope.productosAuditados.splice(count,1);
+                    if (producto.codigo_producto === _producto.codigo_producto && producto.lote.item_id === _producto.lote.item_id) {
+                        $scope.productosAuditados.splice(count, 1);
                         break;
                     }
                     count++;
@@ -400,43 +400,43 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
 
 
-            $scope.onEliminarProductoAuditado = function(DocumentoTemporal, row){
-                
+            $scope.onEliminarProductoAuditado = function(DocumentoTemporal, row) {
+
                 console.log("row entity ", row.entity.lote.item_id);
-                
+
                 var obj = {
-                    session:$scope.session,
-                    data:{
+                    session: $scope.session,
+                    data: {
                         documento_temporal: {
                             item_id: row.entity.lote.item_id,
                             auditado: false,
-                            numero_caja:0,
-                            documento_temporal_id:DocumentoTemporal.documento_temporal_id,
-                            codigo_producto:row.entity.codigo_producto,
-                            cantidad_pendiente:0,
-                            justificacion_auditor:"",
-                            existencia:"",
-                            usuario_id:DocumentoTemporal.separador.usuario_id
+                            numero_caja: 0,
+                            documento_temporal_id: DocumentoTemporal.documento_temporal_id,
+                            codigo_producto: row.entity.codigo_producto,
+                            cantidad_pendiente: 0,
+                            justificacion_auditor: "",
+                            existencia: "",
+                            usuario_id: DocumentoTemporal.separador.usuario_id
                         }
                     }
                 };
 
                 Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.AUDITAR_DOCUMENTO_TEMPORAL, "POST", obj, function(data) {
 
-                    if(data.status === 200){
-                       that.sacarProductoAuditados(row.entity); 
-                       AlertService.mostrarMensaje("success", data.msj);
+                    if (data.status === 200) {
+                        that.sacarProductoAuditados(row.entity);
+                        AlertService.mostrarMensaje("success", data.msj);
 
-                    } 
+                    }
                 });
 
             };
-            
-             $scope.onCerrarCaja = function(caja){
+
+            $scope.onCerrarCaja = function(caja) {
                 var url = API.DOCUMENTOS_TEMPORALES.GENERAR_ROTULO;
                 var obj = {
-                    session:$scope.session,
-                    data:{
+                    session: $scope.session,
+                    data: {
                         documento_temporal: {
                             documento_temporal_id: caja.documento_id,
                             numero_caja: caja.numero_caja
@@ -445,8 +445,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 };
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
-                    console.log(data.status , " tipo de estado ", typeof data.status);
-                    if(data.status === 200){
+                    console.log(data.status, " tipo de estado ", typeof data.status);
+                    if (data.status === 200) {
                         caja.caja_cerrada = '1';
                         //that.sacarCaja(caja);
                     } else {
@@ -454,68 +454,68 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     }
                 });
             };
-            
-            
-            
-            that.sacarCaja = function(caja){
-               for(var i in $scope.cajasSinCerrar){
-                   var _caja = $scope.cajasSinCerrar[i];
-                  // console.log("caja a borrar ",_caja, " buscando con caja ", caja);
-                   if(_caja.numero_caja === caja.numero_caja && caja.documento_id === _caja.documento_id){
-                       console.log("caja a borrar ",_caja);
-                       $scope.cajasSinCerrar.splice(i,1);
-                       break;
-                   }
-               }
+
+
+
+            that.sacarCaja = function(caja) {
+                for (var i in $scope.cajasSinCerrar) {
+                    var _caja = $scope.cajasSinCerrar[i];
+                    // console.log("caja a borrar ",_caja, " buscando con caja ", caja);
+                    if (_caja.numero_caja === caja.numero_caja && caja.documento_id === _caja.documento_id) {
+                        console.log("caja a borrar ", _caja);
+                        $scope.cajasSinCerrar.splice(i, 1);
+                        break;
+                    }
+                }
             };
 
-            $scope.generarDocumento = function(documento){
+            $scope.generarDocumento = function(documento) {
 
-                
+
                 var url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO;
-                
-                if(documento.pedido.tipo === documento.pedido.TIPO_FARMACIA){
-                   url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO_FARMACIA; 
+
+                if (documento.pedido.tipo === documento.pedido.TIPO_FARMACIA) {
+                    url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO_FARMACIA;
                 }
-                
-                console.log(typeof documento.pedido.tipo, ">>>>> generando documento ",typeof documento.pedido.TIPO_FARMACIA, url);
+
+                console.log(typeof documento.pedido.tipo, ">>>>> generando documento ", typeof documento.pedido.TIPO_FARMACIA, url);
                 //return;
 
                 var obj = {
-                    session:$scope.session,
-                    data:{
-                        documento_temporal:{
-                            numero_pedido:documento.pedido.numero_pedido,
-                            documento_temporal_id:documento.documento_temporal_id,
-                            auditor_id:documento.auditor.operario_id,
-                            usuario_id:documento.separador.usuario_id
+                    session: $scope.session,
+                    data: {
+                        documento_temporal: {
+                            numero_pedido: documento.pedido.numero_pedido,
+                            documento_temporal_id: documento.documento_temporal_id,
+                            auditor_id: documento.auditor.operario_id,
+                            usuario_id: documento.separador.usuario_id
                         }
                     }
                 };
 
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
-                    
-                    if(data.status === 200){
-                        
+
+                    if (data.status === 200) {
+
                         $scope.productosNoAuditados = [];
-                        $scope.productosPendientes  = [];
+                        $scope.productosPendientes = [];
                         $scope.cajasSinCerrar = [];
                         $scope.productosAuditados = [];
-                        
-                        console.log("respuesta al generar documento "+data); 
+
+                        console.log("respuesta al generar documento " + data);
                         $scope.$broadcast("onRefrescarListadoPedidos");
-                        $scope.$emit('cerrardetallecliente', {animado:true});
-                        $scope.$emit('cerrardetallefarmacia', {animado:true});
-                        
+                        $scope.$emit('cerrardetallecliente', {animado: true});
+                        $scope.$emit('cerrardetallefarmacia', {animado: true});
+
                         $scope.documento_generado = data.obj.movimientos_bodegas;
                         $scope.opts = {
-                        backdrop: true,
-                        backdropClick: true,
-                        dialogFade: false,
-                        size:'sm',
-                        keyboard: true,
-                        template: ' <div class="modal-header">\
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            size: 'sm',
+                            keyboard: true,
+                            template: ' <div class="modal-header">\
                                         <button type="button" class="close" ng-click="close()">&times;</button>\
                                         <h4 class="modal-title">Generación de documento</h4>\
                                     </div>\
@@ -525,31 +525,31 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                     <div class="modal-footer">\
                                         <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
                                     </div>',
-                        scope: $scope,
-                        controller: function($scope, $modalInstance) {
-                            $scope.close = function() {
-                                $modalInstance.close();
-                            };
-                        }
-                    };
-                    var modalInstance = $modal.open($scope.opts);
-                        
-                        
+                            scope: $scope,
+                            controller: function($scope, $modalInstance) {
+                                $scope.close = function() {
+                                    $modalInstance.close();
+                                };
+                            }
+                        };
+                        var modalInstance = $modal.open($scope.opts);
+
+
                     } else {
-                         AlertService.mostrarMensaje("warning", data.msj);
+                        AlertService.mostrarMensaje("warning", data.msj);
                         var movimientos_bodegas = data.obj.movimientos_bodegas;
                         $scope.productosNoAuditados = [];
-                        $scope.productosPendientes  = [];
+                        $scope.productosPendientes = [];
                         $scope.cajasSinCerrar = [];
-                        
+
                         var productosNoAuditados = [];
-                        
-                        if(documento,movimientos_bodegas.productos_no_auditados !== undefined){
-                            that.renderDetalleDocumentoTemporal(documento,movimientos_bodegas.productos_no_auditados.concat(movimientos_bodegas.productos_pendientes), 2);
+
+                        if (documento, movimientos_bodegas.productos_no_auditados !== undefined) {
+                            that.renderDetalleDocumentoTemporal(documento, movimientos_bodegas.productos_no_auditados.concat(movimientos_bodegas.productos_pendientes), 2);
                         }
-                        
-                        
-                        if(movimientos_bodegas.cajas_no_cerradas){
+
+
+                        if (movimientos_bodegas.cajas_no_cerradas) {
                             $scope.cajasSinCerrar = movimientos_bodegas.cajas_no_cerradas;
                         }
                     }
@@ -558,62 +558,64 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
             };
 
-            $rootScope.$on("productoAuditado", function(e, producto, DocumentoTemporal){
-                if(DocumentoTemporal.getPedido() === undefined){ return; }
+            $rootScope.$on("productoAuditado", function(e, producto, DocumentoTemporal) {
+                if (DocumentoTemporal.getPedido() === undefined) {
+                    return;
+                }
                 DocumentoTemporal.getPedido().vaciarProductos();
                 $scope.productosAuditados = [];
 
-                var params ={
-                    session:$scope.session,
-                    data : {
-                        documento_temporal:{
-                            documento_temporal_id:DocumentoTemporal.documento_temporal_id,
-                            usuario_id:DocumentoTemporal.separador.usuario_id
+                var params = {
+                    session: $scope.session,
+                    data: {
+                        documento_temporal: {
+                            documento_temporal_id: DocumentoTemporal.documento_temporal_id,
+                            usuario_id: DocumentoTemporal.separador.usuario_id
                         }
                     }
                 };
-                
+
                 $scope.traerProductosAuditatos(params);
 
             });
-            
-            $rootScope.$on("onGenerarPdfRotulo",function(e, tipo, numero_pedido, numero_caja){
+
+            $rootScope.$on("onGenerarPdfRotulo", function(e, tipo, numero_pedido, numero_caja) {
                 $scope.onImprimirRotulo(tipo, numero_pedido, numero_caja);
             });
-            
-            
-            $scope.onImprimirRotulo = function(tipo, numero_pedido, numero_caja){
-                
+
+
+            $scope.onImprimirRotulo = function(tipo, numero_pedido, numero_caja) {
+
                 var url = API.DOCUMENTOS_TEMPORALES.IMPRIMIR_ROTULO_CLIENTES;
-                
-                if(tipo === 2){
+
+                if (tipo === 2) {
                     url = API.DOCUMENTOS_TEMPORALES.IMPRIMIR_ROTULO_FARMACIAS;
                 }
-                
-                
+
+
                 var obj = {
-                    session:$scope.session,
-                    data:{
+                    session: $scope.session,
+                    data: {
                         documento_temporal: {
                             numero_pedido: numero_pedido,
                             numero_caja: numero_caja
                         }
                     }
                 };
-                
+
                 Request.realizarRequest(url, "POST", obj, function(data) {
-                    if(data.status === 200){
+                    if (data.status === 200) {
                         var nombre_reporte = data.obj.movimientos_bodegas.nombre_reporte;
                         console.log("reporte generado")
-                         $scope.visualizarReporte("/reports/"+nombre_reporte, "Rotulo_"+numero_caja, "download");
+                        $scope.visualizarReporte("/reports/" + nombre_reporte, "Rotulo_" + numero_caja, "download");
                     } else {
-                        
+
                     }
                 });
             };
 
-            
-            $scope.$on("onDetalleCerrado",function(){
+
+            $scope.$on("onDetalleCerrado", function() {
                 console.log("========================= onDetalleCerrado");
                 $scope.productosAuditados = [];
                 $scope.productosNoAuditados = [];
@@ -621,30 +623,30 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 $scope.cajasSinCerrar = [];
             });
 
-            socket.on("onListarDocumentosTemporalesClientes",function(data){
+            socket.on("onListarDocumentosTemporalesClientes", function(data) {
                 console.log("onListarDocumentosTemporalesClientes", data);
-                if(data.status === 200){
+                if (data.status === 200) {
                     $scope.notificacionclientes++;
-                    for(var i in data.obj.documento_temporal_clientes){
+                    for (var i in data.obj.documento_temporal_clientes) {
                         var obj = data.obj.documento_temporal_clientes[i];
-                        var documento_temporal = that.crearDocumentoTemporal(obj,1);
+                        var documento_temporal = that.crearDocumentoTemporal(obj, 1);
                         documento_temporal.esDocumentoNuevo = true;
                         $scope.Empresa.agregarDocumentoTemporal(documento_temporal, 1);
-                        console.log("object added client ",obj );
+                        console.log("object added client ", obj);
                     }
                 }
             });
 
-             socket.on("onListarDocumentosTemporalesFarmacias",function(data){
+            socket.on("onListarDocumentosTemporalesFarmacias", function(data) {
                 console.log("onListarDocumentosTemporalesFarmacias", data);
-                if(data.status === 200){
+                if (data.status === 200) {
                     $scope.notificacionfarmacias++;
-                    for(var i in data.obj.documento_temporal_farmacias){
+                    for (var i in data.obj.documento_temporal_farmacias) {
                         var obj = data.obj.documento_temporal_farmacias[i];
-                        var documento_temporal = that.crearDocumentoTemporal(obj,2);
+                        var documento_temporal = that.crearDocumentoTemporal(obj, 2);
                         documento_temporal.esDocumentoNuevo = true;
                         $scope.Empresa.agregarDocumentoTemporal(documento_temporal, 2);
-                         console.log("object added client ",obj );
+                        console.log("object added client ", obj);
                     }
                 }
             });

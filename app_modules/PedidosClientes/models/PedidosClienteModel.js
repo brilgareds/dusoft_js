@@ -105,11 +105,11 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
         if (filtro.despachado_pendientes) {
             sql_aux = " AND a.estado_pedido = '5' ";
         }
-        
+
         if (filtro.separacion_finalizada) {
             sql_aux = " AND a.estado_pedido = '6' ";
         }
-        
+
         if (filtro.en_auditoria) {
             sql_aux = " AND a.estado_pedido = '7' ";
         }
@@ -145,7 +145,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
                 inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id \
                 inner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id \
                 left join inv_bodegas_movimiento_tmp_despachos_clientes d on a.pedido_cliente_id = d.pedido_cliente_id  \
-                where a.empresa_id = $1 "+ sql_aux +"\
+                where a.empresa_id = $1 " + sql_aux + "\
                 and (   a.pedido_cliente_id ilike $2  \
                         or b.tercero_id ilike $2 \
                         or b.nombre_tercero ilike $2 \
@@ -279,8 +279,8 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
  */
 
 PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido, callback) {
-    
-        var sql = " select\
+
+    var sql = " select\
                     a.pedido_cliente_id as numero_pedido,\
                     a.codigo_producto,\
                     fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
@@ -398,15 +398,15 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
     if (filtro !== undefined) {
 
         if (filtro.asignados) {
-            sql_aux = "  f.doc_tmp_id IS NULL and  e.usuario_id = "+responsable+" and  ";
+            sql_aux = "  f.doc_tmp_id IS NULL and  e.usuario_id = " + responsable + " and  ";
         }
 
         if (filtro.temporales) {
-            sql_aux = "  f.doc_tmp_id IS NOT NULL AND f.estado = '0' and  e.usuario_id = "+responsable+" and ";
+            sql_aux = "  f.doc_tmp_id IS NOT NULL AND f.estado = '0' and  e.usuario_id = " + responsable + " and ";
         }
         if (filtro.finalizados) {
             estado_pedido = '7';
-            sql_aux = " e.usuario_id = (select usuario_id from operarios_bodega where operario_id = d.responsable_id ) and  g.usuario_id = "+responsable+" and ";
+            sql_aux = " e.usuario_id = (select usuario_id from operarios_bodega where operario_id = d.responsable_id ) and  g.usuario_id = " + responsable + " and ";
         }
     }
 
@@ -451,7 +451,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
                 left join inv_bodegas_movimiento_tmp_despachos_clientes f on a.pedido_cliente_id = f.pedido_cliente_id\
                 left join inv_bodegas_movimiento_tmp g on f.usuario_id = g.usuario_id and f.doc_tmp_id = g.doc_tmp_id \
                 where " + sql_aux + " \
-                a.estado_pedido = "+estado_pedido+" \
+                a.estado_pedido = " + estado_pedido + " \
                 /*AND (a.estado IN ('1'))*/   \
                 and (\
                         a.pedido_cliente_id ilike $1 or\
@@ -491,10 +491,10 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
 PedidosClienteModel.prototype.asignar_responsables_pedidos = function(numero_pedido, estado_pedido, responsable, usuario, callback) {
 
     /*console.log('========== asignar_responsables_pedidos ==========');
-    console.log(responsable);
-    console.log(usuario);
-    console.log('==================================================');*/
-    
+     console.log(responsable);
+     console.log(usuario);
+     console.log('==================================================');*/
+
     var that = this;
 
     // Validar si existen responsables asignados
@@ -550,7 +550,7 @@ PedidosClienteModel.prototype.asignar_responsables_pedidos = function(numero_ped
 PedidosClienteModel.prototype.insertar_responsables_pedidos = function(numero_pedido, estado_pedido, responsable, usuario, callback) {
 
     var sql = "INSERT INTO ventas_ordenes_pedidos_estado( pedido_cliente_id, estado, responsable_id, fecha, usuario_id) " +
-              "VALUES ($1, $2, $3, now(), $4);";
+            "VALUES ($1, $2, $3, now(), $4);";
 
     G.db.query(sql, [numero_pedido, estado_pedido, responsable, usuario], function(err, rows, result) {
         callback(err, rows);
@@ -580,7 +580,7 @@ PedidosClienteModel.prototype.insertar_responsables_pedidos = function(numero_pe
 PedidosClienteModel.prototype.actualizar_responsables_pedidos = function(numero_pedido, estado_pedido, responsable, usuario, callback) {
 
     var sql = "UPDATE ventas_ordenes_pedidos_estado SET responsable_id=$3, fecha=NOW(), usuario_id=$4 " +
-              "WHERE pedido_cliente_id=$1 AND estado=$2 and (sw_terminado is null or sw_terminado = '0');";
+            "WHERE pedido_cliente_id=$1 AND estado=$2 and (sw_terminado is null or sw_terminado = '0');";
 
     G.db.query(sql, [numero_pedido, estado_pedido, responsable, usuario], function(err, rows, result) {
         callback(err, rows);
@@ -656,7 +656,7 @@ PedidosClienteModel.prototype.actualizar_estado_actual_pedido = function(numero_
 //               
 
 PedidosClienteModel.prototype.calcular_cantidad_total_pendiente_producto = function(empresa_id, codigo_producto, callback) {
-    
+
     var sql = " SELECT\
                 b.codigo_producto,\
                 SUM((b.numero_unidades - b.cantidad_despachada)) as cantidad_total_pendiente\
@@ -664,7 +664,7 @@ PedidosClienteModel.prototype.calcular_cantidad_total_pendiente_producto = funct
                 inner join ventas_ordenes_pedidos_d b ON a.pedido_cliente_id = b.pedido_cliente_id\
                 where a.empresa_id = $1 and b.codigo_producto = $2 and b.numero_unidades <> b.cantidad_despachada and a.estado = '1'  \
                 GROUP BY 1";
-    
+
     G.db.query(sql, [empresa_id, codigo_producto], function(err, rows, result) {
         callback(err, rows);
     });
@@ -705,12 +705,12 @@ PedidosClienteModel.prototype.obtener_responsables_del_pedido = function(numero_
 };
 
 
-PedidosClienteModel.prototype.terminar_estado_pedido = function(numero_pedido,estados,terminado,callback) {
-    
+PedidosClienteModel.prototype.terminar_estado_pedido = function(numero_pedido, estados, terminado, callback) {
+
     estados = estados.join(",");
-    
+
     var sql = "update ventas_ordenes_pedidos_estado set sw_terminado = $2\
-               where  pedido_cliente_id = $1 and estado in("+estados+") and (sw_terminado is null or sw_terminado = '0')";
+               where  pedido_cliente_id = $1 and estado in(" + estados + ") and (sw_terminado is null or sw_terminado = '0')";
 
     G.db.query(sql, [numero_pedido, terminado], function(err, rows, result) {
         callback(err, rows, result);
@@ -767,27 +767,27 @@ PedidosClienteModel.prototype.listar_pedidos_pendientes_by_producto = function(e
  * @apiParam {Function} callback Funcion de retorno de informacion.
  */
 
-PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(numero_pedido,prefijo_documento, numero_documento, callback) {
-     var sql = "select b.codigo_producto, sum(b.cantidad) AS cantidad_despachada, b.prefijo, b.numero\
+PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(numero_pedido, prefijo_documento, numero_documento, callback) {
+    var sql = "select b.codigo_producto, sum(b.cantidad) AS cantidad_despachada, b.prefijo, b.numero\
                 from inv_bodegas_movimiento_despachos_clientes a\
                 inner join inv_bodegas_movimiento_d b on a.empresa_id =b.empresa_id and a.prefijo = b.prefijo and a.numero = b.numero\
                 where a.pedido_cliente_id = $1 and a.numero= $3 and a.prefijo= $2 group by 1,3,4";
-    
-    
-    G.db.query(sql, [numero_pedido, prefijo_documento,numero_documento ], function(err, rows, result) {
 
-        if(err){
+
+    G.db.query(sql, [numero_pedido, prefijo_documento, numero_documento], function(err, rows, result) {
+
+        if (err) {
             callback(err, null);
             return;
         }
-        
+
         var length = rows.length;
-        
+
         G.db.begin(function() {
-            rows.forEach(function(row){
+            rows.forEach(function(row) {
 
                 var cantidad_despachada = parseInt(row.cantidad_despachada);
-                 sql = "UPDATE ventas_ordenes_pedidos_d\
+                sql = "UPDATE ventas_ordenes_pedidos_d\
                         SET cantidad_despachada=cantidad_despachada+$1\
                         WHERE   pedido_cliente_id=$2\
                         AND  codigo_producto=$3\
@@ -796,11 +796,11 @@ PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(nu
 
                 G.db.transaction(sql, [cantidad_despachada, numero_pedido, row.codigo_producto], function(err, rows, result) {
 
-                     if (--length === 0) {
-                         G.db.commit(function(){
+                    if (--length === 0) {
+                        G.db.commit(function() {
                             callback(err, rows);
                             return;
-                         });
+                        });
                     }
                 });
 

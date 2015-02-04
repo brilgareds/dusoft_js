@@ -1,6 +1,6 @@
 define(["angular", "js/controllers",
-        'models/ClientePedido', 'models/PedidoAuditoria', 'models/Separador',
-        'models/DocumentoTemporal'], function(angular, controllers) {
+    'models/ClientePedido', 'models/PedidoAuditoria', 'models/Separador',
+    'models/DocumentoTemporal'], function(angular, controllers) {
 
     var fo = controllers.controller('AuditoriaPedidosClientesController', [
         '$scope', '$rootScope', 'Request',
@@ -20,8 +20,8 @@ define(["angular", "js/controllers",
             $scope.numero_pedido = "";
 
             var that = this;
-            that.obtenerParametros = function(){
-                 //valida si cambio el termino de busqueda
+            that.obtenerParametros = function() {
+                //valida si cambio el termino de busqueda
                 if ($scope.ultima_busqueda !== $scope.termino_busqueda) {
                     $scope.paginaactual = 1;
                 }
@@ -51,7 +51,7 @@ define(["angular", "js/controllers",
                 enableHighlighting: true,
                 columnDefs: [
                     {field: 'pedido.numero_pedido', displayName: 'Numero Pedido',
-                     cellTemplate:"<div class='ngCellText ng-scope col1 colt1'>\
+                        cellTemplate: "<div class='ngCellText ng-scope col1 colt1'>\
                                         {{row.entity.pedido.numero_pedido}}\
                                         <span  ng-show='row.entity.esDocumentoNuevo' class='label label-danger pull-right'>Nuevo</span>\
                                      </div>"
@@ -72,35 +72,35 @@ define(["angular", "js/controllers",
                 ]
 
             };
-            
-            
-            $scope.esAuditorCreador = function(row){
-              //  console.log("usuario id ", row.entity.auditor, " session id ", $scope.session.usuario_id);
-                if(row.entity.auditor.usuario_id === 0){
+
+
+            $scope.esAuditorCreador = function(row) {
+                //  console.log("usuario id ", row.entity.auditor, " session id ", $scope.session.usuario_id);
+                if (row.entity.auditor.usuario_id === 0) {
                     return true;
                 }
-                
+
                 return row.entity.auditor.usuario_id === $scope.session.usuario_id;
             };
 
 
-            $scope.$on("onPedidosSeparadosRenderCliente",function(e,items){
-    
+            $scope.$on("onPedidosSeparadosRenderCliente", function(e, items) {
+
                 $scope.items = items;
             });
 
-            $scope.$on("onPedidosSeparadosNoEncotradosCliente",function(e){
+            $scope.$on("onPedidosSeparadosNoEncotradosCliente", function(e) {
                 if ($scope.paginaactual > 1) {
                     $scope.paginaactual--;
                 }
                 AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
             });
-            
-            
-            $rootScope.$on("cerrardetalleclienteCompleto",function(e){
-                $scope.buscarPedidosSeparados(that.obtenerParametros(),1, false, $scope.renderPedidosSeparados);
+
+
+            $rootScope.$on("cerrardetalleclienteCompleto", function(e) {
+                $scope.buscarPedidosSeparados(that.obtenerParametros(), 1, false, $scope.renderPedidosSeparados);
             });
-            
+
 
             $scope.onRowClick = function(row) {
                 row.entity.esDocumentoNuevo = false;
@@ -114,11 +114,11 @@ define(["angular", "js/controllers",
             //eventos de widgets
             $scope.onKeySeparadosPress = function(ev, termino_busqueda) {
                 if (ev.which === 13) {
-                    $scope.buscarPedidosSeparados( that.obtenerParametros(),
-                                                    1,
-                                                    false ,
-                                                    $scope.renderPedidosSeparados 
-                                                 );
+                    $scope.buscarPedidosSeparados(that.obtenerParametros(),
+                            1,
+                            false,
+                            $scope.renderPedidosSeparados
+                            );
                 }
             };
 
@@ -129,23 +129,23 @@ define(["angular", "js/controllers",
 
             $scope.paginaSiguiente = function() {
                 $scope.paginaactual++;
-                $scope.buscarPedidosSeparados(that.obtenerParametros(),1, true, $scope.renderPedidosSeparados);
+                $scope.buscarPedidosSeparados(that.obtenerParametros(), 1, true, $scope.renderPedidosSeparados);
             };
 
             //fin de eventos
-             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
+            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.pedidosSeparadosSeleccionados = [];
                 $scope.$$watchers = null;
             });
-            
-            $scope.$on("onRefrescarListadoPedidos",function(){
-                 $scope.termino_busqueda = "";
-                 $scope.buscarPedidosSeparados(that.obtenerParametros(),1, false, $scope.renderPedidosSeparados);
+
+            $scope.$on("onRefrescarListadoPedidos", function() {
+                $scope.termino_busqueda = "";
+                $scope.buscarPedidosSeparados(that.obtenerParametros(), 1, false, $scope.renderPedidosSeparados);
             });
-            
-            
+
+
             //se realiza el llamado a api para pedidos
-            $scope.buscarPedidosSeparados(that.obtenerParametros(),1, false, $scope.renderPedidosSeparados);
+            $scope.buscarPedidosSeparados(that.obtenerParametros(), 1, false, $scope.renderPedidosSeparados);
 
         }]);
 });

@@ -1,12 +1,11 @@
 define(["angular", "js/controllers", 'models/Separador'], function(angular, controllers) {
 
     controllers.controller('asignacioncontroller', [
-        '$scope', '$rootScope', 'API', 
+        '$scope', '$rootScope', 'API',
         '$modalInstance', "pedidosSeleccionados", "url",
         "Request", "Separador", "EmpresaPedido",
         "Usuario",
-
-        function($scope, $rootScope, API, $modalInstance, pedidosSeleccionados, url, Request, Separador, Empresa,Usuario) {
+        function($scope, $rootScope, API, $modalInstance, pedidosSeleccionados, url, Request, Separador, Empresa, Usuario) {
 
             $scope.Empresa = Empresa;
             $scope.noAsignar = true;
@@ -14,15 +13,15 @@ define(["angular", "js/controllers", 'models/Separador'], function(angular, cont
             $scope.pedidosSeleccionados = pedidosSeleccionados;
             $scope.idAsignado;
             $scope.dialog = false;
-            $scope.msg   = "";
+            $scope.msg = "";
             $scope.operario_id = false;
             var that = this;
 
             $scope.session = {
-               usuario_id:Usuario.usuario_id,
-               auth_token:Usuario.token
+                usuario_id: Usuario.usuario_id,
+                auth_token: Usuario.token
             };
-            
+
             $modalInstance.result.then(function() {
                 //on ok button press 
             }, function() {
@@ -54,17 +53,17 @@ define(["angular", "js/controllers", 'models/Separador'], function(angular, cont
 
                     pedidos.push(pedido.numero_pedido);
                 }
-                
-                if(pedidos.length === 0){
+
+                if (pedidos.length === 0) {
                     $scope.dialog = true;
                     $scope.msg = "No hay pedidos seleccionados";
                     return;
                 }
 
                 var obj = {
-                    session:$scope.session,
-                    data:{
-                        asignacion_pedidos:{
+                    session: $scope.session,
+                    data: {
+                        asignacion_pedidos: {
                             pedidos: pedidos,
                             estado_pedido: "1",
                             responsable: $scope.idAsignado
@@ -73,47 +72,47 @@ define(["angular", "js/controllers", 'models/Separador'], function(angular, cont
                 };
 
                 Request.realizarRequest(
-                    url,
-                    "POST",
-                    obj,
-                    function(data) {
-                        if(data.status === 200){
-                            $modalInstance.close();
-                            $rootScope.$emit("refrescarPedidos");
-                        }                  
-                    }
+                        url,
+                        "POST",
+                        obj,
+                        function(data) {
+                            if (data.status === 200) {
+                                $modalInstance.close();
+                                $rootScope.$emit("refrescarPedidos");
+                            }
+                        }
                 );
             };
-            
-            $scope.validarEstado = function(pedidosSeleccionados){
 
-                
-                 for (var i  in pedidosSeleccionados) {
+            $scope.validarEstado = function(pedidosSeleccionados) {
+
+
+                for (var i  in pedidosSeleccionados) {
                     var pedido = pedidosSeleccionados[i];
-                    if((pedido.estado_actual_pedido !== '0' && pedido.estado_actual_pedido !== '1' && pedido.estado_actual_pedido !== '5') 
-                        || pedido.estado === '2' || pedido.estado_separacion){
+                    if ((pedido.estado_actual_pedido !== '0' && pedido.estado_actual_pedido !== '1' && pedido.estado_actual_pedido !== '5')
+                            || pedido.estado === '2' || pedido.estado_separacion) {
                         pedidosSeleccionados.splice(i, 1);
                         $scope.validarEstado(pedidosSeleccionados);
                         break;
                     }
                 }
-                
+
                 return pedidosSeleccionados;
             };
 
 
             var obj = {
-                session:$scope.session,
-                data:{
-                    lista_operarios:{
-                        estado_registro:"1"
+                session: $scope.session,
+                data: {
+                    lista_operarios: {
+                        estado_registro: "1"
                     }
                 }
             };
 
 
             Request.realizarRequest(API.TERCEROS.LISTAR_OPERARIOS, "POST", obj, function(data) {
-                if(data.obj.lista_operarios){
+                if (data.obj.lista_operarios) {
                     var listado = data.obj.lista_operarios;
                     Empresa.vaciarSeparadores();
                     var data = data.obj;
@@ -123,23 +122,23 @@ define(["angular", "js/controllers", 'models/Separador'], function(angular, cont
                         var obj = listado[i];
 
                         var separador = Separador.get(
-                            obj.nombre_operario,
-                            obj.operario_id,
-                            obj.total_pedidos_asignados
-                        );
+                                obj.nombre_operario,
+                                obj.operario_id,
+                                obj.total_pedidos_asignados
+                                );
 
                         $scope.Empresa.agregarSeparador(
-                            separador
-                        );
+                                separador
+                                );
                     }
                 } else {
                     $scope.dialog = true;
                     $scope.msg = "No hay responsables disponibles";
                 }
-                
+
 
             });
-            
+
             $scope.validarEstado($scope.pedidosSeleccionados);
 
 

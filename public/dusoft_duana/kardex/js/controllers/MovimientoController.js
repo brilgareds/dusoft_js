@@ -54,9 +54,9 @@ define([
                         multiSelect: false,
                         rowHeight: 200,
                         enableHighlighting: true,
-                        enableRowSelection:false,
+                        enableRowSelection: false,
                         filterOptions: $scope.filterOptions,
-                        showFilter:true,
+                        showFilter: true,
                         sortInfo: {fields: ['fecha'], directions: ['desc']},
                         columnDefs: [
                             {field: 'tipo_movimiento', displayName: 'T M', width: "50"},
@@ -74,7 +74,7 @@ define([
                         ]
 
                     };
-                    
+
 
                     $scope.lista_pendientes_farmacia = {
                         data: "producto.getPendientesFarmacia()",
@@ -146,7 +146,7 @@ define([
 
                     });
                     //eventos personalizados
-                    $rootScope.$on("mostrardetallekardexCompleto", function(e, datos) {  
+                    $rootScope.$on("mostrardetallekardexCompleto", function(e, datos) {
 
                         var producto = datos[1];
                         var movimientos = datos[2];

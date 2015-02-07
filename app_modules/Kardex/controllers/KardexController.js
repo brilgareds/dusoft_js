@@ -25,17 +25,17 @@ Kardex.prototype.listar_productos = function(req, res) {
         res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
         return;
     }
-    
+
     if (args.kardex.empresa_id === '') {
         res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {}));
         return;
     }
-    
+
     if (args.kardex.centro_utilidad === '') {
         res.send(G.utils.r(req.url, 'Se requiere centro de ', 404, {}));
         return;
     }
-    
+
     if (args.kardex.bodega_id === '') {
         res.send(G.utils.r(req.url, 'Se requiere la bodega', 404, {}));
         return;
@@ -43,12 +43,12 @@ Kardex.prototype.listar_productos = function(req, res) {
 
     var termino_busqueda = args.kardex.termino_busqueda;
     var pagina_actual = args.kardex.pagina_actual;
-    var empresa_id  = args.kardex.empresa_id;
+    var empresa_id = args.kardex.empresa_id;
     var centro_utilidad = args.kardex.centro_utilidad;
     var bodega_id = args.kardex.bodega_id;
 
 
-    this.m_productos.buscar_productos(empresa_id, centro_utilidad, bodega_id, termino_busqueda, pagina_actual,"0", function(err, lista_productos) {
+    this.m_productos.buscar_productos(empresa_id, centro_utilidad, bodega_id, termino_busqueda, pagina_actual, "0", function(err, lista_productos) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Listado de Productos', 500, {lista_productos: {}}));
@@ -75,23 +75,23 @@ Kardex.prototype.obtener_movimientos_producto = function(req, res) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios Estan Vacios', 404, {}));
         return;
     }
-    
-    
+
+
     if (args.kardex.empresa_id === '') {
         res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {}));
         return;
     }
-    
+
     if (args.kardex.centro_utilidad === '') {
         res.send(G.utils.r(req.url, 'Se requiere centro de ', 404, {}));
         return;
     }
-    
+
     if (args.kardex.bodega_id === '') {
         res.send(G.utils.r(req.url, 'Se requiere la bodega', 404, {}));
         return;
     }
-    
+
 
     var empresa_id = args.kardex.empresa_id; //req.query.empresa_id;
     var centro_utilidad_id = args.kardex.centro_utilidad; //req.query.centro_utilidad_id;
@@ -99,8 +99,8 @@ Kardex.prototype.obtener_movimientos_producto = function(req, res) {
     var codigo_producto = args.kardex.codigo_producto;//'198A0010042';//
     var fecha_inicial = args.kardex.fecha_inicial; //'2014-01-01';//
     var fecha_final = args.kardex.fecha_final; //'2014-01-31';//
-    
-    
+
+
     // Seleccionar los Movimientos del Producto
     this.m_kardex.obtener_movimientos_productos(empresa_id, centro_utilidad_id, bodega_id, codigo_producto, fecha_inicial, fecha_final, function(err, movimientos_producto) {
 
@@ -123,7 +123,7 @@ Kardex.prototype.obtener_movimientos_producto = function(req, res) {
                         else {
                             // Seleccionar las Ordenes de Compras que estan Pendientes con ese producto
                             that.m_ordenes_compra.listar_ordenes_compra_pendientes_by_producto(empresa_id, codigo_producto, function(err, pendientes_ordenes_compra) {
-                              
+
                                 if (err)
                                     res.send(G.utils.r(req.url, 'Error Seleccionado Las Ordenes de Compra Pendientes', 500, {movimientos_producto: {}, pendientes_farmacias: {}, pendientes_clientes: {}, pendientes_ordenes_compra: {}}));
                                 else {
@@ -169,7 +169,7 @@ Kardex.prototype.obtener_movimientos_producto = function(req, res) {
                                                             res.send(G.utils.r(req.url, 'Error Seleccionado el detalle del Movimiento', 500, {movimientos_producto: {}, pendientes_farmacias: {}, pendientes_clientes: {}, pendientes_ordenes_compra: {}}));
                                                             return;
                                                         } else {
-                                                                                                                        
+
                                                             movimiento.detalle = detalle_movimiento[0];
 
                                                             if (--i === 0) {

@@ -84,7 +84,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
             $scope.lista_pedidos_farmacias = {
                 data: 'Empresa.getPedidosFarmacia()',
                 enableColumnResize: true,
-                enablehightlight:true,
+                enablehightlight: true,
                 columnDefs: [
                     {field: '', cellClass: "checkseleccion", width: "60",
                         cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)' ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 && row.entity.estado_actual_pedido != 5 || row.entity.estado_separacion'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
@@ -113,8 +113,8 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                 if (estado === 6) {
                     return estados[1];
                 }
-                
-                
+
+
                 return estados[estado];
             };
 

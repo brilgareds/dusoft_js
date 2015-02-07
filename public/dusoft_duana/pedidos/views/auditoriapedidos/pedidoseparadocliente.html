@@ -18,7 +18,7 @@
 
             </div>
         </div>
-   <!--Inicio Sección para modificar-->     
+        <!--Inicio Sección para modificar-->     
         <div class="panel-info col-sm-6 marginBottom5 paddingLeftZero">
             <div class="panel-body col-sm-12 marginBottom5">
                 <button ng-click="cerrar()" class="pull-right btn btn-default btn-xs" style="margin-right:15px"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>   
@@ -29,177 +29,177 @@
                 </div>
             </div>
         </div>
-   <!--Fin Sección para modificar-->
+        <!--Fin Sección para modificar-->
 
     </div>
 
     <div class="row paddingToptZero">
         <div class="col-sm-12 col-md-6 paddingRightZero">
-          <div class="panel panel-default marginBottom5">
-              
-            <div class="panel-heading">
-              <h4 class="h4MarginTopBottom">De: <a href="#">DUANA Y CIA LTDA</a></h4>
-            </div>
-              
-            <div class="panel-body">
-                
-                <table>
-                    <tr><th>NIT: </th><td>30199199-1</td></tr>
-                    <tr><th>Dirección: &nbsp;</th><td>Calle 9B No. 42 - 115</td></tr>
-                    <tr><th>Teléfono: </th><td>488 2020</td></tr>
-                </table>
+            <div class="panel panel-default marginBottom5">
+
+                <div class="panel-heading">
+                    <h4 class="h4MarginTopBottom">De: <a href="#">DUANA Y CIA LTDA</a></h4>
+                </div>
+
+                <div class="panel-body">
+
+                    <table>
+                        <tr><th>NIT: </th><td>30199199-1</td></tr>
+                        <tr><th>Dirección: &nbsp;</th><td>Calle 9B No. 42 - 115</td></tr>
+                        <tr><th>Teléfono: </th><td>488 2020</td></tr>
+                    </table>
+
+                </div>
 
             </div>
-              
-          </div>
         </div>
 
         <div class="col-sm-12 col-md-6 paddingLeftZero">
-          <div class="panel panel-default marginBottom5">
-            <div class="panel-heading">
-              <h4 class="h4MarginTopBottom">Hacia : <a href="#">{{::cliente.nombre_tercero}}</a></h4>
-            </div>
-            <div class="panel-body">
-                
-                <table>
-                    <tr><th>{{cliente.tipo_id_tercero}}: </th><td>{{::cliente.id}}</td></tr>
-                    <tr><th>Dirección: &nbsp;</th><td>{{::cliente.direccion_cliente}}</td></tr>
-                    <tr><th>Teléfono: </th><td>{{::cliente.telefono_cliente}}</td></tr>
-                </table>
+            <div class="panel panel-default marginBottom5">
+                <div class="panel-heading">
+                    <h4 class="h4MarginTopBottom">Hacia : <a href="#">{{::cliente.nombre_tercero}}</a></h4>
+                </div>
+                <div class="panel-body">
 
+                    <table>
+                        <tr><th>{{cliente.tipo_id_tercero}}: </th><td>{{::cliente.id}}</td></tr>
+                        <tr><th>Dirección: &nbsp;</th><td>{{::cliente.direccion_cliente}}</td></tr>
+                        <tr><th>Teléfono: </th><td>{{::cliente.telefono_cliente}}</td></tr>
+                    </table>
+
+                </div>
             </div>
-           </div>
         </div>
 
     </div> 
 
-    
+
     <div class="row"> <!-- / begin payment details section -->
         <div class="col-sm-12 col-md-12">
             <div class="span7" > 
                 <div class="panel panel-info marginBottom5">
-                    
-                  <div class="panel-heading">
-                    <h4 class="h4MarginTopBottom">Auditar</h4>
-                  </div>
-                    
-                  <div class="panel-body" >
-                    <div class="paddingRightZero">
-                         
-                        <div class="input-group navbar-form" ng-switch on="filtro.codigo_barras">
-                            <span class="checkcodigobarrascontenedor">
-                                <label style="margin-right:3px;">Busquedad por codigo de barras</label>
-                                <input-check ng-model="filtro.codigo_barras" ></input-check>
-                            </span>
 
-                            <input type="text" ng-switch-when="true" class="form-control pull-right" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, true)" ng-model="filtro.termino_busqueda" placeholder="Código Barras" name="srch-term" id="srch-term" />
+                    <div class="panel-heading">
+                        <h4 class="h4MarginTopBottom">Auditar</h4>
+                    </div>
 
-                            <div class="input-group-btn" ng-switch-when="true" >
-                                <button class="btn btn-default pull-right" type="submit" ng-click="onKeyDetalleDocumentoTemporalPress({which:13},true)" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0"><i class="glyphicon glyphicon-search"></i></button>
+                    <div class="panel-body" >
+                        <div class="paddingRightZero">
+
+                            <div class="input-group navbar-form" ng-switch on="filtro.codigo_barras">
+                                <span class="checkcodigobarrascontenedor">
+                                    <label style="margin-right:3px;">Busquedad por codigo de barras</label>
+                                    <input-check ng-model="filtro.codigo_barras" ></input-check>
+                                </span>
+
+                                <input type="text" ng-switch-when="true" class="form-control pull-right" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, true)" ng-model="filtro.termino_busqueda" placeholder="Código Barras" name="srch-term" id="srch-term" />
+
+                                <div class="input-group-btn" ng-switch-when="true" >
+                                    <button class="btn btn-default pull-right" type="submit" ng-click="onKeyDetalleDocumentoTemporalPress({which:13},true)" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0"><i class="glyphicon glyphicon-search"></i></button>
+                                </div>
+                                <input type="text" ng-switch-when="false" class="form-control pull-right" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, false)" ng-model="filtro.termino_busqueda" placeholder="Descripción Producto" name="srch-term" id="srch-term" />
+
+                                <div class="input-group-btn" ng-switch-when="false" >
+                                    <button class="btn btn-default pull-right" type="submit" ng-click="onKeyDetalleDocumentoTemporalPress({which:13},false)" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ><i class="glyphicon glyphicon-search"></i></button>
+                                </div>
+
                             </div>
-                            <input type="text" ng-switch-when="false" class="form-control pull-right" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, false)" ng-model="filtro.termino_busqueda" placeholder="Descripción Producto" name="srch-term" id="srch-term" />
-
-                            <div class="input-group-btn" ng-switch-when="false" >
-                                <button class="btn btn-default pull-right" type="submit" ng-click="onKeyDetalleDocumentoTemporalPress({which:13},false)" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ><i class="glyphicon glyphicon-search"></i></button>
+                            <div class="table-responsive" >
+                                <div class="auditarGrid grid-responsive"  ng-grid="detalle_pedido_separado_cliente"></div>
                             </div>
+                        </div>
 
-                        </div>
-                        <div class="table-responsive" >
-                            <div class="auditarGrid grid-responsive"  ng-grid="detalle_pedido_separado_cliente"></div>
-                        </div>
-                  </div>
-                    
+                    </div>
+                </div> <!-- / end contact details -->
+
+            </div>
+        </div> <!-- / end payment details section -->
+
+        <!-- End Código desplazado -->
+
+        <div class="col-sm-12 col-md-12" ng-if="productosNoAuditados.length > 0">
+
+            <div class="panel panel-info marginBottom5"> <!-- / begin banking details -->
+
+                <div class="panel-heading">
+                    <h4 class="h4MarginTopBottom">No auditados</h4>
                 </div>
-            </div> <!-- / end contact details -->
 
-        </div>
-    </div> <!-- / end payment details section -->
-      
-    <!-- End Código desplazado -->
-
-     <div class="col-sm-12 col-md-12" ng-if="productosNoAuditados.length > 0">
-          
-        <div class="panel panel-info marginBottom5"> <!-- / begin banking details -->
-
-            <div class="panel-heading">
-              <h4 class="h4MarginTopBottom">No auditados</h4>
-            </div>
-
-            <div class="panel-body paddingRightZero">
+                <div class="panel-body paddingRightZero">
 
 
-                <div class="auditadosGrid" ng-grid="lista_productos_no_auditados_clientes"></div>
+                    <div class="auditadosGrid" ng-grid="lista_productos_no_auditados_clientes"></div>
 
-            </div>
-        </div>
-          
-    </div>   
-
-     <div class="col-sm-12 col-md-12" ng-if="productosPendientes.length > 0">
-          
-        <div class="panel panel-info marginBottom5"> 
-
-            <div class="panel-heading">
-              <h4 class="h4MarginTopBottom">Pendientes</h4>
-            </div>
-
-            <div class="panel-body paddingRightZero">
-
-
-                <div class="auditadosGrid" ng-grid="lista_productos_pendientes_clientes"></div>
-
-            </div>
-        </div>
-          
-    </div> 
-    
-     <div class="col-sm-12 col-md-12" ng-if="cajasSinCerrar.length > 0">
-          
-        <div class="panel panel-info marginBottom5"> 
-
-            <div class="panel-heading">
-              <h4 class="h4MarginTopBottom">Cajas sin cerrar</h4>
-            </div>
-
-            <div class="panel-body paddingRightZero">
-
-                <div class="table-responsive" >
-                     <div class="auditadosGrid grid-responsive" ng-grid="lista_cajas_no_cerradas_clientes"></div>
                 </div>
             </div>
-        </div>
-          
-    </div> 
-    
-    <!-- ul>
-        <li ng-repeat="item in DocumentoTemporal.getPedido().getProductos()">
-              {{item.codigo_producto}}
-        </li>
-        
-    </ul-->
-    
 
-    <div class="col-sm-12 col-md-12">
-      
-        <div class="panel panel-info marginBottom5"> <!-- / begin banking details -->
+        </div>   
 
-            <div class="panel-heading">
-              <h4 class="h4MarginTopBottom">Auditados</h4>
+        <div class="col-sm-12 col-md-12" ng-if="productosPendientes.length > 0">
+
+            <div class="panel panel-info marginBottom5"> 
+
+                <div class="panel-heading">
+                    <h4 class="h4MarginTopBottom">Pendientes</h4>
+                </div>
+
+                <div class="panel-body paddingRightZero">
+
+
+                    <div class="auditadosGrid" ng-grid="lista_productos_pendientes_clientes"></div>
+
+                </div>
             </div>
 
-            <div class="panel-body paddingRightZero">
+        </div> 
 
-                 <div class="table-responsive" >
-                    <div class="auditadosGrid grid-responsive" ng-grid="lista_productos_auditados_clientes"></div>
-                 </div>
+        <div class="col-sm-12 col-md-12" ng-if="cajasSinCerrar.length > 0">
 
+            <div class="panel panel-info marginBottom5"> 
+
+                <div class="panel-heading">
+                    <h4 class="h4MarginTopBottom">Cajas sin cerrar</h4>
+                </div>
+
+                <div class="panel-body paddingRightZero">
+
+                    <div class="table-responsive" >
+                        <div class="auditadosGrid grid-responsive" ng-grid="lista_cajas_no_cerradas_clientes"></div>
+                    </div>
+                </div>
             </div>
-        </div>
-          
-    </div>    
 
-    <div class="col-sm-12 row marginBottom5">
-        <button type="submit" class="btn btn-accion btn-primary pull-right" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ng-click="generarDocumento(DocumentoTemporal)">Generar Documento</button>    
+        </div> 
+
+        <!-- ul>
+            <li ng-repeat="item in DocumentoTemporal.getPedido().getProductos()">
+                  {{item.codigo_producto}}
+            </li>
+            
+        </ul-->
+
+
+        <div class="col-sm-12 col-md-12">
+
+            <div class="panel panel-info marginBottom5"> <!-- / begin banking details -->
+
+                <div class="panel-heading">
+                    <h4 class="h4MarginTopBottom">Auditados</h4>
+                </div>
+
+                <div class="panel-body paddingRightZero">
+
+                    <div class="table-responsive" >
+                        <div class="auditadosGrid grid-responsive" ng-grid="lista_productos_auditados_clientes"></div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>    
+
+        <div class="col-sm-12 row marginBottom5">
+            <button type="submit" class="btn btn-accion btn-primary pull-right" ng-disabled="DocumentoTemporal.bodegas_doc_id == 0" ng-click="generarDocumento(DocumentoTemporal)">Generar Documento</button>    
+        </div>
+
     </div>
-
-</div>

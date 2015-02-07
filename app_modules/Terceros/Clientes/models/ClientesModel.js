@@ -58,7 +58,7 @@ ClientesModel.prototype.listar_clientes = function(empresa_id, termino_busqueda,
 		a.nombre_tercero,\
 		a.tipo_bloqueo_id,\
 		c.descripcion as bloqueo,\
-		COALESCE(d.tipo_id_tercero,'0') as contrato_cliente_id,\
+		COALESCE(d.contrato_cliente_id,0) as contrato_cliente_id,\
 		g.pais,\
 		f.departamento,\
 		municipio\

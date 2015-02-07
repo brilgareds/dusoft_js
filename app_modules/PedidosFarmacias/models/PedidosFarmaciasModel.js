@@ -129,6 +129,19 @@ PedidosFarmaciasModel.prototype.insertar_detalle_pedido_farmacia_temporal = func
 
 };
 
+PedidosFarmaciasModel.prototype.buscar_usuario_bloqueo = function(codigo_temporal, callback) {
+
+    var sql = " SELECT b.nombre, b.usuario_id\
+                FROM solicitud_pro_a_bod_prpal_tmp a\
+                INNER JOIN system_usuarios b ON a.usuario_id = b.usuario_id\
+                WHERE a.soli_a_bod_prpal_tmp_id = $1";
+
+    G.db.query(sql, [codigo_temporal], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+
+};
+
 PedidosFarmaciasModel.prototype.consultar_pedido_farmacia_temporal = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback) {
 
     var sql = " SELECT farmacia_id, centro_utilidad, bodega, empresa_destino, centro_destino, bogega_destino, observacion, usuario_id\

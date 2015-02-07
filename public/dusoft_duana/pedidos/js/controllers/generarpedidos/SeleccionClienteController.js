@@ -120,6 +120,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
             that.crearCliente = function(obj) {
                 
+                //console.log(">>>>>> Seleccion Cliente - Datos Creación Cliente: ",obj);
+                
                 var cliente = ClientePedido.get(
                                     obj.nombre_tercero,  //nombre_tercero
                                     obj.direccion,       //direccion
@@ -128,11 +130,12 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                     obj.telefono         //telefono
                                 );
                 
-                cliente.setIdentificacion();                //identificacion = tipo_id_tercero + id
-                cliente.setPais(obj.pais);                  //pais
-                cliente.setDepartamento(obj.departamento);  //departamento
-                cliente.setMunicipio(obj.municipio);        //municipio
-                cliente.setUbicacion();                     //ubicacion = pais + departamento + municipio
+                cliente.setIdentificacion();                    //identificacion = tipo_id_tercero + id
+                cliente.setPais(obj.pais);                      //pais
+                cliente.setDepartamento(obj.departamento);      //departamento
+                cliente.setMunicipio(obj.municipio);            //municipio
+                cliente.setUbicacion();                         //ubicacion = pais + departamento + municipio
+                cliente.setContratoId(obj.contrato_cliente_id); //contrato_id
 
                 return cliente;
             };

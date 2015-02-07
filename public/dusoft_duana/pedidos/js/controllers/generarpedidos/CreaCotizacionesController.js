@@ -159,6 +159,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 //console.log(">>>>> Evento: ", event);
 
                 $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setCliente(data);
+                
+                //console.log(">>>>>> DATOS DEL CLIENTE: ", $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente());
 
                 if ($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().id !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().nombre_tercero != ''
                     && $scope.rootCreaCotizaciones.seleccion_vendedor != 0)
@@ -245,7 +247,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             $scope.onRowClickSelectProducto = function(tipo_cliente) {
                 $scope.slideurl = "views/generarpedidos/seleccionproductocliente.html?time=" + new Date().getTime();
-                $scope.$emit('mostrarseleccionproducto', tipo_cliente);
+                
+                var cliente = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente();
+                $scope.$emit('mostrarseleccionproducto', tipo_cliente, cliente);
 
                 $scope.$broadcast('cargarGridSeleccionadoSlide', $scope.rootCreaCotizaciones.listado_productos);
             };

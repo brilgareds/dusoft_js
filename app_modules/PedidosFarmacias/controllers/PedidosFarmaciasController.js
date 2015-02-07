@@ -1103,6 +1103,43 @@ PedidosFarmacias.prototype.ingresarDetallePedidoTemporal = function(req, res) {
 
 };
 
+PedidosFarmacias.prototype.buscarUsuarioBloqueo = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.usuario_bloqueo === undefined || args.usuario_bloqueo.farmacia_id === undefined || args.usuario_bloqueo.centro_utilidad_id === undefined
+        || args.usuario_bloqueo.codigo_producto === undefined) {
+        res.send(G.utils.r(req.url, 'farmacia_id, centro_utilidad_id o codigo_producto no están definidos', 404, {}));
+        return;
+    }
+    
+    if (args.usuario_bloqueo.farmacia_id === '' || args.usuario_bloqueo.centro_utilidad_id === '' || args.usuario_bloqueo.codigo_producto === '') {
+        res.send(G.utils.r(req.url, 'farmacia_id, centro_utilidad_id o codigo_producto están vacios', 404, {}));
+        return;
+    }
+
+    var farmacia_id = args.usuario_bloqueo.farmacia_id;
+    var centro_utilidad_id = args.usuario_bloqueo.centro_utilidad_id;
+    var codigo_producto = args.usuario_bloqueo.codigo_producto;
+    var codigo_temporal = farmacia_id + centro_utilidad_id + codigo_producto;
+    
+    that.m_pedidos_farmacias.buscar_usuario_bloqueo(codigo_temporal, function(err, rows, result) {
+        
+        if (err) {
+            res.send(G.utils.r(req.url, 'Se ha Generado un Error en la consulta del usuario', 500, {error: err}));
+            return;
+        }
+        else
+        {
+            res.send(G.utils.r(req.url, 'Consulta del usuario exitosa!', 200, {datos_usuario: rows}));
+            return;
+        }
+    });    
+
+};
+
 PedidosFarmacias.prototype.consultarPedidoFarmaciaTemporal = function(req, res) {
 
     var that = this;

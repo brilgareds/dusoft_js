@@ -8,6 +8,7 @@ define(["angular", "js/models", "includes/classes/Cliente"], function(angular, m
             
             this.identificacion;
             this.ubicacion;
+            this.contrato_id;
         }
 
         this.get = function(nombre, direccion, tipo_id, id, telefono) {
@@ -31,6 +32,14 @@ define(["angular", "js/models", "includes/classes/Cliente"], function(angular, m
         ClientePedido.prototype.getUbicacion = function() {
             return this.ubicacion;
         };
+        
+        ClientePedido.prototype.setContratoId = function(contrato_id) {
+            this.contrato_id = contrato_id;
+        }
+        
+        ClientePedido.prototype.getContratoId = function() {
+            return this.contrato_id;
+        }
         
         return this;
 

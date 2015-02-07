@@ -152,6 +152,11 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.actualizarRegistroEncabezadoTemporal(req, res);
     });
     
+    //Buscar Usuario Bloqueo
+    app.post('/api/PedidosFarmacias/buscarUsuarioBloqueo', function(req, res) {
+        c_pedidos_farmacias.buscarUsuarioBloqueo(req, res);
+    });    
+    
     // Listar productos
 //    app.get('/listarProductos', function(req, res) {
 //        c_pedidos_farmacias.listar_productos(req, res);

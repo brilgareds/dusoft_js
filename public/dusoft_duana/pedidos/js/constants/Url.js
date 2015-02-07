@@ -70,7 +70,9 @@ define(["angular"], function(angular) {
                 'IMPRIMIR_PEDIDO_FARMACIA':BASE_URL+'/PedidosFarmacias/imprimirPedidoFarmacia',
                 'ACTUALIZAR_ESTADO_PEDIDO_FARMACIA':BASE_URL+'/PedidosFarmacias/actualizarEstadoActualPedido',
                 'LISTADO_PEDIDOS_TEMPORALES_FARMACIAS':BASE_URL+'/PedidosFarmacias/listarPedidosTemporalesFarmacias',
-                'ACTUALIZAR_ENCABEZADO_TEMPORAL_PEDIDO_FARMACIA':BASE_URL+'/PedidosFarmacias/actualizarRegistroEncabezadoTemporal'
+                'ACTUALIZAR_ENCABEZADO_TEMPORAL_PEDIDO_FARMACIA':BASE_URL+'/PedidosFarmacias/actualizarRegistroEncabezadoTemporal',
+                'LISTAR_PRODUCTOS_CLIENTES' :BASE_URL+'/Productos/listarProductosClientes',
+                'BUSCAR_USUARIO_BLOQUEO' :BASE_URL+'/PedidosFarmacias/buscarUsuarioBloqueo'
 	    },
 	    'TERCEROS':{
 	    	'LISTAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/listar",

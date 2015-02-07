@@ -11,9 +11,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         function($scope, $rootScope, Request, EmpresaPedido, FarmaciaVenta, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService, $modal) {
 
 
-            console.log('>>>>>>>>>>>>>>>>>>>>>>>>>')
-            console.log(socket)
-            console.log('>>>>>>>>>>>>>>>>>>>>>>>>>')
+            console.log('>>>>>>>>>>>>>>>>>>>>>>>>>');
+            console.log(socket);
+            console.log('>>>>>>>>>>>>>>>>>>>>>>>>>');
 
 
             var that = this;

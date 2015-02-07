@@ -549,6 +549,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     if (data.status === 200) {
 
                         //crear detalle en el objeto
+                        
+                        console.log(">>>>>>>>>>>>>>>>> DATA DETALLE PEDIDO: ", data);
+                        
                         data.obj.detalle_pedido.forEach(function(registro){
 
                             var producto = ProductoPedido.get(
@@ -640,7 +643,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         
                         //Crea empresa - setCodigo
                         $scope.rootCreaPedidoFarmacia.Empresa.setCodigo(de_empresa_id);
-                        
                         
                         var pedido = PedidoVenta.get();
                         

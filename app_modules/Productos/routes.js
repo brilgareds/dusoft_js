@@ -24,4 +24,9 @@ module.exports = function(app, di_container) {
         c_productos.listarTipoProductos(req, res);
     });
     
+    //Listar Productos Clientes
+    app.post('/api/Productos/listarProductosClientes', function(req, res) {
+        c_productos.listarProductosClientes(req, res);
+    });
+    
 };

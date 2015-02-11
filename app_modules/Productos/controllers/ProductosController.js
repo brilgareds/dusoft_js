@@ -38,7 +38,7 @@ Productos.prototype.listar_productos = function(req, res) {
     var tipo_producto = '0';
 
     if(args.productos.tipo_producto !== undefined){
-        var tipo_producto = args.productos.tipo_producto;
+        tipo_producto = args.productos.tipo_producto;
     }
     /* Fin - Modificación para Tipo Producto */
 
@@ -54,6 +54,56 @@ Productos.prototype.listar_productos = function(req, res) {
     });
 };
 
+/**/
+Productos.prototype.listarProductosClientes = function(req, res) {
+    
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.productos === undefined || args.productos.termino_busqueda === undefined || args.productos.empresa_id === undefined || args.productos.centro_utilidad_id === undefined || args.productos.bodega_id === undefined || args.productos.termino_busqueda === undefined || args.productos.pagina_actual === undefined) {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id, bodega_id, termino_busqueda o  pagina_actual no estan definidos', 404, {}));
+        return;
+    }
+
+    if (args.productos.empresa_id === '' || args.productos.centro_utilidad_id === '' || args.productos.bodega_id === '') {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacíos', 404, {}));
+        return;
+    }
+    
+    if (args.productos.pagina_actual === '') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
+        return;
+    }
+
+    var empresa_id = args.productos.empresa_id;
+    var centro_utilidad_id = args.productos.centro_utilidad_id;
+    var bodega_id = args.productos.bodega_id;
+    var contrato_cliente_id = args.productos.contrato_cliente_id;
+    var termino_busqueda = args.productos.termino_busqueda;
+    var pagina_actual = args.productos.pagina_actual;
+
+    /* Inicio - Modificación para Tipo Producto */
+    var tipo_producto = '0';
+
+    if(args.productos.tipo_producto !== undefined){
+        tipo_producto = args.productos.tipo_producto;
+    }
+    /* Fin - Modificación para Tipo Producto */
+
+    this.m_productos.listar_productos_clientes(empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pagina_actual, tipo_producto, function(err, lista_productos) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Listado de Productos', 500, {lista_productos: {}}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Listado de Productos', 200, {lista_productos: lista_productos}));
+            return;
+        }
+    });
+};
+
+/**/
 
 Productos.prototype.consultarExistenciasProducto = function(req, res) {
 

@@ -89,6 +89,126 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
 
 };
 
+/**/
+// Autor:      : Alexander López Guerrero
+// Descripcion : Lista productos
+// Calls       : Productos -> ProductosController -> listarProductosClientes();
+// 
+ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pagina, tipo_producto, callback) {
+    
+    var where_tipo = "";
+    var array_parametros = [];
+
+    if(tipo_producto !== '0') {
+
+            where_tipo = " and b.tipo_producto_id = $6 ";
+            array_parametros = [empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, "%" + termino_busqueda + "%", tipo_producto];
+    }
+    else {
+        array_parametros = [empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, "%" + termino_busqueda + "%"];
+    }
+    
+    var sql = 
+        "select " +
+        "   a.codigo_producto, " +
+        "   a.precio_regulado, " +
+        "   fc_descripcion_producto(a.codigo_producto) as nombre_producto, " +
+        "   btrim(fc_precio_producto_contrato_cliente($4, a.codigo_producto, $1), '@') as precio_contrato, " +
+        "   a.existencia as existencia_total, " +
+        "   a.costo_anterior, " +
+        "   a.costo, " +
+        "   CASE WHEN a.costo > 0 THEN ROUND (((a.precio_venta/a.costo) - 1) * 100) ELSE NULL END as porcentaje_utilidad, " +
+        "   a.costo_penultima_compra, " +
+        "   (a.costo_ultima_compra)/((COALESCE(b.porc_iva,0)/100)+1) as costo_ultima_compra, " +
+        "   a.precio_venta_anterior, " +
+        "   a.precio_venta, " +
+        "   a.precio_minimo, " +
+        "   a.precio_maximo, " +
+        "   SUM(a.existencia) as existencia, " +
+        "   a.sw_vende, " +
+        "   a.grupo_contratacion_id, " +
+        "   a.nivel_autorizacion_id, " +
+        "   b.sw_requiereautorizacion_despachospedidos, " +
+        "   SUM(sq_b.cantidad_pendiente) as cantidad_pendiente_final, " +
+        "   ((SUM(a.existencia)-SUM(COALESCE(sq_b.cantidad_pendiente,0)))-SUM(COALESCE(sq_c.total_cantidad,0))) as total_disponible, " +
+        "   CASE " +
+        "       WHEN ((SUM(a.existencia)-SUM(COALESCE(sq_b.cantidad_pendiente,0)))-SUM(COALESCE(sq_c.total_cantidad,0))) > 0 " +
+        "       THEN ((SUM(a.existencia)-SUM(COALESCE(sq_b.cantidad_pendiente,0)))-SUM(COALESCE(sq_c.total_cantidad,0))) " +
+        "       ELSE '0' " +
+        "   END as disponible, " +
+        "   b.estado, " +
+        "   b.sw_regulado, " +
+        "   b.tipo_producto_id, " +
+        "   b.unidad_id, " +
+        "   b.codigo_invima, " +
+        "   b.vencimiento_codigo_invima, " +
+        "   b.codigo_cum, " +
+        "   b.contenido_unidad_venta, " +
+        "   b.sw_control_fecha_vencimiento, " +
+        "   b.grupo_id, " +
+        "   b.clase_id, " +
+        "   b.subclase_id, " +
+        "   b.porc_iva, " +
+        "   b.tipo_producto_id, " +
+        "from " +
+        "    inventarios a " +
+        "    inner join inventarios_productos b on a.codigo_producto = b.codigo_producto " +
+        "        and a.empresa_id = $1 " +
+        "    left join ( " +
+        "        select " +
+        "            sq_a.codigo_producto, " +
+        "            sq_a.cantidad_pendiente " +
+        "        from ( " +
+        "            select " +
+        "                d.codigo_producto, " +
+        "                sum(d.cantidad_pendiente) as cantidad_pendiente " +
+        "            from " +
+        "                solicitud_productos_a_bodega_principal c " +
+        "                inner join solicitud_productos_a_bodega_principal_detalle d on d.solicitud_prod_a_bod_ppal_id = c.solicitud_prod_a_bod_ppal_id " +
+        "                    and c.empresa_destino = $1 " +
+        "                    --and   c.sw_despacho = '0' " +
+        "                    and d.cantidad_pendiente > 0 " +
+        "            group by 1 " +
+        "        ) sq_a " +
+        "    ) sq_b on a.codigo_producto = sq_b.codigo_producto " +
+        "    left join ( " +
+        "        select " +
+        "            f.codigo_producto, " +
+        "            sum((f.numero_unidades - f.cantidad_despachada)) as total_cantidad " +
+        "        from " +
+        "            ventas_ordenes_pedidos as e " +
+        "            inner join ventas_ordenes_pedidos_d as f on e.pedido_cliente_id = f.pedido_cliente_id " +
+        "                and e.estado = '1' " +
+        "                and e.empresa_id = $1 " +
+        "                and f.numero_unidades <> f.cantidad_despachada " +
+        "        group by f.codigo_producto " +
+        "    ) sq_c on a.codigo_producto = sq_c.codigo_producto " +
+        "    inner join inv_subclases_inventarios g on b.subclase_id = g.subclase_id " +
+        "        and b.grupo_id = g.grupo_id " +
+        "        and b.clase_id = g.clase_id " +
+        "    inner join inv_clases_inventarios h on b.grupo_id = h.grupo_id " +
+        "        and b.clase_id = h.clase_id " +
+        "    inner join existencias_bodegas i on a.codigo_producto = i.codigo_producto " +
+        "where " +
+        "    i.empresa_id = $1 " +
+        "    and i.centro_utilidad = $2 " +
+        "    and i.bodega = $3 " +
+        "    and ( " +
+        "        a.codigo_producto ilike $5 " +
+        "        or fc_descripcion_producto(a.codigo_producto) ilike $5 " +
+        "        or b.codigo_cum  ilike $5 " +
+        "    ) " +
+        where_tipo +
+        "order by 3 asc";
+        
+
+    G.db.pagination(sql, array_parametros, pagina, G.settings.limit, function(err, rows, result) {
+        callback(err, rows);
+    });
+
+};
+/**/
+
 // Autor:      : Camilo Orozco 
 // Descripcion : Consultar stock producto o existencias empresa de un producto
 // Calls       : Pedidos -> PedidosModel -> calcular_disponibilidad_producto();

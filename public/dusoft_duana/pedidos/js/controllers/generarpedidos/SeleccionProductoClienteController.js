@@ -7,40 +7,19 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
         '$scope', '$rootScope', 'Request',
         'EmpresaPedido', 'ClientePedido', 'PedidoVenta',
         'API', "socket", "AlertService",
-        '$state',
+        '$state', 'Usuario',
 
-        function($scope, $rootScope, Request, Empresa, Cliente, PedidoVenta, API, socket, AlertService, $state) {
+        function($scope, $rootScope, Request, EmpresaPedido, ClientePedido, PedidoVenta, API, socket, AlertService, $state, Usuario) {
 
-            //$scope.Empresa = Empresa;
             
-//            $scope.session = {
-//                usuario_id: Usuario.usuario_id,
-//                auth_token: Usuario.token
-//            };
-
-            /*$scope.rootSeleccionProductoCliente = {};
-
-            $scope.rootSeleccionProductoCliente.paginas = 0;
-            $scope.rootSeleccionProductoCliente.items = 0;
-            $scope.rootSeleccionProductoCliente.termino_busqueda = "";
-            $scope.rootSeleccionProductoCliente.ultima_busqueda = "";
-            $scope.rootSeleccionProductoCliente.paginaactual = 1;
-            //$scope.numero_pedido = "";
-            //$scope.obj = {};
-            $scope.rootSeleccionProductoCliente.listado_productos = [];
-            $scope.rootSeleccionProductoCliente.listado_productos_seleccionados = [];*/
-
-//            $scope.lista_productos = {};
-//            $scope.lista_productos_seleccionados = {};
-            
-            /*$scope.rootSeleccionProductoCliente.tipo_cliente = 1;*/
-            //$scope.tipo_boton = "success";
             
             $scope.$on('cargarGridSeleccionadoSlide', function(event, mass) {
-                //console.log("Recibimos la GRID del PADRE: ",mass)
+                
+                console.log("Recibimos la GRID del PADRE: ",mass)
                 $scope.rootSeleccionProductoCliente.listado_productos_seleccionados = mass;
                 //$scope.rootSeleccionProductoCliente.listado_productos = [];
                 //alert("Recibe Grid Padre");
+                
             });
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
@@ -51,16 +30,18 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 $scope.rootSeleccionProductoCliente = {};
             };
             
-            $rootScope.$on("mostrarseleccionproducto", function(e, datos) {
+            $rootScope.$on("mostrarseleccionproducto", function(e, tipo_cliente, cliente) {
 
                 $scope.rootSeleccionProductoCliente = {};
                 
-                $scope.rootSeleccionProductoCliente.tipo_cliente = datos;
+                $scope.rootSeleccionProductoCliente.tipo_cliente = tipo_cliente;
+                
+                $scope.rootSeleccionProductoCliente.cliente = cliente;
 
                 $scope.rootSeleccionProductoCliente.paginas = 0;
                 $scope.rootSeleccionProductoCliente.items = 0;
                 $scope.rootSeleccionProductoCliente.termino_busqueda = "";
-                $scope.rootSeleccionProductoCliente.ultima_busqueda = "";
+                $scope.rootSeleccionProductoCliente.ultima_busqueda = {};
                 $scope.rootSeleccionProductoCliente.paginaactual = 1;
                 //$scope.numero_pedido = "";
                 //$scope.obj = {};
@@ -72,6 +53,34 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
                 $scope.buscarSeleccionProducto("");
             });
+            
+            /**/
+            $scope.obtenerParametros = function() {
+
+                //valida si cambio el termino de busqueda
+                if ($scope.rootSeleccionProductoCliente.ultima_busqueda.termino_busqueda !== $scope.rootSeleccionProductoFarmacia.termino_busqueda) {
+                    $scope.rootSeleccionProductoCliente.paginaactual = 1;
+                }
+
+                var obj = {
+                    session: $scope.rootSeleccionProductoCliente.session,
+                    data: {
+                        productos: {
+                            termino_busqueda: $scope.rootSeleccionProductoCliente.termino_busqueda,
+                            pagina_actual: $scope.rootSeleccionProductoCliente.paginaactual,
+                            empresa_id: '03',//$scope.rootSeleccionProductoCliente.de_empresa_id,
+                            centro_utilidad_id: '1 ',//$scope.rootSeleccionProductoCliente.de_centro_utilidad_id,
+                            bodega_id: '03',//$scope.rootSeleccionProductoCliente.de_bodega_id,
+                            tipo_producto: '', //$scope.rootSeleccionProductoCliente.tipoProducto,
+                            contrato_cliente_id: $scope.rootSeleccionProductoCliente.cliente.contrato_cliente_id
+                        }
+                    }
+                };
+
+                return obj;
+            };                        
+
+            /**/
 
             $scope.buscarSeleccionProducto = function(termino, paginando) {
 

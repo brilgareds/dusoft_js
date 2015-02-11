@@ -5,11 +5,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
     var fo = controllers.controller('SeleccionClienteController', [
         '$scope', '$rootScope', 'Request',
-        'EmpresaPedido', 'ClientePedido', 'PedidoVenta',
-        'API', "socket", "AlertService",
-        '$state', 'Usuario',
+        'EmpresaPedido', 'ClientePedido', 'API',
+        "AlertService", 'Usuario',
 
-        function($scope, $rootScope, Request, EmpresaPedido, ClientePedido, PedidoVenta, API, socket, AlertService, $state, Usuario) {
+        function($scope, $rootScope, Request, EmpresaPedido, ClientePedido, API, AlertService, Usuario) {
 
             $scope.expreg = new RegExp("^[0-9]*$");
 
@@ -121,6 +120,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
             that.crearCliente = function(obj) {
                 
+                //console.log(">>>>>> Seleccion Cliente - Datos Creación Cliente: ",obj);
+                
                 var cliente = ClientePedido.get(
                                     obj.nombre_tercero,  //nombre_tercero
                                     obj.direccion,       //direccion
@@ -129,11 +130,12 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                     obj.telefono         //telefono
                                 );
                 
-                cliente.setIdentificacion();                //identificacion = tipo_id_tercero + id
-                cliente.setPais(obj.pais);                  //pais
-                cliente.setDepartamento(obj.departamento);  //departamento
-                cliente.setMunicipio(obj.municipio);        //municipio
-                cliente.setUbicacion();                     //ubicacion = pais + departamento + municipio
+                cliente.setIdentificacion();                    //identificacion = tipo_id_tercero + id
+                cliente.setPais(obj.pais);                      //pais
+                cliente.setDepartamento(obj.departamento);      //departamento
+                cliente.setMunicipio(obj.municipio);            //municipio
+                cliente.setUbicacion();                         //ubicacion = pais + departamento + municipio
+                cliente.setContratoId(obj.contrato_cliente_id); //contrato_id
 
                 return cliente;
             };
@@ -177,13 +179,12 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 $scope.$emit('cargarClienteSlide', row.entity);
                     
                 $scope.$emit('cerrarseleccioncliente', {animado:true});
-               
-                    //$scope.listado_clientes = [];
-                //return
+                
+                //Se inserta el objeto cliente en el objeto Empresa
+                //$scope.rootSeleccionCliente.Empresa.getPedidoSeleccionado().setCliente(row.entity);
+                
                 
             };
-
-
 
             //Método para liberar Memoria de todo lo construido en ésta clase
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
@@ -197,7 +198,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             //eventos de widgets
             $scope.onKeySeleccionClientePress = function(ev) {
-                 //if(!$scope.buscarVerPedidosFarmacias($scope.DocumentoTemporal.bodegas_doc_id)) return;
 
                  if (ev.which == 13) {
                      $scope.onBuscarSeleccionCliente($scope.obtenerParametros(),"");
@@ -213,12 +213,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                  $scope.rootSeleccionCliente.paginaactual++;
                  $scope.onBuscarSeleccionCliente($scope.obtenerParametros(), true);
             };
-
-            $scope.valorSeleccionado = function() {
-
-
-            };
-            
 
         }]);
 });

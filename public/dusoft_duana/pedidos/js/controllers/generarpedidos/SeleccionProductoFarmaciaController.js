@@ -190,7 +190,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
             /* Por el momento se dascarta ésta función */
-            that.crearProducto = function(obj) {
+            /*that.crearProducto = function(obj) {
 
                 var producto = {
                     codigo_producto: obj.codigo_producto,
@@ -207,7 +207,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 };
 
                 return producto;
-            };
+            };*/
 
             /*  Construcción de Grid    */
 
@@ -595,7 +595,96 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                         console.log("Registro Insertado Exitosamente en Detalle: ", data.msj);
                                     }
                                     else {
-                                        console.log(data.msj);
+                                        console.log("No se pudo Incluir éste produto: ",data.msj);
+                                        
+                                        $scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().lista_productos.splice(0, 1);
+
+                                        var obj_bloqueo = {
+                                            session: $scope.rootSeleccionProductoFarmacia.session,
+                                            data: {
+                                                usuario_bloqueo: {
+                                                    farmacia_id: $scope.rootSeleccionProductoFarmacia.para_empresa_id.trim(),
+                                                    centro_utilidad_id: $scope.rootSeleccionProductoFarmacia.para_centro_utilidad_id.trim(),
+                                                    codigo_producto: row.entity.codigo_producto.trim()
+                                                }
+                                            }
+                                        };
+                                        
+                                        var url_bloqueo = API.PEDIDOS.BUSCAR_USUARIO_BLOQUEO;
+                                        
+                                        Request.realizarRequest(url_bloqueo, "POST", obj_bloqueo, function(data) {
+
+                                            if (data.status === 200) {
+
+                                                console.log("Consulta de usuario bloqueante exitosa: ", data.msj);
+
+                                                var template = ' <div class="modal-header">\
+                                                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                                                    <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                                                </div>\
+                                                                <div class="modal-body">\
+                                                                    <h4>El producto con código '+row.entity.codigo_producto+' está bloqueado por el usuario '+
+                                                                    '('+data.obj.datos_usuario[0].usuario_id+') '+data.obj.datos_usuario[0].nombre+' </h4> \
+                                                                </div>\
+                                                                <div class="modal-footer">\
+                                                                    <button class="btn btn-warning" ng-click="close()">Aceptar</button>\
+                                                                </div>';
+
+                                                controller = function($scope, $modalInstance) {
+
+                                                    $scope.close = function() {
+                                                        $modalInstance.close();
+                                                    };
+                                                };
+
+                                                $scope.opts = {
+                                                    backdrop: true,
+                                                    backdropClick: true,
+                                                    dialogFade: false,
+                                                    keyboard: true,
+                                                    template: template,
+                                                    scope: $scope,
+                                                    controller: controller
+                                                };
+
+                                                var modalInstance = $modal.open($scope.opts);
+
+                                            }
+                                            else {
+                                                console.log("Consulta de usuario bloqueante fallida: ", data.msj);
+                                                
+                                                var template = ' <div class="modal-header">\
+                                                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                                                    <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                                                </div>\
+                                                                <div class="modal-body">\
+                                                                    <h4>El producto con código '+row.entity.codigo_producto+' está bloqueado por otro usuario </h4> \
+                                                                </div>\
+                                                                <div class="modal-footer">\
+                                                                    <button class="btn btn-warning" ng-click="close()">Aceptar</button>\
+                                                                </div>';
+
+                                                controller = function($scope, $modalInstance) {
+
+                                                    $scope.close = function() {
+                                                        $modalInstance.close();
+                                                    };
+                                                };
+
+                                                $scope.opts = {
+                                                    backdrop: true,
+                                                    backdropClick: true,
+                                                    dialogFade: false,
+                                                    keyboard: true,
+                                                    template: template,
+                                                    scope: $scope,
+                                                    controller: controller
+                                                };
+
+                                                var modalInstance = $modal.open($scope.opts);
+                                            }
+                                        });
+
                                     }
 
                                 });

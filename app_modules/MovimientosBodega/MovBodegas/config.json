@@ -12,7 +12,7 @@
                 "movimientos_bodegas_model": {
                     "module": "MovimientosBodega/MovBodegas",
                     "model": "MovBodegasModel",
-                    "alias": "m_movientos_bodegas"
+                    "alias": "m_movimientos_bodegas"
                 }
             }],
         "events": [],

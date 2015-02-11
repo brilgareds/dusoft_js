@@ -5,7 +5,7 @@ var MovimientosBodegasModel = function() {
 // Consultar identificador del movimieto temporal
 MovimientosBodegasModel.prototype.obtener_identificicador_movimiento_temporal = function(usuario_id, callback) {
 
-    var sql = "SELECT (COALESCE(MAX(doc_tmp_id),0) + 1) as doc_tmp_id FROM inv_bodegas_movimiento_tmp WHERE usuario_id = $1; "
+    var sql = "SELECT (COALESCE(MAX(doc_tmp_id),0) + 1) as doc_tmp_id FROM inv_bodegas_movimiento_tmp WHERE usuario_id = $1; ";
 
     G.db.query(sql, [usuario_id], function(err, rows, result) {
         var movimiento_temporal_id = rows[0].doc_tmp_id;
@@ -376,6 +376,76 @@ MovimientosBodegasModel.prototype.crear_documento = function(documento_temporal_
 };
 
 
+MovimientosBodegasModel.prototype.obtenerEncabezadoDocumentoDespacho = function(numero, prefijo, empresa, callback){
+    var sql = "select a.*, d.inv_tipo_movimiento as tipo_movimiento , d.descripcion as tipo_clase_documento,\
+                c.descripcion, e.pedido_cliente_id as numero_pedido,\
+                c.tipo_doc_general_id as tipo_doc_bodega_id,\
+                f.nombre as nombre_usuario\
+                from  inv_bodegas_movimiento as a\
+                inner join inv_bodegas_documentos as b on  a.documento_id = b.documento_id AND a.empresa_id = b.empresa_id AND a.centro_utilidad = b.centro_utilidad AND a.bodega = b.bodega\
+                inner join documentos as c on  c.documento_id = a.documento_id AND c.empresa_id = a.empresa_id\
+                inner join tipos_doc_generales as d on  d.tipo_doc_general_id = c.tipo_doc_general_id\
+                inner join inv_bodegas_movimiento_despachos_clientes as e on  e.empresa_id = a.empresa_id AND e.prefijo = a.prefijo AND e.numero = a.numero\
+                inner join system_usuarios f on a.usuario_id = f.usuario_id\
+                where a.empresa_id = $3\
+                and a.prefijo = $2\
+                and a.numero = $1\
+                union\
+                select a.*, d.inv_tipo_movimiento as tipo_movimiento , d.descripcion as tipo_clase_documento,\
+                c.descripcion, e.solicitud_prod_a_bod_ppal_id as numero_pedido,\
+                c.tipo_doc_general_id as tipo_doc_bodega_id,\
+                f.nombre as nombre_usuario\
+                from  inv_bodegas_movimiento as a\
+                inner join inv_bodegas_documentos as b on  a.documento_id = b.documento_id AND a.empresa_id = b.empresa_id AND a.centro_utilidad = b.centro_utilidad AND a.bodega = b.bodega\
+                inner join documentos as c on  c.documento_id = a.documento_id AND c.empresa_id = a.empresa_id\
+                inner join tipos_doc_generales as d on  d.tipo_doc_general_id = c.tipo_doc_general_id\
+                inner join inv_bodegas_movimiento_despachos_farmacias as e on  e.empresa_id = a.empresa_id AND e.prefijo = a.prefijo AND e.numero = a.numero\
+                inner join system_usuarios f on a.usuario_id = f.usuario_id\
+                where a.empresa_id = $3\
+                and a.prefijo = $2\
+                and a.numero = $1";
+    
+    G.db.query(sql, [numero, prefijo, empresa], function(err, rows, result) {
+        callback(err, rows);
+
+    });
+    
+};
+
+
+MovimientosBodegasModel.prototype.obtenerDetalleDocumentoDespacho = function(numero, prefijo, empresa, callback){
+    var sql = "SELECT\
+                a.*,\
+                b.descripcion,\
+                b.unidad_id,\
+                b.contenido_unidad_venta,\
+                c.descripcion as descripcion_unidad,\
+                b.codigo_invima,\
+                b.codigo_cum,\
+                fc_descripcion_producto(b.codigo_producto) as nombre,\
+                (a.valor_unitario*(a.porcentaje_gravamen/100)) as iva,\
+                (a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100))) as valor_unitario_iva,\
+                ((a.cantidad)*(a.valor_unitario+(a.valor_unitario*(a.porcentaje_gravamen/100)))) as valor_total_iva,\
+                (((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad) as valor_unit_1,\
+                ((a.total_costo/a.cantidad)-(((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad)) as iva_1,\
+                ((((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad)*a.cantidad) as valor_total_1,\
+                (((a.total_costo/a.cantidad)-(((a.total_costo)/((a.porcentaje_gravamen/100)+1))/a.cantidad))*a.cantidad) as iva_total_1\
+                FROM\
+                inv_bodegas_movimiento_d as a,\
+                inventarios_productos as b,\
+                unidades as c\
+                WHERE\
+                a.empresa_id = $3\
+                AND a.prefijo = $2\
+                AND a.numero = $1\
+                AND b.codigo_producto = a.codigo_producto\
+                AND c.unidad_id = b.unidad_id\
+                ORDER BY a.codigo_producto";
+    
+    G.db.query(sql, [numero, prefijo, empresa], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
 
 
 /*==================================================================================================================================================================

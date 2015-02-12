@@ -471,7 +471,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             $scope.generarDocumento = function(documento) {
 
-
                 var url = API.DOCUMENTOS_TEMPORALES.GENERAR_DESPACHO;
 
                 if (documento.pedido.tipo === documento.pedido.TIPO_FARMACIA) {
@@ -533,6 +532,26 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             }
                         };
                         var modalInstance = $modal.open($scope.opts);
+
+                        
+                        //generar el pdf
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                movimientos_bodegas: {
+                                    empresa: $scope.documento_generado.empresa_id,
+                                    numero: $scope.documento_generado.numero_documento,
+                                    prefijo:$scope.documento_generado.prefijo_documento
+                                }
+                            }
+                        };
+                        Request.realizarRequest(API.DOCUMENTOS_DESPACHO.IMPRIMIR_DOCUMENTO_DESPACHO, "POST", obj, function(data) {
+                            if (data.status === 200) {
+                                var nombre = data.obj.movimientos_bodegas.nombre_pdf;
+                                $scope.visualizarReporte("/reports/" + nombre, nombre, "download");
+                            }
+
+                        });
 
 
                     } else {
@@ -652,7 +671,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             });
 
 
-  
+
 
         }]);
 });

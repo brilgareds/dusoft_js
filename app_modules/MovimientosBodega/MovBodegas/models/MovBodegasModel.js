@@ -378,7 +378,7 @@ MovimientosBodegasModel.prototype.crear_documento = function(documento_temporal_
 
 MovimientosBodegasModel.prototype.obtenerEncabezadoDocumentoDespacho = function(numero, prefijo, empresa, usuario_id, callback){
     
-    var sql = "select to_char(a.fecha_registro, 'dd-mm-yyyy hh:mm am') as fecha_registro,\
+    var sql = "select to_char(a.fecha_registro, 'dd-mm-yyyy hh:mi am') as fecha_registro,\
                 a.prefijo,\
                 a.numero,\
                 d.inv_tipo_movimiento as tipo_movimiento , d.descripcion as tipo_clase_documento,\
@@ -389,7 +389,8 @@ MovimientosBodegasModel.prototype.obtenerEncabezadoDocumentoDespacho = function(
                 h.descripcion as nombre_bodega_destino,\
                 i.descripcion as nombre_centro_utilidad,\
                 (select nombre from system_usuarios where usuario_id = $4) as usuario_imprime,\
-                to_char(now(), 'dd-mm-yyyy hh:mm AM') as fecha_impresion\
+                to_char(now(), 'dd-mm-yyyy hh:mi AM') as fecha_impresion,\
+                to_char(j.fecha_registro, 'dd-mm-yyyy hh:mi AM') as fecha_pedido\
                 from  inv_bodegas_movimiento as a\
                 inner join inv_bodegas_documentos as b on  a.documento_id = b.documento_id AND a.empresa_id = b.empresa_id AND a.centro_utilidad = b.centro_utilidad AND a.bodega = b.bodega\
                 inner join documentos as c on  c.documento_id = a.documento_id AND c.empresa_id = a.empresa_id\
@@ -399,11 +400,12 @@ MovimientosBodegasModel.prototype.obtenerEncabezadoDocumentoDespacho = function(
                 inner join empresas g on g.empresa_id = a.empresa_id\
                 inner join bodegas h on h.bodega = a.bodega and h.centro_utilidad = a.centro_utilidad and h.empresa_id = a.empresa_id\
                 inner join centros_utilidad i on  i.centro_utilidad = a.centro_utilidad and i.empresa_id = a.empresa_id\
+                inner join ventas_ordenes_pedidos j on j.pedido_cliente_id = e.pedido_cliente_id\
                 where a.empresa_id = $3\
                 and a.prefijo = $2\
                 and a.numero = $1\
                 union\
-                select to_char(a.fecha_registro, 'dd-mm-yyyy hh:mm am') as fecha_registro,\
+                select to_char(a.fecha_registro, 'dd-mm-yyyy hh:mi am') as fecha_registro,\
                 a.prefijo,\
                 a.numero,\
                 d.inv_tipo_movimiento as tipo_movimiento , d.descripcion as tipo_clase_documento,\
@@ -414,7 +416,8 @@ MovimientosBodegasModel.prototype.obtenerEncabezadoDocumentoDespacho = function(
                 h.descripcion as nombre_bodega_destino,\
                 i.descripcion as nombre_centro_utilidad,\
                 (select nombre from system_usuarios where usuario_id = $4) as usuario_imprime,\
-                to_char(now(), 'dd-mm-yyyy hh:mm AM') as fecha_impresion\
+                to_char(now(), 'dd-mm-yyyy hh:mi AM') as fecha_impresion,\
+                to_char(j.fecha_registro, 'dd-mm-yyyy hh:mi AM') as fecha_pedido\
                 from  inv_bodegas_movimiento as a\
                 inner join inv_bodegas_documentos as b on  a.documento_id = b.documento_id AND a.empresa_id = b.empresa_id AND a.centro_utilidad = b.centro_utilidad AND a.bodega = b.bodega\
                 inner join documentos as c on  c.documento_id = a.documento_id AND c.empresa_id = a.empresa_id\
@@ -424,6 +427,7 @@ MovimientosBodegasModel.prototype.obtenerEncabezadoDocumentoDespacho = function(
                 inner join empresas g on g.empresa_id = a.empresa_id\
                 inner join bodegas h on h.bodega = a.bodega and h.centro_utilidad = a.centro_utilidad and h.empresa_id = a.empresa_id\
                 inner join centros_utilidad i on  i.centro_utilidad = a.centro_utilidad and i.empresa_id = a.empresa_id\
+                inner join solicitud_productos_a_bodega_principal j on j.solicitud_prod_a_bod_ppal_id = e.solicitud_prod_a_bod_ppal_id\
                 where a.empresa_id = $3\
                 and a.prefijo = $2\
                 and a.numero = $1";
@@ -440,7 +444,7 @@ MovimientosBodegasModel.prototype.obtenerDetalleDocumentoDespacho = function(num
     var sql = "SELECT\
                a.codigo_producto,\
                a.lote,\
-               a.cantidad,\
+               a.cantidad::integer,\
                to_char(a.fecha_vencimiento, 'dd-mm-yyyy') as fecha_vencimiento,\
                 b.descripcion,\
                 b.unidad_id,\
@@ -530,8 +534,7 @@ MovimientosBodegasModel.prototype.darFormatoTituloAdicionesDocumento = function(
     
     for(var i in adicionales){
     	var name = i.toUpperCase().replace(/_/g," ");
-    	obj[i] = {valor : adicionales[i], titulo: name};
-    
+    	obj[i] = {valor : adicionales[i], titulo: name};  
     }
     
     return obj;

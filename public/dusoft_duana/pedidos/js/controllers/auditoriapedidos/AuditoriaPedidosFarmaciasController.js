@@ -170,23 +170,7 @@ define(["angular", "js/controllers",
 
             //se realiza el llamado a api para pedidos
             $scope.buscarPedidosSeparados(that.obtenerParametros(), 2, false, $scope.renderPedidosSeparados);
-            $scope.listarEmpresas("");
-            
-            
-            
-             var test = {
-                session: $scope.session,
-                data: {
-                    movimientos_bodegas: {
-                        empresa: '03',
-                        numero: '82862',
-                        prefijo: 'EFC'
-                    }
-                }
-            };
-            Request.realizarRequest(API.DOCUMENTOS_DESPACHO.IMPRIMIR_DOCUMENTO_DESPACHO, "POST", test, function() {
-
-            });
+            $scope.listarEmpresas("");   
 
         }]);
 });

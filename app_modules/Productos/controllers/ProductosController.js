@@ -82,6 +82,25 @@ Productos.prototype.listarProductosClientes = function(req, res) {
     var contrato_cliente_id = args.productos.contrato_cliente_id;
     var termino_busqueda = args.productos.termino_busqueda;
     var pagina_actual = args.productos.pagina_actual;
+    var pedido_cliente_id_tmp = args.productos.pedido_cliente_id_tmp;
+    
+    console.log(">>>>>> empresa_id: ", empresa_id);
+    console.log(">>>>>> centro_utilidad_id: ", centro_utilidad_id);
+    console.log(">>>>>> bodega_id: ", bodega_id);
+    console.log(">>>>>> contrato_cliente_id: ", contrato_cliente_id);
+    console.log(">>>>>> termino_busqueda: ", termino_busqueda);
+    console.log(">>>>>> pagina_actual: ", pagina_actual);
+    console.log(">>>>>> pedido_cliente_id_tmp: ", pedido_cliente_id_tmp);
+    
+    /*res.send(G.utils.r(req.url, 'Parámetros recibidos', 200, {  empresa_id: empresa_id,
+                                                                centro_utilidad_id: centro_utilidad_id,
+                                                                bodega_id: bodega_id,
+                                                                contrato_cliente_id: contrato_cliente_id,
+                                                                termino_busqueda: termino_busqueda,
+                                                                pagina_actual: pagina_actual
+                                                                }));*/
+    
+    //return;
 
     /* Inicio - Modificación para Tipo Producto */
     var tipo_producto = '0';
@@ -91,7 +110,7 @@ Productos.prototype.listarProductosClientes = function(req, res) {
     }
     /* Fin - Modificación para Tipo Producto */
 
-    this.m_productos.listar_productos_clientes(empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pagina_actual, tipo_producto, function(err, lista_productos) {
+    this.m_productos.listar_productos_clientes(empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pedido_cliente_id_tmp, tipo_producto, pagina_actual, function(err, lista_productos) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Listado de Productos', 500, {lista_productos: {}}));

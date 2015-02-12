@@ -94,112 +94,129 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
 // Descripcion : Lista productos
 // Calls       : Productos -> ProductosController -> listarProductosClientes();
 // 
-ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pagina, tipo_producto, callback) {
+ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pedido_cliente_id_tmp, tipo_producto, pagina, callback) {
     
-    var where_tipo = "";
+    var sql_aux = "";
+    //var sql_aux2 = "";
+    
     var array_parametros = [];
 
     if(tipo_producto !== '0') {
 
-            where_tipo = " and b.tipo_producto_id = $6 ";
-            array_parametros = [empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, "%" + termino_busqueda + "%", tipo_producto];
+        sql_aux = " and b.tipo_producto_id = $7 ";
+         //sql_aux = " and b.tipo_producto_id = $4 ";
+        array_parametros = [empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, "%" + termino_busqueda + "%", pedido_cliente_id_tmp, tipo_producto];
     }
     else {
-        array_parametros = [empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, "%" + termino_busqueda + "%"];
+        array_parametros = [empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, "%" + termino_busqueda + "%", pedido_cliente_id_tmp];
     }
     
-    var sql = 
-        "select " +
-        "   a.codigo_producto, " +
-        "   a.precio_regulado, " +
-        "   fc_descripcion_producto(a.codigo_producto) as nombre_producto, " +
-        "   btrim(fc_precio_producto_contrato_cliente($4, a.codigo_producto, $1), '@') as precio_contrato, " +
-        "   a.existencia as existencia_total, " +
-        "   a.costo_anterior, " +
-        "   a.costo, " +
-        "   CASE WHEN a.costo > 0 THEN ROUND (((a.precio_venta/a.costo) - 1) * 100) ELSE NULL END as porcentaje_utilidad, " +
-        "   a.costo_penultima_compra, " +
-        "   (a.costo_ultima_compra)/((COALESCE(b.porc_iva,0)/100)+1) as costo_ultima_compra, " +
-        "   a.precio_venta_anterior, " +
-        "   a.precio_venta, " +
-        "   a.precio_minimo, " +
-        "   a.precio_maximo, " +
-        "   SUM(a.existencia) as existencia, " +
-        "   a.sw_vende, " +
-        "   a.grupo_contratacion_id, " +
-        "   a.nivel_autorizacion_id, " +
-        "   b.sw_requiereautorizacion_despachospedidos, " +
-        "   SUM(sq_b.cantidad_pendiente) as cantidad_pendiente_final, " +
-        "   ((SUM(a.existencia)-SUM(COALESCE(sq_b.cantidad_pendiente,0)))-SUM(COALESCE(sq_c.total_cantidad,0))) as total_disponible, " +
-        "   CASE " +
-        "       WHEN ((SUM(a.existencia)-SUM(COALESCE(sq_b.cantidad_pendiente,0)))-SUM(COALESCE(sq_c.total_cantidad,0))) > 0 " +
-        "       THEN ((SUM(a.existencia)-SUM(COALESCE(sq_b.cantidad_pendiente,0)))-SUM(COALESCE(sq_c.total_cantidad,0))) " +
-        "       ELSE '0' " +
-        "   END as disponible, " +
-        "   b.estado, " +
-        "   b.sw_regulado, " +
-        "   b.tipo_producto_id, " +
-        "   b.unidad_id, " +
-        "   b.codigo_invima, " +
-        "   b.vencimiento_codigo_invima, " +
-        "   b.codigo_cum, " +
-        "   b.contenido_unidad_venta, " +
-        "   b.sw_control_fecha_vencimiento, " +
-        "   b.grupo_id, " +
-        "   b.clase_id, " +
-        "   b.subclase_id, " +
-        "   b.porc_iva, " +
-        "   b.tipo_producto_id, " +
-        "from " +
-        "    inventarios a " +
-        "    inner join inventarios_productos b on a.codigo_producto = b.codigo_producto " +
-        "        and a.empresa_id = $1 " +
-        "    left join ( " +
-        "        select " +
-        "            sq_a.codigo_producto, " +
-        "            sq_a.cantidad_pendiente " +
-        "        from ( " +
-        "            select " +
-        "                d.codigo_producto, " +
-        "                sum(d.cantidad_pendiente) as cantidad_pendiente " +
-        "            from " +
-        "                solicitud_productos_a_bodega_principal c " +
-        "                inner join solicitud_productos_a_bodega_principal_detalle d on d.solicitud_prod_a_bod_ppal_id = c.solicitud_prod_a_bod_ppal_id " +
-        "                    and c.empresa_destino = $1 " +
-        "                    --and   c.sw_despacho = '0' " +
-        "                    and d.cantidad_pendiente > 0 " +
-        "            group by 1 " +
-        "        ) sq_a " +
-        "    ) sq_b on a.codigo_producto = sq_b.codigo_producto " +
-        "    left join ( " +
-        "        select " +
-        "            f.codigo_producto, " +
-        "            sum((f.numero_unidades - f.cantidad_despachada)) as total_cantidad " +
-        "        from " +
-        "            ventas_ordenes_pedidos as e " +
-        "            inner join ventas_ordenes_pedidos_d as f on e.pedido_cliente_id = f.pedido_cliente_id " +
-        "                and e.estado = '1' " +
-        "                and e.empresa_id = $1 " +
-        "                and f.numero_unidades <> f.cantidad_despachada " +
-        "        group by f.codigo_producto " +
-        "    ) sq_c on a.codigo_producto = sq_c.codigo_producto " +
-        "    inner join inv_subclases_inventarios g on b.subclase_id = g.subclase_id " +
-        "        and b.grupo_id = g.grupo_id " +
-        "        and b.clase_id = g.clase_id " +
-        "    inner join inv_clases_inventarios h on b.grupo_id = h.grupo_id " +
-        "        and b.clase_id = h.clase_id " +
-        "    inner join existencias_bodegas i on a.codigo_producto = i.codigo_producto " +
-        "where " +
-        "    i.empresa_id = $1 " +
-        "    and i.centro_utilidad = $2 " +
-        "    and i.bodega = $3 " +
-        "    and ( " +
-        "        a.codigo_producto ilike $5 " +
-        "        or fc_descripcion_producto(a.codigo_producto) ilike $5 " +
-        "        or b.codigo_cum  ilike $5 " +
-        "    ) " +
-        where_tipo +
-        "order by 3 asc";
+    var sql = " select\n\
+                    a.codigo_producto,\n\
+                    a.precio_regulado,\n\
+                    fc_descripcion_producto(a.codigo_producto) as nombre_producto,\n\
+                    btrim(fc_precio_producto_contrato_cliente($4, a.codigo_producto, $1), '@') as precio_contrato,\n\
+                    a.existencia as existencia_total,\n\
+                    a.costo_anterior,\n\
+                    a.costo,\n\
+                    CASE WHEN a.costo > 0 THEN ROUND (((a.precio_venta/a.costo) - 1) * 100) ELSE NULL END as porcentaje_utilidad,\n\
+                    a.costo_penultima_compra,\n\
+                    (a.costo_ultima_compra)/((COALESCE(b.porc_iva,0)/100)+1) as costo_ultima_compra,\n\
+                    a.precio_venta_anterior,\n\
+                    a.precio_venta,\n\
+                    a.precio_minimo,\n\
+                    a.precio_maximo,\n\
+                    SUM(a.existencia) as existencia,\n\
+                    a.sw_vende,\n\
+                    a.grupo_contratacion_id,\n\
+                    a.nivel_autorizacion_id,\n\
+                    b.sw_requiereautorizacion_despachospedidos,\n\
+                    SUM(sq_b.cantidad_pendiente) as cantidad_pendiente_final,\n\
+                    ((SUM(a.existencia)-SUM(COALESCE(sq_b.cantidad_pendiente,0)))-SUM(COALESCE(sq_c.total_cantidad,0))) as total_disponible,\n\
+                    CASE\n\
+                        WHEN ((SUM(a.existencia)-SUM(COALESCE(sq_b.cantidad_pendiente,0)))-SUM(COALESCE(sq_c.total_cantidad,0))) > 0\n\
+                        THEN ((SUM(a.existencia)-SUM(COALESCE(sq_b.cantidad_pendiente,0)))-SUM(COALESCE(sq_c.total_cantidad,0)))\n\
+                        ELSE '0'\n\
+                    END as disponible,\n\
+                    b.estado,\n\
+                    b.sw_regulado,\n\
+                    b.tipo_producto_id,\n\
+                    b.unidad_id,\n\
+                    b.codigo_invima,\n\
+                    b.vencimiento_codigo_invima,\n\
+                    b.codigo_cum,\n\
+                    b.contenido_unidad_venta,\n\
+                    b.sw_control_fecha_vencimiento,\n\
+                    b.grupo_id,\n\
+                    b.clase_id,\n\
+                    b.subclase_id,\n\
+                    b.porc_iva,\n\
+                    b.tipo_producto_id, \n\
+                    g.subclase_id as molecula_id,\n\
+                    g.descripcion as molecula_descripcion\n\
+                from    inventarios a \n\
+                    inner join inventarios_productos b on a.codigo_producto = b.codigo_producto \n\
+                         and a.empresa_id = $1 \n\
+                    left join ( \n\
+                         select \n\
+                             sq_a.codigo_producto, \n\
+                             sq_a.cantidad_pendiente \n\
+                         from ( \n\
+                             select \n\
+                                d.codigo_producto, \n\
+                                sum(d.cantidad_pendiente) as cantidad_pendiente \n\
+                             from \n\
+                                 solicitud_productos_a_bodega_principal c \n\
+                                 inner join solicitud_productos_a_bodega_principal_detalle d on d.solicitud_prod_a_bod_ppal_id = c.solicitud_prod_a_bod_ppal_id \n\
+                                     and c.empresa_destino = $1 \n\
+                                     --and   c.sw_despacho = '0' \n\
+                                     and d.cantidad_pendiente > 0 \n\
+                             group by 1 \n\
+                         ) sq_a \n\
+                     ) sq_b on a.codigo_producto = sq_b.codigo_producto \n\
+                     left join ( \n\
+                         select \n\
+                             f.codigo_producto, \n\
+                             sum((f.numero_unidades - f.cantidad_despachada)) as total_cantidad \n\
+                         from \n\
+                             ventas_ordenes_pedidos as e \n\
+                              inner join ventas_ordenes_pedidos_d as f on e.pedido_cliente_id = f.pedido_cliente_id \n\
+                                 and e.estado = '1' \n\
+                                 and e.empresa_id = $1 \n\
+                                 and f.numero_unidades <> f.cantidad_despachada \n\
+                         group by f.codigo_producto \n\
+                     ) sq_c on a.codigo_producto = sq_c.codigo_producto \n\
+                     inner join inv_subclases_inventarios g on b.subclase_id = g.subclase_id \n\
+                         and b.grupo_id = g.grupo_id \n\
+                         and b.clase_id = g.clase_id \n\
+                     inner join inv_clases_inventarios h on b.grupo_id = h.grupo_id \n\
+                         and b.clase_id = h.clase_id \n\
+                     inner join existencias_bodegas i on a.codigo_producto = i.codigo_producto \n\
+                where \n\
+                     i.empresa_id = $1 \n\
+                     and i.centro_utilidad = $2 \n\
+                     and i.bodega = $3 \n\
+                     and ( \n\
+                         a.codigo_producto ilike $5 \n\
+                         or fc_descripcion_producto(a.codigo_producto) ilike $5 \n\
+                         or g.descripcion  ilike $5 \n\
+                     ) "+
+                     "and a.codigo_producto not in( \
+                                   select \
+                                   codigo_producto \
+                                   from \
+                                   ventas_ordenes_pedidos_d_tmp \
+                                   where \
+                                   pedido_cliente_id_tmp = $6\
+                            )"+
+                     sql_aux +
+                "group by a.codigo_producto, a.precio_regulado, a.existencia, a.costo_anterior, a.costo, a.costo_penultima_compra, \n\
+                    a.costo_ultima_compra, a.precio_venta_anterior, a.precio_venta, a.precio_minimo, a.precio_maximo, a.sw_vende, \n\
+                    a.grupo_contratacion_id, a.nivel_autorizacion_id, b.sw_requiereautorizacion_despachospedidos, b.estado, \n\
+                    b.sw_regulado, b.tipo_producto_id, b.unidad_id, b.codigo_invima, b.vencimiento_codigo_invima, b.codigo_cum, \n\
+                    b.contenido_unidad_venta, b.sw_control_fecha_vencimiento, b.grupo_id, b.clase_id, b.subclase_id, b.porc_iva, \n\
+                    b.tipo_producto_id, g.subclase_id, g.descripcion\n\
+                order by 3 asc";
         
 
     G.db.pagination(sql, array_parametros, pagina, G.settings.limit, function(err, rows, result) {

@@ -93,7 +93,7 @@ MovBodegasController.prototype.imprimirDocumentoDespacho = function(req, res){
     var empresa = args.movimientos_bodegas.empresa;
     var datos_documento = {};
     
-    that.m_movimientos_bodegas.obtenerEncabezadoDocumentoDespacho(numero, prefijo, empresa, function(err, rows){
+    that.m_movimientos_bodegas.obtenerEncabezadoDocumentoDespacho(numero, prefijo, empresa, req.session.user.usuario_id, function(err, rows){
         if (err || rows.length === 0) {
 
             res.send(G.utils.r(req.url, 'Error consultando documento despacho', 500, {movimientos_bodegas: {}}));
@@ -108,11 +108,21 @@ MovBodegasController.prototype.imprimirDocumentoDespacho = function(req, res){
             }
             
             datos_documento.detalle = rows;
+            that.m_movimientos_bodegas.obtenerDatosAdicionalesPorDocumento(numero, prefijo, empresa, datos_documento.encabezado.tipo_doc_bodega_id, function(err, rows){
+                if (err || rows.length === 0 ) {
+                    res.send(G.utils.r(req.url, 'Error consultando documento despacho', 500, {movimientos_bodegas: {}}));
+                    return;
+                }
+                                
+                datos_documento.adicionales = that.m_movimientos_bodegas.darFormatoTituloAdicionesDocumento(rows[0]);
+                console.log("datos del documento a imprimir >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+                console.log(datos_documento);
+
+                res.send(G.utils.r(req.url, 'Documento Temporal Actualizado Correctamete', 200, {movimientos_bodegas: {doc:datos_documento}}));
+                
+            });
             
-            console.log("datos del documento a imprimir >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-            console.log(datos_documento);
             
-            res.send(G.utils.r(req.url, 'Documento Temporal Actualizado Correctamete', 200, {movimientos_bodegas: {doc:datos_documento}}));
         });
         
     });

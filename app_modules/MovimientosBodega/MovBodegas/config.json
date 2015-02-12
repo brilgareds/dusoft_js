@@ -13,6 +13,11 @@
                     "module": "MovimientosBodega/MovBodegas",
                     "model": "MovBodegasModel",
                     "alias": "m_movimientos_bodegas"
+                },
+                "usuarios": {
+                    "module": "Usuarios",
+                    "model": "Usuarios",
+                    "alias": "m_usuarios"
                 }
             }],
         "events": [],

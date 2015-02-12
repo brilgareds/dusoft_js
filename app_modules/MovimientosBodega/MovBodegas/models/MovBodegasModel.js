@@ -376,36 +376,59 @@ MovimientosBodegasModel.prototype.crear_documento = function(documento_temporal_
 };
 
 
-MovimientosBodegasModel.prototype.obtenerEncabezadoDocumentoDespacho = function(numero, prefijo, empresa, callback){
-    var sql = "select a.*, d.inv_tipo_movimiento as tipo_movimiento , d.descripcion as tipo_clase_documento,\
+MovimientosBodegasModel.prototype.obtenerEncabezadoDocumentoDespacho = function(numero, prefijo, empresa, usuario_id, callback){
+    
+    var sql = "select to_char(a.fecha_registro, 'dd-mm-yyyy hh:mm am') as fecha_registro,\
+                a.prefijo,\
+                a.numero,\
+                d.inv_tipo_movimiento as tipo_movimiento , d.descripcion as tipo_clase_documento,\
                 c.descripcion, e.pedido_cliente_id as numero_pedido,\
                 c.tipo_doc_general_id as tipo_doc_bodega_id,\
-                f.nombre as nombre_usuario\
+                f.nombre as nombre_usuario,\
+                g.razon_social as nombre_empresa_destino,\
+                h.descripcion as nombre_bodega_destino,\
+                i.descripcion as nombre_centro_utilidad,\
+                (select nombre from system_usuarios where usuario_id = $4) as usuario_imprime,\
+                to_char(now(), 'dd-mm-yyyy hh:mm AM') as fecha_impresion\
                 from  inv_bodegas_movimiento as a\
                 inner join inv_bodegas_documentos as b on  a.documento_id = b.documento_id AND a.empresa_id = b.empresa_id AND a.centro_utilidad = b.centro_utilidad AND a.bodega = b.bodega\
                 inner join documentos as c on  c.documento_id = a.documento_id AND c.empresa_id = a.empresa_id\
                 inner join tipos_doc_generales as d on  d.tipo_doc_general_id = c.tipo_doc_general_id\
                 inner join inv_bodegas_movimiento_despachos_clientes as e on  e.empresa_id = a.empresa_id AND e.prefijo = a.prefijo AND e.numero = a.numero\
                 inner join system_usuarios f on a.usuario_id = f.usuario_id\
+                inner join empresas g on g.empresa_id = a.empresa_id\
+                inner join bodegas h on h.bodega = a.bodega and h.centro_utilidad = a.centro_utilidad and h.empresa_id = a.empresa_id\
+                inner join centros_utilidad i on  i.centro_utilidad = a.centro_utilidad and i.empresa_id = a.empresa_id\
                 where a.empresa_id = $3\
                 and a.prefijo = $2\
                 and a.numero = $1\
                 union\
-                select a.*, d.inv_tipo_movimiento as tipo_movimiento , d.descripcion as tipo_clase_documento,\
+                select to_char(a.fecha_registro, 'dd-mm-yyyy hh:mm am') as fecha_registro,\
+                a.prefijo,\
+                a.numero,\
+                d.inv_tipo_movimiento as tipo_movimiento , d.descripcion as tipo_clase_documento,\
                 c.descripcion, e.solicitud_prod_a_bod_ppal_id as numero_pedido,\
                 c.tipo_doc_general_id as tipo_doc_bodega_id,\
-                f.nombre as nombre_usuario\
+                f.nombre as nombre_usuario,\
+                g.razon_social as nombre_empresa_destino,\
+                h.descripcion as nombre_bodega_destino,\
+                i.descripcion as nombre_centro_utilidad,\
+                (select nombre from system_usuarios where usuario_id = $4) as usuario_imprime,\
+                to_char(now(), 'dd-mm-yyyy hh:mm AM') as fecha_impresion\
                 from  inv_bodegas_movimiento as a\
                 inner join inv_bodegas_documentos as b on  a.documento_id = b.documento_id AND a.empresa_id = b.empresa_id AND a.centro_utilidad = b.centro_utilidad AND a.bodega = b.bodega\
                 inner join documentos as c on  c.documento_id = a.documento_id AND c.empresa_id = a.empresa_id\
                 inner join tipos_doc_generales as d on  d.tipo_doc_general_id = c.tipo_doc_general_id\
                 inner join inv_bodegas_movimiento_despachos_farmacias as e on  e.empresa_id = a.empresa_id AND e.prefijo = a.prefijo AND e.numero = a.numero\
                 inner join system_usuarios f on a.usuario_id = f.usuario_id\
+                inner join empresas g on g.empresa_id = a.empresa_id\
+                inner join bodegas h on h.bodega = a.bodega and h.centro_utilidad = a.centro_utilidad and h.empresa_id = a.empresa_id\
+                inner join centros_utilidad i on  i.centro_utilidad = a.centro_utilidad and i.empresa_id = a.empresa_id\
                 where a.empresa_id = $3\
                 and a.prefijo = $2\
                 and a.numero = $1";
     
-    G.db.query(sql, [numero, prefijo, empresa], function(err, rows, result) {
+    G.db.query(sql, [numero, prefijo, empresa, usuario_id], function(err, rows, result) {
         callback(err, rows);
 
     });
@@ -415,7 +438,10 @@ MovimientosBodegasModel.prototype.obtenerEncabezadoDocumentoDespacho = function(
 
 MovimientosBodegasModel.prototype.obtenerDetalleDocumentoDespacho = function(numero, prefijo, empresa, callback){
     var sql = "SELECT\
-                a.*,\
+               a.codigo_producto,\
+               a.lote,\
+               a.cantidad,\
+               to_char(a.fecha_vencimiento, 'dd-mm-yyyy') as fecha_vencimiento,\
                 b.descripcion,\
                 b.unidad_id,\
                 b.contenido_unidad_venta,\
@@ -445,6 +471,70 @@ MovimientosBodegasModel.prototype.obtenerDetalleDocumentoDespacho = function(num
     G.db.query(sql, [numero, prefijo, empresa], function(err, rows, result) {
         callback(err, rows);
     });
+};
+
+
+MovimientosBodegasModel.prototype.obtenerDatosAdicionalesPorDocumento = function(numero, prefijo,empresa_id, tipo_documento, callback){
+    
+    var sql = "";
+    
+    switch(tipo_documento){
+        case 'E008':
+            sql = "select * From\
+                    (\
+                        (\
+                        SELECT  'CLIENTES'  as tipo_de_despacho,\
+                            a.tipo_id_tercero || ' ' || a.tercero_id || ' : '|| b.nombre_tercero as cliente\
+                            /*a.pedido_cliente_id AS numero_pedido,*/\
+                            /*b.direccion AS direccion*/\
+                            /*b.telefono AS telefono*/\
+                            FROM    inv_bodegas_movimiento_despachos_clientes as a,\
+                            terceros as b\
+                            WHERE   a.empresa_id = $3\
+                            AND a.prefijo = $2\
+                            AND a.numero = $1\
+                            AND b.tipo_id_tercero = a.tipo_id_tercero\
+                            AND b.tercero_id = a.tercero_id\
+                        )\
+                        UNION ALL\
+                        (\
+                            SELECT  'FARMACIAS'  as tipo_de_despacho,\
+                            e.empresa_id || ' - '|| e.razon_social ||' ::: '||c.descripcion as farmacia\
+                            /*a.solicitud_prod_a_bod_ppal_id AS numero_pedido,*/\
+                            /*e.direccion AS direccion*/\
+                           /*e.telefonos AS telefono*/\
+                            FROM    inv_bodegas_movimiento_despachos_farmacias as a\
+                            JOIN solicitud_productos_a_bodega_principal as b ON (a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id)\
+                            JOIN bodegas as c ON (b.farmacia_id = c.empresa_id)\
+                            AND (b.centro_utilidad = c.centro_utilidad)\
+                            AND (b.bodega = c.bodega)\
+                            JOIN centros_utilidad as d ON (c.centro_utilidad = d.centro_utilidad)\
+                            AND (c.empresa_id = d.empresa_id)\
+                            JOIN empresas as e ON (d.empresa_id = e.empresa_id)\
+                            WHERE   a.empresa_id = $3\
+                            AND a.prefijo = $2\
+                            AND a.numero = $1\
+                        )\
+                    )as x";        
+        break;
+    }
+    
+    G.db.query(sql, [numero, prefijo, empresa_id], function(err, rows, result) {
+        callback(err, rows);
+    });
+
+};
+
+MovimientosBodegasModel.prototype.darFormatoTituloAdicionesDocumento = function(adicionales){
+    var obj = {};
+    
+    for(var i in adicionales){
+    	var name = i.toUpperCase().replace(/_/g," ");
+    	obj[i] = {valor : adicionales[i], titulo: name};
+    
+    }
+    
+    return obj;
 };
 
 

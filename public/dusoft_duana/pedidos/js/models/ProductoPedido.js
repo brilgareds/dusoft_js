@@ -17,6 +17,12 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.existencia_disponible = existencia_disponible || "";
             this.cantidad_pendiente = cantidad_pendiente || "";
             
+            //Campos exclusivos pedido clientes
+            this.codigo_cum = "";
+            this.codigo_invima = "";
+            this.iva = "";
+            this.precio_regulado = "";
+            
             //propiedades pendientes
             this.existencia_lotes = "";
             this.porcentaje_gravament = "0";
@@ -38,6 +44,37 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             return this.lote;
         };
         
+        ProductoPedido.prototype.setCodigoCum = function(codigo_cum) {
+            this.codigo_cum = codigo_cum;
+        };
+        
+        ProductoPedido.prototype.getCodigoCum = function() {
+            return this.codigo_cum;
+        };
+        
+        ProductoPedido.prototype.setCodigoInvima = function(codigo_invima) {
+            this.codigo_invima = codigo_invima;
+        };
+        
+        ProductoPedido.prototype.getCodigoInvima = function() {
+            return this.codigo_invima;
+        };
+        
+        ProductoPedido.prototype.setIva = function(iva) {
+            this.iva = iva;
+        };
+        
+        ProductoPedido.prototype.getIva = function() {
+            return this.iva;
+        };
+        
+        ProductoPedido.prototype.setPrecioRegulado = function(precio_regulado) {
+            this.precio_regulado = precio_regulado;
+        };
+        
+        ProductoPedido.prototype.getPrecioRegulado = function() {
+            return this.precio_regulado;
+        };
         
         ProductoPedido.prototype.agregarLote = function(lote) {
             this.lotesSeleccionados.push(lote);

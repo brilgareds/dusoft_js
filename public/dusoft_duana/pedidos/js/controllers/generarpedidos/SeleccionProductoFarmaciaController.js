@@ -8,7 +8,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         'EmpresaPedido', 'ClientePedido', 'PedidoVenta',
         'API', "socket", "AlertService",
         '$state', 'Usuario', 'ProductoPedido', '$modal', 'FarmaciaVenta',
-        function($scope, $rootScope, Request, EmpresaPedido, Cliente, PedidoVenta, API, socket, AlertService, $state, Usuario, ProductoPedido, $modal, FarmaciaVenta) {
+        function($scope, $rootScope, Request, EmpresaPedido, ClientePedido, PedidoVenta, API, socket, AlertService, $state, Usuario, ProductoPedido, $modal, FarmaciaVenta) {
 
             $scope.expreg = new RegExp("^[0-9]*$");
 

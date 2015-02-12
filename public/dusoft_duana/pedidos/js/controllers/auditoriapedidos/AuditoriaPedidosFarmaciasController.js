@@ -174,7 +174,7 @@ define(["angular", "js/controllers",
             
             
             
-             var test = {
+             /*var test = {
                 session: $scope.session,
                 data: {
                     movimientos_bodegas: {
@@ -190,7 +190,7 @@ define(["angular", "js/controllers",
                     $scope.visualizarReporte("/reports/" + nombre, nombre, "download");
                 }
                 
-            });
+            });*/
 
         }]);
 });

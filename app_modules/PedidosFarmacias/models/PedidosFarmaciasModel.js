@@ -15,17 +15,23 @@ PedidosFarmaciasModel.prototype.listar_empresas = function(usuario, callback) {
 
 };
 
-PedidosFarmaciasModel.prototype.listar_farmacias_usuario = function(tipo, usuario, empresa_id, centro_utilidad_id, callback) {
+PedidosFarmaciasModel.prototype.listar_farmacias_usuario = function(tipo, usuario, empresa_id, centro_utilidad_id, permisos_kardex, callback) {
 
     var sql = "";
     var parametros = "";
+    
+    var tabla = "userpermisos_pedidos_farmacia_a_bprincipal";
+    
+    if(permisos_kardex){
+        tabla = "inv_bodegas_userpermisos_admin";
+    }
 
     if (tipo === '1') {
 
         sql = " SELECT\
                 a.empresa_id,\
                 d.razon_social as nombre_empresa\
-                FROM userpermisos_pedidos_farmacia_a_bprincipal AS a\
+                FROM "+tabla+" AS a\
                 JOIN bodegas as b ON (a.empresa_id = b.empresa_id) AND (a.centro_utilidad = b.centro_utilidad) AND (b.estado = '1')\
                 JOIN centros_utilidad as c ON (b.empresa_id = c.empresa_id) AND (b.centro_utilidad = c.centro_utilidad)\
                 JOIN empresas as d ON (c.empresa_id = d.empresa_id) AND (sw_activa = '1')\
@@ -39,7 +45,7 @@ PedidosFarmaciasModel.prototype.listar_farmacias_usuario = function(tipo, usuari
         sql = " SELECT\
                 a.centro_utilidad as centro_utilidad_id,\
                 c.descripcion as nombre_centro_utilidad\
-                FROM userpermisos_pedidos_farmacia_a_bprincipal AS a\
+                FROM "+tabla+" AS a\
                 JOIN bodegas as b ON (a.empresa_id = b.empresa_id) AND (a.centro_utilidad = b.centro_utilidad) AND (b.estado = '1')\
                 JOIN centros_utilidad as c ON (b.empresa_id = c.empresa_id) AND (b.centro_utilidad = c.centro_utilidad)\
                 JOIN empresas as d ON (c.empresa_id = d.empresa_id) AND (sw_activa = '1')\
@@ -49,16 +55,27 @@ PedidosFarmaciasModel.prototype.listar_farmacias_usuario = function(tipo, usuari
     }
 
     if (tipo === '3') {
-
-        sql = " SELECT\
-                b.bodega as bodega_id,\
-                b.descripcion as nombre_bodega,\
-                a.sw_anular_pedido, a.sw_anular_reserva, a.sw_anular_reserva, a.sw_eliminar_productos, a.sw_modificar_pedido\
-                FROM userpermisos_pedidos_farmacia_a_bprincipal AS a\
-                JOIN bodegas as b ON (a.empresa_id = b.empresa_id) AND (a.centro_utilidad = b.centro_utilidad) AND (b.estado = '1')\
-                JOIN centros_utilidad as c ON (b.empresa_id = c.empresa_id) AND (b.centro_utilidad = c.centro_utilidad)\
-                JOIN empresas as d ON (c.empresa_id = d.empresa_id) AND (sw_activa = '1')\
-                WHERE a.usuario_id = $1 and a.empresa_id = $2 and a.centro_utilidad = $3;  ";
+        
+        if(!permisos_kardex){
+            sql = " SELECT\
+                    b.bodega as bodega_id,\
+                    b.descripcion as nombre_bodega,\
+                    a.sw_anular_pedido, a.sw_anular_reserva, a.sw_anular_reserva, a.sw_eliminar_productos, a.sw_modificar_pedido\
+                    FROM userpermisos_pedidos_farmacia_a_bprincipal AS a\
+                    JOIN bodegas as b ON (a.empresa_id = b.empresa_id) AND (a.centro_utilidad = b.centro_utilidad) AND (b.estado = '1')\
+                    JOIN centros_utilidad as c ON (b.empresa_id = c.empresa_id) AND (b.centro_utilidad = c.centro_utilidad)\
+                    JOIN empresas as d ON (c.empresa_id = d.empresa_id) AND (sw_activa = '1')\
+                    WHERE a.usuario_id = $1 and a.empresa_id = $2 and a.centro_utilidad = $3;  ";
+        } else {
+            sql = "SELECT\
+                    b.bodega as bodega_id,\
+                    b.descripcion as nombre_bodega\
+                    FROM inv_bodegas_userpermisos_admin AS a\
+                    JOIN bodegas as b ON (a.empresa_id = b.empresa_id) AND (a.centro_utilidad = b.centro_utilidad) AND (b.estado = '1')\
+                    JOIN centros_utilidad as c ON (b.empresa_id = c.empresa_id) AND (b.centro_utilidad = c.centro_utilidad)\
+                    JOIN empresas as d ON (c.empresa_id = d.empresa_id) AND (sw_activa = '1')\
+                    WHERE a.usuario_id = $1 and a.empresa_id = $2 and a.centro_utilidad = $3;";
+        }
 
         parametros = [usuario, empresa_id, centro_utilidad_id];
     }

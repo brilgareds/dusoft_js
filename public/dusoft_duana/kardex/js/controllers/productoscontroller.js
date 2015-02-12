@@ -197,7 +197,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
 
                 var obj = {
                     session: $scope.session,
-                    data: {}
+                    data: {
+                        pedidos_farmacias:{
+                            permisos_kardex:true
+                        }
+                    }
                 };
 
                 Request.realizarRequest(API.KARDEX.LISTAR_EMPRESAS, "POST", obj, function(data) {
@@ -230,7 +234,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                     session: $scope.session,
                     data: {
                         pedidos_farmacias: {
-                            empresa_id: $scope.filtro.empresa_seleccion
+                            empresa_id: $scope.filtro.empresa_seleccion,
+                            permisos_kardex:true
                         }
                     }
                 };
@@ -263,7 +268,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                     data: {
                         pedidos_farmacias: {
                             empresa_id: $scope.filtro.empresa_seleccion,
-                            centro_utilidad_id: $scope.filtro.centro_seleccion
+                            centro_utilidad_id: $scope.filtro.centro_seleccion,
+                            permisos_kardex:true
                         }
                     }
                 };

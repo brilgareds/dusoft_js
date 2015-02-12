@@ -1614,6 +1614,7 @@ function _generarDocumentoRotulo(rows, callback) {
 // Generar Documento Despacho Clientes
 E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
 
+
     // Verificar Pendientes
     // Ingresar Justificacion
     // Verificar Rotulos
@@ -1743,6 +1744,7 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                                                         console.log("========================================== generar documento despacho clientes satisfactorio ============================");
                                                         that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
                                                         res.send(G.utils.r(req.url, 'Se ha generado el documento', 200, {movimientos_bodegas: {prefijo_documento: prefijo_documento, numero_documento: numero_documento}}));
+
                                                     }
                                                 });
                                             });

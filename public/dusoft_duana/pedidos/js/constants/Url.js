@@ -83,7 +83,10 @@ define(["angular"], function(angular) {
 	    },
 	    'USUARIOS':{
 	    	'LISTAR_USUARIOS':BASE_URL+"/Usuarios/listar"
-	    }
+	    },
+            'DOCUMENTOS_DESPACHO':{
+                'IMPRIMIR_DOCUMENTO_DESPACHO':BASE_URL+"/movBodegas/imprimirDocumentoDespacho"
+            }
 	  }
     };
 

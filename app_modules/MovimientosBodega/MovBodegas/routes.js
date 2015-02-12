@@ -11,5 +11,10 @@ module.exports = function(app, di_container) {
     app.post('/api/movBodegas/actualizarTipoDocumentoTemporal', function(req, res) {
         c_movimientos_bodega.actualizarTipoDocumentoTemporal(req, res);
     });
+    
+    app.post('/api/movBodegas/imprimirDocumentoDespacho', function(req, res) {
+        c_movimientos_bodega.imprimirDocumentoDespacho(req, res);
+    });
+    
 
 };

@@ -115,11 +115,12 @@ MovBodegasController.prototype.imprimirDocumentoDespacho = function(req, res){
                 }
                                 
                 datos_documento.adicionales = that.m_movimientos_bodegas.darFormatoTituloAdicionesDocumento(rows[0]);
-                console.log("datos del documento a imprimir >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-                console.log(datos_documento);
-
-                res.send(G.utils.r(req.url, 'Documento Temporal Actualizado Correctamete', 200, {movimientos_bodegas: {doc:datos_documento}}));
                 
+                __generarPdfDespacho(datos_documento, function(nombre_pdf){
+                    console.log("nombre generado ", nombre_pdf);
+                    res.send(G.utils.r(req.url, 'Documento Generado Correctamete', 200, {movimientos_bodegas: {nombre_pdf:nombre_pdf}}));
+                });
+
             });
             
             
@@ -128,6 +129,29 @@ MovBodegasController.prototype.imprimirDocumentoDespacho = function(req, res){
     });
     
 };
+
+
+function __generarPdfDespacho(datos, callback){
+    G.jsreport.reporter.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/MovimientosBodega/MovBodegas/reports/despacho.html', 'utf8'),
+            recipe: "phantom-pdf",
+            engine: 'jsrender',
+            phantom: {
+                margin: "10px",
+                width:'700px'
+            }
+        },
+        data: datos
+    }).then(function(response) {
+
+        var name = response.result.path;
+        var nombreTmp = datos.encabezado.prefijo + "-" + datos.encabezado.numero + ".pdf";
+        G.fs.copySync(name, G.dirname + "/public/reports/" + nombreTmp);
+
+        callback(nombreTmp);
+    });
+}
 
 
 MovBodegasController.$inject = ["m_movimientos_bodegas"];

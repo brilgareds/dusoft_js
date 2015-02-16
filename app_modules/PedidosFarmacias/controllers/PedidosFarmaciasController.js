@@ -74,10 +74,15 @@ PedidosFarmacias.prototype.obtenerEmpresas = function(req, res) {
 PedidosFarmacias.prototype.listarFarmaciasUsuarios = function(req, res) {
 
     var that = this;
-
     var usuario_id = req.session.user.usuario_id;
-
-    that.m_pedidos_farmacias.listar_farmacias_usuario('1', usuario_id, null, null, function(err, lista_farmacias) {
+    var permisos_kardex = false;
+    var args = req.body.data;
+    
+    if(args.pedidos_farmacias.permisos_kardex){
+        permisos_kardex = true;
+    }
+        
+    that.m_pedidos_farmacias.listar_farmacias_usuario('1', usuario_id, null, null, permisos_kardex, function(err, lista_farmacias) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error listado las farmacias', 500, {lista_farmacias: {}}));
         } else {
@@ -104,8 +109,15 @@ PedidosFarmacias.prototype.listarCentrosUtilidadUsuarios = function(req, res) {
 
     var usuario_id = req.session.user.usuario_id;
     var empresa_id = args.pedidos_farmacias.empresa_id;
+    
+    var permisos_kardex = false;
+    
+    if(args.pedidos_farmacias.permisos_kardex){
+        permisos_kardex = true;
+    }
+        
 
-    that.m_pedidos_farmacias.listar_farmacias_usuario('2', usuario_id, empresa_id, null, function(err, lista_centros_utilidad) {
+    that.m_pedidos_farmacias.listar_farmacias_usuario('2', usuario_id, empresa_id, null, permisos_kardex, function(err, lista_centros_utilidad) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error listado las farmacias', 500, {lista_centros_utilidad: {}}));
         } else {
@@ -133,8 +145,15 @@ PedidosFarmacias.prototype.listarBodegasUsuarios = function(req, res) {
     var usuario = req.session.user.usuario_id;
     var empresa_id = args.pedidos_farmacias.empresa_id;
     var centro_utilidad_id = args.pedidos_farmacias.centro_utilidad_id;
+    
+    var permisos_kardex = false;
+    
+    if(args.pedidos_farmacias.permisos_kardex){
+        permisos_kardex = true;
+    }
+        
 
-    that.m_pedidos_farmacias.listar_farmacias_usuario('3', usuario, empresa_id, centro_utilidad_id, function(err, lista_bodegas) {
+    that.m_pedidos_farmacias.listar_farmacias_usuario('3', usuario, empresa_id, centro_utilidad_id,permisos_kardex, function(err, lista_bodegas) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error listado las farmacias', 500, {lista_bodegas: {}}));
         } else {

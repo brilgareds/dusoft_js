@@ -174,19 +174,23 @@ define(["angular", "js/controllers",
             
             
             
-             var test = {
+             /*var test = {
                 session: $scope.session,
                 data: {
                     movimientos_bodegas: {
                         empresa: '03',
-                        numero: '82862',
+                        numero: '82913',
                         prefijo: 'EFC'
                     }
                 }
             };
-            Request.realizarRequest(API.DOCUMENTOS_DESPACHO.IMPRIMIR_DOCUMENTO_DESPACHO, "POST", test, function() {
-
-            });
+            Request.realizarRequest(API.DOCUMENTOS_DESPACHO.IMPRIMIR_DOCUMENTO_DESPACHO, "POST", test, function(data) {
+                if(data.status === 200){
+                    var nombre = data.obj.movimientos_bodegas.nombre_pdf;
+                    $scope.visualizarReporte("/reports/" + nombre, nombre, "download");
+                }
+                
+            });*/
 
         }]);
 });

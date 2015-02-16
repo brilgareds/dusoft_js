@@ -486,6 +486,104 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
 
 };
 
+/**
+ * @api {post} /api/PedidosClientes/insertarCotizacion Insertar Cotización
+ * @apiName Insertar Cotización.
+ * @apiGroup PedidosClientes
+ * @apiDescription Asignar o delegar los pedidos a un operario de bodega para su correspondiente separacion.
+ * @apiDefinePermission autenticado Requiere Autenticacion
+ * Requiere que el usuario esté autenticado.
+ * @apiPermission autenticado
+ * @apiParam {String} usuario_id  Identificador del Usuario.
+ * @apiParam {String} auth_token  Token de Autenticación, este define si el usuario esta autenticado o no.
+ * @apiParam {String[]} pedidos Lista de pedidos 
+ * @apiParam {Number} estado_pedido ID del estado a asignar 
+ * @apiParam {Number} responsable Operario de Bodega al que se le asigna el pedido.
+ * @apiSuccessExample Ejemplo Válido del Request.
+ *     HTTP/1.1 200 OK
+ *     {  
+ *          session: {              
+ *              usuario_id: 'jhon.doe',
+ *              auth_token: 'asdf2hgt56hjjhgrt-mnjhbgfd-asdfgyh-ghjmnbgfd'
+ *          },
+ *          data : {
+ *              asignacion_pedidos :  { 
+ *                                      pedidos : [],
+ *                                      estado_pedido: '',
+ *                                      responsable : ''
+ *                                  }
+ *          }
+ *     }
+ * @apiSuccessExample Respuesta-Exitosa:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       service : '/api/PedidosClientes/asignarResponsable',   
+ *       msj : 'Asignacion de Resposables',
+ *       status: '200',
+ *       obj : {
+ *             }
+ *     }
+ * @apiErrorExample Respuesta-Error:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       service : '/api/PedidosClientes/asignarResponsable',   
+ *       msj : 'Mensaje Error',
+ *       status: 404,
+ *       obj : {},
+ *     }  
+ */
+
+PedidosCliente.prototype.insertarCotizacion = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.cotizacion_encabezado === undefined || args.cotizacion_encabezado.empresa_id === undefined || args.cotizacion_encabezado.tipo_id_tercero === undefined || args.cotizacion_encabezado.tercero_id === undefined) {
+        res.send(G.utils.r(req.url, 'empresa_id, tipo_tercero_id o tercero_id No Están Definidos', 404, {}));
+        return;
+    }
+    
+    if (args.cotizacion_encabezado.tipo_id_vendedor === undefined || args.cotizacion_encabezado.vendedor_id === undefined || args.cotizacion_encabezado.estado === undefined) {
+        res.send(G.utils.r(req.url, 'tipo_id_vendedor, vendedor_id o estado No Están Definidos', 404, {}));
+        return;
+    }
+
+    //var params = args.asignacion_pedidos;
+
+    if (args.cotizacion_encabezado.empresa_id === '' || args.cotizacion_encabezado.tipo_id_tercero === '' || args.cotizacion_encabezado.tercero_id === '') {
+        res.send(G.utils.r(req.url, 'empresa_id, tipo_id_tercero o tercero_id Están Vacios', 404, {}));
+        return;
+    }
+    
+    if (args.cotizacion_encabezado.tipo_id_vendedor === '' || args.cotizacion_encabezado.vendedor_id === '' || args.cotizacion_encabezado.estado === '') {
+        res.send(G.utils.r(req.url, 'tipo_id_vendedor, vendedor_id o estado Están Vacios', 404, {}));
+        return;
+    }
+
+    //Parámetros a insertar
+    var empresa_id = args.cotizacion_encabezado.empresa_id;
+    var tipo_id_tercero = args.cotizacion_encabezado.tipo_id_tercero;
+    var tercero_id = args.cotizacion_encabezado.tercero_id;
+    var usuario_id = req.session.user.usuario_id;
+    var tipo_id_vendedor = args.cotizacion_encabezado.tipo_id_vendedor;
+    var vendedor_id = args.cotizacion_encabezado.vendedor_id;
+    var estado = args.cotizacion_encabezado.estado;
+    var observaciones = args.cotizacion_encabezado.observaciones;
+
+    that.m_pedidos_clientes.asignar_responsables_pedidos(numero_pedido, estado_pedido, responsable, usuario, function(err, rows, responsable_estado_pedido) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Asignacion de Resposables', 500, {}));
+            return;
+        }
+
+        res.send(G.utils.r(req.url, 'Asignacion de Resposables', 200, {}));
+
+    });
+ 
+};
+
 PedidosCliente.$inject = ["m_pedidos_clientes", "e_pedidos_clientes", "m_productos", "m_pedidos"];
 
 module.exports = PedidosCliente;

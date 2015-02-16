@@ -30,6 +30,11 @@ module.exports = function(app, di_container) {
     // Seleccionar los pedidos de un operario de bodega
     app.post('/api/PedidosClientes/listaPedidosOperarioBodega', function(req, res) {
         c_pedidos_clientes.listaPedidosOperariosBodega(req, res);
-    });   
+    });
+    
+    // Insertar Encabezado de Cotización
+    app.post('/api/PedidosClientes/insertarCotizacion', function(req, res) {
+        c_pedidos_clientes.insertarCotizacion(req, res);
+    });
            
 };

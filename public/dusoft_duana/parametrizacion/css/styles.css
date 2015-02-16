@@ -1,0 +1,14 @@
+.listado_opciones{
+    height:100%;
+    position:relative;
+    width:100%;
+    min-width: 100%;
+}
+
+.contenedor_opciones{
+    height: 280px;
+}
+
+textarea.observacion_modulo{
+    height:160px;
+}

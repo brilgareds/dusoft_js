@@ -428,3 +428,7 @@ textarea {
 .grid-responsive{
     min-width:1024px;
 }
+
+.contenedor_combo_grande{
+    width:100%;
+}

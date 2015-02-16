@@ -82,8 +82,6 @@ PedidosFarmacias.prototype.listarFarmaciasUsuarios = function(req, res) {
         permisos_kardex = true;
     }
         
-    
-
     that.m_pedidos_farmacias.listar_farmacias_usuario('1', usuario_id, null, null, permisos_kardex, function(err, lista_farmacias) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error listado las farmacias', 500, {lista_farmacias: {}}));

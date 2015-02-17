@@ -24,7 +24,8 @@ define([
     "includes/http/HttpInterceptor",
     "storage",
     "includes/classes/Usuario",
-    "includes/widgets/InputCheck"
+    "includes/widgets/InputCheck",
+    "directive/Modulos/ArbolModulos"
 ], function(angular) {
     /* App Module and its dependencies */
 

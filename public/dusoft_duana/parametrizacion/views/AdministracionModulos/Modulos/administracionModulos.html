@@ -8,6 +8,17 @@
             <div class="panel-body">
 
                 <p class="input-group contenedor_combo_grande">
+                    <label for="nodo_principal" style='margin-right: 5px;'>Nodo Principal</label>
+                <input-check ng-model="nodo_principal" style='margin-right: 20px;' id="nodo_principal" ></input-check>
+
+                <label for="habilitar" style='margin-right: 5px;' >Activar</label>
+                <input-check ng-model="habilitar" id="habilitar"  ></input-check>
+
+                <button type="button" class="btn btn-default btn-sm pull-right"  ng-click='onHabilitarModuloEnEmpresas()'>Habilitar En Empresas</button>
+
+                </p>
+
+                <p class="input-group contenedor_combo_grande">
                     <select ui-select2="seleccionvendedor" class="form-control selectgeneral"   ng-disabled="rootCreaCotizaciones.bloqueo_producto_incluido" ng-model="rootCreaCotizaciones.seleccion_vendedor"  placeholder="Modulo Padre" ng-change="valorSeleccionado()">
 
                         <option></option>
@@ -41,28 +52,22 @@
 
                 </p> 
 
-                <p class="input-group">
-                    <label for="nodo_principal" style='margin-right: 5px;'>Nodo Principal</span>
-                        <input-check ng-model="nodo_principal" style='margin-right: 15px;' id="nodo_principal" ></input-check>
 
-                        <label for="habilitar_empresas" style='margin-right: 5px;'>Habilitar En Empresas</label>
-                        <input-check ng-model="habilitar_empresas" id="habilitar_empresas" style='margin-right: 10px;' ></input-check>
-
-                        <label for="habilitar" style='margin-right: 5px;'>Activar</label>
-                        <input-check ng-model="habilitar" id="habilitar"  ></input-check>
-
-
-                </p>
 
             </div>
         </div>
+
+    </div>
+
+
+
+    <div class="col-md-7">
 
         <div class="panel panel-info">
             <div class="panel-heading txt-center"><h5>Opciones del modulo</h5></div>
             <div class="panel-body">
                 <div class="row">
                     <div class="col-md-6 contenedor_opciones">
-
                         <p class="input-group">
                             <input type="text" class="form-control"  placeholder="Nombre Opcion" />
                             <span class="input-group-addon">
@@ -81,12 +86,6 @@
                             <textarea class="form-control observacion_modulo" placeholder="Observacion"></textarea>
 
                         </p> 
-
-                        <p class="input-group">
-                            <label for="habilitar_opcion" style='margin-right: 5px;'>Habilitar Opcion</span>
-                                <input-check ng-model="habilitar_opcion" style='margin-right: 15px;' id="habilitar_opcion" ></input-check>
-                        </p>
-
                     </div>
                     <div class="col-md-6 contenedor_opciones">
                         <div class="table-responsive listado_opciones" >
@@ -95,16 +94,28 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
+
+                <p style='padding-top:5px;'>
+                    <label for="habilitar_opcion" style='margin-right: 5px;'>Habilitar Opcion</label>
+                <input-check ng-model="habilitar_opcion" style='margin-right: 15px;' id="habilitar_opcion" ></input-check>
+                </p>
+            </div>
+        </div>
+    </div> 
+
+</div>
+
+<div class='row'>
+    <div class="col-md-12">
+
+        <div class="panel panel-info">
+            <div class="panel-heading txt-center"><h5>Modulos del sistema</h5></div>
+            <div class="panel-body">
+                <div arbol-modulos></div>
             </div>
         </div>
     </div>
-
-
-
-    <div class="col-md-7 pull-right">
-
-    </div> 
-
 </div>
 

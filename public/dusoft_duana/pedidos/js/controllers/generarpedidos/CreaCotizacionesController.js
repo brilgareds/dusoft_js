@@ -45,6 +45,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             //$scope.ruta_upload = {target: '/subida'}; //ruta del servidor para subir el archivo
 
             $scope.rootCreaCotizaciones.seleccion_vendedor = 0;
+            $scope.rootCreaCotizaciones.nombre_seleccion_vendedor = "";
+            $scope.rootCreaCotizaciones.tipo_id_seleccion_vendedor = "";
 
             $scope.datos_cliente = {
                 nit: '',
@@ -128,6 +130,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 pedido.setDatos(datos_pedido);
                 pedido.setTipo(PedidoVenta.TIPO_CLIENTE);
                 pedido.setObservacion("");
+                pedido.setTipoIdVendedor("");
+                pedido.setVendedorId("");
                 
                //$scope.rootCreaCotizaciones.Empresa.setPedidoSeleccionado(pedido);
                
@@ -260,9 +264,55 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             $scope.valorSeleccionado = function() {
 
-                console.log("Valor Seleccionado: ", $scope.seleccion_vendedor);
+                console.log("Valor Seleccionado: ", $scope.rootCreaCotizaciones.seleccion_vendedor);
 
-                if ($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.rootCreaCotizaciones.seleccion_vendedor != 0)
+                var vendedor_seleccionado = $scope.rootCreaCotizaciones.seleccion_vendedor;
+                //var nombre_vendedor_seleccionado = "";
+                
+                $scope.rootCreaCotizaciones.Empresa.getVendedores().forEach(function(vendedor){
+
+                    if(vendedor.id === vendedor_seleccionado){
+                        //nombre_vendedor_seleccionado = vendedor.nombre_tercero;
+                        
+       /*
+                that.crearVendedor = function(obj) {
+                
+                var vendedor = VendedorPedido.get(
+                                    obj.nombre,           //nombre_tercero
+                                    obj.tipo_id_vendedor, //tipo_id_tercero
+                                    obj.vendedor_id,      //id
+                                    obj.telefono          //telefono
+                                );
+
+                return vendedor;
+            };
+       */
+                        
+                        var obj_vendedor = {
+                            nombre: vendedor.nombre_tercero,
+                            tipo_id_vendedor: vendedor.tipo_id_tercero,
+                            vendedor_id: vendedor.id,
+                            telefono: vendedor.telefono
+                        };
+                        
+                        var vendedor = that.crearVendedor(obj_vendedor);
+                        
+                        $scope.rootCreaCotizaciones.nombre_seleccion_vendedor = vendedor.nombre_tercero;
+                        //$scope.rootCreaCotizaciones.tipo_id_seleccion_vendedor = vendedor.tipo_id_tercero;
+                        $scope.rootCreaCotizaciones.Empresa.setVendedorSeleccionado(vendedor);
+                        
+                        console.log(">>>>> Vendedor Seleccionado: ", $scope.rootCreaCotizaciones.Empresa.getVendedorSeleccionado());
+                        
+                        
+                    }
+                });
+                
+                console.log("Nombre Valor Seleccionado: ", $scope.rootCreaCotizaciones.nombre_seleccion_vendedor);
+                console.log("Nombre Valor Seleccionado: ", $scope.rootCreaCotizaciones.tipo_id_seleccion_vendedor);
+                
+                //console.log("Valor Parámetro: ", valor);
+
+                /*if ($scope.datos_cliente.nit != '' && $scope.datos_cliente.nombre != '' && $scope.rootCreaCotizaciones.seleccion_vendedor != 0)
                 {
                     $scope.rootCreaCotizaciones.bloquear = false;
                 }
@@ -272,7 +322,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 }
                 else {
                     $scope.rootCreaCotizaciones.bloquear_upload = true;
-                }
+                }*/
 
             };
 

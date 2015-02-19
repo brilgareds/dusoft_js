@@ -188,50 +188,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };            
 
             /**/
-
-            /*$scope.onBuscarSeleccionProducto = function(termino, paginando) {
-
-                //valida si cambio el termino de busqueda
-                if ($scope.rootSeleccionProductoCliente.ultima_busqueda != $scope.rootSeleccionProductoCliente.termino_busqueda) {
-                    $scope.rootSeleccionProductoCliente.paginaactual = 1;
-                }
-                
-                console.log("ListadoProductos Vacio",$scope.rootSeleccionProductoCliente.listado_productos);
-                
-                for(var i=0; i<10; i++)
-                {
-                    //var pedido = Pedido.get();
-                    //if($scope.rootSeleccionProductoCliente.tipo_cliente === 1) {
-                    
-                    var obj = {
-                            codigo_producto: '123456'+i,
-                            descripcion: 'TRIPARTYCINA X '+i,
-                            cum: '102030'+i,
-                            codigo_invima: 'INV-321098'+i,
-                            iva: 16,
-                            precio_regulado: '50'+i,
-                            precio_venta: '60'+i,
-                            existencia_bodega: '20'+i,
-                            cantidad_disponible: '10'+i,
-                            cantidad_solicitada: 0,
-                            fila_activa: true,
-                            tipo_boton: 'success',
-                            etiqueta_boton: 'Incluir'
-                    };
-
-                    $scope.rootSeleccionProductoCliente.listado_productos.push(obj);
-
-                    //}
-
-                }
-                
-                $scope.renderGrid();
-            };*/
-
-            /*$scope.Disable = function(item) { 
-			return item.fila_activa;
-		};*/
-
+ 
             /*  Construcción de Grid    */
             
             that.renderGrid = function() {
@@ -319,6 +276,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             that.insertarProducto = function(row) {
 
                 $scope.rootSeleccionProductoCliente.no_incluir_producto = false;
+                
+                var vendedor = $scope.rootSeleccionProductoCliente.Empresa.getVendedorSeleccionado();
+                
+                $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().setTipoIdVendedor(vendedor.tipo_id_tercero);
+                $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().setVendedorId(vendedor.id);
 
                 $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().lista_productos.forEach(function(valor) {
                     if (valor.codigo_producto === row.entity.codigo_producto) {
@@ -341,17 +303,28 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             //Función que inserta el encabezado del pedido temporal
             that.insertarEncabezadoPedidoTemporal = function(callback) {
                 
+                var pedido = $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado();
+                /* empresa_id, tipo_id_tercero, tercero_id, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones */
+                
                 var obj_encabezado = {
                     session: $scope.rootSeleccionProductoCliente.session,
                     data: {
                         pedidos_farmacias: {
-                            empresa_id: $scope.rootSeleccionProductoCliente.para_empresa_id,
+                            
+                            empresa_id: $scope.rootSeleccionProductoCliente.Empresa.getCodigo(),
+                            tipo_id_tercero: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getCliente().tipo_id_tercero,
+                            tercero_id: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().tercero_id,
+                            tipo_id_vendedor: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getTipoIdVendedor(),
+                            vendedor_id: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getVendedorId(),
+                            estado: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().estado,
+                            observaciones: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().observacion
+                            /*empresa_id: $scope.rootSeleccionProductoCliente.para_empresa_id,
                             centro_utilidad_id: $scope.rootSeleccionProductoCliente.para_centro_utilidad_id,
                             bodega_id: $scope.rootSeleccionProductoCliente.para_bodega_id,
                             empresa_destino_id: $scope.rootSeleccionProductoCliente.de_empresa_id,
                             centro_utilidad_destino_id: $scope.rootSeleccionProductoCliente.de_centro_utilidad_id,
                             bodega_destino_id: $scope.rootSeleccionProductoCliente.de_bodega_id,
-                            observacion: $scope.rootSeleccionProductoCliente.observacion_encabezado
+                            observacion: $scope.rootSeleccionProductoCliente.observacion_encabezado*/
                         }
                     }
                 };

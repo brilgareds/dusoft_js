@@ -1,16 +1,16 @@
 <div flow-init="{ target : '/upload'}" flow-file-added="!!{txt:1,csv:1}[$file.getExtension()]">
-<div style="padding:5px" ng-controller="CreaCotizacionesController">  
-    
-    <div class="row"> 
-        <div class="col-sm-12 col-md-12">
+    <div style="padding:5px" ng-controller="CreaCotizacionesController">  
+
+        <div class="row"> 
+            <div class="col-sm-12 col-md-12">
 
                 <div class="panel panel-info marginBottom5">
-                    
+
                     <div class="panel-heading">
                         <h4 class="h4MarginTopBottom">Información de Cliente</h4>
                     </div>
                     <div class="panel-body">
-                        
+
                         <div class="row col-sm-6 col-md-12"> <!--Div Panel Superior-->
                             <!--class="btn btn-accion btn-primary pull-left"-->
                             <button type="button" class="btn btn-default btn-sm" ng-disabled="rootCreaCotizaciones.bloqueo_producto_incluido" ng-click="onRowClickSelectCliente()">
@@ -18,132 +18,160 @@
                             </button>
                             <div class="pull-right"><h3><font color="blue">Cotización N°: 123456</font></h3></div>
                         </div> <!--Div Panel Superior-->
-                        
+
                         <div class="row col-lg-9 col-md-9 col-sm-5"> <!-- Div Panel Izquierdo -->
                             <div class="row"> <!--Div Fila 1-->
-                                
+
                                 <div class="col-md-4"> <!--Contenedor Izquierdo-->
                                     <h4 class="h4MarginTopBottom">Cliente:</h4></br>
                                     {{rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().nombre_tercero}}
                                 </div> <!--/Contenedor Izq-->
-                                
+
                                 <div class="col-md-4"> <!--Contenedor Centro-->
                                     <h4 class="h4MarginTopBottom">Nit:</h4></br>
                                     {{rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().id}}
                                 </div> <!--/Contenedor Centro-->
-                                
+
                                 <div class="col-md-4"> <!--Contenedor Derecho-->
                                     <h4 class="h4MarginTopBottom">Dirección:</h4></br>
                                     {{rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().direccion}}
                                 </div> <!--/Contenedor Der-->
-                                
+
                             </div>  <!--/Div Fila 1-->
                             <div class="row"> <!--Div Fila 2-->
 
                                 <div class="col-md-4"> <!--Contenedor Izquierdo-->
-                                        </br></br>
-                                        <h4 class="h4MarginTopBottom">Vendedor: </h4>
+                                    </br></br>
+                                    <h4 class="h4MarginTopBottom">Vendedor: </h4>
 
-                                        <select ui-select2="seleccionvendedor"  class="form-control selectgeneral pull-left" ng-disabled="rootCreaCotizaciones.bloqueo_producto_incluido" ng-model="rootCreaCotizaciones.seleccion_vendedor"  placeholder="Seleccionar Documento" ng-change="valorSeleccionado()">
-                                            <option></option>
-                                            <option ng-repeat="vendedor in rootCreaCotizaciones.Empresa.getVendedores()"  ng-value="vendedor.id" >{{vendedor.nombre_tercero}}</option>
+                                    <select ui-select2="seleccionvendedor"  class="form-control selectgeneral pull-left" ng-disabled="rootCreaCotizaciones.bloqueo_producto_incluido" ng-model="rootCreaCotizaciones.seleccion_vendedor"  placeholder="Seleccionar Documento" ng-change="valorSeleccionado()">
+                                        <option></option>
+                                        <option ng-repeat="vendedor in rootCreaCotizaciones.Empresa.getVendedores()"  ng-value="vendedor.id" >{{vendedor.nombre_tercero}}</option>
+                                    </select>
+
+                                    <!--                                        <select ui-select2  class="pull-left anchoSeleccionEmpresa" ng-model="farmacia_seleccionada" data-placeholder="Seleccionar Farmacia" ng-change="seleccion_farmacia()"
+                                                                                    data-ng-options="farmacia as farmacia.get_nombre_farmacia() for farmacia in rootVerPedidosFarmacias.Empresa.getFarmacias()">
+                                                                            </select>-->
+
+                                    <!--                                    <select ui-select2  class="form-control selectgeneral pull-left" ng-model="rootCreaCotizaciones.seleccion_vendedor" data-placeholder="Seleccionar Farmacia" ng-change="valorSeleccionado()"
+                                                                                    data-ng-options="vendedor as vendedor.nombre_tercero for vendedor in rootCreaCotizaciones.Empresa.getVendedores()">
+                                                                            </select>-->
+
+                                    <!--select 
+                                        ui-select2="seleccionvendedor"
+                                        id="listaVendedores"
+                                        class="form-control selectgeneral pull-left"
+                                        ng-model="vendedor_seleccionado"
+                                        ng-change="valorSeleccionado(vendedor_seleccionado)"
+                                        data-placeholder="Seleccionar Vendedor"
+                                        data-ng-options="vendedor as vendedor.nombre_tercero for vendedor in rootCreaCotizaciones.Empresa.getVendedores()">
+                                        <option value=""></option>
+                                    </select-->
+
+<!--                                    <div class="col-md-7">  
+                                        <select ui-select2=""  class="form-control selectgeneral pull-left" placeholder="Seleccionar Vendedor" ng-change="valorSeleccionado()"
+                                                ng-options="vendedor as vendedor.id for vendedor in rootCreaCotizaciones.Empresa.getVendedores() track by vendedor.id" ng-model="vendedor_seleccionado">
+                                            option></option>    
+                                            <option ng-repeat="vendedor in  rootCreaCotizaciones.Empresa.getVendedores()"  value="{{vendedor.id}}">{{ vendedor.nombre_tercero }}</option
                                         </select>
+                                    </div>-->
+
                                 </div> <!--/Contenedor Izquierdo-->
-                                
+
                                 <div class="col-md-4"> <!--Contenedor Centro-->
                                     </br></br>
                                     <h4 class="h4MarginTopBottom">Ubicación:</h4></br>
                                     {{rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getUbicacion()}}
                                 </div> <!--/Contenedor Centro-->
-                                
+
                                 <div class="col-md-4"> <!--Contenedor Derecho-->
                                     </br></br>
                                     <h4 class="h4MarginTopBottom">Teléfono:</h4></br>
                                     {{rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().telefono}}
                                 </div> <!--/Contenedor Der-->
-                                
+
                             </div> <!--/Div Fila 2-->
 
                         </div> <!-- / Div Panel Izquierdo -->
-                        
+
                         <div class="col-lg-3 col-md-3 col-sm-5"> <!-- Div Panel Derecho -->
 
                             <h4 class="h4MarginTopBottom">Observación:</h4></br>
                             <textarea class="col-lg-12 col-md-12 col-sm-5" rows="6" name="" placeholder="Ingresar Observación"></textarea>
                         </div> <!-- / Div Panel Izquierdo -->
-                        
+
                     </div>  
-                    
+
                 </div>
 
+            </div>
+        </div> <!-- / end payment details section -->
+
+        <div slide-content open-callback="mostrarseleccioncliente" close-callback="cerrarseleccioncliente" class="slide" >
+            <div ng-include src="slideurl"  ng-controller="SeleccionClienteController" ></div>
         </div>
-    </div> <!-- / end payment details section -->
-    
-    <div slide-content open-callback="mostrarseleccioncliente" close-callback="cerrarseleccioncliente" class="slide" >
-        <div ng-include src="slideurl"  ng-controller="SeleccionClienteController" ></div>
-    </div>
-      
-    <!-- End Código desplazado -->
-    <div class="row">
-        <div class="col-xs-12">
-          
-            <div class="panel panel-info marginBottom5"> <!-- / begin banking details -->
 
-                <div class="panel-heading">
-                  <h4 class="h4MarginTopBottom">Productos</h4>
-                </div>
-                
-                <div>
-                    <br/><!--Espacio entre Tab Y título de Panel-->
-                </div>
-                
-                <tabset  class="">
-                    
-                    <tab disabled="bloquear">
-                        
-                        <tab-heading>
-                            <b> Incluir Producto Manual</b>
-                        </tab-heading>
-                        
-                        <div class="panel-body">
-                            <button type="button" class="btn btn-default btn-sm" ng-disabled="bloquear" ng-click="onRowClickSelectProducto(1)">
-                                <span class="glyphicon glyphicon-plus"></span> Incluir Producto
-                            </button>
-                            <div class="input-group navbar-form paddingRightZero">
-                                <input type="text" class="form-control pull-right" ng-disabled="bloquear" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">
-                                <div class="input-group-btn" >
-                                    <button class="btn btn-default pull-right" type="submit" ng-disabled="bloquear" ng-click="buscarDetalleDocumentoTemporal(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+        <!-- End Código desplazado -->
+        <div class="row">
+            <div class="col-xs-12">
+
+                <div class="panel panel-info marginBottom5"> <!-- / begin banking details -->
+
+                    <div class="panel-heading">
+                        <h4 class="h4MarginTopBottom">Productos</h4>
+                    </div>
+
+                    <div>
+                        <br/><!--Espacio entre Tab Y título de Panel-->
+                    </div>
+
+                    <tabset  class="">
+
+                        <tab disabled="bloquear">
+
+                            <tab-heading>
+                                <b> Incluir Producto Manual</b>
+                            </tab-heading>
+
+                            <div class="panel-body">
+                                <button type="button" class="btn btn-default btn-sm" ng-disabled="bloquear" ng-click="onRowClickSelectProducto(1)">
+                                    <span class="glyphicon glyphicon-plus"></span> Incluir Producto
+                                </button>
+                                <div class="input-group navbar-form paddingRightZero">
+                                    <input type="text" class="form-control pull-right" ng-disabled="bloquear" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">
+                                    <div class="input-group-btn" >
+                                        <button class="btn btn-default pull-right" type="submit" ng-disabled="bloquear" ng-click="buscarDetalleDocumentoTemporal(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="panel-body">
-                            <div class="auditadosGrid" ng-grid="rootCreaCotizaciones.lista_productos"></div>
-                        </div>
-                        
-                    </tab>
-                    
-                    <tab disabled="bloquear_upload">
-                        <tab-heading>
-                            <b> Cargar Archivo Plano </b>
-                        </tab-heading>
+                            <div class="panel-body">
+                                <div class="auditadosGrid" ng-grid="rootCreaCotizaciones.lista_productos"></div>
+                            </div>
 
-                        <div> <!-- flow-init ="ruta_upload"-->
+                        </tab>
 
-                            <br/>
-                            
-                            <div flow-prevent-drop flow-drag-enter="style={border: '5px solid green'}" flow-drag-leave="style={}" ng-style="dropEnabled && style">
-                            
-                                <div class="span6">
+                        <tab disabled="bloquear_upload">
+                            <tab-heading>
+                                <b> Cargar Archivo Plano </b>
+                            </tab-heading>
 
-                                </div>
-                                  
+                            <div> <!-- flow-init ="ruta_upload"-->
+
+                                <br/>
+
+                                <div flow-prevent-drop flow-drag-enter="style={border: '5px solid green'}" flow-drag-leave="style={}" ng-style="dropEnabled && style">
+
+                                    <div class="span6">
+
+                                    </div>
+
                                     <div class="alert" ng-hide="$flow.files.length" flow-drop flow-drag-enter="class='alert alert-success'" flow-drag-leave="class='alert'" ng-class="class" style="text-align: center; padding: 50px 0;">
                                         <img src="../../../images/Cloud-Upload-Blue.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
                                         <br/><br/>
                                         Arrastre y suelte el archivo en ésta área o use el botón ...</br></br>
                                         <button class="btn btn-info" flow-btn><i class="icon icon-file"></i>Buscar Archivo</button>
                                     </div>
-                                    
+
                                     <div class="alert" ng-show="$flow.files.length" flow-drop flow-drag-enter="class='alert alert-success'" flow-drag-leave="class='alert'" ng-class="class" style="text-align: center; padding: 50px 0;">
                                         El archivo a cargar es: {{$flow.files[0].name}}</br></br>
                                         <img src="../../../images/txt-icon.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
@@ -151,31 +179,31 @@
                                         <button class="btn btn-small btn-success" ng-show="$flow.files.length" ng-click="$flow.resume()">Subir Archivo</button>
                                         <button class="btn btn-danger" ng-show="$flow.files.length" ng-click="$flow.cancel()">Eliminar</button>
                                     </div>
-                                
+
+                                </div>
+
                             </div>
-                            
-                       </div>
-                        
-                    </tab>
-                    
-                </tabset>
-            </div>
-              
-        </div>    
-    </div> <!-- / end class row --> 
-    
-    <div class="col-sm-12 btn-toolbar">
-        <button type="submit" ng-disabled="!rootCreaCotizaciones.bloqueo_producto_incluido" class="btn btn-accion btn-success pull-right">Generar Cotización</button>
-        <button type="submit" class="btn btn-accion btn-danger pull-right">Eliminar Cotización</button>
-        <button type="submit" class="btn btn-accion btn-warning pull-right" ng-click="abrirViewPedidosClientes()">Cancelar Cotización</button>
+
+                        </tab>
+
+                    </tabset>
+                </div>
+
+            </div>    
+        </div> <!-- / end class row --> 
+
+        <div class="col-sm-12 btn-toolbar">
+            <button type="submit" ng-disabled="!rootCreaCotizaciones.bloqueo_producto_incluido" class="btn btn-accion btn-success pull-right">Generar Cotización</button>
+            <button type="submit" class="btn btn-accion btn-danger pull-right">Eliminar Cotización</button>
+            <button type="submit" class="btn btn-accion btn-warning pull-right" ng-click="abrirViewPedidosClientes()">Cancelar Cotización</button>
+        </div>
+
+        <br/><br/><br/><br/><br/>
+
+        <div slide-content open-callback="mostrarseleccionproducto" close-callback="cerrarseleccionproducto"  class="slide" >
+            <div ng-include src="slideurl"  ng-controller="SeleccionProductoClienteController" ></div>
+        </div>
+
     </div>
 
-    <br/><br/><br/><br/><br/>
-    
-    <div slide-content open-callback="mostrarseleccionproducto" close-callback="cerrarseleccionproducto"  class="slide" >
-        <div ng-include src="slideurl"  ng-controller="SeleccionProductoClienteController" ></div>
-    </div>
-
-</div>
-    
 </div>

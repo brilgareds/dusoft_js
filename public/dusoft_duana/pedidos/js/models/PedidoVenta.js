@@ -16,6 +16,8 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.tipo = 1;
             this.observacion = "";
             this.editable = true;
+            this.tipo_id_vendedor = "";
+            this.vendedor_id = "";
         };
 
         PedidoVenta.prototype = Object.create(Pedido.getClass().prototype);
@@ -70,6 +72,22 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         PedidoVenta.prototype.getEditable = function() {
             return this.editable;
         };
+        
+        PedidoVenta.prototype.setTipoIdVendedor = function(tipo_id_vendedor) {
+            this.tipo_id_vendedor = tipo_id_vendedor;
+        };
+        
+        PedidoVenta.prototype.getTipoIdVendedor = function() {
+            return this.tipo_id_vendedor;
+        };        
+        
+        PedidoVenta.prototype.setVendedorId = function(vendedor_id) {
+            this.vendedor_id = vendedor_id;
+        };
+        
+        PedidoVenta.prototype.getVendedorId = function() {
+            return this.vendedor_id;
+        };                
 
         this.get = function() {
             return new PedidoVenta();

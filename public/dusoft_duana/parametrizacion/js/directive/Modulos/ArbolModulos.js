@@ -1,85 +1,94 @@
 define(["angular", "js/directive"], function(angular, directive) {
 
     directive.directive('arbolModulos', ["$state", "$rootScope", "$timeout", function($state, $rootScope, $timeout) {
+
             return {
-                link: function(scope, element, attrs) {
-                    
-                    var modulosSeleccionados = [];
+                //scope: { model: '=data' },
+                scope:{
+                     datosArbol: '='
+                },
+                link: function(scope, element, attrs, ngModel) {
+                    console.log("data scope ", scope.datosArbol);
+                    scope.modulosSeleccionados = [];
+                    var plugins = ["state"];
+
+                    if (attrs.plugins) {
+                        plugins = plugins.concat(attrs.plugins.split(","));
+                    }
+
+                    scope.$watch("datosArbol", function(nuevoDato, antiguo) {
+                        console.log("data changed ", nuevoDato, antiguo);
+                    });
 
                     //inicializacion del elemento cuando el dom este listo
                     angular.element(document).ready(function() {
-                        var data = [{"id": "ajson1", "parent": "#", "text": "ajson1"},
-                            {"id": "ajson2", "parent": "#", "text": "ajson2"},
-                            {"id": "ajson3", "parent": "ajson2", "text": "ajson3"},
-                            {"id": "ajson4", "parent": "ajson2", "text": "ajson4"},
-                            {"id": "ajson5", "parent": "ajson4", "text": "ajson5"},
-                            {"id": "ajson6", "parent": "ajson4", "text": "ajson6"},
-                            {"id": "ajson7", "parent": "ajson6", "text": "ajson7"},
-                            {"id": "ajson8", "parent": "ajson6", "text": "ajson8"}
-                        ];
+
 
                         $(element).jstree({
                             'core': {
-                                data: data,
+                                data: scope.datosArbol,
                                 "open_parents": true,
-                                "themes" : { "stripes" : true }
+                                "themes": {"stripes": true}
 
                             },
                             "state": {"key": "tree"},
-                            plugins: ["state"/*, "checkbox"*/]
+                            plugins: plugins
 
 
                         }).on("select_node.jstree", function(node, selected, event) {
-                            //se valida si fue por medio de un evento o por el state del plugin
-                            //configura el slide para el modulo visto en el menu
-                            // console.log($(element).jstree().get_selected());
+
+                            //obtiene todos los nodos seleccionados
                             var seleccionados = $(this).jstree("get_selected", true);
-                            modulosSeleccionados= [];
+                            scope.modulosSeleccionados = [];
+
+
                             $.each(seleccionados, function() {
                                 console.log(this);
-                                agregarModuloSeleccionado(this.id);
-                                
-                                for(var i in this.parents){
-                                    agregarModuloSeleccionado(this.parents[i]);
+                                //se agrega el nodo seleccionado
+                                agregarModuloSeleccionado(scope, this.id);
+
+                                //agrega los parent de cada nodo
+                                for (var i in this.parents) {
+                                    agregarModuloSeleccionado(scope, this.parents[i]);
                                 }
-                                
+
                             });
-                            console.log(modulosSeleccionados);
+                            console.log(scope.modulosSeleccionados);
                         });
                     });
-                    
-                    function agregarModuloSeleccionado(modulo){
-                        for(var i in modulosSeleccionados){
-                            if(modulosSeleccionados[i] === modulo || modulo === "#"){
+
+                    //agrega los nodos seleccionados validando que no se repitan y que no sea parent con id #
+                    function agregarModuloSeleccionado(scope, modulo) {
+
+                        for (var i in scope.modulosSeleccionados) {
+                            if (scope.modulosSeleccionados[i] === modulo || modulo === "#") {
                                 return false;
                             }
                         }
-                        
-                        modulosSeleccionados.push(modulo);
-                        
+                        scope.modulosSeleccionados.push(modulo);
                     }
-                    
+
 
                     /*$(".botonmenu").on("click", function(e) {
-                        var el = $(".contenedormenu");
-                        if (el.hasClass("mostrarmenu")) {
-                            el.removeClass("mostrarmenu");
-                            el.addClass("cerrarmenu");
-                        } else {
-                            el.removeClass("cerrarmenu");
-                            el.addClass("mostrarmenu");
-                        }
-
-
-                    });
-
-                    $(".contenedormenu").on("mouseleave", function() {
-                        var el = $(this);
-                        if (el.hasClass("mostrarmenu")) {
-                            el.removeClass("mostrarmenu");
-                            el.addClass("cerrarmenu");
-                        }
-                    });*/
+                     var el = $(".contenedormenu");
+                     if (el.hasClass("mostrarmenu")) {
+                     el.removeClass("mostrarmenu");
+                     el.addClass("cerrarmenu");
+                     } else {
+                     el.removeClass("cerrarmenu");
+                     el.addClass("mostrarmenu");
+                     }
+                     
+                     
+                     });
+                     
+                     $(".contenedormenu").on("mouseleave", function() {
+                     var el = $(this);
+                     if (el.hasClass("mostrarmenu")) {
+                     el.removeClass("mostrarmenu");
+                     el.addClass("cerrarmenu");
+                     }
+                     });*/
 
 
 

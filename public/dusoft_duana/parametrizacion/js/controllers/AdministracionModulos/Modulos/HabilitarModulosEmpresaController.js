@@ -4,7 +4,8 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
     controllers.controller('HabilitarModulosEmpresaController', ['$scope', '$rootScope', 'Request', '$modal', 'API',
         "socket", "$timeout", "AlertService", "Usuario", "$modalInstance",
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, Usuario, $modalInstance) {
-
+            
+            
             $scope.listado_empresas = {
                 data: '[]',
                 enableColumnResize: true,

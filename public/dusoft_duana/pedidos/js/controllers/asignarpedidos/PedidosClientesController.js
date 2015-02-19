@@ -128,18 +128,18 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                     {field: '', cellClass: "checkseleccion", width: "60",
                         cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)'" +
                                 " ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1  && row.entity.estado_actual_pedido != 5 || " +
-                                " row.entity.estado == 2 || "+
+                                " row.entity.estado == 2 || " +
                                 "row.entity.estado_separacion'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
                     {field: 'descripcion_estado_actual_pedido', displayName: "Estado Actual", cellClass: "txt-center",
                         //cellTemplate: '<div ng-class="agregarClase(row.entity.estado_actual_pedido)" >{{row.entity.descripcion_estado_actual_pedido}}</div>'},
                         cellTemplate: "<button type='button' ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
                     {field: 'numero_pedido', displayName: 'Pedido'},
                     {field: 'cliente.nombre_tercero', displayName: 'Cliente'},
-                   // {field: 'cliente.direccion_cliente', displayName: 'Ubicacion'},
+                    // {field: 'cliente.direccion_cliente', displayName: 'Ubicacion'},
                     //{field: 'cliente.telefono_cliente', displayName: 'Telefono'},
                     {field: 'nombre_vendedor', displayName: 'Vendedor'},
                     {field: 'descripcion_estado', displayName: "Estado"},
-                    {field: 'fecha_registro', displayName: "Fecha Registro",width:"110"},
+                    {field: 'fecha_registro', displayName: "Fecha Registro", width: "110"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                             <button ng-disabled="row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 && row.entity.estado_actual_pedido != 5 || row.entity.estado == 2 || row.entity.estado_separacion " class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
@@ -176,9 +176,9 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
             //fin delegado grid pedidos //
 
             $scope.onPedidoSeleccionado = function(check, row) {
-               /* console.log("agregar!!!!!");
-                console.log(check);
-                console.log(row);*/
+                /* console.log("agregar!!!!!");
+                 console.log(check);
+                 console.log(row);*/
 
                 row.selected = check;
                 if (check) {
@@ -210,7 +210,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                         return false;
                     }
                 }
-                
+
                 $scope.pedidosSeleccionados.push(pedido);
                 console.log("guardando pedido ", $scope.pedidosSeleccionados);
             };
@@ -234,7 +234,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
             //fin delegado grid
 
             $scope.modificar_estado_pedido_cliente = function(row) {
-                
+
                 $scope.pedido_seleccionado = row;
 
                 $scope.opts = {
@@ -257,7 +257,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                     controller: function($scope, $modalInstance) {
 
                         $scope.cambiar_estado_pedido = function() {
-                            
+
                             var obj = {
                                 session: $scope.session,
                                 data: {
@@ -278,7 +278,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                                 }
                             });
                         };
-                        
+
                         $scope.close = function() {
                             $modalInstance.close();
                         };

@@ -1,0 +1,35 @@
+<div class="modal-header">
+    <button type="button" class="close" ng-click="close()">&times;</button>
+    <h4 class="modal-title">Seleccionar empresas y roles</h4>
+</div>
+<div class="modal-body">
+
+    <alert  type="'danger'" close="closeAlert();" ng-show="alert"></alert>
+
+    <div class="row">
+        <div class="col-md-6 contenedor_opciones">
+            <div class="listado_opciones" style="padding-bottom: 10px;">
+                <div class="table-responsive listado_opciones" >
+                    <div class="grid-responsive listado_opciones" ng-grid="listado_empresas">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 contenedor_opciones">
+            <div class="listado_opciones" style="padding-bottom: 10px;">
+                <div class="table-responsive listado_opciones" >
+                    <div class="grid-responsive listado_opciones" ng-grid="listado_roles">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal-footer">
+        <button class="btn btn-primary" ng-disabled='form_operario.nombre_operario.$error.required' ng-click="realizarAccion()" >Terminar</button>
+
+    </div>
+</div>

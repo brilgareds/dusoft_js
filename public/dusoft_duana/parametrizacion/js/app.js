@@ -14,13 +14,18 @@ define([
     "includes/menu/menucontroller",
     "url",
     "controllers/OperariosBodega/OperariosBodegaController",
+    "controllers/AdministracionModulos/Modulos/AdministracionModulosController",
+    "controllers/AdministracionPerfiles/Roles/AdministracionRolesController",
+    "controllers/AdministracionPerfiles/Usuarios/AdministracionUsuariosController",
     "models/OperariosBodegaModel/Operario",
     "includes/alert/Alert",
     "includes/header/HeaderController",
     "includes/http/Request",
     "includes/http/HttpInterceptor",
     "storage",
-    "includes/classes/Usuario"
+    "includes/classes/Usuario",
+    "includes/widgets/InputCheck",
+    "directive/Modulos/ArbolModulos"
 ], function(angular) {
     /* App Module and its dependencies */
 
@@ -53,7 +58,28 @@ define([
             text:"Operarios Bodega",
             templateUrl: "views/OperariosBodega/listaOperarios.html",
             controller: "OperariosBodegaController"
+        })
+        .state('AdministracionModulos', {
+            url: "/AdministracionModulos",
+            text:"Administracion Modulos",
+            templateUrl: "views/AdministracionModulos/Modulos/administracionModulos.html",
+            controller: "AdministracionModulosController"
+        })
+        .state('AdministracionRoles', {
+            url: "/AdministracionRoles",
+            text:"Administracion Roles",
+            templateUrl: "views/AdministracionPerfiles/Roles/listarRoles.html",
+            controller: "AdministracionRolesController"
+        })
+        .state('AdministracionUsuarios', {
+            url: "/AdministracionUsuarios",
+            text:"Administracion Usuarios",
+            templateUrl: "views/AdministracionPerfiles/Usuarios/listarUsuarios.html",
+            controller: "AdministracionUsuariosController"
         });
+        
+        
+        
 
     }]).run(["$rootScope", "localStorageService", "Usuario", function($rootScope,localStorageService, Usuario) {
         $rootScope.name = "parametrizacion";

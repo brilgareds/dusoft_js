@@ -90,5 +90,56 @@
         "icon": "glyphicon glyphicon-list-alt",
         "parentname": "ordenescompra",
         "state": "ListarOrdenes"
+    },
+    {
+        "id": "18",
+        "parent": "7",
+        "text": "Administracion Modulos",
+        "url": "AdministracionModulos",
+        "parentname": "parametrizacion"
+    },
+    {
+        "id": "19",
+        "parent": "7",
+        "text": "Administracion Perfiles",
+        "url": "AdministracionRoles",
+        "parentname": "parametrizacion"
+    },
+    {
+        "id": "20",
+        "parent": "18",
+        "text": "Modulos",
+        "url": "AdministracionModulos",
+        "parentname": "parametrizacion",
+        "icon": "glyphicon glyphicon-file",
+        "state": "AdministracionModulos"
+    },
+    {
+        "id": "21",
+        "parent": "18",
+        "text": "Modulos Empresas",
+        "url": "ModulosEmpresas",
+        "parentname": "parametrizacion",
+        "icon": "glyphicon glyphicon-file",
+        "state": "ModulosEmpresas"
+    },
+    {
+        "id": "22",
+        "parent": "19",
+        "text": "Roles",
+        "url": "AdministracionRoles",
+        "parentname": "parametrizacion",
+        "icon": "glyphicon glyphicon-file",
+        "state": "AdministracionRoles"
+    },
+    {
+        "id": "23",
+        "parent": "19",
+        "text": "Usuarios",
+        "url": "AdministracionUsuarios",
+        "parentname": "parametrizacion",
+        "icon": "glyphicon glyphicon-file",
+        "state": "AdministracionUsuarios"
     }
+    
 ]

@@ -318,6 +318,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                             vendedor_id: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getVendedorId(),
                             estado: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().estado,
                             observaciones: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().observacion
+                    
+                    
                             /*empresa_id: $scope.rootSeleccionProductoCliente.para_empresa_id,
                             centro_utilidad_id: $scope.rootSeleccionProductoCliente.para_centro_utilidad_id,
                             bodega_id: $scope.rootSeleccionProductoCliente.para_bodega_id,

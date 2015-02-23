@@ -48,6 +48,34 @@
                                         <option></option>
                                         <option ng-repeat="vendedor in rootCreaCotizaciones.Empresa.getVendedores()"  ng-value="vendedor.id" >{{vendedor.nombre_tercero}}</option>
                                     </select>
+
+                                    <!--                                        <select ui-select2  class="pull-left anchoSeleccionEmpresa" ng-model="farmacia_seleccionada" data-placeholder="Seleccionar Farmacia" ng-change="seleccion_farmacia()"
+                                                                                    data-ng-options="farmacia as farmacia.get_nombre_farmacia() for farmacia in rootVerPedidosFarmacias.Empresa.getFarmacias()">
+                                                                            </select>-->
+
+                                    <!--                                    <select ui-select2  class="form-control selectgeneral pull-left" ng-model="rootCreaCotizaciones.seleccion_vendedor" data-placeholder="Seleccionar Farmacia" ng-change="valorSeleccionado()"
+                                                                                    data-ng-options="vendedor as vendedor.nombre_tercero for vendedor in rootCreaCotizaciones.Empresa.getVendedores()">
+                                                                            </select>-->
+
+                                    <!--select 
+                                        ui-select2="seleccionvendedor"
+                                        id="listaVendedores"
+                                        class="form-control selectgeneral pull-left"
+                                        ng-model="vendedor_seleccionado"
+                                        ng-change="valorSeleccionado(vendedor_seleccionado)"
+                                        data-placeholder="Seleccionar Vendedor"
+                                        data-ng-options="vendedor as vendedor.nombre_tercero for vendedor in rootCreaCotizaciones.Empresa.getVendedores()">
+                                        <option value=""></option>
+                                    </select-->
+
+<!--                                    <div class="col-md-7">  
+                                        <select ui-select2=""  class="form-control selectgeneral pull-left" placeholder="Seleccionar Vendedor" ng-change="valorSeleccionado()"
+                                                ng-options="vendedor as vendedor.id for vendedor in rootCreaCotizaciones.Empresa.getVendedores() track by vendedor.id" ng-model="vendedor_seleccionado">
+                                            option></option>    
+                                            <option ng-repeat="vendedor in  rootCreaCotizaciones.Empresa.getVendedores()"  value="{{vendedor.id}}">{{ vendedor.nombre_tercero }}</option
+                                        </select>
+                                    </div>-->
+
                                 </div> <!--/Contenedor Izquierdo-->
 
                                 <div class="col-md-4"> <!--Contenedor Centro-->

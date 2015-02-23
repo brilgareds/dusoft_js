@@ -571,14 +571,14 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
     var estado = args.cotizacion_encabezado.estado;
     var observaciones = args.cotizacion_encabezado.observaciones;
 
-    that.m_pedidos_clientes.asignar_responsables_pedidos(numero_pedido, estado_pedido, responsable, usuario, function(err, rows, responsable_estado_pedido) {
+    that.m_pedidos_clientes.insertar_cotizacion(empresa_id, tipo_id_tercero, tercero_id, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones, function(err, pedido_cliente_id_tmp) {
 
         if (err) {
-            res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Asignacion de Resposables', 500, {}));
+            res.send(G.utils.r(req.url, 'Error en Inserción de Cotización', 500, {}));
             return;
         }
 
-        res.send(G.utils.r(req.url, 'Asignacion de Resposables', 200, {}));
+        res.send(G.utils.r(req.url, 'Inserción Exitosa', 200, {pedido_cliente_id_tmp: pedido_cliente_id_tmp}));
 
     });
  

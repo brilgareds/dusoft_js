@@ -17,6 +17,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
         EmpresaPedido.lista_clientes = [];
         EmpresaPedido.lista_vendedores = [];
         EmpresaPedido.lista_productos = [];
+        EmpresaPedido.vendedorSeleccionado = {};
 
         //Agregar farmacia
         EmpresaPedido.agregarFarmacias = function(farmacia){
@@ -169,6 +170,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             return this.pedidosTemporalesFarmacias.splice(index,1);
         };
         
+        //Operaciones Cliente
         EmpresaPedido.agregarCliente = function(cliente){
             this.lista_clientes.push(cliente);
         };
@@ -181,6 +183,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             this.lista_clientes = [];
         };
         
+        //Operaciones Vendedores
         EmpresaPedido.agregarVendedor = function(vendedor){
             this.lista_vendedores.push(vendedor);
         };
@@ -191,8 +194,17 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
         
         EmpresaPedido.vaciarVendedores = function() {
             this.lista_vendedores = [];
-        };  
+        };
+
+        EmpresaPedido.setVendedorSeleccionado = function(vendedor) {
+            this.vendedorSeleccionado = vendedor;
+        };
         
+        EmpresaPedido.getVendedorSeleccionado = function() {
+            return this.vendedorSeleccionado;
+        };
+        
+        //Operaciones Producto
         EmpresaPedido.agregarProducto = function(producto){
             this.lista_productos.push(producto);
         };

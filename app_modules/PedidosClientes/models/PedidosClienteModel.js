@@ -809,6 +809,29 @@ PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(nu
     });
 };
 
+/**
+ * @api {sql} insertar_cotizacion Pedidos clientes model
+ * @apiName Pedidos Clientes
+ * @apiGroup PedidosCliente (sql)
+ * @apiDescription Inserta encabezado de cotización
+ * @apiDefinePermission autenticado Requiere Autenticacion
+ * Requiere que el usuario esté autenticado.
+ * @apiPermission autenticado
+ * @apiParam {Number} numero_pedido Numero del pedido a asignar
+ * @apiParam {Function} callback Funcion de retorno de informacion.
+ */
+PedidosClienteModel.prototype.insertar_cotizacion = function(empresa_id, tipo_id_tercero, tercero_id, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones, callback) {
+    
+    var sql = "INSERT INTO ventas_ordenes_pedidos_tmp(empresa_id, tipo_id_tercero, tercero_id, fecha_registro, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones) \
+                VALUES($1, $2, $3, CURRENT_TIMESTAMP, $4, $5, $6, $7, $8) \
+                RETURNING pedido_cliente_id_tmp";
+
+    G.db.query(sql, [empresa_id, tipo_id_tercero, tercero_id, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+
+};
+
 PedidosClienteModel.$inject = ["m_productos"];
 
 

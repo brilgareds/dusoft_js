@@ -31,6 +31,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.rootCreaCotizaciones.bloqueo_producto_incluido = false;
             $scope.rootCreaCotizaciones.bloquear_upload = true;
             
+            $scope.rootCreaCotizaciones.observacion = "";
+            
             $scope.rootCreaCotizaciones.session = {
                     usuario_id: Usuario.usuario_id,
                     auth_token: Usuario.token
@@ -47,6 +49,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.rootCreaCotizaciones.seleccion_vendedor = 0;
             $scope.rootCreaCotizaciones.nombre_seleccion_vendedor = "";
             $scope.rootCreaCotizaciones.tipo_id_seleccion_vendedor = "";
+            
+            $scope.rootCreaCotizaciones.Empresa.setCodigo('03');
+            $scope.rootCreaCotizaciones.Empresa.setNombre('DUANA & CIA LTDA.');
 
             $scope.datos_cliente = {
                 nit: '',
@@ -123,7 +128,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     numero_pedido: "",
                     fecha_registro: "",
                     descripcion_estado_actual_pedido: "",
-                    estado_actual_pedido: "",
+                    estado: '0',
                     estado_separacion: ""
                 };
 
@@ -253,6 +258,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $scope.slideurl = "views/generarpedidos/seleccionproductocliente.html?time=" + new Date().getTime();
                 
                 var cliente = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente();
+                var observacion = $scope.rootCreaCotizaciones.observacion;
+                
+                $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setObservacion(observacion);
+                
+                console.log(">>>> Observación: ", $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getObservacion());
+                
                 $scope.$emit('mostrarseleccionproducto', tipo_cliente, cliente);
 
                 $scope.$broadcast('cargarGridSeleccionadoSlide', $scope.rootCreaCotizaciones.listado_productos);

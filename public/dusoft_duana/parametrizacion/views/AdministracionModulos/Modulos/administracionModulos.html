@@ -9,7 +9,7 @@
 
                 <p class="input-group contenedor_combo_grande">
                     <label for="nodo_principal" style='margin-right: 5px;'>Nodo Principal</label>
-                <input-check ng-model="rootModulos.moduloACrear.nodo_principal" style='margin-right: 20px;' id="nodo_principal" ></input-check>
+                <input-check ng-model="rootModulos.moduloACrear.nodo_principal" ng-click="onSeleccionarNodoPrincipal()" style='margin-right: 20px;' id="nodo_principal" ></input-check>
 
                 <label for="habilitar" style='margin-right: 5px;' >Activar</label>
                 <input-check ng-model="rootModulos.moduloACrear.estado" id="habilitar"  ></input-check>
@@ -22,6 +22,7 @@
 
                     <ui-select ng-model="rootModulos.moduloACrear.moduloPadre"
                                theme="select2"
+                               ng-disabled = "rootModulos.moduloACrear.nodo_principal"
                                class="contenedor_combo_grande">
                         <ui-select-match  placeholder="Seleccionar Modulo Padre">{{$select.selected.text}}</ui-select-match>
                         <ui-select-choices repeat="modulo in rootModulos.modulos | filter:$select.search">
@@ -41,14 +42,17 @@
                 </p> 
 
                 <p class="input-group">
-                    <input type="text" class="form-control" ng-model='rootModulos.moduloACrear.url'  placeholder="Url" name="srch-term" id="srch-term" />
+                    <input type="text" class="form-control" ng-model='rootModulos.moduloACrear.state'  placeholder="Estado Url" name="srch-term" />
                     <span class="input-group-addon">
                         <i class="glyphicon glyphicon-link"></i>
                     </span>
-                </p> 
-
+                </p>
+                
                 <p class="input-group">
-                    <input type="text" class="form-control" ng-model='rootModulos.moduloACrear.state'  placeholder="Nombre Estado Url" name="srch-term" />
+                    <span class="input-group-addon">
+                       /
+                    </span>
+                    <input type="text" class="form-control" ng-model='rootModulos.moduloACrear.state' disabled="disabled"  placeholder="Url" name="srch-term" id="srch-term" />
                     <span class="input-group-addon">
                         <i class="glyphicon glyphicon-link"></i>
                     </span>
@@ -56,7 +60,7 @@
 
                 <p class="input-group">
                 <div class="btn-group">
-                    <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false" ng-disabled='rootModulos.moduloACrear.moduloPadre.id != 0'>
+                    <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false" ng-disabled='rootModulos.moduloACrear.nodo_principal'>
                         <i class="{{rootModulos.moduloACrear.icon}}" style='margin-right:3px;'></i> Icono Del Modulo <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
@@ -78,14 +82,14 @@
                 </p> 
 
                 <div class="pull-right">
-                    <button class="btn btn-warning btn-sm">
+                    <button class="btn btn-warning btn-sm" ng-click='onLimpiarFormulario()'>
                         Limpiar
                         <span class="glyphicon glyphicon-trash"></span>
                     </button>
 
-                    <button class="btn btn-success btn-sm" ng-click='onCrearModulo()'>
-                        Crear
-                        <span class="glyphicon glyphicon-ok"></span>
+                    <button class="btn btn-success btn-sm" ng-click='onGuardarModulo()'>
+                        Guardar
+                        <span class="glyphicon glyphicon-floppy-disk"></span>
                     </button>
 
                 </div>
@@ -102,7 +106,7 @@
             <div class="panel-heading txt-center"><h5>Opciones del modulo</h5></div>
             <div class="panel-body">
                 <div class="row">
-                    <div class="col-md-6 contenedor_opciones">
+                    <div class="col-md-5 contenedor_opciones">
                         <p class="input-group">
                             <input type="text" class="form-control"  placeholder="Nombre Opcion" />
                             <span class="input-group-addon">
@@ -122,7 +126,7 @@
 
                         </p> 
                     </div>
-                    <div class="col-md-6 contenedor_opciones">
+                    <div class="col-md-7 contenedor_opciones">
                         <div class="table-responsive listado_opciones" >
                             <div class="grid-responsive listado_opciones" ng-grid="listado_opciones">
 
@@ -134,7 +138,7 @@
 
                 <p style='padding-top:5px;'>
                     <label for="habilitar_opcion" style='margin-right: 5px;'>Habilitar Opcion</label>
-                <input-check ng-model="habilitar_opcion" style='margin-right: 15px;' id="habilitar_opcion" ></input-check>
+                    <input-check ng-model="habilitar_opcion" style='margin-right: 15px;' id="habilitar_opcion" ></input-check>
                 </p>
             </div>
         </div>

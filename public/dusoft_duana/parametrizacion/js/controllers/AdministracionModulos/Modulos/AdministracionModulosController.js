@@ -8,47 +8,49 @@ define([
     controllers.controller('AdministracionModulosController', [
         '$scope', '$rootScope', 'Request',
         '$modal', 'API', "socket",
-        "$timeout", "AlertService", "Usuario", "$modal","Modulo",
+        "$timeout", "AlertService", "Usuario", "$modal", "Modulo",
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, Usuario, $modal, Modulo) {
 
-            
-            
+
+            var self = this;
+
             $scope.rootModulos = {
-                
             };
-            
+
             $scope.rootModulos.session = {
                 usuario_id: Usuario.usuario_id,
                 auth_token: Usuario.token
             };
+
             
-            $scope.rootModulos.moduloACrear = {
-                moduloPadre :undefined
-            };
-            
+
             $scope.rootModulos.iconos = [
-                {clase:'glyphicon glyphicon-file', nombre:'Archivo'},
-                {clase:'glyphicon glyphicon-list-alt', nombre:'Lista'}
+                {clase: 'glyphicon glyphicon-file', nombre: 'Archivo'},
+                {clase: 'glyphicon glyphicon-list-alt', nombre: 'Lista'}
             ];
-                        
-            
+
+
             $scope.listado_opciones = {
                 data: '[]',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
-                    {field: 'nombre_opcion', displayName: 'Nombre Opcion'},
-                    {field: 'alias', displayName: 'Alias'}
+                    {field: 'nombre_opcion', displayName: 'Nombre'},
+                    {field: 'alias', displayName: 'Alias'},
+                    {field: 'accion', displayName: 'Accion',
+                        cellTemplate: '<div>\
+                                      <button class="btn btn-default btn-xs" ng-click="onBorrarOpcion(row.entity)"><span class="glyphicon glyphicon-remove">Borrar</span></button>\
+                                   </div>'
+                    }
                 ]
 
             };
-            
+
             //se carga los modulos despues que el arbol esta listo
             $scope.$on("arbolListoEnDom", function() {
                 var obj = {
                     session: $scope.rootModulos.session,
                     data: {
-                       
                     }
                 };
 
@@ -57,20 +59,20 @@ define([
                         console.log(Modulo);
                         var datos = data.obj.modulos;
                         $scope.rootModulos.modulos = [];
-                        
-                        for(var i in datos){
+
+                        for (var i in datos) {
                             var modulo = Modulo.get(
                                     datos[i].id,
                                     datos[i].parent,
                                     datos[i].nombre,
                                     datos[i].url
-                            );
+                                    );
 
                             $scope.rootModulos.modulos.push(modulo);
                         }
-                        
-                       // console.log(modulos);
-                        $scope.$broadcast("datosArbolCambiados",$scope.rootModulos.modulos);
+
+                        // console.log(modulos);
+                        $scope.$broadcast("datosArbolCambiados", $scope.rootModulos.modulos);
 
                     }
 
@@ -97,21 +99,132 @@ define([
                 var modalInstance = $modal.open($scope.opts);
 
             };
-            
-            
+
+
             /*$scope.onModuloPadreSeleccionado = function(){
-                console.log($scope.rootModulos.moduloACrear.moduloPadre);
+             console.log($scope.rootModulos.moduloACrear.moduloPadre);
+             };
+             */
+
+            //limpia los datos del modulo
+            $scope.onLimpiarFormulario = function() {
+                self.inicializarModuloACrear();
             };
-            */
-            $scope.onCrearModulo = function(){
-                console.log($scope.rootModulos.moduloACrear);
+
+            $scope.onGuardarModulo = function() {
+                var validacion = self.validarCreacionModulo();
+
+                if (!validacion.valido) {
+                    AlertService.mostrarMensaje("warning", validacion.msj);
+                    return;
+                }
             };
-            
-            $scope.onSeleccionIcono = function(icono){
+
+            $scope.onSeleccionIcono = function(icono) {
                 console.log(icono);
                 $scope.rootModulos.moduloACrear.icon = icono.clase;
             };
 
+            $scope.onBorrarOpcion = function(opcion) {
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Desea eliminar la opcion?</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <h4>Codigo.</h4>\
+                                    <h5> {{ producto_eliminar.getCodigoProducto() }}</h5>\
+                                    <h4>Descripcion.</h4>\
+                                    <h5> {{ producto_eliminar.getDescripcion() }} </h5>\
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-warning" ng-click="close()">No</button>\
+                                    <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
+                                </div>',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.confirmar = function() {
+                            // $scope.eliminar_producto();
+                            $modalInstance.close();
+                        };
+
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+
+                    },
+                    resolve: {
+                        producto_eliminar: function() {
+                            return $scope.producto_eliminar;
+                        }
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+            };
+
+            $scope.onSeleccionarNodoPrincipal = function() {
+                if ($scope.rootModulos.moduloACrear.nodo_principal) {
+                    $scope.rootModulos.moduloACrear.moduloPadre = undefined;
+                    $scope.rootModulos.moduloACrear.icon = undefined;
+                }
+            };
+
+            self.validarCreacionModulo = function() {
+                var modulo = $scope.rootModulos.moduloACrear;
+                var validacion = {
+                    valido: true,
+                    msj: ""
+                };
+
+                console.log(modulo);
+                
+                if(!modulo.nodo_pricipal && !modulo.moduloPadre){
+                    validacion.valido = false;
+                    validacion.msj = "Debe seleccionar el modulo padre";
+                    return validacion;
+                }
+                
+                if (modulo.nombre === undefined || modulo.nombre.length === 0) {
+                    validacion.valido = false;
+                    validacion.msj = "El modulo debe tener un nombre";
+                    return validacion;
+                }
+                
+                if (modulo.state === undefined || modulo.state.length === 0) {
+                    validacion.valido = false;
+                    validacion.msj = "El modulo debe tener un estado";
+                    return validacion;
+                }
+                
+                if (modulo.descripcion === undefined || modulo.descripcion.length === 0) {
+                    validacion.valido = false;
+                    validacion.msj = "El modulo debe tener una descripcion";
+                    return validacion;
+                }
+                
+                if(!modulo.nodo_pricipal && !modulo.icon){
+                    validacion.valido = false;
+                    validacion.msj = "Debe seleccionar el icono del modulo";
+                    return validacion;
+                }
+                
+                return validacion;
+
+            };
+
+            self.inicializarModuloACrear = function() {
+                $scope.rootModulos.moduloACrear = {
+                    nodo_principal: false,
+                    estado: false
+                };
+            };
+            
+            self.inicializarModuloACrear();
 
 
         }]);

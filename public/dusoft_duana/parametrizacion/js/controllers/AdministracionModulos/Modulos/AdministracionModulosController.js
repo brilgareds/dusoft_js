@@ -22,7 +22,7 @@ define([
                 auth_token: Usuario.token
             };
 
-            
+
 
             $scope.rootModulos.iconos = [
                 {clase: 'glyphicon glyphicon-file', nombre: 'Archivo'},
@@ -102,7 +102,7 @@ define([
 
 
             /*$scope.onModuloPadreSeleccionado = function(){
-             console.log($scope.rootModulos.moduloACrear.moduloPadre);
+             console.log($scope.rootModulos.moduloAGuardar.moduloPadre);
              };
              */
 
@@ -118,11 +118,42 @@ define([
                     AlertService.mostrarMensaje("warning", validacion.msj);
                     return;
                 }
+                
+                var modulo_guardar = angular.copy($scope.rootModulos.moduloAGuardar);
+                
+                //se verifica si tiene padre para sacar la informacion necesaria
+                if(modulo_guardar.moduloPadre){
+                    modulo_guardar.parent = modulo_guardar.moduloPadre.parent_id;
+                    modulo_guardar.parent_name = modulo_guardar.moduloPadre.text;
+                    delete modulo_guardar.moduloPadre;
+                }
+                
+                modulo_guardar.url = "/"+modulo_guardar.state;
+                
+                delete modulo_guardar.nodo_principal;
+                console.log(modulo_guardar);
+                
+                return;
+                
+                 var obj = {
+                    session: $scope.rootModulos.session,
+                    data: {
+                        modulo:modulo_guardar
+                    }
+                };
+
+                Request.realizarRequest(API.MODULOS.GUARDAR_MODULO, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        
+                    }
+
+                });
+                
             };
 
             $scope.onSeleccionIcono = function(icono) {
                 console.log(icono);
-                $scope.rootModulos.moduloACrear.icon = icono.clase;
+                $scope.rootModulos.moduloAGuardar.icon = icono.clase;
             };
 
             $scope.onBorrarOpcion = function(opcion) {
@@ -168,62 +199,63 @@ define([
             };
 
             $scope.onSeleccionarNodoPrincipal = function() {
-                if ($scope.rootModulos.moduloACrear.nodo_principal) {
-                    $scope.rootModulos.moduloACrear.moduloPadre = undefined;
-                    $scope.rootModulos.moduloACrear.icon = undefined;
+                console.log("es modulo principal ", $scope.rootModulos.moduloAGuardar.nodo_principal);
+                if ($scope.rootModulos.moduloAGuardar.nodo_principal) {
+                   delete $scope.rootModulos.moduloAGuardar.moduloPadre ;
+                   delete $scope.rootModulos.moduloAGuardar.icon ;
                 }
             };
 
             self.validarCreacionModulo = function() {
-                var modulo = $scope.rootModulos.moduloACrear;
+                var modulo = $scope.rootModulos.moduloAGuardar;
                 var validacion = {
                     valido: true,
                     msj: ""
                 };
 
                 console.log(modulo);
-                
-                if(!modulo.nodo_pricipal && !modulo.moduloPadre){
+
+                if (!modulo.nodo_principal && !modulo.moduloPadre) {
                     validacion.valido = false;
                     validacion.msj = "Debe seleccionar el modulo padre";
                     return validacion;
                 }
-                
+
                 if (modulo.nombre === undefined || modulo.nombre.length === 0) {
                     validacion.valido = false;
                     validacion.msj = "El modulo debe tener un nombre";
                     return validacion;
                 }
-                
+
                 if (modulo.state === undefined || modulo.state.length === 0) {
                     validacion.valido = false;
                     validacion.msj = "El modulo debe tener un estado";
                     return validacion;
                 }
-                
+
                 if (modulo.descripcion === undefined || modulo.descripcion.length === 0) {
                     validacion.valido = false;
                     validacion.msj = "El modulo debe tener una descripcion";
                     return validacion;
                 }
-                
-                if(!modulo.nodo_pricipal && !modulo.icon){
+
+                if (!modulo.nodo_principal && !modulo.icon) {
                     validacion.valido = false;
                     validacion.msj = "Debe seleccionar el icono del modulo";
                     return validacion;
                 }
-                
+
                 return validacion;
 
             };
 
             self.inicializarModuloACrear = function() {
-                $scope.rootModulos.moduloACrear = {
+                $scope.rootModulos.moduloAGuardar = {
                     nodo_principal: false,
                     estado: false
                 };
             };
-            
+
             self.inicializarModuloACrear();
 
 

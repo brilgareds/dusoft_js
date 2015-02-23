@@ -9,8 +9,21 @@ define(["angular", "js/models"], function(angular, models) {
                 this.url = url || "";
                 this.modulo_id = id || 0;
                 this.parent_id = parent || "#";
+                this.opciones = [];
                 
             }
+            
+            Modulo.prototype.getOpciones = function(){
+                 return this.opciones;
+            };
+            
+            Modulo.prototype.agregarOpcion = function(opcion){
+                 this.opciones.push(opcion);
+            };
+            
+            Modulo.prototype.vaciarOpciones = function(){
+                 this.opciones = [];
+            };
             
             this.get = function(id, parent, text, url) {
                 return new Modulo(id, parent, text, url);

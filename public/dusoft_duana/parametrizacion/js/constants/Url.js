@@ -15,7 +15,8 @@
 	    	'LISTAR_USUARIOS':BASE_URL+"/Usuarios/listar"
 	    },
             'MODULOS':{
-                'LISTAR_MODULOS': BASE_URL+"/Modulos/listarModulos"
+                'LISTAR_MODULOS': BASE_URL+"/Modulos/listarModulos",
+                'GUARDAR_MODULO': BASE_URL+"/Modulos/guardarModulo"
             }
 	  }
 	};

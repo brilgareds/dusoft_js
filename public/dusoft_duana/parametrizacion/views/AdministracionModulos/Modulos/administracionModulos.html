@@ -9,10 +9,9 @@
 
                 <p class="input-group contenedor_combo_grande">
                     <label for="nodo_principal" style='margin-right: 5px;'>Nodo Principal</label>
-                <input-check ng-model="rootModulos.moduloACrear.nodo_principal" ng-click="onSeleccionarNodoPrincipal()" style='margin-right: 20px;' id="nodo_principal" ></input-check>
-
+                <input-check ng-model="rootModulos.moduloAGuardar.nodo_principal" ng-change="onSeleccionarNodoPrincipal()" style='margin-right: 20px;' id="nodo_principal" ></input-check>
                 <label for="habilitar" style='margin-right: 5px;' >Activar</label>
-                <input-check ng-model="rootModulos.moduloACrear.estado" id="habilitar"  ></input-check>
+                <input-check ng-model="rootModulos.moduloAGuardar.estado" id="habilitar"  ></input-check>
 
                 <button type="button" class="btn btn-default btn-sm pull-right"  ng-click='onHabilitarModuloEnEmpresas()'>Habilitar En Empresas</button>
 
@@ -20,9 +19,9 @@
 
                 <p class="input-group contenedor_combo_grande">
 
-                    <ui-select ng-model="rootModulos.moduloACrear.moduloPadre"
+                    <ui-select ng-model="rootModulos.moduloAGuardar.moduloPadre"
                                theme="select2"
-                               ng-disabled = "rootModulos.moduloACrear.nodo_principal"
+                               ng-disabled = "rootModulos.moduloAGuardar.nodo_principal"
                                class="contenedor_combo_grande">
                         <ui-select-match  placeholder="Seleccionar Modulo Padre">{{$select.selected.text}}</ui-select-match>
                         <ui-select-choices repeat="modulo in rootModulos.modulos | filter:$select.search">
@@ -35,14 +34,14 @@
                 </p>
 
                 <p class="input-group">
-                    <input type="text" class="form-control" ng-model='rootModulos.moduloACrear.nombre' placeholder="Nombre Del Modulo" name="srch-term" id="srch-term" />
+                    <input type="text" class="form-control" ng-model='rootModulos.moduloAGuardar.nombre' placeholder="Nombre Del Modulo" name="srch-term" id="srch-term" />
                     <span class="input-group-addon">
                         <i class="glyphicon glyphicon-ok"></i>
                     </span>
                 </p> 
 
                 <p class="input-group">
-                    <input type="text" class="form-control" ng-model='rootModulos.moduloACrear.state'  placeholder="Estado Url" name="srch-term" />
+                    <input type="text" class="form-control" ng-model='rootModulos.moduloAGuardar.state'  placeholder="Estado Url" name="srch-term" />
                     <span class="input-group-addon">
                         <i class="glyphicon glyphicon-link"></i>
                     </span>
@@ -52,7 +51,7 @@
                     <span class="input-group-addon">
                        /
                     </span>
-                    <input type="text" class="form-control" ng-model='rootModulos.moduloACrear.state' disabled="disabled"  placeholder="Url" name="srch-term" id="srch-term" />
+                    <input type="text" class="form-control" ng-model='rootModulos.moduloAGuardar.state' disabled="disabled"  placeholder="Url" name="srch-term" id="srch-term" />
                     <span class="input-group-addon">
                         <i class="glyphicon glyphicon-link"></i>
                     </span>
@@ -60,8 +59,8 @@
 
                 <p class="input-group">
                 <div class="btn-group">
-                    <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false" ng-disabled='rootModulos.moduloACrear.nodo_principal'>
-                        <i class="{{rootModulos.moduloACrear.icon}}" style='margin-right:3px;'></i> Icono Del Modulo <span class="caret"></span>
+                    <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false" ng-disabled='rootModulos.moduloAGuardar.nodo_principal'>
+                        <i class="{{rootModulos.moduloAGuardar.icon}}" style='margin-right:3px;'></i> Icono Del Modulo <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu" role="menu">
 
@@ -77,7 +76,7 @@
                 </p>
 
                 <p class="input-group contenedor_combo_grande">
-                    <textarea class="form-control observacion_modulo" ng-model='rootModulos.moduloACrear.descripcion' placeholder="Descripcion"></textarea>
+                    <textarea class="form-control observacion_modulo" ng-model='rootModulos.moduloAGuardar.descripcion' placeholder="Descripcion"></textarea>
 
                 </p> 
 

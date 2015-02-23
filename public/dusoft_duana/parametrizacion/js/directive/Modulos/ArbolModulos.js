@@ -4,29 +4,34 @@ define(["angular", "js/directive"], function(angular, directive) {
 
             return {
                 //scope: { model: '=data' },
-                scope:{
-                     datosArbol: '='
-                },
+                /*scope: {
+                    datosArbol: '='
+                },*/
                 link: function(scope, element, attrs, ngModel) {
-                    console.log("data scope ", scope.datosArbol);
+                    
+                    //evento que indica que el elemento se cargo en el dom
+                    scope.$emit("arbolListoEnDom");
+                    
                     scope.modulosSeleccionados = [];
+                    
                     var plugins = ["state"];
 
                     if (attrs.plugins) {
                         plugins = plugins.concat(attrs.plugins.split(","));
                     }
-
-                    scope.$watch("datosArbol", function(nuevoDato, antiguo) {
-                        console.log("data changed ", nuevoDato, antiguo);
+                    
+                    //determina que los datos del arbol cambiaron, actualiza los nodos
+                    scope.$on("datosArbolCambiados", function(e, datos) {
+                        if (datos) {
+                            init(datos);
+                        }
                     });
 
-                    //inicializacion del elemento cuando el dom este listo
-                    angular.element(document).ready(function() {
 
-
-                        $(element).jstree({
+                    function init(datos) {
+                        element.jstree({
                             'core': {
-                                data: scope.datosArbol,
+                                data: datos,
                                 "open_parents": true,
                                 "themes": {"stripes": true}
 
@@ -55,7 +60,7 @@ define(["angular", "js/directive"], function(angular, directive) {
                             });
                             console.log(scope.modulosSeleccionados);
                         });
-                    });
+                    }
 
                     //agrega los nodos seleccionados validando que no se repitan y que no sea parent con id #
                     function agregarModuloSeleccionado(scope, modulo) {
@@ -67,30 +72,6 @@ define(["angular", "js/directive"], function(angular, directive) {
                         }
                         scope.modulosSeleccionados.push(modulo);
                     }
-
-
-                    /*$(".botonmenu").on("click", function(e) {
-                     var el = $(".contenedormenu");
-                     if (el.hasClass("mostrarmenu")) {
-                     el.removeClass("mostrarmenu");
-                     el.addClass("cerrarmenu");
-                     } else {
-                     el.removeClass("cerrarmenu");
-                     el.addClass("mostrarmenu");
-                     }
-                     
-                     
-                     });
-                     
-                     $(".contenedormenu").on("mouseleave", function() {
-                     var el = $(this);
-                     if (el.hasClass("mostrarmenu")) {
-                     el.removeClass("mostrarmenu");
-                     el.addClass("cerrarmenu");
-                     }
-                     });*/
-
-
 
                 }
             };

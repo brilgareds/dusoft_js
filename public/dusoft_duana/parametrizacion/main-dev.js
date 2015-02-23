@@ -13,12 +13,12 @@ requirejs.config({
         jquery: "../../javascripts/jquery",
         treemenu: "../includes/menu/myTree",
         tree: "../../javascripts/jstree",
-        select: "../../javascripts/select2",
+       // select: "../../javascripts/select2",
         loader: "../includes/loader/loader",
         url: "js/constants/Url",
         socket: "../includes/socket/socket.io/socket.io",
         socketservice: "../includes/socket/socket",
-        uiselect2: "../../javascripts/uiselect2",
+        uiselect2: "../../javascripts/select",
         storage: "../../javascripts/angular/storage"
     },
     shim: {
@@ -41,9 +41,9 @@ requirejs.config({
         "treemenu": {
             deps: ["tree"]
         },
-        "select": {
+        /*"select": {
             deps: ["jquery"]
-        },
+        },*/
         "url": {
             deps: ["angular"]
         },
@@ -51,7 +51,7 @@ requirejs.config({
             deps: ["socket"]
         },
         "uiselect2": {
-            deps: ["select", "angular"]
+            deps: ["angular", "jquery"]
         },
         "storage": {
             deps: ["angular"]

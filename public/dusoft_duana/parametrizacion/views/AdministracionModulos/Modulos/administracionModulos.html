@@ -9,51 +9,86 @@
 
                 <p class="input-group contenedor_combo_grande">
                     <label for="nodo_principal" style='margin-right: 5px;'>Nodo Principal</label>
-                <input-check ng-model="nodo_principal" style='margin-right: 20px;' id="nodo_principal" ></input-check>
+                <input-check ng-model="rootModulos.moduloACrear.nodo_principal" style='margin-right: 20px;' id="nodo_principal" ></input-check>
 
                 <label for="habilitar" style='margin-right: 5px;' >Activar</label>
-                <input-check ng-model="habilitar" id="habilitar"  ></input-check>
+                <input-check ng-model="rootModulos.moduloACrear.estado" id="habilitar"  ></input-check>
 
                 <button type="button" class="btn btn-default btn-sm pull-right"  ng-click='onHabilitarModuloEnEmpresas()'>Habilitar En Empresas</button>
 
                 </p>
 
                 <p class="input-group contenedor_combo_grande">
-                    <select ui-select2="seleccionvendedor" class="form-control selectgeneral"   ng-disabled="rootCreaCotizaciones.bloqueo_producto_incluido" ng-model="rootCreaCotizaciones.seleccion_vendedor"  placeholder="Modulo Padre" ng-change="valorSeleccionado()">
 
-                        <option></option>
-                        <!--option ng-repeat="vendedor in rootCreaCotizaciones.Empresa.getVendedores()"  ng-value="vendedor.id" >{{vendedor.nombre_tercero}}</option-->
-                    </select>
+                    <ui-select ng-model="rootModulos.moduloACrear.moduloPadre"
+                               theme="select2"
+                               class="contenedor_combo_grande">
+                        <ui-select-match  placeholder="Seleccionar Modulo Padre">{{$select.selected.text}}</ui-select-match>
+                        <ui-select-choices repeat="modulo in rootModulos.modulos | filter:$select.search">
+                            {{modulo.text}}
+                             <div ng-bind-html="modulo.text | highlight: $select.search"></div>
+                        </ui-select-choices>
+                    </ui-select>
+
+
                 </p>
 
                 <p class="input-group">
-                    <input type="text" class="form-control"  placeholder="Nombre Del Modulo" name="srch-term" id="srch-term" />
+                    <input type="text" class="form-control" ng-model='rootModulos.moduloACrear.nombre' placeholder="Nombre Del Modulo" name="srch-term" id="srch-term" />
                     <span class="input-group-addon">
                         <i class="glyphicon glyphicon-ok"></i>
                     </span>
                 </p> 
 
                 <p class="input-group">
-                    <input type="text" class="form-control"  placeholder="Url" name="srch-term" id="srch-term" />
+                    <input type="text" class="form-control" ng-model='rootModulos.moduloACrear.url'  placeholder="Url" name="srch-term" id="srch-term" />
                     <span class="input-group-addon">
                         <i class="glyphicon glyphicon-link"></i>
                     </span>
                 </p> 
 
                 <p class="input-group">
-                    <input type="text" class="form-control"  placeholder="Nombre Estado Url" name="srch-term" />
+                    <input type="text" class="form-control" ng-model='rootModulos.moduloACrear.state'  placeholder="Nombre Estado Url" name="srch-term" />
                     <span class="input-group-addon">
                         <i class="glyphicon glyphicon-link"></i>
                     </span>
                 </p> 
 
+                <p class="input-group">
+                <div class="btn-group">
+                    <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false" ng-disabled='rootModulos.moduloACrear.moduloPadre.id != 0'>
+                        <i class="{{rootModulos.moduloACrear.icon}}" style='margin-right:3px;'></i> Icono Del Modulo <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+
+                        <li ng-repeat='icono in rootModulos.iconos'>
+                            <a class="jstree-anchor" href="javascript:void(0);" ng-click='onSeleccionIcono(icono)'><i class="{{icono.clase}}"></i> {{icono.nombre}} </a>
+                        </li>
+
+                        <!--li><a href="#">Action <i class="jstree-icon jstree-themeicon glyphicon glyphicon-file jstree-themeicon-custom"></i></a> </li>
+                        <li><a href="#">Action <i class="glyphicon glyphicon-folder-open"></i></a></li>
+                        <li><a href="#">Action <i class="jstree-icon jstree-themeicon glyphicon glyphicon-list-alt jstree-themeicon-custom"></i></a></li-->
+                    </ul>
+                </div>
+                </p>
+
                 <p class="input-group contenedor_combo_grande">
-                    <textarea class="form-control observacion_modulo" placeholder="Descripcion"></textarea>
+                    <textarea class="form-control observacion_modulo" ng-model='rootModulos.moduloACrear.descripcion' placeholder="Descripcion"></textarea>
 
                 </p> 
 
+                <div class="pull-right">
+                    <button class="btn btn-warning btn-sm">
+                        Limpiar
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </button>
 
+                    <button class="btn btn-success btn-sm" ng-click='onCrearModulo()'>
+                        Crear
+                        <span class="glyphicon glyphicon-ok"></span>
+                    </button>
 
+                </div>
             </div>
         </div>
 
@@ -113,7 +148,7 @@
         <div class="panel panel-info">
             <div class="panel-heading txt-center"><h5>Modulos del sistema</h5></div>
             <div class="panel-body">
-                <div arbol-modulos plugins='checkbox,wholerow' datos-arbol='data'></div>
+                <div arbol-modulos plugins='wholerow'></div>
             </div>
         </div>
     </div>

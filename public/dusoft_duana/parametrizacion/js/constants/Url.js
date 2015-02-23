@@ -13,7 +13,10 @@
 	    },
 	    'USUARIOS':{
 	    	'LISTAR_USUARIOS':BASE_URL+"/Usuarios/listar"
-	    }
+	    },
+            'MODULOS':{
+                'LISTAR_MODULOS': BASE_URL+"/Modulos/listarModulos"
+            }
 	  }
 	};
 

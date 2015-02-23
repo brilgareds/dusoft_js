@@ -1,22 +1,37 @@
 
 define([
     "angular", "js/controllers", "js/models",
-    "controllers/AdministracionModulos/Modulos/HabilitarModulosEmpresaController"
+    "controllers/AdministracionModulos/Modulos/HabilitarModulosEmpresaController",
+    "models/Modulo/Modulo"
 ], function(angular, controllers) {
 
     controllers.controller('AdministracionModulosController', [
         '$scope', '$rootScope', 'Request',
         '$modal', 'API', "socket",
-        "$timeout", "AlertService", "Usuario", "$modal",
-        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, Usuario, $modal) {
+        "$timeout", "AlertService", "Usuario", "$modal","Modulo",
+        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, Usuario, $modal, Modulo) {
 
-            $scope.session = {
+            
+            
+            $scope.rootModulos = {
+                
+            };
+            
+            $scope.rootModulos.session = {
                 usuario_id: Usuario.usuario_id,
                 auth_token: Usuario.token
             };
-
-
-            $scope.data = [];
+            
+            $scope.rootModulos.moduloACrear = {
+                moduloPadre :undefined
+            };
+            
+            $scope.rootModulos.iconos = [
+                {clase:'glyphicon glyphicon-file', nombre:'Archivo'},
+                {clase:'glyphicon glyphicon-list-alt', nombre:'Lista'}
+            ];
+                        
+            
             $scope.listado_opciones = {
                 data: '[]',
                 enableColumnResize: true,
@@ -27,37 +42,42 @@ define([
                 ]
 
             };
-
-            var test = {
-                session: $scope.session,
-                data: {
-                    movimientos_bodegas: {
-                        empresa: '03',
-                        numero: '82916',
-                        prefijo: 'EFC'
-                    }
-                }
-            };
-
             
-            Request.realizarRequest("/api/movBodegas/imprimirDocumentoDespacho", "POST", test, function(data) {
-                if (data.status === 200) {
-                    console.log(">>>>>>>>>>>>>>>>>>>>>>");
-                    $scope.data = [{"id": "ajson1", "parent": "#", "text": "ajson1"},
-                        {"id": "ajson2", "parent": "#", "text": "ajson2"},
-                        {"id": "ajson3", "parent": "ajson2", "text": "ajson3"},
-                        {"id": "ajson4", "parent": "ajson2", "text": "ajson4"},
-                        {"id": "ajson5", "parent": "ajson4", "text": "ajson5"},
-                        {"id": "ajson6", "parent": "ajson4", "text": "ajson6"},
-                        {"id": "ajson7", "parent": "ajson6", "text": "ajson7"},
-                        {"id": "ajson8", "parent": "ajson6", "text": "ajson8"}
-                    ];
+            //se carga los modulos despues que el arbol esta listo
+            $scope.$on("arbolListoEnDom", function() {
+                var obj = {
+                    session: $scope.rootModulos.session,
+                    data: {
+                       
+                    }
+                };
 
-                }
+                Request.realizarRequest(API.MODULOS.LISTAR_MODULOS, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        console.log(Modulo);
+                        var datos = data.obj.modulos;
+                        $scope.rootModulos.modulos = [];
+                        
+                        for(var i in datos){
+                            var modulo = Modulo.get(
+                                    datos[i].id,
+                                    datos[i].parent,
+                                    datos[i].nombre,
+                                    datos[i].url
+                            );
 
+                            $scope.rootModulos.modulos.push(modulo);
+                        }
+                        
+                       // console.log(modulos);
+                        $scope.$broadcast("datosArbolCambiados",$scope.rootModulos.modulos);
+
+                    }
+
+                });
             });
 
-
+            //ventana para habilitar el modulo en una empresa
             $scope.onHabilitarModuloEnEmpresas = function() {
 
                 $scope.opts = {
@@ -77,7 +97,20 @@ define([
                 var modalInstance = $modal.open($scope.opts);
 
             };
-
+            
+            
+            /*$scope.onModuloPadreSeleccionado = function(){
+                console.log($scope.rootModulos.moduloACrear.moduloPadre);
+            };
+            */
+            $scope.onCrearModulo = function(){
+                console.log($scope.rootModulos.moduloACrear);
+            };
+            
+            $scope.onSeleccionIcono = function(icono){
+                console.log(icono);
+                $scope.rootModulos.moduloACrear.icon = icono.clase;
+            };
 
 
 

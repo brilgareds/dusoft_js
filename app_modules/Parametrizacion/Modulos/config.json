@@ -1,0 +1,21 @@
+{
+    "module": "Modulos",
+    "dependency": {
+        "controllers": [{
+                "modulos_controller": {
+                    "module": "Parametrizacion/Modulos",
+                    "controller": "ModulosController",
+                    "alias": "c_modulos"
+                }
+            }],
+        "models": [{
+                "modulo_model": {
+                    "module": "Parametrizacion/Modulos",
+                    "model": "ModuloModel",
+                    "alias": "m_modulo"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

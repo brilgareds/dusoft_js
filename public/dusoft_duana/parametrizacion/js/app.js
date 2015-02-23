@@ -38,7 +38,7 @@ define([
         'directive',
         'Url',
         'services',
-        'ui.select2',
+        'ui.select',
         'LocalStorageModule'
     ]);
 

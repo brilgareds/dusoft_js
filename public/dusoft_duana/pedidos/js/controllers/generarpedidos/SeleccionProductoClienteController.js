@@ -293,9 +293,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 {
                     that.insertarEncabezadoPedidoTemporal(function(insert_encabezado_exitoso) {
  
-                        if(insert_encabezado_exitoso) {
+                        /*if(insert_encabezado_exitoso) {
                             that.insertarDetallePedidoTemporal(row);
-                        } 
+                        } */
                     });
                 }
             };
@@ -309,11 +309,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 var obj_encabezado = {
                     session: $scope.rootSeleccionProductoCliente.session,
                     data: {
-                        pedidos_farmacias: {
+                        cotizacion_encabezado: {
                             
                             empresa_id: $scope.rootSeleccionProductoCliente.Empresa.getCodigo(),
                             tipo_id_tercero: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getCliente().tipo_id_tercero,
-                            tercero_id: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().tercero_id,
+                            tercero_id: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getCliente().id,
                             tipo_id_vendedor: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getTipoIdVendedor(),
                             vendedor_id: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getVendedorId(),
                             estado: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().estado,
@@ -333,10 +333,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 /* Fin - Objeto para inserción de Encabezado*/
 
                 /* Inicio - Inserción del Encabezado */
+                
+                console.log(">>> lA iNFORMACION para el Encabezado (obj_encabezado) es: ", obj_encabezado);
 
                 var url_encabezado = API.PEDIDOS.CREAR_COTIZACION;
 
                 Request.realizarRequest(url_encabezado, "POST", obj_encabezado, function(data) {
+                    
+                    console.log(">>>>>>>>>> Lo datos enviados son: ", data);
 
                     if (data.status === 200) {
                         console.log("Registro Insertado Exitosamente en Encabezado");

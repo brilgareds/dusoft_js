@@ -570,6 +570,18 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
     var vendedor_id = args.cotizacion_encabezado.vendedor_id;
     var estado = args.cotizacion_encabezado.estado;
     var observaciones = args.cotizacion_encabezado.observaciones;
+    
+    /*console.log(">>> INFORMACION DEL ENCABEZADO:");
+    console.log(">>> empresa_id: ",empresa_id);
+    console.log(">>> tipo_id_tercero: ",tipo_id_tercero);
+    console.log(">>> tercero_id: ",tercero_id);
+    console.log(">>> usuario_id: ",usuario_id);
+    console.log(">>> tipo_id_vendedor: ",tipo_id_vendedor);
+    console.log(">>> vendedor_id: ",vendedor_id);
+    console.log(">>> estado: ",estado);
+    console.log(">>> observaciones: ",observaciones);*/
+    
+    //res.send(G.utils.r(req.url, 'Valores enviados', 200, {valores: [empresa_id, tipo_id_tercero, tercero_id, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones]}));
 
     that.m_pedidos_clientes.insertar_cotizacion(empresa_id, tipo_id_tercero, tercero_id, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones, function(err, pedido_cliente_id_tmp) {
 

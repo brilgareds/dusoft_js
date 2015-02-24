@@ -13,7 +13,7 @@ define(["angular", "js/models", "includes/classes/Cliente"], function(angular, m
 
         this.get = function(nombre, direccion, tipo_id, id, telefono) {
             return new ClientePedido(nombre, direccion, tipo_id, id, telefono);
-        }
+        };
 
         ClientePedido.prototype = Object.create(Cliente.getClass().prototype);
         
@@ -35,11 +35,11 @@ define(["angular", "js/models", "includes/classes/Cliente"], function(angular, m
         
         ClientePedido.prototype.setContratoId = function(contrato_id) {
             this.contrato_id = contrato_id;
-        }
+        };
         
         ClientePedido.prototype.getContratoId = function() {
             return this.contrato_id;
-        }
+        };
         
         return this;
 

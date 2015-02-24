@@ -30,17 +30,34 @@ Modulos.prototype.guardarModulo = function(req, res) {
 
     var args = req.body.data;
 
-    var modulo = args.modulo;
+    var modulo = args.parametrizacion_modulos.modulo;
 
     var validacion = __validarCreacionModulo(modulo);
-    
-    if(!validacion.valido){
-        res.send(G.utils.r(req.url, validacion.msj, 403, {modulo:{}}));
+
+    if (!validacion.valido) {
+        res.send(G.utils.r(req.url, validacion.msj, 403, {modulo: {}}));
         return;
     }
+
+    modulo.usuario_id = req.session.user.usuario_id;
+    modulo.usuario_id_modifica = req.session.user.usuario_id;
     
-    that.m_modulo.guardarModulo(modulo, function(err, result){
-        
+    console.log("modulo a crear ", modulo);
+
+
+    that.m_modulo.guardarModulo(modulo, function(err, rows) {
+        if (err) {
+            console.log("error guardando modulo ", err);
+            res.send(G.utils.r(req.url, 'Error guardando el modulo', 500, {parametrizacion_modulo: {}}));
+            return;
+        }
+        var id;
+        if (rows.length > 0 && rows[0].id) {
+            id = rows[0].id;
+        }
+        modulo.id = id;
+        res.send(G.utils.r(req.url, "Modulo creado con exito", 200, {parametrizacion_modulo: {modulo: modulo}}));
+        console.log("resultado de guardar el modulo ", rows);
     });
 
 };
@@ -63,7 +80,7 @@ function __validarCreacionModulo(modulo) {
         return validacion;
     }
 
-    if (modulo.state === undefined || modulo.state.length === 0) {
+    if (modulo.state === undefined) {
         validacion.valido = false;
         validacion.msj = "El modulo debe tener un estado";
         return validacion;
@@ -83,7 +100,8 @@ function __validarCreacionModulo(modulo) {
 
     return validacion;
 
-};
+}
+;
 
 
 Modulos.$inject = ["m_modulo"];

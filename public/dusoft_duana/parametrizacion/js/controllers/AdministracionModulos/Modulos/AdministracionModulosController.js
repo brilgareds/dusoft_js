@@ -123,7 +123,7 @@ define([
                 
                 //se verifica si tiene padre para sacar la informacion necesaria
                 if(modulo_guardar.moduloPadre){
-                    modulo_guardar.parent = modulo_guardar.moduloPadre.parent_id;
+                    modulo_guardar.parent = modulo_guardar.moduloPadre.modulo_id;
                     modulo_guardar.parent_name = modulo_guardar.moduloPadre.text;
                     delete modulo_guardar.moduloPadre;
                 }
@@ -131,14 +131,17 @@ define([
                 modulo_guardar.url = "/"+modulo_guardar.state;
                 
                 delete modulo_guardar.nodo_principal;
-                console.log(modulo_guardar);
                 
-                return;
+                console.log(JSON.stringify(modulo_guardar));
+                
+                //return;
                 
                  var obj = {
                     session: $scope.rootModulos.session,
                     data: {
-                        modulo:modulo_guardar
+                        parametrizacion_modulos:{
+                            modulo:modulo_guardar
+                        }
                     }
                 };
 

@@ -6,4 +6,8 @@ module.exports = function(app, di_container) {
     app.post('/api/Modulos/listarModulos', function(req, res) {
         c_modulos.listar_modulos(req, res);
     });
+    
+    app.post('/api/Modulos/guardarModulo', function(req, res) {
+        c_modulos.guardarModulo(req, res);
+    });
 };

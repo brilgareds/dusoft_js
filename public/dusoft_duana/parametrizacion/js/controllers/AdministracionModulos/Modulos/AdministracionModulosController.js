@@ -22,8 +22,6 @@ define([
                 auth_token: Usuario.token
             };
 
-
-
             $scope.rootModulos.iconos = [
                 {clase: 'glyphicon glyphicon-file', nombre: 'Archivo'},
                 {clase: 'glyphicon glyphicon-list-alt', nombre: 'Lista'}
@@ -57,16 +55,20 @@ define([
                 Request.realizarRequest(API.MODULOS.LISTAR_MODULOS, "POST", obj, function(data) {
                     if (data.status === 200) {
                         console.log(Modulo);
-                        var datos = data.obj.modulos;
+                        var datos = data.obj.parametrizacion_modulos.modulos;
                         $scope.rootModulos.modulos = [];
-
+                        
                         for (var i in datos) {
+                            
+                            
                             var modulo = Modulo.get(
                                     datos[i].id,
                                     datos[i].parent,
                                     datos[i].nombre,
                                     datos[i].url
                                     );
+
+                            modulo.setIcon(datos[i].icon);
 
                             $scope.rootModulos.modulos.push(modulo);
                         }
@@ -100,12 +102,6 @@ define([
 
             };
 
-
-            /*$scope.onModuloPadreSeleccionado = function(){
-             console.log($scope.rootModulos.moduloAGuardar.moduloPadre);
-             };
-             */
-
             //limpia los datos del modulo
             $scope.onLimpiarFormulario = function() {
                 self.inicializarModuloACrear();
@@ -118,44 +114,42 @@ define([
                     AlertService.mostrarMensaje("warning", validacion.msj);
                     return;
                 }
-                
+
                 var modulo_guardar = angular.copy($scope.rootModulos.moduloAGuardar);
+                var moduloPadre = $scope.rootModulos.moduloPadre;
                 
                 //se verifica si tiene padre para sacar la informacion necesaria
-                if(modulo_guardar.moduloPadre){
-                    modulo_guardar.parent = modulo_guardar.moduloPadre.modulo_id;
-                    modulo_guardar.parent_name = modulo_guardar.moduloPadre.text;
-                    delete modulo_guardar.moduloPadre;
+                if (moduloPadre) {
+                    modulo_guardar.parent = moduloPadre.modulo_id;
+                    modulo_guardar.parent_name = moduloPadre.text;
                 }
-                
-                modulo_guardar.url = "/"+modulo_guardar.state;
-                
+
+                modulo_guardar.url = "/" + modulo_guardar.state;
+
                 delete modulo_guardar.nodo_principal;
-                
+
                 console.log(JSON.stringify(modulo_guardar));
-                
-                //return;
-                
-                 var obj = {
+
+
+                var obj = {
                     session: $scope.rootModulos.session,
                     data: {
-                        parametrizacion_modulos:{
-                            modulo:modulo_guardar
+                        parametrizacion_modulos: {
+                            modulo: modulo_guardar
                         }
                     }
                 };
 
                 Request.realizarRequest(API.MODULOS.GUARDAR_MODULO, "POST", obj, function(data) {
                     if (data.status === 200) {
-                        
+
                     }
 
                 });
-                
+
             };
 
             $scope.onSeleccionIcono = function(icono) {
-                console.log(icono);
                 $scope.rootModulos.moduloAGuardar.icon = icono.clase;
             };
 
@@ -204,11 +198,65 @@ define([
             $scope.onSeleccionarNodoPrincipal = function() {
                 console.log("es modulo principal ", $scope.rootModulos.moduloAGuardar.nodo_principal);
                 if ($scope.rootModulos.moduloAGuardar.nodo_principal) {
-                   delete $scope.rootModulos.moduloAGuardar.moduloPadre ;
-                   delete $scope.rootModulos.moduloAGuardar.icon ;
+                    delete $scope.rootModulos.moduloPadre;
+                    delete $scope.rootModulos.moduloAGuardar.icon;
                 }
             };
+            
+            $scope.$on("modulosSeleccionados",function(e, modulos){
+                ///console.log("modulos seleccionados ", modulos);
+                
+                var obj = {
+                    session: $scope.rootModulos.session,
+                    data: {
+                        parametrizacion_modulos: {
+                            modulos_id: modulos
+                        }
+                    }
+                };
 
+                Request.realizarRequest(API.MODULOS.OBTENER_MODULOS_POR_ID, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        //console.log("modulos encontrados ",data);
+                        var modulo = data.obj.parametrizacion_modulos.modulos[0] || undefined;
+                        
+                        var _modulo = Modulo.get(
+                                modulo.id,
+                                modulo.parent,
+                                modulo.nombre,
+                                modulo.url
+                        );
+
+                        _modulo.setIcon(modulo.icon);
+                        _modulo.setState(modulo.state);
+                        _modulo.setObservacion(modulo.observacion);
+                        _modulo.setEstado(modulo.estado);
+                        $scope.rootModulos.moduloAGuardar = _modulo;
+                        
+                        var modulos = $scope.rootModulos.modulos;
+                        
+                        console.log("moduloe seleccionando ",_modulo.parent);
+                        
+                        for(var i in  modulos){
+                            
+                            if(modulos[i].id === _modulo.parent){
+                                console.log("modulos select ", modulos[i].id);
+                                
+                                $scope.rootModulos.moduloPadre = modulos[i];
+                                break;
+                            }
+                        }
+                        
+                        console.log("modulo creado ",_modulo)
+                        
+                    } else {
+                        AlertService.mostrarMensaje("warning", "Se ha generado un error");
+                    }
+
+                });
+            });
+            
+            //valida que la creacion del modulo se correcta
             self.validarCreacionModulo = function() {
                 var modulo = $scope.rootModulos.moduloAGuardar;
                 var validacion = {
@@ -216,9 +264,7 @@ define([
                     msj: ""
                 };
 
-                console.log(modulo);
-
-                if (!modulo.nodo_principal && !modulo.moduloPadre) {
+                if (!modulo.nodo_principal && !$scope.rootModulos.moduloPadre) {
                     validacion.valido = false;
                     validacion.msj = "Debe seleccionar el modulo padre";
                     return validacion;
@@ -236,9 +282,9 @@ define([
                     return validacion;
                 }
 
-                if (modulo.descripcion === undefined || modulo.descripcion.length === 0) {
+                if (modulo.observacion === undefined || modulo.observacion.length === 0) {
                     validacion.valido = false;
-                    validacion.msj = "El modulo debe tener una descripcion";
+                    validacion.msj = "El modulo debe tener una observacion";
                     return validacion;
                 }
 
@@ -253,10 +299,11 @@ define([
             };
 
             self.inicializarModuloACrear = function() {
-                $scope.rootModulos.moduloAGuardar = {
-                    nodo_principal: false,
-                    estado: false
-                };
+                 $scope.rootModulos.moduloAGuardar = Modulo.get();
+                 $scope.rootModulos.moduloAGuardar.setNodoPrincipal(false);
+                 $scope.rootModulos.moduloAGuardar.setEstado(false);
+                 $scope.rootModulos.moduloPadre = Modulo.get();
+                
             };
 
             self.inicializarModuloACrear();

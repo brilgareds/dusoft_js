@@ -16,7 +16,8 @@
 	    },
             'MODULOS':{
                 'LISTAR_MODULOS': BASE_URL+"/Modulos/listarModulos",
-                'GUARDAR_MODULO': BASE_URL+"/Modulos/guardarModulo"
+                'GUARDAR_MODULO': BASE_URL+"/Modulos/guardarModulo",
+                'OBTENER_MODULOS_POR_ID' : BASE_URL+"/Modulos/obtenerModulosPorId"
             }
 	  }
 	};

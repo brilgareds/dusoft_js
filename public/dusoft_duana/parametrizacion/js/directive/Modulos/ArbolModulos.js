@@ -41,7 +41,8 @@ define(["angular", "js/directive"], function(angular, directive) {
 
 
                         }).on("select_node.jstree", function(node, selected, event) {
-
+                            
+                            console.log("nodo seleccionado ", selected);
                             //obtiene todos los nodos seleccionados
                             var seleccionados = $(this).jstree("get_selected", true);
                             scope.modulosSeleccionados = [];
@@ -49,16 +50,22 @@ define(["angular", "js/directive"], function(angular, directive) {
 
                             $.each(seleccionados, function() {
                                 console.log(this);
+                                
                                 //se agrega el nodo seleccionado
                                 agregarModuloSeleccionado(scope, this.id);
-
-                                //agrega los parent de cada nodo
-                                for (var i in this.parents) {
-                                    agregarModuloSeleccionado(scope, this.parents[i]);
+                                
+                                if(attrs.plugins === 'multiple'){
+                                    //agrega los parent de cada nodo
+                                    for (var i in this.parents) {
+                                        agregarModuloSeleccionado(scope, this.parents[i]);
+                                    }
                                 }
 
                             });
-                            console.log(scope.modulosSeleccionados);
+                           
+                             console.log(scope.modulosSeleccionados);
+                            scope.$emit("modulosSeleccionados", scope.modulosSeleccionados);
+                           
                         });
                     }
 
@@ -70,6 +77,9 @@ define(["angular", "js/directive"], function(angular, directive) {
                                 return false;
                             }
                         }
+                        
+                        modulo = modulo.split("_")[1];
+                        
                         scope.modulosSeleccionados.push(modulo);
                     }
 

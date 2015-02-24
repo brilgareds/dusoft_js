@@ -18,9 +18,31 @@ Modulos.prototype.listar_modulos = function(req, res) {
     that.m_modulo.listar_modulos(function(err, lista_modulos) {
 
         if (err) {
-            res.send(G.utils.r(req.url, 'Error listando Modulos', 500, {modulos: {}}));
+            res.send(G.utils.r(req.url, 'Error listando Modulos', 500, {parametrizacion_modulos: {}}));
         } else {
-            res.send(G.utils.r(req.url, 'Lista de Modulos del sistema', 200, {modulos: lista_modulos}));
+            res.send(G.utils.r(req.url, 'Lista de Modulos del sistema', 200, {parametrizacion_modulos:{modulos: lista_modulos}}));
+        }
+    });
+};
+
+Modulos.prototype.obtenerModulosPorId = function(req, res) {
+
+    var that = this;
+
+
+    var args = req.body.data;
+    
+    if (args.parametrizacion_modulos.modulos_id === undefined && args.parametrizacion_modulos.modulos_id.length === '') {
+        res.send(G.utils.r(req.url, 'El id del modulo no esta definido', 500, {parametrizacion_modulos: {}}));
+        return validacion;
+    }
+
+    that.m_modulo.obtenerModulosPorId(args.parametrizacion_modulos.modulos_id, function(err, rows) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error buscando el modulo', 500, {parametrizacion_modulos: {}}));
+        } else {
+            res.send(G.utils.r(req.url, 'Modulo encontrado', 200, {parametrizacion_modulos:{modulos: rows}}));
         }
     });
 };
@@ -35,7 +57,7 @@ Modulos.prototype.guardarModulo = function(req, res) {
     var validacion = __validarCreacionModulo(modulo);
 
     if (!validacion.valido) {
-        res.send(G.utils.r(req.url, validacion.msj, 403, {modulo: {}}));
+        res.send(G.utils.r(req.url, validacion.msj, 403, {parametrizacion_modulos: {}}));
         return;
     }
 
@@ -86,17 +108,12 @@ function __validarCreacionModulo(modulo) {
         return validacion;
     }
 
-    if (modulo.descripcion === undefined || modulo.descripcion.length === 0) {
+    if (modulo.observacion === undefined || modulo.observacion.length === 0) {
         validacion.valido = false;
         validacion.msj = "El modulo debe tener una descripcion";
         return validacion;
     }
 
-    if (!modulo.parent && !modulo.icon) {
-        validacion.valido = false;
-        validacion.msj = "El modulo debe tener icono";
-        return validacion;
-    }
 
     return validacion;
 

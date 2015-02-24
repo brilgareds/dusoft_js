@@ -10,4 +10,10 @@ module.exports = function(app, di_container) {
     app.post('/api/Modulos/guardarModulo', function(req, res) {
         c_modulos.guardarModulo(req, res);
     });
+    
+    
+    app.post('/api/Modulos/obtenerModulosPorId', function(req, res) {
+        c_modulos.obtenerModulosPorId(req, res);
+    });
+    
 };

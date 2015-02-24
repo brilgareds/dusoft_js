@@ -9,7 +9,7 @@
 
                 <p class="input-group contenedor_combo_grande">
                     <label for="nodo_principal" style='margin-right: 5px;'>Nodo Principal</label>
-                <input-check ng-model="rootModulos.moduloAGuardar.nodo_principal" ng-change="onSeleccionarNodoPrincipal()" style='margin-right: 20px;' id="nodo_principal" ></input-check>
+                <input-check ng-model="rootModulos.moduloAGuardar.nodo_principal" ng-change="onSeleccionarNodoPrincipal()" style='margin-right: 20px;' id="nodo_principal" ng-disabled="rootModulos.moduloAGuardar.id" ></input-check>
                 <label for="habilitar" style='margin-right: 5px;' >Activar</label>
                 <input-check ng-model="rootModulos.moduloAGuardar.estado" id="habilitar"  ></input-check>
 
@@ -19,7 +19,7 @@
 
                 <p class="input-group contenedor_combo_grande">
 
-                    <ui-select ng-model="rootModulos.moduloAGuardar.moduloPadre"
+                    <ui-select ng-model="rootModulos.moduloPadre"
                                theme="select2"
                                ng-disabled = "rootModulos.moduloAGuardar.nodo_principal"
                                class="contenedor_combo_grande">
@@ -76,7 +76,7 @@
                 </p>
 
                 <p class="input-group contenedor_combo_grande">
-                    <textarea class="form-control observacion_modulo" ng-model='rootModulos.moduloAGuardar.descripcion' placeholder="Descripcion"></textarea>
+                    <textarea class="form-control observacion_modulo" ng-model='rootModulos.moduloAGuardar.observacion' placeholder="Descripcion"></textarea>
 
                 </p> 
 
@@ -151,7 +151,7 @@
         <div class="panel panel-info">
             <div class="panel-heading txt-center"><h5>Modulos del sistema</h5></div>
             <div class="panel-body">
-                <div arbol-modulos plugins='wholerow'></div>
+                <div arbol-modulos plugins='wholerow' tipo='unico'></div>
             </div>
         </div>
     </div>

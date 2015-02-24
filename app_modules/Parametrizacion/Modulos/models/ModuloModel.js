@@ -6,7 +6,7 @@ var ModuloModel = function() {
 ModuloModel.prototype.listar_modulos = function(callback) {
 
 
-    var sql = "SELECT * FROM modulos ";
+    var sql = "SELECT * FROM modulos ORDER BY id ASC ";
 
     G.db.query(sql, [], function(err, rows, result) {
         callback(err, rows);
@@ -14,10 +14,20 @@ ModuloModel.prototype.listar_modulos = function(callback) {
 };
 
 
+ModuloModel.prototype.obtenerModulosPorId = function(ids,callback){
+    
+    var ids = ids.join(",");
+    var sql = "SELECT * FROM modulos WHERE id in($1) ";
+
+    G.db.query(sql, [ids], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
 ModuloModel.prototype.guardarModulo = function(modulo, callback) {
     var self = this;
     
-    if(modulo.id){
+    if(modulo.modulo_id){
         self.modificarModulo(modulo, function(err, rows){
             callback(err, rows);
         });
@@ -44,7 +54,7 @@ ModuloModel.prototype.insertarModulo = function(modulo,callback) {
     
     var params = [
         modulo.parent, modulo.nombre, modulo.url, modulo.parent_name, modulo.icon,
-        modulo.state, modulo.descripcion, modulo.usuario_id, 'now()', Number(modulo.estado)
+        modulo.state, modulo.observacion, modulo.usuario_id, 'now()', Number(modulo.estado)
      ];
 
     G.db.query(sql, params, function(err, rows, result) {
@@ -62,8 +72,8 @@ ModuloModel.prototype.modificarModulo = function(modulo, callback) {
     
     var params = [
                     modulo.parent, modulo.nombre, modulo.url, modulo.parent_name, modulo.icon,
-                    modulo.state, modulo.descripcion, modulo.usuario_id, modulo.usuario_id,
-                    Number(modulo.estado), 'now()', modulo.id
+                    modulo.state, modulo.observacion, modulo.usuario_id, modulo.usuario_id,
+                    Number(modulo.estado), 'now()', modulo.modulo_id
                  ];
     
     G.db.query(sql, params, function(err, rows, result) {

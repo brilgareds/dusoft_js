@@ -1,5 +1,5 @@
 
-<div class="row">
+<div class="row" directiva-general-modulos>
 
     <div class="col-md-5">
 
@@ -9,7 +9,7 @@
 
                 <p class="input-group contenedor_combo_grande">
                     <label for="nodo_principal" style='margin-right: 5px;'>Nodo Principal</label>
-                <input-check ng-model="rootModulos.moduloAGuardar.nodo_principal" ng-change="onSeleccionarNodoPrincipal()" style='margin-right: 20px;' id="nodo_principal" ng-disabled="rootModulos.moduloAGuardar.id" ></input-check>
+                <input-check ng-model="rootModulos.moduloAGuardar.nodo_principal" ng-change="onSeleccionarNodoPrincipal()" style='margin-right: 20px;' id="nodo_principal"  ></input-check>
                 <label for="habilitar" style='margin-right: 5px;' >Activar</label>
                 <input-check ng-model="rootModulos.moduloAGuardar.estado" id="habilitar"  ></input-check>
 
@@ -22,11 +22,11 @@
                     <ui-select ng-model="rootModulos.moduloPadre"
                                theme="select2"
                                ng-disabled = "rootModulos.moduloAGuardar.nodo_principal"
+                               ng-change="onModuloPadreSeleccionado()"
                                class="contenedor_combo_grande">
                         <ui-select-match  placeholder="Seleccionar Modulo Padre">{{$select.selected.text}}</ui-select-match>
                         <ui-select-choices repeat="modulo in rootModulos.modulos | filter:$select.search">
                             {{modulo.text}}
-                             <div ng-bind-html="modulo.text | highlight: $select.search"></div>
                         </ui-select-choices>
                     </ui-select>
 
@@ -34,14 +34,15 @@
                 </p>
 
                 <p class="input-group">
-                    <input type="text" class="form-control" ng-model='rootModulos.moduloAGuardar.nombre' placeholder="Nombre Del Modulo" name="srch-term" id="srch-term" />
+                    
+                    <input type="text" class="form-control validar_caracteres" ng-model='rootModulos.moduloAGuardar.nombre' placeholder="Nombre Del Modulo" name="srch-term" id="srch-term" />
                     <span class="input-group-addon">
                         <i class="glyphicon glyphicon-ok"></i>
                     </span>
                 </p> 
 
                 <p class="input-group">
-                    <input type="text" class="form-control" ng-model='rootModulos.moduloAGuardar.state'  placeholder="Estado Url" name="srch-term" />
+                    <input type="text" class="form-control validar_caracteres validar_espacios" ng-model='rootModulos.moduloAGuardar.state'  placeholder="Estado Url" name="srch-term" />
                     <span class="input-group-addon">
                         <i class="glyphicon glyphicon-link"></i>
                     </span>
@@ -51,7 +52,7 @@
                     <span class="input-group-addon">
                        /
                     </span>
-                    <input type="text" class="form-control" ng-model='rootModulos.moduloAGuardar.state' disabled="disabled"  placeholder="Url" name="srch-term" id="srch-term" />
+                    <input type="text" class="form-control validar_caracteres validar_espacios" ng-model='rootModulos.moduloAGuardar.state' disabled="disabled"  placeholder="Url" name="srch-term" id="srch-term"  />
                     <span class="input-group-addon">
                         <i class="glyphicon glyphicon-link"></i>
                     </span>

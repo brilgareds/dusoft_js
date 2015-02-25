@@ -25,7 +25,8 @@ define([
     "storage",
     "includes/classes/Usuario",
     "includes/widgets/InputCheck",
-    "directive/Modulos/ArbolModulos"
+    "directive/Modulos/ArbolModulos",
+    "directive/Modulos/DirectivaGeneralModulos"
 ], function(angular) {
     /* App Module and its dependencies */
 

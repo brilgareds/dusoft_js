@@ -25,6 +25,11 @@ define(["angular", "js/models"], function(angular, models) {
                 
             }
             
+            Modulo.prototype.setId = function(id){
+                 this.id = "modulo_"+id;
+                 this.modulo_id = id;
+            };
+            
             Modulo.prototype.getOpciones = function(){
                  return this.opciones;
             };

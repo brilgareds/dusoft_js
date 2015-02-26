@@ -83,7 +83,13 @@ ModuloModel.prototype.obtenerModuloPorNombreOUrl = function(nombre, url, callbac
     });
 };
 
-
+ModuloModel.prototype.listarOpcionesPorModulo = function(modulo_id, callback) {
+    var sql = "SELECT * FROM modulos_opciones WHERE modulo_id =  $1";
+           
+    G.db.query(sql,  [modulo_id], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
 
 
 module.exports = ModuloModel;

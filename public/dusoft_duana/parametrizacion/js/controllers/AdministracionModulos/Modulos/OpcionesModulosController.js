@@ -1,38 +1,94 @@
 
 define([
     "angular", "js/controllers", "js/models",
-    "controllers/AdministracionModulos/Modulos/HabilitarModulosEmpresaController",
-    "controllers/AdministracionModulos/Modulos/OpcionesModulosController",
-    "models/Modulo/Modulo"
+    "models/Modulo/OpcionModulo"
 ], function(angular, controllers) {
 
-    controllers.controller('AdministracionModulosController', [
+    controllers.controller('OpcionesModulosController', [
         '$scope', '$rootScope', 'Request',
-        '$modal', 'API', "socket",
-        "$timeout", "AlertService", "Usuario",
-        "$modal", "Modulo",
+        'API', "AlertService", "Usuario",
+        "OpcionModulo",
         function($scope, $rootScope, Request,
-                 $modal, API, socket, $timeout,
-                 AlertService, Usuario, $modal,
-                 Modulo) {
+                API, AlertService, Usuario,
+                OpcionModulo) {
 
 
             var self = this;
 
-            $scope.rootModulos = {
-                
+
+            $scope.listado_opciones = {
+                data: 'rootModulos.moduloAGuardar.opciones',
+                enableColumnResize: true,
+                enableRowSelection: false,
+                columnDefs: [
+                    {field: 'nombre', displayName: 'Nombre'},
+                    {field: 'alias', displayName: 'Alias'},
+                    {field: 'accion', displayName: '', width:'40',
+                        cellTemplate: '<div>\
+                                      <button class="btn btn-default btn-xs" ng-click="onBorrarOpcion(row.entity)"><span class="glyphicon glyphicon-remove"></span></button>\
+                                   </div>'
+                    }
+                ]
+
             };
 
 
+            $scope.rootOpciones = {
+                
+            };
+            
+            $scope.$on("traerOpcionesModulo", function(){
+                self.traerOpcionesModulo();
+            });
+            
+            self.traerOpcionesModulo = function() {
+                var obj = {
+                    session: $scope.rootModulos.session,
+                    data: {
+                        parametrizacion_modulos:{
+                            modulo:{
+                                id:$scope.rootModulos.moduloAGuardar.modulo_id
+                            }
+                        } 
+                    }
+                };
+
+                Request.realizarRequest(API.MODULOS.LISTAR_OPCIONES, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        var datos = data.obj.parametrizacion_modulos.opciones_modulo;
+
+                        for (var i in datos) {
+
+
+                            var opcion = OpcionModulo.get(
+                                    datos[i].id,
+                                    datos[i].nombre,
+                                    datos[i].alias,
+                                    datos[i].modulo_id
+                             );
+
+                            opcion.setObservacion(datos[i].observacion);
+
+                            $scope.rootModulos.moduloAGuardar.agregarOpcion(opcion);
+                        }
+                        
+                        console.log("modulo a guardar ",$scope.rootModulos.moduloAGuardar);
+
+                    }
+
+                });
+            };
+            
+            return;
             //valida que la creacion del modulo se correcta
             self.validarCreacionModulo = function() {
-                var modulo = $scope.rootModulos.moduloAGuardar;
+                var modulo = $scope.rootOpciones.moduloAGuardar;
                 var validacion = {
                     valido: true,
                     msj: ""
                 };
 
-                if (!modulo.nodo_principal && !$scope.rootModulos.moduloPadre) {
+                if (!modulo.nodo_principal && !$scope.rootOpciones.moduloPadre) {
                     validacion.valido = false;
                     validacion.msj = "Debe seleccionar el modulo padre";
                     return validacion;
@@ -67,62 +123,44 @@ define([
             };
 
             self.inicializarModuloACrear = function() {
-                $scope.rootModulos.moduloAGuardar = Modulo.get();
-                $scope.rootModulos.moduloAGuardar.setNodoPrincipal(false);
-                $scope.rootModulos.moduloAGuardar.setEstado(false);
-                $scope.rootModulos.moduloPadre = undefined;
+                $scope.rootOpciones.moduloAGuardar = Modulo.get();
+                $scope.rootOpciones.moduloAGuardar.setNodoPrincipal(false);
+                $scope.rootOpciones.moduloAGuardar.setEstado(false);
+                $scope.rootOpciones.moduloPadre = undefined;
 
             };
 
-            self.traerModulos = function() {
-                var obj = {
-                    session: $scope.rootModulos.session,
-                    data: {
-                    }
-                };
 
-                Request.realizarRequest(API.MODULOS.LISTAR_MODULOS, "POST", obj, function(data) {
-                    if (data.status === 200) {
-                        console.log(Modulo);
-                        var datos = data.obj.parametrizacion_modulos.modulos;
-                        $scope.rootModulos.modulos = [];
-
-                        for (var i in datos) {
-
-
-                            var modulo = Modulo.get(
-                                    datos[i].id,
-                                    datos[i].parent,
-                                    datos[i].nombre,
-                                    datos[i].url
-                                    );
-
-                            modulo.setIcon(datos[i].icon);
-
-                            $scope.rootModulos.modulos.push(modulo);
-                        }
-
-                        // console.log(modulos);
-                        $scope.$broadcast("datosArbolCambiados", $scope.rootModulos.modulos);
-
-                    }
-
-                });
-            };
-
-            $scope.rootModulos.session = {
+            $scope.rootOpciones.session = {
                 usuario_id: Usuario.usuario_id,
                 auth_token: Usuario.token
             };
 
-            $scope.rootModulos.iconos = [
+            $scope.rootOpciones.iconos = [
                 {clase: 'glyphicon glyphicon-file', nombre: 'Archivo'},
                 {clase: 'glyphicon glyphicon-list-alt', nombre: 'Lista'}
             ];
 
+
+            $scope.listado_opciones = {
+                data: '[]',
+                enableColumnResize: true,
+                enableRowSelection: false,
+                columnDefs: [
+                    {field: 'nombre_opcion', displayName: 'Nombre'},
+                    {field: 'alias', displayName: 'Alias'},
+                    {field: 'accion', displayName: 'Accion',
+                        cellTemplate: '<div>\
+                                      <button class="btn btn-default btn-xs" ng-click="onBorrarOpcion(row.entity)"><span class="glyphicon glyphicon-remove">Borrar</span></button>\
+                                   </div>'
+                    }
+                ]
+
+            };
+
             //se carga los modulos despues que el arbol esta listo
             $scope.$on("arbolListoEnDom", function() {
-                self.traerModulos();
+                self.traerOpciones();
             });
 
             //ventana para habilitar el modulo en una empresa
@@ -159,16 +197,16 @@ define([
                     return;
                 }
 
-                var modulo_guardar = angular.copy($scope.rootModulos.moduloAGuardar);
-                var moduloPadre = $scope.rootModulos.moduloPadre;
+                var modulo_guardar = angular.copy($scope.rootOpciones.moduloAGuardar);
+                var moduloPadre = $scope.rootOpciones.moduloPadre;
 
                 //se verifica si tiene padre para sacar la informacion necesaria
                 if (moduloPadre) {
                     console.log("tratando de guardar modulo");
                     modulo_guardar.parent = moduloPadre.modulo_id;
                     modulo_guardar.parent_name = moduloPadre.text;
-                    
-                } else if(modulo_guardar.parent === "#"){
+
+                } else if (modulo_guardar.parent === "#") {
                     modulo_guardar.parent = null;
                 }
 
@@ -180,7 +218,7 @@ define([
 
 
                 var obj = {
-                    session: $scope.rootModulos.session,
+                    session: $scope.rootOpciones.session,
                     data: {
                         parametrizacion_modulos: {
                             modulo: modulo_guardar
@@ -193,10 +231,10 @@ define([
                         console.log("modulo guardado con exito ", data);
                         var id = data.obj.parametrizacion_modulo.modulo.id;
                         if (id) {
-                            $scope.rootModulos.moduloAGuardar.setId(id);
+                            $scope.rootOpciones.moduloAGuardar.setId(id);
                         }
 
-                        self.traerModulos();
+                        self.traerOpciones();
                     } else {
                         AlertService.mostrarMensaje("warning", data.msj);
                     }
@@ -206,7 +244,7 @@ define([
             };
 
             $scope.onSeleccionIcono = function(icono) {
-                $scope.rootModulos.moduloAGuardar.icon = icono.clase;
+                $scope.rootOpciones.moduloAGuardar.icon = icono.clase;
             };
 
             $scope.onBorrarOpcion = function(opcion) {
@@ -252,21 +290,21 @@ define([
             };
 
             $scope.onSeleccionarNodoPrincipal = function() {
-                console.log("es modulo principal ", $scope.rootModulos.moduloAGuardar.nodo_principal);
-                if ($scope.rootModulos.moduloAGuardar.nodo_principal) {
-                    delete $scope.rootModulos.moduloPadre;
-                    delete $scope.rootModulos.moduloAGuardar.icon;
-                    $scope.rootModulos.moduloAGuardar.parent = null;
-                    $scope.rootModulos.moduloAGuardar.parent_id = null;
-                    $scope.rootModulos.moduloAGuardar.parent_name = null;
+                console.log("es modulo principal ", $scope.rootOpciones.moduloAGuardar.nodo_principal);
+                if ($scope.rootOpciones.moduloAGuardar.nodo_principal) {
+                    delete $scope.rootOpciones.moduloPadre;
+                    delete $scope.rootOpciones.moduloAGuardar.icon;
+                    $scope.rootOpciones.moduloAGuardar.parent = null;
+                    $scope.rootOpciones.moduloAGuardar.parent_id = null;
+                    $scope.rootOpciones.moduloAGuardar.parent_name = null;
                 }
             };
 
             $scope.onModuloPadreSeleccionado = function() {
 
-                if ($scope.rootModulos.moduloAGuardar && $scope.rootModulos.moduloAGuardar.modulo_id === $scope.rootModulos.moduloPadre.modulo_id) {
-                    console.log("modulo padre seleccionado ", $scope.rootModulos.moduloPadre);
-                    delete $scope.rootModulos.moduloPadre;
+                if ($scope.rootOpciones.moduloAGuardar && $scope.rootOpciones.moduloAGuardar.modulo_id === $scope.rootOpciones.moduloPadre.modulo_id) {
+                    console.log("modulo padre seleccionado ", $scope.rootOpciones.moduloPadre);
+                    delete $scope.rootOpciones.moduloPadre;
                 }
             };
 
@@ -274,7 +312,7 @@ define([
                 ///console.log("modulos seleccionados ", modulos);
 
                 var obj = {
-                    session: $scope.rootModulos.session,
+                    session: $scope.rootOpciones.session,
                     data: {
                         parametrizacion_modulos: {
                             modulos_id: modulos
@@ -298,9 +336,9 @@ define([
                         _modulo.setState(modulo.state);
                         _modulo.setObservacion(modulo.observacion);
                         _modulo.setEstado(modulo.estado);
-                        $scope.rootModulos.moduloAGuardar = _modulo;
+                        $scope.rootOpciones.moduloAGuardar = _modulo;
 
-                        var modulos = $scope.rootModulos.modulos;
+                        var modulos = $scope.rootOpciones.modulos;
 
                         console.log("moduloe seleccionando ", _modulo.parent);
 
@@ -311,15 +349,14 @@ define([
                                 if (modulos[i].id === _modulo.parent) {
                                     console.log("modulos select ", modulos[i].id);
 
-                                    $scope.rootModulos.moduloPadre = modulos[i];
+                                    $scope.rootOpciones.moduloPadre = modulos[i];
                                     break;
                                 }
                             }
                         } else {
-                            $scope.rootModulos.moduloPadre = undefined;
+                            $scope.rootOpciones.moduloPadre = undefined;
                         }
-                        
-                        $scope.$broadcast("traerOpcionesModulo");
+
                         console.log("modulo creado ", _modulo);
 
                     } else {
@@ -331,7 +368,7 @@ define([
 
             //fin de eventos
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
-                $scope.rootModulos = [];
+                $scope.rootOpciones = [];
                 $scope.$$watchers = null;
             });
 

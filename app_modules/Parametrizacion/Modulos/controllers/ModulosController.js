@@ -33,8 +33,8 @@ Modulos.prototype.obtenerModulosPorId = function(req, res) {
     var args = req.body.data;
 
     if (args.parametrizacion_modulos.modulos_id === undefined && args.parametrizacion_modulos.modulos_id.length === '') {
-        res.send(G.utils.r(req.url, 'El id del modulo no esta definido', 500, {parametrizacion_modulos: {}}));
-        return validacion;
+        res.send(G.utils.r(req.url, 'El id del modulo no esta definido', 403, {parametrizacion_modulos: {}}));
+        return;
     }
 
     that.m_modulo.obtenerModulosPorId(args.parametrizacion_modulos.modulos_id, function(err, rows) {
@@ -82,7 +82,28 @@ Modulos.prototype.guardarModulo = function(req, res) {
             res.send(G.utils.r(req.url, "Modulo creado con exito", 200, {parametrizacion_modulo: {modulo: modulo}}));
         });
     });
+};
 
+
+Modulos.prototype.listarOpcionesPorModulo = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+
+    if (args.parametrizacion_modulos.modulo.id === undefined && aargs.parametrizacion_modulos.modulo.id.length === '') {
+        res.send(G.utils.r(req.url, 'El id del modulo no esta definido', 500, {parametrizacion_modulos: {}}));
+        return;
+    }
+    var modulo = args.parametrizacion_modulos.modulo.id;
+
+
+    that.m_modulo.listarOpcionesPorModulo(modulo, function(err, rows) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error listando las opciones del modulo', 500, {parametrizacion_modulo: {}}));
+            return;
+        }
+        res.send(G.utils.r(req.url, "Listado de opciones por modulo", 200, {parametrizacion_modulos: {opciones_modulo: rows}}));
+        
+    });
 
 };
 
@@ -136,7 +157,7 @@ function __validarCreacionModulo(that, modulo, callback) {
         //determina si el nombre del modulo ya esta en uso, insensible a mayusculas o espacios
         for (var i in rows) {
 
-            if ( modulo.modulo_id !== rows[i].id) {
+            if (modulo.modulo_id !== rows[i].id) {
 
                 var _nombre_modulo = rows[i].nombre.toLowerCase().replace(/ /g, "");
                 var _nombre_url = rows[i].state.toLowerCase().replace(/ /g, "");

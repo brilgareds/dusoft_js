@@ -16,4 +16,9 @@ module.exports = function(app, di_container) {
         c_modulos.obtenerModulosPorId(req, res);
     });
     
+    
+    app.post('/api/Modulos/listarOpcionesPorModulo', function(req, res) {
+        c_modulos.listarOpcionesPorModulo(req, res);
+    });
+    
 };

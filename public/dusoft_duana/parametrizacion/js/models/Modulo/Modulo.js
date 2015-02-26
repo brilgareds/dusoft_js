@@ -16,13 +16,12 @@ define(["angular", "js/models"], function(angular, models) {
                 this.observacion = "";
                 this.nodo_principal = false;
                 this.estado = false;
-                
+                this.opcionAGuardar;
                 
                 if(this.parent === "#"){
                     this.nodo_principal = true;
                 }
-                
-                
+
             }
             
             Modulo.prototype.setId = function(id){
@@ -35,7 +34,14 @@ define(["angular", "js/models"], function(angular, models) {
             };
             
             Modulo.prototype.agregarOpcion = function(opcion){
-                 this.opciones.push(opcion);
+                
+                for(var i in this.opciones){
+                    if(this.opciones[i].id === opcion.id){
+                        return false;
+                    }
+                }
+                
+                 this.opciones.unshift(opcion);
             };
             
             Modulo.prototype.vaciarOpciones = function(){
@@ -73,6 +79,14 @@ define(["angular", "js/models"], function(angular, models) {
             
             Modulo.prototype.setNodoPrincipal = function(nodo_principal){
                 this.nodo_principal = nodo_principal;
+            };
+            
+            Modulo.prototype.setOpcionAGuardar = function(opcion){
+                this.opcionAGuardar = opcion;
+            };
+            
+            Modulo.prototype.getOpcionAGuardar = function(){
+                return this.opcionAGuardar;
             };
             
             this.get = function(id, parent, text, url) {

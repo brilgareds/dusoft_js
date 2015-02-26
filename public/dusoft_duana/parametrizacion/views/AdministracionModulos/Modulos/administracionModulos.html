@@ -108,21 +108,21 @@
                 <div class="row">
                     <div class="col-md-5 contenedor_opciones">
                         <p class="input-group">
-                            <input type="text" class="form-control"  placeholder="Nombre Opcion" />
+                            <input type="text" ng-model='rootModulos.moduloAGuardar.opcionAGuardar.nombre' class="form-control"  placeholder="Nombre Opcion" />
                             <span class="input-group-addon">
                                 <i class="glyphicon glyphicon-ok"></i>
                             </span>
                         </p> 
 
                         <p class="input-group">
-                            <input type="text" class="form-control"  placeholder="Alias" />
+                            <input type="text" class="form-control" ng-model='rootModulos.moduloAGuardar.opcionAGuardar.alias'  placeholder="Alias" />
                             <span class="input-group-addon">
                                 <i class="glyphicon glyphicon-ok"></i>
                             </span>
                         </p> 
 
                         <p class="input-group contenedor_combo_grande">
-                            <textarea class="form-control observacion_modulo" placeholder="Observacion"></textarea>
+                            <textarea class="form-control observacion_modulo" ng-model='rootModulos.moduloAGuardar.opcionAGuardar.observacion' placeholder="Observacion"></textarea>
 
                         </p> 
                     </div>
@@ -138,11 +138,27 @@
 
                 <div class="input-group" style="margin-top:10px;">
                     <label for="habilitar_opcion" style='margin-right: 5px;'>Habilitar Opcion</label>
-                    <input-check ng-model="habilitar_opcion" style='margin-right: 15px;' id="habilitar_opcion" ></input-check>
-                    <button class="btn btn-success btn-sm" ng-click='onGuardarOpcion()' style="margin-left: 5px;">
-                        Guardar
-                        <span class="glyphicon glyphicon-floppy-disk"></span>
+                    <input-check ng-model="rootModulos.moduloAGuardar.opcionAGuardar.estado" style='margin-right: 15px;' ></input-check>
+
+                </div>
+                
+                <div class="input-group" style="margin-top:10px;">
+                    <button class="btn btn-warning btn-sm" ng-click='onLimpiarFormularioOpcion()'>
+                        Limpiar
+                        <span class="glyphicon glyphicon-trash"></span>
                     </button>
+                    <span ng-switch="rootModulos.moduloAGuardar.modulo_id != 0">
+
+                        <button ng-switch-when="true" class="btn btn-success btn-sm" ng-click='onGuardarOpcion()'>
+                            Guardar
+                            <span class="glyphicon glyphicon-floppy-disk"></span>
+                        </button>
+
+                        <button ng-switch-when="false" disabled="disabled" class="btn btn-success btn-sm">
+                            Guardar
+                            <span class="glyphicon glyphicon-floppy-disk"></span>
+                        </button>
+                    </span>
                 </div>
 
             </div>

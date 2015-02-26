@@ -209,48 +209,6 @@ define([
                 $scope.rootModulos.moduloAGuardar.icon = icono.clase;
             };
 
-            $scope.onBorrarOpcion = function(opcion) {
-                $scope.opts = {
-                    backdrop: true,
-                    backdropClick: true,
-                    dialogFade: false,
-                    keyboard: true,
-                    template: ' <div class="modal-header">\
-                                    <button type="button" class="close" ng-click="close()">&times;</button>\
-                                    <h4 class="modal-title">Desea eliminar la opcion?</h4>\
-                                </div>\
-                                <div class="modal-body">\
-                                    <h4>Codigo.</h4>\
-                                    <h5> {{ producto_eliminar.getCodigoProducto() }}</h5>\
-                                    <h4>Descripcion.</h4>\
-                                    <h5> {{ producto_eliminar.getDescripcion() }} </h5>\
-                                </div>\
-                                <div class="modal-footer">\
-                                    <button class="btn btn-warning" ng-click="close()">No</button>\
-                                    <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
-                                </div>',
-                    scope: $scope,
-                    controller: function($scope, $modalInstance) {
-
-                        $scope.confirmar = function() {
-                            // $scope.eliminar_producto();
-                            $modalInstance.close();
-                        };
-
-                        $scope.close = function() {
-                            $modalInstance.close();
-                        };
-
-                    },
-                    resolve: {
-                        producto_eliminar: function() {
-                            return $scope.producto_eliminar;
-                        }
-                    }
-                };
-                var modalInstance = $modal.open($scope.opts);
-            };
-
             $scope.onSeleccionarNodoPrincipal = function() {
                 console.log("es modulo principal ", $scope.rootModulos.moduloAGuardar.nodo_principal);
                 if ($scope.rootModulos.moduloAGuardar.nodo_principal) {

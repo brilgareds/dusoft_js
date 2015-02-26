@@ -84,6 +84,40 @@ Modulos.prototype.guardarModulo = function(req, res) {
     });
 };
 
+Modulos.prototype.guardarOpcion = function(req, res) {
+    var that = this;
+
+    var args = req.body.data;
+
+    var opcion = args.parametrizacion_modulos.opcion;
+
+    __validarCreacionOpcion(that, opcion, function(validacion) {
+
+        if (!validacion.valido) {
+            res.send(G.utils.r(req.url, validacion.msj, 403, {parametrizacion_modulos: {}}));
+            return;
+        }
+
+        opcion.usuario_id = req.session.user.usuario_id;
+        opcion.usuario_id_modifica = req.session.user.usuario_id;
+
+        that.m_modulo.guardarOpcion(opcion, function(err, rows) {
+            if (err) {
+                console.log("error guardando opcion ", err);
+                res.send(G.utils.r(req.url, 'Error guardando la opcion', 500, {parametrizacion_modulo: {}}));
+                return;
+            }
+
+            if (rows.length > 0 && rows[0].id) {
+                opcion.id = rows[0].id;
+            }
+
+            console.log("opcion a regresar ", opcion);
+            res.send(G.utils.r(req.url, "Opcion guardada con exito", 200, {parametrizacion_modulo: {opcion: opcion}}));
+        });
+    });
+};
+
 
 Modulos.prototype.listarOpcionesPorModulo = function(req, res) {
     var that = this;
@@ -104,8 +138,10 @@ Modulos.prototype.listarOpcionesPorModulo = function(req, res) {
         res.send(G.utils.r(req.url, "Listado de opciones por modulo", 200, {parametrizacion_modulos: {opciones_modulo: rows}}));
         
     });
-
 };
+
+
+
 
 function __validarCreacionModulo(that, modulo, callback) {
     var validacion = {
@@ -184,9 +220,80 @@ function __validarCreacionModulo(that, modulo, callback) {
 
     });
 
-}
-;
+};
 
+
+function __validarCreacionOpcion(that, opcion, callback) {
+    var validacion = {
+        valido: true,
+        msj: ""
+    };
+
+    if (opcion.modulo_id && opcion.modulo_id.length === '') {
+        validacion.valido = false;
+        validacion.msj = "La opcion debe tener un modulo asignado";
+        callback(validacion);
+        return;
+    }
+
+    if (opcion.nombre === undefined || opcion.nombre.length === 0) {
+        validacion.valido = false;
+        validacion.msj = "La opcion debe tener un nombre";
+        callback(validacion);
+        return;
+    }
+
+    if (opcion.alias === undefined) {
+        validacion.valido = false;
+        validacion.msj = "La opcion debe tener un alias";
+        callback(validacion);
+        return;
+    }
+
+    //trae las opcion que hagan match con las primeras letras del nombre o el alias
+    that.m_modulo.obtenerOpcionPorNombre(opcion.nombre.substring(0, 4), function(err, rows) {
+        if (err) {
+            validacion.valido = false;
+            validacion.msj = "Ha ocurrido un error validando la opcion";
+            callback(validacion);
+            return;
+        }
+
+
+        var nombre_opcion = opcion.nombre.toLowerCase().replace(/ /g, "");
+       // var alias = opcion.alias.toLowerCase().replace(/ /g, "");
+
+        //determina si el nombre de la opcion ya esta en uso, insensible a mayusculas o espacios
+        for (var i in rows) {
+
+            if (opcion.id !== rows[i].id) {
+
+                var _nombre_opcion = rows[i].nombre.toLowerCase().replace(/ /g, "");
+                var _alias = rows[i].alias.toLowerCase().replace(/ /g, "");
+
+                if (nombre_opcion === _nombre_opcion) {
+                    validacion.valido = false;
+                    validacion.msj = "El nombre de la opcion no esta disponible";
+                    callback(validacion);
+                    return;
+                }
+
+               /* if (alias === _alias) {
+                    validacion.valido = false;
+                    validacion.msj = "El alias de la opcion no esta disponible";
+                    callback(validacion);
+                    return;
+                }*/
+            }
+
+        }
+
+        callback(validacion);
+
+
+    });
+
+};
 
 Modulos.$inject = ["m_modulo"];
 

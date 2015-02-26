@@ -45,7 +45,7 @@ define(["angular", "js/directive"], function(angular, directive) {
                                 "themes": {"stripes": true}
 
                             },
-                            "state": {"key": "tree"},
+                            "state": {"key": "treemodulos"},
                             plugins: plugins
 
 

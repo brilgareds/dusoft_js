@@ -21,4 +21,8 @@ module.exports = function(app, di_container) {
         c_modulos.listarOpcionesPorModulo(req, res);
     });
     
+    app.post('/api/Modulos/guardarOpcion', function(req, res) {
+        c_modulos.guardarOpcion(req, res);
+    });
+    
 };

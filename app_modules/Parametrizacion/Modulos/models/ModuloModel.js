@@ -83,8 +83,69 @@ ModuloModel.prototype.obtenerModuloPorNombreOUrl = function(nombre, url, callbac
     });
 };
 
+//opciones
+
+//gestiona para modificar o insertar la opcion
+ModuloModel.prototype.guardarOpcion = function(opcion, callback) {
+    var self = this;
+
+    if (opcion.id && opcion.id !== 0) {
+        self.modificarOpcion(opcion, function(err, rows) {
+            callback(err, rows);
+        });
+    } else {
+        self.insertarOpcion(opcion, function(err, rows) {
+            callback(err, rows);
+        });
+    }
+};
+
+
+ModuloModel.prototype.insertarOpcion = function(opcion, callback) {
+
+    var sql = "INSERT INTO modulos_opciones (nombre, alias, modulo_id, observacion, usuario_id,\
+               fecha_creacion, estado) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id";
+
+
+    var params = [
+        opcion.nombre, opcion.alias, opcion.modulo_id,
+        opcion.observacion, opcion.usuario_id, 'now()', Number(opcion.estado)
+    ];
+
+    G.db.query(sql, params, function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+ModuloModel.prototype.modificarOpcion = function(opcion, callback) {
+
+
+    var sql = "UPDATE modulos_opciones SET nombre = $1, alias =$2,\
+               observacion = $3,  usuario_id_modifica = $4,\
+               estado = $5, fecha_modificacion = $6 WHERE id = $7  \
+               ";
+
+    var params = [
+        opcion.nombre, opcion.alias, opcion.observacion,
+        opcion.usuario_id, Number(opcion.estado), 'now()', opcion.id
+    ];
+
+    G.db.query(sql, params, function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+ModuloModel.prototype.obtenerOpcionPorNombre = function(nombre, callback) {
+    var sql = "SELECT  nombre, alias, id FROM modulos_opciones WHERE nombre ILIKE $1";
+           
+    G.db.query(sql,  [nombre + "%"], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+
 ModuloModel.prototype.listarOpcionesPorModulo = function(modulo_id, callback) {
-    var sql = "SELECT * FROM modulos_opciones WHERE modulo_id =  $1";
+    var sql = "SELECT * FROM modulos_opciones WHERE modulo_id =  $1 ORDER BY id";
            
     G.db.query(sql,  [modulo_id], function(err, rows, result) {
         callback(err, rows);

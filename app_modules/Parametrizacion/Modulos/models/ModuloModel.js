@@ -152,5 +152,12 @@ ModuloModel.prototype.listarOpcionesPorModulo = function(modulo_id, callback) {
     });
 };
 
+ModuloModel.prototype.eliminarOpcion = function(id, callback){
+    var sql = "DELETE FROM modulos_opciones WHERE id = $1";
+    
+    G.db.query(sql,  [id], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
 
 module.exports = ModuloModel;

@@ -226,6 +226,11 @@ input.readonlyinput[readonly]{
 .modal-view{
     overflow-y:hidden;
 }
+
+.modal-body{
+    word-break: break-all;
+}
+
 nav.navbar-fixed-top{
     background-color: #428bca;
     border-color: #428bca;

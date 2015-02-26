@@ -1,7 +1,6 @@
 
 define([
     "angular", "js/controllers", "js/models",
-    "controllers/AdministracionModulos/Modulos/HabilitarModulosEmpresaController",
     "controllers/AdministracionModulos/Modulos/OpcionesModulosController",
     "models/Modulo/Modulo"
 ], function(angular, controllers) {
@@ -173,6 +172,9 @@ define([
                 }
 
                 modulo_guardar.url = "/" + modulo_guardar.state;
+                
+                //estas propiedades se borrarn porque no es necesario enviarlas al api
+                delete modulo_guardar.opciones;
 
                 delete modulo_guardar.nodo_principal;
 
@@ -191,11 +193,11 @@ define([
                 Request.realizarRequest(API.MODULOS.GUARDAR_MODULO, "POST", obj, function(data) {
                     if (data.status === 200) {
                         console.log("modulo guardado con exito ", data);
+                        AlertService.mostrarMensaje("success", "Modulo guardado correctamente");
                         var id = data.obj.parametrizacion_modulo.modulo.id;
                         if (id) {
                             $scope.rootModulos.moduloAGuardar.setId(id);
                         }
-
                         self.traerModulos();
                     } else {
                         AlertService.mostrarMensaje("warning", data.msj);

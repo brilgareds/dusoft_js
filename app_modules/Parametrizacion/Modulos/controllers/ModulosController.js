@@ -140,7 +140,24 @@ Modulos.prototype.listarOpcionesPorModulo = function(req, res) {
     });
 };
 
-
+Modulos.prototype.eliminarOpcion = function(req, res){
+    var that = this;
+    var args = req.body.data;
+    
+    if (args.parametrizacion_modulos.opcion.id === undefined && args.parametrizacion_modulos.opcion.id.length === '') {
+        res.send(G.utils.r(req.url, 'El id de la opcion no esta definida', 500, {parametrizacion_modulos: {}}));
+        return;
+    }
+    
+    that.m_modulo.eliminarOpcion(args.parametrizacion_modulos.opcion.id, function(err, rows) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error eliminando la opcion', 500, {parametrizacion_modulo: {}}));
+            return;
+        }
+        res.send(G.utils.r(req.url, "Opcion eliminada correctamente", 200, {parametrizacion_modulos: {opciones_modulo: {}}}));
+        
+    });
+};
 
 
 function __validarCreacionModulo(that, modulo, callback) {

@@ -25,4 +25,8 @@ module.exports = function(app, di_container) {
         c_modulos.guardarOpcion(req, res);
     });
     
+    app.post('/api/Modulos/eliminarOpcion', function(req, res) {
+        c_modulos.eliminarOpcion(req, res);
+    });
+    
 };

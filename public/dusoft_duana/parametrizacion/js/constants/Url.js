@@ -19,7 +19,8 @@
                 'GUARDAR_MODULO': BASE_URL+"/Modulos/guardarModulo",
                 'OBTENER_MODULOS_POR_ID' : BASE_URL+"/Modulos/obtenerModulosPorId",
                 'LISTAR_OPCIONES' : BASE_URL+"/Modulos/listarOpcionesPorModulo",
-                'GUARDAR_OPCION' : BASE_URL+"/Modulos/guardarOpcion"
+                'GUARDAR_OPCION' : BASE_URL+"/Modulos/guardarOpcion",
+                'ELIMINAR_OPCION' : BASE_URL+"/Modulos/eliminarOpcion"
             }
 	  }
 	};

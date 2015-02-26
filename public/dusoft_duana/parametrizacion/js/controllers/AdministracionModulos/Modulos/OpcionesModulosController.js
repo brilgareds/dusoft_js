@@ -1,16 +1,16 @@
 
 define([
     "angular", "js/controllers", "js/models",
-    "models/Modulo/OpcionModulo"
+    "models/Modulo/OpcionModulo","controllers/AdministracionModulos/Modulos/HabilitarModulosEmpresaController"
 ], function(angular, controllers) {
 
     controllers.controller('OpcionesModulosController', [
         '$scope', '$rootScope', 'Request',
         'API', "AlertService", "Usuario",
-        "OpcionModulo",
+        "OpcionModulo","$modal",
         function($scope, $rootScope, Request,
                 API, AlertService, Usuario,
-                OpcionModulo) {
+                OpcionModulo, $modal) {
 
 
             var self = this;
@@ -18,7 +18,7 @@ define([
             $scope.rootOpciones = {
             };
 
-
+            //trae todas las opciones que tenga el modulo que se este guardando
             self.traerOpcionesModulo = function() {
                 $scope.rootModulos.moduloAGuardar.vaciarOpciones();
                 var obj = {
@@ -52,7 +52,6 @@ define([
                             $scope.rootModulos.moduloAGuardar.agregarOpcion(opcion);
                         }
 
-                        // console.log("modulo a guardar ", $scope.rootModulos.moduloAGuardar);
 
                     }
 
@@ -98,6 +97,28 @@ define([
 
             self.inicializarOpcionACrear = function() {
                 $scope.rootModulos.moduloAGuardar.opcionAGuardar = OpcionModulo.get();
+            };
+            
+            self.eliminarOpcion = function(opcion){
+                var obj = {
+                    session: $scope.rootModulos.session,
+                    data: {
+                        parametrizacion_modulos: {
+                            opcion : opcion
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.MODULOS.ELIMINAR_OPCION, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        
+                        $scope.rootModulos.moduloAGuardar.eliminarOpcion(opcion);
+                        AlertService.mostrarMensaje("success", "Opcion eliminada correctamente");
+                    }  else {
+                         AlertService.mostrarMensaje("warning", data.msj);
+                    }
+
+                });
 
             };
 
@@ -125,30 +146,32 @@ define([
             };
 
             $scope.onBorrarOpcion = function(opcion) {
+                //console.log("opcion a eliminar ", opcion);
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
                     dialogFade: false,
+                    size: 'sm',
                     keyboard: true,
                     template: ' <div class="modal-header">\
                                     <button type="button" class="close" ng-click="close()">&times;</button>\
                                     <h4 class="modal-title">Desea eliminar la opcion?</h4>\
                                 </div>\
                                 <div class="modal-body">\
-                                    <h4>Codigo.</h4>\
-                                    <h5> {{ producto_eliminar.getCodigoProducto() }}</h5>\
-                                    <h4>Descripcion.</h4>\
-                                    <h5> {{ producto_eliminar.getDescripcion() }} </h5>\
+                                    <h4>Opcion:</h4>\
+                                    <h5> {{ opcion.getNombre() }} - {{opcion.getAlias()}}</h5>\
+                                    <h4>Descripcion:</h4>\
+                                    <h5> {{ opcion.getObservacion() }} </h5>\
                                 </div>\
                                 <div class="modal-footer">\
-                                    <button class="btn btn-warning" ng-click="close()">No</button>\
-                                    <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
+                                    <button class="btn btn-primary" ng-click="close()">No</button>\
+                                    <button class="btn btn-warning" ng-click="confirmar()" ng-disabled="" >Si</button>\
                                 </div>',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
-
+                    controller: function($scope, $modalInstance, opcion) {
+                        $scope.opcion = opcion;
                         $scope.confirmar = function() {
-                            // $scope.eliminar_producto();
+                             self.eliminarOpcion(opcion);
                             $modalInstance.close();
                         };
 
@@ -158,14 +181,15 @@ define([
 
                     },
                     resolve: {
-                        producto_eliminar: function() {
-                            return $scope.producto_eliminar;
+                        opcion: function() {
+                            return opcion;
                         }
                     }
                 };
                 var modalInstance = $modal.open($scope.opts);
             };
-
+            
+            //este evento escucha al scope principal para traer las opciones e inicializar la opcion a guardar
             $scope.$on("traerOpcionesModulo", function() {
                 self.traerOpcionesModulo();
                 self.inicializarOpcionACrear();

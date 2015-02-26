@@ -28,6 +28,14 @@ define(["angular", "js/models"], function(angular, models) {
                  return this.nombre ;
             };
             
+            OpcionModulo.prototype.setAlias = function(alias){
+                 this.alias = alias;
+            };
+            
+            OpcionModulo.prototype.getAlias = function(){
+                 return this.alias ;
+            };
+            
             OpcionModulo.prototype.setObservacion = function(observacion){
                 this.observacion = observacion;
             };

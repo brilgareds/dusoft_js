@@ -160,6 +160,12 @@ Modulos.prototype.eliminarOpcion = function(req, res){
 };
 
 
+Modulos.prototype.habilitarModuloEnEmpresas = function(req,res){
+     var that = this;
+     var args = req.body.data;
+};
+
+
 function __validarCreacionModulo(that, modulo, callback) {
     var validacion = {
         valido: true,

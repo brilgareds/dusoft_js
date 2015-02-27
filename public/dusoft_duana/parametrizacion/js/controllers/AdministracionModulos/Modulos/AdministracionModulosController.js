@@ -136,6 +136,9 @@ define([
                     templateUrl: 'views/AdministracionModulos/Modulos/habilitarModuloEmpresa.html',
                     controller: "HabilitarModulosEmpresaController",
                     resolve: {
+                        moduloSeleccionado:function(){
+                            return $scope.rootModulos.moduloAGuardar;
+                        }
                     }
                 };
 

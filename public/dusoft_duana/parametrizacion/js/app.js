@@ -26,7 +26,9 @@ define([
     "includes/classes/Usuario",
     "includes/widgets/InputCheck",
     "directive/Modulos/ArbolModulos",
-    "directive/Modulos/DirectivaGeneralModulos"
+    "directive/Modulos/DirectivaGeneralModulos",
+    "models/Modulo/Empresa_Modulo",
+    "models/Modulo/EmpresaParametrizacion"
 ], function(angular) {
     /* App Module and its dependencies */
 

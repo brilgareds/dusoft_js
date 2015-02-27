@@ -3,15 +3,18 @@ define(["angular", "js/models"], function(angular, models) {
     models.factory('Modulo', [function() {
 
             function Modulo(id, parent, text, url) {
+                //propiedades necesarias para el plugin de jstree
                 this.id = (id) ? "modulo_" + id : 0;
                 this.parent = (parent) ? "modulo_" + parent : "#";
                 this.text = text || "";
+                this.icon = "";
+                //
+
                 this.nombre = this.text;
                 this.url = url || "";
                 this.modulo_id = id || 0;
                 this.parent_id = parent || "#";
                 this.opciones = [];
-                this.icon = "";
                 this.state = "";
                 this.observacion = "";
                 this.nodo_principal = false;
@@ -22,11 +25,17 @@ define(["angular", "js/models"], function(angular, models) {
                     this.nodo_principal = true;
                 }
 
+                this.empresasModulos = [];
+
             }
 
             Modulo.prototype.setId = function(id) {
                 this.id = "modulo_" + id;
                 this.modulo_id = id;
+            };
+            
+            Modulo.prototype.getId = function(id) {
+                return  this.modulo_id ;
             };
 
             Modulo.prototype.getOpciones = function() {
@@ -98,6 +107,40 @@ define(["angular", "js/models"], function(angular, models) {
 
             Modulo.prototype.getOpcionAGuardar = function() {
                 return this.opcionAGuardar;
+            };
+
+            Modulo.prototype.vaciarListaEmpresas = function(opcion) {
+                this.empresasModulos = [];
+            };
+
+            Modulo.prototype.agregarEmpresa = function(empresa_modulo) {
+
+                for (var i in this.empresasModulos) {
+                    var empresa = this.empresasModulos[i];
+
+                    if (empresa_modulo.getEmpresa().getCodigo() === empresa.getEmpresa().getCodigo()) {
+                        return false;
+                    }
+                }
+
+                this.empresasModulos.push(empresa_modulo);
+            };
+
+            Modulo.prototype.removerEmpresa = function(empresa_modulo) {
+
+                for (var i in this.empresasModulos) {
+                    var empresa = this.empresasModulos[i];
+
+                    if (empresa_modulo.getEmpresa().getCodigo() === empresa.getEmpresa().getCodigo()) {
+                        this.empresasModulos.splice(i, 1);
+                        break;
+                    }
+                }
+
+            };
+
+            Modulo.prototype.getListaEmpresas = function() {
+                return this.empresasModulos;
             };
 
             this.get = function(id, parent, text, url) {

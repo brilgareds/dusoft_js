@@ -29,4 +29,12 @@ module.exports = function(app, di_container) {
         c_modulos.eliminarOpcion(req, res);
     });
     
+    app.post('/api/Modulos/eliminarOpcion', function(req, res) {
+        c_modulos.eliminarOpcion(req, res);
+    });
+    
+    app.post('/api/Modulos/habilitarModuloEnEmpresas', function(req, res){
+        c_modulos.habilitarModuloEnEmpresas(req, res);
+    });
+    
 };

@@ -151,7 +151,7 @@ define([
                     backdrop: true,
                     backdropClick: true,
                     dialogFade: false,
-                    size: 'sm',
+                  //  size: 'sm',
                     keyboard: true,
                     template: ' <div class="modal-header">\
                                     <button type="button" class="close" ng-click="close()">&times;</button>\
@@ -232,6 +232,7 @@ define([
                             //se decide pasar esta instancia ya que es una copia de la opcion para guardar
                             //si se pasa la referencia de agregarOpcion directamente puede presentar conflictos con el binding
                             opcion_guardar.setId(id);
+                            AlertService.mostrarMensaje("success", "Opcion guardada correctamente");
                         }
 
                         $scope.rootModulos.moduloAGuardar.agregarOpcion(opcion_guardar);

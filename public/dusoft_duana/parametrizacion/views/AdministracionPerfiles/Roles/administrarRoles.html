@@ -1,0 +1,53 @@
+
+<div class="row">
+
+    <div class="col-md-3">
+
+        <p class="input-group">
+            <input type="text" ng-model='rootRoles.rolAGuardar.nombre' class="form-control"  placeholder="Nombre Rol" />
+            <span class="input-group-addon">
+                <i class="glyphicon glyphicon-ok"></i>
+            </span>
+        </p> 
+
+        <p class="input-group contenedor_combo_grande">
+
+            <ui-select ng-model="rootRol.moduloPadre"
+                       theme="select2"
+                       ng-change="onEmpresaSeleccionada()"
+                       class="contenedor_combo_grande">
+                <ui-select-match  placeholder="Seleccionar Empresa">{{$select.selected.getNombre()}}</ui-select-match>
+                <ui-select-choices repeat="empresa in rootRoles.empresas | filter:$select.search">
+                    {{empresa.getNombre()}}
+                </ui-select-choices>
+            </ui-select>
+
+
+        </p>
+
+        <p class="input-group contenedor_combo_grande">
+            <textarea class="form-control observacion_modulo" ng-model='rootRoles.rolAGuardar.observacion' placeholder="Observacion"></textarea>
+
+        </p> 
+        <p class="input-group" >
+        </p>
+        <p class="input-group contenedor_combo_grande">
+            <label for="habilitar_rol" style='margin-right: 5px;'>Habilitar Rol</label>
+        <input-check ng-model="rootRoles.rolAGuardar.opcionAGuardar.estado" style='margin-right: 15px;' id="habilitar_rol" ></input-check>
+
+        </p>
+
+    </div>
+
+    <div class="col-md-5">
+        <div arbol-modulos plugins='checkbox, wholerow' tipo='multiple'></div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="table-responsive" >
+            <div class="grid-responsive listado_opciones" ng-grid="listado_opciones">
+
+            </div>
+        </div>
+    </div>
+</div>

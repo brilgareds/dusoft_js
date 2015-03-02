@@ -185,7 +185,7 @@ Modulos.prototype.habilitarModuloEnEmpresas = function(req, res) {
             return;
         }
         
-        res.send(G.utils.r(req.url, "Modulo Habilitado", 200, {parametrizacion_modulos: {}}));
+        res.send(G.utils.r(req.url, "Se habilito el modulo en las empresas seleccionadas", 200, {parametrizacion_modulos: {}}));
         
     });
 

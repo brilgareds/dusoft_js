@@ -20,6 +20,10 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             EmpresaParametrizacion.prototype.getListaEmpresas = function() {
                 return this.empreasModulos;
             };
+            
+            EmpresaParametrizacion.prototype.getEstado = function() {
+                return this.estado;
+            };
 
             this.get = function(nombre, codigo, estado) {
                 return new EmpresaParametrizacion(nombre, codigo, estado);

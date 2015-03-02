@@ -118,10 +118,9 @@ define(["angular", "js/models"], function(angular, models) {
             };
 
             Modulo.prototype.agregarEmpresa = function(empresa_modulo) {
-
+                
                 for (var i in this.empresasModulos) {
                     var empresa = this.empresasModulos[i];
-
                     if (empresa_modulo.getEmpresa().getCodigo() === empresa.getEmpresa().getCodigo()) {
                         return false;
                     }

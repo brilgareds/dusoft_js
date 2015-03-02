@@ -71,7 +71,7 @@ define([
         .state('AdministracionRoles', {
             url: "/AdministracionRoles",
             text:"Administracion Roles",
-            templateUrl: "views/AdministracionPerfiles/Roles/listarRoles.html",
+            templateUrl: "views/AdministracionPerfiles/Roles/administrarRoles.html",
             controller: "AdministracionRolesController"
         })
         .state('AdministracionUsuarios', {

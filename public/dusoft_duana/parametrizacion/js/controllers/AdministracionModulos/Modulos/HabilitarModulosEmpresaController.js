@@ -30,7 +30,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                     }
                 };
 
-                Request.realizarRequest(API.MODULOS.LISTAR_EMPRESAS, "POST", obj, function(data) {
+                Request.realizarRequest(API.MODULOS.LISTAR_EMPRESAS_MODULOS, "POST", obj, function(data) {
                     if (data.status === 200) {
                         $scope.empresas = [];
                         var datos = data.obj.empresas;
@@ -43,14 +43,31 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                                     datos[i].estado
                                     );
 
-                            //console.log("push empresa ",empresa);
-                          //  console.log("push 2 empresa ",datos[i]);
                             $scope.empresas.push(empresa);
+                            
+                            self.agregarEmpresa(empresa);
                         }
 
                     }
 
                 });
+            };
+            
+            self.agregarEmpresa = function(empresa){
+                
+                //se crea una instancia de la clase que asocia la relacion N:N entre modulos y empresas
+                //se crea una instancia nueva de modulo diferente al seleccionado porque solo interesa tener el id
+                var empresa_modulo = Empresa_Modulo.get(
+                        empresa,
+                        Modulo.get(moduloSeleccionado.getId())
+                        );
+
+                //valida si la empresa fue seleccionada con el checkbox
+                if (empresa.getEstado()) {
+                    moduloSeleccionado.agregarEmpresa(empresa_modulo);
+                } else {
+                    moduloSeleccionado.removerEmpresa(empresa_modulo);
+                }
             };
 
             $scope.listado_empresas = {
@@ -68,22 +85,10 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
 
             $scope.onSeleccionarEmpresa = function(empresa) {
 
-                //se crea una instancia de la clase que asocia la relacion N:N entre modulos y empresas
-                //se crea una instancia nueva de modulo diferente al seleccionado porque solo interesa tener el id
-                var empresa_modulo = Empresa_Modulo.get(
-                        empresa,
-                        Modulo.get(moduloSeleccionado.getId())
-                        );
-
-                //valida si la empresa fue seleccionada con el checkbox
-                if (empresa.estado) {
-                    moduloSeleccionado.agregarEmpresa(empresa_modulo);
-                } else {
-                    moduloSeleccionado.removerEmpresa(empresa_modulo);
-                }
-
+                self.agregarEmpresa(empresa);
 
             };
+            
 
             $scope.onHabilitarModuloEnEmpresas = function() {
                 console.log($scope.moduloSeleccionado.getListaEmpresas());
@@ -99,12 +104,8 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 };
 
                 Request.realizarRequest(API.MODULOS.HABILITAR_MODULO_EMPRESAS, "POST", obj, function(data) {
-                    console.log("resultado habilitar modulo ", data);
-                    if (data.status === 200) {
-
-
-                    }
-
+                      $scope.close();
+                      AlertService.mostrarMensaje("success", data.msj);
                 });
 
             };
@@ -121,7 +122,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
 
 
             $scope.close = function() {
-                self.empresas = [];
+                $scope.empresas = [];
                 $modalInstance.close();
             };
 

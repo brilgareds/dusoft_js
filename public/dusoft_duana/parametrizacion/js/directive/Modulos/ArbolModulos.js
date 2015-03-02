@@ -5,25 +5,34 @@ define(["angular", "js/directive"], function(angular, directive) {
             return {
                 //scope: { model: '=data' },
                 /*scope: {
-                    datosArbol: '='
-                },*/
+                 datosArbol: '='
+                 },*/
                 link: function(scope, element, attrs, ngModel) {
-                    
+
                     //evento que indica que el elemento se cargo en el dom
                     scope.$emit("arbolListoEnDom");
-                    
+
                     scope.modulosSeleccionados = [];
-                    
+
                     var plugins = ["state"];
 
                     if (attrs.plugins) {
                         plugins = plugins.concat(attrs.plugins.split(","));
                     }
-                    
+
                     //determina que los datos del arbol cambiaron, actualiza los nodos
                     scope.$on("datosArbolCambiados", function(e, datos) {
                         if (datos) {
-                            init(datos);
+
+                           // $('#treeId').jstree(true).settings.core.data = newData;
+                           // $('#treeId').jstree(true).refresh();
+                          
+                           if(element.jstree(true).settings){
+                               element.jstree(true).settings.core.data = datos;
+                               element.jstree(true).refresh();
+                           } else {
+                               init(datos);
+                           }
                         }
                     });
 
@@ -36,12 +45,13 @@ define(["angular", "js/directive"], function(angular, directive) {
                                 "themes": {"stripes": true}
 
                             },
-                            "state": {"key": "tree"},
+                            "state": {"key": "treemodulos"},
                             plugins: plugins
 
 
                         }).on("select_node.jstree", function(node, selected, event) {
 
+                            console.log("nodo seleccionado ", selected);
                             //obtiene todos los nodos seleccionados
                             var seleccionados = $(this).jstree("get_selected", true);
                             scope.modulosSeleccionados = [];
@@ -49,16 +59,22 @@ define(["angular", "js/directive"], function(angular, directive) {
 
                             $.each(seleccionados, function() {
                                 console.log(this);
+
                                 //se agrega el nodo seleccionado
                                 agregarModuloSeleccionado(scope, this.id);
 
-                                //agrega los parent de cada nodo
-                                for (var i in this.parents) {
-                                    agregarModuloSeleccionado(scope, this.parents[i]);
+                                if (attrs.plugins === 'multiple') {
+                                    //agrega los parent de cada nodo
+                                    for (var i in this.parents) {
+                                        agregarModuloSeleccionado(scope, this.parents[i]);
+                                    }
                                 }
 
                             });
+
                             console.log(scope.modulosSeleccionados);
+                            scope.$emit("modulosSeleccionados", scope.modulosSeleccionados);
+
                         });
                     }
 
@@ -70,6 +86,9 @@ define(["angular", "js/directive"], function(angular, directive) {
                                 return false;
                             }
                         }
+
+                        modulo = modulo.split("_")[1];
+
                         scope.modulosSeleccionados.push(modulo);
                     }
 

@@ -136,33 +136,55 @@ Modulos.prototype.listarOpcionesPorModulo = function(req, res) {
             return;
         }
         res.send(G.utils.r(req.url, "Listado de opciones por modulo", 200, {parametrizacion_modulos: {opciones_modulo: rows}}));
-        
+
     });
 };
 
-Modulos.prototype.eliminarOpcion = function(req, res){
+Modulos.prototype.eliminarOpcion = function(req, res) {
     var that = this;
     var args = req.body.data;
-    
+
     if (args.parametrizacion_modulos.opcion.id === undefined && args.parametrizacion_modulos.opcion.id.length === '') {
         res.send(G.utils.r(req.url, 'El id de la opcion no esta definida', 500, {parametrizacion_modulos: {}}));
         return;
     }
-    
+
     that.m_modulo.eliminarOpcion(args.parametrizacion_modulos.opcion.id, function(err, rows) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error eliminando la opcion', 500, {parametrizacion_modulo: {}}));
             return;
         }
         res.send(G.utils.r(req.url, "Opcion eliminada correctamente", 200, {parametrizacion_modulos: {opciones_modulo: {}}}));
-        
+
     });
 };
 
 
-Modulos.prototype.habilitarModuloEnEmpresas = function(req,res){
-     var that = this;
-     var args = req.body.data;
+Modulos.prototype.habilitarModuloEnEmpresas = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+
+    var empresas_modulos = args.parametrizacion_modulos.empresas_modulos;
+    var modulo_id = args.parametrizacion_modulos.modulo_id;
+
+    if (empresas_modulos === undefined && empresas_modulos.length === 0) {
+        res.send(G.utils.r(req.url, 'No se a seleccionado ninguna empresa', 500, {parametrizacion_modulos: {}}));
+        return;
+    }
+
+    if (modulo_id === undefined && modulo_id.length === 0) {
+        res.send(G.utils.r(req.url, 'El id del modulo no se encontro', 500, {parametrizacion_modulos: {}}));
+        return;
+    }
+
+
+    that.m_modulo.habilitarModuloEnEmpresas(modulo_id, empresas_modulos, function(err, rows) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error habilitando las empresas para el modulo', 500, {parametrizacion_modulo: {}}));
+            return;
+        }
+    });
+
 };
 
 
@@ -243,7 +265,8 @@ function __validarCreacionModulo(that, modulo, callback) {
 
     });
 
-};
+}
+;
 
 
 function __validarCreacionOpcion(that, opcion, callback) {
@@ -284,7 +307,7 @@ function __validarCreacionOpcion(that, opcion, callback) {
 
 
         var nombre_opcion = opcion.nombre.toLowerCase().replace(/ /g, "");
-       // var alias = opcion.alias.toLowerCase().replace(/ /g, "");
+        // var alias = opcion.alias.toLowerCase().replace(/ /g, "");
 
         //determina si el nombre de la opcion ya esta en uso, insensible a mayusculas o espacios
         for (var i in rows) {
@@ -301,12 +324,12 @@ function __validarCreacionOpcion(that, opcion, callback) {
                     return;
                 }
 
-               /* if (alias === _alias) {
-                    validacion.valido = false;
-                    validacion.msj = "El alias de la opcion no esta disponible";
-                    callback(validacion);
-                    return;
-                }*/
+                /* if (alias === _alias) {
+                 validacion.valido = false;
+                 validacion.msj = "El alias de la opcion no esta disponible";
+                 callback(validacion);
+                 return;
+                 }*/
             }
 
         }
@@ -316,7 +339,8 @@ function __validarCreacionOpcion(that, opcion, callback) {
 
     });
 
-};
+}
+;
 
 Modulos.$inject = ["m_modulo"];
 

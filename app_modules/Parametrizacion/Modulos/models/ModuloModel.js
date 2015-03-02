@@ -160,4 +160,19 @@ ModuloModel.prototype.eliminarOpcion = function(id, callback){
     });
 };
 
+ModuloModel.prototype.habilitarModuloEnEmpresas = function(modulo_id, empresas_modulos, callback){
+    //se deshabilitan todos las empresas del modulos para asignar solo las que se enviaron del cliente
+    var sql = "UPDATE modulos_empresas SET estado = 0 WHERE modulo_id = $1";
+    
+    G.db.query(sql,[modulo_id], function(err, rows, result) {
+        if(err){
+            callback(err, rows);
+        } else {
+            
+        }
+    });
+    
+    
+};
+
 module.exports = ModuloModel;

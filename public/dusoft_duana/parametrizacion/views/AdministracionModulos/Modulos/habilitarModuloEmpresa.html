@@ -29,7 +29,7 @@
 
 
     <div class="modal-footer">
-        <button class="btn btn-primary" ng-disabled='form_operario.nombre_operario.$error.required' ng-click="onHabilitarModuloEnEmpresas()" >Terminar</button>
+        <button class="btn btn-primary" ng-disabled='moduloSeleccionado.getListaEmpresas().length == 0' ng-click="onHabilitarModuloEnEmpresas()" >Terminar</button>
 
     </div>
 </div>

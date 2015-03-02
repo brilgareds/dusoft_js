@@ -16,8 +16,9 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.tipo = 1;
             this.observacion = "";
             this.editable = true;
-            this.tipo_id_vendedor = "";
-            this.vendedor_id = "";
+//            this.tipo_id_vendedor = "";
+//            this.vendedor_id = "";
+            this.vendedor = {};
         };
 
         PedidoVenta.prototype = Object.create(Pedido.getClass().prototype);
@@ -32,6 +33,22 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
 //        PedidoVenta.prototype.agregarProducto = function(producto) {
 //            this.lista_productos.push(producto);
 //        };
+
+        PedidoVenta.prototype.setNumeroCotizacion = function(numero_cotizacion) {
+            this.numero_cotizacion = numero_cotizacion;
+        };
+        
+        PedidoVenta.prototype.getNumeroCotizacion = function() {
+            return this.numero_cotizacion;
+        };
+        
+        PedidoVenta.prototype.setValorCotizacion = function(valor_cotizacion) {
+            this.valor_cotizacion = valor_cotizacion;
+        };
+        
+        PedidoVenta.prototype.getValorCotizacion = function() {
+            return this.valor_cotizacion;
+        };        
 
         PedidoVenta.prototype.agregarProducto = function(producto) {
             this.lista_productos.unshift(producto);
@@ -73,21 +90,29 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             return this.editable;
         };
         
-        PedidoVenta.prototype.setTipoIdVendedor = function(tipo_id_vendedor) {
-            this.tipo_id_vendedor = tipo_id_vendedor;
+//        PedidoVenta.prototype.setTipoIdVendedor = function(tipo_id_vendedor) {
+//            this.tipo_id_vendedor = tipo_id_vendedor;
+//        };
+//        
+//        PedidoVenta.prototype.getTipoIdVendedor = function() {
+//            return this.tipo_id_vendedor;
+//        };        
+//        
+//        PedidoVenta.prototype.setVendedorId = function(vendedor_id) {
+//            this.vendedor_id = vendedor_id;
+//        };
+//        
+//        PedidoVenta.prototype.getVendedorId = function() {
+//            return this.vendedor_id;
+//        };      
+
+        PedidoVenta.prototype.setVendedor = function(vendedor) {
+            this.vendedor = vendedor;
         };
         
-        PedidoVenta.prototype.getTipoIdVendedor = function() {
-            return this.tipo_id_vendedor;
-        };        
-        
-        PedidoVenta.prototype.setVendedorId = function(vendedor_id) {
-            this.vendedor_id = vendedor_id;
+        PedidoVenta.prototype.getVendedor = function() {
+            return this.vendedor;
         };
-        
-        PedidoVenta.prototype.getVendedorId = function() {
-            return this.vendedor_id;
-        };                
 
         this.get = function() {
             return new PedidoVenta();

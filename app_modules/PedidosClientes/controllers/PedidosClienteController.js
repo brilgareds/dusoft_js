@@ -517,7 +517,7 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
  * @apiSuccessExample Respuesta-Exitosa:
  *     HTTP/1.1 200 OK
  *     {
- *       service : '/api/PedidosClientes/asignarResponsable',   
+ *       service : '/api/PedidosClientes/insertarCotizacion',   
  *       msj : 'Asignacion de Resposables',
  *       status: '200',
  *       obj : {
@@ -526,7 +526,7 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
  * @apiErrorExample Respuesta-Error:
  *     HTTP/1.1 404 Not Found
  *     {
- *       service : '/api/PedidosClientes/asignarResponsable',   
+ *       service : '/api/PedidosClientes/insertarCotizacion',   
  *       msj : 'Mensaje Error',
  *       status: 404,
  *       obj : {},
@@ -549,8 +549,6 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
         return;
     }
 
-    //var params = args.asignacion_pedidos;
-
     if (args.cotizacion_encabezado.empresa_id === '' || args.cotizacion_encabezado.tipo_id_tercero === '' || args.cotizacion_encabezado.tercero_id === '') {
         res.send(G.utils.r(req.url, 'empresa_id, tipo_id_tercero o tercero_id Están Vacios', 404, {}));
         return;
@@ -570,27 +568,145 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
     var vendedor_id = args.cotizacion_encabezado.vendedor_id;
     var estado = args.cotizacion_encabezado.estado;
     var observaciones = args.cotizacion_encabezado.observaciones;
-    
-    /*console.log(">>> INFORMACION DEL ENCABEZADO:");
-    console.log(">>> empresa_id: ",empresa_id);
-    console.log(">>> tipo_id_tercero: ",tipo_id_tercero);
-    console.log(">>> tercero_id: ",tercero_id);
-    console.log(">>> usuario_id: ",usuario_id);
-    console.log(">>> tipo_id_vendedor: ",tipo_id_vendedor);
-    console.log(">>> vendedor_id: ",vendedor_id);
-    console.log(">>> estado: ",estado);
-    console.log(">>> observaciones: ",observaciones);*/
-    
-    //res.send(G.utils.r(req.url, 'Valores enviados', 200, {valores: [empresa_id, tipo_id_tercero, tercero_id, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones]}));
 
     that.m_pedidos_clientes.insertar_cotizacion(empresa_id, tipo_id_tercero, tercero_id, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones, function(err, pedido_cliente_id_tmp) {
 
         if (err) {
-            res.send(G.utils.r(req.url, 'Error en Inserción de Cotización', 500, {}));
+            res.send(G.utils.r(req.url, 'Error en Inserción del Encabezado de Cotización', 500, {}));
             return;
         }
 
-        res.send(G.utils.r(req.url, 'Inserción Exitosa', 200, {pedido_cliente_id_tmp: pedido_cliente_id_tmp}));
+        res.send(G.utils.r(req.url, 'Inserción del Encabezado Cotización Exitosa', 200, {resultado_consulta: pedido_cliente_id_tmp}));
+
+    });
+ 
+};
+
+/**
+ * @api {post} /api/PedidosClientes/insertarDetalleCotizacion Insertar Detalle Cotización
+ * @apiName Insertar Cotización.
+ * @apiGroup PedidosClientes
+ * @apiDescription Asignar o delegar los pedidos a un operario de bodega para su correspondiente separacion.
+ * @apiDefinePermission autenticado Requiere Autenticacion
+ * Requiere que el usuario esté autenticado.
+ * @apiPermission autenticado
+ * @apiParam {String} usuario_id  Identificador del Usuario.
+ * @apiParam {String} auth_token  Token de Autenticación, este define si el usuario esta autenticado o no.
+ * @apiParam {String[]} pedidos Lista de pedidos 
+ * @apiParam {Number} estado_pedido ID del estado a asignar 
+ * @apiParam {Number} responsable Operario de Bodega al que se le asigna el pedido.
+ * @apiSuccessExample Ejemplo Válido del Request.
+ *     HTTP/1.1 200 OK
+ *     {  
+ *          session: {              
+ *              usuario_id: 'jhon.doe',
+ *              auth_token: 'asdf2hgt56hjjhgrt-mnjhbgfd-asdfgyh-ghjmnbgfd'
+ *          },
+ *          data : {
+ *              asignacion_pedidos :  { 
+ *                                      pedidos : [],
+ *                                      estado_pedido: '',
+ *                                      responsable : ''
+ *                                  }
+ *          }
+ *     }
+ * @apiSuccessExample Respuesta-Exitosa:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       service : '/api/PedidosClientes/insertarDetalleCotizacion',   
+ *       msj : 'Asignacion de Resposables',
+ *       status: '200',
+ *       obj : {
+ *             }
+ *     }
+ * @apiErrorExample Respuesta-Error:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       service : '/api/PedidosClientes/insertarDetalleCotizacion',   
+ *       msj : 'Mensaje Error',
+ *       status: 404,
+ *       obj : {},
+ *     }  
+ */
+
+PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.cotizacion_detalle === undefined || args.cotizacion_detalle.pedido_cliente_id_tmp === undefined || args.cotizacion_detalle.codigo_producto === undefined || args.cotizacion_detalle.porc_iva === undefined) {
+        res.send(G.utils.r(req.url, 'pedido_cliente_id_tmp, codigo_producto o porc_iva No Están Definidos', 404, {}));
+        return;
+    }
+    
+    if (args.cotizacion_detalle.numero_unidades === undefined || args.cotizacion_detalle.valor_unitario === undefined) {
+        res.send(G.utils.r(req.url, 'numero_unidades o valor_unitario No Están Definidos', 404, {}));
+        return;
+    }
+
+    if (args.cotizacion_detalle.pedido_cliente_id_tmp === '' || args.cotizacion_detalle.codigo_producto === '' || args.cotizacion_detalle.porc_iva === '') {
+        res.send(G.utils.r(req.url, 'pedido_cliente_id_tmp, codigo_producto o porc_iva Están Vacios', 404, {}));
+        return;
+    }
+    
+    if (args.cotizacion_detalle.numero_unidades === '' || args.cotizacion_detalle.valor_unitario === '') {
+        res.send(G.utils.r(req.url, 'numero_unidades o valor_unitario Están Vacios', 404, {}));
+        return;
+    }
+
+    //Parámetros a insertar
+    var pedido_cliente_id_tmp = args.cotizacion_detalle.pedido_cliente_id_tmp;
+    var codigo_producto = args.cotizacion_detalle.codigo_producto;
+    var porc_iva = args.cotizacion_detalle.porc_iva;
+    var numero_unidades = args.cotizacion_detalle.numero_unidades;
+    var valor_unitario = args.cotizacion_detalle.valor_unitario;
+    var usuario_id = req.session.user.usuario_id;
+
+    that.m_pedidos_clientes.insertar_detalle_cotizacion(pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, function(err, pedido_cliente_id_tmp) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error en Inserción del Detalle de Cotización', 500, {}));
+            return;
+        }
+
+        res.send(G.utils.r(req.url, 'Inserción del Detalle Cotización Exitosa', 200, {}));
+
+    });
+ 
+};
+
+PedidosCliente.prototype.listarCotizaciones = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+    
+    //cotizaciones_cliente
+
+    if (args.cotizaciones_cliente === undefined || args.cotizaciones_cliente.empresa_id === undefined) {
+        res.send(G.utils.r(req.url, 'empresa_id No Está Definido', 404, {}));
+        return;
+    }
+    
+    if (args.cotizaciones_cliente.empresa_id === '') {
+        res.send(G.utils.r(req.url, 'empresa_id Está Vacio', 404, {}));
+        return;
+    }
+
+    //Parámetros a insertar
+    var empresa_id = args.cotizaciones_cliente.empresa_id;
+    var termino_busqueda = args.cotizaciones_cliente.termino_busqueda;
+    var pagina = args.cotizaciones_cliente.pagina_actual;
+
+    that.m_pedidos_clientes.listar_cotizaciones(empresa_id, termino_busqueda, pagina, function(err, listado_cotizaciones) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error en Inserción del Detalle de Cotización', 500, {}));
+            return;
+        }
+
+        res.send(G.utils.r(req.url, 'Inserción del Detalle Cotización Exitosa', 200, {resultado_consulta: listado_cotizaciones}));
 
     });
  

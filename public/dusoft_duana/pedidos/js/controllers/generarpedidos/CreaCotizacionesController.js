@@ -128,15 +128,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     numero_pedido: "",
                     fecha_registro: "",
                     descripcion_estado_actual_pedido: "",
-                    estado: '0',
+                    estado: '1',
                     estado_separacion: ""
                 };
 
                 pedido.setDatos(datos_pedido);
                 pedido.setTipo(PedidoVenta.TIPO_CLIENTE);
-                pedido.setObservacion("");
-                pedido.setTipoIdVendedor("");
-                pedido.setVendedorId("");
+                //pedido.setObservacion("");
+//                pedido.setTipoIdVendedor("");
+//                pedido.setVendedorId("");
                 
                //$scope.rootCreaCotizaciones.Empresa.setPedidoSeleccionado(pedido);
                
@@ -226,7 +226,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             //definicion y delegados del Tabla de pedidos clientes
 
             $scope.rootCreaCotizaciones.lista_productos = {
-                data: 'rootCreaCotizaciones.listado_productos',
+                data: 'rootCreaCotizaciones.Empresa.getPedidoSeleccionado().obtenerProductos()',
+                //data: 'rootCreaCotizaciones.listado_productos',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 //enableCellSelection: true,
@@ -237,7 +238,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'descripcion', displayName: 'Descripción'},
                     {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada'},
                     {field: 'iva', displayName: 'Iva'},
-                    {field: 'precio_venta', displayName: 'Precio Unitario'},
+                    {field: 'precio', displayName: 'Precio Unitario'},
                     {field: 'total_sin_iva', displayName: 'Total Sin Iva'},
                     {field: 'total_con_iva', displayName: 'Total Con Iva'}
                 ]

@@ -16,6 +16,28 @@ define(["angular", "js/models"], function(angular, models) {
         }
         ;
         
+        //Operaciones Get de parámetros iniciales de creación de Tercero
+        Tercero.prototype.getNombre = function(){
+            return this.nombre_tercero;
+        };
+        
+        Tercero.prototype.getTipoId = function(){
+            return this.tipo_id_tercero;
+        };
+        
+        Tercero.prototype.getId = function(){
+            return this.id;
+        };
+        
+        Tercero.prototype.getDireccion = function(){
+            return this.direccion;
+        };
+        
+        Tercero.prototype.getTelefono = function(){
+            return this.telefono;
+        };
+        
+        //Operaciones Set y Get de atributos adicionales
         Tercero.prototype.setPais = function(pais) {
             this.pais = pais;
         };

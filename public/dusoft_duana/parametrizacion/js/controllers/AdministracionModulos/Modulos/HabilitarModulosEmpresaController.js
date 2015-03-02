@@ -24,6 +24,9 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 var obj = {
                     session: $scope.root.session,
                     data: {
+                        empresas:{
+                            modulo_id:moduloSeleccionado.getId()
+                        }
                     }
                 };
 
@@ -36,10 +39,12 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
 
                             var empresa = EmpresaParametrizacion.get(
                                     datos[i].razon_social,
-                                    datos[i].empresa_id
+                                    datos[i].empresa_id,
+                                    datos[i].estado
                                     );
 
-
+                            //console.log("push empresa ",empresa);
+                          //  console.log("push 2 empresa ",datos[i]);
                             $scope.empresas.push(empresa);
                         }
 
@@ -54,7 +59,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 enableRowSelection: false,
                 columnDefs: [
                     {field: 'opciones', displayName: "", cellClass: "txt-center", width: "10%",
-                        cellTemplate: ' <input-check  ng-model="row.entity.seleccionado" ng-change="onSeleccionarEmpresa(row.entity)"  />'},
+                        cellTemplate: ' <input-check  ng-model="row.entity.estado" ng-change="onSeleccionarEmpresa(row.entity)"  />'},
                     {field: 'codigo', displayName: 'Codigo'},
                     {field: 'nombre', displayName: 'Nombre'}
                 ]
@@ -71,7 +76,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                         );
 
                 //valida si la empresa fue seleccionada con el checkbox
-                if (empresa.seleccionado) {
+                if (empresa.estado) {
                     moduloSeleccionado.agregarEmpresa(empresa_modulo);
                 } else {
                     moduloSeleccionado.removerEmpresa(empresa_modulo);
@@ -86,27 +91,17 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 var obj = {
                     session: $scope.root.session,
                     data: {
-                        parametrizacion_modulos:{
-                            empresas_modulos:$scope.moduloSeleccionado.getListaEmpresas()
+                        parametrizacion_modulos: {
+                            empresas_modulos: $scope.moduloSeleccionado.getListaEmpresas(),
+                            modulo_id: moduloSeleccionado.getId()
                         }
                     }
                 };
 
-                Request.realizarRequest(API.MODULOS.LISTAR_EMPRESAS, "POST", obj, function(data) {
+                Request.realizarRequest(API.MODULOS.HABILITAR_MODULO_EMPRESAS, "POST", obj, function(data) {
+                    console.log("resultado habilitar modulo ", data);
                     if (data.status === 200) {
-                        $scope.empresas = [];
-                        var datos = data.obj.empresas;
 
-                        for (var i in datos) {
-
-                            var empresa = EmpresaParametrizacion.get(
-                                    datos[i].razon_social,
-                                    datos[i].empresa_id
-                                    );
-
-
-                            $scope.empresas.push(empresa);
-                        }
 
                     }
 
@@ -126,6 +121,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
 
 
             $scope.close = function() {
+                self.empresas = [];
                 $modalInstance.close();
             };
 

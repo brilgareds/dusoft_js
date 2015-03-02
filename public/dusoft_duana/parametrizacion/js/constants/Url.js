@@ -21,7 +21,8 @@
                 'LISTAR_OPCIONES' : BASE_URL+"/Modulos/listarOpcionesPorModulo",
                 'GUARDAR_OPCION' : BASE_URL+"/Modulos/guardarOpcion",
                 'ELIMINAR_OPCION' : BASE_URL+"/Modulos/eliminarOpcion",
-                'LISTAR_EMPRESAS' : BASE_URL+"/Empresas/listarEmpresas"
+                'LISTAR_EMPRESAS' : BASE_URL+"/Empresas/listarEmpresasModulos",
+                'HABILITAR_MODULO_EMPRESAS' : BASE_URL +"/Modulos/habilitarModuloEnEmpresas"
             }
 	  }
 	};

@@ -3,10 +3,11 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
 
     models.factory('EmpresaParametrizacion', ['Empresa', function(Empresa) {
 
-            function EmpresaParametrizacion(nombre, codigo) {
+            function EmpresaParametrizacion(nombre, codigo, estado) {
                 Empresa.getClass().call(this, nombre, codigo);
                 this.empreasModulos = [];
                 this.seleccionado = false;
+                this.estado = Boolean(parseInt(estado));
             }
 
             EmpresaParametrizacion.prototype = Object.create(Empresa.getClass().prototype);
@@ -20,8 +21,8 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
                 return this.empreasModulos;
             };
 
-            this.get = function(nombre, codigo) {
-                return new EmpresaParametrizacion(nombre, codigo);
+            this.get = function(nombre, codigo, estado) {
+                return new EmpresaParametrizacion(nombre, codigo, estado);
             };
 
 

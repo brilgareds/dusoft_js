@@ -20,8 +20,10 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             //Campos exclusivos pedido clientes
             this.codigo_cum = "";
             this.codigo_invima = "";
-            this.iva = "";
-            this.precio_regulado = "";
+            this.iva = 0;
+            this.precio_regulado = 0;
+            this.total_sin_iva = 0;
+            this.total_con_iva = 0;
             
             //propiedades pendientes
             this.existencia_lotes = "";
@@ -74,6 +76,21 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
         
         ProductoPedido.prototype.getPrecioRegulado = function() {
             return this.precio_regulado;
+        };
+        
+        ProductoPedido.prototype.setTotalSinIva = function() {
+            this.total_sin_iva = this.precio * this.cantidad_solicitada;
+        }
+        ProductoPedido.prototype.getTotalSinIva = function() {
+            return this.total_sin_iva;
+        };
+        
+        ProductoPedido.prototype.setTotalConIva = function() {
+            this.total_con_iva = (this.precio + ((this.precio*this.iva)/100)) * this.cantidad_solicitada;
+        }
+        
+        ProductoPedido.prototype.getTotalConIva = function() {
+            return this.total_con_iva;
         };
         
         ProductoPedido.prototype.agregarLote = function(lote) {

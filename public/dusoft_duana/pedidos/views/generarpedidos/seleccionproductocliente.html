@@ -38,15 +38,17 @@
                 
             </div>
               
-        </div>    
+        </div>
     </div>
 
     <div class="container col-xs-12 paddingRightZero paddingLeftZero" >
         <br><br><br>
         <div class="fieldset" style ="border: 1px solid #ccc; padding: 10px; padding:10px;">
             <legend>Productos Seleccionados</legend>
-            <div class="row-fluid" ng-if="rootSeleccionProductoCliente.listado_productos_seleccionados.length > 0">                
-                <div class="auditadosGrid" ng-grid="lista_productos_seleccionados"></div>
+            
+            <!--<div class="row-fluid" ng-if="rootSeleccionProductoCliente.listado_productos_seleccionados.length > 0">-->                
+            <div class="row-fluid" table-responsive ng-if="rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().obtenerProductos().length > 0">
+                <div class="mediaPantallaGrid grid-responsive" ng-grid="lista_productos_seleccionados"></div>
             </div>
         </div>
     </div>

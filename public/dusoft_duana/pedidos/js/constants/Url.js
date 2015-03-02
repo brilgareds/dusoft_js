@@ -73,7 +73,9 @@ define(["angular"], function(angular) {
                 'ACTUALIZAR_ENCABEZADO_TEMPORAL_PEDIDO_FARMACIA':BASE_URL+'/PedidosFarmacias/actualizarRegistroEncabezadoTemporal',
                 'LISTAR_PRODUCTOS_CLIENTES' :BASE_URL+'/Productos/listarProductosClientes',
                 'BUSCAR_USUARIO_BLOQUEO' :BASE_URL+'/PedidosFarmacias/buscarUsuarioBloqueo',
-                'CREAR_COTIZACION' :BASE_URL+'/PedidosClientes/insertarCotizacion'
+                'CREAR_COTIZACION' :BASE_URL+'/PedidosClientes/insertarCotizacion',
+                'INSERTAR_DETALLE_COTIZACION' :BASE_URL+'/PedidosClientes/insertarDetalleCotizacion',
+                'LISTAR_COTIZACIONES' :BASE_URL+'/PedidosClientes/listarCotizaciones'
 	    },
 	    'TERCEROS':{
 	    	'LISTAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/listar",

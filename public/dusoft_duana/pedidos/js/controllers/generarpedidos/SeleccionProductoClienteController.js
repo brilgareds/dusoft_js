@@ -229,7 +229,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 };
 
                 $scope.lista_productos_seleccionados = {    
-                    data: 'rootSeleccionProductoCliente.listado_productos_seleccionados',
+                    data: 'rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().obtenerProductos()',
+                    //data: 'rootSeleccionProductoCliente.listado_productos_seleccionados',
                     enableColumnResize: true,
                     enableRowSelection: false,
                     //enableCellSelection: true,
@@ -241,7 +242,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         {field: 'descripcion', displayName: 'Descripción'},
                         {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada'},
                         {field: 'iva', displayName: 'Iva'},
-                        {field: 'precio_venta', displayName: 'Precio Unitario'},
+                        {field: 'precio', displayName: 'Precio Unitario'},
                         {field: 'total_sin_iva', displayName: 'Total Sin Iva'},
                         {field: 'total_con_iva', displayName: 'Total Con Iva'},
                         {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
@@ -278,10 +279,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 $scope.rootSeleccionProductoCliente.no_incluir_producto = false;
                 
                 var vendedor = $scope.rootSeleccionProductoCliente.Empresa.getVendedorSeleccionado();
+                    
+                $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().setVendedor(vendedor);
                 
-                $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().setTipoIdVendedor(vendedor.tipo_id_tercero);
-                $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().setVendedorId(vendedor.id);
-
                 $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().lista_productos.forEach(function(valor) {
                     if (valor.codigo_producto === row.entity.codigo_producto) {
                         $scope.rootSeleccionProductoCliente.no_incluir_producto = true;
@@ -291,84 +291,100 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 if ($scope.rootSeleccionProductoCliente.no_incluir_producto === false)
                 {
-                    that.insertarEncabezadoPedidoTemporal(function(insert_encabezado_exitoso) {
+                    that.insertarEncabezadoCotizacion(function(insert_encabezado_exitoso) {
  
-                        /*if(insert_encabezado_exitoso) {
-                            that.insertarDetallePedidoTemporal(row);
-                        } */
+                        if(insert_encabezado_exitoso) {
+                            that.insertarDetalleCotizacion(row);
+                        } 
                     });
                 }
             };
             
             //Función que inserta el encabezado del pedido temporal
-            that.insertarEncabezadoPedidoTemporal = function(callback) {
+            that.insertarEncabezadoCotizacion = function(callback) {
                 
-                var pedido = $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado();
+                //var pedido = $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado();
                 /* empresa_id, tipo_id_tercero, tercero_id, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones */
                 
-                var obj_encabezado = {
-                    session: $scope.rootSeleccionProductoCliente.session,
-                    data: {
-                        cotizacion_encabezado: {
+                if($scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getNumeroCotizacion() === "") {
+
+                    var obj_encabezado = {
+                        session: $scope.rootSeleccionProductoCliente.session,
+                        data: {
+                            cotizacion_encabezado: {
+
+                                empresa_id: $scope.rootSeleccionProductoCliente.Empresa.getCodigo(),
+                                tipo_id_tercero: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getCliente().tipo_id_tercero,
+                                tercero_id: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getCliente().id,
+                                tipo_id_vendedor: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getVendedor().getTipoId(),
+                                vendedor_id: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getVendedor().getId(),
+                                estado: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().estado,
+                                observaciones: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().observacion
+
+                            }
+                        }
+                    };
+                    /* Fin - Objeto para inserción de Encabezado*/
+
+                    /* Inicio - Inserción del Encabezado */
+
+                    console.log(">>> lA iNFORMACION para el Encabezado (obj_encabezado) es: ", obj_encabezado);
+
+                    var url_encabezado = API.PEDIDOS.CREAR_COTIZACION;
+
+                    Request.realizarRequest(url_encabezado, "POST", obj_encabezado, function(data) {
+
+                        console.log(">>>>>>>>>> Lo datos enviados son: ", data);
+
+                        if (data.status === 200) {
+                            console.log("Registro Insertado Exitosamente en Encabezado");
                             
-                            empresa_id: $scope.rootSeleccionProductoCliente.Empresa.getCodigo(),
-                            tipo_id_tercero: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getCliente().tipo_id_tercero,
-                            tercero_id: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getCliente().id,
-                            tipo_id_vendedor: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getTipoIdVendedor(),
-                            vendedor_id: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getVendedorId(),
-                            estado: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().estado,
-                            observaciones: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().observacion
-                    
-                    
-                            /*empresa_id: $scope.rootSeleccionProductoCliente.para_empresa_id,
-                            centro_utilidad_id: $scope.rootSeleccionProductoCliente.para_centro_utilidad_id,
-                            bodega_id: $scope.rootSeleccionProductoCliente.para_bodega_id,
-                            empresa_destino_id: $scope.rootSeleccionProductoCliente.de_empresa_id,
-                            centro_utilidad_destino_id: $scope.rootSeleccionProductoCliente.de_centro_utilidad_id,
-                            bodega_destino_id: $scope.rootSeleccionProductoCliente.de_bodega_id,
-                            observacion: $scope.rootSeleccionProductoCliente.observacion_encabezado*/
+                            //console.log(">>>>>>>>>>>> Resultado Inserción Encabezado", data);
+                            
+                            var pedido_cliente_id_tmp = data.obj.resultado_consulta[0].pedido_cliente_id_tmp;
+                            
+                            $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().setNumeroCotizacion(pedido_cliente_id_tmp);
+
+                            if(callback !== undefined && callback !== "" && callback !== 0){
+                                callback(true);
+                            }
                         }
-                    }
-                };
-                /* Fin - Objeto para inserción de Encabezado*/
-
-                /* Inicio - Inserción del Encabezado */
-                
-                console.log(">>> lA iNFORMACION para el Encabezado (obj_encabezado) es: ", obj_encabezado);
-
-                var url_encabezado = API.PEDIDOS.CREAR_COTIZACION;
-
-                Request.realizarRequest(url_encabezado, "POST", obj_encabezado, function(data) {
-                    
-                    console.log(">>>>>>>>>> Lo datos enviados son: ", data);
-
-                    if (data.status === 200) {
-                        console.log("Registro Insertado Exitosamente en Encabezado");
-
-                        if(callback !== undefined && callback !== "" && callback !== 0){
-                            callback(true);
+                        else {
+                            console.log(data.msj);
+                            if(callback !== undefined && callback !== "" && callback !== 0){
+                                callback(false);
+                            }
                         }
-                    }
-                    else {
-                        console.log(data.msj);
-                        if(callback !== undefined && callback !== "" && callback !== 0){
-                            callback(false);
-                        }
-                    }
-                });
-                /* Fin - Inserción del Encabezado */
+                    });
+                    /* Fin - Inserción del Encabezado */
+                }
+                else{
+                    console.log("Cotización Existente - Continua Inserción Detalle");
+                    callback(true);
+                }
             };
             
             
-            that.insertarDetallePedidoTemporal = function(row) {
+            that.insertarDetalleCotizacion = function(row) {
                 //Cálculo de cantidad pendiente
-                var cantidad_pendiente = row.entity.cantidad_solicitada - row.entity.disponibilidad_bodega;
+                var cantidad_pendiente = row.entity.cantidad_solicitada - row.entity.disponible;
+                
+                //Parámetros de entrada Insert DB
+                //pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id
 
                 /* Inicio - Objeto para Inserción Detalle */
                 var obj_detalle = {
                     session: $scope.rootSeleccionProductoCliente.session,
                     data: {
-                        detalle_pedidos_farmacias: {
+                        cotizacion_detalle: {
+                            
+                            pedido_cliente_id_tmp: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getNumeroCotizacion(),
+                            codigo_producto: row.entity.codigo_producto,
+                            porc_iva: row.entity.iva,
+                            numero_unidades: parseInt(row.entity.cantidad_solicitada),
+                            valor_unitario: row.entity.precio,
+                            
+                            /*
                             numero_pedido: $scope.rootSeleccionProductoCliente.para_empresa_id.trim() + $scope.rootSeleccionProductoCliente.para_centro_utilidad_id.trim() + row.entity.codigo_producto.trim(),
                             empresa_id: $scope.rootSeleccionProductoCliente.para_empresa_id,
                             centro_utilidad_id: $scope.rootSeleccionProductoCliente.para_centro_utilidad_id,
@@ -376,32 +392,46 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                             codigo_producto: row.entity.codigo_producto,
                             cantidad_solic: parseInt(row.entity.cantidad_solicitada),
                             tipo_producto_id: row.entity.tipo_producto_id,
-                            cantidad_pendiente: (cantidad_pendiente < 0) ? '0' : cantidad_pendiente
+                            cantidad_pendiente: (cantidad_pendiente < 0) ? '0' : cantidad_pendiente*/
                         }
                     }
                 };
+                
+                console.log(">>>> Datos para la base de datos: ",obj_detalle);
                 /* Fin - Objeto para Inserción Detalle */
 
                 /* Inicio - Inserción de objeto en grid de seleccionados */
 
                 var producto = ProductoPedido.get(
-                                    row.entity.codigo_producto,        //codigo_producto
-                                    row.entity.nombre_producto,            //descripcion
+                                    row.entity.codigo_producto,      //codigo_producto
+                                    row.entity.descripcion,          //descripcion
                                     0,                               //existencia **hasta aquí heredado
-                                    0,                               //precio
-                                    row.entity.cantidad_solicitada,    //cantidad_solicitada
+                                    row.entity.precio,      //precio
+                                    row.entity.cantidad_solicitada,  //cantidad_solicitada
                                     0,                               //cantidad_separada
                                     "",                              //observacion
                                     "",                              //disponible
-                                    "",                              //molecula
+                                    row.entity.molecula, //molecula
                                     "",                              //existencia_farmacia
-                                    row.entity.tipo_producto_id,          //tipo_producto_id
+                                    row.entity.tipo_producto_id,     //tipo_producto_id
                                     "",                              //total_existencias_farmacia
                                     "",                              //existencia_disponible
                                     (cantidad_pendiente < 0) ? '0' : cantidad_pendiente      //cantidad_pendiente
                                 );
+                                    
+                producto.setCodigoCum(row.entity.getCodigoCum());
+                producto.setCodigoInvima(row.entity.getCodigoInvima());
+                producto.setIva(row.entity.getIva());
+                producto.setPrecioRegulado(row.entity.getPrecioRegulado());
+                producto.setTotalSinIva();
+                producto.setTotalConIva();
+                
+                console.log(">>>>>>>>>>>>>&&&&& Datos del Row:  ", row.entity);
+                console.log(">>>>>>>>>>>>>&&&&& Producto antes de agregar a pedido:  ", producto);
 
                 $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().agregarProducto(producto);
+                
+                console.log("&&&&&&&&&&&&&&&&&& Listado Productos Seleccionados: ", $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().obtenerProductos());
 
                 //if ($scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.length === 25) {
                 if ($scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().lista_productos.length === 25) {
@@ -445,7 +475,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 /* Inicio - Inserción del Detalle */
 
-                var url_detalle = API.PEDIDOS.CREAR_DETALLE_PEDIDO_TEMPORAL;
+                var url_detalle = API.PEDIDOS.INSERTAR_DETALLE_COTIZACION;
 
                 Request.realizarRequest(url_detalle, "POST", obj_detalle, function(data) {
 
@@ -461,8 +491,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                             session: $scope.rootSeleccionProductoCliente.session,
                             data: {
                                 usuario_bloqueo: {
-                                    farmacia_id: $scope.rootSeleccionProductoCliente.para_empresa_id.trim(),
-                                    centro_utilidad_id: $scope.rootSeleccionProductoCliente.para_centro_utilidad_id.trim(),
+                                    farmacia_id: '03',
+                                    centro_utilidad_id: '1 ',
                                     codigo_producto: row.entity.codigo_producto.trim()
                                 }
                             }
@@ -475,37 +505,39 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                             if (data.status === 200) {
 
                                 console.log("Consulta de usuario bloqueante exitosa: ", data.msj);
+                                
+                                console.log(" >>>>#####>>>> Resultado Consulta Usuario Bloqueo: ", data);
 
-                                var template = ' <div class="modal-header">\
-                                                    <button type="button" class="close" ng-click="close()">&times;</button>\
-                                                    <h4 class="modal-title">Mensaje del Sistema</h4>\
-                                                </div>\
-                                                <div class="modal-body">\
-                                                    <h4>El producto con código '+row.entity.codigo_producto+' está bloqueado por el usuario '+
-                                                    '('+data.obj.datos_usuario[0].usuario_id+') '+data.obj.datos_usuario[0].nombre+' </h4> \
-                                                </div>\
-                                                <div class="modal-footer">\
-                                                    <button class="btn btn-warning" ng-click="close()">Aceptar</button>\
-                                                </div>';
-
-                                controller = function($scope, $modalInstance) {
-
-                                    $scope.close = function() {
-                                        $modalInstance.close();
-                                    };
-                                };
-
-                                $scope.opts = {
-                                    backdrop: true,
-                                    backdropClick: true,
-                                    dialogFade: false,
-                                    keyboard: true,
-                                    template: template,
-                                    scope: $scope,
-                                    controller: controller
-                                };
-
-                                var modalInstance = $modal.open($scope.opts);
+//                                var template = ' <div class="modal-header">\
+//                                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+//                                                    <h4 class="modal-title">Mensaje del Sistema</h4>\
+//                                                </div>\
+//                                                <div class="modal-body">\
+//                                                    <h4>El producto con código '+row.entity.codigo_producto+' está bloqueado por el usuario '+
+//                                                    '('+data.obj.datos_usuario[0].usuario_id+') '+data.obj.datos_usuario[0].nombre+' </h4> \
+//                                                </div>\
+//                                                <div class="modal-footer">\
+//                                                    <button class="btn btn-warning" ng-click="close()">Aceptar</button>\
+//                                                </div>';
+//
+//                                controller = function($scope, $modalInstance) {
+//
+//                                    $scope.close = function() {
+//                                        $modalInstance.close();
+//                                    };
+//                                };
+//
+//                                $scope.opts = {
+//                                    backdrop: true,
+//                                    backdropClick: true,
+//                                    dialogFade: false,
+//                                    keyboard: true,
+//                                    template: template,
+//                                    scope: $scope,
+//                                    controller: controller
+//                                };
+//
+//                                var modalInstance = $modal.open($scope.opts);
 
                             }
                             else {

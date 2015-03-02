@@ -36,5 +36,15 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/insertarCotizacion', function(req, res) {
         c_pedidos_clientes.insertarCotizacion(req, res);
     });
+    
+    // Insertar Detalle de Cotización
+    app.post('/api/PedidosClientes/insertarDetalleCotizacion', function(req, res) {
+        c_pedidos_clientes.insertarDetalleCotizacion(req, res);
+    });
+    
+    // Insertar Detalle de Cotización
+    app.post('/api/PedidosClientes/listarCotizaciones', function(req, res) {
+        c_pedidos_clientes.listarCotizaciones(req, res);
+    });
            
 };

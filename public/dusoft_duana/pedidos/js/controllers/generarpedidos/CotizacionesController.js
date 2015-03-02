@@ -7,138 +7,193 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
         '$scope', '$rootScope', 'Request',
         'EmpresaPedido', 'Cliente', 'PedidoVenta',
         'API', "socket", "AlertService",
-        '$state',
+        '$state','Usuario',
 
-        function($scope, $rootScope, Request, Empresa, Cliente, PedidoVenta, API, socket, AlertService, $state) {
+        function($scope, $rootScope, Request, Empresa, Cliente, PedidoVenta, API, socket, AlertService, $state, Usuario) {
 
+            var that = this;
             //$scope.Empresa = Empresa;
             
 //            $scope.session = {
 //                usuario_id: Usuario.usuario_id,
 //                auth_token: Usuario.token
 //            };
-            $scope.paginas = 0;
-            $scope.items = 0;
-            $scope.termino_busqueda = "";
-            $scope.ultima_busqueda = "";
-            $scope.paginaactual = 1;
-            //$scope.numero_pedido = "";
-            //$scope.obj = {};
-            $scope.listado_cotizaciones = [];
 
-            var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
+            $scope.rootCotizaciones = {};
 
-            $scope.buscarCotizaciones = function(termino, paginando) {
+            $scope.rootCotizaciones.paginas = 0;
+            $scope.rootCotizaciones.items = 0;
+            $scope.rootCotizaciones.termino_busqueda = "";
+            $scope.rootCotizaciones.ultima_busqueda = {};
+            $scope.rootCotizaciones.paginaactual = 1;
+            $scope.rootCotizaciones.listado_cotizaciones = [];
+            
+            $scope.rootCotizaciones.session = {
+                usuario_id: Usuario.usuario_id,
+                auth_token: Usuario.token
+            };
+
+            //var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
+            
+            /* INICIO - Operaciones nuevas */
+            
+            $scope.obtenerParametros = function() {
 
                 //valida si cambio el termino de busqueda
-                if ($scope.ultima_busqueda != $scope.termino_busqueda) {
-                    $scope.paginaactual = 1;
-                }
-                
-                for(i=0; i<10; i++)
+                if ($scope.rootCotizaciones.ultima_busqueda.termino_busqueda !== $scope.rootCotizaciones.termino_busqueda)
                 {
-                    //var pedido = Pedido.get();
-                    
-                    obj = { 
-                            numero_cotizacion: '123456'+i,
-                            nombre_cliente: 'Franz Kafka',
-                            nombre_vendedor: 'Alexeiv Karpov'+i,
-                            fecha_cotizacion: '0'+i+'-09-2014',
-                            valor_cotizacion: i+'00.000',
-                            estado: 'Activo'
-                        }
-                    
-                    $scope.listado_cotizaciones.push(obj);
-                        
+                    $scope.rootCotizaciones.paginaactual = 1;
                 }
-                
-                console.log("LISTADO COTIZACIONES: ", $scope.listado_cotizaciones);
-                
 
-                
-//                var obj = {
-//                    session: $scope.session,
-//                    data: {
-//                        documento_temporal: {
-//                            termino_busqueda: termino,
-//                            pagina_actual: $scope.paginaactual,
-//                            filtro: {
-//                                finalizados: true
-//                            }
-//                        }
-//                    }
-//                };
-//
-//                Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.LISTAR_DOCUMENTOS_TEMPORALES_CLIENTES, "POST", obj, function(data) {
-//                    $scope.ultima_busqueda = $scope.termino_busqueda;
-//                    
-//                    if(data.obj.documentos_temporales != undefined) {
-//                        $scope.renderPedidosSeparadosCliente(data.obj, paginando);
-//                    }
-//
-//                });
+                var obj = {
+                    session: $scope.rootCotizaciones.session,
+                    data: {
+                        cotizaciones_cliente: {
+                            empresa_id: '03',                            
+                            termino_busqueda: $scope.rootCotizaciones.termino_busqueda,
+                            pagina_actual: $scope.rootCotizaciones.paginaactual,
+                            filtro: {}
+                        }
+                    }
+                };
+
+                return obj;
+            };
+
+            $scope.onBuscarCotizacion = function(obj, paginando) {
+
+                that.consultarEncabezadosCotizaciones(obj, function(data) {
+
+                    $scope.rootCotizaciones.ultima_busqueda = {
+                        termino_busqueda: $scope.rootCotizaciones.termino_busqueda,
+                    }
+
+                    that.renderCotizaciones(data.obj, paginando);
+
+                });
+            };
+
+
+            that.consultarEncabezadosCotizaciones = function(obj, callback) {
+
+                var url = API.PEDIDOS.LISTAR_COTIZACIONES;
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        console.log("Consulta exitosa: ", data.msj);
+                        console.log(">>>>>> DATOS CONSULTA COTIZACIONES: ",data);
+
+                        if (callback !== undefined && callback !== "" && callback !== 0) {
+                            callback(data);
+                        }
+                    }
+                    else {
+                        console.log("Error en la consulta: ", data.msj);
+                    }
+                });
+            };
+
+            that.renderCotizaciones = function(data, paginando) {
+
+                $scope.rootCotizaciones.items = data.resultado_consulta.length;
+
+                //se valida que hayan registros en una siguiente pagina
+                if (paginando && $scope.rootCotizaciones.items === 0) {
+                    if ($scope.rootCotizaciones.paginaactual > 1) {
+                        $scope.rootCotizaciones.paginaactual--;
+                    }
+                    AlertService.mostrarMensaje("warning", "No se encontraron más registros");
+                    return;
+                }
+
+                $scope.rootCotizaciones.Empresa.vaciarPedidos();
+
+                if (data.resultado_consulta.length > 0)
+                {
+                    $scope.rootCotizaciones.Empresa.setCodigo(data.resultado_consulta[0].empresa_origen_id);
+                }
+
+                for (var i in data.resultado_consulta) {
+
+                    var obj = data.resultado_consulta[i];
+
+                    var cotizacion = that.crearCotizacion(obj);
+
+                    $scope.rootCotizaciones.Empresa.agregarPedido(cotizacion);
+
+                }
 
             };
 
-//            $scope.renderPedidosSeparadosCliente = function(data, paginando) {
-//
-//                $scope.items = data.documentos_temporales.length;
-//                //se valida que hayan registros en una siguiente pagina
-//                if(paginando && $scope.items == 0){
-//                    if($scope.paginaactual > 1){
-//                        $scope.paginaactual--;
-//                    }
-//                    AlertService.mostrarMensaje("warning","No se encontraron mas registros");
-//                    return;
-//                }
-//
-//                $scope.Empresa.vaciarDocumentoTemporal("Cliente");
-//               
-//                for (var i in data.documentos_temporales) {
-//
-//                    var obj = data.documentos_temporales[i];
-//                    
-//                    var documento_temporal = $scope.crearDocumentoTemporal(obj);
-//
-//                    $scope.Empresa.agregarDocumentoTemporal(
-//                        documento_temporal, "Cliente"
-//                    );
-//
-//
-//                }
-//
-//            };
+            that.crearCotizacion = function(obj) {
 
-//            $scope.crearDocumentoTemporal = function(obj) {
-//                var documento_temporal = DocumentoTemporal.get();
-//                documento_temporal.setDatos(obj);
-//
-//                var pedido = Pedido.get(obj);
-//                pedido.setDatos(obj);
-//                        
-//                var cliente = Cliente.get(
-//                        obj.nombre_cliente,
-//                        obj.direccion_cliente,
-//                        obj.tipo_id_cliente,
-//                        obj.identificacion_cliente,
-//                        obj.telefono_cliente
-//                        );
-//
-//                pedido.setCliente(cliente);
-//                
-//                documento_temporal.setPedido(pedido);
-//                
-//                var separador = Separador.get(obj.responsable_pedido, obj.responsable_id, 1);
-//                
-//                documento_temporal.setSeparador(separador);
-//                
-//                return documento_temporal;
-//            };
+                /*
+                 var pedido = PedidoVenta.get();
+                        
+                var datos_pedido = {
+                    numero_pedido: "",
+                    fecha_registro: "",
+                    descripcion_estado_actual_pedido: "",
+                    estado: '1',
+                    estado_separacion: ""
+                };
 
-            //definicion y delegados del Tabla de pedidos clientes
+                pedido.setDatos(datos_pedido);
+                pedido.setTipo(PedidoVenta.TIPO_CLIENTE);
+                //pedido.setObservacion("");
+//                pedido.setTipoIdVendedor("");
+//                pedido.setVendedorId("");
+                
+               //$scope.rootCreaCotizaciones.Empresa.setPedidoSeleccionado(pedido);
+               
+                return pedido;
+                
+                 */
 
-            $scope.lista_pedidos_clientes = {
-                data: 'listado_cotizaciones',
+
+                var cotizacion = PedidoVenta.get();
+
+                var datos_cotizacion = {
+                    numero_pedido: '',
+                    fecha_registro: obj.fecha_registro,
+                    estado: '1',
+                };
+
+                cotizacion.setDatos(datos_cotizacion);
+                
+                cotizacion.setTipo(PedidoVenta.TIPO_CLIENTE);
+
+                cotizacion.setNumeroCotizacion(obj.numero_cotizacion);
+                
+                cotizacion.setValorCotizacion(obj.valor_cotizacion);
+
+                cotizacion.setObservacion(obj.observaciones);
+                
+                var vendedor = VendedorPedido.get(
+                    
+                    );
+                
+                cotizacion.setVendedor(vendedor);
+
+                var cliente = ClientePedido.get(
+                        obj.farmacia_id,
+                        obj.bodega_id,
+                        obj.nombre_farmacia,
+                        obj.nombre_bodega,
+                        obj.centro_utilidad,
+                        obj.nombre_centro_utilidad
+                        );
+
+                cotizacion.setCliente(cliente);
+
+                return cotizacion;
+            };            
+            
+            /* FIN - Operaciones nuevas */
+            
+            $scope.rootCotizaciones.lista_pedidos_clientes = {
+                data: 'rootCotizaciones.listado_cotizaciones',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
@@ -211,7 +266,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
             };
             
-            $scope.buscarCotizaciones("");
+            //$scope.buscarCotizaciones("");
+            $scope.onBuscarCotizacion($scope.obtenerParametros(),"");
 
         }]);
 });

@@ -240,22 +240,23 @@ define([
                     session: $scope.rootModulos.session,
                     data: {
                         parametrizacion_modulos: {
-                            modulos_id: modulos
+                            //solo se trae el modulo que se selecciono
+                            modulos_id: [modulos[0]]
                         }
                     }
                 };
 
                 Request.realizarRequest(API.MODULOS.OBTENER_MODULOS_POR_ID, "POST", obj, function(data) {
                     if (data.status === 200) {
-                        //console.log("modulos encontrados ",data);
-                        var modulo = data.obj.parametrizacion_modulos.modulos[0] || undefined;
-
+                        var modulo = data.obj.parametrizacion_modulos.modulos[0];
+                        
+                        //se inicializa el modulo a guardar
                         var _modulo = Modulo.get(
                                 modulo.id,
                                 modulo.parent,
                                 modulo.nombre,
                                 modulo.url
-                                );
+                         );
 
                         _modulo.setIcon(modulo.icon);
                         _modulo.setState(modulo.state);
@@ -265,10 +266,8 @@ define([
 
                         var modulos = $scope.rootModulos.modulos;
 
-                        console.log("moduloe seleccionando ", _modulo.parent);
-
                         if (_modulo.parent !== "#") {
-
+                            //se determina el modulo padre
                             for (var i in  modulos) {
 
                                 if (modulos[i].id === _modulo.parent) {
@@ -283,7 +282,6 @@ define([
                         }
                         
                         $scope.$broadcast("traerOpcionesModulo");
-                        console.log("modulo creado ", _modulo);
 
                     } else {
                         AlertService.mostrarMensaje("warning", "Se ha generado un error");

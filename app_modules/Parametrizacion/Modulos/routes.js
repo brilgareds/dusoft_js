@@ -37,4 +37,8 @@ module.exports = function(app, di_container) {
         c_modulos.habilitarModuloEnEmpresas(req, res);
     });
     
+    app.post('/api/Modulos/listarModulosPorEmpresa', function(req, res){
+        c_modulos.listarModulosPorEmpresa(req, res);
+    });
+    
 };

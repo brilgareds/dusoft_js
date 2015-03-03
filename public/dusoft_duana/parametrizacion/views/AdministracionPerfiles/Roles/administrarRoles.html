@@ -3,6 +3,12 @@
 
     <div class="col-md-3">
 
+        <p class="input-group contenedor_combo_grande">
+            <label for="habilitar_rol" style='margin-right: 5px;'>Habilitar Rol</label>
+            <input-check ng-model="rootRoles.rolAGuardar.opcionAGuardar.estado" style='margin-right: 15px;' id="habilitar_rol" ></input-check>
+
+        </p>
+
         <p class="input-group">
             <input type="text" ng-model='rootRoles.rolAGuardar.nombre' class="form-control"  placeholder="Nombre Rol" />
             <span class="input-group-addon">
@@ -12,7 +18,7 @@
 
         <p class="input-group contenedor_combo_grande">
 
-            <ui-select ng-model="rootRol.moduloPadre"
+            <ui-select ng-model="rootRoles.empresaSeleccionada"
                        theme="select2"
                        ng-change="onEmpresaSeleccionada()"
                        class="contenedor_combo_grande">
@@ -31,11 +37,19 @@
         </p> 
         <p class="input-group" >
         </p>
-        <p class="input-group contenedor_combo_grande">
-            <label for="habilitar_rol" style='margin-right: 5px;'>Habilitar Rol</label>
-        <input-check ng-model="rootRoles.rolAGuardar.opcionAGuardar.estado" style='margin-right: 15px;' id="habilitar_rol" ></input-check>
 
-        </p>
+        <div class="pull-right">
+            <button class="btn btn-warning btn-sm" ng-click='onLimpiarFormulario()'>
+                Limpiar
+                <span class="glyphicon glyphicon-trash"></span>
+            </button>
+
+            <button class="btn btn-success btn-sm" ng-click='onGuardarModulo()'>
+                Guardar
+                <span class="glyphicon glyphicon-floppy-disk"></span>
+            </button>
+
+        </div>
 
     </div>
 

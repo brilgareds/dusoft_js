@@ -2,19 +2,20 @@
 define(["angular", "js/controllers", "js/models"], function(angular, controllers) {
 
     controllers.controller('AdministracionRolesController', ['$scope', '$rootScope', 'Request', '$modal', 'API',
-        "socket", "$timeout", "AlertService", "Usuario","EmpresaParametrizacion",
+        "socket", "$timeout", "AlertService", "Usuario", "EmpresaParametrizacion", "Empresa_Modulo", "Modulo",
         function($scope, $rootScope, Request,
-                 $modal, API, socket, $timeout,
-                 AlertService, Usuario, EmpresaParametrizacion) {
+                $modal, API, socket, $timeout,
+                AlertService, Usuario, EmpresaParametrizacion,
+                Empresa_Modulo, Modulo) {
 
             var self = this;
 
 
             $scope.rootRoles = {
             };
-            
-            $scope.rootRoles.empresas =[];
-            
+
+            $scope.rootRoles.empresas = [];
+
             $scope.rootRoles.session = {
                 usuario_id: Usuario.usuario_id,
                 auth_token: Usuario.token
@@ -39,7 +40,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                             var empresa = EmpresaParametrizacion.get(
                                     datos[i].razon_social,
                                     datos[i].empresa_id
-                            );
+                                    );
 
                             $scope.rootRoles.empresas.push(empresa);
 
@@ -66,6 +67,73 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                                    </div>'
                     }
                 ]
+
+            };
+
+
+            $scope.onEmpresaSeleccionada = function() {
+                console.log($scope.rootRoles.empresaSeleccionada);
+                var obj = {
+                    session: $scope.rootRoles.session,
+                    data: {
+                        parametrizacion_roles: {
+                            empresa_id: $scope.rootRoles.empresaSeleccionada.getCodigo()
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.MODULOS.LISTAR_MODULOS_POR_EMPRESA, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        var datos = data.obj.parametrizacion_roles.modulos_empresas;
+                        var modulos = [];
+                       /* for (var i in datos) {
+
+
+                            var modulo = Modulo.get(
+                                    datos[i].id,
+                                    datos[i].parent,
+                                    datos[i].nombre,
+                                    datos[i].url
+                                    );
+
+                            modulo.setIcon(datos[i].icon);
+
+                            $scope.rootModulos.modulos.push(modulo);
+                        }
+
+                        // console.log(modulos);
+                        $scope.$broadcast("datosArbolCambiados", $scope.rootModulos.modulos);*/
+                        
+                        
+                        
+                        
+                        //se crea una instancia de la relacion de modulos y empresas
+                        for (var i in datos) {
+                            var modulo = Modulo.get(
+                                     datos[i].modulo_id,
+                                     null,
+                                     datos[i].nombre,
+                                     datos[i].state
+                            );
+                            
+                            modulo.setIcon(datos[i].icon);
+                            
+                            var empresa_modulo = Empresa_Modulo.get(
+                                 EmpresaParametrizacion.get(
+                                     $scope.rootRoles.empresaSeleccionada.getNombre(),
+                                     $scope.rootRoles.empresaSeleccionada.getCodigo()
+                                 ),
+                                 modulo
+                             );
+
+                            modulos.push(modulo);   
+
+                        }
+                        
+                        $scope.$broadcast("datosArbolCambiados", modulos);
+                    }
+
+                });
 
             };
 

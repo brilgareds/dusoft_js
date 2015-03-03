@@ -123,7 +123,7 @@ Modulos.prototype.listarOpcionesPorModulo = function(req, res) {
     var that = this;
     var args = req.body.data;
 
-    if (args.parametrizacion_modulos.modulo.id === undefined && aargs.parametrizacion_modulos.modulo.id.length === '') {
+    if (args.parametrizacion_modulos.modulo.id === undefined && args.parametrizacion_modulos.modulo.id.length === '') {
         res.send(G.utils.r(req.url, 'El id del modulo no esta definido', 500, {parametrizacion_modulos: {}}));
         return;
     }
@@ -189,6 +189,29 @@ Modulos.prototype.habilitarModuloEnEmpresas = function(req, res) {
         
     });
 
+};
+
+
+
+Modulos.prototype.listarModulosPorEmpresa = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+
+    if (args.parametrizacion_roles.empresa_id === undefined && args.parametrizacion_roles.empresa_id.length === '') {
+        res.send(G.utils.r(req.url, 'El id de la empresa no esta definido', 500, {parametrizacion_roles: {}}));
+        return;
+    }
+    var empresa_id = args.parametrizacion_roles.empresa_id;
+
+
+    that.m_modulo.listarModulosPorEmpresa(empresa_id, function(err, rows) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error listando los modulos de la empresa', 500, {parametrizacion_roles: {}}));
+            return;
+        }
+        res.send(G.utils.r(req.url, "Listado de modulos", 200, {parametrizacion_roles: {modulos_empresas: rows}}));
+
+    });
 };
 
 

@@ -175,9 +175,18 @@ ModuloModel.prototype.habilitarModuloEnEmpresas = function(usuario_id, empresas_
             });
         }
     });
-
-
 };
+
+ModuloModel.prototype.listarModulosPorEmpresa = function(empresa_id, callback) {
+    var sql = "SELECT a.*, b.parent, b.nombre, b.state, b.icon FROM modulos_empresas a\
+               INNER JOIN modulos b ON a.modulo_id = b.id \
+               WHERE empresa_id =  $1 ORDER BY id";
+
+    G.db.query(sql, [empresa_id], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
 
 
 //funcion recursiva para actualizar listado de empresas_modulos

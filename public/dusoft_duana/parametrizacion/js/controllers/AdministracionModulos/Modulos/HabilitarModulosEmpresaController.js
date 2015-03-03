@@ -60,7 +60,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 var empresa_modulo = Empresa_Modulo.get(
                         empresa,
                         Modulo.get(moduloSeleccionado.getId())
-                        );
+                 );
 
                 //valida si la empresa fue seleccionada con el checkbox
                 if (empresa.getEstado()) {

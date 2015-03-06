@@ -78,7 +78,7 @@ PedidosFarmacias.prototype.listarFarmaciasUsuarios = function(req, res) {
     var permisos_kardex = false;
     var args = req.body.data;
     
-    if(args.pedidos_farmacias.permisos_kardex){
+    if(args.pedidos_farmacias && args.pedidos_farmacias.permisos_kardex){
         permisos_kardex = true;
     }
         

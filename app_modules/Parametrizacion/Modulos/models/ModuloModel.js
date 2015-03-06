@@ -164,22 +164,22 @@ ModuloModel.prototype.habilitarModuloEnEmpresas = function(usuario_id, empresas_
     
     var that = this;
     //se deshabilitan todos las empresas del modulos para asignar solo las que se enviaron del cliente
-    var sql = "UPDATE modulos_empresas SET estado = 0 WHERE modulo_id = $1";
+    /*var sql = "UPDATE modulos_empresas SET estado = 0, usuario_id_modifica = $2, fecha_modificacion = now() WHERE modulo_id = $1";
 
-    G.db.query(sql, [modulo_id], function(err, rows, result) {
+    G.db.query(sql, [modulo_id, usuario_id], function(err, rows, result) {
         if (err) {
             callback(err, rows);
-        } else {
+        } else {*/
             __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, function(err, result){
-                callback(err, rows);
+                callback(err, result);
             });
-        }
-    });
+        /*}
+    });*/
 };
 
 ModuloModel.prototype.listarModulosPorEmpresa = function(empresa_id, callback) {
     var sql = "SELECT a.*, b.parent, b.nombre, b.state, b.icon FROM modulos_empresas a\
-               INNER JOIN modulos b ON a.modulo_id = b.id \
+               INNER JOIN modulos b ON a.modulo_id = b.id and a.estado = 1 \
                WHERE empresa_id =  $1 ORDER BY id";
 
     G.db.query(sql, [empresa_id], function(err, rows, result) {
@@ -202,19 +202,21 @@ function __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, callbac
     //toma el primer objeto
     var empresa_id = empresas_modulos[0].empresa.codigo;
     var modulo_id = empresas_modulos[0].modulo.modulo_id;
+    var estado = Number(empresas_modulos[0].empresa.estado);
+    console.log("va a actualizar con estado ",estado);
 
-    var sql = "UPDATE modulos_empresas SET estado = 1, usuario_id_modifica = $1, fecha_modificacion = now()  WHERE modulo_id = $2 and empresa_id = $3";
+    var sql = "UPDATE modulos_empresas SET estado = $4, usuario_id_modifica = $1, fecha_modificacion = now()  WHERE modulo_id = $2 and empresa_id = $3";
 
-    G.db.query(sql, [usuario_id, modulo_id, empresa_id], function(err, rows, result) {
+    G.db.query(sql, [usuario_id, modulo_id, empresa_id, estado], function(err, rows, result) {
         if (err) {
             callback(err, rows);
         } else {
             //si la actualizacion no devuelve resultado se trata de hacer el insert
             if (result.rowCount === 0) {
                 sql = "INSERT INTO modulos_empresas (empresa_id, modulo_id, usuario_id, fecha_creacion, estado)\
-                       VALUES($1, $2, $3, now(), 1)";
+                       VALUES($1, $2, $3, now(), $4)";
 
-                G.db.query(sql, [empresa_id, modulo_id, usuario_id], function(err, rows, result) {
+                G.db.query(sql, [empresa_id, modulo_id, usuario_id, estado], function(err, rows, result) {
                     if (err) {
                         callback(err, rows);
                     } else {

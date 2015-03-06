@@ -17,6 +17,8 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 usuario_id: Usuario.usuario_id,
                 auth_token: Usuario.token
             };
+            
+            console.log("moduloSeleccionado ", moduloSeleccionado)
 
             $scope.moduloSeleccionado = moduloSeleccionado;
 
@@ -24,8 +26,8 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 var obj = {
                     session: $scope.root.session,
                     data: {
-                        empresas:{
-                            modulo_id:moduloSeleccionado.getId()
+                        empresas: {
+                            modulo_id: moduloSeleccionado.getId()
                         }
                     }
                 };
@@ -36,7 +38,6 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                         var datos = data.obj.empresas;
 
                         for (var i in datos) {
-
                             var empresa = EmpresaParametrizacion.get(
                                     datos[i].razon_social,
                                     datos[i].empresa_id,
@@ -44,7 +45,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                                     );
 
                             $scope.empresas.push(empresa);
-                            
+
                             self.agregarEmpresa(empresa);
                         }
 
@@ -52,22 +53,45 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
 
                 });
             };
-            
-            self.agregarEmpresa = function(empresa){
+
+            self.agregarEmpresa = function(empresa) {
+               //se debe recorrer los modulos padre o hijo automaticamente seleccionados por el plugin
+               empresa = angular.copy(empresa);
+                for (var i in moduloSeleccionado.getModulosHijo()) {
+
+                    self.__agregarEmpresa(empresa, moduloSeleccionado.getModulosHijo()[i]);
+                }
                 
-                //se crea una instancia de la clase que asocia la relacion N:N entre modulos y empresas
+                for (var i in moduloSeleccionado.getModulosPadre()) {
+                     
+                    if(empresa.getEstado()){
+                        console.log("cambiar modulo padre ",empresa.getEstado(), moduloSeleccionado.getModulosPadre()[i]);
+                        self.__agregarEmpresa(empresa, moduloSeleccionado.getModulosPadre()[i]);
+                    }
+                    
+                }
+                
+                //se crea una instancia empresa_modulo para el modulo seleccionado
+                self.__agregarEmpresa(empresa, moduloSeleccionado.getId());
+                
+            };
+
+            self.__agregarEmpresa = function(empresa, modulo_id) {
+               // console.log("empresa seleccionada ", empresa)
+                 //se crea una instancia de la clase que asocia la relacion N:N entre modulos y empresas
                 //se crea una instancia nueva de modulo diferente al seleccionado porque solo interesa tener el id
+                
                 var empresa_modulo = Empresa_Modulo.get(
                         empresa,
-                        Modulo.get(moduloSeleccionado.getId())
+                        Modulo.get(modulo_id),
+                        empresa.getEstado()
                  );
-
                 //valida si la empresa fue seleccionada con el checkbox
-                if (empresa.getEstado()) {
+                //if (empresa.getEstado()) {
                     moduloSeleccionado.agregarEmpresa(empresa_modulo);
-                } else {
-                    moduloSeleccionado.removerEmpresa(empresa_modulo);
-                }
+                //} else {
+                    //moduloSeleccionado.removerEmpresa(empresa_modulo);
+                //}
             };
 
             $scope.listado_empresas = {
@@ -84,15 +108,14 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             };
 
             $scope.onSeleccionarEmpresa = function(empresa) {
-
                 self.agregarEmpresa(empresa);
 
             };
-            
+
 
             $scope.onHabilitarModuloEnEmpresas = function() {
-                console.log($scope.moduloSeleccionado.getListaEmpresas());
-
+                
+                console.log("modulso seleccionados ",$scope.moduloSeleccionado.getListaEmpresas());
                 var obj = {
                     session: $scope.root.session,
                     data: {
@@ -104,8 +127,8 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 };
 
                 Request.realizarRequest(API.MODULOS.HABILITAR_MODULO_EMPRESAS, "POST", obj, function(data) {
-                      $scope.close();
-                      AlertService.mostrarMensaje("success", data.msj);
+                    $scope.close();
+                    AlertService.mostrarMensaje("success", data.msj);
                 });
 
             };

@@ -111,7 +111,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                         for (var i in datos) {
                             var modulo = Modulo.get(
                                      datos[i].modulo_id,
-                                     null,
+                                     datos[i].parent,
                                      datos[i].nombre,
                                      datos[i].state
                             );

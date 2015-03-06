@@ -233,15 +233,14 @@ define([
                 }
             };
 
-            $scope.$on("modulosSeleccionados", function(e, modulos) {
-                ///console.log("modulos seleccionados ", modulos);
+            $scope.$on("modulosSeleccionados", function(e, modulos_seleccionado) {
 
                 var obj = {
                     session: $scope.rootModulos.session,
                     data: {
                         parametrizacion_modulos: {
                             //solo se trae el modulo que se selecciono
-                            modulos_id: [modulos[0]]
+                            modulos_id: [modulos_seleccionado.seleccionado]
                         }
                     }
                 };
@@ -262,6 +261,16 @@ define([
                         _modulo.setState(modulo.state);
                         _modulo.setObservacion(modulo.observacion);
                         _modulo.setEstado(modulo.estado);
+                        
+                        //valida si tiene padres
+                        if(modulos_seleccionado.padres.length > 0){
+                            _modulo.setModulosPadre(modulos_seleccionado.padres);
+                        }
+                        
+                        if(modulos_seleccionado.hijos.length > 0){
+                            _modulo.setModulosHijo(modulos_seleccionado.hijos);
+                        }
+                        
                         $scope.rootModulos.moduloAGuardar = _modulo;
 
                         var modulos = $scope.rootModulos.modulos;

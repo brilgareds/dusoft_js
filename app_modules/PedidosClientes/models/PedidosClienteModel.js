@@ -873,12 +873,14 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, termino
                     a.empresa_id,\
                     a.tipo_id_tercero as tipo_id_cliente,\
                     a.tercero_id as cliente_id,\
-                    a.fecha_registro,\
+                    to_char(a.fecha_registro, 'dd-mm-yyyy hh:mm:ss') as fecha_registro,\
                     a.usuario_id,\
-                    a.fecha_envio,\
+                    to_char(a.fecha_envio, 'dd-mm-yyyy hh:mm:ss') as fecha_envio,\
                     a.tipo_id_vendedor,\
                     a.vendedor_id,\
-                    SUM((b.valor_unitario + (b.valor_unitario * b.porc_iva)/100) * b.numero_unidades) as valor_cotizacion,\
+                    /*to_char( SUM((b.valor_unitario + (b.valor_unitario * b.porc_iva)/100) * b.numero_unidades), '999999990.99' ) as valor_cotizacion,*/\
+                    round(SUM((b.valor_unitario + (b.valor_unitario * COALESCE(b.porc_iva, 0))/100) * b.numero_unidades),2) as valor_cotizacion,\
+                    /*CASE WHEN COALESCE (aa.valor_pactado,0)=0 then round((b.costo_ultima_compra)/((COALESCE(a.porc_iva,0)/100)+1),2) else aa.valor_pactado end as costo_ultima_compra,*/\
                     a.estado,\
                     a.observaciones,\
                     c.tipo_pais_id as tipo_pais_cliente,\
@@ -888,27 +890,56 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, termino
                     c.telefono as telefono_cliente,\
                     c.nombre_tercero as nombre_cliente,\
                     d.nombre as nombre_vendedor,\
-                    d.telefono as telefono_vendedor\
+                    d.telefono as telefono_vendedor,\
+                    e.pais,\
+                    f.departamento,\
+                    g.municipio\
                 from ventas_ordenes_pedidos_tmp a\
-                    join ventas_ordenes_pedidos_d_tmp b on b.pedido_cliente_id_tmp = a.pedido_cliente_id_tmp\
+                    left join ventas_ordenes_pedidos_d_tmp b on b.pedido_cliente_id_tmp = a.pedido_cliente_id_tmp\
                     join terceros c on c.tipo_id_tercero = a.tipo_id_tercero\
                         and c.tercero_id = a.tercero_id\
                     join vnts_vendedores d on d.tipo_id_vendedor = a.tipo_id_vendedor\
                         and d.vendedor_id = a.vendedor_id\
+                    left join tipo_pais as e on e.tipo_pais_id = c.tipo_pais_id\
+                    left join tipo_dptos as f on f.tipo_dpto_id = c.tipo_dpto_id\
+                        and f.tipo_pais_id = e.tipo_pais_id \
+                    left join tipo_mpios as g on g.tipo_mpio_id = c.tipo_mpio_id\
+                        and g.tipo_dpto_id = f.tipo_dpto_id\
+                        and g.tipo_pais_id = e.tipo_pais_id\
                 where a.empresa_id = $1\
-                    and a.estado = 1\
                     and (   a.pedido_cliente_id_tmp ilike $2\
                             or c.nombre_tercero ilike $2\
                             or d.nombre ilike $2    )\
                 group by a.pedido_cliente_id_tmp, a.empresa_id, a.tipo_id_tercero, a.tercero_id, a.fecha_registro, a.usuario_id, a.fecha_envio,\
-                a.tipo_id_vendedor, a.vendedor_id, a.estado, a.observaciones, c.tipo_pais_id, c.tipo_dpto_id, c.tipo_mpio_id, c.direccion,\
-                c.telefono, c.nombre_tercero, d.nombre, d.telefono\
+                    a.tipo_id_vendedor, a.vendedor_id, a.estado, a.observaciones, c.tipo_pais_id, c.tipo_dpto_id, c.tipo_mpio_id, c.direccion,\
+                    c.telefono, c.nombre_tercero, d.nombre, d.telefono, e.pais, f.departamento, g.municipio\
+                order by 1 desc\
 ";
     
     G.db.pagination(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
         callback(err, rows);
     }); 
 
+};
+
+/**
+ * @api {sql} estado_cotizacion Pedidos clientes model
+ * @apiName Pedidos Clientes
+ * @apiGroup PedidosCliente (sql)
+ * @apiDescription Estado de Cotización
+ * @apiDefinePermission autenticado Requiere Autenticación
+ * Requiere que el usuario esté autenticado.
+ * @apiPermission autenticado
+ * @apiParam {Number} numero_cotizacion Numero de cotizacion a consultar
+ * @apiParam {Function} callback Funcion de retorno de informacion.
+ */
+PedidosClienteModel.prototype.estado_cotizacion = function(numero_cotizacion, callback) {
+    
+    var sql = "select estado from ventas_ordenes_pedidos_tmp where pedido_cliente_id_tmp = $1";
+    
+    G.db.query(sql, [numero_cotizacion], function(err, rows, result) {
+        callback(err, rows, result);
+    });
 };
 
 PedidosClienteModel.$inject = ["m_productos"];

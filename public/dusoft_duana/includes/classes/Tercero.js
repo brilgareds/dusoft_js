@@ -10,9 +10,9 @@ define(["angular", "js/models"], function(angular, models) {
             this.id = id || "";
             this.direccion = direccion || "";
             this.telefono = telefono || "";
-            this.pais;
-            this.departamento;
-            this.municipio;
+            this.pais = "";
+            this.departamento = "";
+            this.municipio = "";
         }
         ;
         

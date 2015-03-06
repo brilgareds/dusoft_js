@@ -1,25 +1,21 @@
 //Controlador de la View pedidosclientes.html
 
 define(["angular", "js/controllers",'includes/slide/slideContent',
-        'models/ClientePedido', 'models/PedidoVenta'], function(angular, controllers) {
+        'models/ClientePedido', 'models/PedidoVenta', 'models/VendedorPedido'], function(angular, controllers) {
 
     var fo = controllers.controller('CotizacionesController', [
         '$scope', '$rootScope', 'Request',
-        'EmpresaPedido', 'Cliente', 'PedidoVenta',
+        'EmpresaPedido', 'ClientePedido', 'PedidoVenta',
         'API', "socket", "AlertService",
-        '$state','Usuario',
+        '$state', 'Usuario', 'VendedorPedido', "$modal",
 
-        function($scope, $rootScope, Request, Empresa, Cliente, PedidoVenta, API, socket, AlertService, $state, Usuario) {
+        function($scope, $rootScope, Request, EmpresaPedido, ClientePedido, PedidoVenta, API, socket, AlertService, $state, Usuario, VendedorPedido, $modal) {
 
             var that = this;
-            //$scope.Empresa = Empresa;
-            
-//            $scope.session = {
-//                usuario_id: Usuario.usuario_id,
-//                auth_token: Usuario.token
-//            };
 
             $scope.rootCotizaciones = {};
+            
+            $scope.rootCotizaciones.Empresa = EmpresaPedido;
 
             $scope.rootCotizaciones.paginas = 0;
             $scope.rootCotizaciones.items = 0;
@@ -59,13 +55,15 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 return obj;
             };
+            
+            //$scope.onBuscarCotizacion($scope.obtenerParametros(),"");
 
             $scope.onBuscarCotizacion = function(obj, paginando) {
 
                 that.consultarEncabezadosCotizaciones(obj, function(data) {
 
                     $scope.rootCotizaciones.ultima_busqueda = {
-                        termino_busqueda: $scope.rootCotizaciones.termino_busqueda,
+                        termino_busqueda: $scope.rootCotizaciones.termino_busqueda
                     }
 
                     that.renderCotizaciones(data.obj, paginando);
@@ -82,7 +80,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                     if (data.status === 200) {
                         console.log("Consulta exitosa: ", data.msj);
-                        console.log(">>>>>> DATOS CONSULTA COTIZACIONES: ",data);
 
                         if (callback !== undefined && callback !== "" && callback !== 0) {
                             callback(data);
@@ -107,11 +104,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     return;
                 }
 
-                $scope.rootCotizaciones.Empresa.vaciarPedidos();
+                $scope.rootCotizaciones.Empresa.vaciarPedidosTemporales();
 
                 if (data.resultado_consulta.length > 0)
                 {
-                    $scope.rootCotizaciones.Empresa.setCodigo(data.resultado_consulta[0].empresa_origen_id);
+                    $scope.rootCotizaciones.Empresa.setCodigo(data.resultado_consulta[0].empresa_id);
                 }
 
                 for (var i in data.resultado_consulta) {
@@ -120,7 +117,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                     var cotizacion = that.crearCotizacion(obj);
 
-                    $scope.rootCotizaciones.Empresa.agregarPedido(cotizacion);
+                    $scope.rootCotizaciones.Empresa.agregarPedidoTemporal(cotizacion);
 
                 }
 
@@ -128,36 +125,12 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
             that.crearCotizacion = function(obj) {
 
-                /*
-                 var pedido = PedidoVenta.get();
-                        
-                var datos_pedido = {
-                    numero_pedido: "",
-                    fecha_registro: "",
-                    descripcion_estado_actual_pedido: "",
-                    estado: '1',
-                    estado_separacion: ""
-                };
-
-                pedido.setDatos(datos_pedido);
-                pedido.setTipo(PedidoVenta.TIPO_CLIENTE);
-                //pedido.setObservacion("");
-//                pedido.setTipoIdVendedor("");
-//                pedido.setVendedorId("");
-                
-               //$scope.rootCreaCotizaciones.Empresa.setPedidoSeleccionado(pedido);
-               
-                return pedido;
-                
-                 */
-
-
                 var cotizacion = PedidoVenta.get();
 
                 var datos_cotizacion = {
                     numero_pedido: '',
                     fecha_registro: obj.fecha_registro,
-                    estado: '1',
+                    estado: obj.estado,
                 };
 
                 cotizacion.setDatos(datos_cotizacion);
@@ -171,19 +144,27 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 cotizacion.setObservacion(obj.observaciones);
                 
                 var vendedor = VendedorPedido.get(
-                    
+                        obj.nombre_vendedor,    //nombre_tercero
+                        obj.tipo_id_vendedor,   //tipo_id_tercero
+                        obj.vendedor_id,        //id
+                        '',                     //direccion
+                        obj.telefono_vendedor   //telefono
                     );
                 
                 cotizacion.setVendedor(vendedor);
 
                 var cliente = ClientePedido.get(
-                        obj.farmacia_id,
-                        obj.bodega_id,
-                        obj.nombre_farmacia,
-                        obj.nombre_bodega,
-                        obj.centro_utilidad,
-                        obj.nombre_centro_utilidad
+                        obj.nombre_cliente,    //nombre_tercero
+                        obj.direccion_cliente, //direccion
+                        obj.tipo_id_cliente,   //tipo_id_tercero
+                        obj.cliente_id,        //id
+                        obj.telefono_cliente   //telefono
                         );
+                            
+                cliente.setPais(obj.pais);//pais
+                cliente.setDepartamento(obj.departamento);//departamento
+                cliente.setMunicipio(obj.municipio);//municipio
+                cliente.setUbicacion(); //ubicacion
 
                 cotizacion.setCliente(cliente);
 
@@ -193,80 +174,204 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             /* FIN - Operaciones nuevas */
             
             $scope.rootCotizaciones.lista_pedidos_clientes = {
-                data: 'rootCotizaciones.listado_cotizaciones',
+                data: 'rootCotizaciones.Empresa.getPedidosTemporales()',
+                //data: 'rootCotizaciones.listado_cotizaciones',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
                     {field: 'numero_cotizacion', displayName: 'Numero Cotización'},
-                    {field: 'nombre_cliente', displayName: 'Cliente'},
-                    {field: 'nombre_vendedor', displayName: 'Vendedor'},
-                    {field: 'fecha_cotizacion', displayName: 'Fecha'},
+                    {field: 'cliente.nombre_tercero', displayName: 'Cliente'},
+                    {field: 'vendedor.nombre_tercero', displayName: 'Vendedor'},
+                    {field: 'fecha_registro', displayName: 'Fecha'},
                     {field: 'valor_cotizacion', displayName: 'Valor'},
                     {field: 'estado', displayName: 'Estado'},
-                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Activar</span></button></div>'}
+                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center dropdown-button", width: "7%",
+                        cellTemplate: '<div class="btn-group">\
+                                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
+                                            <ul class="dropdown-menu dropdown-options">\
+                                                <li><a href="javascript:void(0);" ng-click="onEditarCotizacion(row.entity)">Modificar</a></li>\
+                                                <li></li>\
+                                                <!--<li><a href="javascript:void(0);" ng-click="onVerCotizacion(row.entity)" >Ver</a></li>-->\
+                                            </ul>\n\
+                                        </div>'
+                    }
 
                 ]
 
             };
             
-            $scope.abrirViewCotizacion = function()
-            {
+            /*NUEVO*/
+            
+            that.consultarEstadoCotizacion = function(data, callback){
+                
+                //Objeto para consulta de encabezado pedido
+                var obj = {
+                    session: $scope.rootCotizaciones.session,
+                    data: {
+                        estado_cotizacion: {
+                            numero_cotizacion: data.numero_cotizacion,
+                        }
+                    }
+                };
+                
+                var url = API.PEDIDOS.CONSULTA_ESTADO_COTIZACION;
+
+                Request.realizarRequest(url, "POST", obj, function(data_estado) {
+
+                    if (data_estado.status === 200) {
+                        console.log("Consulta exitosa: ", data_estado.msj);
+
+                        if (callback !== undefined && callback !== "" && callback !== 0) {
+
+                            var estado = data_estado.obj.resultado_consulta[0].estado;
+                            
+                            callback(estado);
+                        }
+                    }
+                    else {
+                        console.log("Error en la consulta: ", data_estado.msj);
+                    }
+                });
+                
+            };
+            
+            that.consultarContratoCliente = function(data, callback){
+
+                //Objeto Consulta Contrato Cliente
+                var obj = {
+                    session: $scope.rootCotizaciones.session,
+                    data: {
+                        contrato_cliente: {
+                            tipo_id_cliente: data.cliente.getTipoId(),
+                            cliente_id: data.cliente.getId()
+                        }
+                    }
+                };
+                
+                var url = API.TERCEROS.CONSULTAR_CONTRATO_CLIENTE;
+                
+                Request.realizarRequest(url, "POST", obj, function(data_contrato) {
+
+                    if (data_contrato.status === 200) {
+                        console.log("Consulta exitosa: ", data_contrato.msj);
+
+                        if (callback !== undefined && callback !== "" && callback !== 0) {
+
+                            var array_datos_contrato = data_contrato.obj.resultado_consulta;
+                            
+                            var datos_contrato = {};
+                            
+                            if(array_datos_contrato.length > 1){
+
+                                array_datos_contrato.forEach(function(info_contrato){
+                                    if(info_contrato.estado === '1')
+                                        datos_contrato = info_contrato;
+                                });
+                            
+                            }
+                            else{
+                                datos_contrato = array_datos_contrato[0];
+                            }
+                            
+                            callback(datos_contrato.contrato_cliente_id);
+                        }
+                    }
+                    else {
+                        console.log("Error en la consulta: ", data_contrato.msj);
+                    }
+                });
+                
+            };
+            
+            $scope.onEditarCotizacion = function(data) {
+
+                that.consultarEstadoCotizacion(data, function(estado){
+
+                    $scope.rootCotizaciones.Empresa.setPedidoSeleccionado(data);
+
+                    if (estado === '1') {
+                        
+                        that.consultarContratoCliente(data, function(contrato_cliente_id){
+                            
+                            $scope.rootCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setContratoId(contrato_cliente_id);
+                            
+                            //console.log(">>>> Objeto Empresa - Pedido Seleccionado: ", $scope.rootCotizaciones.Empresa.getPedidoSeleccionado());
+                            
+                            $state.go('CotizacionCliente');
+                            
+                        });
+
+                    }
+                    else {
+
+                        //Avisar la no posibilidad de modiificar porque el pedido está abierto en una tablet
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: ' <div class="modal-header">\
+                                            <button type="button" class="close" ng-click="close()">&times;</button>\
+                                            <h4 class="modal-title">Aviso: </h4>\
+                                        </div>\
+                                        <div class="modal-body row">\
+                                            <div class="col-md-12">\
+                                                <h4 >La Cotización ' + $scope.rootCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() + ' se ha convertido en Pedido. No puede modificarse!</h4>\
+                                            </div>\
+                                        </div>\
+                                        <div class="modal-footer">\
+                                            <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                        </div>',
+                            scope: $scope,
+                            controller: function($scope, $modalInstance) {
+                                $scope.close = function() {
+                                    $modalInstance.close();
+                                };
+                            }
+                        };
+
+                        var modalInstance = $modal.open($scope.opts);
+                    }
+                });                        
+            };
+            
+            /*NUEVO*/
+            
+            $scope.onNuevaCotizacion = function (){
                 $state.go('CotizacionCliente');
-            }
+            };
             
             //Método para liberar Memoria de todo lo construido en ésta clase
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
                
-               //alert("En éste momento debo limpiar algo");
-               $scope.listado_cotizaciones = [];
+               //Limpieza de objeto rootCotizaciones
+               $scope.rootCotizaciones = {};
 
             });
             
             //eventos de widgets
-            $scope.onKeyCotizacionesPress = function(ev) {
-                 //if(!$scope.buscarVerPedidosFarmacias($scope.DocumentoTemporal.bodegas_doc_id)) return;
+            $scope.onKeyBuscarCotizaciones = function(ev) {
 
                  if (ev.which == 13) {
                      //Aquí no se usa el parámetro "termino_busqueda" porque ésta variable se usa en el scope y se actualiza sin necesidad de pasarla como parámetro
-                     $scope.buscarCotizaciones(termino_busqueda);
+                     $scope.onBuscarCotizacion($scope.obtenerParametros(), true);
                  }
             };
 
             $scope.paginaAnterior = function() {
                  $scope.paginaactual--;
-                 $scope.buscarCotizaciones($scope.termino_busqueda, true);
+                 $scope.onBuscarCotizacion($scope.obtenerParametros(), true);
             };
 
             $scope.paginaSiguiente = function() {
                  $scope.paginaactual++;
-                 $scope.buscarCotizaciones($scope.termino_busqueda, true);
+                 $scope.onBuscarCotizacion($scope.obtenerParametros(), true);
             };
 
             $scope.valorSeleccionado = function() {
-//                 var obj = {
-//                     session: $scope.session,
-//                     data: {
-//                         movimientos_bodegas: {
-//                             documento_temporal_id: $scope.documento_temporal_id, 
-//                             usuario_id: $scope.usuario_id,
-//                             bodegas_doc_id: $scope.seleccion,
-//                             numero_pedido:$scope.numero_pedido
-//                         }
-//                     }
-//                 };
-//
-//                $scope.validarDocumentoUsuario(obj, 2, function(data){
-//                    if(data.status === 200){
-//                        $scope.DocumentoTemporal.bodegas_doc_id = $scope.seleccion;
-//                        AlertService.mostrarMensaje("success", data.msj);
-//                    } else {
-//                        AlertService.mostrarMensaje("warning", data.msj);
-//                    }
-//                });
 
             };
             
-            //$scope.buscarCotizaciones("");
             $scope.onBuscarCotizacion($scope.obtenerParametros(),"");
 
         }]);

@@ -702,11 +702,43 @@ PedidosCliente.prototype.listarCotizaciones = function(req, res) {
     that.m_pedidos_clientes.listar_cotizaciones(empresa_id, termino_busqueda, pagina, function(err, listado_cotizaciones) {
 
         if (err) {
-            res.send(G.utils.r(req.url, 'Error en Inserción del Detalle de Cotización', 500, {}));
+            res.send(G.utils.r(req.url, 'Error en consulta de Cotización', 500, {}));
             return;
         }
 
-        res.send(G.utils.r(req.url, 'Inserción del Detalle Cotización Exitosa', 200, {resultado_consulta: listado_cotizaciones}));
+        res.send(G.utils.r(req.url, 'Consulta de Cotización Exitosa', 200, {resultado_consulta: listado_cotizaciones}));
+
+    });
+ 
+};
+
+PedidosCliente.prototype.estadoCotizacion = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.estado_cotizacion === undefined || args.estado_cotizacion.numero_cotizacion === undefined) {
+        res.send(G.utils.r(req.url, 'numero_cotizacion No Está Definido', 404, {}));
+        return;
+    }
+    
+    if (args.estado_cotizacion.numero_cotizacion === '') {
+        res.send(G.utils.r(req.url, 'numero_cotizacion Está Vacio', 404, {}));
+        return;
+    }
+
+    //Parámetro a insertar
+    var numero_cotizacion = args.estado_cotizacion.numero_cotizacion;
+
+    that.m_pedidos_clientes.estado_cotizacion(numero_cotizacion, function(err, array_estado_cotizacion) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error en consulta Estado de Cotización', 500, {}));
+            return;
+        }
+
+        res.send(G.utils.r(req.url, 'Consulta Estado Cotización Exitosa', 200, {resultado_consulta: array_estado_cotizacion}));
 
     });
  

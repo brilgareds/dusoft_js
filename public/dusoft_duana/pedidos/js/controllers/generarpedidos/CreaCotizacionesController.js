@@ -150,17 +150,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 
             };
             
-            that.buscarPedido = function(termino, paginando) {
+           /* that.buscarPedido = function(termino, paginando) {
 
                 //valida si cambio el termino de busqueda
                 if ($scope.rootCreaCotizaciones.ultima_busqueda !== $scope.rootCreaCotizaciones.termino_busqueda) {
                     $scope.rootCreaCotizaciones.paginaactual = 1;
                 }
 
-                /*if (PedidoVenta.pedidoseleccionado !== "") {
-                    
-                }   */
-            };
+            };*/
             
             //Trae el cliente con el evento "cargarClienteSlide" y lo asigna como objeto cliente para el objeto pedido
             $scope.$on('cargarClienteSlide', function(event, data) {
@@ -211,15 +208,63 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             });
 
-            var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
+            //var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
 
             $scope.buscarCotizaciones = function(termino, paginando) {
 
                 //valida si cambio el termino de busqueda
-                if ($scope.rootCreaCotizaciones.ultima_busqueda != $scope.rootCreaCotizaciones.termino_busqueda) {
+                if ($scope.rootCreaCotizaciones.ultima_busqueda !== $scope.rootCreaCotizaciones.termino_busqueda) {
                     $scope.rootCreaCotizaciones.paginaactual = 1;
                 }
+                
+                
+                /*if(that.empty($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado())){
+                    console.log(">>>>>VACIO!");
+                }
+                else{
+                    console.log(">>>>> NO VACIO!");
+                }*/
+                //if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado() !== {}){
+                if(that.empty($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado())){
+                    that.crearPedidoSeleccionadoEmpresa(that.crearPedidoVacio());
+                    //console.log(">>>>> EMPRESA: ",$scope.rootCreaCotizaciones.Empresa);
+                }
+                else{
+                    $scope.rootCreaCotizaciones.seleccion_vendedor = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getVendedor().getId();
+                    //that.crearPedidoSeleccionadoEmpresa(that.crearPedidoVacio());
+                }
+            
 
+            };
+            
+            that.empty = function (data)
+            {
+                if(typeof(data) === 'number' || typeof(data) === 'boolean')
+                {
+                  return false;
+                }
+                
+                if(typeof(data) === 'undefined' || data === null)
+                {
+                  return true;
+                }
+                
+                if(typeof(data.length) !== 'undefined')
+                {
+                  return data.length === 0;
+                }
+                
+                var count = 0;
+                
+                for(var i in data)
+                {
+                  if(data.hasOwnProperty(i))
+                  {
+                    count ++;
+                  }
+                }
+                
+                return count === 0;
             };
 
 
@@ -286,20 +331,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     if(vendedor.id === vendedor_seleccionado){
                         //nombre_vendedor_seleccionado = vendedor.nombre_tercero;
                         
-       /*
-                that.crearVendedor = function(obj) {
-                
-                var vendedor = VendedorPedido.get(
-                                    obj.nombre,           //nombre_tercero
-                                    obj.tipo_id_vendedor, //tipo_id_tercero
-                                    obj.vendedor_id,      //id
-                                    obj.telefono          //telefono
-                                );
-
-                return vendedor;
-            };
-       */
-                        
                         var obj_vendedor = {
                             nombre: vendedor.nombre_tercero,
                             tipo_id_vendedor: vendedor.tipo_id_tercero,
@@ -313,9 +344,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         //$scope.rootCreaCotizaciones.tipo_id_seleccion_vendedor = vendedor.tipo_id_tercero;
                         $scope.rootCreaCotizaciones.Empresa.setVendedorSeleccionado(vendedor);
                         
-                        console.log(">>>>> Vendedor Seleccionado: ", $scope.rootCreaCotizaciones.Empresa.getVendedorSeleccionado());
-                        
-                        
+                        //console.log(">>>>> Vendedor Seleccionado: ", $scope.rootCreaCotizaciones.Empresa.getVendedorSeleccionado());
+
                     }
                 });
                 
@@ -361,7 +391,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             //that.crearPedidoVacio();
             that.cargarListadoVendedores();
-            that.crearPedidoSeleccionadoEmpresa(that.crearPedidoVacio());
+            
             $scope.buscarCotizaciones("");
 
         }]);

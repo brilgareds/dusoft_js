@@ -6,7 +6,7 @@
             <div class="col-md-3">
                 <p class="input-group">
                     <span class="input-group-btn">
-                        <button type="button" class="btn btn-default btn-sm" ng-click="abrirViewCotizacion()">
+                        <button type="button" class="btn btn-default btn-sm" ng-click="onNuevaCotizacion()">
                             <span class="glyphicon glyphicon-plus"></span>  Crear Cotización
                         </button>
                     </span>
@@ -15,9 +15,9 @@
 
             <div class="col-md-2 pull-right">
                 <p class="input-group">
-                    <input type="text" class="form-control" ng-keypress="onKeyCotizacionesPress($event)" ng-model="rootCotizaciones.termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
+                    <input type="text" class="form-control" ng-keypress="onKeyBuscarCotizaciones($event)" ng-model="rootCotizaciones.termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
                     <span class="input-group-btn" >
-                        <button class="btn btn-default" type="submit" ng-click="buscarCotizaciones(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                        <button class="btn btn-default" type="submit" ng-click="onBuscarCotizacion()"><i class="glyphicon glyphicon-search"></i></button>
                     </span>  
                 </p>    
             </div>

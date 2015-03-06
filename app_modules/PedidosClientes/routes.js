@@ -46,5 +46,10 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/listarCotizaciones', function(req, res) {
         c_pedidos_clientes.listarCotizaciones(req, res);
     });
-           
+    
+    // Consultar Estado de Cotización
+    app.post('/api/PedidosClientes/estadoCotizacion', function(req, res) {
+        c_pedidos_clientes.estadoCotizacion(req, res);
+    });
+
 };

@@ -123,7 +123,7 @@ Modulos.prototype.listarOpcionesPorModulo = function(req, res) {
     var that = this;
     var args = req.body.data;
 
-    if (args.parametrizacion_modulos.modulo.id === undefined && aargs.parametrizacion_modulos.modulo.id.length === '') {
+    if (args.parametrizacion_modulos.modulo.id === undefined && args.parametrizacion_modulos.modulo.id.length === '') {
         res.send(G.utils.r(req.url, 'El id del modulo no esta definido', 500, {parametrizacion_modulos: {}}));
         return;
     }
@@ -171,20 +171,47 @@ Modulos.prototype.habilitarModuloEnEmpresas = function(req, res) {
         res.send(G.utils.r(req.url, 'No se a seleccionado ninguna empresa', 500, {parametrizacion_modulos: {}}));
         return;
     }
-
+    
     if (modulo_id === undefined && modulo_id.length === 0) {
         res.send(G.utils.r(req.url, 'El id del modulo no se encontro', 500, {parametrizacion_modulos: {}}));
         return;
     }
 
+    
 
-    that.m_modulo.habilitarModuloEnEmpresas(modulo_id, empresas_modulos, function(err, rows) {
+    that.m_modulo.habilitarModuloEnEmpresas(req.session.user.usuario_id, empresas_modulos,modulo_id, function(err, rows) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error habilitando las empresas para el modulo', 500, {parametrizacion_modulo: {}}));
             return;
         }
+        
+        res.send(G.utils.r(req.url, "Se habilito el modulo en las empresas seleccionadas", 200, {parametrizacion_modulos: {}}));
+        
     });
 
+};
+
+
+
+Modulos.prototype.listarModulosPorEmpresa = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+
+    if (args.parametrizacion_roles.empresa_id === undefined && args.parametrizacion_roles.empresa_id.length === '') {
+        res.send(G.utils.r(req.url, 'El id de la empresa no esta definido', 500, {parametrizacion_roles: {}}));
+        return;
+    }
+    var empresa_id = args.parametrizacion_roles.empresa_id;
+
+
+    that.m_modulo.listarModulosPorEmpresa(empresa_id, function(err, rows) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error listando los modulos de la empresa', 500, {parametrizacion_roles: {}}));
+            return;
+        }
+        res.send(G.utils.r(req.url, "Listado de modulos", 200, {parametrizacion_roles: {modulos_empresas: rows}}));
+
+    });
 };
 
 

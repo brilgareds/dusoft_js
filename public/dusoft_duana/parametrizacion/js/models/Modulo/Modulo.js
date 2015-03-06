@@ -24,6 +24,11 @@ define(["angular", "js/models"], function(angular, models) {
                 if (this.parent === "#") {
                     this.nodo_principal = true;
                 }
+                
+                //arreglo necesario para guardar en modulos_empresas, incluye los modulos padre
+                this.modulosPadre = [];
+                
+                this.modulosHijo  = [];
 
                 this.empresasModulos = [];
 
@@ -36,6 +41,10 @@ define(["angular", "js/models"], function(angular, models) {
             
             Modulo.prototype.getId = function(id) {
                 return  this.modulo_id ;
+            };
+            
+            Modulo.prototype.getNombre = function() {
+                return  this.nombre ;
             };
 
             Modulo.prototype.getOpciones = function() {
@@ -114,35 +123,54 @@ define(["angular", "js/models"], function(angular, models) {
             };
 
             Modulo.prototype.agregarEmpresa = function(empresa_modulo) {
-
                 for (var i in this.empresasModulos) {
                     var empresa = this.empresasModulos[i];
-
-                    if (empresa_modulo.getEmpresa().getCodigo() === empresa.getEmpresa().getCodigo()) {
-                        return false;
+                    if (empresa_modulo.getEmpresa().getCodigo() === empresa.getEmpresa().getCodigo()
+                        && empresa_modulo.getModulo().getId() === empresa.getModulo().getId()) {
+                        console.log("changing empresa codigo to ",empresa_modulo.getEmpresa().getEstado(), " module ", empresa.getModulo().getId());
+                        this.empresasModulos[i] = empresa_modulo;
+                        return;
                     }
                 }
 
                 this.empresasModulos.push(empresa_modulo);
             };
 
-            Modulo.prototype.removerEmpresa = function(empresa_modulo) {
+           /* Modulo.prototype.removerEmpresa = function(empresa_modulo) {
 
                 for (var i in this.empresasModulos) {
                     var empresa = this.empresasModulos[i];
 
-                    if (empresa_modulo.getEmpresa().getCodigo() === empresa.getEmpresa().getCodigo()) {
-                        this.empresasModulos.splice(i, 1);
+                    if (empresa_modulo.getEmpresa().getCodigo() === empresa.getEmpresa().getCodigo()
+                        && empresa_modulo.getModulo().getId() === empresa.getModulo().getId()) {
+                        //this.empresasModulos.splice(i, 1);
+                        empresa.setEstado(false);
                         break;
                     }
                 }
 
-            };
+            };*/
 
             Modulo.prototype.getListaEmpresas = function() {
                 return this.empresasModulos;
             };
-
+            
+            Modulo.prototype.getModulosPadre = function() {
+                return this.modulosPadre;
+            };
+            
+             Modulo.prototype.setModulosPadre = function(modulos) {
+                this.modulosPadre = modulos;
+            };
+            
+            Modulo.prototype.getModulosHijo = function() {
+                return this.modulosHijo;
+            };
+            
+             Modulo.prototype.setModulosHijo = function(modulos) {
+                this.modulosHijo = modulos;
+            };
+            
             this.get = function(id, parent, text, url) {
                 return new Modulo(id, parent, text, url);
             };

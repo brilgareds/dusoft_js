@@ -151,9 +151,11 @@ app.use(function(err, req, res, next) {
 /*========================================
     Carga libreria de reportes
 ==========================================*/
-jsreport.bootstrapper().start().then(function(bootstrapper) {    
-	G.jsreport =  bootstrapper;
-});
+jsreport.bootstrapper({
+             logger: { providerName: "console" }
+        }).start().then(function(bootstrapper) {    
+             G.jsreport =  bootstrapper;
+        });
 
 /*=========================================
  * Ruteo del Servidor

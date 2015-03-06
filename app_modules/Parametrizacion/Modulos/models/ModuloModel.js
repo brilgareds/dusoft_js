@@ -77,8 +77,8 @@ ModuloModel.prototype.modificarModulo = function(modulo, callback) {
 
 ModuloModel.prototype.obtenerModuloPorNombreOUrl = function(nombre, url, callback) {
     var sql = "SELECT  nombre, state, id FROM modulos WHERE nombre ILIKE $1 OR state ILIKE $2";
-           
-    G.db.query(sql,  [nombre + "%", url + "%"], function(err, rows, result) {
+
+    G.db.query(sql, [nombre + "%", url + "%"], function(err, rows, result) {
         callback(err, rows);
     });
 };
@@ -137,8 +137,8 @@ ModuloModel.prototype.modificarOpcion = function(opcion, callback) {
 
 ModuloModel.prototype.obtenerOpcionPorNombre = function(nombre, callback) {
     var sql = "SELECT  nombre, alias, id FROM modulos_opciones WHERE nombre ILIKE $1";
-           
-    G.db.query(sql,  [nombre + "%"], function(err, rows, result) {
+
+    G.db.query(sql, [nombre + "%"], function(err, rows, result) {
         callback(err, rows);
     });
 };
@@ -146,33 +146,92 @@ ModuloModel.prototype.obtenerOpcionPorNombre = function(nombre, callback) {
 
 ModuloModel.prototype.listarOpcionesPorModulo = function(modulo_id, callback) {
     var sql = "SELECT * FROM modulos_opciones WHERE modulo_id =  $1 ORDER BY id";
-           
-    G.db.query(sql,  [modulo_id], function(err, rows, result) {
+
+    G.db.query(sql, [modulo_id], function(err, rows, result) {
         callback(err, rows);
     });
 };
 
-ModuloModel.prototype.eliminarOpcion = function(id, callback){
+ModuloModel.prototype.eliminarOpcion = function(id, callback) {
     var sql = "DELETE FROM modulos_opciones WHERE id = $1";
-    
-    G.db.query(sql,  [id], function(err, rows, result) {
+
+    G.db.query(sql, [id], function(err, rows, result) {
         callback(err, rows);
     });
 };
 
-ModuloModel.prototype.habilitarModuloEnEmpresas = function(modulo_id, empresas_modulos, callback){
-    //se deshabilitan todos las empresas del modulos para asignar solo las que se enviaron del cliente
-    var sql = "UPDATE modulos_empresas SET estado = 0 WHERE modulo_id = $1";
+ModuloModel.prototype.habilitarModuloEnEmpresas = function(usuario_id, empresas_modulos, modulo_id, callback) {
     
-    G.db.query(sql,[modulo_id], function(err, rows, result) {
-        if(err){
+    var that = this;
+    //se deshabilitan todos las empresas del modulos para asignar solo las que se enviaron del cliente
+    /*var sql = "UPDATE modulos_empresas SET estado = 0, usuario_id_modifica = $2, fecha_modificacion = now() WHERE modulo_id = $1";
+
+    G.db.query(sql, [modulo_id, usuario_id], function(err, rows, result) {
+        if (err) {
+            callback(err, rows);
+        } else {*/
+            __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, function(err, result){
+                callback(err, result);
+            });
+        /*}
+    });*/
+};
+
+ModuloModel.prototype.listarModulosPorEmpresa = function(empresa_id, callback) {
+    var sql = "SELECT a.*, b.parent, b.nombre, b.state, b.icon FROM modulos_empresas a\
+               INNER JOIN modulos b ON a.modulo_id = b.id and a.estado = 1 \
+               WHERE empresa_id =  $1 ORDER BY id";
+
+    G.db.query(sql, [empresa_id], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+
+
+//funcion recursiva para actualizar listado de empresas_modulos
+function __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, callback) {
+
+    //si el array esta vacio se termina la funcion recursiva
+
+    if (empresas_modulos.length === 0) {
+        callback(false, true);
+        return;
+    }
+
+    //toma el primer objeto
+    var empresa_id = empresas_modulos[0].empresa.codigo;
+    var modulo_id = empresas_modulos[0].modulo.modulo_id;
+    var estado = Number(empresas_modulos[0].empresa.estado);
+    console.log("va a actualizar con estado ",estado);
+
+    var sql = "UPDATE modulos_empresas SET estado = $4, usuario_id_modifica = $1, fecha_modificacion = now()  WHERE modulo_id = $2 and empresa_id = $3";
+
+    G.db.query(sql, [usuario_id, modulo_id, empresa_id, estado], function(err, rows, result) {
+        if (err) {
             callback(err, rows);
         } else {
-            
+            //si la actualizacion no devuelve resultado se trata de hacer el insert
+            if (result.rowCount === 0) {
+                sql = "INSERT INTO modulos_empresas (empresa_id, modulo_id, usuario_id, fecha_creacion, estado)\
+                       VALUES($1, $2, $3, now(), $4)";
+
+                G.db.query(sql, [empresa_id, modulo_id, usuario_id, estado], function(err, rows, result) {
+                    if (err) {
+                        callback(err, rows);
+                    } else {
+                        empresas_modulos.splice(0, 1);
+                        __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, callback);
+                    }
+                });
+
+            } else {
+                empresas_modulos.splice(0, 1);
+                __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, callback);
+            }
         }
     });
-    
-    
+
 };
 
 module.exports = ModuloModel;

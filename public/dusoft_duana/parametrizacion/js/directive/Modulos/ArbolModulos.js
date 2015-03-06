@@ -12,7 +12,10 @@ define(["angular", "js/directive"], function(angular, directive) {
                     //evento que indica que el elemento se cargo en el dom
                     scope.$emit("arbolListoEnDom");
 
-                    scope.modulosSeleccionados = [];
+                    scope.modulosSeleccionados = {
+                        padres: [],
+                        hijos: []
+                    };
 
                     var plugins = ["state"];
 
@@ -24,15 +27,15 @@ define(["angular", "js/directive"], function(angular, directive) {
                     scope.$on("datosArbolCambiados", function(e, datos) {
                         if (datos) {
 
-                           // $('#treeId').jstree(true).settings.core.data = newData;
-                           // $('#treeId').jstree(true).refresh();
-                          
-                           if(element.jstree(true).settings){
-                               element.jstree(true).settings.core.data = datos;
-                               element.jstree(true).refresh();
-                           } else {
-                               init(datos);
-                           }
+                            // $('#treeId').jstree(true).settings.core.data = newData;
+                            // $('#treeId').jstree(true).refresh();
+
+                            if (element.jstree(true).settings) {
+                                element.jstree(true).settings.core.data = datos;
+                                element.jstree(true).refresh();
+                            } else {
+                                init(datos);
+                            }
                         }
                     });
 
@@ -45,51 +48,73 @@ define(["angular", "js/directive"], function(angular, directive) {
                                 "themes": {"stripes": true}
 
                             },
-                            "state": {"key": "treemodulos"},
+                            "state": {"key": attrs.estado || "" },
                             plugins: plugins
 
 
                         }).on("select_node.jstree", function(node, selected, event) {
 
-                            console.log("nodo seleccionado ", selected);
-                            //obtiene todos los nodos seleccionados
-                            var seleccionados = $(this).jstree("get_selected", true);
-                            scope.modulosSeleccionados = [];
+                            //evita que se seleccione otro nodo diferente al actual
+                            if (scope.modulosSeleccionados.seleccionado) {
 
+                                //deselecciona todos los nodos para evitar multiples nodos
+                                element.jstree("deselect_all");
+                                scope.modulosSeleccionados = {
+                                    padres: [],
+                                    hijos: []
+                                };
 
-                            $.each(seleccionados, function() {
-                                console.log(this);
+                                //se vuelve a seleccionar el nodo que el usuario eligio
+                                element.jstree("select_node", "#" + selected.node.id);
+                                return;
+                            }
 
-                                //se agrega el nodo seleccionado
-                                agregarModuloSeleccionado(scope, this.id);
+                            //var seleccionados = $(this).jstree("get_selected", true);
 
-                                if (attrs.plugins === 'multiple') {
-                                    //agrega los parent de cada nodo
-                                    for (var i in this.parents) {
-                                        agregarModuloSeleccionado(scope, this.parents[i]);
-                                    }
+                            //console.log("parents .....", selected.node.parents);
+                            //console.log("childrens ....", selected.node.original);
+                            
+                            //se agrega el nodo seleccionado
+                            scope.modulosSeleccionados.seleccionado = selected.node.original.modulo_id;
+
+                            if (attrs.tipo === 'multiple') {
+                                //agrega los nodos padres
+                                for (var i in selected.node.parents) {
+                                    agregarModuloSeleccionado(scope, selected.node.parents[i], "padres");
+                                }
+                                
+                                //agrega los nodos hijos
+                                for (var i in selected.node.children_d) {
+                                    agregarModuloSeleccionado(scope, selected.node.children_d[i], "hijos");
                                 }
 
-                            });
+                            }
 
-                            console.log(scope.modulosSeleccionados);
+
+                            console.log("modulos seleccionaddos ", scope.modulosSeleccionados);
                             scope.$emit("modulosSeleccionados", scope.modulosSeleccionados);
 
+                        }).on("deselect_node.jstree", function() {
+                            console.log("deselected");
                         });
                     }
 
-                    //agrega los nodos seleccionados validando que no se repitan y que no sea parent con id #
-                    function agregarModuloSeleccionado(scope, modulo) {
+                    //agrega los nodos padres e hijos
+                    function agregarModuloSeleccionado(scope, modulo, tipo) {
 
-                        for (var i in scope.modulosSeleccionados) {
-                            if (scope.modulosSeleccionados[i] === modulo || modulo === "#") {
+                        modulo = modulo.split("_")[1];
+                        
+                        if(!modulo){
+                            return;
+                        }
+                        
+                        for (var i in scope.modulosSeleccionados[tipo]) {
+                            if (scope.modulosSeleccionados[tipo][i] === modulo) {
                                 return false;
                             }
                         }
 
-                        modulo = modulo.split("_")[1];
-
-                        scope.modulosSeleccionados.push(modulo);
+                        scope.modulosSeleccionados[tipo].push(modulo);
                     }
 
                 }

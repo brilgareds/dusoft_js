@@ -744,6 +744,38 @@ PedidosCliente.prototype.estadoCotizacion = function(req, res) {
  
 };
 
+PedidosCliente.prototype.listarDetalleCotizacion = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.detalle_cotizacion === undefined || args.detalle_cotizacion.numero_cotizacion === undefined) {
+        res.send(G.utils.r(req.url, 'numero_cotizacion No Está Definido', 404, {}));
+        return;
+    }
+    
+    if (args.detalle_cotizacion.numero_cotizacion === '') {
+        res.send(G.utils.r(req.url, 'numero_cotizacion Está Vacio', 404, {}));
+        return;
+    }
+
+    //Parámetro a insertar
+    var numero_cotizacion = args.detalle_cotizacion.numero_cotizacion;
+
+    that.m_pedidos_clientes.listar_detalle_cotizacion(numero_cotizacion, function(err, detalle_cotizacion) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error en Consulta Detalle Cotización', 500, {}));
+            return;
+        }
+
+        res.send(G.utils.r(req.url, 'Consulta Detalle Cotización Exitosa', 200, {resultado_consulta: detalle_cotizacion}));
+
+    });
+ 
+};
+
 PedidosCliente.$inject = ["m_pedidos_clientes", "e_pedidos_clientes", "m_productos", "m_pedidos"];
 
 module.exports = PedidosCliente;

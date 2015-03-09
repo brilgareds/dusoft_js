@@ -29,7 +29,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 auth_token: Usuario.token
             };
 
-            //var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
+            that.estados = [ "btn btn-warning btn-xs", "btn btn-success btn-xs" ];
             
             /* INICIO - Operaciones nuevas */
             
@@ -130,7 +130,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 var datos_cotizacion = {
                     numero_pedido: '',
                     fecha_registro: obj.fecha_registro,
-                    estado: obj.estado,
+                    estado: obj.estado
                 };
 
                 cotizacion.setDatos(datos_cotizacion);
@@ -183,8 +183,17 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     {field: 'cliente.nombre_tercero', displayName: 'Cliente'},
                     {field: 'vendedor.nombre_tercero', displayName: 'Vendedor'},
                     {field: 'fecha_registro', displayName: 'Fecha'},
-                    {field: 'valor_cotizacion', displayName: 'Valor'},
-                    {field: 'estado', displayName: 'Estado'},
+                    {field: 'valor_cotizacion', displayName: '$ Valor', cellFilter: "currency:'$ '"},
+                    //{field: 'estado', displayName: 'Estado'},
+                    
+                    {field: 'estado', displayName: 'Estado', cellClass: "txt-center",
+                        cellTemplate: " <button ng-if='row.entity.estado==0' ng-class='agregarClase(row.entity.estado)'>\
+                                            Inactivo\
+                                        </button>\
+                                        <button ng-if='row.entity.estado==1' ng-class='agregarClase(row.entity.estado)'>\
+                                            Activo\
+                                        </button>"},
+                    
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center dropdown-button", width: "7%",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
@@ -201,6 +210,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
             
             /*NUEVO*/
+            $scope.agregarClase = function(estado) {
+
+                return that.estados[estado];
+            };
             
             that.consultarEstadoCotizacion = function(data, callback){
                 
@@ -359,12 +372,12 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
 
             $scope.paginaAnterior = function() {
-                 $scope.paginaactual--;
+                 $scope.rootCotizaciones.paginaactual--;
                  $scope.onBuscarCotizacion($scope.obtenerParametros(), true);
             };
 
             $scope.paginaSiguiente = function() {
-                 $scope.paginaactual++;
+                 $scope.rootCotizaciones.paginaactual++;
                  $scope.onBuscarCotizacion($scope.obtenerParametros(), true);
             };
 

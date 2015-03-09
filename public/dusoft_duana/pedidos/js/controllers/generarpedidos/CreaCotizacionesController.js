@@ -7,8 +7,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         '$scope', '$rootScope', 'Request',
         'EmpresaPedido', 'ClientePedido', 'PedidoVenta',
         'API', "socket", "AlertService",
-        '$state','VendedorPedido', 'Usuario',
-        function($scope, $rootScope, Request, EmpresaPedido, ClientePedido, PedidoVenta, API, socket, AlertService, $state, VendedorPedido, Usuario) {
+        '$state','VendedorPedido', 'Usuario', 'ProductoPedido',
+        function($scope, $rootScope, Request, EmpresaPedido, ClientePedido, PedidoVenta, API, socket, AlertService, $state, VendedorPedido, Usuario, ProductoPedido) {
 
             //$scope.Empresa = Empresa;
 
@@ -210,28 +210,57 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             //var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
 
-            $scope.buscarCotizaciones = function(termino, paginando) {
+            $scope.buscarCotizaciones = function(paginando) {
 
                 //valida si cambio el termino de busqueda
                 if ($scope.rootCreaCotizaciones.ultima_busqueda !== $scope.rootCreaCotizaciones.termino_busqueda) {
                     $scope.rootCreaCotizaciones.paginaactual = 1;
                 }
-                
-                
-                /*if(that.empty($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado())){
-                    console.log(">>>>>VACIO!");
-                }
-                else{
-                    console.log(">>>>> NO VACIO!");
-                }*/
-                //if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado() !== {}){
+
                 if(that.empty($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado())){
                     that.crearPedidoSeleccionadoEmpresa(that.crearPedidoVacio());
                     //console.log(">>>>> EMPRESA: ",$scope.rootCreaCotizaciones.Empresa);
                 }
                 else{
                     $scope.rootCreaCotizaciones.seleccion_vendedor = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getVendedor().getId();
+                    console.log("Información de Empresa: ", $scope.rootCreaCotizaciones.Empresa);
                     //that.crearPedidoSeleccionadoEmpresa(that.crearPedidoVacio());
+                    
+                    // HACER CONSULTA DE PRODUCTOS DEL PEDIDO (DETALLE)
+                    
+                    //detalle_cotizacion.numero_cotizacion
+                    
+                    var obj = {
+                        session: $scope.rootCreaCotizaciones.session,
+                        data: {
+                            detalle_cotizacion: {
+                                numero_cotizacion: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion(),                            
+                            }
+                        }
+                    };
+
+                    var url = API.PEDIDOS.LISTAR_DETALLE_COTIZACION;
+                    
+                    Request.realizarRequest(url, "POST", obj, function(data) {
+
+                        if (data.status === 200) {
+                            console.log("Consulta exitosa: ", data.msj);
+                            
+                            console.log("Datos de la consulta: ", data);
+
+                            /*if (callback !== undefined && callback !== "" && callback !== 0) {
+                                callback(data);
+                            }*/
+                            
+                            var detalle = data.obj.resultado_consulta;
+                            
+                            that.renderDetalleCotizacion(detalle);
+                        }
+                        else {
+                            console.log("Error en la consulta: ", data.msj);
+                        }
+                    });
+                    
                 }
             
 
@@ -267,6 +296,47 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 return count === 0;
             };
 
+            that.renderDetalleCotizacion = function(detalle){
+                
+                detalle.forEach(function(producto){
+                    
+                    var obj = that.crearObjetoDetalle(producto);
+                    
+                    $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().agregarProducto(obj);
+                    
+                });
+            };
+            
+            that.crearObjetoDetalle = function(producto){
+                
+                //codigo, nombre, existencia, precio, cantidad_solicitada, cantidad_ingresada, observacion_cambio, disponible, molecula, existencia_farmacia, tipo_producto_id, total_existencias_farmacia, existencia_disponible, cantidad_pendiente
+                
+                var objeto_producto = ProductoPedido.get(
+                        producto.codigo_producto,//codigo,
+                        producto.nombre_producto,//nombre,
+                        '',//existencia,
+                        producto.valor_unitario,//precio,
+                        producto.numero_unidades,//cantidad_solicitada,
+                        '',//cantidad_ingresada,
+                        '',//observacion_cambio,
+                        '',//disponible,
+                        '',//molecula,
+                        '',//existencia_farmacia,
+                        '',//tipo_producto_id,
+                        '',//total_existencias_farmacia,
+                        '',//existencia_disponible,
+                        ''//cantidad_pendiente
+                    );
+                        
+                objeto_producto.setIva(producto.porc_iva);
+                
+                objeto_producto.setTotalSinIva();
+                
+                objeto_producto.setTotalConIva();
+                        
+                return objeto_producto;
+                
+            };
 
             //definicion y delegados del Tabla de pedidos clientes
 

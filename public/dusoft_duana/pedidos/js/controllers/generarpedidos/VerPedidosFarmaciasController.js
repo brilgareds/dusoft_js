@@ -225,26 +225,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'descripcion_estado_actual_pedido', displayName: 'Estado', cellClass: "txt-center",
                         cellTemplate: "<button ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center dropdown-button", width: "8%",
-                        /*cellTemplate: ' <div>\n\
-                                            <button class="btn btn-default btn-xs" ng-click="onEditarPedidoFarmacia(row.entity)" ng-disabled="(row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1) || row.entity.estado_separacion != null || row.entity.en_uso != 0">\n\
-                                                <!--<span ng-if="row.entity.en_uso != 0" class="glyphicon glyphicon-eye-open"></span>-->\n\
-                                                <span class="glyphicon glyphicon-pencil">Modificar</span>\n\
-                                            </button>\n\
-                                            <button class="btn btn-default btn-xs" ng-if="row.entity.en_uso != 0">\n\
-                                                <span class="glyphicon glyphicon-eye-open"></span>\n\
-                                            </button>\n\
-                                        </div>'*/
-                        /*cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
-                                            <ul class="dropdown-menu dropdown-options">\
-                                                <li ng-show="!((row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1) || row.entity.estado_separacion != null || row.entity.en_uso != 0)"><a href="javascript:void(0);" ng-click="onEditarPedidoFarmacia(row.entity)">Modificar</a></li>\
-                                                <li class="divider" ng-show="!((row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1) || row.entity.estado_separacion != null || row.entity.en_uso != 0)"></li>\
-                                                <li><a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity)" >Ver</a></li>\
-                                            </ul>\n\
-                                            <button class="btn btn-default btn-xs" ng-if="row.entity.en_uso != 0">\n\
-                                               <span class="glyphicon glyphicon-eye-open"></span>\n\
-                                           </button>\n\
-                                        </div>'*/
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\

@@ -878,9 +878,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, termino
                     to_char(a.fecha_envio, 'dd-mm-yyyy hh:mm:ss') as fecha_envio,\
                     a.tipo_id_vendedor,\
                     a.vendedor_id,\
-                    /*to_char( SUM((b.valor_unitario + (b.valor_unitario * b.porc_iva)/100) * b.numero_unidades), '999999990.99' ) as valor_cotizacion,*/\
                     round(SUM((b.valor_unitario + (b.valor_unitario * COALESCE(b.porc_iva, 0))/100) * b.numero_unidades),2) as valor_cotizacion,\
-                    /*CASE WHEN COALESCE (aa.valor_pactado,0)=0 then round((b.costo_ultima_compra)/((COALESCE(a.porc_iva,0)/100)+1),2) else aa.valor_pactado end as costo_ultima_compra,*/\
                     a.estado,\
                     a.observaciones,\
                     c.tipo_pais_id as tipo_pais_cliente,\
@@ -940,6 +938,38 @@ PedidosClienteModel.prototype.estado_cotizacion = function(numero_cotizacion, ca
     G.db.query(sql, [numero_cotizacion], function(err, rows, result) {
         callback(err, rows, result);
     });
+};
+
+/**
+ * @api {sql} listar_detalle_cotizacion Pedidos clientes model
+ * @apiName Pedidos Clientes
+ * @apiGroup PedidosCliente (sql)
+ * @apiDescription Lista detalle de cotización
+ * @apiDefinePermission autenticado Requiere Autenticacion
+ * Requiere que el usuario esté autenticado.
+ * @apiPermission autenticado
+ * @apiParam {Number} numero_pedido Numero del pedido a asignar
+ * @apiParam {Function} callback Funcion de retorno de informacion.
+ */
+PedidosClienteModel.prototype.listar_detalle_cotizacion = function(numero_cotizacion, callback) {
+    
+    var sql = " select\
+                    codigo_producto,\
+                    fc_descripcion_producto(codigo_producto) as nombre_producto,\
+                    porc_iva,\
+                    numero_unidades,\
+                    valor_unitario,\
+                    to_char(fecha_registro, 'dd-mm-yyyy hh:mm:ss') as fecha_registro,\
+                    valor_unitario*numero_unidades as total_sin_iva,\
+                    round((valor_unitario + (valor_unitario * COALESCE(porc_iva, 0))/100) * numero_unidades, 2) as total_con_iva\
+                from\
+                    ventas_ordenes_pedidos_d_tmp\
+                where pedido_cliente_id_tmp = $1";
+    
+    G.db.query(sql, [numero_cotizacion], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+
 };
 
 PedidosClienteModel.$inject = ["m_productos"];

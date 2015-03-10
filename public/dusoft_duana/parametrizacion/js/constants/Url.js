@@ -25,6 +25,9 @@
                 'LISTAR_EMPRESAS' : BASE_URL+"/Empresas/listarEmpresas",
                 'HABILITAR_MODULO_EMPRESAS' : BASE_URL +"/Modulos/habilitarModuloEnEmpresas",
                 'LISTAR_MODULOS_POR_EMPRESA' : BASE_URL +"/Modulos/listarModulosPorEmpresa"
+            },
+            'PERFILES':{
+                'GUARDAR_ROL': BASE_URL+"/Roles/guardarRol"
             }
 	  }
 	};

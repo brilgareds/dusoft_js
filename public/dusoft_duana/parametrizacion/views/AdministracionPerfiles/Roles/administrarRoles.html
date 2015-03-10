@@ -5,17 +5,9 @@
 
         <p class="input-group contenedor_combo_grande">
             <label for="habilitar_rol" style='margin-right: 5px;'>Habilitar Rol</label>
-            <input-check ng-model="rootRoles.rolAGuardar.opcionAGuardar.estado" style='margin-right: 15px;' id="habilitar_rol" ></input-check>
+            <input-check ng-model="rootRoles.rolAGuardar.estado" style='margin-right: 15px;' id="habilitar_rol" ></input-check>
 
         </p>
-
-        <p class="input-group">
-            <input type="text" ng-model='rootRoles.rolAGuardar.nombre' class="form-control"  placeholder="Nombre Rol" />
-            <span class="input-group-addon">
-                <i class="glyphicon glyphicon-ok"></i>
-            </span>
-        </p> 
-
         <p class="input-group contenedor_combo_grande">
 
             <ui-select ng-model="rootRoles.empresaSeleccionada"
@@ -31,6 +23,14 @@
 
         </p>
 
+        <p class="input-group">
+            <input type="text" ng-model='rootRoles.rolAGuardar.nombre' class="form-control"  placeholder="Nombre Rol" />
+            <span class="input-group-addon">
+                <i class="glyphicon glyphicon-ok"></i>
+            </span>
+        </p> 
+
+
         <p class="input-group contenedor_combo_grande">
             <textarea class="form-control observacion_modulo" ng-model='rootRoles.rolAGuardar.observacion' placeholder="Observacion"></textarea>
 
@@ -44,7 +44,7 @@
                 <span class="glyphicon glyphicon-trash"></span>
             </button>
 
-            <button class="btn btn-success btn-sm" ng-click='onGuardarModulo()'>
+            <button class="btn btn-success btn-sm" ng-click='onGuardarRol()'>
                 Guardar
                 <span class="glyphicon glyphicon-floppy-disk"></span>
             </button>
@@ -53,11 +53,11 @@
 
     </div>
 
-    <div class="col-md-5">
+    <div class="col-md-5" ng-if='rootRoles.rolAGuardar.id > 0'>
         <div arbol-modulos plugins='checkbox, wholerow' tipo='multiple' estado='modulos_empresas'></div>
     </div>
 
-    <div class="col-md-4" ng-controller='OpcionesModulosController' ng-init='init({eliminar:false, detalle:false, seleccionar:true})'>
+    <div class="col-md-4" ng-if='rootRoles.rolAGuardar.id > 0' ng-controller='OpcionesModulosController' ng-init='init({eliminar:false, detalle:false, seleccionar:true})'>
         <div class="table-responsive" >
             <div class="grid-responsive listado_opciones" ng-grid="listado_opciones">
 

@@ -42,7 +42,7 @@ define(["angular", "js/directive"], function(angular, directive) {
                                 "themes": {"stripes": true}
 
                             },
-                            "state": {"key": attrs.estado || "" },
+                            "state": {"key": attrs.estado || undefined },
                             plugins: plugins
 
 

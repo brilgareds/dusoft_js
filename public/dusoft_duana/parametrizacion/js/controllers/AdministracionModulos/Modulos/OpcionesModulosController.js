@@ -11,12 +11,19 @@ define([
         function($scope, $rootScope, Request,
                 API, AlertService, Usuario,
                 OpcionModulo, $modal) {
-
-
+            
             var self = this;
 
             $scope.rootOpciones = {
+                opciones:{}
             };
+                
+            $scope.init = function(opciones){
+                $scope.rootOpciones.opciones = opciones;
+            };
+            
+            
+            
 
             //trae todas las opciones que tenga el modulo que se este guardando
             self.traerOpcionesModulo = function() {
@@ -132,12 +139,21 @@ define([
                     {field: 'alias', displayName: 'Alias'},
                     {field: 'accion', displayName: '', width: '70',
                         cellTemplate: '<div class="ngCellText txt-center">\
-                                      <button class="btn btn-default btn-xs" ng-click="onEditarOpcion(row.entity)"><span class="glyphicon glyphicon-zoom-in"></span></button>\
-                                      <button class="btn btn-default btn-xs" ng-click="onBorrarOpcion(row.entity)"><span class="glyphicon glyphicon-remove"></span></button>\
+                                      <button ng-if="rootOpciones.opciones.detalle" class="btn btn-default btn-xs" ng-click="onEditarOpcion(row.entity)">\
+                                        <span class="glyphicon glyphicon-zoom-in"></span>\
+                                      </button>\
+                                      <button ng-if="rootOpciones.opciones.eliminar" class="btn btn-default btn-xs" ng-click="onBorrarOpcion(row.entity)">\
+                                        <span class="glyphicon glyphicon-remove"></span>\
+                                      </button>\
+                                      <input-check ng-if="rootOpciones.opciones.seleccionar"  ng-model="row.entity.seleccionado"  ng-change="onSeleccionarOpcion(row.entity)">\
                                    </div>'
                     }
                 ]
 
+            };
+            
+            $scope.onSeleccionarOpcion = function(opcion){
+                console.log("seleccion ", opcion , opcion.seleccionado);
             };
             
             $scope.onEditarOpcion = function(opcion){

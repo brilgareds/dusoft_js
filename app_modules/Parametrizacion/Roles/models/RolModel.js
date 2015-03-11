@@ -3,21 +3,27 @@ var RolModel = function() {
 };
 
 
-RolModel.prototype.listar_rols = function(callback) {
-
-
-    var sql = "SELECT * FROM rols ORDER BY id ASC ";
-
-    G.db.query(sql, [], function(err, rows, result) {
-        callback(err, rows);
+RolModel.prototype.listar_roles = function(empresa_id, termino,pagina, callback) {
+    
+    var sqlaux = "";
+    var parametros = [empresa_id];
+    if(termino.length > 0){
+        sqlaux = " and nombre ilike $2";
+        parametros.push("%"+termino+"%");
+    }
+    
+    var sql = "SELECT * FROM roles where empresa_id = $1 "+sqlaux+" ORDER BY id ASC ";
+    
+     G.db.pagination(sql, parametros , pagina, G.settings.limit, function(err, rows, result, total_records) {
+        callback(err, rows, total_records);
     });
 };
 
 
-RolModel.prototype.obtenerModulosPorId = function(ids, callback) {
+RolModel.prototype.obtenerRolesPorId = function(ids, callback) {
 
     var ids = ids.join(",");
-    var sql = "SELECT * FROM rols WHERE id in($1) ";
+    var sql = "SELECT * FROM roles WHERE id in($1) ";
 
     G.db.query(sql, [ids], function(err, rows, result) {
         callback(err, rows);

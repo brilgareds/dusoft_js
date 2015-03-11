@@ -7,11 +7,11 @@ define(["angular", "js/controllers", "js/models",
     controllers.controller('AdministracionRolesController', [
         '$scope', '$rootScope', 'Request', '$modal', 'API',
         "socket", "$timeout", "AlertService", "Usuario", "EmpresaParametrizacion",
-        "Empresa_Modulo", "Modulo", "Rol", "RolModulo",
+        "Empresa_Modulo", "Modulo", "Rol", "RolModulo", "localStorageService",
         function($scope, $rootScope, Request,
                 $modal, API, socket, $timeout,
                 AlertService, Usuario, EmpresaParametrizacion,
-                Empresa_Modulo, Modulo, Rol, RolModulo) {
+                Empresa_Modulo, Modulo, Rol, RolModulo, localStorageService) {
 
             var self = this;
 
@@ -30,7 +30,7 @@ define(["angular", "js/controllers", "js/models",
                 usuario_id: Usuario.usuario_id,
                 auth_token: Usuario.token
             };
-
+            
 
             self.inicializarRolACrear = function() {
                 $scope.rootModulos.moduloAGuardar = Modulo.get();
@@ -252,9 +252,16 @@ define(["angular", "js/controllers", "js/models",
             //se carga las empresas despues que el arbol esta listo
             $scope.$on("arbolListoEnDom", function() {
             });
-
-            self.inicializarRolACrear();
-            self.traerEmpresas();
+            
+            //valida si hay un rol que se busco en el view de listar roles
+            var rol_id = localStorageService.get("rol_id");
+            
+            if(rol_id && rol_id.length > 0){
+                
+            } else {
+                self.inicializarRolACrear();
+                self.traerEmpresas();
+            }
 
         }]);
 });

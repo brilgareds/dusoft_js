@@ -7,9 +7,8 @@ module.exports = function(app, di_container) {
         c_roles.guardarRol(req, res);
     });
     
-    
-    app.post('/api/Modulos/listarModulos', function(req, res) {
-        c_roles.listar_modulos(req, res);
+    app.post('/api/Roles/listarRoles', function(req, res) {
+        c_roles.listar_roles(req, res);
     });
     
     

@@ -27,6 +27,7 @@
                 'LISTAR_MODULOS_POR_EMPRESA' : BASE_URL +"/Modulos/listarModulosPorEmpresa"
             },
             'PERFILES':{
+                'LISTAR_ROLES': BASE_URL+"/Roles/listarRoles",
                 'GUARDAR_ROL': BASE_URL+"/Roles/guardarRol"
             }
 	  }

@@ -5,7 +5,7 @@ define(["angular", "js/models"], function(angular, models) {
             function Rol(id, nombre, observacion, empresa_id) {
                 this.id = id || 0;
                 this.nombre = nombre;
-                this.observacion = "";
+                this.observacion = observacion ||  "";
                 this.estado = false;
                 this.empresa_id = empresa_id || "";
 

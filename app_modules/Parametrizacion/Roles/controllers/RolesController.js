@@ -7,20 +7,35 @@ var Roles = function(m_rol) {
 };
 
 
-Roles.prototype.listar_rols = function(req, res) {
+Roles.prototype.listar_roles = function(req, res) {
 
     var that = this;
 
 
     var args = req.body.data;
+    var empresa_id = args.parametrizacion_perfiles.empresa_id;
+    var termino = args.parametrizacion_perfiles.termino || "";
+    var pagina =  args.parametrizacion_perfiles.pagina_actual;
+    
+    console.log("argumentos ", args);
+    
+    if (empresa_id === undefined || empresa_id.length === 0) {
+        res.send(G.utils.r(req.url, 'La empresa no es valida.', 403, {parametrizacion_perfiles: {}}));
+        return;
+    }
+    
+    if (pagina === undefined || pagina <= 0) {
+        res.send(G.utils.r(req.url, 'El numero de pagina no es valido', 403, {parametrizacion_perfiles: {}}));
+        return;
+    }
+    
 
-
-    that.m_rol.listar_rols(function(err, lista_rols) {
+    that.m_rol.listar_roles(empresa_id, termino,pagina, function(err, lista_roles) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error listando Roles', 500, {parametrizacion_perfiles: {}}));
         } else {
-            res.send(G.utils.r(req.url, 'Lista de Roles del sistema', 200, {parametrizacion_perfiles: {rols: lista_rols}}));
+            res.send(G.utils.r(req.url, 'Lista de Roles del sistema', 200, {parametrizacion_perfiles: {roles: lista_roles}}));
         }
     });
 };
@@ -37,7 +52,7 @@ Roles.prototype.obtenerRolesPorId = function(req, res) {
         return;
     }
 
-    that.m_rol.obtenerRolesPorId(args.parametrizacion_perfiles.rols_id, function(err, rows) {
+    that.m_rol.obtenerRolesPorId(args.parametrizacion_perfiles.rol.id, function(err, rows) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error buscando el rol', 500, {parametrizacion_perfiles: {}}));

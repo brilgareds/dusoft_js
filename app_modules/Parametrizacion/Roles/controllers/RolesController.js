@@ -99,7 +99,31 @@ Roles.prototype.guardarRol = function(req, res) {
     });
 };
 
-Roles.prototype.guardarOpcion = function(req, res) {
+Roles.prototype.habilitarModulosEnRoles = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+
+    var rolesModulos = args.parametrizacion_perfiles.rolesModulos;
+
+    if (rolesModulos === undefined || rolesModulos.length === 0) {
+        res.send(G.utils.r(req.url, 'No se a seleccionado ningun modulo', 500, {parametrizacion_perfiles: {}}));
+        return;
+    }
+    
+    that.m_rol.habilitarModulosEnRoles(req.session.user.usuario_id, rolesModulos, function(err, rows) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error habilitando las empresas para el rol', 500, {parametrizacion_perfiles: {}}));
+            return;
+        }
+        
+        res.send(G.utils.r(req.url, "Se asigno correctamente los modulos seleccionados", 200, {parametrizacion_perfiles: {}}));
+        
+    });
+
+};
+
+
+/*Roles.prototype.guardarOpcion = function(req, res) {
     var that = this;
 
     var args = req.body.data;
@@ -175,36 +199,6 @@ Roles.prototype.eliminarOpcion = function(req, res) {
 };
 
 
-Roles.prototype.habilitarModuloEnEmpresas = function(req, res) {
-    var that = this;
-    var args = req.body.data;
-
-    var empresas_rols = args.parametrizacion_perfiles.empresas_rols;
-    var rol_id = args.parametrizacion_perfiles.rol_id;
-
-    if (empresas_rols === undefined && empresas_rols.length === 0) {
-        res.send(G.utils.r(req.url, 'No se a seleccionado ninguna empresa', 500, {parametrizacion_perfiles: {}}));
-        return;
-    }
-    
-    if (rol_id === undefined && rol_id.length === 0) {
-        res.send(G.utils.r(req.url, 'El id del rol no se encontro', 500, {parametrizacion_perfiles: {}}));
-        return;
-    }
-
-    
-
-    that.m_rol.habilitarModuloEnEmpresas(req.session.user.usuario_id, empresas_rols,rol_id, function(err, rows) {
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error habilitando las empresas para el rol', 500, {parametrizacion_perfiles: {}}));
-            return;
-        }
-        
-        res.send(G.utils.r(req.url, "Se habilito el rol en las empresas seleccionadas", 200, {parametrizacion_perfiles: {}}));
-        
-    });
-
-};
 
 
 
@@ -228,7 +222,7 @@ Roles.prototype.listarRolesPorEmpresa = function(req, res) {
 
     });
 };
-
+*/
 
 function __validarCreacionRol(that, rol, callback) {
     var validacion = {

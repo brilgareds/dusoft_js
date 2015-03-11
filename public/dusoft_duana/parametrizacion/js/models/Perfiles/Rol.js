@@ -58,8 +58,12 @@ define(["angular", "js/models"], function(angular, models) {
             Rol.prototype.setRolesModulos = function(rolesModulos) {
                 this.rolesModulos = rolesModulos;
             };
-
-            Rol.prototype.getRolesModulos = function() {
+            
+            Rol.prototype.vaciarModulos = function() {
+                this.rolesModulos = [];
+            };
+            
+            Rol.prototype.getModulos = function() {
                 return this.rolesModulos;
             };
             

@@ -86,7 +86,64 @@ RolModel.prototype.obtenerRolPorNombre = function(nombre, callback) {
     });
 };
 
-//opciones
+
+RolModel.prototype.habilitarModulosEnRoles = function(usuario_id, rolesModulos, callback) {
+    
+    var that = this;
+
+    __habilitarModulosEnRoles(that, usuario_id, rolesModulos, function(err, result){
+        callback(err, result);
+    });
+
+};
+
+
+//funcion recursiva para actualizar listado de roles_modulos
+function __habilitarModulosEnRoles(that, usuario_id, rolesModulos, callback) {
+
+    //si el array esta vacio se termina la funcion recursiva
+
+    if (rolesModulos.length === 0) {
+        callback(false, true);
+        return;
+    }
+
+    //este es el id de modulos_empresa
+    var modulos_empresas_id = rolesModulos[0].modulo.empresasModulos[0].id;
+    var rol_id = rolesModulos[0].rol.id;    
+    var estado = Number(rolesModulos[0].estado);
+
+    var sql = "UPDATE roles_modulos SET estado = $3, usuario_id_modifica = $1, fecha_modificacion = now()  WHERE modulos_empresas_id = $2";
+
+    G.db.query(sql, [usuario_id, modulos_empresas_id, estado], function(err, rows, result) {
+        if (err) {
+            callback(err, rows);
+        } else {
+            //si la actualizacion no devuelve resultado se trata de hacer el insert
+            if (result.rowCount === 0) {
+                sql = "INSERT INTO roles_modulos (modulos_empresas_id, rol_id, usuario_id, fecha_creacion, estado)\
+                       VALUES($1, $2, $3, now(), $4)";
+
+                G.db.query(sql, [modulos_empresas_id, rol_id, usuario_id, estado], function(err, rows, result) {
+                    if (err) {
+                        callback(err, rows);
+                    } else {
+                        rolesModulos.splice(0, 1);
+                        __habilitarModulosEnRoles(that, usuario_id, rolesModulos, callback);
+                    }
+                });
+
+            } else {
+                rolesModulos.splice(0, 1);
+                __habilitarModulosEnRoles(that, usuario_id, rolesModulos, callback);
+            }
+        }
+    });
+
+};
+
+
+/*/opciones
 
 //gestiona para modificar o insertar la opcion
 RolModel.prototype.guardarOpcion = function(opcion, callback) {
@@ -161,80 +218,6 @@ RolModel.prototype.eliminarOpcion = function(id, callback) {
     G.db.query(sql, [id], function(err, rows, result) {
         callback(err, rows);
     });
-};
-
-RolModel.prototype.habilitarModuloEnEmpresas = function(usuario_id, empresas_rols, rol_id, callback) {
-    
-    var that = this;
-    //se deshabilitan todos las empresas del rols para asignar solo las que se enviaron del cliente
-    /*var sql = "UPDATE rols_empresas SET estado = 0, usuario_id_modifica = $2, fecha_modificacion = now() WHERE rol_id = $1";
-
-    G.db.query(sql, [rol_id, usuario_id], function(err, rows, result) {
-        if (err) {
-            callback(err, rows);
-        } else {*/
-            __habilitarModuloEnEmpresas(that, usuario_id, empresas_rols, function(err, result){
-                callback(err, result);
-            });
-        /*}
-    });*/
-};
-
-RolModel.prototype.listarModulosPorEmpresa = function(empresa_id, callback) {
-    var sql = "SELECT a.*, b.parent, b.nombre, b.state, b.icon FROM rols_empresas a\
-               INNER JOIN rols b ON a.rol_id = b.id and a.estado = 1 \
-               WHERE empresa_id =  $1 ORDER BY id";
-
-    G.db.query(sql, [empresa_id], function(err, rows, result) {
-        callback(err, rows);
-    });
-};
-
-
-
-//funcion recursiva para actualizar listado de empresas_rols
-function __habilitarModuloEnEmpresas(that, usuario_id, empresas_rols, callback) {
-
-    //si el array esta vacio se termina la funcion recursiva
-
-    if (empresas_rols.length === 0) {
-        callback(false, true);
-        return;
-    }
-
-    //toma el primer objeto
-    var empresa_id = empresas_rols[0].empresa.codigo;
-    var rol_id = empresas_rols[0].rol.rol_id;
-    var estado = Number(empresas_rols[0].empresa.estado);
-    console.log("va a actualizar con estado ",estado);
-
-    var sql = "UPDATE rols_empresas SET estado = $4, usuario_id_modifica = $1, fecha_modificacion = now()  WHERE rol_id = $2 and empresa_id = $3";
-
-    G.db.query(sql, [usuario_id, rol_id, empresa_id, estado], function(err, rows, result) {
-        if (err) {
-            callback(err, rows);
-        } else {
-            //si la actualizacion no devuelve resultado se trata de hacer el insert
-            if (result.rowCount === 0) {
-                sql = "INSERT INTO rols_empresas (empresa_id, rol_id, usuario_id, fecha_creacion, estado)\
-                       VALUES($1, $2, $3, now(), $4)";
-
-                G.db.query(sql, [empresa_id, rol_id, usuario_id, estado], function(err, rows, result) {
-                    if (err) {
-                        callback(err, rows);
-                    } else {
-                        empresas_rols.splice(0, 1);
-                        __habilitarModuloEnEmpresas(that, usuario_id, empresas_rols, callback);
-                    }
-                });
-
-            } else {
-                empresas_rols.splice(0, 1);
-                __habilitarModuloEnEmpresas(that, usuario_id, empresas_rols, callback);
-            }
-        }
-    });
-
-};
+};*/
 
 module.exports = RolModel;

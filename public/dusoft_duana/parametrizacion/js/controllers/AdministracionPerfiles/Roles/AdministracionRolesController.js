@@ -108,7 +108,7 @@ define(["angular", "js/controllers", "js/models",
             self.obtenerModuloSeleccionado = function(modulo_id) {
                 var modulos = $scope.rootRoles.modulos_empresa;
                 for (var i in modulos) {
-                    if (modulos[i].getModulo().getId() === modulo_id) {
+                    if (modulos[i].getModulo().getId() === parseInt(modulo_id)) {
                         return modulos[i];
                     }
                 }
@@ -218,32 +218,81 @@ define(["angular", "js/controllers", "js/models",
                 });
 
             };
-
-            $scope.$on("modulosSeleccionados", function(e, modulos_seleccionado) {
-                var modulo_empresa = self.obtenerModuloSeleccionado(modulos_seleccionado.seleccionado);
-
+            
+            self.agregarModulo= function(modulo_id){
+               
+                var modulo_empresa = self.obtenerModuloSeleccionado(modulo_id);
                 if (!modulo_empresa)
-                    return;
-
-                $scope.rootModulos.moduloAGuardar = Modulo.get(modulo_empresa.getModulo().getId());
-                $scope.rootModulos.moduloAGuardar.agregarEmpresa(modulo_empresa);
-
-                //representa la relacion de roles_modulos
+                    return false;
+                
+                var modulo = Modulo.get(modulo_empresa.getModulo().getId());
+                modulo.agregarEmpresa(modulo_empresa);
+                
                 var rol_modulo = RolModulo.get(
                         0,
                         Rol.get(
-                        $scope.rootRoles.rolAGuardar.getId(),
-                        $scope.rootRoles.rolAGuardar.getNombre(),
-                        $scope.rootRoles.rolAGuardar.getObservacion(),
-                        $scope.rootRoles.rolAGuardar.getEmpresaId()
+                            $scope.rootRoles.rolAGuardar.getId(),
+                            $scope.rootRoles.rolAGuardar.getNombre(),
+                            $scope.rootRoles.rolAGuardar.getObservacion(),
+                            $scope.rootRoles.rolAGuardar.getEmpresaId()
                         ),
-                        angular.copy($scope.rootModulos.moduloAGuardar)
-                        );
+                        modulo,
+                        true
+                );
 
                 $scope.rootRoles.rolAGuardar.agregarModulo(rol_modulo);
-                $scope.$broadcast("traerOpcionesModulo");
+                
+                return modulo;
+            };
+            
+            
+            self.habilitarModulosRol = function(){
+                
+                var obj = {
+                    session: $scope.rootModulos.session,
+                    data: {
+                        parametrizacion_perfiles: {
+                            rolesModulos: $scope.rootRoles.rolAGuardar.getModulos()
+                        }
+                    }
+                };
 
-                console.log("modulos empresas >>>>>>>> ", modulo_empresa);
+                Request.realizarRequest(API.PERFILES.HABILITAR_MODULOS_ROLES, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        AlertService.mostrarMensaje("success", "Rol guardado correctamente");
+                        var id = data.obj.parametrizacion_perfiles.rol.id;
+
+                        if ($scope.rootRoles.rolAGuardar.getId() === 0) {
+                            $scope.rootRoles.rolAGuardar.setId(id);
+                            $scope.onEmpresaSeleccionada();
+                        }
+                    } else {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+
+                });
+            };
+            
+            $scope.$on("modulosSeleccionados", function(e, modulos_seleccionado) {
+                $scope.rootRoles.rolAGuardar.vaciarModulos();
+                var modulo = self.agregarModulo(modulos_seleccionado.seleccionado);
+                
+                if(!modulo){
+                    return;
+                }
+                
+                $scope.rootModulos.moduloAGuardar = modulo;
+                
+                
+                for(var i in modulos_seleccionado.padres){
+                    self.agregarModulo(modulos_seleccionado.padres[i]);
+                }
+                
+                for(var ii in modulos_seleccionado.hijos){
+                    self.agregarModulo(modulos_seleccionado.hijos[ii]);
+                }
+                
+                $scope.$broadcast("traerOpcionesModulo");
 
             });
 
@@ -258,7 +307,8 @@ define(["angular", "js/controllers", "js/models",
 
                 $scope.rootRoles.rolAGuardar.setEmpresaId($scope.rootRoles.empresaSeleccionada.getCodigo());
                 var rol_guardar = angular.copy($scope.rootRoles.rolAGuardar);
-
+                
+                console.log("rol a guardar ", rol_guardar);
 
                 var obj = {
                     session: $scope.rootModulos.session,
@@ -271,13 +321,21 @@ define(["angular", "js/controllers", "js/models",
 
                 Request.realizarRequest(API.PERFILES.GUARDAR_ROL, "POST", obj, function(data) {
                     if (data.status === 200) {
-                        AlertService.mostrarMensaje("success", "Rol guardado correctamente");
+                       
                         var id = data.obj.parametrizacion_perfiles.rol.id;
-
+                        
+                        
                         if ($scope.rootRoles.rolAGuardar.getId() === 0) {
                             $scope.rootRoles.rolAGuardar.setId(id);
                             $scope.onEmpresaSeleccionada();
                         }
+                        
+                        if($scope.rootRoles.rolAGuardar.getModulos().length > 0){
+                            self.habilitarModulosRol();
+                        } else {
+                             AlertService.mostrarMensaje("success", "Rol guardado correctamente");
+                        }
+                        
                     } else {
                         AlertService.mostrarMensaje("warning", data.msj);
                     }
@@ -285,6 +343,7 @@ define(["angular", "js/controllers", "js/models",
                 });
 
             };
+            
             
             $scope.onLimpiarFormulario = function() {
                 self.inicializarRolACrear();

@@ -10,9 +10,13 @@ module.exports = function(app, di_container) {
     app.post('/api/Roles/listarRoles', function(req, res) {
         c_roles.listar_roles(req, res);
     });
-    
+
     app.post('/api/Roles/obtenerRolesPorId', function(req, res) {
         c_roles.obtenerRolesPorId(req, res);
+    });
+
+    app.post('/api/Roles/habilitarModulosEnRoles', function(req, res) {
+        c_roles.habilitarModulosEnRoles(req, res);
     });
 
     app.post('/api/Modulos/listarOpcionesPorModulo', function(req, res) {
@@ -27,9 +31,7 @@ module.exports = function(app, di_container) {
         c_roles.eliminarOpcion(req, res);
     });
 
-    app.post('/api/Modulos/habilitarModuloEnEmpresas', function(req, res) {
-        c_roles.habilitarModuloEnEmpresas(req, res);
-    });
+
 
     app.post('/api/Modulos/listarModulosPorEmpresa', function(req, res) {
         c_roles.listarModulosPorEmpresa(req, res);

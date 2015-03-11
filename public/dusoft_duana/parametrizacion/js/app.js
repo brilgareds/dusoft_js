@@ -16,6 +16,7 @@ define([
     "controllers/OperariosBodega/OperariosBodegaController",
     "controllers/AdministracionModulos/Modulos/AdministracionModulosController",
     "controllers/AdministracionPerfiles/Roles/AdministracionRolesController",
+    "controllers/AdministracionPerfiles/Roles/ListarRolesController",
     "controllers/AdministracionPerfiles/Usuarios/AdministracionUsuariosController",
     "models/OperariosBodegaModel/Operario",
     "includes/alert/Alert",
@@ -73,6 +74,12 @@ define([
             text:"Administracion Roles",
             templateUrl: "views/AdministracionPerfiles/Roles/administrarRoles.html",
             controller: "AdministracionRolesController"
+        })
+        .state('ListarRoles', {
+            url: "/ListarRoles",
+            text:"Listar Roles",
+            templateUrl: "views/AdministracionPerfiles/Roles/listarRoles.html",
+            controller: "ListarRolesController"
         })
         .state('AdministracionUsuarios', {
             url: "/AdministracionUsuarios",

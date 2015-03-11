@@ -5,8 +5,6 @@ define(["angular", "js/controllers", "treemenu"], function(angular, controllers)
 
             $scope.$on("nodeSelected", function(e, data) {
 
-                
-
                 var parent = data.parent;
                 var url = data.url;
 
@@ -15,12 +13,11 @@ define(["angular", "js/controllers", "treemenu"], function(angular, controllers)
                     //se valida si es un padre
                     if (isNaN(parent)) {
                         url = "../" + url;
-                        console.log(url)
                         $scope.changelocation(url);
                     } else {
                         //si no posee la propiedad parentname se coloca por default el nombre del modulo actual
-                        var parentname = (data.parentname == undefined) ? $rootScope.name : data.parentname;
-                        if ($rootScope.name == parentname) {
+                        var parentname = (data.parentname === undefined) ? $rootScope.name : data.parentname;
+                        if ($rootScope.name === parentname) {
                             $state.go(data.url);
                         } else {
                             url = "../" + parentname + "/#/" + url;
@@ -47,23 +44,6 @@ define(["angular", "js/controllers", "treemenu"], function(angular, controllers)
             Request.realizarRequest("../pages/tree.json","GET",{},function(data) {
                 $scope.treedata = data;
             });
-
-
-            /*$scope.treedata = [
-                {"id": "1", "parent": "#", "text": "Administracion de Pedidos", "url": "pedidos"},
-                //{"id": "2", "parent": "1", "text": "Creacion De Pedidos", "url": "route1", "parentname":"pedidos"},
-                //{"id": "3", "parent": "2", "text": "Clientes", "url": "clientes", "parentname": "pedidos"},
-               // {"id": "4", "parent": "2", "text": "Farmacia", "url": "route1", "parentname": "pedidos"},
-                {"id": "5", "parent": "1", "text": "Asignacion Pedidos", "url": "AsignarPedidos", "parentname": "pedidos", "icon":"glyphicon glyphicon-file", "state":"AsignarPedidos"},
-                //{"id": "6", "parent": "1", "text": "Auditoria De Pedidos"},
-                {"id": "7", "parent": "#", "text": "Parametrizacion", "url":"parametrizacion"},
-                {"id": "8", "parent": "7", "text": "Parametrizacion de Usuarios", "url": "OperariosBodega", "parentname":"parametrizacion"},
-                //{"id": "9", "parent": "8", "text": "Usuarios del Sistema"},
-                //{"id": "10", "parent": "8", "text": "Usuarios Dpto Ventas"},
-                {"id": "11", "parent": "8", "text": "Operarios de Bodega", "url": "OperariosBodega", "parentname": "parametrizacion", "icon":"glyphicon glyphicon-file", "state":"OperariosBodega"},
-                {"id": "12", "parent": "#", "text": "Kardex", "url": "kardex", "state":"listarproductos"}
-
-            ]*/
 
 
             $scope.titulo = "Menu de navegacion";

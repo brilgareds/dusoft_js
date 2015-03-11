@@ -4,7 +4,7 @@ define(["angular", "js/controllers", "js/models",
     "models/Perfiles/Rol", "models/Perfiles/RolModulo"
 ], function(angular, controllers) {
 
-    controllers.controller('AdministracionRolesController', [
+    controllers.controller('ListarRolesController', [
         '$scope', '$rootScope', 'Request', '$modal', 'API',
         "socket", "$timeout", "AlertService", "Usuario", "EmpresaParametrizacion",
         "Empresa_Modulo", "Modulo", "Rol", "RolModulo",

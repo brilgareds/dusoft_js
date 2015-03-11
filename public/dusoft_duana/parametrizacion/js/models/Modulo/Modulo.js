@@ -103,7 +103,7 @@ define(["angular", "js/models"], function(angular, models) {
             };
 
             Modulo.prototype.setEstado = function(estado) {
-                this.estado = Boolean(estado);
+                this.estado = Boolean(Number(estado));
             };
 
             Modulo.prototype.setNodoPrincipal = function(nodo_principal) {

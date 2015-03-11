@@ -65,12 +65,12 @@ RolModel.prototype.modificarRol = function(rol, callback) {
 
 
     var sql = "UPDATE roles SET  nombre = $1, observacion = $2, usuario_id = $3, usuario_id_modifica = $4,\
-               estado = $5, fecha_modificacion = $6 WHERE id = $7  \
+               estado = $5, fecha_modificacion = $6, empresa_id =$7 WHERE id = $8  \
                ";
 
     var params = [
         rol.nombre, rol.observacion, rol.usuario_id, rol.usuario_id,
-        Number(rol.estado), 'now()', rol.id
+        Number(rol.estado), 'now()', rol.empresa_id, rol.id
     ];
 
     G.db.query(sql, params, function(err, rows, result) {

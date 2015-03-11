@@ -28,7 +28,8 @@
             },
             'PERFILES':{
                 'LISTAR_ROLES': BASE_URL+"/Roles/listarRoles",
-                'GUARDAR_ROL': BASE_URL+"/Roles/guardarRol"
+                'GUARDAR_ROL': BASE_URL+"/Roles/guardarRol",
+                'OBTENER_ROLES_POR_ID' : BASE_URL+"/Roles/obtenerRolesPorId"
             }
 	  }
 	};

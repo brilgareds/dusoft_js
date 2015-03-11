@@ -39,7 +39,12 @@ define(["angular", "js/models"], function(angular, models) {
             };
 
             Rol.prototype.setEstado = function(estado) {
-                this.estado = Boolean(estado);
+                
+                this.estado = Boolean(Number(estado));
+            };
+            
+            Rol.prototype.getEstado = function() {
+                return this.estado;
             };
 
             Rol.prototype.setEmpresaId = function(empresa_id) {
@@ -47,7 +52,7 @@ define(["angular", "js/models"], function(angular, models) {
             };
 
             Rol.prototype.getEmpresaId = function() {
-                return this.observacion;
+                return this.empresa_id;
             };
 
             Rol.prototype.setRolesModulos = function(rolesModulos) {

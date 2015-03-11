@@ -11,8 +11,9 @@ module.exports = function(app, di_container) {
         c_modulos.guardarModulo(req, res);
     });
     
-    app.post('/api/Modulos/obtenerRolesPorId', function(req, res) {
-        c_modulos.obtenerRolesPorId(req, res);
+    
+    app.post('/api/Modulos/obtenerModulosPorId', function(req, res) {
+        c_modulos.obtenerModulosPorId(req, res);
     });
     
     

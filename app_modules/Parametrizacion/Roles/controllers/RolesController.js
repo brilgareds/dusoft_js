@@ -47,17 +47,17 @@ Roles.prototype.obtenerRolesPorId = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.parametrizacion_perfiles.rol.id === undefined && args.parametrizacion_perfiles.rol.id.length === '') {
-        res.send(G.utils.r(req.url, 'El id del rol no esta definido', 403, {parametrizacion_perfiles: {}}));
+    if (args.parametrizacion_perfiles.roles === undefined && args.parametrizacion_perfiles.roles.length === 0) {
+        res.send(G.utils.r(req.url, 'Los roles a buscar no son validos', 403, {parametrizacion_perfiles: {}}));
         return;
     }
 
-    that.m_rol.obtenerRolesPorId(args.parametrizacion_perfiles.rol.id, function(err, rows) {
+    that.m_rol.obtenerRolesPorId(args.parametrizacion_perfiles.roles, function(err, rows) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error buscando el rol', 500, {parametrizacion_perfiles: {}}));
         } else {
-            res.send(G.utils.r(req.url, 'Modulo encontrado', 200, {parametrizacion_perfiles: {rols: rows}}));
+            res.send(G.utils.r(req.url, 'Modulo encontrado', 200, {parametrizacion_perfiles: {roles: rows}}));
         }
     });
 };

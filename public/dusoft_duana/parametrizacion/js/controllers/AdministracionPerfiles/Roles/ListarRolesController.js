@@ -141,7 +141,6 @@ define(["angular", "js/controllers", "js/models",
             };
 
             $scope.onEditarRol = function(rol) {
-                console.log(rol);
                 localStorageService.set("rol_id", rol.getId());
                 $state.go("AdministracionRoles");
             };
@@ -160,6 +159,11 @@ define(["angular", "js/controllers", "js/models",
             };
 
             self.traerEmpresas();
+            
+            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+                $scope.rootRoles = {};
+                $scope.$$watchers = null;
+            });
 
 
 

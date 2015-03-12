@@ -28,7 +28,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             $scope.cerrar = function(){
                 $scope.$emit('cerrarseleccionproducto', {animado:true});
-
+                
+                $scope.limpiarProductosEmpresa();
+                
                 $scope.rootSeleccionProductoCliente = {};
             };
             
@@ -45,6 +47,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 $scope.rootSeleccionProductoCliente.tipo_cliente = tipo_cliente;
                 $scope.rootSeleccionProductoCliente.cliente = cliente;
                 $scope.rootSeleccionProductoCliente.no_incluir_producto = false; //NUEVO
+                $scope.rootSeleccionProductoCliente.bloquear_eliminar = false; //NUEVO
                 
                 console.log(">>>>>>>>>> Información Cliente: ", cliente);
 
@@ -183,6 +186,12 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 producto.setIva(obj.porc_iva);
 
                 producto.setPrecioRegulado(obj.precio_regulado);
+                
+                producto.setPrecioVentaAnterior(obj.precio_venta_anterior);
+                
+                producto.setCostoUltimaCompra(parseFloat(obj.costo_ultima_compra));
+                
+                producto.setEstado(obj.estado);
 
                 return producto;
             };            
@@ -193,11 +202,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             that.renderGrid = function() {
             
-                $scope.lista_productos = {    
+                $scope.rootSeleccionProductoCliente.lista_productos = {    
                     data: 'rootSeleccionProductoCliente.Empresa.getProductos()',
                     enableColumnResize: true,
                     enableRowSelection: false,
-                    enableCellSelection: true,
+                    enableCellSelection: false,
                     //selectedItems: $scope.selectedRow,
                     multiSelect: false,
                     columnDefs: [
@@ -207,7 +216,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         {field: 'codigo_invima', displayName: 'Código Invima'},
                         {field: 'iva', displayName: 'Iva'},
                         {field: 'precio_regulado', displayName: 'Precio Regulado'},
-                        {field: 'precio', displayName: 'Precio Venta'},
+                        {field: 'precio', displayName: 'Precio Venta',
+                            cellTemplate: ' <div class="col-xs-12">\n\
+                                                <input type="text" ng-model="row.entity.precio" validacion-numero class="form-control grid-inline-input"'+
+                                                'ng-keyup=""/>\n\
+                                            </div>'},
                         {field: 'existencia', displayName: 'Existencia'},
                         {field: 'disponible', displayName: 'Disponible'},
                         //{field: 'cantidad_solicitada', displayName: 'Cantidad', enableCellEdit: true},
@@ -219,16 +232,20 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         },
                         {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "6%",
                             cellTemplate: ' <div class="row">\n\
-                                                <button class="btn btn-default btn-xs" ng-click="onIncluirProducto(row)" '+
+                                                <button ng-if="row.entity.estado==1" class="btn btn-default btn-xs" ng-click="onIncluirProducto(row)" '+
                                                 ' ng-disabled="row.entity.cantidad_solicitada<=0 || row.entity.cantidad_solicitada==null || !expreg.test(row.entity.cantidad_solicitada)">\n\
                                                     <span class="glyphicon glyphicon-plus-sign"> Incluir</span>\n\
+                                                </button>\n\
+                                                <button ng-if="row.entity.estado==0" ng-disabled=true class="btn btn-default btn-xs" ng-click="" '+
+                                                ' ng-disabled="row.entity.cantidad_solicitada<=0 || row.entity.cantidad_solicitada==null || !expreg.test(row.entity.cantidad_solicitada)">\n\
+                                                    <span class="glyphicon glyphicon-lock"> Bloqueado</span>\n\
                                                 </button>\n\
                                             </div>'
                         }
                     ]
                 };
 
-                $scope.lista_productos_seleccionados = {    
+                $scope.rootSeleccionProductoCliente.lista_productos_seleccionados = {    
                     data: 'rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().obtenerProductos()',
                     //data: 'rootSeleccionProductoCliente.listado_productos_seleccionados',
                     enableColumnResize: true,
@@ -247,12 +264,15 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         {field: 'total_con_iva', displayName: 'Total Con Iva'},
                         {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
                             cellTemplate: ' <div class="row">\n\
-                                                <button class="btn btn-danger btn-xs" ng-click="onRowClick2(row)">\n\
+                                                <button ng-if="rootSeleccionProductoCliente.bloquear_eliminar == false" class="btn btn-danger btn-xs" ng-click="onEliminarSeleccionado(row)">\n\
+                                                    <span class="glyphicon glyphicon-minus-sign">Eliminar</span>\n\
+                                                </button>\n\
+                                                <button ng-if="rootSeleccionProductoCliente.bloquear_eliminar == true" ng-disabled="true" class="btn btn-danger btn-xs" ng-click="">\n\
                                                     <span class="glyphicon glyphicon-minus-sign">Eliminar</span>\n\
                                                 </button>\n\
                                             </div>'
                         }
-                    ]
+                    ] //rootSeleccionProductoCliente.bloquear_eliminar
 
                 };
             };
@@ -281,13 +301,90 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 var vendedor = $scope.rootSeleccionProductoCliente.Empresa.getVendedorSeleccionado();
                     
                 $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().setVendedor(vendedor);
-                
-                $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().lista_productos.forEach(function(valor) {
+                    
+                $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().obtenerProductos().forEach(function(valor) {
+
                     if (valor.codigo_producto === row.entity.codigo_producto) {
+                        
                         $scope.rootSeleccionProductoCliente.no_incluir_producto = true;
+                        
+                        /*Ventana Modal - Inicio*/
+                        var template = ' <div class="modal-header">\
+                                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                                    <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                                </div>\
+                                                <div class="modal-body">\
+                                                    <h4>El producto con código '+row.entity.codigo_producto+' ya está incluido  en la <br> cotización.\n\
+                                                        Eliminelo y vuelva a incluirlo si quiere modificar <br> valores. </h4> \
+                                                </div>\
+                                                <div class="modal-footer">\
+                                                    <button class="btn btn-warning" ng-click="close()">Aceptar</button>\
+                                                </div>';
+
+                        controller = function($scope, $modalInstance) {
+
+                            $scope.close = function() {
+                                $modalInstance.close();
+                            };
+                        };
+
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: template,
+                            scope: $scope,
+                            controller: controller
+                        };
+
+                        var modalInstance = $modal.open($scope.opts);
+                        /*Ventana Modal - Fin*/
                         return;
                     }
+
                 });
+                
+                if(parseFloat(row.entity.precio) < row.entity.costo_ultima_compra) {
+                    
+                    $scope.rootSeleccionProductoCliente.no_incluir_producto = true;
+
+                    /*Ventana Modal validacion costo última compra - Inicio*/
+                    var template = ' <div class="modal-header">\
+                                                <button type="button" class="close" ng-click="close()">&times;</button>\
+                                                <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                            </div>\
+                                            <div class="modal-body">\
+                                                <h4>El precio está por debajo del valor de costo de la última compra. <br> \n\
+                                                    El producto de código '+row.entity.codigo_producto+' tuvo un último costo de <br>\n\
+                                                    $'+row.entity.costo_ultima_compra+'. </h4> \
+                                            </div>\
+                                            <div class="modal-footer">\
+                                                <button class="btn btn-warning" ng-click="close()">Aceptar</button>\
+                                            </div>';
+
+                    controller = function($scope, $modalInstance) {
+
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+                    };
+
+                    $scope.opts = {
+                        backdrop: true,
+                        backdropClick: true,
+                        dialogFade: false,
+                        keyboard: true,
+                        template: template,
+                        scope: $scope,
+                        controller: controller
+                    };
+
+                    var modalInstance = $modal.open($scope.opts);
+                    /*Ventana Modal validacion costo última compra - Fin*/
+                    return;
+                        
+                }
 
                 if ($scope.rootSeleccionProductoCliente.no_incluir_producto === false)
                 {
@@ -406,7 +503,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                     row.entity.codigo_producto,      //codigo_producto
                                     row.entity.descripcion,          //descripcion
                                     0,                               //existencia **hasta aquí heredado
-                                    row.entity.precio,      //precio
+                                    parseFloat(row.entity.precio),      //precio
                                     row.entity.cantidad_solicitada,  //cantidad_solicitada
                                     0,                               //cantidad_separada
                                     "",                              //observacion
@@ -421,17 +518,20 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                     
                 producto.setCodigoCum(row.entity.getCodigoCum());
                 producto.setCodigoInvima(row.entity.getCodigoInvima());
-                producto.setIva(row.entity.getIva());
+                producto.setIva(parseFloat(row.entity.getIva()));
                 producto.setPrecioRegulado(row.entity.getPrecioRegulado());
+                producto.setPrecioVentaAnterior(row.entity.getPrecioVentaAnterior());
+                producto.setCostoUltimaCompra(row.entity.getCostoUltimaCompra());
                 producto.setTotalSinIva();
                 producto.setTotalConIva();
+                producto.setEstado(row.entity.getEstado());
                 
-                console.log(">>>>>>>>>>>>>&&&&& Datos del Row:  ", row.entity);
-                console.log(">>>>>>>>>>>>>&&&&& Producto antes de agregar a pedido:  ", producto);
+                //console.log(">>>>>>>>>>>>>&&&&& Datos del Row:  ", row.entity);
+                //console.log(">>>>>>>>>>>>>&&&&& Producto antes de agregar a pedido:  ", producto);
 
                 $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().agregarProducto(producto);
                 
-                console.log("&&&&&&&&&&&&&&&&&& Listado Productos Seleccionados: ", $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().obtenerProductos());
+                //console.log("&&&&&&&&&&&&&&&&&& Listado Productos Seleccionados: ", $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().obtenerProductos());
 
                 //if ($scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.length === 25) {
                 if ($scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().lista_productos.length === 25) {
@@ -579,42 +679,97 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 });
                 /* Fin - Inserción del Detalle */             
-            };            
+            };
             
+            /* Eliminar producto seleccionado - Inicio */
+            $scope.onEliminarSeleccionado = function(row) {
+
+                //-$scope.rootSeleccionProductoCliente.no_incluir_producto = false;
+                
+                //--$scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().eliminarProducto(row.rowIndex);
+
+                //-$scope.rootSeleccionProductoCliente.listado_productos_seleccionados = $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().lista_productos;
+                //
+                //-$scope.$emit('cargarGridPrincipal', 1);
+
+                /* Inicio - Objeto para Eliminar Registro del Detalle */
+                
+                if ($scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().obtenerProductos().length === 1)
+                {
+                            
+                            $scope.rootSeleccionProductoCliente.bloquear_eliminar = true;
+                            //Mensaje: Solo queda un producto. La cotización debe tener al menos un producto. No puede eliminar éste.
+                            var template = ' <div class="modal-header">\
+                                                <button type="button" class="close" ng-click="close()">&times;</button>\
+                                                <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                            </div>\
+                                            <div class="modal-body">\
+                                                <h4>Solo queda un producto en la cotización y debe haber al menos uno. No puede eliminar más productos. </h4> \
+                                            </div>\
+                                            <div class="modal-footer">\
+                                                <button class="btn btn-warning" ng-click="close()">Aceptar</button>\
+                                            </div>';
+
+                            controller = function($scope, $modalInstance) {
+
+                                $scope.close = function() {
+                                    $modalInstance.close();
+                                };
+                            };
+
+                            $scope.opts = {
+                                backdrop: true,
+                                backdropClick: true,
+                                dialogFade: false,
+                                keyboard: true,
+                                template: template,
+                                scope: $scope,
+                                controller: controller
+                            };
+
+                            var modalInstance = $modal.open($scope.opts);                            
+                }
+                else {
+
+                    var obj_detalle = {
+                        session: $scope.rootSeleccionProductoCliente.session,
+                        data: {
+                            eliminar_detalle_cotizacion: {
+                                numero_cotizacion: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getNumeroCotizacion(),
+                                codigo_producto: row.entity.codigo_producto
+                            }
+                        }
+                    };
+                    /* Fin - Objeto para Eliminar Registro del Detalle */
+
+                    /* Inicio - Borrado de registro en Detalle Pedido */
+
+                    var url_eliminar_detalle_cotizacion = API.PEDIDOS.ELIMINAR_REGISTRO_DETALLE_COTIZACION;
+
+                    Request.realizarRequest(url_eliminar_detalle_cotizacion, "POST", obj_detalle, function(data) {
+
+                        if (data.status == 200) {
+                            console.log("Eliminación de detalle Exitosa: ", data.msj);
+
+                            $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().eliminarProducto(row.rowIndex);
+
+                            /* Para desarrollar aquí: Si la grid está vacia, eliminar el encabezado */
+
+                        }
+                        else
+                        {
+                            console.log("Eliminación Detalle Fallida: ", data.msj);
+                        }
+                    });
+                
+                }
+
+            };            
+            /* Eliminar producto seleccionado - Fin */
             
             /*F-NUEVO*/
             
-            $scope.onRowClick1 = function(row) {
-                
-                //console.log(row.entity);
-                if($scope.rootSeleccionProductoCliente.listado_productos[row.rowIndex].fila_activa !== false){
-                
-                    $scope.rootSeleccionProductoCliente.listado_productos[row.rowIndex].fila_activa = false; 
-                    $scope.rootSeleccionProductoCliente.listado_productos[row.rowIndex].tipo_boton = 'warning';
-                    $scope.rootSeleccionProductoCliente.listado_productos[row.rowIndex].etiqueta_boton = 'Listo';
-                    
-                    console.log("Row Listado Origen: ", row);
-
-                    var obj_sel = {
-                            codigo_producto: row.entity.codigo_producto,
-                            descripcion: row.entity.descripcion,
-                            cantidad_solicitada: row.entity.cantidad_solicitada,
-                            iva: row.entity.iva,
-                            precio_venta: row.entity.precio_venta,
-                            total_sin_iva: row.entity.cantidad_solicitada*row.entity.precio_venta, //cantidad*precio_venta
-                            total_con_iva: row.entity.cantidad_solicitada*row.entity.precio_venta + row.entity.cantidad_solicitada*row.entity.precio_venta*row.entity.iva/100, //cantidad*precio_venta + cantidad*precio_venta*iva
-                            sourceIndex: row.rowIndex
-                    };
-
-                    //$scope.listado_productos_seleccionados.push(obj_sel); // adiciona al final
-                    //$scope.listado_productos_seleccionados.unshift(obj_sel); // adiciona al comienzo
-                    $scope.rootSeleccionProductoCliente.listado_productos_seleccionados.unshift(row.entity);
-
-                    $scope.$emit('cargarGridPrincipal', $scope.rootSeleccionProductoCliente.listado_productos_seleccionados);
-                }
-            };
-            
-            $scope.onRowClick2 = function(row) {
+            /*$scope.onRowClick2 = function(row) {
                     
 //                $scope.listado_productos[row.entity.sourceIndex].fila_activa = true;
 //                $scope.listado_productos[row.entity.sourceIndex].tipo_boton = 'success';
@@ -628,8 +783,12 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 $scope.rootSeleccionProductoCliente.listado_productos_seleccionados.splice(row.rowIndex,1);
                 
-                $scope.$emit('cargarGridPrincipal', $scope.rootSeleccionProductoCliente.listado_productos_seleccionados);
+                //$scope.$emit('cargarGridPrincipal', $scope.rootSeleccionProductoCliente.listado_productos_seleccionados);
                 
+            };*/
+            
+            $scope.limpiarProductosEmpresa = function() {
+                $scope.rootSeleccionProductoCliente.Empresa.vaciarProductos();
             };
             
             //Método para liberar Memoria de todo lo construido en ésta clase
@@ -640,6 +799,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
 //                $scope.listado_productos_farmacias = [];
 //                $scope.listado_productos_clientes = [];
+
                 $scope.rootSeleccionProductoCliente = {};
 
             });

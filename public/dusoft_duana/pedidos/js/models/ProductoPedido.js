@@ -22,8 +22,11 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.codigo_invima = "";
             this.iva = 0;
             this.precio_regulado = 0;
+            this.precio_venta_anterior = 0;
+            this.costo_ultima_compra = 0;
             this.total_sin_iva = 0;
             this.total_con_iva = 0;
+            this.estado = 0;
             
             //propiedades pendientes
             this.existencia_lotes = "";
@@ -78,19 +81,43 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             return this.precio_regulado;
         };
         
+        ProductoPedido.prototype.setPrecioVentaAnterior = function(precio_venta_anterior) {
+            this.precio_venta_anterior = precio_venta_anterior;
+        };
+        
+        ProductoPedido.prototype.getPrecioVentaAnterior = function() {
+            return this.precio_venta_anterior;
+        };
+        
+        ProductoPedido.prototype.setCostoUltimaCompra = function(costo_ultima_compra) {
+            this.costo_ultima_compra = costo_ultima_compra;
+        };
+        
+        ProductoPedido.prototype.getCostoUltimaCompra = function() {
+            return this.costo_ultima_compra;
+        };
+        
         ProductoPedido.prototype.setTotalSinIva = function() {
             this.total_sin_iva = this.precio * this.cantidad_solicitada;
-        }
+        };
         ProductoPedido.prototype.getTotalSinIva = function() {
             return this.total_sin_iva;
         };
         
         ProductoPedido.prototype.setTotalConIva = function() {
             this.total_con_iva = (this.precio + ((this.precio*this.iva)/100)) * this.cantidad_solicitada;
-        }
+        };
         
         ProductoPedido.prototype.getTotalConIva = function() {
             return this.total_con_iva;
+        };
+        
+        ProductoPedido.prototype.setEstado = function(estado) {
+            this.estado = estado;
+        };
+        
+        ProductoPedido.prototype.getEstado = function() {
+            return this.estado;
         };
         
         ProductoPedido.prototype.agregarLote = function(lote) {

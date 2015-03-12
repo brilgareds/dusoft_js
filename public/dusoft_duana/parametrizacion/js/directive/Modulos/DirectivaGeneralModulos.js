@@ -7,8 +7,12 @@ define(["angular", "js/directive"], function(angular, directive) {
 
         //cuando la etiqueta esta cargada en el dom
         directive.link = function(scope, element, attrs, ngModel) {
+            
+           /* $(document).on("blur", ".validar_caracteres", function() {
+                    alert("")
+                });*/
 
-            element.find(".validar_caracteres").on("blur", function() {
+            element.on("blur", ".validar_caracteres", function() {
                 //no permite los caracteres especiales
                 $(this).val(
                         scope.firstToUpperCase($(this).val().replace(/[^a-z0-9 ]/gi, ''))
@@ -18,7 +22,7 @@ define(["angular", "js/directive"], function(angular, directive) {
                 $(this).trigger('input');
             });
 
-            element.find(".validar_espacios").on("blur", function() {
+            element.on("blur",".validar_espacios", function() {
 
                 $(this).val(scope.camelCase($(this).val()));
 

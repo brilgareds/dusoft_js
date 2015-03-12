@@ -3,10 +3,7 @@ define(["angular", "js/directive"], function(angular, directive) {
     directive.directive('arbolModulos', ["$state", "$rootScope", "$timeout", function($state, $rootScope, $timeout) {
 
             return {
-                //scope: { model: '=data' },
-                /*scope: {
-                 datosArbol: '='
-                 },*/
+
                 link: function(scope, element, attrs, ngModel) {
 
                     //evento que indica que el elemento se cargo en el dom
@@ -26,10 +23,7 @@ define(["angular", "js/directive"], function(angular, directive) {
                     //determina que los datos del arbol cambiaron, actualiza los nodos
                     scope.$on("datosArbolCambiados", function(e, datos) {
                         if (datos) {
-
-                            // $('#treeId').jstree(true).settings.core.data = newData;
-                            // $('#treeId').jstree(true).refresh();
-
+                            //valida si se debe refrescar el arbol o simplemente inicializarlo
                             if (element.jstree(true).settings) {
                                 element.jstree(true).settings.core.data = datos;
                                 element.jstree(true).refresh();
@@ -48,7 +42,7 @@ define(["angular", "js/directive"], function(angular, directive) {
                                 "themes": {"stripes": true}
 
                             },
-                            "state": {"key": attrs.estado || "" },
+                            "state": {"key": attrs.estado || undefined },
                             plugins: plugins
 
 
@@ -68,11 +62,6 @@ define(["angular", "js/directive"], function(angular, directive) {
                                 element.jstree("select_node", "#" + selected.node.id);
                                 return;
                             }
-
-                            //var seleccionados = $(this).jstree("get_selected", true);
-
-                            //console.log("parents .....", selected.node.parents);
-                            //console.log("childrens ....", selected.node.original);
                             
                             //se agrega el nodo seleccionado
                             scope.modulosSeleccionados.seleccionado = selected.node.original.modulo_id;

@@ -3,9 +3,11 @@ module.exports = function(app, di_container) {
     var c_clientes = di_container.get("c_clientes");
     
     app.post('/api/Terceros/Clientes/listarClientes', function(req, res) {
-        
          c_clientes.listarClientes(req, res);
-         
+    });
+    
+    app.post('/api/Terceros/Clientes/consultarContratoCliente', function(req, res) {
+         c_clientes.consultarContratoCliente(req, res);
     });
     
 };

@@ -42,6 +42,36 @@ Clientes.prototype.listarClientes = function(req, res) {
     
 };
 
+Clientes.prototype.consultarContratoCliente = function(req, res) {
+    var that = this;
+
+    var args = req.body.data;
+    
+    //tipo_id_tercero, tercero_id, empresa_id
+
+    if (args.contrato_cliente === undefined || args.contrato_cliente.tipo_id_cliente === undefined || args.contrato_cliente.cliente_id === undefined)
+    {
+        res.send(G.utils.r(req.url, 'tipo_id_tercero o tercero_id no están definidas.', 404, {}));
+        return;
+    }
+    
+    if (args.contrato_cliente.tipo_id_cliente === undefined || args.contrato_cliente.cliente_id === undefined) {
+        res.send(G.utils.r(req.url, 'tipo_id_tercero o tercero_id están vacios.', 404, {}));
+        return;
+    }
+
+    var tipo_id_cliente = args.contrato_cliente.tipo_id_cliente;
+    var cliente_id = args.contrato_cliente.cliente_id;
+    
+    this.m_clientes.consultar_contrato_cliente( tipo_id_cliente, cliente_id, function(err, contrato_cliente) {
+        if(err)
+            res.send(G.utils.r(req.url, 'Error Consultando Contrato Clientes', 500, {}));
+        else
+            res.send(G.utils.r(req.url, 'Consulta de Contrato Clientes Exitosa', 200, {resultado_consulta: contrato_cliente}));
+    });
+    
+};
+
 
 
 Clientes.$inject = ["m_clientes", "m_pedidos_clientes"];

@@ -9,6 +9,7 @@ define(["angular", "js/models"], function(angular, models) {
                 this.observacion = "";
                 this.alias = alias || "";
                 this.estado = false;
+                this.seleccionado = false;
                 
             }
             

@@ -75,14 +75,19 @@ define(["angular"], function(angular) {
                 'BUSCAR_USUARIO_BLOQUEO' :BASE_URL+'/PedidosFarmacias/buscarUsuarioBloqueo',
                 'CREAR_COTIZACION' :BASE_URL+'/PedidosClientes/insertarCotizacion',
                 'INSERTAR_DETALLE_COTIZACION' :BASE_URL+'/PedidosClientes/insertarDetalleCotizacion',
-                'LISTAR_COTIZACIONES' :BASE_URL+'/PedidosClientes/listarCotizaciones'
+                'LISTAR_COTIZACIONES' :BASE_URL+'/PedidosClientes/listarCotizaciones',
+                'CONSULTA_ESTADO_COTIZACION' :BASE_URL+'/PedidosClientes/estadoCotizacion',
+                'LISTAR_DETALLE_COTIZACION' :BASE_URL+'/PedidosClientes/listarDetalleCotizacion',
+                'ELIMINAR_REGISTRO_DETALLE_COTIZACION' :BASE_URL+'/PedidosClientes/eliminarRegistroDetalleCotizacion',
+                'CAMBIAR_ESTADO_COTIZACION' :BASE_URL+'/PedidosClientes/cambiarEstadoCotizacion'
 	    },
 	    'TERCEROS':{
 	    	'LISTAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/listar",
 	    	'CREAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/crear",
 	    	'MODIFICAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/modificar",
                 'LISTAR_CLIENTES':BASE_URL+"/Terceros/Clientes/listarClientes",
-                'LISTAR_VENDEDORES':BASE_URL+"/Terceros/Vendedores/listarVendedores"
+                'LISTAR_VENDEDORES':BASE_URL+"/Terceros/Vendedores/listarVendedores",
+                'CONSULTAR_CONTRATO_CLIENTE':BASE_URL+'/Terceros/Clientes/consultarContratoCliente'
 	    },
 	    'USUARIOS':{
 	    	'LISTAR_USUARIOS':BASE_URL+"/Usuarios/listar"

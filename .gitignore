@@ -7,4 +7,5 @@ public/reports/*
 data/
 logs/
 tmp/*
+files/*
 !.gitignore

@@ -9,6 +9,7 @@ define(["angular", "js/models", "includes/classes/Cliente"], function(angular, m
             this.identificacion;
             this.ubicacion;
             this.contrato_id;
+            this.tipo_bloqueo_id;
         }
 
         this.get = function(nombre, direccion, tipo_id, id, telefono) {
@@ -39,6 +40,14 @@ define(["angular", "js/models", "includes/classes/Cliente"], function(angular, m
         
         ClientePedido.prototype.getContratoId = function() {
             return this.contrato_id;
+        };
+        
+        ClientePedido.prototype.setTipoBloqueoId = function(tipo_bloqueo_id) {
+            this.tipo_bloqueo_id = tipo_bloqueo_id;
+        };
+        
+        ClientePedido.prototype.getTipoBloqueoId = function() {
+            return this.tipo_bloqueo_id;
         };
         
         return this;

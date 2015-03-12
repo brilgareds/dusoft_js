@@ -972,6 +972,24 @@ PedidosClienteModel.prototype.listar_detalle_cotizacion = function(numero_cotiza
 
 };
 
+PedidosClienteModel.prototype.eliminar_registro_detalle_cotizacion = function(numero_cotizacion, codigo_producto, callback)
+{
+    var sql = "DELETE FROM ventas_ordenes_pedidos_d_tmp WHERE pedido_cliente_id_tmp = $1 and codigo_producto = $2";
+
+    G.db.query(sql, [numero_cotizacion, codigo_producto], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+PedidosClienteModel.prototype.cambiar_estado_cotizacion = function(numero_cotizacion, nuevo_estado, callback)
+{
+    var sql = "UPDATE ventas_ordenes_pedidos_tmp SET estado = $2 WHERE pedido_cliente_id_tmp = $1";
+    
+    G.db.query(sql, [numero_cotizacion, nuevo_estado], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
 PedidosClienteModel.$inject = ["m_productos"];
 
 

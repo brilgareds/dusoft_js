@@ -42,13 +42,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.rootCreaPedidoFarmacia.bloqueo_bodega_de = true;
             $scope.rootCreaPedidoFarmacia.bloqueo_centro_utilidad_para = true;
             $scope.rootCreaPedidoFarmacia.bloqueo_bodega_para = true;
-            //$scope.rootCreaPedidoFarmacia.bloqueo_modificar_pedido = false;
 
             $scope.rootCreaPedidoFarmacia.grid_pedido_generado_visible = false;
 
             $scope.rootCreaPedidoFarmacia.tab_estados = {tab1: true, tab2: false};
-
-            //$scope.rootCreaPedidoFarmacia.listado_productos = [];
 
             $scope.rootCreaPedidoFarmacia.de_seleccion_empresa = 0;
             $scope.rootCreaPedidoFarmacia.de_seleccion_centro_utilidad = 0;

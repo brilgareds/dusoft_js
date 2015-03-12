@@ -49,32 +49,6 @@
                                         <option ng-repeat="vendedor in rootCreaCotizaciones.Empresa.getVendedores()"  ng-value="vendedor.id" >{{vendedor.nombre_tercero}}</option>
                                     </select>
 
-                                    <!--                                        <select ui-select2  class="pull-left anchoSeleccionEmpresa" ng-model="farmacia_seleccionada" data-placeholder="Seleccionar Farmacia" ng-change="seleccion_farmacia()"
-                                                                                    data-ng-options="farmacia as farmacia.get_nombre_farmacia() for farmacia in rootVerPedidosFarmacias.Empresa.getFarmacias()">
-                                                                            </select>-->
-
-                                    <!--                                    <select ui-select2  class="form-control selectgeneral pull-left" ng-model="rootCreaCotizaciones.seleccion_vendedor" data-placeholder="Seleccionar Farmacia" ng-change="valorSeleccionado()"
-                                                                                    data-ng-options="vendedor as vendedor.nombre_tercero for vendedor in rootCreaCotizaciones.Empresa.getVendedores()">
-                                                                            </select>-->
-
-                                    <!--select 
-                                        ui-select2="seleccionvendedor"
-                                        id="listaVendedores"
-                                        class="form-control selectgeneral pull-left"
-                                        ng-model="vendedor_seleccionado"
-                                        ng-change="valorSeleccionado(vendedor_seleccionado)"
-                                        data-placeholder="Seleccionar Vendedor"
-                                        data-ng-options="vendedor as vendedor.nombre_tercero for vendedor in rootCreaCotizaciones.Empresa.getVendedores()">
-                                        <option value=""></option>
-                                    </select-->
-
-<!--                                    <div class="col-md-7">  
-                                        <select ui-select2=""  class="form-control selectgeneral pull-left" placeholder="Seleccionar Vendedor" ng-change="valorSeleccionado()"
-                                                ng-options="vendedor as vendedor.id for vendedor in rootCreaCotizaciones.Empresa.getVendedores() track by vendedor.id" ng-model="vendedor_seleccionado">
-                                            option></option>    
-                                            <option ng-repeat="vendedor in  rootCreaCotizaciones.Empresa.getVendedores()"  value="{{vendedor.id}}">{{ vendedor.nombre_tercero }}</option
-                                        </select>
-                                    </div>-->
 
                                 </div> <!--/Contenedor Izquierdo-->
 
@@ -155,11 +129,46 @@
                                 <b> Cargar Archivo Plano </b>
                             </tab-heading>
 
-                            <div> <!-- flow-init ="ruta_upload"-->
+                            <div> 
 
                                 <br/>
 
-                                <div flow-prevent-drop flow-drag-enter="style={border: '5px solid green'}" flow-drag-leave="style={}" ng-style="dropEnabled && style">
+                                <div class="row col-md-8 col-md-offset-2" style="margin-top: 25px">    
+
+                                    <div flow-init="rootCreaCotizaciones.opciones_archivo"  flow-file-success="respuesta_archivo_plano($file, $message);" flow-file-added="!!{xlsx:1,xls:1}[$file.getExtension()]" flow-files-submitted="cargar_archivo_plano($flow)" class="ng-scope" flow-prevent-drop=""  flow-drag-enter="dropClass='drag-over'" flow-drag-leave="dropClass=''" >
+                                        <div class="drop txt-center" flow-drop="" flow-drop-enabled="!(vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '')" ng-class="dropClass" >
+
+                                            <div class="col-md-12">
+                                                <img  ng-hide="$flow.files.length" src="../../../images/Cloud-Upload-Blue.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
+                                                <img ng-show="$flow.files.length" src="../../../images/xls.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
+                                            </div>
+                                            <div ng-hide="$flow.files.length">
+                                                <b>OR</b> Arrastrar y Soltar el archivo AQUI!!..                                                    
+                                            </div>
+                                            <div class="" ng-repeat="file in $flow.files" ng-show="$flow.files.length">
+                                                Nombre Archivo : <label>{{file.name}}</label>                                                                                                                                                       
+                                            </div>
+                                        </div>
+
+                                        <br>
+
+                                        <div class="well txt-center">
+                                            <span class="btn btn-default" flow-btn="" ng-disabled="rootCreaCotizaciones.bloqueo_upload" ng-hide="$flow.files.length" >
+                                                <!--ng-disabled="vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '' "-->
+                                                <span class="glyphicon glyphicon-folder-open" style="margin-right: 5px;"></span> Seleccionar Archivo
+                                                <input type="file" style="visibility: hidden; position: absolute;">
+                                            </span>                                                
+                                            <button class="btn btn-default" ng-click="$flow.cancel()" ng-disabled="rootCreaCotizaciones.bloqueo_upload" ng-show="$flow.files.length">
+                                                <span class="glyphicon glyphicon-minus" ></span> Remover
+                                            </button>
+                                            <button class="btn btn-default" ng-click="subir_archivo_plano()" ng-disabled="rootCreaCotizaciones.bloqueo_upload" ng-show="$flow.files.length">
+                                                <!--ng-disabled="vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '' "-->
+                                                <span class="glyphicon glyphicon-cloud-upload" ></span> Subir
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+<!--                                <div flow-prevent-drop flow-drag-enter="style={border: '5px solid green'}" flow-drag-leave="style={}" ng-style="dropEnabled && style">
 
                                     <div class="span6">
 
@@ -180,7 +189,7 @@
                                         <button class="btn btn-danger" ng-show="$flow.files.length" ng-click="$flow.cancel()">Eliminar</button>
                                     </div>
 
-                                </div>
+                                </div>-->
 
                             </div>
 

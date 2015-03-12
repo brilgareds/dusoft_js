@@ -1,0 +1,21 @@
+{
+    "module": "Roles",
+    "dependency": {
+        "controllers": [{
+                "roles_controller": {
+                    "module": "Parametrizacion/Roles",
+                    "controller": "RolesController",
+                    "alias": "c_roles"
+                }
+            }],
+        "models": [{
+                "rol_model": {
+                    "module": "Parametrizacion/Roles",
+                    "model": "RolModel",
+                    "alias": "m_rol"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

@@ -103,7 +103,7 @@ define(["angular", "js/models"], function(angular, models) {
             };
 
             Modulo.prototype.setEstado = function(estado) {
-                this.estado = Boolean(estado);
+                this.estado = Boolean(Number(estado));
             };
 
             Modulo.prototype.setNodoPrincipal = function(nodo_principal) {
@@ -135,21 +135,6 @@ define(["angular", "js/models"], function(angular, models) {
 
                 this.empresasModulos.push(empresa_modulo);
             };
-
-           /* Modulo.prototype.removerEmpresa = function(empresa_modulo) {
-
-                for (var i in this.empresasModulos) {
-                    var empresa = this.empresasModulos[i];
-
-                    if (empresa_modulo.getEmpresa().getCodigo() === empresa.getEmpresa().getCodigo()
-                        && empresa_modulo.getModulo().getId() === empresa.getModulo().getId()) {
-                        //this.empresasModulos.splice(i, 1);
-                        empresa.setEstado(false);
-                        break;
-                    }
-                }
-
-            };*/
 
             Modulo.prototype.getListaEmpresas = function() {
                 return this.empresasModulos;

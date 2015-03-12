@@ -3,13 +3,15 @@
         "id": "1",
         "parent": "#",
         "text": "Administracion de Pedidos",
-        "url": "pedidos"
+        "url": "pedidos",
+        "visible" :true
     },
     {
         "id": "13",
         "parent": "1",
         "text": "Generar Pedidos",
-        "url": "PedidosClientes"
+        "url": "PedidosClientes",
+        "visible" :true
     },
     {
         "id": "5",
@@ -18,7 +20,8 @@
         "url": "AsignarPedidos",
         "parentname": "pedidos",
         "icon": "glyphicon glyphicon-file",
-        "state": "AsignarPedidos"
+        "state": "AsignarPedidos",
+        "visible" :true
     },
     {
         "id": "6",
@@ -27,20 +30,23 @@
         "url": "AuditarPedidos",
         "parentname": "pedidos",
         "icon": "glyphicon glyphicon-file",
-        "state": "AuditarPedidos"
+        "state": "AuditarPedidos",
+        "visible" :true
     },
     {
         "id": "7",
         "parent": "#",
         "text": "Parametrizacion",
-        "url": "parametrizacion"
+        "url": "parametrizacion",
+        "visible" :true
     },
     {
         "id": "8",
         "parent": "7",
         "text": "Parametrizacion de Usuarios",
         "url": "OperariosBodega",
-        "parentname": "parametrizacion"
+        "parentname": "parametrizacion",
+        "visible" :true
     },
     {
         "id": "11",
@@ -49,14 +55,16 @@
         "url": "OperariosBodega",
         "parentname": "parametrizacion",
         "icon": "glyphicon glyphicon-file",
-        "state": "OperariosBodega"
+        "state": "OperariosBodega",
+        "visible" :true
     },
     {
         "id": "12",
         "parent": "#",
         "text": "Kardex",
         "url": "kardex",
-        "state": "listarproductos"
+        "state": "listarproductos",
+        "visible" :true
     },
     {
         "id": "14",
@@ -65,7 +73,8 @@
         "url": "PedidosClientes",
         "icon": "glyphicon glyphicon-list-alt",
         "parentname": "pedidos",
-        "state": "PedidosClientes"
+        "state": "PedidosClientes",
+        "visible" :true
     },
     {
         "id": "15",
@@ -74,13 +83,15 @@
         "url": "VerPedidosFarmacias",
         "icon": "glyphicon glyphicon-list-alt",
         "parentname": "pedidos",
-        "state": "VerPedidosFarmacias"
+        "state": "VerPedidosFarmacias",
+        "visible" :true
     },
     {
         "id": "16",
         "parent": "#",
         "text": "Compras",
-        "url": "ordenescompra"
+        "url": "ordenescompra",
+        "visible" :true
     },
     {
         "id": "17",
@@ -89,21 +100,24 @@
         "url": "ListarOrdenes",
         "icon": "glyphicon glyphicon-list-alt",
         "parentname": "ordenescompra",
-        "state": "ListarOrdenes"
+        "state": "ListarOrdenes",
+        "visible" :true
     },
     {
         "id": "18",
         "parent": "7",
         "text": "Administracion Modulos",
         "url": "AdministracionModulos",
-        "parentname": "parametrizacion"
+        "parentname": "parametrizacion",
+        "visible" :true
     },
     {
         "id": "19",
         "parent": "7",
         "text": "Administracion Perfiles",
         "url": "AdministracionRoles",
-        "parentname": "parametrizacion"
+        "parentname": "parametrizacion",
+        "visible" :true
     },
     {
         "id": "20",
@@ -112,7 +126,8 @@
         "url": "AdministracionModulos",
         "parentname": "parametrizacion",
         "icon": "glyphicon glyphicon-file",
-        "state": "AdministracionModulos"
+        "state": "AdministracionModulos",
+        "visible" :true
     },
     {
         "id": "21",
@@ -121,17 +136,10 @@
         "url": "ModulosEmpresas",
         "parentname": "parametrizacion",
         "icon": "glyphicon glyphicon-file",
-        "state": "ModulosEmpresas"
+        "state": "ModulosEmpresas",
+        "visible" :true
     },
-    {
-        "id": "22",
-        "parent": "19",
-        "text": "Roles",
-        "url": "AdministracionRoles",
-        "parentname": "parametrizacion",
-        "icon": "glyphicon glyphicon-file",
-        "state": "AdministracionRoles"
-    },
+
     {
         "id": "23",
         "parent": "19",
@@ -139,7 +147,18 @@
         "url": "AdministracionUsuarios",
         "parentname": "parametrizacion",
         "icon": "glyphicon glyphicon-file",
-        "state": "AdministracionUsuarios"
+        "state": "AdministracionUsuarios",
+        "visible" :true
+    },
+    {
+        "id": "24",
+        "parent": "19",
+        "text": "Roles",
+        "url": "ListarRoles",
+        "parentname": "parametrizacion",
+        "icon": "glyphicon glyphicon-file",
+        "state": "ListarRoles",
+        "visible" :true
     }
     
 ]

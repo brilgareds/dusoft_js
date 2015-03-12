@@ -42,7 +42,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/heade
                 };
 
                 Request.realizarRequest('/api/unLockScreen', "POST", {session: session, data: {login:{contrasenia:$scope.obj.clave}}}, function(data) {
-                    if(data.status == 200){
+                    if(data.status === 200){
                         $scope.msgerror = "";
                         $scope.mostrarmensaje = false;
                         $scope.mostarLock = false;
@@ -62,11 +62,8 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/heade
                     auth_token: Usuario.token
                 };
 
-
-
-
                 Request.realizarRequest('/api/lockScreen', "POST", {session: session, data: {}}, function(data) {
-                    if(data.status == 200){
+                    if(data.status === 200){
                         $scope.mostarLock = true;
                         $scope.obj = {};
                     }

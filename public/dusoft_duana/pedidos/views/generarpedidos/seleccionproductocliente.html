@@ -24,7 +24,7 @@
                     
                 </div>
                 <div class="panel-body" ng-if="rootSeleccionProductoCliente.Empresa.getProductos().length > 0">
-                    <div class="auditadosGrid" ng-grid="lista_productos"></div>
+                    <div class="auditadosGrid" ng-grid="rootSeleccionProductoCliente.lista_productos"></div>
                 </div>
                 
                 <div class="row text-center">
@@ -48,7 +48,7 @@
             
             <!--<div class="row-fluid" ng-if="rootSeleccionProductoCliente.listado_productos_seleccionados.length > 0">-->                
             <div class="row-fluid" table-responsive ng-if="rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().obtenerProductos().length > 0">
-                <div class="mediaPantallaGrid grid-responsive" ng-grid="lista_productos_seleccionados"></div>
+                <div class="mediaPantallaGrid grid-responsive" ng-grid="rootSeleccionProductoCliente.lista_productos_seleccionados"></div>
             </div>
         </div>
     </div>

@@ -56,5 +56,15 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/listarDetalleCotizacion', function(req, res) {
         c_pedidos_clientes.listarDetalleCotizacion(req, res);
     });
+    
+    //Eliminar Registro Detalle Cotizacion
+    app.post('/api/PedidosClientes/eliminarRegistroDetalleCotizacion', function(req, res) {
+        c_pedidos_clientes.eliminarRegistroDetalleCotizacion(req, res);
+    });
+    
+    //Cambiar Estado Cotización
+    app.post('/api/PedidosClientes/cambiarEstadoCotizacion', function(req, res) {
+        c_pedidos_clientes.cambiarEstadoCotizacion(req, res);
+    });    
 
 };

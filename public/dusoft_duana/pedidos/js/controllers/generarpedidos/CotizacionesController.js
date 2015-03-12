@@ -198,9 +198,12 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li><a href="javascript:void(0);" ng-click="onEditarCotizacion(row.entity)">Modificar</a></li>\
+                                                <li><a href="javascript:void(0);" ng-click="onVerCotizacion(row.entity)" >Ver</a></li>\
                                                 <li></li>\
-                                                <!--<li><a href="javascript:void(0);" ng-click="onVerCotizacion(row.entity)" >Ver</a></li>-->\
+                                                <li ng-if="row.entity.estado == 1"><a href="javascript:void(0);" ng-click="onEditarCotizacion(row.entity)">Modificar</a></li>\
+                                                <li ng-if="row.entity.estado == 1"></li>\
+                                                <li ng-if="row.entity.estado == 1"><a href="javascript:void(0);" ng-click="onCambiarEstado(row.entity)">Inactivar</a></li>\
+                                                <li ng-if="row.entity.estado == 1"></li>\
                                             </ul>\n\
                                         </div>'
                     }
@@ -210,6 +213,80 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
             
             /*NUEVO*/
+            
+            $scope.onCambiarEstado = function(obj){
+                if(obj.estado === '1') {
+                    
+                    //obj.estado = '0';
+                    that.cambiarEstadoCotizacion(obj.numero_cotizacion, '0', function(cambio_exitoso){
+                        if(cambio_exitoso)
+                            obj.estado = '0';
+                        else {
+                            $scope.opts = {
+                                backdrop: true,
+                                backdropClick: true,
+                                dialogFade: false,
+                                keyboard: true,
+                                template: ' <div class="modal-header">\
+                                                <button type="button" class="close" ng-click="close()">&times;</button>\
+                                                <h4 class="modal-title">Aviso: </h4>\
+                                            </div>\
+                                            <div class="modal-body row">\
+                                                <div class="col-md-12">\
+                                                    <h4 >No se pudo modificar el estado. No se puede registrar la modificación en la Base de Datos.</h4>\
+                                                </div>\
+                                            </div>\
+                                            <div class="modal-footer">\
+                                                <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                            </div>',
+                                scope: $scope,
+                                controller: function($scope, $modalInstance) {
+                                    $scope.close = function() {
+                                        $modalInstance.close();
+                                    };
+                                }
+                            };
+
+                            var modalInstance = $modal.open($scope.opts);
+                        }
+                    });
+                }
+            };
+            
+            that.cambiarEstadoCotizacion = function(numero_cotizacion, nuevo_estado, callback){
+                
+                var obj = {
+                    session: $scope.rootCotizaciones.session,
+                    data: {
+                        estado_cotizacion: {
+                            numero_cotizacion: numero_cotizacion,
+                            nuevo_estado: nuevo_estado
+                        }
+                    }
+                };
+                
+                var url = API.PEDIDOS.CAMBIAR_ESTADO_COTIZACION;
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        console.log("Consulta exitosa: ", data.msj);
+
+                        if (callback !== undefined && callback !== "" && callback !== 0) {
+                            callback(true);
+                        }
+                    }
+                    else {
+                        console.log("Error en la consulta: ", data.msj);
+                        if (callback !== undefined && callback !== "" && callback !== 0) {
+                            callback(false);
+                        }
+                    }
+                });
+                
+                
+            };
+            
             $scope.agregarClase = function(estado) {
 
                 return that.estados[estado];

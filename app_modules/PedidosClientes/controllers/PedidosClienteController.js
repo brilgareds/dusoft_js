@@ -776,6 +776,75 @@ PedidosCliente.prototype.listarDetalleCotizacion = function(req, res) {
  
 };
 
+//eliminar_registro_detalle_cotizacion
+
+PedidosCliente.prototype.eliminarRegistroDetalleCotizacion = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.eliminar_detalle_cotizacion === undefined || args.eliminar_detalle_cotizacion.numero_cotizacion === undefined || args.eliminar_detalle_cotizacion.codigo_producto === undefined) {
+        res.send(G.utils.r(req.url, 'numero_cotizacion o codigo_producto no están definidos', 404, {}));
+        return;
+    }
+    
+    if (args.eliminar_detalle_cotizacion.numero_cotizacion === '' || args.eliminar_detalle_cotizacion.codigo_producto === '') {
+        res.send(G.utils.r(req.url, 'numero_cotizacion o codigo_producto están vacios', 404, {}));
+        return;
+    }
+
+    //Parámetro a insertar
+    var numero_cotizacion = args.eliminar_detalle_cotizacion.numero_cotizacion;
+    var codigo_producto = args.eliminar_detalle_cotizacion.codigo_producto;
+
+    that.m_pedidos_clientes.eliminar_registro_detalle_cotizacion(numero_cotizacion, codigo_producto, function(err, rows) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error en Eliminación Registro Detalle Cotización', 500, {}));
+            return;
+        }
+
+        res.send(G.utils.r(req.url, 'Eliminación Registro Detalle Cotización Exitoso', 200, {}));
+
+    });
+ 
+};
+
+//cotizacionEsPedido
+PedidosCliente.prototype.cambiarEstadoCotizacion = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.estado_cotizacion === undefined || args.estado_cotizacion.numero_cotizacion === undefined || args.estado_cotizacion.nuevo_estado === undefined) {
+        res.send(G.utils.r(req.url, 'numero_cotizacion o nuevo_estado no están definidos', 404, {}));
+        return;
+    }
+    
+    if (args.estado_cotizacion.numero_cotizacion === '' || args.estado_cotizacion.nuevo_estado === '') {
+        res.send(G.utils.r(req.url, 'numero_cotizacion o nuevo_estado están vacios', 404, {}));
+        return;
+    }
+
+    //Parámetro a insertar
+    var numero_cotizacion = args.estado_cotizacion.numero_cotizacion;
+    var nuevo_estado = args.estado_cotizacion.nuevo_estado;
+
+    that.m_pedidos_clientes.cambiar_estado_cotizacion(numero_cotizacion, nuevo_estado, function(err, rows) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error al modificar el estado', 500, {}));
+            return;
+        }
+
+        res.send(G.utils.r(req.url, 'Modificación de estado Exitosa', 200, {}));
+
+    });
+ 
+};
+
 PedidosCliente.$inject = ["m_pedidos_clientes", "e_pedidos_clientes", "m_productos", "m_pedidos"];
 
 module.exports = PedidosCliente;

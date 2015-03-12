@@ -77,7 +77,9 @@ define(["angular"], function(angular) {
                 'INSERTAR_DETALLE_COTIZACION' :BASE_URL+'/PedidosClientes/insertarDetalleCotizacion',
                 'LISTAR_COTIZACIONES' :BASE_URL+'/PedidosClientes/listarCotizaciones',
                 'CONSULTA_ESTADO_COTIZACION' :BASE_URL+'/PedidosClientes/estadoCotizacion',
-                'LISTAR_DETALLE_COTIZACION' :BASE_URL+'/PedidosClientes/listarDetalleCotizacion'
+                'LISTAR_DETALLE_COTIZACION' :BASE_URL+'/PedidosClientes/listarDetalleCotizacion',
+                'ELIMINAR_REGISTRO_DETALLE_COTIZACION' :BASE_URL+'/PedidosClientes/eliminarRegistroDetalleCotizacion',
+                'CAMBIAR_ESTADO_COTIZACION' :BASE_URL+'/PedidosClientes/cambiarEstadoCotizacion'
 	    },
 	    'TERCEROS':{
 	    	'LISTAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/listar",

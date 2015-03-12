@@ -37,14 +37,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     usuario_id: Usuario.usuario_id,
                     auth_token: Usuario.token
                 };
-            
-            //$scope.tab_activo = true;
 
-            //$scope.numero_pedido = "";
-            //$scope.obj = {};
             $scope.rootCreaCotizaciones.listado_productos = [];
-
-            //$scope.ruta_upload = {target: '/subida'}; //ruta del servidor para subir el archivo
 
             $scope.rootCreaCotizaciones.seleccion_vendedor = 0;
             $scope.rootCreaCotizaciones.nombre_seleccion_vendedor = "";
@@ -60,14 +54,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 telefono: '',
                 ubicacion: ''
             };
-
-            /*$scope.rootCreaCotizaciones.lista_vendedores = [{id: 1, nombre: 'Oscar Huerta'},
-                {id: 2, nombre: 'Bruce Wayn'},
-                {id: 3, nombre: 'John Malcovich'},
-                {id: 4, nombre: 'Patricia Salgado'},
-                {id: 5, nombre: 'Sofia Vergara'},
-                {id: 6, nombre: 'Salma Hayec'}
-            ];*/
+            
+            /* Nuevas variables y objetos para almacenamiento y validación - Inicio */
+            
+                $scope.rootCreaCotizaciones.tab_estados = {tab1: true, tab2: false};
+            
+                /**/$scope.rootCreaCotizaciones.titulo_tab_1 = "Incluir Producto Manual";
+                /**/$scope.rootCreaCotizaciones.titulo_tab_2 = "Cargar Archivo Plano";
+            
+            /* Nuevas variables y objetos para almacenamiento y validación - Fin */
             
             that.cargarListadoVendedores = function(){
                 
@@ -134,11 +129,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 pedido.setDatos(datos_pedido);
                 pedido.setTipo(PedidoVenta.TIPO_CLIENTE);
-                //pedido.setObservacion("");
-//                pedido.setTipoIdVendedor("");
-//                pedido.setVendedorId("");
-                
-               //$scope.rootCreaCotizaciones.Empresa.setPedidoSeleccionado(pedido);
                
                 return pedido;
                 
@@ -149,15 +139,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                  $scope.rootCreaCotizaciones.Empresa.setPedidoSeleccionado(pedido);
                 
             };
-            
-           /* that.buscarPedido = function(termino, paginando) {
-
-                //valida si cambio el termino de busqueda
-                if ($scope.rootCreaCotizaciones.ultima_busqueda !== $scope.rootCreaCotizaciones.termino_busqueda) {
-                    $scope.rootCreaCotizaciones.paginaactual = 1;
-                }
-
-            };*/
             
             //Trae el cliente con el evento "cargarClienteSlide" y lo asigna como objeto cliente para el objeto pedido
             $scope.$on('cargarClienteSlide', function(event, data) {
@@ -298,6 +279,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             that.renderDetalleCotizacion = function(detalle){
                 
+                $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().vaciarProductos();
+                
                 detalle.forEach(function(producto){
                     
                     var obj = that.crearObjetoDetalle(producto);
@@ -314,10 +297,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 var objeto_producto = ProductoPedido.get(
                         producto.codigo_producto,//codigo,
                         producto.nombre_producto,//nombre,
-                        '',//existencia,
+                        0,//existencia,
                         producto.valor_unitario,//precio,
                         producto.numero_unidades,//cantidad_solicitada,
-                        '',//cantidad_ingresada,
+                        0,//cantidad_ingresada,
                         '',//observacion_cambio,
                         '',//disponible,
                         '',//molecula,
@@ -363,7 +346,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.abrirViewPedidosClientes = function()
             {
                 $state.go('PedidosClientes');
-            }
+            };
 
             $scope.onRowClickSelectCliente = function() {
                 $scope.slideurl = "views/generarpedidos/seleccioncliente.html?time=" + new Date().getTime();
@@ -438,27 +421,148 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             };
 
-            $scope.$on('flow::fileAdded', function(event, $flow, flowFile) {
+            /*$scope.$on('flow::fileAdded', function(event, $flow, flowFile) {
 
                 var arreglo_nombre = flowFile.name.split(".");
 
                 if (arreglo_nombre[1] !== 'txt' && arreglo_nombre[1] !== 'csv') {
                     alert("El archivo debe ser TXT o CSV. Intente de nuevo ...");
                 }
-            });
+            });*/
 
             //Método para liberar Memoria de todo lo construido en ésta clase
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 
-                //alert("En éste momento debo limpiar algo");
-
                 $scope.rootCreaCotizaciones = {};
-                
-                //$scope.rootCreaCotizaciones.listado_productos = [];
-                //$scope.rootCreaCotizaciones.lista_vendedores = [];
 
             });
+            
+            /* Subir Planos - Inicio */
+            
+            $scope.rootCreaCotizaciones.opciones_archivo = new Flow();
+            $scope.rootCreaCotizaciones.opciones_archivo.target = API.PEDIDOS.ARCHIVO_PLANO_PEDIDO_FARMACIA;
+            $scope.rootCreaCotizaciones.opciones_archivo.testChunks = false;
+            $scope.rootCreaCotizaciones.opciones_archivo.singleFile = true;
+            $scope.rootCreaCotizaciones.opciones_archivo.query = {
+                session: JSON.stringify($scope.rootCreaCotizaciones.session)
+            };
+            
+            $scope.cargar_archivo_plano = function($flow) {
 
+                $scope.rootCreaCotizaciones.opciones_archivo = $flow;
+            };
+
+            $scope.subir_archivo_plano = function() {
+                    
+                    that.insertarEncabezadoPedidoTemporal(function(insert_encabezado_exitoso) {
+
+                        if (insert_encabezado_exitoso) {
+
+                            $scope.rootCreaCotizaciones.opciones_archivo.opts.query.data = JSON.stringify({
+                                
+                                pedido_farmacia: {
+                                    empresa_id: $scope.rootCreaCotizaciones.de_seleccion_empresa,
+                                    centro_utilidad_id: $scope.rootCreaCotizaciones.de_seleccion_centro_utilidad,
+                                    bodega_id: $scope.rootCreaCotizaciones.de_seleccion_bodega,
+                                    empresa_para: $scope.rootCreaCotizaciones.para_seleccion_empresa.split(",")[0],
+                                    centro_utilidad_para: $scope.rootCreaCotizaciones.para_seleccion_centro_utilidad.split(",")[0],                                    
+                                    bodega_para: $scope.rootCreaCotizaciones.para_seleccion_bodega.split(",")[0]
+                                }
+
+                            });
+
+                            $scope.rootCreaCotizaciones.opciones_archivo.upload();
+                        }
+                    });
+            };
+
+            $scope.respuesta_archivo_plano = function(file, message) {
+                
+                /*var para_seleccion_empresa = [];
+                var para_seleccion_centro_utilidad = [];
+                var para_seleccion_bodega = [];*/
+
+                var data = (message !== undefined) ? JSON.parse(message) : {};
+
+
+                if (data.status === 200) {
+
+                    /*$scope.rootCreaCotizaciones.opciones_archivo.cancel();
+                    
+                    if ($scope.rootCreaPedidoFarmacia.para_seleccion_empresa)
+                    {
+                        para_seleccion_empresa = $scope.rootCreaPedidoFarmacia.para_seleccion_empresa.split(',');
+                    }
+
+                    if ($scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad)
+                    {
+                        para_seleccion_centro_utilidad = $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad.split(',');
+                    }
+
+                    if ($scope.rootCreaPedidoFarmacia.para_seleccion_bodega)
+                    {
+                        para_seleccion_bodega = $scope.rootCreaPedidoFarmacia.para_seleccion_bodega.split(',');
+                    }*/
+                    
+                    
+                    that.ventana_modal_no_validos(data, function(){
+                        $scope.setTabActivo(1, function(){
+                        
+                            //Trae detalle de productos cargados del archivo
+                            /*that.consultarDetallePedidoTemporal(para_seleccion_empresa, para_seleccion_centro_utilidad, para_seleccion_bodega);*/
+                        });
+                    });
+                    
+
+                } else {
+                    AlertService.mostrarMensaje("warning", data.msj);
+                }
+            };
+            
+            that.ventana_modal_no_validos = function(data, callback){
+                
+                $scope.productos_validos = data.obj.pedido_farmacia_detalle.productos_validos;
+                $scope.productos_invalidos = data.obj.pedido_farmacia_detalle.productos_invalidos;
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Listado Productos </h4>\
+                                </div>\
+                                <div class="modal-body row">\
+                                    <div class="col-md-12">\
+                                        <h4 >Lista Productos INVALIDOS.</h4>\
+                                        <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
+                                            <div class="list-group">\
+                                                <a ng-repeat="producto in productos_invalidos" class="list-group-item defaultcursor" href="javascript:void(0)">\
+                                                    {{ producto.codigo_producto}}\
+                                                </a>\
+                                            </div>\
+                                        </div>\
+                                    </div>\
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                </div>',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+                    }
+                };
+                
+                var modalInstance = $modal.open($scope.opts);  
+                
+                callback();
+            };            
+            
+            /* Subir Planos - Fin */
+            
             //that.crearPedidoVacio();
             that.cargarListadoVendedores();
             

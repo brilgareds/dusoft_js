@@ -54,7 +54,7 @@
     </div>
 
     <div class="col-md-5" ng-if='rootRoles.rolAGuardar.id > 0'>
-        <div arbol-modulos plugins='checkbox' tipo='multiple' estado='modulos_empresas'></div>
+        <div arbol-modulos plugins='checkbox,grid' tipo='multiple' estado='modulos_empresas'></div>
     </div>
 
     <div class="col-md-4" ng-if='rootRoles.rolAGuardar.id > 0' ng-controller='OpcionesModulosController' ng-init='init({eliminar:false, detalle:false, seleccionar:true})'>

@@ -198,6 +198,10 @@ define(["angular", "js/controllers", "js/models",
                                     );
 
                             modulo.setIcon(datos[i].icon);
+                            
+                            modulo.state = {
+                                selected    :true
+                            };
                             modulos.push(modulo);
 
                             //necesario para guardar en roles_modulos

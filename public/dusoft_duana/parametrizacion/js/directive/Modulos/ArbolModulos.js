@@ -14,8 +14,9 @@ define(["angular", "js/directive"], function(angular, directive) {
                         hijos: []
                     };
 
-                    var plugins = ["state"];
-
+                   // var plugins = ["state"];
+                   var plugins = [];
+                   
                     if (attrs.plugins) {
                         plugins = plugins.concat(attrs.plugins.split(","));
                     }
@@ -42,7 +43,7 @@ define(["angular", "js/directive"], function(angular, directive) {
                                 "themes": {"stripes": true}
 
                             },
-                            "state": {"key": attrs.estado || undefined },
+                            "state": {"key": attrs.estado || "" },
                             plugins: plugins
 
 

@@ -121,7 +121,7 @@ ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro
                     a.costo,\n\
                     CASE WHEN a.costo > 0 THEN ROUND (((a.precio_venta/a.costo) - 1) * 100) ELSE NULL END as porcentaje_utilidad,\n\
                     a.costo_penultima_compra,\n\
-                    (a.costo_ultima_compra)/((COALESCE(b.porc_iva,0)/100)+1) as costo_ultima_compra,\n\
+                    round((a.costo_ultima_compra)/((COALESCE(b.porc_iva,0)/100)+1),2) as costo_ultima_compra,\n\
                     a.precio_venta_anterior,\n\
                     a.precio_venta,\n\
                     a.precio_minimo,\n\

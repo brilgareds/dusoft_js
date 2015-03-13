@@ -241,6 +241,8 @@ define([
                 Request.realizarRequest(API.MODULOS.GUARDAR_OPCION, "POST", obj, function(data) {
                     if (data.status === 200) {
                         console.log("opcion guardada con exito ", data);
+                        console.log("modulo a guardar ",$scope.rootModulos.moduloAGuardar);
+                        console.log("opcion a guardar ",$scope.rootModulos.moduloAGuardar.getOpcionAGuardar());
                         var id = data.obj.parametrizacion_modulo.opcion.id;
                         if (id) {
                             $scope.rootModulos.moduloAGuardar.getOpcionAGuardar().setId(id);
@@ -260,6 +262,8 @@ define([
                 });
 
             };
+            
+            self.inicializarOpcionACrear();
 
         }]);
 });

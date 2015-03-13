@@ -3,7 +3,6 @@ define(["angular", "js/directive"], function(angular, directive) {
     directive.directive('arbolModulos', ["$state", "$rootScope", "$timeout", function($state, $rootScope, $timeout) {
 
             return {
-
                 link: function(scope, element, attrs, ngModel) {
 
                     //evento que indica que el elemento se cargo en el dom
@@ -14,9 +13,9 @@ define(["angular", "js/directive"], function(angular, directive) {
                         hijos: []
                     };
 
-                   // var plugins = ["state"];
-                   var plugins = [];
-                   
+                    // var plugins = ["state"];
+                    var plugins = [];
+
                     if (attrs.plugins) {
                         plugins = plugins.concat(attrs.plugins.split(","));
                     }
@@ -34,6 +33,72 @@ define(["angular", "js/directive"], function(angular, directive) {
                         }
                     });
 
+                    scope.onSeleccionarNodo = function(nodo) {
+                        //evita que se seleccione otro nodo diferente al actual
+                        if (scope.modulosSeleccionados.seleccionado && !attrs.multiplesNodos) {
+
+                            //deselecciona todos los nodos para evitar multiples nodos
+                            element.jstree("deselect_all");
+                            scope.modulosSeleccionados = {
+                                padres: [],
+                                hijos: []
+                            };
+
+                            //se vuelve a seleccionar el nodo que el usuario eligio
+                            element.jstree("select_node", "#" + nodo.id);
+                            return;
+
+                        } else if (attrs.multiplesNodos) {
+                            scope.modulosSeleccionados = {
+                                padres: [],
+                                hijos: []
+                            };
+                        }
+
+                        //se agrega el nodo seleccionado
+                        scope.modulosSeleccionados.seleccionado = nodo.original.modulo_id;
+
+                        if (attrs.tipo === 'multiple') {
+                            //agrega los nodos padres+
+                            for (var i in nodo.parents) {
+                                agregarModuloSeleccionado(scope, nodo.parents[i], "padres");
+                            }
+
+                            //agrega los nodos hijos
+                            for (var ii in nodo.children_d) {
+                                agregarModuloSeleccionado(scope, nodo.children_d[ii], "hijos");
+                            }
+
+                        }
+
+
+                        console.log("padres del modulo ", nodo.parents, " seleccion ", scope.modulosSeleccionados);
+                        scope.$emit("modulosSeleccionados", scope.modulosSeleccionados);
+                    };
+
+
+                    scope.onDeshabilitarNodo = function(nodo) {
+
+                        scope.modulosSeleccionados = {
+                            padres: [],
+                            hijos: []
+                        };
+                        
+                        scope.modulosSeleccionados.seleccionado = nodo.original.modulo_id;
+                        
+                        //agrega los nodos padres
+                        for (var i in nodo.parents) {
+                            agregarModuloSeleccionado(scope, nodo.parents[i], "padres");
+                        }
+
+                        //agrega los nodos hijos
+                        for (var ii in nodo.children_d) {
+                            agregarModuloSeleccionado(scope, nodo.children_d[ii], "hijos");
+                        }
+                        
+                        element.jstree("deselect_node", "#" + nodo.id);
+                        scope.$emit("modulosDeshabilitados", scope.modulosSeleccionados);
+                    };
 
                     function init(datos) {
                         element.jstree({
@@ -43,49 +108,50 @@ define(["angular", "js/directive"], function(angular, directive) {
                                 "themes": {"stripes": true}
 
                             },
-                            "state": {"key": attrs.estado || "" },
-                            plugins: plugins
+                            "state": {"key": attrs.estado || ""},
+                            plugins: plugins,
+                            "contextmenu": {
+                                select_node: false,
+                                "items": function($node) {
+                                    return {
+                                         "VerOpciones": {
+                                            "label": "Ver Opciones",
+                                            "action": function(obj) {
+                                                //las opciones solo estan disponibles para modulos hijos
+                                                
+                                                if($node.children_d.length === 0 && $node.state.selected){
+                                                    console.log($node)
+                                                    scope.$emit("traerOpcioesModuloSeleccionado", $node.original.modulo_id);
+                                                }
+                                            }
+                                         },
+                                        "Seleccionar": {
+                                            "label": "Seleccionar",
+                                            "action": function(obj) {
+                                                //scope.onSeleccionarNodo($node);
+                                                element.jstree("select_node", "#" + $node.id);
+                                            }
+                                        },
+                                        "Deshabilitar": {
+                                            "label": "Deshabilitar",
+                                            "action": function(obj) {
+                                                console.log("deshabilitar ", $node);
+                                                if($node.state.selected){
+                                                    scope.onDeshabilitarNodo($node);
+                                                }
+                                            }
+                                        }
+                                    };
+                                }
+                            }
 
 
                         }).on("select_node.jstree", function(node, selected, event) {
+                            scope.onSeleccionarNodo(selected.node);
 
-                            //evita que se seleccione otro nodo diferente al actual
-                            if (scope.modulosSeleccionados.seleccionado) {
-
-                                //deselecciona todos los nodos para evitar multiples nodos
-                                element.jstree("deselect_all");
-                                scope.modulosSeleccionados = {
-                                    padres: [],
-                                    hijos: []
-                                };
-
-                                //se vuelve a seleccionar el nodo que el usuario eligio
-                                element.jstree("select_node", "#" + selected.node.id);
-                                return;
-                            }
-                            
-                            //se agrega el nodo seleccionado
-                            scope.modulosSeleccionados.seleccionado = selected.node.original.modulo_id;
-
-                            if (attrs.tipo === 'multiple') {
-                                //agrega los nodos padres
-                                for (var i in selected.node.parents) {
-                                    agregarModuloSeleccionado(scope, selected.node.parents[i], "padres");
-                                }
-                                
-                                //agrega los nodos hijos
-                                for (var i in selected.node.children_d) {
-                                    agregarModuloSeleccionado(scope, selected.node.children_d[i], "hijos");
-                                }
-
-                            }
-
-
-                            console.log("modulos seleccionaddos ", scope.modulosSeleccionados);
-                            scope.$emit("modulosSeleccionados", scope.modulosSeleccionados);
-
-                        }).on("deselect_node.jstree", function() {
-                            console.log("deselected");
+                        }).on("deselect_node.jstree", function(node, selected, event) {
+                            console.log(selected)
+                            return false;
                         });
                     }
 
@@ -93,11 +159,11 @@ define(["angular", "js/directive"], function(angular, directive) {
                     function agregarModuloSeleccionado(scope, modulo, tipo) {
 
                         modulo = modulo.split("_")[1];
-                        
-                        if(!modulo){
+
+                        if (!modulo) {
                             return;
                         }
-                        
+
                         for (var i in scope.modulosSeleccionados[tipo]) {
                             if (scope.modulosSeleccionados[tipo][i] === modulo) {
                                 return false;

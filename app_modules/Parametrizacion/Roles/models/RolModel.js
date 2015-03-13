@@ -22,10 +22,20 @@ RolModel.prototype.listar_roles = function(empresa_id, termino,pagina, callback)
 
 RolModel.prototype.obtenerRolesPorId = function(ids, callback) {
 
-    var ids = ids.join(",");
+    ids = ids.join(",");
     var sql = "SELECT * FROM roles WHERE id in($1) ";
 
     G.db.query(sql, [ids], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+
+RolModel.prototype.obtenerModulosPorRol = function(rol_id, callback) {
+
+    var sql = "SELECT * FROM roles_modulos WHERE rol_id = $1 AND estado = '1' ";
+
+    G.db.query(sql, [rol_id], function(err, rows, result) {
         callback(err, rows);
     });
 };

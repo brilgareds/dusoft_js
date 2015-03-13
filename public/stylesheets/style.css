@@ -437,3 +437,21 @@ textarea {
 .contenedor_combo_grande{
     width:100%;
 }
+
+
+.jstree-default .jstree-disabled > .jstree-icon {
+/* opacity: 0.8; */
+filter:none!important;
+filter: none!important;
+ -webkit-filter:none!important; 
+ opacity: 1!important;
+}
+
+.jstree-default .jstree-disabled.jstree-clicked {
+    background: inherit!important;
+    box-shadow:none;
+}
+
+.jstree-default .jstree-disabled.jstree-hovered {
+    background: inherit!important;
+}

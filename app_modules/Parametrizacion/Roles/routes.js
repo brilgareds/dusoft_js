@@ -19,8 +19,9 @@ module.exports = function(app, di_container) {
         c_roles.habilitarModulosEnRoles(req, res);
     });
 
-    app.post('/api/Modulos/listarOpcionesPorModulo', function(req, res) {
-        c_roles.listarOpcionesPorModulo(req, res);
+
+    app.post('/api/Roles/obtenerModulosPorRol', function(req, res) {
+        c_roles.obtenerModulosPorRol(req, res);
     });
 
     app.post('/api/Modulos/guardarOpcion', function(req, res) {

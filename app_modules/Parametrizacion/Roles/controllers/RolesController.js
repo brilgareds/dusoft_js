@@ -160,6 +160,11 @@ Roles.prototype.obtenerModulosPorRol = function(req, res) {
                 var modulos = [];
                 var i = rows.length;
                 
+                if(i === 0){
+                    res.send(G.utils.r(req.url, "Listado de modulos rol", 200, {parametrizacion_perfiles: {modulos_empresas:[]}}));
+                    return;
+                }
+                
                 //solo deben retornarse los modulos hijos para el plugin jstree
                 rows.forEach(function(modulo){
                     
@@ -169,7 +174,7 @@ Roles.prototype.obtenerModulosPorRol = function(req, res) {
                         }
                         
                         if(--i === 0 ){
-                            res.send(G.utils.r(req.url, "Se asigno correctamente los modulos seleccionados", 200, {parametrizacion_perfiles: {modulos_empresas:modulos}}));
+                            res.send(G.utils.r(req.url, "Listado de modulos", 200, {parametrizacion_perfiles: {modulos_empresas:modulos}}));
                         }
                         
                     });

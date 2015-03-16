@@ -27,10 +27,9 @@ define(["angular", "js/models"], function(angular, models) {
                 
                 //arreglo necesario para guardar en modulos_empresas, incluye los modulos padre
                 this.modulosPadre = [];
-                
                 this.modulosHijo  = [];
-
                 this.empresasModulos = [];
+                this.rolesModulos = [];
 
             }
 
@@ -156,8 +155,35 @@ define(["angular", "js/models"], function(angular, models) {
                 return this.modulosHijo;
             };
             
-             Modulo.prototype.setModulosHijo = function(modulos) {
+            Modulo.prototype.setModulosHijo = function(modulos) {
                 this.modulosHijo = modulos;
+            };
+            
+            
+            Modulo.prototype.vaciarRoles = function() {
+                this.rolesModulos = [];
+            };
+            
+            Modulo.prototype.getRoles = function() {
+                return this.rolesModulos;
+            };
+            
+            Modulo.prototype.setRoles = function(roles) {
+                this.rolesModulos = roles;
+            };
+            
+            Modulo.prototype.agregarRol = function(rolModulo) {
+                for (var i in this.rolesModulos) {
+                    var modulo = this.rolesModulos[i];
+                    if (modulo.getRol().getId() === rolModulo.getRol().getId()
+                        && modulo.getRol().getEmpresaId() === rolModulo.getRol().getEmpresaId()
+                        && modulo.getModulo().getId() === rolModulo.getModulo().getId()) {
+                    
+                        return false;
+                    }
+                }
+
+                this.rolesModulos.push(rolModulo);
             };
             
             this.get = function(id, parent, text, url) {

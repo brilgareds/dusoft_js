@@ -23,8 +23,6 @@ define([
             };
             
             
-            
-
             //trae todas las opciones que tenga el modulo que se este guardando
             self.traerOpcionesModulo = function() {
                 $scope.rootModulos.moduloAGuardar.vaciarOpciones();
@@ -51,7 +49,7 @@ define([
                                     datos[i].nombre,
                                     datos[i].alias,
                                     datos[i].modulo_id
-                                    );
+                            );
 
                             opcion.setObservacion(datos[i].observacion);
                             opcion.setEstado(datos[i].estado);
@@ -154,6 +152,7 @@ define([
             
             $scope.onSeleccionarOpcion = function(opcion){
                 console.log("seleccion ", opcion , opcion.seleccionado);
+                console.log("modulo a guardar ", $scope.rootModulos.moduloAGuardar);
             };
             
             $scope.onEditarOpcion = function(opcion){

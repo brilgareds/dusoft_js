@@ -18,7 +18,9 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 auth_token: Usuario.token
             };
             
-            console.log("moduloSeleccionado ", moduloSeleccionado)
+            moduloSeleccionado.vaciarListaEmpresas();
+            console.log("moduloSeleccionado ", moduloSeleccionado);
+            
 
             $scope.moduloSeleccionado = moduloSeleccionado;
 
@@ -87,11 +89,9 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                         empresa.getEstado()
                  );
                 //valida si la empresa fue seleccionada con el checkbox
-                //if (empresa.getEstado()) {
-                    moduloSeleccionado.agregarEmpresa(empresa_modulo);
-                //} else {
-                    //moduloSeleccionado.removerEmpresa(empresa_modulo);
-                //}
+
+                 moduloSeleccionado.agregarEmpresa(empresa_modulo);
+
             };
 
             $scope.listado_empresas = {

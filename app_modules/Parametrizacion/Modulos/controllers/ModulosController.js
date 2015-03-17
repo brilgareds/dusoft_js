@@ -128,9 +128,10 @@ Modulos.prototype.listarOpcionesPorModulo = function(req, res) {
         return;
     }
     var modulo = args.parametrizacion_modulos.modulo.id;
+    var rol_modulo_id = args.parametrizacion_modulos.modulo.rol_modulo_id;
 
 
-    that.m_modulo.listarOpcionesPorModulo(modulo, function(err, rows) {
+    that.m_modulo.listarOpcionesPorModulo(modulo,rol_modulo_id, function(err, rows) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error listando las opciones del modulo', 500, {parametrizacion_modulo: {}}));
             return;
@@ -277,12 +278,12 @@ function __validarCreacionModulo(that, modulo, callback) {
                     return;
                 }
 
-                if (nombre_url === _nombre_url) {
+                /*if (nombre_url === _nombre_url) {
                     validacion.valido = false;
                     validacion.msj = "El url del modulo no esta disponible";
                     callback(validacion);
                     return;
-                }
+                }*/
             }
 
         }

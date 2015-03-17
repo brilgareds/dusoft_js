@@ -23,17 +23,21 @@ define([
             };
             
             
-            
-
             //trae todas las opciones que tenga el modulo que se este guardando
             self.traerOpcionesModulo = function() {
+                console.log("modulo >>>>>>>>>>>>>",$scope.rootModulos.moduloAGuardar);
+                
+                var rolesModulos = $scope.rootModulos.moduloAGuardar.rolesModulos;
+                var rol_modulo_id = (rolesModulos.length > 0)?rolesModulos[0].id:0;
+                
                 $scope.rootModulos.moduloAGuardar.vaciarOpciones();
                 var obj = {
                     session: $scope.rootModulos.session,
                     data: {
                         parametrizacion_modulos: {
                             modulo: {
-                                id: $scope.rootModulos.moduloAGuardar.modulo_id
+                                id: $scope.rootModulos.moduloAGuardar.modulo_id,
+                                rol_modulo_id:rol_modulo_id
                             }
                         }
                     }
@@ -51,10 +55,15 @@ define([
                                     datos[i].nombre,
                                     datos[i].alias,
                                     datos[i].modulo_id
-                                    );
+                            );
 
                             opcion.setObservacion(datos[i].observacion);
                             opcion.setEstado(datos[i].estado);
+                            opcion.setEstado_opcion_rol(datos[i].estado_opcion_rol);
+                            
+                            if(datos[i].estado_opcion_rol === '1'){
+                                opcion.seleccionado= true;
+                            }
 
                             $scope.rootModulos.moduloAGuardar.agregarOpcion(opcion);
                         }
@@ -145,7 +154,7 @@ define([
                                       <button ng-if="rootOpciones.opciones.eliminar" class="btn btn-default btn-xs" ng-click="onBorrarOpcion(row.entity)">\
                                         <span class="glyphicon glyphicon-remove"></span>\
                                       </button>\
-                                      <input-check ng-if="rootOpciones.opciones.seleccionar"  ng-model="row.entity.seleccionado"  ng-change="onSeleccionarOpcion(row.entity)">\
+                                      <input-check ng-if="rootOpciones.opciones.seleccionar" ng-disabled="!row.entity.estado"  ng-model="row.entity.seleccionado"  ng-change="onSeleccionarOpcion(row.entity)">\
                                    </div>'
                     }
                 ]
@@ -153,7 +162,33 @@ define([
             };
             
             $scope.onSeleccionarOpcion = function(opcion){
-                console.log("seleccion ", opcion , opcion.seleccionado);
+                $scope.rootModulos.moduloAGuardar.opcionAGuardar  = opcion;
+                console.log("opcion a guardar ", opcion);
+                
+                if(!opcion.estado){
+                    return;
+                }
+                
+                var obj = {
+                    session: $scope.rootModulos.session,
+                    data: {
+                        parametrizacion_perfiles: {
+                            modulo: $scope.rootModulos.moduloAGuardar
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PERFILES.GUARDAR_OPCION, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        AlertService.mostrarMensaje("success", "Opcion guardada correctamente");
+
+                    } else {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+
+                });
+                
+                
             };
             
             $scope.onEditarOpcion = function(opcion){
@@ -227,7 +262,6 @@ define([
 
                 opcion_guardar.modulo_id = $scope.rootModulos.moduloAGuardar.modulo_id;
 
-                console.log(JSON.stringify(opcion_guardar));
 
                 var obj = {
                     session: $scope.rootModulos.session,
@@ -241,6 +275,8 @@ define([
                 Request.realizarRequest(API.MODULOS.GUARDAR_OPCION, "POST", obj, function(data) {
                     if (data.status === 200) {
                         console.log("opcion guardada con exito ", data);
+                        console.log("modulo a guardar ",$scope.rootModulos.moduloAGuardar);
+                        console.log("opcion a guardar ",$scope.rootModulos.moduloAGuardar.getOpcionAGuardar());
                         var id = data.obj.parametrizacion_modulo.opcion.id;
                         if (id) {
                             $scope.rootModulos.moduloAGuardar.getOpcionAGuardar().setId(id);
@@ -260,6 +296,8 @@ define([
                 });
 
             };
+            
+            self.inicializarOpcionACrear();
 
         }]);
 });

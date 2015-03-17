@@ -17,7 +17,7 @@ ModuloModel.prototype.listar_modulos = function(callback) {
 ModuloModel.prototype.obtenerModulosPorId = function(ids, callback) {
 
     var ids = ids.join(",");
-    var sql = "SELECT * FROM modulos WHERE id in($1) ";
+    var sql = "SELECT * FROM modulos WHERE id IN($1) ";
 
     G.db.query(sql, [ids], function(err, rows, result) {
         callback(err, rows);
@@ -58,11 +58,10 @@ ModuloModel.prototype.insertarModulo = function(modulo, callback) {
 
 ModuloModel.prototype.modificarModulo = function(modulo, callback) {
 
-
+    var that = this;
     var sql = "UPDATE modulos SET parent = $1, nombre = $2, url =$3, parent_name = $4,\
                icon = $5, state = $6, observacion = $7, usuario_id = $8, usuario_id_modifica = $9,\
-               estado = $10, fecha_modificacion = $11 WHERE id = $12  \
-               ";
+               estado = $10, fecha_modificacion = $11 WHERE id = $12 ";
 
     var params = [
         modulo.parent, modulo.nombre, modulo.url, modulo.parent_name, modulo.icon,
@@ -71,8 +70,52 @@ ModuloModel.prototype.modificarModulo = function(modulo, callback) {
     ];
 
     G.db.query(sql, params, function(err, rows, result) {
-        callback(err, rows);
+        
+        //se debe determinar los modulos padres e hijos para modificar su estado
+        var modulos = modulo.modulosHijo || [];
+        
+        if(modulo.modulosPadre !== undefined && modulo.estado){
+            modulos = modulos.concat(modulo.modulosPadre);
+        }
+        
+        
+        if(modulos !== undefined && modulos.length > 0){
+           
+            that.activarModulosFamilirares(modulo.estado, modulo.usuario_id, modulos,function(err, rows){
+                callback(err, rows);
+            });
+        } else {
+            callback(err, rows);
+        }
+        
     });
+};
+
+//funcion que se encarga de modificar el estado de todos los modulos hijo y modificar el estado de los modulos padre siempre y cuando sea true
+ModuloModel.prototype.activarModulosFamilirares = function(estado, usuario, modulos, callback) {
+    
+    var i = modulos.length;
+    
+    if(i === 0){
+        callback(false, []);
+        return;
+    }
+    
+    modulos.forEach(function(modulo){
+        
+        var sql = "UPDATE modulos SET  usuario_id_modifica = $1,\
+                   estado = $2, fecha_modificacion = $3 WHERE id = $4";
+
+        var params = [usuario, Number(estado), 'now()', modulo];
+
+        G.db.query(sql, params, function(err, rows, result) {
+            if(--i === 0){
+                callback(err, rows);
+            }
+        });
+
+    });
+
 };
 
 ModuloModel.prototype.obtenerModuloPorNombreOUrl = function(nombre, url, callback) {
@@ -109,7 +152,7 @@ ModuloModel.prototype.insertarOpcion = function(opcion, callback) {
 
     var params = [
         opcion.nombre, opcion.alias, opcion.modulo_id,
-        opcion.observacion, opcion.usuario_id, 'now()', Number(opcion.estado)
+        opcion.observacion, opcion.usuario_id, 'now()', Number(Boolean(opcion.estado)) || '0'
     ];
 
     G.db.query(sql, params, function(err, rows, result) {
@@ -127,7 +170,7 @@ ModuloModel.prototype.modificarOpcion = function(opcion, callback) {
 
     var params = [
         opcion.nombre, opcion.alias, opcion.observacion,
-        opcion.usuario_id, Number(opcion.estado), 'now()', opcion.id
+        opcion.usuario_id, Number(Boolean(opcion.estado)), 'now()', opcion.id
     ];
 
     G.db.query(sql, params, function(err, rows, result) {
@@ -144,10 +187,12 @@ ModuloModel.prototype.obtenerOpcionPorNombre = function(nombre, callback) {
 };
 
 
-ModuloModel.prototype.listarOpcionesPorModulo = function(modulo_id, callback) {
-    var sql = "SELECT * FROM modulos_opciones WHERE modulo_id =  $1 ORDER BY id";
+ModuloModel.prototype.listarOpcionesPorModulo = function(modulo_id,rol_modulo_id, callback) {
+    var sql = "SELECT a.*, b.estado as estado_opcion_rol FROM modulos_opciones  a\
+               LEFT JOIN roles_modulos_opciones b ON b.rol_modulo_id = $2 AND a.id = b.modulo_opcion_id\
+               WHERE a.modulo_id =  $1 ORDER BY a.id";
 
-    G.db.query(sql, [modulo_id], function(err, rows, result) {
+    G.db.query(sql, [modulo_id, rol_modulo_id], function(err, rows, result) {
         callback(err, rows);
     });
 };
@@ -164,22 +209,16 @@ ModuloModel.prototype.habilitarModuloEnEmpresas = function(usuario_id, empresas_
     
     var that = this;
     //se deshabilitan todos las empresas del modulos para asignar solo las que se enviaron del cliente
-    /*var sql = "UPDATE modulos_empresas SET estado = 0, usuario_id_modifica = $2, fecha_modificacion = now() WHERE modulo_id = $1";
 
-    G.db.query(sql, [modulo_id, usuario_id], function(err, rows, result) {
-        if (err) {
-            callback(err, rows);
-        } else {*/
-            __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, function(err, result){
-                callback(err, result);
-            });
-        /*}
-    });*/
+    __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, function(err, result){
+        callback(err, result);
+    });
+
 };
 
 ModuloModel.prototype.listarModulosPorEmpresa = function(empresa_id, callback) {
     var sql = "SELECT a.*, b.parent, b.nombre, b.state, b.icon FROM modulos_empresas a\
-               INNER JOIN modulos b ON a.modulo_id = b.id and a.estado = 1 \
+               INNER JOIN modulos b ON a.modulo_id = b.id and a.estado = '1' and b.estado = '1' \
                WHERE empresa_id =  $1 ORDER BY id";
 
     G.db.query(sql, [empresa_id], function(err, rows, result) {
@@ -187,7 +226,28 @@ ModuloModel.prototype.listarModulosPorEmpresa = function(empresa_id, callback) {
     });
 };
 
+ModuloModel.prototype.listarModulosEmpresaPorId = function(modulos_empresa_id, callback) {
+    var ids = modulos_empresa_id.join(',');
+    var sql = " SELECT a.*, b.parent, b.nombre, b.state, b.icon, c.id as roles_modulos_id FROM modulos_empresas a\
+                INNER JOIN modulos b ON a.modulo_id = b.id and a.estado = '1' and b.estado = '1'\
+                INNER JOIN roles_modulos c ON c.modulos_empresas_id = a.id\
+                WHERE a.id  IN("+ids+")   ORDER BY id";
 
+    G.db.query(sql, [], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+ModuloModel.prototype.obtenerModulosHijos = function(modulo_id, callback) {
+    
+    var sql = " SELECT * FROM modulos a\
+                INNER join modulos b on a.id= b.parent\
+                WHERE a.id = $1";
+
+    G.db.query(sql, [modulo_id], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
 
 //funcion recursiva para actualizar listado de empresas_modulos
 function __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, callback) {

@@ -40,6 +40,10 @@ define(["angular", "js/models"], function(angular, models) {
         Pedido.prototype.setFarmacia = function(cliente) {
             this.farmacia = cliente;
         };
+        
+        Pedido.prototype.getFechaRegistro = function() {
+            return this.fecha_registro;
+        };
 
         this.getClass = function(){
             return Pedido;

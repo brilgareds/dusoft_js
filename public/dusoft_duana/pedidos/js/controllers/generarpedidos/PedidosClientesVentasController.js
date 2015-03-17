@@ -3,7 +3,7 @@
 define(["angular", "js/controllers",'includes/slide/slideContent',
         'models/ClientePedido', 'models/PedidoVenta', 'models/VendedorPedido'], function(angular, controllers) {
 
-    var fo = controllers.controller('CotizacionesController', [
+    var fo = controllers.controller('PedidosClientesVentasController', [
         '$scope', '$rootScope', 'Request',
         'EmpresaPedido', 'ClientePedido', 'PedidoVenta',
         'API', "socket", "AlertService",
@@ -13,41 +13,42 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
             var that = this;
 
-            $scope.rootCotizaciones = {};
+            $scope.rootPedidosClientes = {};
             
-            $scope.rootCotizaciones.Empresa = EmpresaPedido;
+            $scope.rootPedidosClientes.Empresa = EmpresaPedido;
 
-            $scope.rootCotizaciones.paginas = 0;
-            $scope.rootCotizaciones.items = 0;
-            $scope.rootCotizaciones.termino_busqueda = "";
-            $scope.rootCotizaciones.ultima_busqueda = {};
-            $scope.rootCotizaciones.paginaactual = 1;
-            $scope.rootCotizaciones.listado_cotizaciones = [];
+            $scope.rootPedidosClientes.paginas = 0;
+            $scope.rootPedidosClientes.items = 0;
+            $scope.rootPedidosClientes.termino_busqueda = "";
+            $scope.rootPedidosClientes.ultima_busqueda = {};
+            $scope.rootPedidosClientes.paginaactual = 1;
+            $scope.rootPedidosClientes.listado_cotizaciones = [];
             
-            $scope.rootCotizaciones.session = {
+            $scope.rootPedidosClientes.session = {
                 usuario_id: Usuario.usuario_id,
                 auth_token: Usuario.token
             };
 
-            that.estados = [ "btn btn-warning btn-xs", "btn btn-success btn-xs" ];
+            //that.estados = [ "btn btn-warning btn-xs", "btn btn-success btn-xs" ];
+            that.estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs"];
             
             /* INICIO - Operaciones nuevas */
             
             $scope.obtenerParametros = function() {
 
                 //valida si cambio el termino de busqueda
-                if ($scope.rootCotizaciones.ultima_busqueda.termino_busqueda !== $scope.rootCotizaciones.termino_busqueda)
+                if ($scope.rootPedidosClientes.ultima_busqueda.termino_busqueda !== $scope.rootPedidosClientes.termino_busqueda)
                 {
-                    $scope.rootCotizaciones.paginaactual = 1;
+                    $scope.rootPedidosClientes.paginaactual = 1;
                 }
 
                 var obj = {
-                    session: $scope.rootCotizaciones.session,
+                    session: $scope.rootPedidosClientes.session,
                     data: {
-                        cotizaciones_cliente: {
+                        pedidos_cliente: {
                             empresa_id: '03',                            
-                            termino_busqueda: $scope.rootCotizaciones.termino_busqueda,
-                            pagina_actual: $scope.rootCotizaciones.paginaactual,
+                            termino_busqueda: $scope.rootPedidosClientes.termino_busqueda,
+                            pagina_actual: $scope.rootPedidosClientes.paginaactual,
                             filtro: {}
                         }
                     }
@@ -56,25 +57,25 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 return obj;
             };
             
-            //$scope.onBuscarCotizacion($scope.obtenerParametros(),"");
+            //$scope.onBuscarPedido($scope.obtenerParametros(),"");
 
-            $scope.onBuscarCotizacion = function(obj, paginando) {
+            $scope.onBuscarPedido = function(obj, paginando) {
 
-                that.consultarEncabezadosCotizaciones(obj, function(data) {
+                that.consultarEncabezadosPedidos(obj, function(data) {
 
-                    $scope.rootCotizaciones.ultima_busqueda = {
-                        termino_busqueda: $scope.rootCotizaciones.termino_busqueda
+                    $scope.rootPedidosClientes.ultima_busqueda = {
+                        termino_busqueda: $scope.rootPedidosClientes.termino_busqueda
                     }
 
-                    that.renderCotizaciones(data.obj, paginando);
+                    that.renderPedidos(data.obj, paginando);
 
                 });
             };
 
 
-            that.consultarEncabezadosCotizaciones = function(obj, callback) {
+            that.consultarEncabezadosPedidos = function(obj, callback) {
 
-                var url = API.PEDIDOS.LISTAR_COTIZACIONES;
+                var url = API.PEDIDOS.LISTADO_PEDIDOS_CLIENTES;
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
@@ -91,57 +92,59 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 });
             };
 
-            that.renderCotizaciones = function(data, paginando) {
+            that.renderPedidos = function(data, paginando) {
 
-                $scope.rootCotizaciones.items = data.resultado_consulta.length;
+                $scope.rootPedidosClientes.items = data.resultado_consulta.length;
 
                 //se valida que hayan registros en una siguiente pagina
-                if (paginando && $scope.rootCotizaciones.items === 0) {
-                    if ($scope.rootCotizaciones.paginaactual > 1) {
-                        $scope.rootCotizaciones.paginaactual--;
+                if (paginando && $scope.rootPedidosClientes.items === 0) {
+                    if ($scope.rootPedidosClientes.paginaactual > 1) {
+                        $scope.rootPedidosClientes.paginaactual--;
                     }
                     AlertService.mostrarMensaje("warning", "No se encontraron más registros");
                     return;
                 }
 
-                $scope.rootCotizaciones.Empresa.vaciarPedidosTemporales();
+                $scope.rootPedidosClientes.Empresa.vaciarPedidos();
 
                 if (data.resultado_consulta.length > 0)
                 {
-                    $scope.rootCotizaciones.Empresa.setCodigo(data.resultado_consulta[0].empresa_id);
+                    $scope.rootPedidosClientes.Empresa.setCodigo(data.resultado_consulta[0].empresa_id);
                 }
 
                 for (var i in data.resultado_consulta) {
 
                     var obj = data.resultado_consulta[i];
 
-                    var cotizacion = that.crearCotizacion(obj);
+                    var pedido = that.crearPedido(obj);
 
-                    $scope.rootCotizaciones.Empresa.agregarPedidoTemporal(cotizacion);
+                    $scope.rootPedidosClientes.Empresa.agregarPedido(pedido);
 
                 }
 
             };
 
-            that.crearCotizacion = function(obj) {
+            that.crearPedido = function(obj) {
 
-                var cotizacion = PedidoVenta.get();
+                var pedido = PedidoVenta.get();
 
-                var datos_cotizacion = {
-                    numero_pedido: '',
+                var datos_pedido = {
+                    numero_pedido: obj.numero_pedido,
                     fecha_registro: obj.fecha_registro,
-                    estado: obj.estado
+                    estado: obj.estado,
+                    estado_actual_pedido: obj.estado_pedido,
+                    estado_separacion: obj.estado_separacion
                 };
 
-                cotizacion.setDatos(datos_cotizacion);
+                pedido.setDatos(datos_pedido);
                 
-                cotizacion.setTipo(PedidoVenta.TIPO_CLIENTE);
+                pedido.setTipo(PedidoVenta.TIPO_CLIENTE);
 
-                cotizacion.setNumeroCotizacion(obj.numero_cotizacion);
+                //pedido.setNumeroCotizacion('');
                 
-                cotizacion.setValorCotizacion(obj.valor_cotizacion);
+                pedido.setValorPedido(obj.valor_pedido);
 
-                cotizacion.setObservacion(obj.observaciones);
+                pedido.setObservacion(obj.observaciones);
                 
                 var vendedor = VendedorPedido.get(
                         obj.nombre_vendedor,    //nombre_tercero
@@ -151,7 +154,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         obj.telefono_vendedor   //telefono
                     );
                 
-                cotizacion.setVendedor(vendedor);
+                pedido.setVendedor(vendedor);
 
                 var cliente = ClientePedido.get(
                         obj.nombre_cliente,    //nombre_tercero
@@ -166,33 +169,59 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 cliente.setMunicipio(obj.municipio);//municipio
                 cliente.setUbicacion(); //ubicacion
 
-                cotizacion.setCliente(cliente);
+                pedido.setCliente(cliente);
 
-                return cotizacion;
+                return pedido;
             };            
             
             /* FIN - Operaciones nuevas */
             
-            $scope.rootCotizaciones.lista_pedidos_clientes = {
-                data: 'rootCotizaciones.Empresa.getPedidosTemporales()',
-                //data: 'rootCotizaciones.listado_cotizaciones',
+            $scope.rootPedidosClientes.lista_pedidos_clientes = {
+                data: 'rootPedidosClientes.Empresa.getPedidos()',
+                //data: 'rootPedidosClientes.listado_cotizaciones',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
-                    {field: 'numero_cotizacion', displayName: 'Numero Cotización'},
+                    {field: 'numero_pedido', displayName: 'Numero Pedido'},
                     {field: 'cliente.nombre_tercero', displayName: 'Cliente'},
                     {field: 'vendedor.nombre_tercero', displayName: 'Vendedor'},
                     {field: 'fecha_registro', displayName: 'Fecha'},
-                    {field: 'valor_cotizacion', displayName: '$ Valor', cellFilter: "currency:'$ '"},
+                    {field: 'valor_pedido', displayName: '$ Valor', cellFilter: "currency:'$ '"},
                     //{field: 'estado', displayName: 'Estado'},
                     
-                    {field: 'estado', displayName: 'Estado', cellClass: "txt-center",
-                        cellTemplate: " <button ng-if='row.entity.estado==0' ng-class='agregarClase(row.entity.estado)'>\
-                                            Inactivo\
-                                        </button>\
-                                        <button ng-if='row.entity.estado==1' ng-class='agregarClase(row.entity.estado)'>\
-                                            Activo\
-                                        </button>"},
+                    {field: 'estado', displayName: 'Estado Pedido', cellClass: "txt-center",
+                        cellTemplate:   "   <button ng-if='row.entity.estado==0'>Inactivo</button>\
+                                            <button ng-if='row.entity.estado==1'>Activo</button>\
+                                            <button ng-if='row.entity.estado==2'>Anulado</button>\
+                                            <button ng-if='row.entity.estado==3'>Entregado</button>\
+                                        "},
+                    
+                    {field: 'estado_pedido', displayName: 'Estado Proceso', cellClass: "txt-center",
+                        cellTemplate:   "   <button ng-if='row.entity.estado_actual_pedido==0' ng-class='agregarClase(row.entity.estado_actual_pedido)'>\
+                                                <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> No Asignado\
+                                            </button>\
+                                            <button ng-if='row.entity.estado_actual_pedido==1' ng-class='agregarClase(row.entity.estado_actual_pedido)'>\
+                                                <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> Asignado\
+                                            </button>\
+                                            <button ng-if='row.entity.estado_actual_pedido==2' ng-class='agregarClase(row.entity.estado_actual_pedido)'>\
+                                                <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> Auditado\
+                                            </button>\
+                                            <button ng-if='row.entity.estado_actual_pedido==3' ng-class='agregarClase(row.entity.estado_actual_pedido)'>\
+                                                <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> En Zona Despacho\
+                                            </button>\
+                                            <button ng-if='row.entity.estado_actual_pedido==4' ng-class='agregarClase(row.entity.estado_actual_pedido)'>\
+                                                <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> Despachado\
+                                            </button>\
+                                            <button ng-if='row.entity.estado_actual_pedido==5' ng-class='agregarClase(row.entity.estado_actual_pedido)'>\
+                                                <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> Despachado con Pendientes\
+                                            </button>\
+                                            <button ng-if='row.entity.estado_actual_pedido==6' ng-class='agregarClase(row.entity.estado_actual_pedido)'>\
+                                                <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> Separación Finalizada\
+                                            </button>\
+                                            <button ng-if='row.entity.estado_actual_pedido==7' ng-class='agregarClase(row.entity.estado_actual_pedido)'>\
+                                                <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> En Auditoria\
+                                            </button>\
+                                        "},
                     
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center dropdown-button", width: "7%",
                         cellTemplate: '<div class="btn-group">\
@@ -256,7 +285,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             that.cambiarEstadoCotizacion = function(numero_cotizacion, nuevo_estado, callback){
                 
                 var obj = {
-                    session: $scope.rootCotizaciones.session,
+                    session: $scope.rootPedidosClientes.session,
                     data: {
                         estado_cotizacion: {
                             numero_cotizacion: numero_cotizacion,
@@ -287,16 +316,27 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
             };
             
+            //Clase para color de estado en proceso
             $scope.agregarClase = function(estado) {
 
                 return that.estados[estado];
+            };
+            
+            // Agregar Restriccion de acuerdo al estado de asigancion del pedido
+            $scope.agregarRestriccion = function(estado_separacion) {
+                
+                var clase = "";
+                if (estado_separacion)
+                    clase = "glyphicon glyphicon-lock";
+
+                return clase;
             };
             
             that.consultarEstadoCotizacion = function(data, callback){
                 
                 //Objeto para consulta de encabezado pedido
                 var obj = {
-                    session: $scope.rootCotizaciones.session,
+                    session: $scope.rootPedidosClientes.session,
                     data: {
                         estado_cotizacion: {
                             numero_cotizacion: data.numero_cotizacion,
@@ -329,7 +369,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 //Objeto Consulta Contrato Cliente
                 var obj = {
-                    session: $scope.rootCotizaciones.session,
+                    session: $scope.rootPedidosClientes.session,
                     data: {
                         contrato_cliente: {
                             tipo_id_cliente: data.cliente.getTipoId(),
@@ -377,15 +417,15 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 that.consultarEstadoCotizacion(data, function(estado){
 
-                    $scope.rootCotizaciones.Empresa.setPedidoSeleccionado(data);
+                    $scope.rootPedidosClientes.Empresa.setPedidoSeleccionado(data);
 
                     if (estado === '1') {
                         
                         that.consultarContratoCliente(data, function(contrato_cliente_id){
                             
-                            $scope.rootCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setContratoId(contrato_cliente_id);
+                            $scope.rootPedidosClientes.Empresa.getPedidoSeleccionado().getCliente().setContratoId(contrato_cliente_id);
                             
-                            //console.log(">>>> Objeto Empresa - Pedido Seleccionado: ", $scope.rootCotizaciones.Empresa.getPedidoSeleccionado());
+                            //console.log(">>>> Objeto Empresa - Pedido Seleccionado: ", $scope.rootPedidosClientes.Empresa.getPedidoSeleccionado());
                             
                             $state.go('CotizacionCliente');
                             
@@ -406,7 +446,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                         </div>\
                                         <div class="modal-body row">\
                                             <div class="col-md-12">\
-                                                <h4 >La Cotización ' + $scope.rootCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() + ' se ha convertido en Pedido. No puede modificarse!</h4>\
+                                                <h4 >La Cotización ' + $scope.rootPedidosClientes.Empresa.getPedidoSeleccionado().getNumeroCotizacion() + ' se ha convertido en Pedido. No puede modificarse!</h4>\
                                             </div>\
                                         </div>\
                                         <div class="modal-footer">\
@@ -427,44 +467,44 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             /*NUEVO*/
             
-            $scope.onNuevaCotizacion = function (){
+           /* $scope.onNuevaCotizacion = function (){
 
-                $scope.rootCotizaciones.Empresa.setPedidoSeleccionado({});
+                $scope.rootPedidosClientes.Empresa.setPedidoSeleccionado({});
                 $state.go('CotizacionCliente');
-            };
+            };*/
             
             //Método para liberar Memoria de todo lo construido en ésta clase
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){ 
                
-               //Limpieza de objeto rootCotizaciones
-               $scope.rootCotizaciones = {};
+               //Limpieza de objeto rootPedidosClientes
+               $scope.rootPedidosClientes = {};
 
             });
             
             //eventos de widgets
-            $scope.onKeyBuscarCotizaciones = function(ev) {
+            $scope.onKeyBuscarPedidos = function(ev) {
 
                  if (ev.which == 13) {
                      //Aquí no se usa el parámetro "termino_busqueda" porque ésta variable se usa en el scope y se actualiza sin necesidad de pasarla como parámetro
-                     $scope.onBuscarCotizacion($scope.obtenerParametros(), true);
+                     $scope.onBuscarPedido($scope.obtenerParametros(), true);
                  }
             };
 
             $scope.paginaAnterior = function() {
-                 $scope.rootCotizaciones.paginaactual--;
-                 $scope.onBuscarCotizacion($scope.obtenerParametros(), true);
+                 $scope.rootPedidosClientes.paginaactual--;
+                 $scope.onBuscarPedido($scope.obtenerParametros(), true);
             };
 
             $scope.paginaSiguiente = function() {
-                 $scope.rootCotizaciones.paginaactual++;
-                 $scope.onBuscarCotizacion($scope.obtenerParametros(), true);
+                 $scope.rootPedidosClientes.paginaactual++;
+                 $scope.onBuscarPedido($scope.obtenerParametros(), true);
             };
 
             $scope.valorSeleccionado = function() {
 
             };
             
-            $scope.onBuscarCotizacion($scope.obtenerParametros(),"");
+            $scope.onBuscarPedido($scope.obtenerParametros(),"");
 
         }]);
 });

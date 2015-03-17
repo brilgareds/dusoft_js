@@ -11,7 +11,8 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         function PedidoVenta() {
             Pedido.getClass().call(this);
             this.numero_cotizacion = "";
-            this.valor_cotizacion = "";
+            this.valor_cotizacion = 0;
+            this.valor_pedido = 0;
             this.lista_productos = [];
             this.tipo = 1;
             this.observacion = "";
@@ -19,6 +20,8 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
 //            this.tipo_id_vendedor = "";
 //            this.vendedor_id = "";
             this.vendedor = {};
+            this.valor_total_sin_iva = 0;
+            this.valor_total_con_iva = 0;
         };
 
         PedidoVenta.prototype = Object.create(Pedido.getClass().prototype);
@@ -48,7 +51,15 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         
         PedidoVenta.prototype.getValorCotizacion = function() {
             return this.valor_cotizacion;
-        };        
+        };
+        
+        PedidoVenta.prototype.setValorPedido = function(valor_pedido) {
+            this.valor_pedido = valor_pedido;
+        };
+        
+        PedidoVenta.prototype.getValorPedido = function() {
+            return this.valor_pedido;
+        }; 
 
         PedidoVenta.prototype.agregarProducto = function(producto) {
             this.lista_productos.unshift(producto);

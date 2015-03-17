@@ -921,6 +921,79 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, termino
 };
 
 /**
+ * @api {sql} listar_pedidos Pedidos clientes model
+ * @apiName Pedidos Clientes
+ * @apiGroup PedidosCliente (sql)
+ * @apiDescription Lista pedidos
+ * @apiDefinePermission autenticado Requiere Autenticacion
+ * Requiere que el usuario esté autenticado.
+ * @apiPermission autenticado
+ * @apiParam {Number} numero_pedido Numero del pedido a asignar
+ * @apiParam {Function} callback Funcion de retorno de informacion.
+ */
+PedidosClienteModel.prototype.listado_pedidos_clientes = function(empresa_id, termino_busqueda, pagina, callback) {
+    
+    var sql = " select\
+                    a.pedido_cliente_id as numero_pedido,\
+                    a.empresa_id,\
+                    a.tipo_id_tercero as tipo_id_cliente,\
+                    a.tercero_id as cliente_id,\
+                    to_char(a.fecha_registro, 'dd-mm-yyyy hh:mm:ss') as fecha_registro,\
+                    a.usuario_id,\
+                    to_char(a.fecha_envio, 'dd-mm-yyyy hh:mm:ss') as fecha_envio,\
+                    a.tipo_id_vendedor,\
+                    a.vendedor_id,\
+                    round(SUM((b.valor_unitario + (b.valor_unitario * COALESCE(b.porc_iva, 0))/100) * b.numero_unidades),2) as valor_pedido,\
+                    a.estado,\
+                    a.estado_pedido,\
+                    a.fecha_registro_anulacion,\
+                    a.usuario_anulador,\
+                    a.observacion_anulacion,\
+                    a.observacion,\
+                    c.tipo_pais_id as tipo_pais_cliente,\
+                    c.tipo_dpto_id as tipo_departamento_cliente,\
+                    c.tipo_mpio_id as tipo_municipio_cliente,\
+                    c.direccion as direccion_cliente,\
+                    c.telefono as telefono_cliente,\
+                    c.nombre_tercero as nombre_cliente,\
+                    d.nombre as nombre_vendedor,\
+                    d.telefono as telefono_vendedor,\
+                    e.pais,\
+                    f.departamento,\
+                    g.municipio,\
+                    h.estado as estado_separacion\
+                from ventas_ordenes_pedidos a\
+                    left join ventas_ordenes_pedidos_d b on b.pedido_cliente_id = a.pedido_cliente_id\
+                    join terceros c on c.tipo_id_tercero = a.tipo_id_tercero\
+                        and c.tercero_id = a.tercero_id\
+                    join vnts_vendedores d on d.tipo_id_vendedor = a.tipo_id_vendedor\
+                        and d.vendedor_id = a.vendedor_id\
+                    left join tipo_pais as e on e.tipo_pais_id = c.tipo_pais_id\
+                    left join tipo_dptos as f on f.tipo_dpto_id = c.tipo_dpto_id\
+                        and f.tipo_pais_id = e.tipo_pais_id \
+                    left join tipo_mpios as g on g.tipo_mpio_id = c.tipo_mpio_id\
+                        and g.tipo_dpto_id = f.tipo_dpto_id\
+                        and g.tipo_pais_id = e.tipo_pais_id\
+                    left join inv_bodegas_movimiento_tmp_despachos_clientes h on a.pedido_cliente_id = h.pedido_cliente_id  \
+                where a.empresa_id = $1\
+                    and (   a.pedido_cliente_id ilike $2\
+                            or c.nombre_tercero ilike $2\
+                            or d.nombre ilike $2    )\
+                group by a.pedido_cliente_id, a.empresa_id, a.tipo_id_tercero, a.tercero_id, a.fecha_registro, a.usuario_id, a.fecha_envio,\
+                    a.tipo_id_vendedor, a.vendedor_id, a.estado, a.estado_pedido, a.fecha_registro_anulacion, a.usuario_anulador, a.observacion_anulacion,\
+                    a.observacion, c.tipo_pais_id, c.tipo_dpto_id, c.tipo_mpio_id, c.direccion, c.telefono, c.nombre_tercero, d.nombre, d.telefono, e.pais,\
+                    f.departamento, g.municipio, h.estado\
+                order by 1 desc\
+";
+    
+    G.db.pagination(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
+        callback(err, rows);
+    }); 
+
+};
+
+
+/**
  * @api {sql} estado_cotizacion Pedidos clientes model
  * @apiName Pedidos Clientes
  * @apiGroup PedidosCliente (sql)

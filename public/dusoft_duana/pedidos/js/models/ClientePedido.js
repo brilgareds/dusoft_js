@@ -9,7 +9,7 @@ define(["angular", "js/models", "includes/classes/Cliente"], function(angular, m
             this.identificacion;
             this.ubicacion;
             this.contrato_id;
-            this.tipo_bloqueo_id;
+            this.estado_contrato;
         }
 
         this.get = function(nombre, direccion, tipo_id, id, telefono) {
@@ -42,12 +42,12 @@ define(["angular", "js/models", "includes/classes/Cliente"], function(angular, m
             return this.contrato_id;
         };
         
-        ClientePedido.prototype.setTipoBloqueoId = function(tipo_bloqueo_id) {
-            this.tipo_bloqueo_id = tipo_bloqueo_id;
+        ClientePedido.prototype.setEstadoContrato = function(estado_contrato) {
+            this.estado_contrato = estado_contrato;
         };
         
-        ClientePedido.prototype.getTipoBloqueoId = function() {
-            return this.tipo_bloqueo_id;
+        ClientePedido.prototype.getEstadoContrato = function() {
+            return this.estado_contrato;
         };
         
         return this;

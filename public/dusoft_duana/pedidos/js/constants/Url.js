@@ -79,7 +79,10 @@ define(["angular"], function(angular) {
                 'CONSULTA_ESTADO_COTIZACION' :BASE_URL+'/PedidosClientes/estadoCotizacion',
                 'LISTAR_DETALLE_COTIZACION' :BASE_URL+'/PedidosClientes/listarDetalleCotizacion',
                 'ELIMINAR_REGISTRO_DETALLE_COTIZACION' :BASE_URL+'/PedidosClientes/eliminarRegistroDetalleCotizacion',
-                'CAMBIAR_ESTADO_COTIZACION' :BASE_URL+'/PedidosClientes/cambiarEstadoCotizacion'
+                'CAMBIAR_ESTADO_COTIZACION' :BASE_URL+'/PedidosClientes/cambiarEstadoCotizacion',
+                'ARCHIVO_PLANO_PEDIDO_CLIENTE' :BASE_URL+'/PedidosClientes/pedidoClienteArchivoPlano',
+                'IMPRIMIR_COTIZACION_CLIENTE' :BASE_URL+'/PedidosClientes/imprimirCotizacionCliente',
+                'LISTADO_PEDIDOS_CLIENTES' :BASE_URL+'/PedidosClientes/listadoPedidosClientes'
 	    },
 	    'TERCEROS':{
 	    	'LISTAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/listar",

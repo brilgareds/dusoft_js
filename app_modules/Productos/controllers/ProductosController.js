@@ -83,24 +83,6 @@ Productos.prototype.listarProductosClientes = function(req, res) {
     var termino_busqueda = args.productos.termino_busqueda;
     var pagina_actual = args.productos.pagina_actual;
     var pedido_cliente_id_tmp = args.productos.pedido_cliente_id_tmp;
-    
-    console.log(">>>>>> empresa_id: ", empresa_id);
-    console.log(">>>>>> centro_utilidad_id: ", centro_utilidad_id);
-    console.log(">>>>>> bodega_id: ", bodega_id);
-    console.log(">>>>>> contrato_cliente_id: ", contrato_cliente_id);
-    console.log(">>>>>> termino_busqueda: ", termino_busqueda);
-    console.log(">>>>>> pagina_actual: ", pagina_actual);
-    console.log(">>>>>> pedido_cliente_id_tmp: ", pedido_cliente_id_tmp);
-    
-    /*res.send(G.utils.r(req.url, 'Parámetros recibidos', 200, {  empresa_id: empresa_id,
-                                                                centro_utilidad_id: centro_utilidad_id,
-                                                                bodega_id: bodega_id,
-                                                                contrato_cliente_id: contrato_cliente_id,
-                                                                termino_busqueda: termino_busqueda,
-                                                                pagina_actual: pagina_actual
-                                                                }));*/
-    
-    //return;
 
     /* Inicio - Modificación para Tipo Producto */
     var tipo_producto = '0';

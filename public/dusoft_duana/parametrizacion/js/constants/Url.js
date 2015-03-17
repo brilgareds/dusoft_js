@@ -31,7 +31,8 @@
                 'GUARDAR_ROL': BASE_URL+"/Roles/guardarRol",
                 'OBTENER_ROLES_POR_ID' : BASE_URL+"/Roles/obtenerRolesPorId",
                 'HABILITAR_MODULOS_ROLES' : BASE_URL +"/Roles/habilitarModulosEnRoles",
-                'OBTENER_MODULOS_POR_ROL' : BASE_URL +"/Roles/obtenerModulosPorRol"
+                'OBTENER_MODULOS_POR_ROL' : BASE_URL +"/Roles/obtenerModulosPorRol",
+                'GUARDAR_OPCION' : BASE_URL +"/Roles/guardarOpcion"
                 
                 
             }

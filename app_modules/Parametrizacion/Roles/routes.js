@@ -24,18 +24,8 @@ module.exports = function(app, di_container) {
         c_roles.obtenerModulosPorRol(req, res);
     });
 
-    app.post('/api/Modulos/guardarOpcion', function(req, res) {
+    app.post('/api/Roles/guardarOpcion', function(req, res) {
         c_roles.guardarOpcion(req, res);
-    });
-
-    app.post('/api/Modulos/eliminarOpcion', function(req, res) {
-        c_roles.eliminarOpcion(req, res);
-    });
-
-
-
-    app.post('/api/Modulos/listarModulosPorEmpresa', function(req, res) {
-        c_roles.listarModulosPorEmpresa(req, res);
     });
 
 };

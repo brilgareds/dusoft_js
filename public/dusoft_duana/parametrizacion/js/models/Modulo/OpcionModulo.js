@@ -10,6 +10,7 @@ define(["angular", "js/models"], function(angular, models) {
                 this.alias = alias || "";
                 this.estado = false;
                 this.seleccionado = false;
+                this.estado_opcion_rol = 0;
                 
             }
             
@@ -19,6 +20,10 @@ define(["angular", "js/models"], function(angular, models) {
             
             OpcionModulo.prototype.getId = function(){
                  return this.id ;
+            };
+            
+            OpcionModulo.prototype.setEstado_opcion_rol = function(id){
+                this.estado_opcion_rol = Boolean(Number(id));
             };
 
             OpcionModulo.prototype.setNombre = function(nombre){

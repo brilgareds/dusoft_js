@@ -187,10 +187,12 @@ ModuloModel.prototype.obtenerOpcionPorNombre = function(nombre, callback) {
 };
 
 
-ModuloModel.prototype.listarOpcionesPorModulo = function(modulo_id, callback) {
-    var sql = "SELECT * FROM modulos_opciones WHERE modulo_id =  $1 ORDER BY id";
+ModuloModel.prototype.listarOpcionesPorModulo = function(modulo_id,rol_modulo_id, callback) {
+    var sql = "SELECT a.*, b.estado as estado_opcion_rol FROM modulos_opciones  a\
+               LEFT JOIN roles_modulos_opciones b ON b.rol_modulo_id = $2 AND a.id = b.modulo_opcion_id\
+               WHERE a.modulo_id =  $1 ORDER BY a.id";
 
-    G.db.query(sql, [modulo_id], function(err, rows, result) {
+    G.db.query(sql, [modulo_id, rol_modulo_id], function(err, rows, result) {
         callback(err, rows);
     });
 };

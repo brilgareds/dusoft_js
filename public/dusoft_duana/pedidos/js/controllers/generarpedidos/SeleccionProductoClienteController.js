@@ -259,9 +259,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         {field: 'descripcion', displayName: 'Descripción'},
                         {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada'},
                         {field: 'iva', displayName: 'Iva'},
-                        {field: 'precio', displayName: 'Precio Unitario'},
-                        {field: 'total_sin_iva', displayName: 'Total Sin Iva'},
-                        {field: 'total_con_iva', displayName: 'Total Con Iva'},
+                        {field: 'precio', displayName: 'Precio Unitario', cellFilter: "currency:'$ '"},
+                        {field: 'total_sin_iva', displayName: 'Total Sin Iva', cellFilter: "currency:'$ '"},
+                        {field: 'total_con_iva', displayName: 'Total Con Iva', cellFilter: "currency:'$ '"},
                         {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
                             cellTemplate: ' <div class="row">\n\
                                                 <button ng-if="rootSeleccionProductoCliente.bloquear_eliminar == false" class="btn btn-danger btn-xs" ng-click="onEliminarSeleccionado(row)">\n\
@@ -504,7 +504,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                     row.entity.descripcion,          //descripcion
                                     0,                               //existencia **hasta aquí heredado
                                     parseFloat(row.entity.precio),      //precio
-                                    row.entity.cantidad_solicitada,  //cantidad_solicitada
+                                    parseInt(row.entity.cantidad_solicitada),  //cantidad_solicitada
                                     0,                               //cantidad_separada
                                     "",                              //observacion
                                     "",                              //disponible
@@ -525,9 +525,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 producto.setTotalSinIva();
                 producto.setTotalConIva();
                 producto.setEstado(row.entity.getEstado());
-                
-                //console.log(">>>>>>>>>>>>>&&&&& Datos del Row:  ", row.entity);
-                //console.log(">>>>>>>>>>>>>&&&&& Producto antes de agregar a pedido:  ", producto);
 
                 $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().agregarProducto(producto);
                 
@@ -581,6 +578,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                     if (data.status === 200) {
                         console.log("Registro Insertado Exitosamente en Detalle: ", data.msj);
+                        
+                        //Sumar Parcial de Total Con IVA y Sin IVA
+                        $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().valor_total_sin_iva += parseFloat(producto.getTotalSinIva());
+                        $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().valor_total_con_iva += parseFloat(producto.getTotalConIva());
                     }
                     else {
                         console.log("No se pudo Incluir éste produto: ",data.msj);

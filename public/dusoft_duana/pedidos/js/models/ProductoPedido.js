@@ -99,6 +99,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
         
         ProductoPedido.prototype.setTotalSinIva = function() {
             this.total_sin_iva = this.precio * this.cantidad_solicitada;
+            this.total_sin_iva = this.total_sin_iva.toFixed(2);
         };
         ProductoPedido.prototype.getTotalSinIva = function() {
             return this.total_sin_iva;
@@ -106,6 +107,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
         
         ProductoPedido.prototype.setTotalConIva = function() {
             this.total_con_iva = (this.precio + ((this.precio*this.iva)/100)) * this.cantidad_solicitada;
+            this.total_con_iva = this.total_con_iva.toFixed(2);
         };
         
         ProductoPedido.prototype.getTotalConIva = function() {

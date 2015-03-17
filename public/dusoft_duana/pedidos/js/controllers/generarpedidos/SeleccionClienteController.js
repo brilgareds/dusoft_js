@@ -136,7 +136,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 cliente.setMunicipio(obj.municipio);            //municipio
                 cliente.setUbicacion();                         //ubicacion = pais + departamento + municipio
                 cliente.setContratoId(obj.contrato_cliente_id); //contrato_id
-                cliente.setTipoBloqueoId(obj.tipo_bloqueo_id);  //tipo_bloqueo_id
+                cliente.setEstadoContrato(obj.estado_contrato);  //tipo_bloqueo_id
 
                 return cliente;
             };
@@ -159,10 +159,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         {field: 'telefono', displayName: 'Teléfono', width: "11%"},
                         {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
                         cellTemplate: ' <div class="row">\n\
-                                            <button ng-if="row.entity.tipo_bloqueo_id == 1" class="btn btn-default btn-xs" ng-click="onSeleccionarCliente(row)">\n\
+                                            <button ng-if="row.entity.estado_contrato == 1" class="btn btn-default btn-xs" ng-click="onSeleccionarCliente(row)">\n\
                                                 <span class="glyphicon glyphicon-plus-sign"> Seleccionar</span>\n\
                                             </button>\n\
-                                            <button ng-if="row.entity.tipo_bloqueo_id != 1" ng-disabled="true" class="btn btn-default btn-xs" ng-click="">\n\
+                                            <button ng-if="row.entity.estado_contrato != 1" ng-disabled="true" class="btn btn-default btn-xs" ng-click="">\n\
                                                 <span class="glyphicon glyphicon-lock"> Bloqueado</span>\n\
                                             </button>\n\
                                         </div>'

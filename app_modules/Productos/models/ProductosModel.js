@@ -91,7 +91,7 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
 
 /**/
 // Autor:      : Alexander López Guerrero
-// Descripcion : Lista productos
+// Descripcion : Lista productos Clientes
 // Calls       : Productos -> ProductosController -> listarProductosClientes();
 // 
 ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pedido_cliente_id_tmp, tipo_producto, pagina, callback) {
@@ -104,7 +104,7 @@ ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro
     if(tipo_producto !== '0') {
 
         sql_aux = " and b.tipo_producto_id = $7 ";
-         //sql_aux = " and b.tipo_producto_id = $4 ";
+         
         array_parametros = [empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, "%" + termino_busqueda + "%", pedido_cliente_id_tmp, tipo_producto];
     }
     else {

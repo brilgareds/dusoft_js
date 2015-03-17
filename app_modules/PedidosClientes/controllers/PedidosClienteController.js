@@ -676,13 +676,12 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
  
 };
 
+//LISTAR COTIZACIONES CLIENTES
 PedidosCliente.prototype.listarCotizaciones = function(req, res) {
 
     var that = this;
 
     var args = req.body.data;
-    
-    //cotizaciones_cliente
 
     if (args.cotizaciones_cliente === undefined || args.cotizaciones_cliente.empresa_id === undefined) {
         res.send(G.utils.r(req.url, 'empresa_id No Está Definido', 404, {}));
@@ -694,7 +693,7 @@ PedidosCliente.prototype.listarCotizaciones = function(req, res) {
         return;
     }
 
-    //Parámetros a insertar
+    //Parámetros de búsqueda
     var empresa_id = args.cotizaciones_cliente.empresa_id;
     var termino_busqueda = args.cotizaciones_cliente.termino_busqueda;
     var pagina = args.cotizaciones_cliente.pagina_actual;
@@ -712,6 +711,42 @@ PedidosCliente.prototype.listarCotizaciones = function(req, res) {
  
 };
 
+//LISTAR PEDIDOS
+PedidosCliente.prototype.listadoPedidosClientes = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+    
+    if (args.pedidos_cliente === undefined || args.pedidos_cliente.empresa_id === undefined) {
+        res.send(G.utils.r(req.url, 'empresa_id No Está Definido', 404, {}));
+        return;
+    }
+    
+    if (args.pedidos_cliente.empresa_id === '') {
+        res.send(G.utils.r(req.url, 'empresa_id Está Vacio', 404, {}));
+        return;
+    }
+
+    //Parámetros de búsqueda
+    var empresa_id = args.pedidos_cliente.empresa_id;
+    var termino_busqueda = args.pedidos_cliente.termino_busqueda;
+    var pagina = args.pedidos_cliente.pagina_actual;
+
+    that.m_pedidos_clientes.listado_pedidos_clientes(empresa_id, termino_busqueda, pagina, function(err, listado_pedidos) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error en consulta de Pedidos', 500, {}));
+            return;
+        }
+
+        res.send(G.utils.r(req.url, 'Consulta de Pedidos Exitosa', 200, {resultado_consulta: listado_pedidos}));
+
+    });
+ 
+};
+
+//ESTADO COTIZACIÓN DEL CLIENTE
 PedidosCliente.prototype.estadoCotizacion = function(req, res) {
 
     var that = this;
@@ -751,12 +786,12 @@ PedidosCliente.prototype.listarDetalleCotizacion = function(req, res) {
     var args = req.body.data;
 
     if (args.detalle_cotizacion === undefined || args.detalle_cotizacion.numero_cotizacion === undefined) {
-        res.send(G.utils.r(req.url, 'numero_cotizacion No Está Definido', 404, {}));
+        res.send(G.utils.r(req.url, 'número_cotizacion No Está Definido', 404, {}));
         return;
     }
     
     if (args.detalle_cotizacion.numero_cotizacion === '') {
-        res.send(G.utils.r(req.url, 'numero_cotizacion Está Vacio', 404, {}));
+        res.send(G.utils.r(req.url, 'número_cotizacion Está Vacio', 404, {}));
         return;
     }
 
@@ -777,7 +812,6 @@ PedidosCliente.prototype.listarDetalleCotizacion = function(req, res) {
 };
 
 //eliminar_registro_detalle_cotizacion
-
 PedidosCliente.prototype.eliminarRegistroDetalleCotizacion = function(req, res) {
 
     var that = this;
@@ -845,6 +879,357 @@ PedidosCliente.prototype.cambiarEstadoCotizacion = function(req, res) {
  
 };
 
+PedidosCliente.prototype.pedidoClienteArchivoPlano = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+    var session = req.body.session;
+    
+    //VERIFICACION DATOS PARA CONSULTA PRODUCTOS
+
+    if (args.pedido_cliente === undefined || args.pedido_cliente.empresa_id === undefined || args.pedido_cliente.centro_utilidad_id === undefined || args.pedido_cliente.bodega_id === undefined) {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id no estan definidos', 404, {}));
+        return;
+    }
+
+    if (args.pedido_cliente.contrato_cliente_id === undefined || args.pedido_cliente.pedido_cliente_id_tmp === undefined || args.pedido_cliente.tipo_producto === undefined) {
+        res.send(G.utils.r(req.url, 'contrato_cliente_id, pedido_cliente_id_tmp o tipo_producto no estan definidos', 404, {}));
+        return;
+    }
+    
+    if (args.pedido_cliente.empresa_id === '' || args.pedido_cliente.centro_utilidad_id === '' || args.pedido_cliente.bodega_id === '') {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id están vacios', 404, {}));
+        return;
+    }
+
+    if (args.pedido_cliente.contrato_cliente_id === '' || args.pedido_cliente.pedido_cliente_id_tmp === '' || args.pedido_cliente.tipo_producto === '') {
+        res.send(G.utils.r(req.url, 'contrato_cliente_id, pedido_cliente_id_tmp o tipo_producto están vacios', 404, {}));
+        return;
+    }
+    
+    //VERIFICACION DE DATOS PARA ENCABEZADO. empresa_id se verifica arriba
+
+    if (args.pedido_cliente === undefined || args.pedido_cliente.tipo_id_tercero === undefined || args.pedido_cliente.tercero_id === undefined) {
+        res.send(G.utils.r(req.url, 'tipo_id_tercero o tercero_id no estan definidos', 404, {}));
+        return;
+    }
+
+    if (args.pedido_cliente.tipo_id_vendedor === undefined || args.pedido_cliente.vendedor_id === undefined || args.pedido_cliente.estado === undefined) {
+        res.send(G.utils.r(req.url, 'tipo_id_vendedor, vendedor_id o estado no estan definidos', 404, {}));
+        return;
+    }
+    
+    if (args.pedido_cliente.tipo_id_tercero === '' || args.pedido_cliente.tercero_id === '') {
+        res.send(G.utils.r(req.url, 'tipo_id_tercero o tercero_id están vacios', 404, {}));
+        return;
+    }
+
+    if (args.pedido_cliente.tipo_id_vendedor=== '' || args.pedido_cliente.vendedor_id === '' || args.pedido_cliente.estado === '') {
+        res.send(G.utils.r(req.url, 'tipo_id_vendedor, vendedor_id o estado están vacios', 404, {}));
+        return;
+    }
+    
+    //VERIFICACION DEL FILE
+
+    if (req.files === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere un archivo plano', 404, {}));
+        return;
+    }
+
+    __subir_archivo_plano(req.files, function(continuar, contenido) {
+
+        if (continuar) {
+
+            var lista_productos = contenido[0].data;
+
+            __validar_productos_archivo_plano(that, lista_productos, function(productos_validos, productos_invalidos) {
+
+                if (productos_validos.length === 0) {
+                    res.send(G.utils.r(req.url, 'Lista de Productos', 200, {pedido_cliente: {productos_validos: productos_validos, productos_invalidos: productos_invalidos}}));
+                    return;
+                }
+
+                var j = productos_validos.length;
+                
+                var empresa_id = args.pedido_cliente.empresa_id;
+                var tipo_id_tercero = args.pedido_cliente.tipo_id_tercero;
+                var tercero_id = args.pedido_cliente.tercero_id;
+                var usuario_id = req.session.user.usuario_id;
+                var tipo_id_vendedor = args.pedido_cliente.tipo_id_vendedor;
+                var vendedor_id = args.pedido_cliente.vendedor_id;
+                var estado = args.pedido_cliente.estado;
+                var observaciones = args.pedido_cliente.observaciones;
+                
+                if(j>0){
+                    //INSERTAR ENCABEZADO
+                    that.m_pedidos_clientes.insertar_cotizacion(empresa_id, tipo_id_tercero, tercero_id, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones, function(err, array_pedido_cliente_id_tmp) {
+
+                        if (err) {
+                            res.send(G.utils.r(req.url, 'Error en Inserción del Encabezado de Cotización', 500, {}));
+                            return;
+                        }
+
+                        var centro_utilidad_id = args.pedido_cliente.centro_utilidad_id;
+                        var bodega_id = args.pedido_cliente.bodega_id;
+                        var contrato_cliente_id = args.pedido_cliente.contrato_cliente_id;
+                        var pedido_cliente_id_tmp = array_pedido_cliente_id_tmp[0].pedido_cliente_id_tmp;
+                        var tipo_producto = args.pedido_cliente.tipo_producto;
+                        var pagina_actual = 1;
+
+                        productos_validos.forEach(function(producto_valido) {
+
+                            var termino_busqueda = producto_valido.codigo_producto;
+
+                            //Consultar tipo_producto_id y cantidad_pendiente
+                            that.m_productos.listar_productos_clientes(empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pedido_cliente_id_tmp, tipo_producto, pagina_actual, function(err, lista_productos) {
+
+                                var i = lista_productos.length;
+
+                                if (i === 0) {
+                                    res.send(G.utils.r(req.url, 'Lista de productos vacía', 200, {lista_productos: []}));
+                                    return;
+                                }
+
+                                lista_productos.forEach(function(producto) {
+
+                                    //Datos a Insertar
+                                    var codigo_producto = producto_valido.codigo_producto;
+                                    var porc_iva = producto.porc_iva;
+                                    var numero_unidades = parseInt(producto_valido.cantidad_solicitada);
+                                    var valor_unitario = parseFloat(producto_valido.precio_unitario);
+                                    
+                                    //INSERTAR DETALLE
+                                    that.m_pedidos_clientes.insertar_detalle_cotizacion(pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, function(err, rows, result) {
+                                        if (err) {
+                                            productos_invalidos.push(producto);
+                                        }
+                                        if (--j === 0) {
+                                            res.send(G.utils.r(req.url, 'Lista de Productos', 200, {pedido_cliente_detalle: {numero_cotizacion: pedido_cliente_id_tmp, productos_validos: productos_validos, productos_invalidos: productos_invalidos}}));
+                                            return;
+                                        }
+
+                                    });
+
+                                });
+                            });
+                        });
+                    });
+                }
+
+                else{
+                    res.send(G.utils.r(req.url, 'Lista de Productos', 200, {pedido_cliente_detalle: {numero_cotizacion: pedido_cliente_id_tmp, productos_validos: productos_validos, productos_invalidos: productos_invalidos}}));
+                    return;
+                }
+                
+            });
+        } else {
+            // Error
+            console.log('Se ha generado error subiendo el archivo Plano. Revise el formato!');
+        }
+    });
+};
+
+function __subir_archivo_plano(files, callback) {
+
+    var ruta_tmp = files.file.path;
+    var ext = G.path.extname(ruta_tmp);
+    var nombre_archivo = G.random.randomKey(3, 3) + ext;
+    var ruta_nueva = G.dirname + G.settings.carpeta_temporal + nombre_archivo;
+    var contenido_archivo_plano = [];
+
+    if (G.fs.existsSync(ruta_tmp)) {
+        // Copiar Archivo
+        G.fs.copy(ruta_tmp, ruta_nueva, function(err) {
+            if (err) {
+                // Borrar archivo fisico
+                G.fs.unlinkSync(ruta_tmp);
+                callback(false);
+                return;
+            } else {
+                G.fs.unlink(ruta_tmp, function(err) {
+                    if (err) {
+                        callback(false);
+                        return;
+                    } else {
+                        // Cargar Contenido
+                        contenido_archivo_plano = G.xlsx.parse(ruta_nueva);
+                        // Borrar archivo fisico
+                        G.fs.unlinkSync(ruta_nueva);
+                        callback(true, contenido_archivo_plano);
+                    }
+                });
+            }
+        });
+    } else {
+        callback(false);
+    }
+};
+
+function __validar_productos_archivo_plano(contexto, contenido_archivo_plano, callback) {
+
+    var that = contexto;
+
+    var productos_validos = [];
+    var productos_invalidos = [];
+    var filas = [];
+
+
+    contenido_archivo_plano.forEach(function(row) {
+        filas.push(row);
+    });
+
+
+    var i = filas.length;
+
+    filas.forEach(function(row) {
+        var codigo_producto = row[0] || '';
+        var cantidad_solicitada = row[1] || 0;
+        var precio_unitario = row[2] || 0;
+
+        that.m_productos.validar_producto(codigo_producto, function(err, existe_producto) {
+
+            var producto = {codigo_producto: codigo_producto, cantidad_solicitada: cantidad_solicitada, precio_unitario: precio_unitario};
+
+            if (existe_producto.length > 0 && cantidad_solicitada > 0) {
+                productos_validos.push(producto);
+            } else {
+                productos_invalidos.push(producto);
+            }
+
+            if (--i === 0) {
+                callback(productos_validos, productos_invalidos);
+            }
+        });
+    });
+};
+
+PedidosCliente.prototype.imprimirCotizacionCliente = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.encabezado_pedido_cliente === undefined || args.encabezado_pedido_cliente.numero_cotizacion === undefined) {
+        res.send(G.utils.r(req.url, 'numero_cotizacion no está definido', 404, {}));
+        return;
+    }
+
+    if (args.encabezado_pedido_cliente.codigo_origen_id === undefined || args.encabezado_pedido_cliente.empresa_origen === undefined
+            || args.encabezado_pedido_cliente.fecha_registro === undefined) {
+
+        res.send(G.utils.r(req.url, 'codigo_origen_id, empresa_origen o fecha_registro no están definidos', 404, {}));
+        return;
+    }
+
+   if (args.encabezado_pedido_cliente.id_cliente === undefined || args.encabezado_pedido_cliente.nombre_cliente === undefined
+            || args.encabezado_pedido_cliente.ciudad_cliente === undefined || args.encabezado_pedido_cliente.direccion_cliente === undefined) {
+
+        res.send(G.utils.r(req.url, 'id_cliente, nombre_cliente, ciudad_cliente o direccion_cliente no están definidos', 404, {}));
+        return;
+    }
+    
+    if (args.encabezado_pedido_cliente.valor_total_sin_iva === undefined || args.encabezado_pedido_cliente.valor_total_con_iva === undefined) {
+
+        res.send(G.utils.r(req.url, 'valor_total_sin_iva o valor_total_con_iva no están definidos', 404, {}));
+        return;
+    }
+    
+
+    if (args.encabezado_pedido_cliente.numero_cotizacion === '') {
+        res.send(G.utils.r(req.url, 'numero_cotizacion está vacio', 404, {}));
+        return;
+    }
+
+    if (args.encabezado_pedido_cliente.codigo_origen_id === '' || args.encabezado_pedido_cliente.empresa_origen === ''
+            || args.encabezado_pedido_cliente.fecha_registro === '') {
+
+        res.send(G.utils.r(req.url, 'codigo_origen_id, empresa_origen o fecha_registro están vacios', 404, {}));
+        return;
+    }
+    
+    if (args.encabezado_pedido_cliente.id_cliente === '' || args.encabezado_pedido_cliente.nombre_cliente === ''
+            || args.encabezado_pedido_cliente.ciudad_cliente === '' || args.encabezado_pedido_cliente.direccion_cliente === '') {
+
+        res.send(G.utils.r(req.url, 'id_cliente, nombre_cliente, ciudad_cliente o direccion_cliente están vacios', 404, {}));
+        return;
+    }
+    
+    if (args.encabezado_pedido_cliente.valor_total_sin_iva === '' || args.encabezado_pedido_cliente.valor_total_con_iva === '') {
+
+        res.send(G.utils.r(req.url, 'valor_total_sin_iva o valor_total_con_iva están vacios', 404, {}));
+        return;
+    }
+
+    
+    if (args.detalle_pedido_cliente === undefined) {
+        res.send(G.utils.r(req.url, 'El detalle no está definido', 404, {}));
+        return;
+    }
+    else {
+        args.detalle_pedido_cliente.forEach(function(detalle) {
+
+            if (detalle.codigo_producto === undefined || detalle.descripcion === undefined) {
+                res.send(G.utils.r(req.url, 'codigo_producto o descripcion no están definidos', 404, {}));
+                return;
+            }
+
+            if (detalle.cantidad_solicitada === undefined || detalle.iva === undefined) {
+                res.send(G.utils.r(req.url, 'cantidad_solicitada o iva no están definidos', 404, {}));
+                return;
+            }
+            
+            if (detalle.precio === undefined || detalle.total_sin_iva === undefined || detalle.total_con_iva === undefined) {
+                res.send(G.utils.r(req.url, 'precio, total_sin_iva o total_con_iva no están definidos', 404, {}));
+                return;
+            }
+
+            
+            if (detalle.codigo_producto === '' || detalle.descripcion === '') {
+                res.send(G.utils.r(req.url, 'codigo_producto o descripcion están vacios', 404, {}));
+                return;
+            }
+
+            if (detalle.cantidad_solicitada === '' || detalle.iva === '') {
+                res.send(G.utils.r(req.url, 'cantidad_solicitada o iva están vacios', 404, {}));
+                return;
+            }
+            
+            if (detalle.precio === '' || detalle.total_sin_iva === '' || detalle.total_con_iva === '') {
+                res.send(G.utils.r(req.url, 'precio, total_sin_iva o total_con_iva están vacios', 404, {}));
+                return;
+            }
+
+        });
+    }
+
+    _generarDocumentoPedido(args, function(nombreTmp){
+     res.send(G.utils.r(req.url, 'Url reporte pedido', 200, {reporte_pedido: {nombre_reporte: nombreTmp}}));
+     return;
+     });
+
+};
+
+function _generarDocumentoPedido(obj, callback) {
+    G.jsreport.reporter.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/PedidosClientes/reports/cotizacion.html', 'utf8'),
+            //helpers: G.fs.readFileSync('app_modules/PedidosFarmacias/reports/javascripts/rotulos.js', 'utf8'),
+            recipe: "phantom-pdf",
+            engine: 'jsrender'
+        },
+        data: obj
+    }).then(function(response) {
+
+        var name = response.result.path;
+        var fecha = new Date();
+        var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
+        G.fs.copySync(name, G.dirname + "/public/reports/" + nombreTmp);
+
+        callback(nombreTmp);
+    });
+};
+/* PDF - Fin */
 PedidosCliente.$inject = ["m_pedidos_clientes", "e_pedidos_clientes", "m_productos", "m_pedidos"];
 
 module.exports = PedidosCliente;

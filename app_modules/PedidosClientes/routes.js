@@ -62,9 +62,24 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.eliminarRegistroDetalleCotizacion(req, res);
     });
     
-    //Cambiar Estado Cotización
+    // Cambiar Estado Cotización
     app.post('/api/PedidosClientes/cambiarEstadoCotizacion', function(req, res) {
         c_pedidos_clientes.cambiarEstadoCotizacion(req, res);
     });    
+    
+    // Carga Archivo Plano
+    app.post('/api/PedidosClientes/pedidoClienteArchivoPlano', function(req, res) {
+        c_pedidos_clientes.pedidoClienteArchivoPlano(req, res);
+    });
+    
+    // Generar PDF Cotización
+    app.post('/api/PedidosClientes/imprimirCotizacionCliente', function(req, res) {
+        c_pedidos_clientes.imprimirCotizacionCliente(req, res);
+    }); 
+    
+    // Listado Pedidos Clientes
+    app.post('/api/PedidosClientes/listadoPedidosClientes', function(req, res) {
+        c_pedidos_clientes.listadoPedidosClientes(req, res);
+    }); 
 
 };

@@ -101,7 +101,7 @@
 
                     <tabset  class="">
 
-                        <tab disabled="bloquear">
+                        <tab disabled="bloquear" active="rootCreaCotizaciones.tab_estados.tab1">
 
                             <tab-heading>
                                 <b> Incluir Producto Manual</b>
@@ -124,7 +124,7 @@
 
                         </tab>
 
-                        <tab disabled="bloquear_upload">
+                        <tab disabled="bloquear_upload" active="rootCreaCotizaciones.tab_estados.tab2">
                             <tab-heading>
                                 <b> Cargar Archivo Plano </b>
                             </tab-heading>
@@ -168,28 +168,6 @@
                                         </div>
                                     </div>
                                 </div>
-<!--                                <div flow-prevent-drop flow-drag-enter="style={border: '5px solid green'}" flow-drag-leave="style={}" ng-style="dropEnabled && style">
-
-                                    <div class="span6">
-
-                                    </div>
-
-                                    <div class="alert" ng-hide="$flow.files.length" flow-drop flow-drag-enter="class='alert alert-success'" flow-drag-leave="class='alert'" ng-class="class" style="text-align: center; padding: 50px 0;">
-                                        <img src="../../../images/Cloud-Upload-Blue.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
-                                        <br/><br/>
-                                        Arrastre y suelte el archivo en ésta área o use el botón ...</br></br>
-                                        <button class="btn btn-info" flow-btn><i class="icon icon-file"></i>Buscar Archivo</button>
-                                    </div>
-
-                                    <div class="alert" ng-show="$flow.files.length" flow-drop flow-drag-enter="class='alert alert-success'" flow-drag-leave="class='alert'" ng-class="class" style="text-align: center; padding: 50px 0;">
-                                        El archivo a cargar es: {{$flow.files[0].name}}</br></br>
-                                        <img src="../../../images/txt-icon.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
-                                        <br/><br/>
-                                        <button class="btn btn-small btn-success" ng-show="$flow.files.length" ng-click="$flow.resume()">Subir Archivo</button>
-                                        <button class="btn btn-danger" ng-show="$flow.files.length" ng-click="$flow.cancel()">Eliminar</button>
-                                    </div>
-
-                                </div>-->
 
                             </div>
 
@@ -202,9 +180,9 @@
         </div> <!-- / end class row --> 
 
         <div class="col-sm-12 btn-toolbar">
-            <button type="submit" ng-disabled="!rootCreaCotizaciones.bloqueo_producto_incluido" class="btn btn-accion btn-success pull-right">Generar Cotización</button>
-            <button type="submit" class="btn btn-accion btn-danger pull-right">Eliminar Cotización</button>
-            <button type="submit" class="btn btn-accion btn-warning pull-right" ng-click="abrirViewPedidosClientes()">Cancelar Cotización</button>
+            <button type="submit" ng-disabled="!rootCreaCotizaciones.bloqueo_producto_incluido" class="btn btn-accion btn-success pull-right">Generar Pedido</button>
+            <button type="submit" class="btn btn-accion btn-danger pull-right" ng-click="generarPdfCotizacionCliente()">Generar PDF</button>
+            <button type="submit" class="btn btn-accion btn-warning pull-right" ng-click="abrirViewPedidosClientes()">Guardar Cotización</button>
         </div>
 
         <br/><br/><br/><br/><br/>
@@ -214,5 +192,5 @@
         </div>
 
     </div>
-
+    <visualizar-reporte></visualizar-reporte>
 </div>

@@ -7,8 +7,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         '$scope', '$rootScope', 'Request',
         'EmpresaPedido', 'ClientePedido', 'PedidoVenta',
         'API', "socket", "AlertService",
-        '$state','VendedorPedido', 'Usuario', 'ProductoPedido',
-        function($scope, $rootScope, Request, EmpresaPedido, ClientePedido, PedidoVenta, API, socket, AlertService, $state, VendedorPedido, Usuario, ProductoPedido) {
+        '$state','VendedorPedido', 'Usuario', 'ProductoPedido', "$modal",
+        function($scope, $rootScope, Request, EmpresaPedido, ClientePedido, PedidoVenta, API, socket, AlertService, $state, VendedorPedido, Usuario, ProductoPedido, $modal) {
 
             //$scope.Empresa = Empresa;
 
@@ -46,6 +46,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             $scope.rootCreaCotizaciones.Empresa.setCodigo('03');
             $scope.rootCreaCotizaciones.Empresa.setNombre('DUANA & CIA LTDA.');
+            
+            //$scope.rootCreaCotizaciones.valor_total_sin_iva = 0;
+            //$scope.rootCreaCotizaciones.valor_total_con_iva = 0;
 
             $scope.datos_cliente = {
                 nit: '',
@@ -199,19 +202,33 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 }
 
                 if(that.empty($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado())){
+                    
                     that.crearPedidoSeleccionadoEmpresa(that.crearPedidoVacio());
-                    //console.log(">>>>> EMPRESA: ",$scope.rootCreaCotizaciones.Empresa);
                 }
                 else{
                     $scope.rootCreaCotizaciones.seleccion_vendedor = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getVendedor().getId();
-                    console.log("Información de Empresa: ", $scope.rootCreaCotizaciones.Empresa);
-                    //that.crearPedidoSeleccionadoEmpresa(that.crearPedidoVacio());
+                    //console.log("Información de Empresa: ", $scope.rootCreaCotizaciones.Empresa);
+                    
+                    //console.log(">>>>> OBSERVACIÓN: ",$scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getObservacion());
+                    
+                    $scope.rootCreaCotizaciones.observacion = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getObservacion();
                     
                     // HACER CONSULTA DE PRODUCTOS DEL PEDIDO (DETALLE)
-                    
-                    //detalle_cotizacion.numero_cotizacion
-                    
-                    var obj = {
+
+                    that.consultarDetalleCotizacion(function(data){
+
+                        var detalle = data.obj.resultado_consulta;
+                        that.renderDetalleCotizacion(detalle);
+
+                    });
+                                                
+                }
+
+            };
+            
+            that.consultarDetalleCotizacion = function(callback){
+                
+                var obj = {
                         session: $scope.rootCreaCotizaciones.session,
                         data: {
                             detalle_cotizacion: {
@@ -219,32 +236,31 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             }
                         }
                     };
-
-                    var url = API.PEDIDOS.LISTAR_DETALLE_COTIZACION;
+                 
+                var url = API.PEDIDOS.LISTAR_DETALLE_COTIZACION;
                     
-                    Request.realizarRequest(url, "POST", obj, function(data) {
+                Request.realizarRequest(url, "POST", obj, function(data) {
 
-                        if (data.status === 200) {
-                            console.log("Consulta exitosa: ", data.msj);
-                            
-                            console.log("Datos de la consulta: ", data);
+                    if (data.status === 200) {
+                        console.log("Consulta exitosa: ", data.msj);
 
-                            /*if (callback !== undefined && callback !== "" && callback !== 0) {
-                                callback(data);
-                            }*/
-                            
-                            var detalle = data.obj.resultado_consulta;
-                            
-                            that.renderDetalleCotizacion(detalle);
+                        //console.log("Datos de la consulta: ", data);
+
+                        if (callback !== undefined && callback !== "" && callback !== 0) {
+                            callback(data);
                         }
-                        else {
-                            console.log("Error en la consulta: ", data.msj);
-                        }
-                    });
+
+                        
+                        //Lo siguiente va en el callback
+                        //--var detalle = data.obj.resultado_consulta;
+
+                        //--that.renderDetalleCotizacion(detalle);
+                    }
+                    else {
+                        console.log("Error en la consulta: ", data.msj);
+                    }
+                });
                     
-                }
-            
-
             };
             
             that.empty = function (data)
@@ -281,9 +297,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 
                 $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().vaciarProductos();
                 
+                $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_sin_iva = 0;
+                $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_con_iva = 0;
+                
                 detalle.forEach(function(producto){
                     
                     var obj = that.crearObjetoDetalle(producto);
+                    
+                    $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_sin_iva += parseFloat(obj.getTotalSinIva());
+                    $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_con_iva += parseFloat(obj.getTotalConIva());
+                    
+                    console.log(">>> Valor Parcial Total Sin Iva: ", $scope.rootCreaCotizaciones.valor_total_sin_iva);
                     
                     $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().agregarProducto(obj);
                     
@@ -331,14 +355,30 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 //enableCellSelection: true,
                 //selectedItems: $scope.selectedRow,
                 multiSelect: false,
+                footerTemplate: '   <div class="row col-md-12">\
+                                        <div class="col-md-3 pull-right">\
+                                            <table class="table table-clear">\
+                                                <tbody>\
+                                                    <tr>\
+                                                        <td class="left"><strong>Total Sin IVA</strong></td>\
+                                                        <td class="right">{{rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_sin_iva | currency: "$ "}}</td>    \
+                                                    </tr>\
+                                                    <tr>\
+                                                        <td class="left"><strong>Total Con IVA</strong></td>\
+                                                        <td class="right">{{rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_con_iva | currency: "$ "}}</td>                                        \
+                                                    </tr>\
+                                                </tbody>\
+                                            </table>\
+                                        </div>\
+                                    </div>',
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Código Producto'},
                     {field: 'descripcion', displayName: 'Descripción'},
                     {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada'},
-                    {field: 'iva', displayName: 'Iva'},
-                    {field: 'precio', displayName: 'Precio Unitario'},
-                    {field: 'total_sin_iva', displayName: 'Total Sin Iva'},
-                    {field: 'total_con_iva', displayName: 'Total Con Iva'}
+                    {field: 'iva', displayName: 'Iva %'},
+                    {field: 'precio', displayName: 'Precio Unitario', cellFilter: "currency:'$ '"},
+                    {field: 'total_sin_iva', displayName: 'Total Sin Iva', cellFilter: "currency:'$ '"},
+                    {field: 'total_con_iva', displayName: 'Total Con Iva', cellFilter: "currency:'$ '"}
                 ]
 
             };
@@ -396,6 +436,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         $scope.rootCreaCotizaciones.nombre_seleccion_vendedor = vendedor.nombre_tercero;
                         //$scope.rootCreaCotizaciones.tipo_id_seleccion_vendedor = vendedor.tipo_id_tercero;
                         $scope.rootCreaCotizaciones.Empresa.setVendedorSeleccionado(vendedor);
+                        $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setVendedor(vendedor);
                         
                         //console.log(">>>>> Vendedor Seleccionado: ", $scope.rootCreaCotizaciones.Empresa.getVendedorSeleccionado());
 
@@ -437,10 +478,63 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             });
             
-            /* Subir Planos - Inicio */
+            /**/
+            //Función que inserta el encabezado del pedido temporal
+            that.insertarEncabezadoCotizacion = function(callback) {
+                
+                if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() === "") {
+
+                    var obj_encabezado = {
+                        session: $scope.rootCreaCotizaciones.session,
+                        data: {
+                            cotizacion_encabezado: {
+
+                                empresa_id: $scope.rootCreaCotizaciones.Empresa.getCodigo(),
+                                tipo_id_tercero: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().tipo_id_tercero,
+                                tercero_id: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().id,
+                                tipo_id_vendedor: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getVendedor().getTipoId(),
+                                vendedor_id: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getVendedor().getId(),
+                                estado: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().estado,
+                                observaciones: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getObservacion()
+
+                            }
+                        }
+                    };
+
+                    var url_encabezado = API.PEDIDOS.CREAR_COTIZACION;
+
+                    Request.realizarRequest(url_encabezado, "POST", obj_encabezado, function(data) {
+
+                        if (data.status === 200) {
+                            
+                            console.log("Registro Insertado Exitosamente en Encabezado");
+
+                            var pedido_cliente_id_tmp = data.obj.resultado_consulta[0].pedido_cliente_id_tmp;
+                            
+                            $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setNumeroCotizacion(pedido_cliente_id_tmp);
+
+                            if(callback !== undefined && callback !== "" && callback !== 0){
+                                callback(true);
+                            }
+                        }
+                        else {
+                            console.log(data.msj);
+                            if(callback !== undefined && callback !== "" && callback !== 0){
+                                callback(false);
+                            }
+                        }
+                    });
+                    /* Fin - Inserción del Encabezado */
+                }
+                else{
+                    console.log("Cotización Existente - Continua Inserción Detalle");
+                    callback(true);
+                }
+            };          
+            /**/
             
             $scope.rootCreaCotizaciones.opciones_archivo = new Flow();
-            $scope.rootCreaCotizaciones.opciones_archivo.target = API.PEDIDOS.ARCHIVO_PLANO_PEDIDO_FARMACIA;
+            $scope.rootCreaCotizaciones.opciones_archivo.target = API.PEDIDOS.ARCHIVO_PLANO_PEDIDO_CLIENTE;
             $scope.rootCreaCotizaciones.opciones_archivo.testChunks = false;
             $scope.rootCreaCotizaciones.opciones_archivo.singleFile = true;
             $scope.rootCreaCotizaciones.opciones_archivo.query = {
@@ -454,26 +548,46 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             $scope.subir_archivo_plano = function() {
                     
-                    that.insertarEncabezadoPedidoTemporal(function(insert_encabezado_exitoso) {
+                   // that.insertarEncabezadoCotizacion(function(insert_encabezado_exitoso) {
 
-                        if (insert_encabezado_exitoso) {
+                        //--Inicialmente no se insertará Encabezado porque aquí se genera un consecutivo y no puede eliminarse una cotización. Se creará despué de validar la información del archivo.
+                        //if (insert_encabezado_exitoso) {
+
+                            //console.log("Pedido Seleccionado para PLANO: ",$scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado());
+                            
+                            var observacion = $scope.rootCreaCotizaciones.observacion;
+                
+                            $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setObservacion(observacion);
 
                             $scope.rootCreaCotizaciones.opciones_archivo.opts.query.data = JSON.stringify({
                                 
-                                pedido_farmacia: {
-                                    empresa_id: $scope.rootCreaCotizaciones.de_seleccion_empresa,
-                                    centro_utilidad_id: $scope.rootCreaCotizaciones.de_seleccion_centro_utilidad,
-                                    bodega_id: $scope.rootCreaCotizaciones.de_seleccion_bodega,
-                                    empresa_para: $scope.rootCreaCotizaciones.para_seleccion_empresa.split(",")[0],
-                                    centro_utilidad_para: $scope.rootCreaCotizaciones.para_seleccion_centro_utilidad.split(",")[0],                                    
-                                    bodega_para: $scope.rootCreaCotizaciones.para_seleccion_bodega.split(",")[0]
+                                pedido_cliente: {
+                                    //DATOS PARA CONSULTA PRODUCTOS
+                                    //termino_busqueda: $scope.rootCreaCotizaciones.termino_busqueda,
+                                    //pagina_actual: $scope.rootCreaCotizaciones.paginaactual,
+                                    //empresa_id: '03',
+                                    empresa_id: $scope.rootCreaCotizaciones.Empresa.getCodigo(),
+                                    centro_utilidad_id: '1 ',
+                                    bodega_id: '03',
+                                    tipo_producto: '0',
+                                    contrato_cliente_id: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getContratoId(),
+                                    pedido_cliente_id_tmp: '0',
+                                    
+                                    //DATOS PARA ENCABEZADO
+                                    //empresa_id: $scope.rootCreaCotizaciones.Empresa.getCodigo(),
+                                    tipo_id_tercero: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().tipo_id_tercero,
+                                    tercero_id: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().id,
+                                    tipo_id_vendedor: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getVendedor().getTipoId(),
+                                    vendedor_id: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getVendedor().getId(),
+                                    estado: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().estado,
+                                    observaciones: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getObservacion()
                                 }
 
                             });
 
                             $scope.rootCreaCotizaciones.opciones_archivo.upload();
-                        }
-                    });
+                        //}
+                   // });
             };
 
             $scope.respuesta_archivo_plano = function(file, message) {
@@ -504,12 +618,25 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         para_seleccion_bodega = $scope.rootCreaPedidoFarmacia.para_seleccion_bodega.split(',');
                     }*/
                     
+                    //--numero_cotizacion: pedido_cliente_id_tmp,
+                    
+                    var numero_cotizacion = data.obj.pedido_cliente_detalle.numero_cotizacion;
+                    
+                    console.log(">>>>> Número Cotización PLANO DATA: ",data.obj.pedido_cliente_detalle);
+                    
+                    $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setNumeroCotizacion(numero_cotizacion);
                     
                     that.ventana_modal_no_validos(data, function(){
                         $scope.setTabActivo(1, function(){
                         
                             //Trae detalle de productos cargados del archivo
                             /*that.consultarDetallePedidoTemporal(para_seleccion_empresa, para_seleccion_centro_utilidad, para_seleccion_bodega);*/
+                            that.consultarDetalleCotizacion(function(data){
+
+                                var detalle = data.obj.resultado_consulta;
+                                that.renderDetalleCotizacion(detalle);
+
+                            });
                         });
                     });
                     
@@ -521,8 +648,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             that.ventana_modal_no_validos = function(data, callback){
                 
-                $scope.productos_validos = data.obj.pedido_farmacia_detalle.productos_validos;
-                $scope.productos_invalidos = data.obj.pedido_farmacia_detalle.productos_invalidos;
+                $scope.productos_validos = data.obj.pedido_cliente_detalle.productos_validos;
+                $scope.productos_invalidos = data.obj.pedido_cliente_detalle.productos_invalidos;
 
                 $scope.opts = {
                     backdrop: true,
@@ -559,9 +686,85 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 var modalInstance = $modal.open($scope.opts);  
                 
                 callback();
-            };            
+            };     
             
-            /* Subir Planos - Fin */
+            $scope.setTabActivo = function(number, callback) {
+
+                if (number === 1)
+                {
+                    $scope.rootCreaCotizaciones.tab_estados.tab1 = true;
+                    if(callback !== undefined && callback !== "" && callback !== 0){
+                        callback();
+                    }
+                }
+
+                if (number === 2)
+                {
+                    $scope.rootCreaCotizaciones.tab_estados.tab2 = true;
+                    if(callback !== undefined && callback !== "" && callback !== 0){
+                        callback();
+                    }
+                }
+
+            };
+            
+            $scope.generarPdfCotizacionCliente = function(){
+                
+                var codigo_empresa_origen = $scope.rootCreaCotizaciones.Empresa.getCodigo();
+                var nombre_empresa_origen = $scope.rootCreaCotizaciones.Empresa.getNombre();
+                
+                var numero_cotizacion = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion();
+                
+                var id_cliente = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getId();
+                var nombre_cliente = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getNombre();
+                var ciudad_cliente = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getMunicipio();
+                var direccion_cliente = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getDireccion();
+
+                var fecha_registro = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getFechaRegistro();
+                var observacion = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getObservacion();
+                
+                var valor_total_sin_iva = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_sin_iva;
+                var valor_total_con_iva = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_con_iva;
+
+
+                var obj_pdf = {
+                    session: $scope.rootCreaCotizaciones.session,
+                    data: {
+                        encabezado_pedido_cliente: {
+                            numero_cotizacion: numero_cotizacion,        
+                            codigo_origen_id: codigo_empresa_origen,
+                            empresa_origen: nombre_empresa_origen,
+                            
+                            id_cliente: id_cliente,
+                            nombre_cliente: nombre_cliente,
+                            ciudad_cliente: ciudad_cliente,
+                            direccion_cliente: direccion_cliente,
+
+                            fecha_registro: fecha_registro,
+                            observacion: observacion,
+                    
+                            valor_total_sin_iva: valor_total_sin_iva,
+                            valor_total_con_iva: valor_total_con_iva
+                        },
+                        detalle_pedido_cliente: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().obtenerProductos()
+                    }
+                };
+
+                var url_imprimir_cotizacion_pdf = API.PEDIDOS.IMPRIMIR_COTIZACION_CLIENTE;
+
+                Request.realizarRequest(url_imprimir_cotizacion_pdf, "POST", obj_pdf, function(data) {
+
+                    if (data.status === 200) {
+
+                        var nombre_archivo_temporal = data.obj.reporte_pedido.nombre_reporte;
+
+                        $scope.visualizarReporte("/reports/"+nombre_archivo_temporal, "Cotizacion: "+numero_cotizacion, "download");
+                    }
+                    else{
+                        console.log("Error: ", data.msj);
+                    }
+                });
+            };   
             
             //that.crearPedidoVacio();
             that.cargarListadoVendedores();

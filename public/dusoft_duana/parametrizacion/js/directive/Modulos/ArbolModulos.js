@@ -129,7 +129,11 @@ define(["angular", "js/directive"], function(angular, directive) {
                                             "label": "Seleccionar",
                                             "action": function(obj) {
                                                 //scope.onSeleccionarNodo($node);
-                                                element.jstree("select_node", "#" + $node.id);
+                                                if(!$node.state.selected){
+                                                    element.jstree("select_node", "#" + $node.id);
+                                                } else {
+                                                    scope.onSeleccionarNodo($node);
+                                                }
                                             }
                                         },
                                         "Deshabilitar": {

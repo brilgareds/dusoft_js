@@ -101,8 +101,9 @@ RolModel.prototype.habilitarModulosEnRoles = function(usuario_id, rolesModulos, 
 
     var that = this;
 
-    __habilitarModulosEnRoles(that, usuario_id, rolesModulos, function(err, result) {
-        callback(err, result);
+    __habilitarModulosEnRoles(that, usuario_id, rolesModulos,[], function(err, result, ids) {
+        console.log("ids creados 111 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ",ids);
+        callback(err, result, ids);
     });
 
 };
@@ -128,12 +129,12 @@ RolModel.prototype.guardarOpcion = function(modulo, usuario_id, callback) {
 
 
 RolModel.prototype.insertarOpcion = function(modulo, usuario_id, callback) {
-
+    
     var rol_modulo_id = modulo.rolesModulos[0].id;
     var modulo_opcion_id = modulo.opcionAGuardar.id;
     var estado = modulo.opcionAGuardar.seleccionado;
 
-    console.log("estado >>>>>>>>>>>", typeof estado, " estado ", Number(estado));
+    console.log("estado >>>>>>>>>>>", typeof estado, " estado ", Number(estado), " rol_modulo_id ",rol_modulo_id, " modulo_opcion_id ",modulo_opcion_id);
 
     var sql = "INSERT INTO roles_modulos_opciones (modulo_opcion_id, rol_modulo_id, usuario_id,\
                fecha_creacion, estado) VALUES ($1, $2, $3, $4, $5) RETURNING id";
@@ -167,12 +168,12 @@ RolModel.prototype.modificarOpcion = function(modulo, usuario_id, callback) {
 
 
 //funcion recursiva para actualizar listado de roles_modulos
-function __habilitarModulosEnRoles(that, usuario_id, rolesModulos, callback) {
+function __habilitarModulosEnRoles(that, usuario_id, rolesModulos, ids, callback) {
 
     //si el array esta vacio se termina la funcion recursiva
 
     if (rolesModulos.length === 0) {
-        callback(false, true);
+        callback(false, true, ids);
         return;
     }
 
@@ -180,30 +181,38 @@ function __habilitarModulosEnRoles(that, usuario_id, rolesModulos, callback) {
     var modulos_empresas_id = rolesModulos[0].modulo.empresasModulos[0].id;
     var rol_id = rolesModulos[0].rol.id;
     var estado = Number(rolesModulos[0].estado);
+    var modulo_id = rolesModulos[0].modulo.modulo_id;
+    
+    console.log("modulo Z>>>>>>>>>>>>>>>>>>>>>> ",rolesModulos[0] )
 
     var sql = "UPDATE roles_modulos SET estado = $3, usuario_id_modifica = $1, fecha_modificacion = now()  WHERE modulos_empresas_id = $2";
 
     G.db.query(sql, [usuario_id, modulos_empresas_id, estado], function(err, rows, result) {
         if (err) {
-            callback(err, rows);
+            callback(err, rows, ids);
         } else {
             //si la actualizacion no devuelve resultado se trata de hacer el insert
             if (result.rowCount === 0) {
                 sql = "INSERT INTO roles_modulos (modulos_empresas_id, rol_id, usuario_id, fecha_creacion, estado)\
-                       VALUES($1, $2, $3, now(), $4)";
+                       VALUES($1, $2, $3, now(), $4) RETURNING id";
 
                 G.db.query(sql, [modulos_empresas_id, rol_id, usuario_id, estado], function(err, rows, result) {
                     if (err) {
-                        callback(err, rows);
+                        callback(err, rows, ids);
                     } else {
                         rolesModulos.splice(0, 1);
-                        __habilitarModulosEnRoles(that, usuario_id, rolesModulos, callback);
+                        //se agrega el id del rol_modulo creado
+                        if(rows.length > 0 && rows[0].id){
+                            ids.push({roles_modulos_id :rows[0].id,modulos_empresas_id:modulos_empresas_id, modulo_id:modulo_id});
+                        }
+                        
+                        __habilitarModulosEnRoles(that, usuario_id, rolesModulos,ids, callback);
                     }
                 });
 
             } else {
                 rolesModulos.splice(0, 1);
-                __habilitarModulosEnRoles(that, usuario_id, rolesModulos, callback);
+                __habilitarModulosEnRoles(that, usuario_id, rolesModulos,ids, callback);
             }
         }
     });

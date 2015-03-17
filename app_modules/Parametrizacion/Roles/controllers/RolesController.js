@@ -111,13 +111,13 @@ Roles.prototype.habilitarModulosEnRoles = function(req, res) {
         return;
     }
 
-    that.m_rol.habilitarModulosEnRoles(req.session.user.usuario_id, rolesModulos, function(err, rows) {
+    that.m_rol.habilitarModulosEnRoles(req.session.user.usuario_id, rolesModulos, function(err, rows, ids) {
         if (err) {
-            res.send(G.utils.r(req.url, 'Error habilitando las empresas para el rol', 500, {parametrizacion_perfiles: {}}));
+            res.send(G.utils.r(req.url, 'Error habilitando las empresas para el rol', 500, {parametrizacion_perfiles: {ids:ids}}));
             return;
         }
 
-        res.send(G.utils.r(req.url, "Se asigno correctamente los modulos seleccionados", 200, {parametrizacion_perfiles: {}}));
+        res.send(G.utils.r(req.url, "Se asigno correctamente los modulos seleccionados", 200, {parametrizacion_perfiles: {ids:ids}}));
 
     });
 
@@ -207,6 +207,11 @@ Roles.prototype.guardarOpcion = function(req, res) {
 
     if (modulo === undefined || modulo.length === 0) {
         res.send(G.utils.r(req.url, 'No se a seleccionado ningun modulo', 500, {parametrizacion_perfiles: {}}));
+        return;
+    }
+    
+    if(modulo.rolesModulos.length === 0){
+        res.send(G.utils.r(req.url, 'No se selecciono el rol', 500, {parametrizacion_perfiles: {}}));
         return;
     }
 

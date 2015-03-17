@@ -154,7 +154,7 @@ define([
                                       <button ng-if="rootOpciones.opciones.eliminar" class="btn btn-default btn-xs" ng-click="onBorrarOpcion(row.entity)">\
                                         <span class="glyphicon glyphicon-remove"></span>\
                                       </button>\
-                                      <input-check ng-if="rootOpciones.opciones.seleccionar"  ng-model="row.entity.seleccionado"  ng-change="onSeleccionarOpcion(row.entity)">\
+                                      <input-check ng-if="rootOpciones.opciones.seleccionar" ng-disabled="!row.entity.estado"  ng-model="row.entity.seleccionado"  ng-change="onSeleccionarOpcion(row.entity)">\
                                    </div>'
                     }
                 ]
@@ -163,7 +163,11 @@ define([
             
             $scope.onSeleccionarOpcion = function(opcion){
                 $scope.rootModulos.moduloAGuardar.opcionAGuardar  = opcion;
-                console.log("modulo a guardar ", $scope.rootModulos.moduloAGuardar);
+                console.log("opcion a guardar ", opcion);
+                
+                if(!opcion.estado){
+                    return;
+                }
                 
                 var obj = {
                     session: $scope.rootModulos.session,
@@ -176,18 +180,8 @@ define([
 
                 Request.realizarRequest(API.PERFILES.GUARDAR_OPCION, "POST", obj, function(data) {
                     if (data.status === 200) {
-                        console.log("opcion guardada con exito ", data);
-                        return;
-                        var id = data.obj.parametrizacion_perfiles.opcion.id;
-                        if (id) {
-                            $scope.rootModulos.moduloAGuardar.getOpcionAGuardar().setId(id);
-                            
-                            //se decide pasar esta instancia ya que es una copia de la opcion para guardar
-                            //si se pasa la referencia de agregarOpcion directamente puede presentar conflictos con el binding
-                            AlertService.mostrarMensaje("success", "Opcion guardada correctamente");
-                        }
+                        AlertService.mostrarMensaje("success", "Opcion guardada correctamente");
 
-                        //self.traerOpcionesModulo();
                     } else {
                         AlertService.mostrarMensaje("warning", data.msj);
                     }

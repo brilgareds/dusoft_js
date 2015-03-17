@@ -278,12 +278,12 @@ function __validarCreacionModulo(that, modulo, callback) {
                     return;
                 }
 
-                if (nombre_url === _nombre_url) {
+                /*if (nombre_url === _nombre_url) {
                     validacion.valido = false;
                     validacion.msj = "El url del modulo no esta disponible";
                     callback(validacion);
                     return;
-                }
+                }*/
             }
 
         }

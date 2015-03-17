@@ -152,7 +152,7 @@ ModuloModel.prototype.insertarOpcion = function(opcion, callback) {
 
     var params = [
         opcion.nombre, opcion.alias, opcion.modulo_id,
-        opcion.observacion, opcion.usuario_id, 'now()', Number(opcion.estado) || '0'
+        opcion.observacion, opcion.usuario_id, 'now()', Number(Boolean(opcion.estado)) || '0'
     ];
 
     G.db.query(sql, params, function(err, rows, result) {
@@ -170,7 +170,7 @@ ModuloModel.prototype.modificarOpcion = function(opcion, callback) {
 
     var params = [
         opcion.nombre, opcion.alias, opcion.observacion,
-        opcion.usuario_id, Number(opcion.estado), 'now()', opcion.id
+        opcion.usuario_id, Number(Boolean(opcion.estado)), 'now()', opcion.id
     ];
 
     G.db.query(sql, params, function(err, rows, result) {

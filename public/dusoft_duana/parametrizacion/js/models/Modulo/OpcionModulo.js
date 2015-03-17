@@ -51,7 +51,7 @@ define(["angular", "js/models"], function(angular, models) {
             };
             
             OpcionModulo.prototype.setEstado = function(estado){
-                this.estado = Boolean(estado);
+                this.estado = Boolean(Number(estado));
             };
             
             OpcionModulo.prototype.getEstado = function(){

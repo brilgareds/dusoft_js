@@ -143,6 +143,10 @@ define(["angular", "js/models"], function(angular, models) {
                 return this.empresasModulos;
             };
             
+            Modulo.prototype.setListasEmpresas = function(empresas) {
+                this.empresasModulos = empresas;
+            };
+            
             Modulo.prototype.getModulosPadre = function() {
                 return this.modulosPadre;
             };

@@ -73,7 +73,8 @@ define(["angular", "js/models"], function(angular, models) {
                     if (modulo.getRol().getId() === rolModulo.getRol().getId()
                         && modulo.getRol().getEmpresaId() === rolModulo.getRol().getEmpresaId()
                         && modulo.getModulo().getId() === rolModulo.getModulo().getId()) {
-                    
+                        this.rolesModulos[i].setEstado(rolModulo.getEstado());
+                        this.rolesModulos[i].getModulo().setListasEmpresas(rolModulo.getModulo().getListaEmpresas());
                         return false;
                     }
                 }

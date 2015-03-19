@@ -7,11 +7,11 @@ define(["angular", "js/controllers", "js/models",
     controllers.controller('AdministracionRolesController', [
         '$scope', '$rootScope', 'Request', '$modal', 'API',
         "socket", "$timeout", "AlertService", "Usuario", "EmpresaParametrizacion",
-        "Empresa_Modulo", "Modulo", "Rol", "RolModulo", "localStorageService",
+        "Empresa_Modulo", "Modulo", "Rol", "RolModulo", "localStorageService","$state",
         function($scope, $rootScope, Request,
                 $modal, API, socket, $timeout,
                 AlertService, Usuario, EmpresaParametrizacion,
-                Empresa_Modulo, Modulo, Rol, RolModulo, localStorageService) {
+                Empresa_Modulo, Modulo, Rol, RolModulo, localStorageService, $state) {
 
             var self = this;
 
@@ -314,6 +314,8 @@ define(["angular", "js/controllers", "js/models",
                         modulo,
                         estado
                 );
+                    
+               // console.log("self.agregarModulo _______________ ", $scope.rootRoles.rolAGuardar.getModulos())
 
                 $scope.rootRoles.rolAGuardar.agregarModulo(rol_modulo);
                
@@ -408,7 +410,8 @@ define(["angular", "js/controllers", "js/models",
             };
 
             $scope.$on("modulosSeleccionados", function(e, modulos_seleccionado) {
-               //testing $scope.rootRoles.rolAGuardar.vaciarModulos();
+                //vacia los modulos del rol para enviar solo los seleccionados en el momento
+                $scope.rootRoles.rolAGuardar.vaciarModulos();
                 
                 var modulo = self.agregarModulo(modulos_seleccionado.seleccionado, true);
 
@@ -434,21 +437,6 @@ define(["angular", "js/controllers", "js/models",
 
 
             $scope.$on("traerOpcioesModuloSeleccionado", function(e, modulo_id) {
-                //obtiene el modulo actual
-                /*var modulo = self.agregarModulo(modulo_id, true);
-
-                if (!modulo) {
-                    return;
-                }
-                
-                var moduloRolSeleccionado = self.esModuloSeleccionado(modulo);   
-                            
-                if(moduloRolSeleccionado){
-
-                    modulo.agregarRol(moduloRolSeleccionado);
-                }*/
-                
-                
                 self.listarRolesModulosOpciones(modulo_id);
             });
 
@@ -515,7 +503,10 @@ define(["angular", "js/controllers", "js/models",
                 });
 
             };
-
+            
+            $scope.onVolver = function(){
+                $state.go("ListarRoles");
+            };
 
             $scope.onLimpiarFormulario = function() {
                 self.inicializarRolACrear();

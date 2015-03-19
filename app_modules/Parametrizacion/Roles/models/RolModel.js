@@ -13,10 +13,17 @@ RolModel.prototype.listar_roles = function(empresa_id, termino, pagina, callback
     }
 
     var sql = "SELECT * FROM roles where empresa_id = $1 " + sqlaux + " ORDER BY id ASC ";
-
-    G.db.pagination(sql, parametros, pagina, G.settings.limit, function(err, rows, result, total_records) {
-        callback(err, rows, total_records);
-    });
+    
+    if(pagina !== 0){
+        
+        G.db.pagination(sql, parametros, pagina, G.settings.limit, function(err, rows, result, total_records) {
+            callback(err, rows, total_records);
+        });
+    } else{
+        G.db.query(sql, parametros, function(err, rows, result) {
+            callback(err, rows);
+        });
+    }
 };
 
 
@@ -153,6 +160,8 @@ RolModel.prototype.modificarOpcion = function(modulo, usuario_id, callback) {
     var estado = modulo.opcionAGuardar.seleccionado;
     var rol_modulo_id = modulo.rolesModulos[0].id;
     var modulo_opcion_id = modulo.opcionAGuardar.id;
+    
+    console.log("modificar opcion >>>>>>>>>>>", typeof estado, " estado ", Number(estado), " rol_modulo_id ",rol_modulo_id, " modulo_opcion_id ",modulo_opcion_id);
 
     var sql = "UPDATE roles_modulos_opciones SET   usuario_id_modifica = $1,\
                estado = $2, fecha_modificacion = $3  WHERE rol_modulo_id = $4 AND modulo_opcion_id = $5";
@@ -162,6 +171,22 @@ RolModel.prototype.modificarOpcion = function(modulo, usuario_id, callback) {
     ];
 
     G.db.query(sql, params, function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
+
+RolModel.prototype.listarRolesModulosOpciones = function(modulo_id, rol_id, rol_modulo_id,empresa_id,callback){
+    var sql = "SELECT a.*, b.rol_id, b.rol_opcion_id, b.estado_opcion_rol FROM modulos_opciones as a\
+               LEFT JOIN (\
+                    SELECT cc.id as rol_opcion_id, aa.modulo_id, cc.modulo_opcion_id, cc.estado as estado_opcion_rol, bb.rol_id FROM modulos_empresas as aa\
+                    INNER JOIN roles_modulos bb ON aa.id = bb.modulos_empresas_id AND bb.rol_id = $2\
+                    INNER JOIN roles_modulos_opciones cc ON cc.rol_modulo_id = bb.id\
+                    WHERE aa.empresa_id = $3 and aa.modulo_id = $1\
+               ) as b ON b.modulo_id = a.modulo_id AND b.modulo_opcion_id = a.id\
+               WHERE a.modulo_id =  $1 ORDER BY a.id DESC";
+    
+    G.db.query(sql, [modulo_id,rol_id,empresa_id ], function(err, rows, result) {
         callback(err, rows, result);
     });
 };
@@ -185,9 +210,10 @@ function __habilitarModulosEnRoles(that, usuario_id, rolesModulos, ids, callback
     
     console.log("modulo Z>>>>>>>>>>>>>>>>>>>>>> ",rolesModulos[0] )
 
-    var sql = "UPDATE roles_modulos SET estado = $3, usuario_id_modifica = $1, fecha_modificacion = now()  WHERE modulos_empresas_id = $2";
+    var sql = "UPDATE roles_modulos SET estado = $3, usuario_id_modifica = $1, fecha_modificacion = now()  \
+                WHERE modulos_empresas_id = $2 AND rol_id = $4";
 
-    G.db.query(sql, [usuario_id, modulos_empresas_id, estado], function(err, rows, result) {
+    G.db.query(sql, [usuario_id, modulos_empresas_id, estado, rol_id], function(err, rows, result) {
         if (err) {
             callback(err, rows, ids);
         } else {
@@ -219,83 +245,5 @@ function __habilitarModulosEnRoles(that, usuario_id, rolesModulos, ids, callback
 
 }
 ;
-
-
-/*/opciones
- 
- //gestiona para modificar o insertar la opcion
- RolModel.prototype.guardarOpcion = function(opcion, callback) {
- var self = this;
- 
- if (opcion.id && opcion.id !== 0) {
- self.modificarOpcion(opcion, function(err, rows) {
- callback(err, rows);
- });
- } else {
- self.insertarOpcion(opcion, function(err, rows) {
- callback(err, rows);
- });
- }
- };
- 
- 
- RolModel.prototype.insertarOpcion = function(opcion, callback) {
- 
- var sql = "INSERT INTO rols_opciones (nombre, alias, rol_id, observacion, usuario_id,\
- fecha_creacion, estado) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id";
- 
- 
- var params = [
- opcion.nombre, opcion.alias, opcion.rol_id,
- opcion.observacion, opcion.usuario_id, 'now()', Number(opcion.estado)
- ];
- 
- G.db.query(sql, params, function(err, rows, result) {
- callback(err, rows);
- });
- };
- 
- RolModel.prototype.modificarOpcion = function(opcion, callback) {
- 
- 
- var sql = "UPDATE rols_opciones SET nombre = $1, alias =$2,\
- observacion = $3,  usuario_id_modifica = $4,\
- estado = $5, fecha_modificacion = $6 WHERE id = $7  \
- ";
- 
- var params = [
- opcion.nombre, opcion.alias, opcion.observacion,
- opcion.usuario_id, Number(opcion.estado), 'now()', opcion.id
- ];
- 
- G.db.query(sql, params, function(err, rows, result) {
- callback(err, rows);
- });
- };
- 
- RolModel.prototype.obtenerOpcionPorNombre = function(nombre, callback) {
- var sql = "SELECT  nombre, alias, id FROM rols_opciones WHERE nombre ILIKE $1";
- 
- G.db.query(sql, [nombre + "%"], function(err, rows, result) {
- callback(err, rows);
- });
- };
- 
- 
- RolModel.prototype.listarOpcionesPorModulo = function(rol_id, callback) {
- var sql = "SELECT * FROM rols_opciones WHERE rol_id =  $1 ORDER BY id";
- 
- G.db.query(sql, [rol_id], function(err, rows, result) {
- callback(err, rows);
- });
- };
- 
- RolModel.prototype.eliminarOpcion = function(id, callback) {
- var sql = "DELETE FROM rols_opciones WHERE id = $1";
- 
- G.db.query(sql, [id], function(err, rows, result) {
- callback(err, rows);
- });
- };*/
 
 module.exports = RolModel;

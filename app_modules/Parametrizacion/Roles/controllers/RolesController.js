@@ -25,7 +25,7 @@ Roles.prototype.listar_roles = function(req, res) {
         return;
     }
 
-    if (pagina === undefined || pagina <= 0) {
+    if (pagina === undefined || pagina < 0) {
         res.send(G.utils.r(req.url, 'El numero de pagina no es valido', 403, {parametrizacion_perfiles: {}}));
         return;
     }
@@ -40,6 +40,30 @@ Roles.prototype.listar_roles = function(req, res) {
         }
     });
 };
+
+
+Roles.prototype.listarRolesPorEmpresa = function(req, res) {
+
+    var that = this;
+
+
+    var args = req.body.data;
+
+    if (args.parametrizacion_perfiles.empresa_id === undefined && args.parametrizacion_perfiles.empresa_id.length === 0) {
+        res.send(G.utils.r(req.url, 'La empresa no es valida', 403, {parametrizacion_perfiles: {}}));
+        return;
+    }
+
+    that.m_rol.listarRolesPorEmpresa(args.parametrizacion_perfiles.roles, function(err, rows) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error buscando el rol', 500, {parametrizacion_perfiles: {}}));
+        } else {
+            res.send(G.utils.r(req.url, 'Modulo encontrado', 200, {parametrizacion_perfiles: {roles: rows}}));
+        }
+    });
+};
+
 
 Roles.prototype.obtenerRolesPorId = function(req, res) {
 
@@ -231,6 +255,30 @@ Roles.prototype.guardarOpcion = function(req, res) {
 
     });
 
+};
+
+
+Roles.prototype.listarRolesModulosOpciones = function(req, res ){
+    var that = this;
+    var args = req.body.data;
+
+    if (args.parametrizacion_perfiles.modulo.id === undefined && args.parametrizacion_perfiles.modulo.id.length === '') {
+        res.send(G.utils.r(req.url, 'El id del modulo no esta definido', 500, {parametrizacion_modulos: {}}));
+        return;
+    }
+    var modulo = args.parametrizacion_perfiles.modulo.id;
+    var rol_modulo_id = args.parametrizacion_perfiles.modulo.rol_modulo_id;
+    var rol_id = args.parametrizacion_perfiles.modulo.rol_id;
+    var empresa_id = args.parametrizacion_perfiles.modulo.empresa_id;
+    
+    that.m_rol.listarRolesModulosOpciones(modulo,rol_id,rol_modulo_id,empresa_id, function(err, rows) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error listando las opciones del modulo', 500, {parametrizacion_perfiles: {}}));
+            return;
+        }
+        res.send(G.utils.r(req.url, "Listado de opciones por modulo", 200, {parametrizacion_perfiles: {opciones_modulo: rows}}));
+
+    });
 };
 
 

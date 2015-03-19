@@ -180,13 +180,13 @@ Modulos.prototype.habilitarModuloEnEmpresas = function(req, res) {
 
     
 
-    that.m_modulo.habilitarModuloEnEmpresas(req.session.user.usuario_id, empresas_modulos,modulo_id, function(err, rows) {
+    that.m_modulo.habilitarModuloEnEmpresas(req.session.user.usuario_id, empresas_modulos,modulo_id, function(err, rows, ids) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error habilitando las empresas para el modulo', 500, {parametrizacion_modulo: {}}));
             return;
         }
         
-        res.send(G.utils.r(req.url, "Se habilito el modulo en las empresas seleccionadas", 200, {parametrizacion_modulos: {}}));
+        res.send(G.utils.r(req.url, "Se habilito el modulo en las empresas seleccionadas", 200, {parametrizacion_modulos: {ids:ids}}));
         
     });
 

@@ -188,11 +188,10 @@ ModuloModel.prototype.obtenerOpcionPorNombre = function(nombre, callback) {
 
 
 ModuloModel.prototype.listarOpcionesPorModulo = function(modulo_id,rol_modulo_id, callback) {
-    var sql = "SELECT a.*, b.estado as estado_opcion_rol FROM modulos_opciones  a\
-               LEFT JOIN roles_modulos_opciones b ON b.rol_modulo_id = $2 AND a.id = b.modulo_opcion_id\
+    var sql = "SELECT * FROM modulos_opciones  a\
                WHERE a.modulo_id =  $1 ORDER BY a.id";
 
-    G.db.query(sql, [modulo_id, rol_modulo_id], function(err, rows, result) {
+    G.db.query(sql, [modulo_id], function(err, rows, result) {
         callback(err, rows);
     });
 };
@@ -210,8 +209,8 @@ ModuloModel.prototype.habilitarModuloEnEmpresas = function(usuario_id, empresas_
     var that = this;
     //se deshabilitan todos las empresas del modulos para asignar solo las que se enviaron del cliente
 
-    __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, function(err, result){
-        callback(err, result);
+    __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos,[], function(err, result, ids){
+        callback(err, result, ids);
     });
 
 };
@@ -250,12 +249,12 @@ ModuloModel.prototype.obtenerModulosHijos = function(modulo_id, callback) {
 };
 
 //funcion recursiva para actualizar listado de empresas_modulos
-function __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, callback) {
+function __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, ids, callback) {
 
     //si el array esta vacio se termina la funcion recursiva
 
     if (empresas_modulos.length === 0) {
-        callback(false, true);
+        callback(false, true, ids);
         return;
     }
 
@@ -274,20 +273,26 @@ function __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, callbac
             //si la actualizacion no devuelve resultado se trata de hacer el insert
             if (result.rowCount === 0) {
                 sql = "INSERT INTO modulos_empresas (empresa_id, modulo_id, usuario_id, fecha_creacion, estado)\
-                       VALUES($1, $2, $3, now(), $4)";
+                       VALUES($1, $2, $3, now(), $4) RETURNING id";
 
                 G.db.query(sql, [empresa_id, modulo_id, usuario_id, estado], function(err, rows, result) {
                     if (err) {
-                        callback(err, rows);
+                        callback(err, rows, ids);
                     } else {
                         empresas_modulos.splice(0, 1);
-                        __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, callback);
+                        
+                        //se agrega el id del rol_modulo creado
+                        if(rows.length > 0 && rows[0].id){
+                            ids.push({modulos_empresas_id :rows[0].id, modulo_id : modulo_id});
+                        }
+                        
+                        __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos,ids, callback);
                     }
                 });
 
             } else {
                 empresas_modulos.splice(0, 1);
-                __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, callback);
+                __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos,ids, callback);
             }
         }
     });

@@ -236,7 +236,7 @@ define(["angular", "js/controllers", "js/models",
             //se busca en el rol los modulo que le pertenecen
             self.esModuloSeleccionado = function(modulo) {
                 var modulos =  $scope.rootRoles.rolAGuardar.getModulos();
-                console.log("modulos del rol ",modulos);
+                //console.log("modulos del rol ",modulos);
                 for (var i in modulos) {
                     if (modulos[i].getModulo().getId() === modulo.getId()) {
                         return modulos[i];
@@ -355,7 +355,7 @@ define(["angular", "js/controllers", "js/models",
                                     modulo,
                                     true
                             );
-                            console.log("traerModulosPorRol() modulos que pertenecn al rol >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", rol_modulo);   
+                            //console.log("traerModulosPorRol() modulos que pertenecn al rol >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", rol_modulo);   
                                 
 
                             $scope.rootRoles.rolAGuardar.agregarModulo(rol_modulo);
@@ -365,6 +365,50 @@ define(["angular", "js/controllers", "js/models",
                         callback();
                     } else {
                         AlertService.mostrarMensaje("warning", data.msj);
+                    }
+
+                });
+            };
+            
+            
+            //trae las opciones del modulo asignadas para el rol
+            self.listarRolesModulosOpciones = function(modulo_id){
+                 console.log("roles modulos code 1================== ************* ",$scope.rootModulos.moduloAGuardar.rolesModulos )
+                var modulo = self.agregarModulo(modulo_id, true);
+                if (!modulo) {
+                    return;
+                }
+
+                $scope.rootModulos.moduloAGuardar = modulo;
+                 console.log("roles modulos code 2 ================== ************* ",$scope.rootModulos.moduloAGuardar.rolesModulos )
+                ////
+                var rolesModulos = $scope.rootModulos.moduloAGuardar.rolesModulos;
+                var rol_modulo_id = (rolesModulos.length > 0)?rolesModulos[0].id:0;
+                var rol_id = $scope.rootRoles.rolAGuardar.getId();
+                var empresa_id = $scope.rootRoles.rolAGuardar.getEmpresaId();
+                
+                $scope.rootModulos.moduloAGuardar.vaciarOpciones();
+                var obj = {
+                    session: $scope.rootModulos.session,
+                    data: {
+                        parametrizacion_perfiles: {
+                            modulo: {
+                                id: $scope.rootModulos.moduloAGuardar.modulo_id,
+                                rol_modulo_id:rol_modulo_id,
+                                rol_id:rol_id,
+                                empresa_id:empresa_id
+                            }
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PERFILES.LISTAR_ROLES_MODULOS_OPCIONES, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        var datos = data.obj.parametrizacion_perfiles.opciones_modulo;
+                        
+                        //se emite el evento con los datos al controllador de opciones
+                        $scope.$broadcast("traerOpcionesModulo", datos);
+
                     }
 
                 });
@@ -380,6 +424,7 @@ define(["angular", "js/controllers", "js/models",
                 }
                 
                 
+                
                 $scope.rootModulos.moduloAGuardar = modulo;
 
 
@@ -391,25 +436,19 @@ define(["angular", "js/controllers", "js/models",
                     self.agregarModulo(modulos_seleccionado.hijos[ii], true);
                 }
                 
-
                 self.habilitarModulosRol();
-                $scope.$broadcast("traerOpcionesModulo");
-
+                
+                console.log("roles seleccionados >>>>>>>>>>>>>>>>>>_________________________________", $scope.rootRoles.rolAGuardar.getModulos());
             });
 
 
             $scope.$on("traerOpcioesModuloSeleccionado", function(e, modulo_id) {
-                var modulo = self.agregarModulo(modulo_id, true);
-                if (!modulo) {
-                    return;
-                }
-
-                $scope.rootModulos.moduloAGuardar = modulo;
-                $scope.$broadcast("traerOpcionesModulo");
+                
+                self.listarRolesModulosOpciones(modulo_id);
             });
 
             $scope.$on("modulosDeshabilitados", function(e, modulos_seleccionados) {
-                console.log("modulos a deshabilitar ", modulos_seleccionados);
+                //console.log("modulos a deshabilitar ", modulos_seleccionados);
 
                 $scope.rootRoles.rolAGuardar.vaciarModulos();
                 var modulo = self.agregarModulo(modulos_seleccionados.seleccionado, false);
@@ -439,7 +478,7 @@ define(["angular", "js/controllers", "js/models",
                 $scope.rootRoles.rolAGuardar.setEmpresaId($scope.rootRoles.empresaSeleccionada.getCodigo());
                 var rol_guardar = angular.copy($scope.rootRoles.rolAGuardar);
 
-                console.log("rol a guardar ", rol_guardar);
+                //console.log("rol a guardar ", rol_guardar);
 
                 var obj = {
                     session: $scope.rootModulos.session,
@@ -484,6 +523,7 @@ define(["angular", "js/controllers", "js/models",
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.rootRoles = {};
+                $scope.rootModulos = {};
                 $scope.$$watchers = null;
             });
 

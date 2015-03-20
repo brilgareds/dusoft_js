@@ -37,6 +37,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     usuario_id: Usuario.usuario_id,
                     auth_token: Usuario.token
                 };
+                
+            $scope.rootCreaCotizaciones.es_cotizacion = true;
 
             $scope.rootCreaCotizaciones.listado_productos = [];
 
@@ -200,27 +202,48 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 if ($scope.rootCreaCotizaciones.ultima_busqueda !== $scope.rootCreaCotizaciones.termino_busqueda) {
                     $scope.rootCreaCotizaciones.paginaactual = 1;
                 }
-
+                
+                //Si no hay Pedido/Cotizacion Seleccionado, se crea una Cotización Vacia. Para Pedidos el llegar a éste punto implica un Pedido Seleccionado
                 if(that.empty($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado())){
                     
                     that.crearPedidoSeleccionadoEmpresa(that.crearPedidoVacio());
                 }
+                //Si hay Pedido/Cotizacion Seleccionado recibe el objeto Pedido/Cotización Correspondiente
+                //debe haber numero_cotizacion o numero_pedido. Según sea, carga iterfaz para manipular Cotización o Pedido. Validar según sea el caso.
                 else{
                     $scope.rootCreaCotizaciones.seleccion_vendedor = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getVendedor().getId();
-                    //console.log("Información de Empresa: ", $scope.rootCreaCotizaciones.Empresa);
-                    
-                    //console.log(">>>>> OBSERVACIÓN: ",$scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getObservacion());
                     
                     $scope.rootCreaCotizaciones.observacion = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getObservacion();
                     
-                    // HACER CONSULTA DE PRODUCTOS DEL PEDIDO (DETALLE)
+                    // HACER CONSULTA DE PRODUCTOS DE LA COTIZACIÓN O PEDIDO (DETALLE)
+                    console.log(">>>>>>>>> Numero Cotización: ", $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion());
+                    
+                    if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== undefined
+                        /*&& ($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado.numero_pedido === '' || $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado.numero_pedido === undefined)*/)
+                    {
+                        console.log(">>>>>>>>>>>>>> Número Cotización con Valor");
 
-                    that.consultarDetalleCotizacion(function(data){
+                        that.consultarDetalleCotizacion(function(data){
 
-                        var detalle = data.obj.resultado_consulta;
-                        that.renderDetalleCotizacion(detalle);
+                            var detalle = data.obj.resultado_consulta;
+                            that.renderDetalleCotizacion(detalle);
 
-                    });
+                        });
+                    }                       
+                    else {
+                        
+                        console.log(">>>>>>>>>>>>>> Número Cotización sin Valor");
+                        
+                        $scope.rootCreaCotizaciones.es_cotizacion = false;
+                        
+                        //Crear las siguientes Operaciones
+                        that.consultarDetallePedido(function(data){
+
+                            var detalle = data.obj.resultado_consulta;
+                            that.renderDetalleCotizacion(detalle);
+
+                        });
+                    }
                                                 
                 }
 
@@ -244,17 +267,42 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     if (data.status === 200) {
                         console.log("Consulta exitosa: ", data.msj);
 
-                        //console.log("Datos de la consulta: ", data);
+                        if (callback !== undefined && callback !== "" && callback !== 0) {
+                            callback(data);
+                        }
+                    }
+                    else {
+                        console.log("Error en la consulta: ", data.msj);
+                    }
+                });
+                    
+            };
+            
+            that.consultarDetallePedido = function(callback){
+                
+                
+                
+                console.log(" >>>>>> Consultando Detalle - Objeto Pedido: ",$scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado());
+                
+                var obj = {
+                        session: $scope.rootCreaCotizaciones.session,
+                        data: {
+                            detalle_pedido: {
+                                numero_pedido: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido(),                            
+                            }
+                        }
+                    };
+                 
+                var url = API.PEDIDOS.LISTAR_DETALLE_PEDIDO;
+                    
+                Request.realizarRequest(url, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        console.log("Consulta exitosa: ", data.msj);
 
                         if (callback !== undefined && callback !== "" && callback !== 0) {
                             callback(data);
                         }
-
-                        
-                        //Lo siguiente va en el callback
-                        //--var detalle = data.obj.resultado_consulta;
-
-                        //--that.renderDetalleCotizacion(detalle);
                     }
                     else {
                         console.log("Error en la consulta: ", data.msj);
@@ -361,11 +409,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                                 <tbody>\
                                                     <tr>\
                                                         <td class="left"><strong>Total Sin IVA</strong></td>\
-                                                        <td class="right">{{rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_sin_iva | currency: "$ "}}</td>    \
+                                                        <td class="right">{{rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_sin_iva | currency: "$ "}}</td>\
                                                     </tr>\
                                                     <tr>\
                                                         <td class="left"><strong>Total Con IVA</strong></td>\
-                                                        <td class="right">{{rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_con_iva | currency: "$ "}}</td>                                        \
+                                                        <td class="right">{{rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_con_iva | currency: "$ "}}</td>\
                                                     </tr>\
                                                 </tbody>\
                                             </table>\
@@ -764,7 +812,67 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         console.log("Error: ", data.msj);
                     }
                 });
-            };   
+            };
+            
+            $scope.generarPedidoCliente = function (){
+                
+                var obj_encabezado = {
+                        session: $scope.rootCreaCotizaciones.session,
+                        data: {
+                            pedido_cliente: {
+                                numero_cotizacion: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion()
+                            }
+                        }
+                    };
+                    /* Fin - Objeto para inserción de Encabezado*/
+
+                    /* Inicio - Validar Existencia de encabezado */
+
+                    var url_encabezado = API.PEDIDOS.INSERTAR_PEDIDO_CLIENTE;
+
+                    Request.realizarRequest(url_encabezado, "POST", obj_encabezado, function(data) {
+
+                        if (data.status === 200) {
+                            
+                            console.log("Inserción de Pedido Cliente exitosa", data.msj);
+                            
+                            var numero_pedido = data.obj.numero_pedido;
+                            
+                            /* Mensaje para Usuario - Inicio */
+                            $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: ' <div class="modal-header">\
+                                            <button type="button" class="close" ng-click="close()">&times;</button>\
+                                            <h4 class="modal-title">Listado Productos </h4>\
+                                        </div>\
+                                        <div class="modal-body row">\
+                                            <div class="col-md-12">\
+                                                <h4 >Número de Pedido: '+numero_pedido+' </h4>\
+                                            </div>\
+                                        </div>\
+                                        <div class="modal-footer">\
+                                            <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                        </div>',
+                            scope: $scope,
+                            controller: function($scope, $modalInstance) {
+                                $scope.close = function() {
+                                    $modalInstance.close();
+                                };
+                            }
+                        };
+
+                        var modalInstance = $modal.open($scope.opts);  
+
+                            /* Mensaje para Usuario - Fin */
+                        }
+                        else{
+                            console.log("Falló la Inserción de Pedido Cliente", data.msj);
+                        }
+                    });
+            };
             
             //that.crearPedidoVacio();
             that.cargarListadoVendedores();

@@ -1572,7 +1572,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                 centro_utilidad_id: $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad.split(",")[0],
                                 bodega_id: $scope.rootCreaPedidoFarmacia.para_seleccion_bodega.split(",")[0],
                                 observacion: $scope.rootCreaPedidoFarmacia.observacion,
-                                tipo_pedido: 0, //Pedido Normal. Pedido General tiene un valor de 1
+                                tipo_pedido: 0 //Pedido Normal. Pedido General tiene un valor de 1
                             }
                         }
                     };

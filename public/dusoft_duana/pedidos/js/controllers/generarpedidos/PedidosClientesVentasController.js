@@ -140,7 +140,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
                 pedido.setTipo(PedidoVenta.TIPO_CLIENTE);
 
-                //pedido.setNumeroCotizacion('');
+                pedido.setNumeroCotizacion('');
                 
                 pedido.setValorPedido(obj.valor_pedido);
 
@@ -229,7 +229,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                             <ul class="dropdown-menu dropdown-options">\
                                                 <li><a href="javascript:void(0);" ng-click="onVerCotizacion(row.entity)" >Ver</a></li>\
                                                 <li></li>\
-                                                <li ng-if="row.entity.estado == 1"><a href="javascript:void(0);" ng-click="onEditarCotizacion(row.entity)">Modificar</a></li>\
+                                                <li ng-if="row.entity.estado == 1"><a href="javascript:void(0);" ng-click="onEditarPedido(row.entity)">Modificar</a></li>\
                                                 <li ng-if="row.entity.estado == 1"></li>\
                                                 <li ng-if="row.entity.estado == 1"><a href="javascript:void(0);" ng-click="onCambiarEstado(row.entity)">Inactivar</a></li>\
                                                 <li ng-if="row.entity.estado == 1"></li>\
@@ -365,6 +365,40 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
             };
             
+            //CONSULTA ESTADO DEL PEDIDO
+            that.consultarEstadoPedido = function(data, callback){
+                
+                //Objeto para consulta de encabezado pedido
+                var obj = {
+                    session: $scope.rootPedidosClientes.session,
+                    data: {
+                        estado_pedido: {
+                            numero_pedido: data.numero_pedido,
+                        }
+                    }
+                };
+                
+                var url = API.PEDIDOS.CONSULTA_ESTADO_PEDIDO;
+
+                Request.realizarRequest(url, "POST", obj, function(data_estado) {
+
+                    if (data_estado.status === 200) {
+                        console.log("Consulta exitosa: ", data_estado.msj);
+
+                        if (callback !== undefined && callback !== "" && callback !== 0) {
+
+                            var estado = data_estado.obj.resultado_consulta[0].estado_pedido;
+                            
+                            callback(estado);
+                        }
+                    }
+                    else {
+                        console.log("Error en la consulta: ", data_estado.msj);
+                    }
+                });
+                
+            };
+            
             that.consultarContratoCliente = function(data, callback){
 
                 //Objeto Consulta Contrato Cliente
@@ -413,13 +447,21 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
             };
             
-            $scope.onEditarCotizacion = function(data) {
+            $scope.onEditarPedido = function(data) {
 
-                that.consultarEstadoCotizacion(data, function(estado){
+                that.consultarEstadoPedido(data, function(estado_pedido){
+                //that.consultarEstadoCotizacion(data, function(estado){
 
-                    $scope.rootPedidosClientes.Empresa.setPedidoSeleccionado(data);
+                    //$scope.rootPedidosClientes.Empresa.setPedidoSeleccionado(data);
 
-                    if (estado === '1') {
+                    console.log(">>>>>>>>> ESTADO PEDIDO: ", estado_pedido);
+                    console.log(">>>>>>>>> DATA ENCABEZADO PEDIDO: ",data);
+
+                    if (estado_pedido === '0') {
+                    
+                        console.log(">>>>>>>>> ESTADO PEDIDO 0 ... INGRESO IF ");
+                        
+                        $scope.rootPedidosClientes.Empresa.setPedidoSeleccionado(data);
                         
                         that.consultarContratoCliente(data, function(contrato_cliente_id){
                             
@@ -446,7 +488,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                         </div>\
                                         <div class="modal-body row">\
                                             <div class="col-md-12">\
-                                                <h4 >La Cotización ' + $scope.rootPedidosClientes.Empresa.getPedidoSeleccionado().getNumeroCotizacion() + ' se ha convertido en Pedido. No puede modificarse!</h4>\
+                                                <h4 >El Pedido ' + $scope.rootPedidosClientes.Empresa.getPedidoSeleccionado().getNumeroPedido() + ' ya fue asignado para separación. No puede modificarse!</h4>\
                                             </div>\
                                         </div>\
                                         <div class="modal-footer">\

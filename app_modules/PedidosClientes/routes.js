@@ -52,6 +52,11 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.estadoCotizacion(req, res);
     });
     
+    // Consultar Estado de Pedido
+    app.post('/api/PedidosClientes/estadoPedido', function(req, res) {
+        c_pedidos_clientes.estadoPedido(req, res);
+    });
+    
     // Listar Detalle Cotización
     app.post('/api/PedidosClientes/listarDetalleCotizacion', function(req, res) {
         c_pedidos_clientes.listarDetalleCotizacion(req, res);
@@ -81,5 +86,15 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/listadoPedidosClientes', function(req, res) {
         c_pedidos_clientes.listadoPedidosClientes(req, res);
     }); 
+    
+    // Insertar Pedidos Clientes
+    app.post('/api/PedidosClientes/insertarPedidoCliente', function(req, res) {
+        c_pedidos_clientes.insertarPedidoCliente(req, res);
+    });
+
+    //Listar Detalle Pedido
+    app.post('/api/PedidosClientes/listarDetallePedido', function(req, res) {
+        c_pedidos_clientes.listarDetallePedido(req, res);
+    });
 
 };

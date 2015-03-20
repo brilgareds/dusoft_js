@@ -676,6 +676,39 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
  
 };
 
+//INSERTAR PEDIDO CLIENTES
+PedidosCliente.prototype.insertarPedidoCliente = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.pedido_cliente === undefined || args.pedido_cliente.numero_cotizacion === undefined) {
+        res.send(G.utils.r(req.url, 'número_cotizacion No Está Definido', 404, {}));
+        return;
+    }
+    
+    if (args.pedido_cliente.numero_cotizacion === '') {
+        res.send(G.utils.r(req.url, 'número_cotizacion Está Vacio', 404, {}));
+        return;
+    }
+
+    //Parámetro a insertar
+    var numero_cotizacion = args.pedido_cliente.numero_cotizacion;
+
+    that.m_pedidos_clientes.insertar_pedido_cliente(numero_cotizacion, function(err, rows) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error en la inserción del Pedido', 500, {}));
+            return;
+        }
+
+        res.send(G.utils.r(req.url, 'Inserción Exitosa del Pedido', 200, {numero_pedido: rows.rows[0].pedido_cliente_id}));
+
+    });
+ 
+};
+
 //LISTAR COTIZACIONES CLIENTES
 PedidosCliente.prototype.listarCotizaciones = function(req, res) {
 
@@ -779,6 +812,40 @@ PedidosCliente.prototype.estadoCotizacion = function(req, res) {
  
 };
 
+//ESTADO PEDIDO DEL CLIENTE
+//estadoPedido
+PedidosCliente.prototype.estadoPedido = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.estado_pedido === undefined || args.estado_pedido.numero_pedido === undefined) {
+        res.send(G.utils.r(req.url, 'numero_pedido No Está Definido', 404, {}));
+        return;
+    }
+    
+    if (args.estado_pedido.numero_pedido === '') {
+        res.send(G.utils.r(req.url, 'numero_pedido Está Vacio', 404, {}));
+        return;
+    }
+
+    //Parámetro a insertar
+    var numero_pedido = args.estado_pedido.numero_pedido;
+
+    that.m_pedidos_clientes.estado_pedido(numero_pedido, function(err, array_estado_pedido) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error en consulta Estado de Pedido', 500, {}));
+            return;
+        }
+
+        res.send(G.utils.r(req.url, 'Consulta Estado Pedido Exitosa', 200, {resultado_consulta: array_estado_pedido}));
+
+    });
+ 
+};
+
 PedidosCliente.prototype.listarDetalleCotizacion = function(req, res) {
 
     var that = this;
@@ -786,12 +853,12 @@ PedidosCliente.prototype.listarDetalleCotizacion = function(req, res) {
     var args = req.body.data;
 
     if (args.detalle_cotizacion === undefined || args.detalle_cotizacion.numero_cotizacion === undefined) {
-        res.send(G.utils.r(req.url, 'número_cotizacion No Está Definido', 404, {}));
+        res.send(G.utils.r(req.url, 'numero_cotizacion No Está Definido', 404, {}));
         return;
     }
     
     if (args.detalle_cotizacion.numero_cotizacion === '') {
-        res.send(G.utils.r(req.url, 'número_cotizacion Está Vacio', 404, {}));
+        res.send(G.utils.r(req.url, 'numero_cotizacion Está Vacio', 404, {}));
         return;
     }
 
@@ -806,6 +873,39 @@ PedidosCliente.prototype.listarDetalleCotizacion = function(req, res) {
         }
 
         res.send(G.utils.r(req.url, 'Consulta Detalle Cotización Exitosa', 200, {resultado_consulta: detalle_cotizacion}));
+
+    });
+ 
+};
+
+//listarDetallePedido
+PedidosCliente.prototype.listarDetallePedido = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.detalle_pedido === undefined || args.detalle_pedido.numero_pedido === undefined) {
+        res.send(G.utils.r(req.url, 'numero_pedido No Está Definido', 404, {}));
+        return;
+    }
+    
+    if (args.detalle_pedido.numero_pedido === '') {
+        res.send(G.utils.r(req.url, 'numero_pedido Está Vacio', 404, {}));
+        return;
+    }
+
+    //Parámetro a insertar
+    var numero_pedido = args.detalle_pedido.numero_pedido;
+
+    that.m_pedidos_clientes.listar_detalle_pedido(numero_pedido, function(err, detalle_pedido) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error en Consulta Detalle Pedido', 500, {}));
+            return;
+        }
+
+        res.send(G.utils.r(req.url, 'Consulta Detalle Pedido Exitosa', 200, {resultado_consulta: detalle_pedido}));
 
     });
  
@@ -1229,7 +1329,7 @@ function _generarDocumentoPedido(obj, callback) {
         callback(nombreTmp);
     });
 };
-/* PDF - Fin */
+
 PedidosCliente.$inject = ["m_pedidos_clientes", "e_pedidos_clientes", "m_productos", "m_pedidos"];
 
 module.exports = PedidosCliente;

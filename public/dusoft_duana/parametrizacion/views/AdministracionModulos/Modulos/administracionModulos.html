@@ -98,7 +98,7 @@
 
             </tab>
 
-            <tab ng-controller="OpcionesModulosController" ng-init='init({eliminar:true, detalle:true})'>
+            <tab ng-controller="OpcionesModulosController" ng-init='init({eliminar:true, detalle:true})' disabled='rootModulos.moduloAGuardar.nodo_principal || rootModulos.moduloAGuardar.getModulosHijo() > 0'>
                 <tab-heading>
                     Opciones
                 </tab-heading>

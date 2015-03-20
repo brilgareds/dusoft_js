@@ -51,23 +51,48 @@ define(["angular", "js/controllers", "js/models", "models/Perfiles/Rol", "models
                         var datos = data.obj.empresas;
 
                         for (var i in datos) {
+                            //se determina si la empresa es seleccioanda al hacer match con el modulo_id
+                            var esModuloActual = false;
+                            var estado = datos[i].estado;
+                            //
+                            if(datos[i].modulo_id === moduloSeleccionado.getId()) {
+                                esModuloActual = true;
+                            }
+                            
                             var empresa = EmpresaParametrizacion.get(
                                     datos[i].razon_social,
                                     datos[i].empresa_id,
-                                    datos[i].estado
+                                    estado
                             );
+                                
                             
-                            if(datos[i].modulo_id === moduloSeleccionado.getId() || datos[i].modulo_id === null  ){
-                                $scope.empresas.push(empresa);
+                             self.agregarEmpresasDisponibles(empresa, esModuloActual);
+                            
+                            if(datos[i].modulo_id !== null){
+                                
+                                self.__agregarEmpresa(empresa, datos[i].modulo_id , datos[i].modulos_empresas_id);
                             }
-                            
-
-                            self.__agregarEmpresa(empresa, datos[i].modulo_id , datos[i].modulos_empresas_id);
                         }
 
                     }
 
                 });
+            };
+            
+            self.agregarEmpresasDisponibles = function(empresa, modulo_actual){
+                 
+                 
+                 for(var i in $scope.empresas){
+                     if($scope.empresas[i].getCodigo() ===  empresa.getCodigo()){
+                         //solo modifica el estado de la empresa si es el modulo actual
+                         if(modulo_actual){
+                            $scope.empresas[i] = empresa;
+                         }
+                         return false;
+                     }
+                 }
+                 
+                 $scope.empresas.push(empresa);
             };
 
             self.agregarEmpresa = function(empresa, modulos_empresas_id) {
@@ -81,7 +106,7 @@ define(["angular", "js/controllers", "js/models", "models/Perfiles/Rol", "models
                 for (var i in moduloSeleccionado.getModulosPadre()) {
                      
                     if(empresa.getEstado()){
-                       // console.log("cambiar modulo padre ",empresa.getEstado(), moduloSeleccionado.getModulosPadre()[i]);
+                        console.log("cambiar modulo padre ",empresa.getEstado(), moduloSeleccionado.getModulosPadre()[i]);
                         self.__agregarEmpresa(empresa, moduloSeleccionado.getModulosPadre()[i],modulos_empresas_id);
                     }
                     
@@ -160,14 +185,20 @@ define(["angular", "js/controllers", "js/models", "models/Perfiles/Rol", "models
             //crea la instancia rol_modulo para habilitar el modulo en el rol
             self.crearRolModulo = function(modulo, rol, empresa){
                 var empresas = $scope.moduloSeleccionado.getListaEmpresas();
+                var asignado_empresa = false;
                 
                 for(var i in empresas){
                    
                     if(empresas[i].getEmpresa().getCodigo() === empresa.getCodigo() && empresas[i].getModulo().getId() === modulo.getId()){
-                        console.log("econtrando >>>>>>>>>>>>>>> ", empresas[i])
                         modulo.agregarEmpresa(empresas[i]);
+                        asignado_empresa = true;
                         break;
                     }
+                }
+                
+                //si el modulo no tiene empresa asignada no se debe agregar
+                if(!asignado_empresa){
+                    return false;
                 }
                 
                 var rol_modulo = RolModulo.get(
@@ -228,23 +259,37 @@ define(["angular", "js/controllers", "js/models", "models/Perfiles/Rol", "models
                 var empresa = angular.copy($scope.root.empresaSeleccionada);
                 rol = angular.copy(rol);
                 
-                moduloSeleccionado.agregarRol( 
-                    self.crearRolModulo(modulo, rol, empresa)
-                );
+                var rol_modulo = self.crearRolModulo(modulo, rol, empresa);
+                
+                if(rol_modulo){
+                    moduloSeleccionado.agregarRol( 
+                        rol_modulo
+                    );
+                }
                 
                 for (var i in moduloSeleccionado.getModulosHijo()) {
                     modulo = Modulo.get(moduloSeleccionado.getModulosHijo()[i]);
-                    moduloSeleccionado.agregarRol(
-                         self.crearRolModulo(modulo, rol, empresa)
-                    );
+                    
+                    rol_modulo = self.crearRolModulo(modulo, rol, empresa);
+                    
+                    if(rol_modulo){
+                        moduloSeleccionado.agregarRol(
+                             rol_modulo
+                        );
+                    }
                 }
                 
                 if(rol.getEstado()){
                     for (var i in moduloSeleccionado.getModulosPadre()) {
                          modulo = Modulo.get(moduloSeleccionado.getModulosPadre()[i]);
-                         moduloSeleccionado.agregarRol(
-                             self.crearRolModulo(modulo, rol, empresa)
-                         );
+                         
+                         rol_modulo = self.crearRolModulo(modulo, rol, empresa);
+                         
+                         if(rol_modulo){
+                            moduloSeleccionado.agregarRol(
+                                rol_modulo
+                            );
+                         }
                     }
                 }
                 self.habilitarModulosRol();
@@ -297,6 +342,9 @@ define(["angular", "js/controllers", "js/models", "models/Perfiles/Rol", "models
             $scope.onSeleccionarEmpresa = function(empresa) { 
                //testing moduloSeleccionado.vaciarListaEmpresas();
                 self.agregarEmpresa(empresa);
+                
+                
+                console.log("$scope.moduloSeleccionado.getListaEmpresas() ",$scope.moduloSeleccionado.getListaEmpresas());
                                 
                 var obj = {
                     session: $scope.root.session,
@@ -309,7 +357,28 @@ define(["angular", "js/controllers", "js/models", "models/Perfiles/Rol", "models
                 };
 
                 Request.realizarRequest(API.MODULOS.HABILITAR_MODULO_EMPRESAS, "POST", obj, function(data) {
-                    AlertService.mostrarMensaje("success", data.msj);
+                    if (data.status === 200) {
+                        AlertService.mostrarMensaje("success", "La empresa se habilito correctamente");
+                        var modulo = $scope.moduloSeleccionado;
+                        var ids = data.obj.parametrizacion_modulos.ids;
+                        
+                        //se asigna el id del rol_modulo guardado, ya sea que se modifique o cree
+                        var empresas = modulo.getListaEmpresas();
+                        for(var i in ids){
+                            
+                            for(var ii in empresas){
+                                if(empresas[ii].getModulo().getId() === ids[i].modulo_id && empresas[ii].getEmpresa().getCodigo() === ids[i].empresa_id ){
+                                    empresas[ii].setId(ids[i].modulos_empresas_id);
+                                    break;
+                                }
+                            }
+                          
+                        }
+                        
+
+                    } else {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
                 });
 
             };

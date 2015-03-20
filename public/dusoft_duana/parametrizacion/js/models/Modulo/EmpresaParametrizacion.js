@@ -21,7 +21,21 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             EmpresaParametrizacion.prototype.getListaEmpresas = function() {
                 return this.empreasModulos;
             };
+            
+            EmpresaParametrizacion.prototype.agregarEmpresa = function(empresa_modulo) {
+                for (var i in this.empresasModulos) {
+                    var empresa = this.empresasModulos[i];
+                    if (empresa_modulo.getEmpresa().getCodigo() === empresa.getEmpresa().getCodigo()
+                        && empresa_modulo.getModulo().getId() === empresa.getModulo().getId()) {
+                        this.empresasModulos[i] = empresa_modulo;
+                        return;
+                    }
+                }
 
+                this.empresasModulos.push(empresa_modulo);
+            };
+
+            
             EmpresaParametrizacion.prototype.getEstado = function() {
                 return this.estado;
             };

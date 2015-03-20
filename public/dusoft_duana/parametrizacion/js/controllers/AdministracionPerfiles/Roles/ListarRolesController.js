@@ -144,6 +144,11 @@ define(["angular", "js/controllers", "js/models",
                 localStorageService.set("rol_id", rol.getId());
                 $state.go("AdministracionRoles");
             };
+            
+            $scope.onNuevoRol = function(){
+                localStorageService.set("rol_id", null);
+                $state.go("AdministracionRoles");
+            };
 
             $scope.onBuscarRol = function($event) {
                 if ($event.which === 13) {

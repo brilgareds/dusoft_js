@@ -8,8 +8,9 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
 
             $scope.titulo_modulo= "Administracion de Operarios de Bodega";
             $scope.operario = angular.copy(operario);
+            $scope.operario.activo = Boolean(Number(operario.estado));
             $scope.usuarios = [];
-
+            $scope.usuario = {};
             $scope.alert = false;
             $scope.msg = "";
 
@@ -24,6 +25,22 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 $scope.operario.estado = '1';
             }
 
+
+            $scope.listado_usuarios = {
+                data: 'usuarios',
+                multiSelect: false,
+                showFilter: true,
+                enableRowSelection: true,
+                 afterSelectionChange:function(rowItem){
+                     rowItem.entity.seleccionado = rowItem.selected;
+                     $scope.loginSeleccionado(rowItem.entity);
+                },
+                columnDefs: [
+                    {field: 'nombre_usuario', displayName: 'Nombre'},
+                    {field: 'usuario', displayName: 'Usuario'}
+                ]
+
+            };
 
             
             
@@ -47,6 +64,12 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                              var obj = lista_usuarios[i];
 
                              var usuario = {id: obj.usuario_id, nombre_usuario: obj.nombre, usuario: obj.usuario, estado: obj.activo};
+                             
+                             
+                             if(usuario.id === $scope.operario.usuario_id){
+                                 usuario.seleccionado = true;
+                                 $scope.usuario = usuario;
+                             }
 
                              $scope.usuarios.push(usuario);
                          }
@@ -96,6 +119,15 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                         AlertService.mostrarMensaje("success", "Operario modificado correctamente!");
                     }
                 });
+            };
+            
+            $scope.loginSeleccionado = function(usuario){
+                $scope.operario.usuario_id = usuario.id;
+                $scope.usuario = usuario;
+            };
+            
+            $scope.onEstadoChange = function(){
+                $scope.operario.estado = Number($scope.operario.activo);
             };
 
             $scope.validarEstado = function() {

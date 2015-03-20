@@ -47,27 +47,7 @@ define([
                     if (data.status === 200) {
                         var datos = data.obj.parametrizacion_modulos.opciones_modulo;
 
-                        for (var i in datos) {
-
-
-                            var opcion = OpcionModulo.get(
-                                    datos[i].id,
-                                    datos[i].nombre,
-                                    datos[i].alias,
-                                    datos[i].modulo_id
-                            );
-
-                            opcion.setObservacion(datos[i].observacion);
-                            opcion.setEstado(datos[i].estado);
-                            opcion.setEstado_opcion_rol(datos[i].estado_opcion_rol);
-                            
-                            if(datos[i].estado_opcion_rol === '1'){
-                                opcion.seleccionado= true;
-                            }
-
-                            $scope.rootModulos.moduloAGuardar.agregarOpcion(opcion);
-                        }
-
+                        self.procesarDatos(datos);
 
                     }
 
@@ -136,6 +116,28 @@ define([
 
                 });
 
+            };
+            
+            self.procesarDatos = function(datos){
+                for (var i in datos) {
+
+                    var opcion = OpcionModulo.get(
+                            datos[i].id,
+                            datos[i].nombre,
+                            datos[i].alias,
+                            datos[i].modulo_id
+                    );
+
+                    opcion.setObservacion(datos[i].observacion);
+                    opcion.setEstado(datos[i].estado);
+                    opcion.setEstado_opcion_rol(datos[i].estado_opcion_rol);
+
+                    if(datos[i].estado_opcion_rol === '1'){
+                        opcion.seleccionado= true;
+                    }
+
+                    $scope.rootModulos.moduloAGuardar.agregarOpcion(opcion);
+                }
             };
 
             $scope.listado_opciones = {
@@ -241,8 +243,18 @@ define([
             };
             
             //este evento escucha al scope principal para traer las opciones e inicializar la opcion a guardar
-            $scope.$on("traerOpcionesModulo", function() {
-                self.traerOpcionesModulo();
+            $scope.$on("traerOpcionesModulo", function(e, datos) {
+                console.log("data opciones >>>>>>>>>>>>>>>>>>>> ",datos);
+                
+                //trae los datos por defecto
+                if(datos !== undefined){
+                    self.procesarDatos(datos);
+                } else {
+                    
+                    self.traerOpcionesModulo();
+                }
+                
+                
                 self.inicializarOpcionACrear();
             });
             

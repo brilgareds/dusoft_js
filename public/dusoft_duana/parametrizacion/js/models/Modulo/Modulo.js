@@ -12,7 +12,7 @@ define(["angular", "js/models"], function(angular, models) {
 
                 this.nombre = this.text;
                 this.url = url || "";
-                this.modulo_id = id || 0;
+                this.modulo_id = parseInt(id) || 0;
                 this.parent_id = parent || "#";
                 this.opciones = [];
                 this.state = "";
@@ -141,6 +141,10 @@ define(["angular", "js/models"], function(angular, models) {
 
             Modulo.prototype.getListaEmpresas = function() {
                 return this.empresasModulos;
+            };
+            
+            Modulo.prototype.setListasEmpresas = function(empresas) {
+                this.empresasModulos = empresas;
             };
             
             Modulo.prototype.getModulosPadre = function() {

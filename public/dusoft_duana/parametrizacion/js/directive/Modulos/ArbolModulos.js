@@ -72,7 +72,7 @@ define(["angular", "js/directive"], function(angular, directive) {
                         }
 
 
-                        console.log("padres del modulo ", nodo.parents, " seleccion ", scope.modulosSeleccionados);
+                        console.log("modulos seleccionados ",scope.modulosSeleccionados)
                         scope.$emit("modulosSeleccionados", scope.modulosSeleccionados);
                     };
 
@@ -120,7 +120,6 @@ define(["angular", "js/directive"], function(angular, directive) {
                                                 //las opciones solo estan disponibles para modulos hijos
                                                 
                                                 if($node.children_d.length === 0 && $node.state.selected){
-                                                    console.log($node)
                                                     scope.$emit("traerOpcioesModuloSeleccionado", $node.original.modulo_id);
                                                 }
                                             }
@@ -129,7 +128,11 @@ define(["angular", "js/directive"], function(angular, directive) {
                                             "label": "Seleccionar",
                                             "action": function(obj) {
                                                 //scope.onSeleccionarNodo($node);
-                                                element.jstree("select_node", "#" + $node.id);
+                                                if(!$node.state.selected){
+                                                    element.jstree("select_node", "#" + $node.id);
+                                                } else {
+                                                    scope.onSeleccionarNodo($node);
+                                                }
                                             }
                                         },
                                         "Deshabilitar": {

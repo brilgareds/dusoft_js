@@ -27,5 +27,11 @@ module.exports = function(app, di_container) {
     app.post('/api/Roles/guardarOpcion', function(req, res) {
         c_roles.guardarOpcion(req, res);
     });
+    
+    app.post('/api/Roles/listarRolesModulosOpciones', function(req, res) {
+        c_roles.listarRolesModulosOpciones(req, res);
+    });
+    
+    
 
 };

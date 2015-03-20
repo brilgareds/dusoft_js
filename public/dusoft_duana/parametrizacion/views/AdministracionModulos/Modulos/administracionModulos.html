@@ -4,7 +4,7 @@
         <tabset>
             <tab>
                 <tab-heading>
-                    Administracion de modulos del sistema
+                    Detalle Modulo
                 </tab-heading>
 
                 <div class="panel">
@@ -98,9 +98,9 @@
 
             </tab>
 
-            <tab ng-controller="OpcionesModulosController" ng-init='init({eliminar:true, detalle:true})'>
+            <tab ng-controller="OpcionesModulosController" ng-init='init({eliminar:true, detalle:true})' disabled='rootModulos.moduloAGuardar.nodo_principal || rootModulos.moduloAGuardar.getModulosHijo() > 0'>
                 <tab-heading>
-                    Opciones del modulo
+                    Opciones
                 </tab-heading>
 
                 <div class="panel">
@@ -168,8 +168,8 @@
 
     <div class="col-md-7">
 
-        <div arbol-modulos plugins='checkbox,wholerow,state' tipo='multiple' estado='arbolmodulos'></div>
-
+        <!--div arbol-modulos plugins='checkbox,wholerow,state,contextmenu' tipo='multiple' estado='arbolmodulos'></div-->
+         <div arbol-modulos plugins='wholerow,state' tipo='multiple' estado='arbolmodulos'></div>
     </div>
 </div>
 

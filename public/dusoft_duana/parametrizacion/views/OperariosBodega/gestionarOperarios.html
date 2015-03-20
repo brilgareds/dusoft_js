@@ -4,8 +4,8 @@
 </div>
 <div class="modal-body">
 
-    <alert  type="'danger'" close="closeAlert();" ng-show="alert">{{msg}}</alert>
-    
+    <alert  type="danger" close="closeAlert();" ng-show="alert">{{msg}}</alert>
+
     <form name="form_operario">
         <div class="row">
 
@@ -14,18 +14,37 @@
                 <input type="text" name='nombre_operario' class="form-control" id="exampleInputEmail1" placeholder="Ingresar el Nombre" ng-model='operario.nombre_operario' ng-value="operario.nombre_operario" required>
             </div>
             <div class="form-group">
-                <label>Login del Operario</label>            
+                <label>Login del Operario -- {{usuario.usuario}} </label>            
             </div>
 
-            <select class="input-medium" style="width:300px" ui-select2 data-placeholder="Seleccionar Login" ng-model="operario.usuario_id" ng-change="loginSeleccionado()"  >
+            <!--select class="input-medium" style="width:300px" ui-select2 data-placeholder="Seleccionar Login" ng-model="operario.usuario_id" ng-change="loginSeleccionado()"  >
                 <option ng-repeat="usuario in  usuarios"  value="{{usuario.id}}">{{usuario.nombre_usuario}}-{{ usuario.usuario }}</option>
-            </select>
+            </select-->
 
-            
-            <div class="checkbox">
+            <!--ui-select ng-model="usuario"
+                       theme="select2"
+                       style="width:300px"
+                       ng-change="loginSeleccionado($select.selected)"
+                       class="contenedor_combo_grande">
+                <ui-select-match  placeholder="Seleccionar Login">{{$select.selected.nombre_usuario}}-{{$select.selected.usuario}}</ui-select-match>
+                <ui-select-choices repeat="usuario in usuarios | filter:$select.search">
+                    {{usuario.nombre_usuario}}-{{usuario.usuario}}
+                </ui-select-choices>
+            </ui-select-->
+
+            <div class="table-responsive" >
+
+                <div class="grid-responsive" style='height: 200px; width:200px; min-width: 100%' ng-grid="listado_usuarios">
+
+                </div>
+            </div>
+
+
+            <div style="margin-top: 20px;">
                 <label>
-                    <input type="checkbox" ng-checked="operario.estado == '1'" ng-model='operario.estado' ng-true-value="1" ng-false-value="0"> Estado
+                    Activo
                 </label>
+                <input-check  ng-model='operario.activo' ng-change='onEstadoChange()' /> 
             </div>
         </div>
 

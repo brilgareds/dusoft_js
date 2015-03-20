@@ -97,6 +97,10 @@ define([
                                     );
 
                             modulo.setIcon(datos[i].icon);
+                            
+                            /*modulo.state = {
+                                disabled: true
+                            };*/
 
                             $scope.rootModulos.modulos.push(modulo);
                         }
@@ -232,6 +236,11 @@ define([
                     delete $scope.rootModulos.moduloPadre;
                 }
             };
+            
+           /* $scope.$on("traerOpcioesModuloSeleccionado", function(e, modulo_id) {
+
+                $scope.$broadcast("traerOpcionesModulo");
+            });*/
 
             $scope.$on("modulosSeleccionados", function(e, modulos_seleccionado) {
 

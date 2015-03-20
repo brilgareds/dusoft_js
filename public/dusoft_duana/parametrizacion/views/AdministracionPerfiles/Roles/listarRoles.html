@@ -1,5 +1,13 @@
 
+<div class="col-md-1">
+    <button class="btn btn-default btn-sm" ng-click='onNuevoRol()'>
+            Nuevo
+            <span class="glyphicon glyphicon-plus"></span>
+     </button>
+</div>
+
 <div class="col-sm-12 col-md-3">
+    
     <ui-select ng-model="rootRoles.empresaSeleccionada"
                theme="select2"
                ng-change="onEmpresaSeleccionada()"

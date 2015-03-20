@@ -27,15 +27,15 @@ Empresas.prototype.listar_empresas_modulos = function(req, res) {
     
     var args = req.body.data;
 
-    var modulo_id = args.empresas.modulo_id;
+    var modulos_id = args.empresas.modulos_id;
     
     
-    if (modulo_id === undefined && modulo_id.length === 0) {
+    if (modulos_id === undefined && modulos_id.length === 0) {
         res.send(G.utils.r(req.url, 'El id del modulo no se encontro', 500, {empresas: {}}));
         return;
     }
 
-    that.m_empresas.listar_empresas_modulos(modulo_id, function(err, lista_empresas){
+    that.m_empresas.listar_empresas_modulos(modulos_id, function(err, lista_empresas){
         if(err){
             res.send(G.utils.r(req.url, 'Error listado empresas', 500, {empresas: {}}));
         } else {

@@ -15,14 +15,14 @@ EmpresasModel.prototype.listar_empresas = function(callback) {
 };
 
 //lista las empresas y el estado en modulos_empresas en caso de estar presente
-EmpresasModel.prototype.listar_empresas_modulos = function(modulo_id, callback) {
+EmpresasModel.prototype.listar_empresas_modulos = function(modulos_id, callback) {
 
-    var sql = "SELECT  a.empresa_id, a.razon_social, COALESCE(b.estado, '0') as estado, b.id as modulos_empresas_id\
+    var sql = "SELECT  a.empresa_id, a.razon_social, COALESCE(b.estado, '0') as estado, b.id as modulos_empresas_id, b.modulo_id\
                FROM empresas a\
-               LEFT JOIN  modulos_empresas b on b.empresa_id = a.empresa_id and b.modulo_id = $1\
+               LEFT JOIN  modulos_empresas b on b.empresa_id = a.empresa_id and b.modulo_id  in("+modulos_id+")\
                WHERE a.sw_tipo_empresa= '0' AND a.sw_activa='1'";
 
-    G.db.query(sql,[modulo_id], function(err, empresas, result) {
+    G.db.query(sql,[], function(err, empresas, result) {
         callback(err, empresas, result);
     });
 };

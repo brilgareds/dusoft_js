@@ -73,7 +73,7 @@ define([
 
             };
 
-            self.traerModulos = function() {
+            self.traerModulos = function(callback) {
                 var obj = {
                     session: $scope.rootModulos.session,
                     data: {
@@ -93,7 +93,7 @@ define([
                                     datos[i].parent,
                                     datos[i].nombre,
                                     datos[i].url
-                                    );
+                             );
 
                             modulo.setIcon(datos[i].icon);
                             
@@ -106,7 +106,7 @@ define([
 
                         // console.log(modulos);
                         $scope.$broadcast("datosArbolCambiados", $scope.rootModulos.modulos);
-
+                        callback();
                     }
 
                 });
@@ -124,7 +124,9 @@ define([
 
             //se carga los modulos despues que el arbol esta listo
             $scope.$on("arbolListoEnDom", function() {
-                self.traerModulos();
+                self.traerModulos(function(){
+                    
+                });
             });
 
             //ventana para habilitar el modulo en una empresa
@@ -169,7 +171,6 @@ define([
 
                 //se verifica si tiene padre para sacar la informacion necesaria
                 if (moduloPadre) {
-                    console.log("tratando de guardar modulo");
                     modulo_guardar.parent = moduloPadre.modulo_id;
                     modulo_guardar.parent_name = moduloPadre.text;
                     
@@ -184,7 +185,7 @@ define([
 
                 delete modulo_guardar.nodo_principal;
 
-                console.log(JSON.stringify(modulo_guardar));
+               // console.log(JSON.stringify(modulo_guardar));
 
 
                 var obj = {
@@ -203,8 +204,13 @@ define([
                         var id = data.obj.parametrizacion_modulo.modulo.id;
                         if (id) {
                             $scope.rootModulos.moduloAGuardar.setId(id);
+                            modulo_guardar.setId(id);
+                            
+                            self.traerModulos(function(){
+                                $scope.$broadcast("onseleccionarnodo", modulo_guardar.id);
+                            });
                         }
-                        self.traerModulos();
+                        
                     } else {
                         AlertService.mostrarMensaje("warning", data.msj);
                     }

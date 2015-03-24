@@ -352,9 +352,11 @@ function __validarCreacionOpcion(that, opcion, callback) {
         callback(validacion);
         return;
     }
+    
+    callback(validacion);
 
     //trae las opcion que hagan match con las primeras letras del nombre o el alias
-    that.m_modulo.obtenerOpcionPorNombre(opcion.nombre.substring(0, 4), function(err, rows) {
+   /* that.m_modulo.obtenerOpcionPorNombre(opcion.nombre.substring(0, 4), function(err, rows) {
         if (err) {
             validacion.valido = false;
             validacion.msj = "Ha ocurrido un error validando la opcion";
@@ -381,12 +383,12 @@ function __validarCreacionOpcion(that, opcion, callback) {
                     return;
                 }
 
-                /* if (alias === _alias) {
+                 if (alias === _alias) {
                  validacion.valido = false;
                  validacion.msj = "El alias de la opcion no esta disponible";
                  callback(validacion);
                  return;
-                 }*/
+                 }
             }
 
         }
@@ -394,7 +396,7 @@ function __validarCreacionOpcion(that, opcion, callback) {
         callback(validacion);
 
 
-    });
+    });*/
 
 }
 ;

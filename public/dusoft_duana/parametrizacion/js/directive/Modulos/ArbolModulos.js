@@ -32,6 +32,11 @@ define(["angular", "js/directive"], function(angular, directive) {
                             }
                         }
                     });
+                    
+                    
+                    scope.$on("onseleccionarnodo", function(e, id){
+                        element.jstree("select_node", "#" + id);
+                    });
 
                     scope.onSeleccionarNodo = function(nodo) {
                         //evita que se seleccione otro nodo diferente al actual

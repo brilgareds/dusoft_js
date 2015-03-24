@@ -25,7 +25,7 @@ define([
             
             //trae todas las opciones que tenga el modulo que se este guardando
             self.traerOpcionesModulo = function() {
-                console.log("modulo >>>>>>>>>>>>>",$scope.rootModulos.moduloAGuardar);
+               // console.log("modulo >>>>>>>>>>>>>",$scope.rootModulos.moduloAGuardar);
                 
                 var rolesModulos = $scope.rootModulos.moduloAGuardar.rolesModulos;
                 var rol_modulo_id = (rolesModulos.length > 0)?rolesModulos[0].id:0;
@@ -244,7 +244,7 @@ define([
             
             //este evento escucha al scope principal para traer las opciones e inicializar la opcion a guardar
             $scope.$on("traerOpcionesModulo", function(e, datos) {
-                console.log("data opciones >>>>>>>>>>>>>>>>>>>> ",datos);
+               // console.log("data opciones >>>>>>>>>>>>>>>>>>>> ",datos);
                 
                 //trae los datos por defecto
                 if(datos !== undefined){

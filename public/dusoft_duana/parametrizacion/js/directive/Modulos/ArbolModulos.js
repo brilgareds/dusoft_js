@@ -72,7 +72,7 @@ define(["angular", "js/directive"], function(angular, directive) {
                         }
 
 
-                        console.log("modulos seleccionados ",scope.modulosSeleccionados)
+                        //console.log("modulos seleccionados ",scope.modulosSeleccionados)
                         scope.$emit("modulosSeleccionados", scope.modulosSeleccionados);
                     };
 

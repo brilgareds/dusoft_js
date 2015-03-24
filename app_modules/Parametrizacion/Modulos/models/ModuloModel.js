@@ -248,6 +248,21 @@ ModuloModel.prototype.obtenerModulosHijos = function(modulo_id, callback) {
     });
 };
 
+
+ModuloModel.prototype.listarRolesPorModulo = function(modulo_id, empresa_id, callback){
+    var sql = " SELECT a. *, b.id_rol_modulo, b.estado_rol_modulo FROM roles a\
+                INNER JOIN (\
+                    SELECT bb.rol_id, bb.id as id_rol_modulo, bb.estado as estado_rol_modulo, aa.empresa_id FROM modulos_empresas aa\
+                    INNER JOIN roles_modulos bb ON bb.modulos_empresas_id = aa.id\
+                    WHERE  aa.modulo_id = $1 AND aa.empresa_id = $2\
+                ) AS b ON  b.rol_id = a.id\
+                WHERE a.empresa_id = $2 AND a.estado = '1'";
+    
+    G.db.query(sql, [modulo_id, empresa_id], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
 //funcion recursiva para actualizar listado de empresas_modulos
 function __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, ids, callback) {
 

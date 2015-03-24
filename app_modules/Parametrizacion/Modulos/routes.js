@@ -37,4 +37,10 @@ module.exports = function(app, di_container) {
         c_modulos.listarModulosPorEmpresa(req, res);
     });
     
+    app.post('/api/Modulos/listarRolesPorModulo', function(req, res){
+        c_modulos.listarRolesPorModulo(req, res);
+    });
+    
+    
+    
 };

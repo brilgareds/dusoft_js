@@ -216,6 +216,35 @@ Modulos.prototype.listarModulosPorEmpresa = function(req, res) {
 };
 
 
+//lista los roles relacionados al modulo y la empresa
+Modulos.prototype.listarRolesPorModulo = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+
+    if (args.parametrizacion_modulos.empresa_id === undefined && args.parametrizacion_modulos.empresa_id.length === '') {
+        res.send(G.utils.r(req.url, 'El id de la empresa no esta definido', 500, {parametrizacion_modulos: {}}));
+        return;
+    }
+    
+    if (args.parametrizacion_modulos.modulo_id === undefined && args.parametrizacion_modulos.modulo_id.length === '') {
+        res.send(G.utils.r(req.url, 'El id del modulo no esta definido', 500, {parametrizacion_modulos: {}}));
+        return;
+    }
+    
+    var empresa_id = args.parametrizacion_modulos.empresa_id;
+    var modulo_id = args.parametrizacion_modulos.modulo_id;
+
+    that.m_modulo.listarRolesPorModulo(modulo_id, empresa_id, function(err, rows) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error listando los roles del modulo', 500, {parametrizacion_modulos: {}}));
+            return;
+        }
+        res.send(G.utils.r(req.url, "Listado de roles", 200, {parametrizacion_modulos: {roles: rows}}));
+
+    });
+};
+
+
 function __validarCreacionModulo(that, modulo, callback) {
     var validacion = {
         valido: true,

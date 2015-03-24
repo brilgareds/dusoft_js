@@ -82,7 +82,6 @@ define([
 
                 Request.realizarRequest(API.MODULOS.LISTAR_MODULOS, "POST", obj, function(data) {
                     if (data.status === 200) {
-                        console.log(Modulo);
                         var datos = data.obj.parametrizacion_modulos.modulos;
                         $scope.rootModulos.modulos = [];
 
@@ -289,7 +288,7 @@ define([
                             for (var i in  modulos) {
 
                                 if (modulos[i].id === _modulo.parent) {
-                                    console.log("modulos select ", modulos[i].id);
+                                    //console.log("modulos select ", modulos[i].id);
 
                                     $scope.rootModulos.moduloPadre = modulos[i];
                                     break;

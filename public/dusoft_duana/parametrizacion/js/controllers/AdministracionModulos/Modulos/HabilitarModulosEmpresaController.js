@@ -28,7 +28,7 @@ define(["angular", "js/controllers", "js/models", "models/Perfiles/Rol", "models
             $scope.moduloSeleccionado = moduloSeleccionado;
             $scope.root.empresaSeleccionada;
 
-            self.traerEmpresas = function() {
+            self.traerEmpresasModulos = function(callback) {
                 
                 
                 var ids = [moduloSeleccionado.getId()];
@@ -44,7 +44,7 @@ define(["angular", "js/controllers", "js/models", "models/Perfiles/Rol", "models
                         }
                     }
                 };
-
+                
                 Request.realizarRequest(API.MODULOS.LISTAR_EMPRESAS_MODULOS, "POST", obj, function(data) {
                     if (data.status === 200) {
                         $scope.empresas = [];
@@ -54,7 +54,6 @@ define(["angular", "js/controllers", "js/models", "models/Perfiles/Rol", "models
                             //se determina si la empresa es seleccioanda al hacer match con el modulo_id
                             var esModuloActual = false;
                             var estado = datos[i].estado;
-                            //
                             if(datos[i].modulo_id === moduloSeleccionado.getId()) {
                                 esModuloActual = true;
                             }
@@ -65,34 +64,74 @@ define(["angular", "js/controllers", "js/models", "models/Perfiles/Rol", "models
                                     estado
                             );
                                 
-                            
-                             self.agregarEmpresasDisponibles(empresa, esModuloActual);
-                            
+                                                        
                             if(datos[i].modulo_id !== null){
                                 
                                 self.__agregarEmpresa(empresa, datos[i].modulo_id , datos[i].modulos_empresas_id);
                             }
                         }
-
+                        
+                        callback();
                     }
 
                 });
             };
             
-            self.agregarEmpresasDisponibles = function(empresa, modulo_actual){
+            
+           self.traerEmpresas = function() {
+                
+                
+                var ids = [moduloSeleccionado.getId()];
+                
+                ids = ids.concat(moduloSeleccionado.getModulosHijo());
+                ids = ids.concat(moduloSeleccionado.getModulosPadre());
+                
+                var obj = {
+                    session: $scope.root.session,
+                    data: {
+                        empresas: {
+                            modulos_id: ids
+                        }
+                    }
+                };
+                
+                Request.realizarRequest(API.MODULOS.LISTAR_EMPRESAS, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        $scope.empresas = [];
+                        var datos = data.obj.empresas;
+
+                        for (var i in datos) {
+
+                            var empresa = EmpresaParametrizacion.get(
+                                    datos[i].razon_social,
+                                    datos[i].empresa_id
+                            );
+                                
+                            empresa.setEstado(self.esEmpresaSeleccionada(empresa));
+                            
+                            $scope.empresas.push(empresa);
+
+                        }
+                        
+                    }
+
+                });
+            };
+            
+            self.esEmpresaSeleccionada = function(empresa){
                  
                  
-                 for(var i in $scope.empresas){
-                     if($scope.empresas[i].getCodigo() ===  empresa.getCodigo()){
-                         //solo modifica el estado de la empresa si es el modulo actual
-                         if(modulo_actual){
-                            $scope.empresas[i] = empresa;
-                         }
-                         return false;
+                 for(var i in moduloSeleccionado.getListaEmpresas()){
+                     var _empresa = moduloSeleccionado.getListaEmpresas()[i];
+                     
+                     if(empresa.getCodigo() ===  _empresa.getEmpresa().getCodigo() 
+                        &&_empresa.getModulo().getId() === moduloSeleccionado.getId()){
+    
+                         return true;
                      }
                  }
                  
-                 $scope.empresas.push(empresa);
+                 return false;
             };
 
             self.agregarEmpresa = function(empresa, modulos_empresas_id) {
@@ -412,7 +451,9 @@ define(["angular", "js/controllers", "js/models", "models/Perfiles/Rol", "models
             };
 
             $modalInstance.opened.then(function() {
-                self.traerEmpresas();
+                self.traerEmpresasModulos(function(){
+                    self.traerEmpresas();
+                });
 
             });
 

@@ -16,7 +16,8 @@
                             <button type="button" class="btn btn-default btn-sm" ng-disabled="rootCreaCotizaciones.bloqueo_producto_incluido" ng-click="onRowClickSelectCliente()">
                                 <span class="glyphicon glyphicon-user"></span> Seleccionar Cliente
                             </button>
-                            <div class="pull-right"><h3><font color="blue">Cotización N°: {{rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion()}}</font></h3></div>
+                            <div class="pull-right" ng-if="rootCreaCotizaciones.es_cotizacion"><h3><font color="blue">Cotización N°: {{rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion()}}</font></h3></div>
+                            <div class="pull-right" ng-if="!rootCreaCotizaciones.es_cotizacion"><h3><font color="blue">Pedido N°: {{rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido()}}</font></h3></div>
                         </div> <!--Div Panel Superior-->
 
                         <div class="row col-lg-9 col-md-9 col-sm-5"> <!-- Div Panel Izquierdo -->
@@ -104,7 +105,8 @@
                         <tab disabled="bloquear" active="rootCreaCotizaciones.tab_estados.tab1">
 
                             <tab-heading>
-                                <b> Incluir Producto Manual</b>
+                                <b ng-if="rootCreaCotizaciones.es_cotizacion"> Detalle Cotización</b>
+                                <b ng-if="!rootCreaCotizaciones.es_cotizacion"> Detalle Pedido</b>
                             </tab-heading>
 
                             <div class="panel-body">
@@ -124,7 +126,7 @@
 
                         </tab>
 
-                        <tab disabled="bloquear_upload" active="rootCreaCotizaciones.tab_estados.tab2">
+                        <tab disabled="bloquear_upload" ng-if="rootCreaCotizaciones.es_cotizacion" active="rootCreaCotizaciones.tab_estados.tab2">
                             <tab-heading>
                                 <b> Cargar Archivo Plano </b>
                             </tab-heading>
@@ -180,9 +182,12 @@
         </div> <!-- / end class row --> 
 
         <div class="col-sm-12 btn-toolbar">
-            <button type="submit" ng-disabled="!rootCreaCotizaciones.bloqueo_producto_incluido" class="btn btn-accion btn-success pull-right">Generar Pedido</button>
+<!--            <button type="submit" ng-disabled="!rootCreaCotizaciones.bloqueo_producto_incluido" class="btn btn-accion btn-success pull-right">Generar Pedido</button>-->
+            <button type="submit" class="btn btn-accion btn-success pull-right" ng-if="rootCreaCotizaciones.es_cotizacion" ng-click="generarPedidoCliente()">Generar Pedido</button>
             <button type="submit" class="btn btn-accion btn-danger pull-right" ng-click="generarPdfCotizacionCliente()">Generar PDF</button>
-            <button type="submit" class="btn btn-accion btn-warning pull-right" ng-click="abrirViewPedidosClientes()">Guardar Cotización</button>
+            <button type="submit" class="btn btn-accion btn-warning pull-right" ng-if="rootCreaCotizaciones.es_cotizacion" ng-click="abrirViewPedidosClientes()">Guardar Cotización</button>
+            <button type="submit" class="btn btn-accion btn-warning pull-right" ng-if="!rootCreaCotizaciones.es_cotizacion" ng-click="abrirViewPedidosClientes()">Guardar Pedido</button>
+            <!--ng-if="rootCreaCotizaciones.es_cotizacion"-->
         </div>
 
         <br/><br/><br/><br/><br/>

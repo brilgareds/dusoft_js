@@ -1014,6 +1014,26 @@ PedidosClienteModel.prototype.estado_cotizacion = function(numero_cotizacion, ca
 };
 
 /**
+ * @api {sql} estado_pedido Pedidos clientes model
+ * @apiName Pedidos Clientes
+ * @apiGroup PedidosCliente (sql)
+ * @apiDescription Estado de Pedido
+ * @apiDefinePermission autenticado Requiere Autenticación
+ * Requiere que el usuario esté autenticado.
+ * @apiPermission autenticado
+ * @apiParam {Number} numero_pedido Numero de pedido a consultar
+ * @apiParam {Function} callback Funcion de retorno de informacion.
+ */
+PedidosClienteModel.prototype.estado_pedido = function(numero_pedido, callback) {
+    
+    var sql = "select estado_pedido from ventas_ordenes_pedidos where pedido_cliente_id = $1";
+    
+    G.db.query(sql, [numero_pedido], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
+/**
  * @api {sql} listar_detalle_cotizacion Pedidos clientes model
  * @apiName Pedidos Clientes
  * @apiGroup PedidosCliente (sql)
@@ -1045,6 +1065,52 @@ PedidosClienteModel.prototype.listar_detalle_cotizacion = function(numero_cotiza
 
 };
 
+/**
+ * @api {sql} listar_detalle_pedido Pedidos clientes model
+ * @apiName Pedidos Clientes
+ * @apiGroup PedidosCliente (sql)
+ * @apiDescription Lista detalle de pedido
+ * @apiDefinePermission autenticado Requiere Autenticacion
+ * Requiere que el usuario esté autenticado.
+ * @apiPermission autenticado
+ * @apiParam {Number} numero_pedido Numero del pedido a asignar
+ * @apiParam {Function} callback Funcion de retorno de informacion.
+ */
+PedidosClienteModel.prototype.listar_detalle_pedido = function(numero_pedido, callback) {
+    
+    var sql = " select\
+                    codigo_producto,\
+                    fc_descripcion_producto(codigo_producto) as nombre_producto,\
+                    porc_iva,\
+                    numero_unidades,\
+                    valor_unitario,\
+                    to_char(fecha_registro, 'dd-mm-yyyy hh:mm:ss') as fecha_registro,\
+                    valor_unitario*numero_unidades as total_sin_iva,\
+                    round((valor_unitario + (valor_unitario * COALESCE(porc_iva, 0))/100) * numero_unidades, 2) as total_con_iva\
+                from\
+                    ventas_ordenes_pedidos_d\
+                where pedido_cliente_id = $1";
+    
+    /*
+    //--item_id serial NOT NULL, -- Es la llave primaria del item de un pedido
+  //--pedido_cliente_id integer NOT NULL, -- Es el Pedido (foranea)
+  codigo_producto character varying(50) NOT NULL, -- Es el Producto inscrito en el pedido de un cliente
+  porc_iva numeric(5,3) NOT NULL, -- Es el Iva del Producto
+  numero_unidades integer NOT NULL DEFAULT 0, -- Numero de Unidades Solicitadas por el Cliente
+  valor_unitario numeric(15,2) NOT NULL, -- Es el valor unitario del producto, calculado segun el contrato inscrito en el sistema
+  fecha_registro timestamp(1) without time zone NOT NULL DEFAULT now(), -- Fecha de Registro
+  //--usuario_id integer NOT NULL, -- Usuario que registra el Item
+  //--cantidad_despachada integer NOT NULL DEFAULT 0, -- CANTIDAD DESPACHADA A UN CLIENTE
+  //--cantidad_facturada integer NOT NULL DEFAULT 0, 
+     */
+    
+    
+    G.db.query(sql, [numero_pedido], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+
+};
+
 PedidosClienteModel.prototype.eliminar_registro_detalle_cotizacion = function(numero_cotizacion, codigo_producto, callback)
 {
     var sql = "DELETE FROM ventas_ordenes_pedidos_d_tmp WHERE pedido_cliente_id_tmp = $1 and codigo_producto = $2";
@@ -1061,6 +1127,110 @@ PedidosClienteModel.prototype.cambiar_estado_cotizacion = function(numero_cotiza
     G.db.query(sql, [numero_cotizacion, nuevo_estado], function(err, rows, result) {
         callback(err, rows, result);
     });
+};
+
+function __cambiar_estado_cotizacion(numero_cotizacion, nuevo_estado, callback)
+{
+    
+    var sql = "UPDATE ventas_ordenes_pedidos_tmp SET estado = $2 WHERE pedido_cliente_id_tmp = $1";
+
+    G.db.transaction(sql, [numero_cotizacion, nuevo_estado], function(err, rows, result){
+        callback(err, rows, result);
+    });
+
+};
+
+PedidosClienteModel.prototype.insertar_pedido_cliente = function(numero_cotizacion, callback)
+{
+    G.db.begin(function() {
+        
+       __insertar_encabezado_pedido_cliente(numero_cotizacion, function(err, rows, result) {
+
+           if(err){
+               callback(err);
+               return;
+           }
+
+           //console.log(">>>>> DATA ROWS: ", rows.rows[0].pedido_cliente_id);
+           //console.log(">>>>> DATA RESULT: ", result);
+           var numero_pedido = rows.rows[0].pedido_cliente_id;
+           console.log(">>>>> Número Pedido: ", numero_pedido);
+           
+           __cambiar_estado_cotizacion(numero_cotizacion, '0', function(err, rows, result){
+               if(err){
+                    callback(err);
+                    return;
+                }
+                
+                /* Insertar Detalle */
+                __insertar_detalle_pedido_cliente(numero_pedido, numero_cotizacion, function(err, rows, result) {
+
+                    if(err){
+                        callback(err);
+                        return;
+                    }
+
+                    // Finalizar Transacción.
+                    G.db.commit(function(){
+                        callback(err, rows);
+                    });
+                });
+                /* Insertar Detalle */
+           });
+
+       });
+    });
+};
+
+function __insertar_encabezado_pedido_cliente(numero_cotizacion, callback)
+{
+    
+    /*
+     Los camposiguientes se usan solo para anulación:
+    
+        fecha_registro_anulacion,
+	usuario_anulador,
+	observacion_anulacion,
+     */
+    
+    var sql = " INSERT INTO ventas_ordenes_pedidos( empresa_id, tipo_id_tercero, tercero_id, fecha_registro, usuario_id, estado, tipo_id_vendedor,\
+                    vendedor_id, observacion, estado_pedido) \
+                SELECT empresa_id, tipo_id_tercero, tercero_id, CURRENT_TIMESTAMP, usuario_id, 1, tipo_id_vendedor,\
+                    vendedor_id, observaciones, 0\
+                FROM ventas_ordenes_pedidos_tmp \
+                WHERE pedido_cliente_id_tmp = $1 \
+                RETURNING pedido_cliente_id";
+
+    G.db.transaction(sql, [numero_cotizacion], function(err, rows, result){
+        callback(err, rows, result);
+    });
+    /*G.db.query(sql, [numero_cotizacion], function(err, rows, result) {
+        callback(err, rows, result);
+    });*/
+
+};
+
+function __insertar_detalle_pedido_cliente(numero_pedido, numero_cotizacion, callback) {
+    
+    /*
+     Los campos siguientes se usan solo para despacho y facturación:
+    
+        cantidad_despachada
+        cantidad_facturada
+    */
+    var sql = " INSERT INTO ventas_ordenes_pedidos_d(pedido_cliente_id, codigo_producto, porc_iva, numero_unidades, valor_unitario, fecha_registro, usuario_id)\
+                SELECT $1, codigo_producto, porc_iva, numero_unidades, valor_unitario, CURRENT_TIMESTAMP, usuario_id\
+                FROM ventas_ordenes_pedidos_d_tmp \
+                WHERE pedido_cliente_id_tmp = $2\
+                RETURNING pedido_cliente_id";
+
+    G.db.transaction(sql, [numero_pedido, numero_cotizacion], function(err, rows, result){
+        callback(err, rows, result);
+    });
+    /*G.db.query(sql, [numero_pedido, numero_cotizacion], function(err, rows, result) {
+        callback(err, rows, result);
+    });*/
+
 };
 
 PedidosClienteModel.$inject = ["m_productos"];

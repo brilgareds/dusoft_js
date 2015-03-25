@@ -1026,7 +1026,9 @@ PedidosClienteModel.prototype.estado_cotizacion = function(numero_cotizacion, ca
  */
 PedidosClienteModel.prototype.estado_pedido = function(numero_pedido, callback) {
     
-    var sql = "select estado_pedido from ventas_ordenes_pedidos where pedido_cliente_id = $1";
+    var sql = " select a.estado_pedido, b.estado as estado_separacion from ventas_ordenes_pedidos a\
+                left join inv_bodegas_movimiento_tmp_despachos_clientes b on a.pedido_cliente_id = b.pedido_cliente_id\
+                where pedido_cliente_id = $1";
     
     G.db.query(sql, [numero_pedido], function(err, rows, result) {
         callback(err, rows, result);
@@ -1111,12 +1113,45 @@ PedidosClienteModel.prototype.listar_detalle_pedido = function(numero_pedido, ca
 
 };
 
-PedidosClienteModel.prototype.eliminar_registro_detalle_cotizacion = function(numero_cotizacion, codigo_producto, callback)
+PedidosClienteModel.prototype.eliminar_registro_detalle_cotizacion = function(numero_cotizacion, codigo_producto, usuario_solicitud, callback)
 {
-    var sql = "DELETE FROM ventas_ordenes_pedidos_d_tmp WHERE pedido_cliente_id_tmp = $1 and codigo_producto = $2";
+    /*var sql = "DELETE FROM ventas_ordenes_pedidos_d_tmp WHERE pedido_cliente_id_tmp = $1 and codigo_producto = $2";
 
     G.db.query(sql, [numero_cotizacion, codigo_producto], function(err, rows, result) {
         callback(err, rows);
+    });*/
+    
+    G.db.begin(function(){
+        
+        __log_eliminar_producto_detalle_cotizacion(numero_cotizacion, codigo_producto, usuario_solicitud, function(err, rows, result){
+            
+            if(err){
+                    callback(err);
+                    return;
+                }
+            
+            __eliminar_registro_detalle_cotizacion(numero_cotizacion, codigo_producto, function(err, rows, result){
+               
+                if(err){
+                    callback(err);
+                    return;
+                }
+                
+                G.db.commit(function(){
+                    callback(err, rows);
+                });
+            });
+        });
+        
+    });  
+};
+
+function __eliminar_registro_detalle_cotizacion(numero_cotizacion, codigo_producto, callback){
+    
+    var sql = "DELETE FROM ventas_ordenes_pedidos_d_tmp WHERE pedido_cliente_id_tmp = $1 and codigo_producto = $2";
+    
+    G.db.transaction(sql, [numero_cotizacion, codigo_producto], function(err, rows, result){
+        callback(err, rows, result);
     });
 };
 
@@ -1204,10 +1239,6 @@ function __insertar_encabezado_pedido_cliente(numero_cotizacion, callback)
     G.db.transaction(sql, [numero_cotizacion], function(err, rows, result){
         callback(err, rows, result);
     });
-    /*G.db.query(sql, [numero_cotizacion], function(err, rows, result) {
-        callback(err, rows, result);
-    });*/
-
 };
 
 function __insertar_detalle_pedido_cliente(numero_pedido, numero_cotizacion, callback) {
@@ -1227,11 +1258,91 @@ function __insertar_detalle_pedido_cliente(numero_pedido, numero_cotizacion, cal
     G.db.transaction(sql, [numero_pedido, numero_cotizacion], function(err, rows, result){
         callback(err, rows, result);
     });
-    /*G.db.query(sql, [numero_pedido, numero_cotizacion], function(err, rows, result) {
-        callback(err, rows, result);
-    });*/
-
 };
+
+
+PedidosClienteModel.prototype.insertar_detalle_pedido = function(numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, callback) {
+    
+    var sql = "INSERT INTO ventas_ordenes_pedidos_d(pedido_cliente_id, codigo_producto, porc_iva, numero_unidades, valor_unitario, fecha_registro, usuario_id)\n\
+                    VALUES($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, $6)";
+    
+    G.db.query(sql, [numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
+//eliminar_registro_detalle_pedido
+PedidosClienteModel.prototype.eliminar_registro_detalle_pedido = function(numero_pedido, codigo_producto, usuario_solicitud, callback)
+{
+    /*var sql = "DELETE FROM ventas_ordenes_pedidos_d WHERE pedido_cliente_id = $1 and codigo_producto = $2";
+
+    G.db.query(sql, [numero_pedido, codigo_producto], function(err, rows, result) {
+        callback(err, rows);
+    });*/
+    
+    G.db.begin(function() {
+        
+        __log_eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, usuario_solicitud, function(err, rows, result){
+            
+            if(err){
+                    callback(err);
+                    return;
+                }
+            
+            __eliminar_registro_detalle_pedido(numero_pedido, codigo_producto, function(err, rows, result){
+               
+                if(err){
+                    callback(err);
+                    return;
+                }
+                
+                G.db.commit(function(){
+                    callback(err, rows);
+                });
+            });
+        });
+    });
+};
+
+function __eliminar_registro_detalle_pedido(numero_cotizacion, codigo_producto, callback)
+{
+    var sql = "DELETE FROM ventas_ordenes_pedidos_d WHERE pedido_cliente_id = $1 and codigo_producto = $2";
+    
+    G.db.transaction(sql, [numero_cotizacion, codigo_producto], function(err, rows, result){
+        callback(err, rows, result);
+    });
+};
+
+function __log_eliminar_producto_detalle_cotizacion(numero_cotizacion, codigo_producto, usuario_solicitud, callback)
+{
+    
+    var sql = " INSERT INTO log_eliminacion_cotizaciones_cliente(cotizacion_id,usuario_solicitud,codigo_producto,porc_iva,numero_unidades,valor_unitario,usuario_id,fecha_registro,usuario_ejecuta)\
+                SELECT a.pedido_cliente_id_tmp, b.usuario, a.codigo_producto, a.porc_iva, a.numero_unidades, a.valor_unitario, a.usuario_id,CURRENT_TIMESTAMP, b.nombre\
+                FROM ventas_ordenes_pedidos_d_tmp a\
+                LEFT JOIN system_usuarios b on b.usuario_id = $3\
+                WHERE a.pedido_cliente_id_tmp = $1\
+                AND a.codigo_producto = $2";
+
+    G.db.transaction(sql, [numero_cotizacion, codigo_producto, usuario_solicitud], function(err, rows, result){
+        callback(err, rows, result);
+    });
+};
+
+function __log_eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, usuario_solicitud, callback)
+{
+    
+    var sql = " INSERT INTO log_eliminacion_pedidos_cliente(pedido_id,usuario_solicitud,codigo_producto,porc_iva,numero_unidades,valor_unitario,usuario_id,fecha_registro,usuario_ejecuta)\
+                SELECT a.pedido_cliente_id, b.usuario, a.codigo_producto, a.porc_iva, a.numero_unidades, a.valor_unitario, a.usuario_id,CURRENT_TIMESTAMP, b.nombre\
+                FROM ventas_ordenes_pedidos_d a\
+                LEFT JOIN system_usuarios b on b.usuario_id = $3\
+                WHERE a.pedido_cliente_id = $1\
+                AND a.codigo_producto = $2";
+
+    G.db.transaction(sql, [numero_pedido, codigo_producto, usuario_solicitud], function(err, rows, result){
+        callback(err, rows, result);
+    });
+};
+
 
 PedidosClienteModel.$inject = ["m_productos"];
 

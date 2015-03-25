@@ -86,6 +86,9 @@ define(["angular"], function(angular) {
                 'INSERTAR_PEDIDO_CLIENTE' :BASE_URL+'/PedidosClientes/insertarPedidoCliente',
                 'LISTAR_DETALLE_PEDIDO'  :BASE_URL+'/PedidosClientes/listarDetallePedido',
                 'CONSULTA_ESTADO_PEDIDO' :BASE_URL+'/PedidosClientes/estadoPedido',
+                'INSERTAR_DETALLE_PEDIDO_CLIENTE' :BASE_URL+'/PedidosClientes/insertarDetallePedido',
+                'ELIMINAR_REGISTRO_DETALLE_PEDIDO' :BASE_URL+'/PedidosClientes/eliminarRegistroDetallePedido',
+                'IMPRIMIR_PEDIDO_CLIENTE' :BASE_URL+'/PedidosClientes/imprimirPedidoCliente'
 	    },
 	    'TERCEROS':{
 	    	'LISTAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/listar",

@@ -218,8 +218,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     // HACER CONSULTA DE PRODUCTOS DE LA COTIZACIÓN O PEDIDO (DETALLE)
                     console.log(">>>>>>>>> Numero Cotización: ", $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion());
                     
-                    if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== undefined
-                        /*&& ($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado.numero_pedido === '' || $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado.numero_pedido === undefined)*/)
+                    if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== undefined)
                     {
                         console.log(">>>>>>>>>>>>>> Número Cotización con Valor");
 
@@ -813,6 +812,64 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     }
                 });
             };
+            
+            $scope.generarPdfPedidoCliente = function(){
+                
+                var codigo_empresa_origen = $scope.rootCreaCotizaciones.Empresa.getCodigo();
+                var nombre_empresa_origen = $scope.rootCreaCotizaciones.Empresa.getNombre();
+                
+                var numero_pedido = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido();
+                
+                var id_cliente = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getId();
+                var nombre_cliente = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getNombre();
+                var ciudad_cliente = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getMunicipio();
+                var direccion_cliente = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getDireccion();
+
+                var fecha_registro = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getFechaRegistro();
+                var observacion = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getObservacion();
+                
+                var valor_total_sin_iva = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_sin_iva;
+                var valor_total_con_iva = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_con_iva;
+
+
+                var obj_pdf = {
+                    session: $scope.rootCreaCotizaciones.session,
+                    data: {
+                        encabezado_pedido_cliente: {
+                            numero_pedido: numero_pedido,        
+                            codigo_origen_id: codigo_empresa_origen,
+                            empresa_origen: nombre_empresa_origen,
+                            
+                            id_cliente: id_cliente,
+                            nombre_cliente: nombre_cliente,
+                            ciudad_cliente: ciudad_cliente,
+                            direccion_cliente: direccion_cliente,
+
+                            fecha_registro: fecha_registro,
+                            observacion: observacion,
+                    
+                            valor_total_sin_iva: valor_total_sin_iva,
+                            valor_total_con_iva: valor_total_con_iva
+                        },
+                        detalle_pedido_cliente: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().obtenerProductos()
+                    }
+                };
+
+                var url_imprimir_pedido_pdf = API.PEDIDOS.IMPRIMIR_PEDIDO_CLIENTE;
+
+                Request.realizarRequest(url_imprimir_pedido_pdf, "POST", obj_pdf, function(data) {
+
+                    if (data.status === 200) {
+
+                        var nombre_archivo_temporal = data.obj.reporte_pedido.nombre_reporte;
+
+                        $scope.visualizarReporte("/reports/"+nombre_archivo_temporal, "Pedido: "+numero_pedido, "download");
+                    }
+                    else{
+                        console.log("Error: ", data.msj);
+                    }
+                });
+            };            
             
             $scope.generarPedidoCliente = function (){
                 

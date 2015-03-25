@@ -931,8 +931,9 @@ PedidosCliente.prototype.eliminarRegistroDetalleCotizacion = function(req, res) 
     //Parámetro a insertar
     var numero_cotizacion = args.eliminar_detalle_cotizacion.numero_cotizacion;
     var codigo_producto = args.eliminar_detalle_cotizacion.codigo_producto;
+    var usuario_solicitud = req.session.user.usuario_id;
 
-    that.m_pedidos_clientes.eliminar_registro_detalle_cotizacion(numero_cotizacion, codigo_producto, function(err, rows) {
+    that.m_pedidos_clientes.eliminar_registro_detalle_cotizacion(numero_cotizacion, codigo_producto, usuario_solicitud, function(err, rows) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error en Eliminación Registro Detalle Cotización', 500, {}));
@@ -1303,14 +1304,14 @@ PedidosCliente.prototype.imprimirCotizacionCliente = function(req, res) {
         });
     }
 
-    _generarDocumentoPedido(args, function(nombreTmp){
-     res.send(G.utils.r(req.url, 'Url reporte pedido', 200, {reporte_pedido: {nombre_reporte: nombreTmp}}));
-     return;
+    _generarDocumentoCotizacion(args, function(nombreTmp){
+        res.send(G.utils.r(req.url, 'Url reporte pedido', 200, {reporte_pedido: {nombre_reporte: nombreTmp}}));
+        return;
      });
 
 };
 
-function _generarDocumentoPedido(obj, callback) {
+function _generarDocumentoCotizacion(obj, callback) {
     G.jsreport.reporter.render({
         template: {
             content: G.fs.readFileSync('app_modules/PedidosClientes/reports/cotizacion.html', 'utf8'),
@@ -1328,6 +1329,216 @@ function _generarDocumentoPedido(obj, callback) {
 
         callback(nombreTmp);
     });
+};
+
+PedidosCliente.prototype.imprimirPedidoCliente = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.encabezado_pedido_cliente === undefined || args.encabezado_pedido_cliente.numero_pedido === undefined) {
+        res.send(G.utils.r(req.url, 'numero_pedido no está definido', 404, {}));
+        return;
+    }
+
+    if (args.encabezado_pedido_cliente.codigo_origen_id === undefined || args.encabezado_pedido_cliente.empresa_origen === undefined
+            || args.encabezado_pedido_cliente.fecha_registro === undefined) {
+
+        res.send(G.utils.r(req.url, 'codigo_origen_id, empresa_origen o fecha_registro no están definidos', 404, {}));
+        return;
+    }
+
+   if (args.encabezado_pedido_cliente.id_cliente === undefined || args.encabezado_pedido_cliente.nombre_cliente === undefined
+            || args.encabezado_pedido_cliente.ciudad_cliente === undefined || args.encabezado_pedido_cliente.direccion_cliente === undefined) {
+
+        res.send(G.utils.r(req.url, 'id_cliente, nombre_cliente, ciudad_cliente o direccion_cliente no están definidos', 404, {}));
+        return;
+    }
+    
+    if (args.encabezado_pedido_cliente.valor_total_sin_iva === undefined || args.encabezado_pedido_cliente.valor_total_con_iva === undefined) {
+
+        res.send(G.utils.r(req.url, 'valor_total_sin_iva o valor_total_con_iva no están definidos', 404, {}));
+        return;
+    }
+    
+
+    if (args.encabezado_pedido_cliente.numero_pedido === '') {
+        res.send(G.utils.r(req.url, 'numero_pedido está vacio', 404, {}));
+        return;
+    }
+
+    if (args.encabezado_pedido_cliente.codigo_origen_id === '' || args.encabezado_pedido_cliente.empresa_origen === ''
+            || args.encabezado_pedido_cliente.fecha_registro === '') {
+
+        res.send(G.utils.r(req.url, 'codigo_origen_id, empresa_origen o fecha_registro están vacios', 404, {}));
+        return;
+    }
+    
+    if (args.encabezado_pedido_cliente.id_cliente === '' || args.encabezado_pedido_cliente.nombre_cliente === ''
+            || args.encabezado_pedido_cliente.ciudad_cliente === '' || args.encabezado_pedido_cliente.direccion_cliente === '') {
+
+        res.send(G.utils.r(req.url, 'id_cliente, nombre_cliente, ciudad_cliente o direccion_cliente están vacios', 404, {}));
+        return;
+    }
+    
+    if (args.encabezado_pedido_cliente.valor_total_sin_iva === '' || args.encabezado_pedido_cliente.valor_total_con_iva === '') {
+
+        res.send(G.utils.r(req.url, 'valor_total_sin_iva o valor_total_con_iva están vacios', 404, {}));
+        return;
+    }
+
+    
+    if (args.detalle_pedido_cliente === undefined) {
+        res.send(G.utils.r(req.url, 'El detalle no está definido', 404, {}));
+        return;
+    }
+    else {
+        args.detalle_pedido_cliente.forEach(function(detalle) {
+
+            if (detalle.codigo_producto === undefined || detalle.descripcion === undefined) {
+                res.send(G.utils.r(req.url, 'codigo_producto o descripcion no están definidos', 404, {}));
+                return;
+            }
+
+            if (detalle.cantidad_solicitada === undefined || detalle.iva === undefined) {
+                res.send(G.utils.r(req.url, 'cantidad_solicitada o iva no están definidos', 404, {}));
+                return;
+            }
+            
+            if (detalle.precio === undefined || detalle.total_sin_iva === undefined || detalle.total_con_iva === undefined) {
+                res.send(G.utils.r(req.url, 'precio, total_sin_iva o total_con_iva no están definidos', 404, {}));
+                return;
+            }
+
+            
+            if (detalle.codigo_producto === '' || detalle.descripcion === '') {
+                res.send(G.utils.r(req.url, 'codigo_producto o descripcion están vacios', 404, {}));
+                return;
+            }
+
+            if (detalle.cantidad_solicitada === '' || detalle.iva === '') {
+                res.send(G.utils.r(req.url, 'cantidad_solicitada o iva están vacios', 404, {}));
+                return;
+            }
+            
+            if (detalle.precio === '' || detalle.total_sin_iva === '' || detalle.total_con_iva === '') {
+                res.send(G.utils.r(req.url, 'precio, total_sin_iva o total_con_iva están vacios', 404, {}));
+                return;
+            }
+
+        });
+    }
+
+    _generarDocumentoPedido(args, function(nombreTmp){
+        res.send(G.utils.r(req.url, 'Url reporte pedido', 200, {reporte_pedido: {nombre_reporte: nombreTmp}}));
+        return;
+     });
+
+};
+
+function _generarDocumentoPedido(obj, callback) {
+    G.jsreport.reporter.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/PedidosClientes/reports/pedido.html', 'utf8'),
+            //helpers: G.fs.readFileSync('app_modules/PedidosFarmacias/reports/javascripts/rotulos.js', 'utf8'),
+            recipe: "phantom-pdf",
+            engine: 'jsrender'
+        },
+        data: obj
+    }).then(function(response) {
+
+        var name = response.result.path;
+        var fecha = new Date();
+        var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
+        G.fs.copySync(name, G.dirname + "/public/reports/" + nombreTmp);
+
+        callback(nombreTmp);
+    });
+};
+
+//Insertar Detalle Pedido
+PedidosCliente.prototype.insertarDetallePedido = function(req, res){
+  
+    var that = this;
+    
+    var args = req.body.data;
+    
+    if (args.detalle_pedido === undefined || args.detalle_pedido.numero_pedido === undefined || args.detalle_pedido.codigo_producto === undefined || args.detalle_pedido.porc_iva === undefined) {
+        res.send(G.utils.r(req.url, 'numero_pedido, codigo_producto o porc_iva No Están Definidos', 404, {}));
+        return;
+    }
+    
+    if (args.detalle_pedido.numero_unidades === undefined || args.detalle_pedido.valor_unitario === undefined) {
+        res.send(G.utils.r(req.url, 'numero_unidades o valor_unitario No Están Definidos', 404, {}));
+        return;
+    }
+
+    if (args.detalle_pedido.numero_pedido === '' || args.detalle_pedido.codigo_producto === '' || args.detalle_pedido.porc_iva === '') {
+        res.send(G.utils.r(req.url, 'numero_pedido, codigo_producto o porc_iva Están Vacios', 404, {}));
+        return;
+    }
+    
+    if (args.detalle_pedido.numero_unidades === '' || args.detalle_pedido.valor_unitario === '') {
+        res.send(G.utils.r(req.url, 'numero_unidades o valor_unitario Están Vacios', 404, {}));
+        return;
+    }
+
+    //Parámetros a insertar
+    var numero_pedido = args.detalle_pedido.numero_pedido;
+    var codigo_producto = args.detalle_pedido.codigo_producto;
+    var porc_iva = args.detalle_pedido.porc_iva;
+    var numero_unidades = args.detalle_pedido.numero_unidades;
+    var valor_unitario = args.detalle_pedido.valor_unitario;
+    var usuario_id = req.session.user.usuario_id;
+    
+    //insertar_detalle_pedido = function(numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, callback)
+
+    that.m_pedidos_clientes.insertar_detalle_pedido(numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, function(err, row) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error en Inserción del Detalle de Pedido', 500, {}));
+            return;
+        }
+
+        res.send(G.utils.r(req.url, 'Inserción del Detalle Pedido Exitosa', 200, {}));
+
+    });
+};
+
+//eliminarRegistroDetallePedido
+PedidosCliente.prototype.eliminarRegistroDetallePedido = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.eliminar_detalle_pedido === undefined || args.eliminar_detalle_pedido.numero_pedido === undefined || args.eliminar_detalle_pedido.codigo_producto === undefined) {
+        res.send(G.utils.r(req.url, 'numero_pedido o codigo_producto no están definidos', 404, {}));
+        return;
+    }
+    
+    if (args.eliminar_detalle_pedido.numero_pedido === '' || args.eliminar_detalle_pedido.codigo_producto === '') {
+        res.send(G.utils.r(req.url, 'numero_pedido o codigo_producto están vacios', 404, {}));
+        return;
+    }
+
+    //Parámetro a insertar
+    var numero_pedido = args.eliminar_detalle_pedido.numero_pedido;
+    var codigo_producto = args.eliminar_detalle_pedido.codigo_producto;
+    var usuario_solicitud = req.session.user.usuario_id;
+
+    that.m_pedidos_clientes.eliminar_registro_detalle_pedido(numero_pedido, codigo_producto, usuario_solicitud, function(err, rows) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error en Eliminación Registro Detalle Pedido', 500, {}));
+            return;
+        }
+
+        res.send(G.utils.r(req.url, 'Eliminación Registro Detalle Pedido Exitoso', 200, {}));
+
+    });
+ 
 };
 
 PedidosCliente.$inject = ["m_pedidos_clientes", "e_pedidos_clientes", "m_productos", "m_pedidos"];

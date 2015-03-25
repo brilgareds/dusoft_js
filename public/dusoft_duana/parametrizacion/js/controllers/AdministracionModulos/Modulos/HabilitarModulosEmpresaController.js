@@ -121,14 +121,13 @@ define(["angular", "js/controllers", "js/models", "models/Perfiles/Rol", "models
             //verifica si la empresa fue seleccionada por el modulo
             self.esEmpresaSeleccionada = function(empresa){
                  
-                 
                  for(var i in moduloSeleccionado.getListaEmpresas()){
                      var _empresa = moduloSeleccionado.getListaEmpresas()[i];
                      
                      if(empresa.getCodigo() ===  _empresa.getEmpresa().getCodigo() 
                         &&_empresa.getModulo().getId() === moduloSeleccionado.getId()){
     
-                         return true;
+                         return _empresa.getEmpresa().getEstado();
                      }
                  }
                  

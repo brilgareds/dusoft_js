@@ -73,7 +73,7 @@ define([
 
             };
 
-            self.traerModulos = function() {
+            self.traerModulos = function(callback) {
                 var obj = {
                     session: $scope.rootModulos.session,
                     data: {
@@ -82,7 +82,6 @@ define([
 
                 Request.realizarRequest(API.MODULOS.LISTAR_MODULOS, "POST", obj, function(data) {
                     if (data.status === 200) {
-                        console.log(Modulo);
                         var datos = data.obj.parametrizacion_modulos.modulos;
                         $scope.rootModulos.modulos = [];
 
@@ -94,7 +93,7 @@ define([
                                     datos[i].parent,
                                     datos[i].nombre,
                                     datos[i].url
-                                    );
+                             );
 
                             modulo.setIcon(datos[i].icon);
                             
@@ -106,8 +105,8 @@ define([
                         }
 
                         // console.log(modulos);
+                        callback();
                         $scope.$broadcast("datosArbolCambiados", $scope.rootModulos.modulos);
-
                     }
 
                 });
@@ -125,7 +124,9 @@ define([
 
             //se carga los modulos despues que el arbol esta listo
             $scope.$on("arbolListoEnDom", function() {
-                self.traerModulos();
+                self.traerModulos(function(){
+                    
+                });
             });
 
             //ventana para habilitar el modulo en una empresa
@@ -170,7 +171,6 @@ define([
 
                 //se verifica si tiene padre para sacar la informacion necesaria
                 if (moduloPadre) {
-                    console.log("tratando de guardar modulo");
                     modulo_guardar.parent = moduloPadre.modulo_id;
                     modulo_guardar.parent_name = moduloPadre.text;
                     
@@ -185,7 +185,7 @@ define([
 
                 delete modulo_guardar.nodo_principal;
 
-                console.log(JSON.stringify(modulo_guardar));
+               // console.log(JSON.stringify(modulo_guardar));
 
 
                 var obj = {
@@ -199,13 +199,23 @@ define([
 
                 Request.realizarRequest(API.MODULOS.GUARDAR_MODULO, "POST", obj, function(data) {
                     if (data.status === 200) {
-                        console.log("modulo guardado con exito ", data);
                         AlertService.mostrarMensaje("success", "Modulo guardado correctamente");
                         var id = data.obj.parametrizacion_modulo.modulo.id;
                         if (id) {
                             $scope.rootModulos.moduloAGuardar.setId(id);
+                            modulo_guardar.setId(id);
+                            
+                            self.traerModulos(function(){
+                                
+                                
+                                $scope.$on("arbolRefrescado",function(){
+                                    console.log("arbol refrescado code 2")
+                                    $scope.$broadcast("onseleccionarnodo", modulo_guardar.id, modulo_guardar.parent);
+                                });
+                                
+                            });
                         }
-                        self.traerModulos();
+                        
                     } else {
                         AlertService.mostrarMensaje("warning", data.msj);
                     }
@@ -219,7 +229,6 @@ define([
             };
 
             $scope.onSeleccionarNodoPrincipal = function() {
-                console.log("es modulo principal ", $scope.rootModulos.moduloAGuardar.nodo_principal);
                 if ($scope.rootModulos.moduloAGuardar.nodo_principal) {
                     delete $scope.rootModulos.moduloPadre;
                     delete $scope.rootModulos.moduloAGuardar.icon;
@@ -236,11 +245,7 @@ define([
                     delete $scope.rootModulos.moduloPadre;
                 }
             };
-            
-           /* $scope.$on("traerOpcioesModuloSeleccionado", function(e, modulo_id) {
 
-                $scope.$broadcast("traerOpcionesModulo");
-            });*/
 
             $scope.$on("modulosSeleccionados", function(e, modulos_seleccionado) {
 
@@ -289,7 +294,7 @@ define([
                             for (var i in  modulos) {
 
                                 if (modulos[i].id === _modulo.parent) {
-                                    console.log("modulos select ", modulos[i].id);
+                                    //console.log("modulos select ", modulos[i].id);
 
                                     $scope.rootModulos.moduloPadre = modulos[i];
                                     break;

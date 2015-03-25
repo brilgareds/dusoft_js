@@ -1,0 +1,176 @@
+
+<div class="row" directiva-general-modulos>
+    <div class="col-md-5">
+        <tabset>
+            <tab>
+                <tab-heading>
+                    Detalle Modulo
+                </tab-heading>
+
+                <div class="panel">
+                    <div class="panel-body">
+
+                        <p class="input-group contenedor_combo_grande">
+                            <label for="nodo_principal" style='margin-right: 5px;'>Nodo Principal</label>
+                        <input-check ng-model="rootModulos.moduloAGuardar.nodo_principal" ng-change="onSeleccionarNodoPrincipal()" style='margin-right: 20px;' id="nodo_principal"  ></input-check>
+                        <label for="habilitar" style='margin-right: 5px;' >Activar</label>
+                        <input-check ng-model="rootModulos.moduloAGuardar.estado" id="habilitar"  ></input-check>
+
+                        <button type="button" class="btn btn-default btn-sm pull-right" ng-disabled="rootModulos.moduloAGuardar.id == 0"  ng-click='onHabilitarModuloEnEmpresas()'>Habilitar En Empresas</button>
+
+                        </p>
+
+                        <p class="input-group contenedor_combo_grande">
+
+                        <ui-select ng-model="rootModulos.moduloPadre"
+                                   theme="select2"
+                                   ng-disabled = "rootModulos.moduloAGuardar.nodo_principal"
+                                   ng-change="onModuloPadreSeleccionado()"
+                                   class="contenedor_combo_grande">
+                            <ui-select-match  placeholder="Seleccionar Modulo Padre">{{$select.selected.text}}</ui-select-match>
+                            <ui-select-choices repeat="modulo in rootModulos.modulos | filter:$select.search">
+                                {{modulo.text}}
+                            </ui-select-choices>
+                        </ui-select>
+
+
+                        </p>
+
+                        <p class="input-group">
+
+                            <input type="text" class="form-control validar_caracteres" ng-model='rootModulos.moduloAGuardar.nombre' placeholder="Nombre Del Modulo" name="srch-term" id="srch-term"  />
+                            <span class="input-group-addon">
+                                <i class="glyphicon glyphicon-ok"></i>
+                            </span>
+                        </p> 
+
+                        <p class="input-group">
+                            <input type="text" class="form-control validar_caracteres validar_espacios" ng-model='rootModulos.moduloAGuardar.state'  placeholder="Estado Url" name="srch-term" />
+                            <span class="input-group-addon">
+                                <i class="glyphicon glyphicon-link"></i>
+                            </span>
+                        </p>
+
+                        <p class="input-group">
+                            <span class="input-group-addon">
+                                /
+                            </span>
+                            <input type="text" class="form-control validar_caracteres validar_espacios" ng-model='rootModulos.moduloAGuardar.state' disabled="disabled"  placeholder="Url" name="srch-term" id="srch-term"  />
+                            <span class="input-group-addon">
+                                <i class="glyphicon glyphicon-link"></i>
+                            </span>
+                        </p> 
+
+                        <div class="btn-group listaIconos">
+                            <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false" ng-disabled='rootModulos.moduloAGuardar.nodo_principal'>
+                                <i class="{{rootModulos.moduloAGuardar.icon}}" style='margin-right:3px;'></i> Icono Del Modulo <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+
+                                <li ng-repeat='icono in rootModulos.iconos'>
+                                    <a class="jstree-anchor" href="javascript:void(0);" ng-click='onSeleccionIcono(icono)'><i class="{{icono.clase}}"></i> {{icono.nombre}} </a>
+                                </li>
+
+                                <!--li><a href="#">Action <i class="jstree-icon jstree-themeicon glyphicon glyphicon-file jstree-themeicon-custom"></i></a> </li>
+                                <li><a href="#">Action <i class="glyphicon glyphicon-folder-open"></i></a></li>
+                                <li><a href="#">Action <i class="jstree-icon jstree-themeicon glyphicon glyphicon-list-alt jstree-themeicon-custom"></i></a></li-->
+                            </ul>
+                        </div>
+                        <p class="input-group contenedor_combo_grande">
+                            <textarea class="form-control observacion_modulo" ng-model='rootModulos.moduloAGuardar.observacion' placeholder="Descripcion"></textarea>
+
+                        </p> 
+
+                        <div class="pull-right">
+                            <button class="btn btn-warning btn-sm" ng-click='onLimpiarFormulario()'>
+                                Nuevo
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+
+                            <button class="btn btn-success btn-sm" ng-click='onGuardarModulo()'>
+                                Guardar
+                                <span class="glyphicon glyphicon-floppy-disk"></span>
+                            </button>
+
+                        </div>
+                    </div>
+                </div>
+
+            </tab>
+
+            <tab ng-controller="OpcionesModulosController" ng-init='init({eliminar:true, detalle:true})' disabled='rootModulos.moduloAGuardar.nodo_principal || rootModulos.moduloAGuardar.getModulosHijo() > 0'>
+                <tab-heading>
+                    Opciones
+                </tab-heading>
+
+                <div class="panel">
+                    <div class="panel-body">
+                        <p class="input-group contenedor_combo_grande">
+                            <label for="habilitar_opcion" style='margin-right: 5px;'>Habilitar Opcion</label>
+                            <input-check ng-model="rootModulos.moduloAGuardar.opcionAGuardar.estado" style='margin-right: 15px;' id="habilitar_opcion" ></input-check>
+
+                        </p>
+                        <p class="input-group">
+                            <input type="text" ng-model='rootModulos.moduloAGuardar.opcionAGuardar.nombre' class="form-control"  placeholder="Nombre Opcion" />
+                            <span class="input-group-addon">
+                                <i class="glyphicon glyphicon-ok"></i>
+                            </span>
+                        </p> 
+
+                        <p class="input-group">
+                            <input type="text" class="form-control" ng-model='rootModulos.moduloAGuardar.opcionAGuardar.alias'  placeholder="Alias" />
+                            <span class="input-group-addon">
+                                <i class="glyphicon glyphicon-ok"></i>
+                            </span>
+                        </p> 
+
+                        <p class="input-group contenedor_combo_grande">
+                            <textarea class="form-control observacion_modulo" ng-model='rootModulos.moduloAGuardar.opcionAGuardar.observacion' placeholder="Observacion"></textarea>
+
+                        </p> 
+                        <p class="input-group" >
+                            <div class="table-responsive" >
+                                <div class="grid-responsive listado_opciones" ng-grid="listado_opciones">
+
+                                </div>
+                            </div>
+                        </p>
+
+
+
+                        <p class="input-group pull-right">
+                            <button class="btn btn-warning btn-sm" ng-click='onLimpiarFormularioOpcion()'>
+                                Nuevo
+                                <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                            <span ng-switch="rootModulos.moduloAGuardar.modulo_id != 0">
+
+                                <button ng-switch-when="true" class="btn btn-success btn-sm" ng-click='onGuardarOpcion()'>
+                                    Guardar
+                                    <span class="glyphicon glyphicon-floppy-disk"></span>
+                                </button>
+
+                                <button ng-switch-when="false" disabled="disabled" class="btn btn-success btn-sm">
+                                    Guardar
+                                    <span class="glyphicon glyphicon-floppy-disk"></span>
+                                </button>
+                            </span>
+                        </p>
+
+                    </div>
+                </div>
+            </tab>
+        </tabset>
+
+
+
+    </div>
+
+    <div class="col-md-7">
+
+        <!--div arbol-modulos plugins='checkbox,wholerow,state,contextmenu' tipo='multiple' estado='arbolmodulos'></div-->
+         <div arbol-modulos plugins='wholerow,state' tipo='multiple' estado='arbolmodulos'></div>
+    </div>
+</div>
+
+

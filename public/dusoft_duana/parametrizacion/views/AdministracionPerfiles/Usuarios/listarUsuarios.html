@@ -1,14 +1,37 @@
-<!--
-To change this template, choose Tools | Templates
-and open the template in the editor.
--->
-<!DOCTYPE html>
-<html>
-    <head>
-        <title></title>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    </head>
-    <body>
-        <div>TODO write content listar usuarios</div>
-    </body>
-</html>
+
+<div class="col-md-1">
+    <button class="btn btn-default btn-sm" ng-click='onNuevoUsuario()'>
+            Nuevo
+            <span class="glyphicon glyphicon-plus"></span>
+     </button>
+</div>
+
+<div class="input-group  navbar-form buscadorgeneral">
+
+    <input type="text" class="form-control pull-right" ng-keypress="onBuscarUsuario($event)" ng-model="rootUsuarios.termino_busqueda" placeholder="Buscar" />
+    <div class="input-group-btn" >
+        <button class="btn btn-default" type="submit" ng-click="onBuscarUsuario({which:13})"><i class="glyphicon glyphicon-search"></i></button>
+    </div>
+
+</div>
+
+
+
+<div class="table-responsive" >
+
+    <div class="defaultGrid grid-responsive" ng-grid="listado_usuarios">
+
+    </div>
+</div>
+
+<br/>
+
+<div class="row text-center">
+    <button type="button" class="btn btn-default btn-medium" ng-disabled="rootUsuarios.paginaactual == 1" ng-click="paginaAnterior()">
+        <span class="glyphicon glyphicon-chevron-left" ></span>
+    </button>
+    <button type="button" class="btn btn-default btn-medium" ng-disabled="rootUsuarios.usuarios.length == 0" ng-click="paginaSiguiente()">
+        <span class="glyphicon glyphicon-chevron-right" ></span>
+    </button>
+</div>
+

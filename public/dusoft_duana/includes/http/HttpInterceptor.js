@@ -6,8 +6,7 @@ define(["angular","js/services"], function(angular, services){
                 if(response.headers()['content-type'] === "application/json; charset=utf-8" && auth){
 
                     //el usuario actual no esta autenticado en el api, el token no es valido
-                    console.log("http request HttpInterceptor")
-                    if(response.data.status == 401){
+                    if(response.data.status === 401){
 
                          window.location = "../pages/"+response.data.status+".html";
                          return;

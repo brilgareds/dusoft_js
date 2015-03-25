@@ -20,9 +20,10 @@ Usuarios.prototype.listarUsuarios = function(req, res) {
 
     var termino_busqueda = args.lista_usuarios.termino_busqueda;
     var estado_registro = args.lista_usuarios.estado_registro;
+    var pagina = args.lista_usuarios.pagina_actual || 0;
 
 
-    this.m_usuarios.listar_usuarios_sistema(termino_busqueda, estado_registro, function(err, lista_usuarios) {
+    this.m_usuarios.listar_usuarios_sistema(termino_busqueda, estado_registro, pagina, function(err, lista_usuarios) {
         res.send(G.utils.r(req.url, 'Lista Usuarios Sistema', 200, {lista_usuarios: lista_usuarios}));
     });
 };

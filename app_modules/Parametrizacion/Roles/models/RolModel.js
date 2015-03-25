@@ -192,6 +192,11 @@ RolModel.prototype.listarRolesModulosOpciones = function(modulo_id, rol_id, rol_
 };
 
 
+RolModel.prototype.listarRolesPorEmpresa = function(){
+    
+};
+
+
 //funcion recursiva para actualizar listado de roles_modulos
 function __habilitarModulosEnRoles(that, usuario_id, rolesModulos, ids, callback) {
 

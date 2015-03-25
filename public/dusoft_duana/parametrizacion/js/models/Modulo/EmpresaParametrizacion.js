@@ -35,6 +35,9 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
                 this.empresasModulos.push(empresa_modulo);
             };
 
+            EmpresaParametrizacion.prototype.setEstado = function(estado) {
+                this.estado =  estado;
+            };
             
             EmpresaParametrizacion.prototype.getEstado = function() {
                 return this.estado;

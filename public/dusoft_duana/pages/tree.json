@@ -141,16 +141,6 @@
     },
 
     {
-        "id": "23",
-        "parent": "19",
-        "text": "Usuarios",
-        "url": "AdministracionUsuarios",
-        "parentname": "parametrizacion",
-        "icon": "glyphicon glyphicon-file",
-        "state": "AdministracionUsuarios",
-        "visible" :true
-    },
-    {
         "id": "24",
         "parent": "19",
         "text": "Roles",
@@ -159,6 +149,17 @@
         "icon": "glyphicon glyphicon-file",
         "state": "ListarRoles",
         "visible" :true
+    },
+    {
+        "id": "25",
+        "parent": "19",
+        "text": "Usuarios",
+        "url": "ListarUsuarios",
+        "parentname": "parametrizacion",
+        "icon": "glyphicon glyphicon-file",
+        "state": "ListarUsuarios",
+        "visible" :true
     }
+    
     
 ]

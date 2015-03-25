@@ -229,10 +229,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                             <ul class="dropdown-menu dropdown-options">\
                                                 <li><a href="javascript:void(0);" ng-click="onVerCotizacion(row.entity)" >Ver</a></li>\
                                                 <li></li>\
-                                                <li ng-if="row.entity.estado == 1"><a href="javascript:void(0);" ng-click="onEditarPedido(row.entity)">Modificar</a></li>\
-                                                <li ng-if="row.entity.estado == 1"></li>\
-                                                <li ng-if="row.entity.estado == 1"><a href="javascript:void(0);" ng-click="onCambiarEstado(row.entity)">Inactivar</a></li>\
-                                                <li ng-if="row.entity.estado == 1"></li>\
+                                                <li ng-if="(row.entity.estado_actual_pedido == 0 || row.entity.estado_actual_pedido == 1) && !row.entity.estado_separacion"><a href="javascript:void(0);" ng-click="onEditarPedido(row.entity)">Modificar</a></li>\
+                                                <li ng-if="(row.entity.estado_actual_pedido == 0 || row.entity.estado_actual_pedido == 1) && !row.entity.estado_separacion"></li>\
                                             </ul>\n\
                                         </div>'
                     }
@@ -243,7 +241,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             /*NUEVO*/
             
-            $scope.onCambiarEstado = function(obj){
+            /*$scope.onCambiarEstado = function(obj){
                 if(obj.estado === '1') {
                     
                     //obj.estado = '0';
@@ -280,9 +278,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         }
                     });
                 }
-            };
+            };*/
             
-            that.cambiarEstadoCotizacion = function(numero_cotizacion, nuevo_estado, callback){
+            /*that.cambiarEstadoCotizacion = function(numero_cotizacion, nuevo_estado, callback){
                 
                 var obj = {
                     session: $scope.rootPedidosClientes.session,
@@ -314,7 +312,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 });
                 
                 
-            };
+            };*/
             
             //Clase para color de estado en proceso
             $scope.agregarClase = function(estado) {
@@ -387,9 +385,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                         if (callback !== undefined && callback !== "" && callback !== 0) {
 
-                            var estado = data_estado.obj.resultado_consulta[0].estado_pedido;
+                            var estado_pedido = data_estado.obj.resultado_consulta[0].estado_pedido;
+                            var estado_separacion = data_estado.obj.resultado_consulta[0].estado_separacion;
                             
-                            callback(estado);
+                            callback(estado_pedido, estado_separacion);
                         }
                     }
                     else {
@@ -449,7 +448,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             $scope.onEditarPedido = function(data) {
 
-                that.consultarEstadoPedido(data, function(estado_pedido){
+                that.consultarEstadoPedido(data, function(estado_pedido, estado_separacion){
                 //that.consultarEstadoCotizacion(data, function(estado){
 
                     //$scope.rootPedidosClientes.Empresa.setPedidoSeleccionado(data);
@@ -457,7 +456,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     console.log(">>>>>>>>> ESTADO PEDIDO: ", estado_pedido);
                     console.log(">>>>>>>>> DATA ENCABEZADO PEDIDO: ",data);
 
-                    if (estado_pedido === '0') {
+                    //(row.entity.estado_actual_pedido == 0 || row.entity.estado_actual_pedido == 1) && !row.entity.estado_separacion
+                    if ((estado_pedido === '0' || estado_pedido === '1') && !estado_separacion) {
                     
                         console.log(">>>>>>>>> ESTADO PEDIDO 0 ... INGRESO IF ");
                         
@@ -488,7 +488,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                         </div>\
                                         <div class="modal-body row">\
                                             <div class="col-md-12">\
-                                                <h4 >El Pedido ' + $scope.rootPedidosClientes.Empresa.getPedidoSeleccionado().getNumeroPedido() + ' ya fue asignado para separación. No puede modificarse!</h4>\
+                                                <h4 >El Pedido ' + $scope.rootPedidosClientes.Empresa.getPedidoSeleccionado().get_numero_pedido() + ' ya fue asignado para separación. No puede modificarse!</h4>\
                                             </div>\
                                         </div>\
                                         <div class="modal-footer">\

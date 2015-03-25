@@ -56,7 +56,6 @@
     </head>
     <body>
         <div class="container">
-            
             <div class="row pad-top-botm ">
                 <!--div class="col-lg-6 col-md-6 col-sm-6 "-->
                 <div class="box">
@@ -72,28 +71,39 @@
             
             <hr/>
             <div  class="row  pad-top-botm client-info">
-                <h1>Pedido No {{:encabezado_pedido_farmacia.numero_pedido}}</h1>
+                <h1>Pedido No {{:encabezado_pedido_cliente.numero_pedido}}</h1>
 
                 <table class="table table-striped" width='100%'>
                     <tr>
                         <th></th>
                         <th>Empresa</th>
-                        <th>Centro Utilidad</th>
-                        <th>Bodega</th>
                     </tr>
                     <tr>
                         <th style='border-style:solid'>Origen</th>
-                        <td><center>{{:encabezado_pedido_farmacia.empresa_origen}}</center></td>
-                        <td><center>{{:encabezado_pedido_farmacia.centro_utilidad_origen}}</center></td>
-                        <td><center>{{:encabezado_pedido_farmacia.bodega_origen}}</center></td>
+                        <td><center>{{:encabezado_pedido_cliente.empresa_origen}}</center></td>
                     </tr>
-                    <tr>
-                        <th style='border-style:solid'>Destino</th>
-                        <td><center>{{:encabezado_pedido_farmacia.empresa_destino}}</center></td>
-                        <td><center>{{:encabezado_pedido_farmacia.centro_utilidad_destino}}</center></td>
-                        <td><center>{{:encabezado_pedido_farmacia.bodega_destino}}</center></td>
-                    </tr>
+
                 </table>
+                <br>
+                <table class="table table-striped" width='100%'>
+                    <tr>
+                        <th></th>
+                        <th>Nombre</th>
+                        <th>Nit</th>
+                        <th>Ciudad</th>
+                        <th>Direcci&oacute;n</th>
+                    </tr>
+
+                    <tr>
+                        <th style='border-style:solid'>Cliente</th>
+                        <td><center>{{:encabezado_pedido_cliente.nombre_cliente}}</center></td>
+                        <td><center>{{:encabezado_pedido_cliente.id_cliente}}</center></td>
+                        <td><center>{{:encabezado_pedido_cliente.ciudad_cliente}}</center></td>
+                        <td><center>{{:encabezado_pedido_cliente.direccion_cliente}}</center></td>
+                    </tr>
+                    
+                </table>
+                
             </div>
             </br>
             
@@ -101,7 +111,7 @@
                 <table class="table table-striped" width='100%'>
                     <tr>
                         <th width='14%'>Observaci&oacute;n:</th>
-                        <td width='86%'>{{:encabezado_pedido_farmacia.observacion}}</td>
+                        <td width='86%'>{{:encabezado_pedido_cliente.observacion}}</td>
                     </tr>
                 </table>
             </div>
@@ -114,19 +124,34 @@
                             <tr>
                                 <th width='14%'>C&oacute;digo Producto</th>
                                 <th>Descripci&oacute;n</th>
-                                <th>Cantidad Solicitada</th>
-                                <th>Disponible</th>
+                                <th>Cantidad</th>
+                                <th>Iva</th>
+                                <th>Precio</th>
+                                <th>Tot-Sin-Iva</th>
+                                <th>Tot-Con-Iva</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {{for detalle_pedido_farmacia}}
+                            {{for detalle_pedido_cliente}}
                                 <tr>
                                     <td>{{:codigo_producto}}</td>
                                     <td>{{:descripcion}}</td>
                                     <td>{{:cantidad_solicitada}}</td>
-                                    <td>{{:disponibilidad}}</td>
+                                    <td>{{:iva}}</td>
+                                    <td>{{:precio}}</td>
+                                    <td>{{:total_sin_iva}}</td>
+                                    <td>{{:total_con_iva}}</td>
                                 </tr>
                             {{/for}}
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <th>TOTAL</th>
+                                <td>{{:encabezado_pedido_cliente.valor_total_sin_iva}}</td>
+                                <td>{{:encabezado_pedido_cliente.valor_total_con_iva}}</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -143,16 +168,19 @@
                 <div class="col-md-12">
                     <hr />
                     <span>
-                        <strong>Realiza : </strong>  {{:encabezado_pedido_farmacia.nombre_usuario}} 
+                        <strong>Realiza : </strong>  {{:encabezado_pedido_cliente.nombre_usuario}} 
                     </span>
                     <span>
-                        <strong>Imprime : </strong>  {{:encabezado_pedido_farmacia.usuario_imprime}} 
+                        <strong>Imprime : </strong>  {{:encabezado_pedido_cliente.usuario_imprime}} 
                     </span>                    
                     <span>
-                        <strong>Fecha Impresión : </strong>{{:encabezado_pedido_farmacia.fecha_actual}}                        
+                        <strong>Fecha Impresión : </strong>{{:encabezado_pedido_cliente.fecha_actual}}                        
+                    </span>
+                    <span>
+                        <strong>Fecha Cotización : </strong>{{:encabezado_pedido_cliente.fecha_registro}}                        
                     </span>
                 </div>
-            </div> 
+            </div>            
         </div>
     </body>
 </html>

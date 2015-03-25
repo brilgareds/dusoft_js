@@ -82,6 +82,11 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.imprimirCotizacionCliente(req, res);
     }); 
     
+    //Generar PDF Pedido
+    app.post('/api/PedidosClientes/imprimirPedidoCliente', function(req, res) {
+        c_pedidos_clientes.imprimirPedidoCliente(req, res);
+    }); 
+    
     // Listado Pedidos Clientes
     app.post('/api/PedidosClientes/listadoPedidosClientes', function(req, res) {
         c_pedidos_clientes.listadoPedidosClientes(req, res);
@@ -96,5 +101,14 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/listarDetallePedido', function(req, res) {
         c_pedidos_clientes.listarDetallePedido(req, res);
     });
-
+    
+    //Insertar Detalle Pedido Cliente. Usado solo para modificación de pedido ya creado por Cotización.
+    app.post('/api/PedidosClientes/insertarDetallePedido', function(req, res) {
+        c_pedidos_clientes.insertarDetallePedido(req, res);
+    });
+    
+    //Eliminar Registro del Detalle Pedido Cliente. Usado solo para modificación de pedido ya creado por Cotización.
+    app.post('/api/PedidosClientes/eliminarRegistroDetallePedido', function(req, res) {
+        c_pedidos_clientes.eliminarRegistroDetallePedido(req, res);
+    });
 };

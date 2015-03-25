@@ -5,7 +5,7 @@ var UsuariosModel = function() {
 
 
 // Lista los usuarios del sistema, permite buscar por nombre, login o descripcion
-UsuariosModel.prototype.listar_usuarios_sistema = function(termino_busqueda, estado, callback) {
+UsuariosModel.prototype.listar_usuarios_sistema = function(termino_busqueda, estado, pagina, callback) {
 
     // Estado = '' -> Todos
     // Estado = 1 -> Activos
@@ -18,10 +18,19 @@ UsuariosModel.prototype.listar_usuarios_sistema = function(termino_busqueda, est
     }
 
     var sql = "SELECT * FROM system_usuarios a where (a.usuario ilike $1 or a.nombre ilike $1 or a.descripcion ilike $1) " + sql_aux;
+    
+    if (pagina !== 0) {
 
-    G.db.query(sql, ["%" + termino_busqueda + "%"], function(err, rows, result) {
-        callback(err, rows);
-    });
+        G.db.pagination(sql, ["%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
+            callback(err, rows, total_records);
+        });
+    } else {
+       G.db.query(sql, ["%" + termino_busqueda + "%"], function(err, rows, result) {
+            callback(err, rows);
+       });
+    }
+    
+    
 };
 
 // Selecciona un usuario por el ID

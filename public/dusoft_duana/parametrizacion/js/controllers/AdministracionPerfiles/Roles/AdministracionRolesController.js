@@ -181,6 +181,7 @@ define(["angular", "js/controllers", "js/models",
                     if (data.status === 200) {
                         
                         var modulos = data.obj.parametrizacion_perfiles.modulos_empresas;
+                        
                         for(var i in modulos){
                             //bloque 1
                             var modulo = Modulo.get(modulos[i].modulo_id, modulos[i].parent);

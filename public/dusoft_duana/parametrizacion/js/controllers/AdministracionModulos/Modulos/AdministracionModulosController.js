@@ -105,8 +105,8 @@ define([
                         }
 
                         // console.log(modulos);
-                        $scope.$broadcast("datosArbolCambiados", $scope.rootModulos.modulos);
                         callback();
+                        $scope.$broadcast("datosArbolCambiados", $scope.rootModulos.modulos);
                     }
 
                 });
@@ -206,7 +206,13 @@ define([
                             modulo_guardar.setId(id);
                             
                             self.traerModulos(function(){
-                                $scope.$broadcast("onseleccionarnodo", modulo_guardar.id);
+                                
+                                
+                                $scope.$on("arbolRefrescado",function(){
+                                    console.log("arbol refrescado code 2")
+                                    $scope.$broadcast("onseleccionarnodo", modulo_guardar.id, modulo_guardar.parent);
+                                });
+                                
                             });
                         }
                         

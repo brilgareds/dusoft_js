@@ -34,8 +34,13 @@ define(["angular", "js/directive"], function(angular, directive) {
                     });
                     
                     
-                    scope.$on("onseleccionarnodo", function(e, id){
-                        element.jstree("select_node", "#" + id);
+                    scope.$on("onseleccionarnodo", function(e, id, parent_id){
+                        var node = "#" + id;
+                        var padre = "#" +parent_id;
+                        /*var padre = element.jstree(true)._get_parent(node);
+                        element.jstree(true).refresh(padre);*/
+                        element.jstree("select_node",  parent_id);
+                        element.jstree("select_node",  id);
                     });
 
                     scope.onSeleccionarNodo = function(nodo) {
@@ -158,8 +163,10 @@ define(["angular", "js/directive"], function(angular, directive) {
                             scope.onSeleccionarNodo(selected.node);
 
                         }).on("deselect_node.jstree", function(node, selected, event) {
-                            console.log(selected)
                             return false;
+                        }).on("refresh.jstree", function(node, selected, event) {
+                            console.log("arbol refrescado code 1");
+                            scope.$emit("arbolRefrescado");
                         });
                     }
 

@@ -199,7 +199,6 @@ define([
 
                 Request.realizarRequest(API.MODULOS.GUARDAR_MODULO, "POST", obj, function(data) {
                     if (data.status === 200) {
-                        console.log("modulo guardado con exito ", data);
                         AlertService.mostrarMensaje("success", "Modulo guardado correctamente");
                         var id = data.obj.parametrizacion_modulo.modulo.id;
                         if (id) {
@@ -224,7 +223,6 @@ define([
             };
 
             $scope.onSeleccionarNodoPrincipal = function() {
-                console.log("es modulo principal ", $scope.rootModulos.moduloAGuardar.nodo_principal);
                 if ($scope.rootModulos.moduloAGuardar.nodo_principal) {
                     delete $scope.rootModulos.moduloPadre;
                     delete $scope.rootModulos.moduloAGuardar.icon;
@@ -241,11 +239,7 @@ define([
                     delete $scope.rootModulos.moduloPadre;
                 }
             };
-            
-           /* $scope.$on("traerOpcioesModuloSeleccionado", function(e, modulo_id) {
 
-                $scope.$broadcast("traerOpcionesModulo");
-            });*/
 
             $scope.$on("modulosSeleccionados", function(e, modulos_seleccionado) {
 

@@ -25,7 +25,6 @@ define([
             
             //trae todas las opciones que tenga el modulo que se este guardando
             self.traerOpcionesModulo = function() {
-               // console.log("modulo >>>>>>>>>>>>>",$scope.rootModulos.moduloAGuardar);
                 
                 var rolesModulos = $scope.rootModulos.moduloAGuardar.rolesModulos;
                 var rol_modulo_id = (rolesModulos.length > 0)?rolesModulos[0].id:0;

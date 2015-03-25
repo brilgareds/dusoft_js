@@ -84,7 +84,7 @@ define(["angular", "js/controllers", "js/models",
                     {field: 'usuario', displayName: 'Usuario'},
                     {field: 'accion', displayName: '', width: '70',
                         cellTemplate: '<div class="ngCellText txt-center">\
-                                      <button class="btn btn-default btn-xs" ng-click="onEditarRol(row.entity)"><span class="glyphicon glyphicon-zoom-in"></span></button>\
+                                      <button class="btn btn-default btn-xs" ng-click="onEditarUsuario(row.entity)"><span class="glyphicon glyphicon-zoom-in"></span></button>\
                                    </div>'
                     }
                 ]
@@ -105,9 +105,9 @@ define(["angular", "js/controllers", "js/models",
                 self.traerUsuarios();
             };
 
-            $scope.onEditarRol = function(rol) {
-                localStorageService.set("rol_id", rol.getId());
-                $state.go("AdministracionRoles");
+            $scope.onEditarUsuario = function(rol) {
+                localStorageService.set("usuario_id", rol.getId());
+                $state.go("AdministracionUsuarios");
             };
             
             $scope.onNuevoUsuario = function(){

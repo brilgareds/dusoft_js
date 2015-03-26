@@ -397,6 +397,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         that.insertarEncabezadoCotizacion(function(insert_encabezado_exitoso) {
 
                             if(insert_encabezado_exitoso) {
+                                $scope.rootSeleccionProductoCliente.bloquear_eliminar = false;
                                 that.insertarDetalleCotizacion(row);
                             } 
                         });
@@ -405,14 +406,51 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         
                         
                         console.log(">>>>> Detalle Pedido");
-                        
-                        //No se Inserta Encabezado porque el pedido se crea de una cotización. Aquí solo se modifica el Detalle. Verificar si Observacipón puede modificarse.
-                        //that.insertarEncabezadoPedido(function(insert_encabezado_exitoso) {
 
-                            //if(insert_encabezado_exitoso) {
+/**/
+                        var numero_pedido = $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().get_numero_pedido();
+                        
+                        that.consultarEstadoPedido(numero_pedido, function(estado_pedido, estado_separacion){
+
+                            if ((estado_pedido === '0' || estado_pedido === '1') && !estado_separacion) {
+                                //Ejecuta la Inclusión del Producto
+                                $scope.rootSeleccionProductoCliente.bloquear_eliminar = false;
                                 that.insertarDetallePedido(row);
-                            //} 
-                        //});
+                            } //Fin IF estado_pedido
+                            else {
+                                //Muestra Alerta explicando porqué no puede eliminar
+                                $scope.opts = {
+                                    backdrop: true,
+                                    backdropClick: true,
+                                    dialogFade: false,
+                                    keyboard: true,
+                                    template: ' <div class="modal-header">\
+                                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                                    <h4 class="modal-title">Aviso: </h4>\
+                                                </div>\
+                                                <div class="modal-body row">\
+                                                    <div class="col-md-12">\
+                                                        <h4 >El Pedido ' + numero_pedido + ' ya está siendo separado o en proceso de <br>despacho. No puede modificarse!</h4>\
+                                                    </div>\
+                                                </div>\
+                                                <div class="modal-footer">\
+                                                    <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                                </div>',
+                                    scope: $scope,
+                                    controller: function($scope, $modalInstance) {
+                                        $scope.close = function() {
+                                            $modalInstance.close();
+                                        };
+                                    }
+                                };
+
+                                var modalInstance = $modal.open($scope.opts);
+                            }
+
+                        }); //Fin consultarEstadoPedido  
+/**/
+                        //--that.insertarDetallePedido(row);
+
                     }
                 }
             };
@@ -894,22 +932,45 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 /* Fin - Inserción del Detalle */             
             };
             
+            that.consultarEstadoPedido = function(numero_pedido, callback){
+                
+                var obj = {
+                    session: $scope.rootSeleccionProductoCliente.session,
+                    data: {
+                        estado_pedido: {
+                            numero_pedido: numero_pedido,
+                        }
+                    }
+                };
+                
+                var url = API.PEDIDOS.CONSULTA_ESTADO_PEDIDO;
+
+                Request.realizarRequest(url, "POST", obj, function(data_estado) {
+
+                    if (data_estado.status === 200) {
+                        console.log("Consulta exitosa: ", data_estado.msj);
+
+                        if (callback !== undefined && callback !== "" && callback !== 0) {
+
+                            var estado_pedido = data_estado.obj.resultado_consulta[0].estado_pedido;
+                            var estado_separacion = data_estado.obj.resultado_consulta[0].estado_separacion;
+                            
+                            callback(estado_pedido, estado_separacion);
+                        }
+                    }
+                    else {
+                        console.log("Error en la consulta: ", data_estado.msj);
+                    }
+                });
+                
+            };
+            
             /* Eliminar producto seleccionado - Inicio */
             $scope.onEliminarSeleccionado = function(row) {
 
-                //-$scope.rootSeleccionProductoCliente.no_incluir_producto = false;
-                
-                //--$scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().eliminarProducto(row.rowIndex);
-
-                //-$scope.rootSeleccionProductoCliente.listado_productos_seleccionados = $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().lista_productos;
-                //
-                //-$scope.$emit('cargarGridPrincipal', 1);
-
-                /* Inicio - Objeto para Eliminar Registro del Detalle */
-                
                 if ($scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().obtenerProductos().length === 1)
                 {
-                            
+
                     $scope.rootSeleccionProductoCliente.bloquear_eliminar = true;
                     //Mensaje: Solo queda un producto. La cotización debe tener al menos un producto. No puede eliminar éste.
                     var template = ' <div class="modal-header">\
@@ -917,7 +978,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                         <h4 class="modal-title">Mensaje del Sistema</h4>\
                                     </div>\
                                     <div class="modal-body">\
-                                        <h4>Solo queda un producto en el detalle y debe haber al menos uno. No puede eliminar más productos. </h4> \
+                                        <h4>Solo queda un producto en el detalle y debe haber al menos uno. <br>No puede eliminar más productos. </h4> \
                                     </div>\
                                     <div class="modal-footer">\
                                         <button class="btn btn-warning" ng-click="close()">Aceptar</button>\
@@ -943,16 +1004,54 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     var modalInstance = $modal.open($scope.opts);                            
                 }
                 else {
-                    
+
                     if($scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== '' && $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== undefined)
                     {
                         that.eliminarDetalleCotizacion(row);
                     }
                     else {
-                        that.eliminarDetallePedido(row);
-                    }                
-                }
+                        
+                        var numero_pedido = $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().get_numero_pedido();
+                        
+                        that.consultarEstadoPedido(numero_pedido, function(estado_pedido, estado_separacion){
 
+                            if ((estado_pedido === '0' || estado_pedido === '1') && !estado_separacion) {
+                                //Ejecuta la eliminación
+                                that.eliminarDetallePedido(row);
+                            } //Fin IF estado_pedido
+                            else {
+                                //Muestra Alerta explicando porqué no puede eliminar
+                                $scope.opts = {
+                                    backdrop: true,
+                                    backdropClick: true,
+                                    dialogFade: false,
+                                    keyboard: true,
+                                    template: ' <div class="modal-header">\
+                                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                                    <h4 class="modal-title">Aviso: </h4>\
+                                                </div>\
+                                                <div class="modal-body row">\
+                                                    <div class="col-md-12">\
+                                                        <h4 >El Pedido ' + numero_pedido + ' ya está siendo separado o en proceso de <br>despacho. No puede modificarse!</h4>\
+                                                    </div>\
+                                                </div>\
+                                                <div class="modal-footer">\
+                                                    <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                                </div>',
+                                    scope: $scope,
+                                    controller: function($scope, $modalInstance) {
+                                        $scope.close = function() {
+                                            $modalInstance.close();
+                                        };
+                                    }
+                                };
+
+                                var modalInstance = $modal.open($scope.opts);
+                            }
+
+                        }); //Fin consultarEstadoPedido    
+                    }                
+                }                        
             };            
             /* Eliminar producto seleccionado - Fin */
             

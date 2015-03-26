@@ -366,7 +366,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             //CONSULTA ESTADO DEL PEDIDO
             that.consultarEstadoPedido = function(data, callback){
                 
-                //Objeto para consulta de encabezado pedido
+                //Objeto para consulta de Estado del pedido en el encabezado del mismo
                 var obj = {
                     session: $scope.rootPedidosClientes.session,
                     data: {
@@ -475,7 +475,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                     }
                     else {
-
+                        //console.log(">>>>>>>> EMPRESA SELECIONADO antes ALERTA!: ",$scope.rootPedidosClientes.Empresa);
                         //Avisar la no posibilidad de modiificar porque el pedido está abierto en una tablet
                         $scope.opts = {
                             backdrop: true,
@@ -488,7 +488,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                         </div>\
                                         <div class="modal-body row">\
                                             <div class="col-md-12">\
-                                                <h4 >El Pedido ' + $scope.rootPedidosClientes.Empresa.getPedidoSeleccionado().get_numero_pedido() + ' ya fue asignado para separación. No puede modificarse!</h4>\
+                                                <h4 >El Pedido ' + data.numero_pedido + ' ya está siendo separado o en proceso de <br>despacho. No puede modificarse!</h4>\
                                             </div>\
                                         </div>\
                                         <div class="modal-footer">\

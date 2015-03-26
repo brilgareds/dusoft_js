@@ -1028,7 +1028,7 @@ PedidosClienteModel.prototype.estado_pedido = function(numero_pedido, callback) 
     
     var sql = " select a.estado_pedido, b.estado as estado_separacion from ventas_ordenes_pedidos a\
                 left join inv_bodegas_movimiento_tmp_despachos_clientes b on a.pedido_cliente_id = b.pedido_cliente_id\
-                where pedido_cliente_id = $1";
+                where a.pedido_cliente_id = $1";
     
     G.db.query(sql, [numero_pedido], function(err, rows, result) {
         callback(err, rows, result);

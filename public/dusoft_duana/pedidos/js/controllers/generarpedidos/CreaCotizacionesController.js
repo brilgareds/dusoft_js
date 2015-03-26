@@ -27,9 +27,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.rootCreaCotizaciones.termino_busqueda = "";
             $scope.rootCreaCotizaciones.ultima_busqueda = "";
             $scope.rootCreaCotizaciones.paginaactual = 1;
-            $scope.rootCreaCotizaciones.bloquear = true; //Default True
-            $scope.rootCreaCotizaciones.bloqueo_producto_incluido = false;
+            //$scope.rootCreaCotizaciones.bloquear = true; //Default True
+            //$scope.rootCreaCotizaciones.bloqueo_producto_incluido = false;
             $scope.rootCreaCotizaciones.bloquear_upload = true;
+
+            $scope.rootCreaCotizaciones.bloquear_incluir_producto = true;
+
+            
+            $scope.rootCreaCotizaciones.encabezado_bloqueado = false;
             
             $scope.rootCreaCotizaciones.observacion = "";
             
@@ -123,16 +128,25 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             that.crearPedidoVacio = function() {
                 
                 var pedido = PedidoVenta.get();
-                        
-                var datos_pedido = {
+                
+                //Se hacen asignaciones de ésta forma porque definición de setDatos convierte a null los ''
+                //No se cambia definición del objeto para evitar generar problemas a lo ya desarrollado
+                pedido.numero_pedido = '';
+                pedido.fecha_registro = '';
+                pedido.descripcion_estado_actual_pedido = '';
+                pedido.estado = '1';
+                pedido.estado_separacion = '';
+                
+                /*var datos_pedido = {
                     numero_pedido: "",
                     fecha_registro: "",
                     descripcion_estado_actual_pedido: "",
                     estado: '1',
                     estado_separacion: ""
-                };
+                };*/
 
-                pedido.setDatos(datos_pedido);
+                //pedido.setDatos(datos_pedido);
+                
                 pedido.setTipo(PedidoVenta.TIPO_CLIENTE);
                
                 return pedido;
@@ -152,16 +166,24 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setCliente(data);
                 
-                //console.log(">>>>>> DATOS DEL CLIENTE: ", $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente());
+                /*
+                    getPedidoSeleccionado().getCliente().getNombre()
+                    getPedidoSeleccionado().getCliente().getId()
+                    getPedidoSeleccionado().getCliente().getDireccion()
+                    rootCreaCotizaciones.seleccion_vendedor
+                    getPedidoSeleccionado().getCliente().getUbicacion()
+                    getPedidoSeleccionado().getCliente().getTelefono() 
+                 */
+                
+                /* Bloqueo de Inccluir Producto y Subir Archivo Plano */
 
-                if ($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().id !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().nombre_tercero != ''
-                    && $scope.rootCreaCotizaciones.seleccion_vendedor != 0)
+                if ($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getId() !== '' && $scope.rootCreaCotizaciones.seleccion_vendedor !== 0)
                 {
-                    $scope.rootCreaCotizaciones.bloquear = false;
+                    $scope.rootCreaCotizaciones.bloquear_incluir_producto = false;
                 }
 
-                if ($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().id != '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().nombre_tercero != ''
-                    && $scope.rootCreaCotizaciones.seleccion_vendedor != 0 && $scope.rootCreaCotizaciones.listado_productos.length == 0)
+                if ($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().id != '' && $scope.rootCreaCotizaciones.seleccion_vendedor !== 0
+                    && $scope.rootCreaCotizaciones.listado_productos.length === 0)
                 {
 
                     $scope.rootCreaCotizaciones.bloquear_upload = false;
@@ -207,6 +229,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 if(that.empty($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado())){
                     
                     that.crearPedidoSeleccionadoEmpresa(that.crearPedidoVacio());
+                    
+                    $scope.rootCreaCotizaciones.encabezado_bloqueado = false;
+                    $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setEncabezadoBloqueado(false);
+                    $scope.rootCreaCotizaciones.bloquear_incluir_producto = true;
+                    $scope.rootCreaCotizaciones.bloquear_upload = true;
                 }
                 //Si hay Pedido/Cotizacion Seleccionado recibe el objeto Pedido/Cotización Correspondiente
                 //debe haber numero_cotizacion o numero_pedido. Según sea, carga iterfaz para manipular Cotización o Pedido. Validar según sea el caso.
@@ -221,6 +248,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== undefined)
                     {
                         console.log(">>>>>>>>>>>>>> Número Cotización con Valor");
+                        
+                        $scope.rootCreaCotizaciones.encabezado_bloqueado = true;
+                        $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setEncabezadoBloqueado(true);
+                        $scope.rootCreaCotizaciones.bloquear_incluir_producto = false;
+                        //Por seguridad pero no influye mucho
+                        $scope.rootCreaCotizaciones.bloquear_upload = true;
 
                         that.consultarDetalleCotizacion(function(data){
 
@@ -232,6 +265,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     else {
                         
                         console.log(">>>>>>>>>>>>>> Número Cotización sin Valor");
+                        
+                        $scope.rootCreaCotizaciones.encabezado_bloqueado = true;
+                        $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setEncabezadoBloqueado(true);
+                        $scope.rootCreaCotizaciones.bloquear_incluir_producto = false;
+                        //Por seguridad pero no influye mucho
+                        $scope.rootCreaCotizaciones.bloquear_upload = true;
                         
                         $scope.rootCreaCotizaciones.es_cotizacion = false;
                         
@@ -464,7 +503,23 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 console.log("Valor Seleccionado: ", $scope.rootCreaCotizaciones.seleccion_vendedor);
 
                 var vendedor_seleccionado = $scope.rootCreaCotizaciones.seleccion_vendedor;
-                //var nombre_vendedor_seleccionado = "";
+                
+                /* Bloqueos Incluir Producto y Subir Archivo Plano */
+                if ($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getId() !== '' && $scope.rootCreaCotizaciones.seleccion_vendedor !== 0)
+                {
+                    $scope.rootCreaCotizaciones.bloquear_incluir_producto = false;
+                }
+
+                if ($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().id != '' && $scope.rootCreaCotizaciones.seleccion_vendedor !== 0
+                    && $scope.rootCreaCotizaciones.listado_productos.length === 0)
+                {
+
+                    $scope.rootCreaCotizaciones.bloquear_upload = false;
+                }
+                else {
+
+                    $scope.rootCreaCotizaciones.bloquear_upload = true;
+                }
                 
                 $scope.rootCreaCotizaciones.Empresa.getVendedores().forEach(function(vendedor){
 
@@ -894,6 +949,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             console.log("Inserción de Pedido Cliente exitosa", data.msj);
                             
                             var numero_pedido = data.obj.numero_pedido;
+                            
+                            $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().numero_pedido = numero_pedido;
+                            $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setNumeroCotizacion('');
+                            $scope.rootCreaCotizaciones.es_cotizacion = false;
                             
                             /* Mensaje para Usuario - Inicio */
                             $scope.opts = {

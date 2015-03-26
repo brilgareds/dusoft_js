@@ -392,20 +392,23 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         && $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== undefined )
                     {    
                         
-                        console.log(">>>> Detalle Cotización");
+                        console.log(">>>> Cotización Con Detalle");
                         
-                        that.insertarEncabezadoCotizacion(function(insert_encabezado_exitoso) {
+                        //that.insertarEncabezadoCotizacion(function(insert_encabezado_exitoso) {
 
-                            if(insert_encabezado_exitoso) {
+                            //if(insert_encabezado_exitoso) {
                                 $scope.rootSeleccionProductoCliente.bloquear_eliminar = false;
                                 that.insertarDetalleCotizacion(row);
-                            } 
-                        });
+                            //} 
+                        //});
                     }
-                    else{
+                    else if ($scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().get_numero_pedido() !== ''
+                        && $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().get_numero_pedido() !== undefined)
+                    {
                         
                         
                         console.log(">>>>> Detalle Pedido");
+                        console.log(">>>>> EMPRESA PEDIDO VACIO: ", $scope.rootSeleccionProductoCliente.Empresa);
 
 /**/
                         var numero_pedido = $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().get_numero_pedido();
@@ -451,6 +454,19 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 /**/
                         //--that.insertarDetallePedido(row);
 
+                    }
+                    else if($scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getNumeroCotizacion() === ''
+                        || $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getNumeroCotizacion() === undefined){
+                        
+                        console.log(">>>> Cotización Sin Detalle");
+                        
+                        that.insertarEncabezadoCotizacion(function(insert_encabezado_exitoso) {
+
+                            if(insert_encabezado_exitoso) {
+                                $scope.rootSeleccionProductoCliente.bloquear_eliminar = false;
+                                that.insertarDetalleCotizacion(row);
+                            } 
+                        });
                     }
                 }
             };
@@ -499,6 +515,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                             var pedido_cliente_id_tmp = data.obj.resultado_consulta[0].pedido_cliente_id_tmp;
                             
                             $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().setNumeroCotizacion(pedido_cliente_id_tmp);
+                            $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().setEncabezadoBloqueado(true);
 
                             if(callback !== undefined && callback !== "" && callback !== 0){
                                 callback(true);
@@ -1009,7 +1026,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     {
                         that.eliminarDetalleCotizacion(row);
                     }
-                    else {
+                    else if($scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().get_numero_pedido() !== ''
+                        && $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().get_numero_pedido() !== undefined)
+                    {
                         
                         var numero_pedido = $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().get_numero_pedido();
                         
@@ -1050,7 +1069,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                             }
 
                         }); //Fin consultarEstadoPedido    
-                    }                
+                    }
                 }                        
             };            
             /* Eliminar producto seleccionado - Fin */

@@ -13,7 +13,7 @@
 
                         <div class="row col-sm-6 col-md-12"> <!--Div Panel Superior-->
                             <!--class="btn btn-accion btn-primary pull-left"-->
-                            <button type="button" class="btn btn-default btn-sm" ng-disabled="rootCreaCotizaciones.bloqueo_producto_incluido" ng-click="onRowClickSelectCliente()">
+                            <button type="button" class="btn btn-default btn-sm" ng-if="rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEditable() && !rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEncabezadoBloqueado()" ng-click="onRowClickSelectCliente()">
                                 <span class="glyphicon glyphicon-user"></span> Seleccionar Cliente
                             </button>
                             <div class="pull-right" ng-if="rootCreaCotizaciones.es_cotizacion"><h3><font color="blue">Cotización N°: {{rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion()}}</font></h3></div>
@@ -45,7 +45,7 @@
                                     </br></br>
                                     <h4 class="h4MarginTopBottom">Vendedor: </h4>
 
-                                    <select ui-select2="seleccionvendedor"  class="form-control selectgeneral pull-left" ng-disabled="rootCreaCotizaciones.bloqueo_producto_incluido" ng-model="rootCreaCotizaciones.seleccion_vendedor"  placeholder="Seleccionar Documento" ng-change="valorSeleccionado()">
+                                    <select ui-select2="seleccionvendedor"  class="form-control selectgeneral pull-left" ng-disabled="rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEncabezadoBloqueado() || !rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEditable()" ng-model="rootCreaCotizaciones.seleccion_vendedor"  placeholder="Seleccionar Documento" ng-change="valorSeleccionado()">
                                         <option></option>
                                         <option ng-repeat="vendedor in rootCreaCotizaciones.Empresa.getVendedores()"  ng-value="vendedor.id" >{{vendedor.nombre_tercero}}</option>
                                     </select>
@@ -72,7 +72,7 @@
                         <div class="col-lg-3 col-md-3 col-sm-5"> <!-- Div Panel Derecho -->
 
                             <h4 class="h4MarginTopBottom">Observación:</h4></br>
-                            <textarea class="col-lg-12 col-md-12 col-sm-5" rows="6" name="" ng-model="rootCreaCotizaciones.observacion" placeholder="Ingresar Observación"></textarea>
+                            <textarea class="col-lg-12 col-md-12 col-sm-5" rows="6" name="" ng-disabled="rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEncabezadoBloqueado() || !rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEditable()" ng-model="rootCreaCotizaciones.observacion" placeholder="Ingresar Observación"></textarea>
                         </div> <!-- / Div Panel Izquierdo -->
 
                     </div>  
@@ -110,15 +110,15 @@
                             </tab-heading>
 
                             <div class="panel-body">
-                                <button type="button" class="btn btn-default btn-sm" ng-disabled="bloquear" ng-click="onRowClickSelectProducto(1)">
+                                <button type="button" class="btn btn-default btn-sm" ng-disabled="rootCreaCotizaciones.bloquear_incluir_producto" ng-if="rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEditable()" ng-click="onRowClickSelectProducto(1)">
                                     <span class="glyphicon glyphicon-plus"></span> Incluir / Eliminar Producto
                                 </button>
-                                <div class="input-group navbar-form paddingRightZero">
+<!--                                <div class="input-group navbar-form paddingRightZero">
                                     <input type="text" class="form-control pull-right" ng-disabled="bloquear" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">
                                     <div class="input-group-btn" >
                                         <button class="btn btn-default pull-right" type="submit" ng-disabled="bloquear" ng-click="buscarDetalleDocumentoTemporal(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
                                     </div>
-                                </div>
+                                </div>-->
                             </div>
                             <div class="panel-body">
                                 <div class="auditadosGrid" ng-grid="rootCreaCotizaciones.lista_productos"></div>
@@ -126,7 +126,7 @@
 
                         </tab>
 
-                        <tab disabled="bloquear_upload" ng-if="rootCreaCotizaciones.es_cotizacion" active="rootCreaCotizaciones.tab_estados.tab2">
+                        <tab ng-if="rootCreaCotizaciones.es_cotizacion && rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEditable() && !rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEncabezadoBloqueado() && !rootCreaCotizaciones.bloquear_upload" active="rootCreaCotizaciones.tab_estados.tab2">
                             <tab-heading>
                                 <b> Cargar Archivo Plano </b>
                             </tab-heading>
@@ -183,7 +183,7 @@
 
         <div class="col-sm-12 btn-toolbar">
 <!--            <button type="submit" ng-disabled="!rootCreaCotizaciones.bloqueo_producto_incluido" class="btn btn-accion btn-success pull-right">Generar Pedido</button>-->
-            <button type="submit" class="btn btn-accion btn-success pull-right" ng-if="rootCreaCotizaciones.es_cotizacion" ng-click="generarPedidoCliente()">Generar Pedido</button>
+            <button type="submit" class="btn btn-accion btn-success pull-right" ng-if="rootCreaCotizaciones.es_cotizacion" ng-disabled="!rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEditable()" ng-click="generarPedidoCliente()">Generar Pedido</button>
             <button type="submit" class="btn btn-accion btn-danger pull-right" ng-if="rootCreaCotizaciones.es_cotizacion" ng-click="generarPdfCotizacionCliente()">Generar PDF</button>
             <button type="submit" class="btn btn-accion btn-danger pull-right" ng-if="!rootCreaCotizaciones.es_cotizacion" ng-click="generarPdfPedidoCliente()">Generar PDF</button>
             <button type="submit" class="btn btn-accion btn-warning pull-right" ng-if="rootCreaCotizaciones.es_cotizacion" ng-click="abrirViewPedidosClientes()">Guardar Cotización</button>

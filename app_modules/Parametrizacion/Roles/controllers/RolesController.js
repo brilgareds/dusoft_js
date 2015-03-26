@@ -137,11 +137,11 @@ Roles.prototype.habilitarModulosEnRoles = function(req, res) {
 
     that.m_rol.habilitarModulosEnRoles(req.session.user.usuario_id, rolesModulos, function(err, rows, ids) {
         if (err) {
-            res.send(G.utils.r(req.url, 'Error habilitando las empresas para el rol', 500, {parametrizacion_perfiles: {ids:ids}}));
+            res.send(G.utils.r(req.url, 'Error habilitando las empresas para el rol', 500, {parametrizacion_perfiles: {ids: ids}}));
             return;
         }
 
-        res.send(G.utils.r(req.url, "Se asigno correctamente los modulos seleccionados", 200, {parametrizacion_perfiles: {ids:ids}}));
+        res.send(G.utils.r(req.url, "Se asigno correctamente los modulos seleccionados", 200, {parametrizacion_perfiles: {ids: ids}}));
 
     });
 
@@ -160,81 +160,59 @@ Roles.prototype.obtenerModulosPorRol = function(req, res) {
         return;
     }
 
-    //lista los roles registrados en roles_modulos
-    that.m_rol.obtenerModulosPorRol(rol_id, function(err, rows) {
+    that.m_modulo.listarModulosEmpresaPorRol(rol_id, function(err, rows) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error listando modulos del rol', 500, {parametrizacion_perfiles: {}}));
             return;
         }
 
-        //apartir del modulos_empresas_id se listan los modulos 
-        var modulos_ids = [];
+        var modulos = [];
+        var i = rows.length;
 
-        for (var i in rows) {
-            modulos_ids.push(rows[i].modulos_empresas_id);
+        if (i === 0) {
+            res.send(G.utils.r(req.url, "Listado de modulos rol", 200, {parametrizacion_perfiles: {modulos_empresas: []}}));
+            return;
         }
 
-        if (modulos_ids.length > 0) {
-            that.m_modulo.listarModulosEmpresaPorId(modulos_ids, function(err, rows) {
-                if (err) {
-                    res.send(G.utils.r(req.url, 'Error listando modulos del rol', 500, {parametrizacion_perfiles: {}}));
-                    return;
+        //solo deben retornarse los modulos hijos para el plugin jstree
+        rows.forEach(function(modulo) {
+
+            that.m_modulo.obtenerModulosHijos(modulo.modulo_id, function(err, hijos) {
+                if (hijos.length === 0) {
+                    modulos.push(modulo);
                 }
 
-                var modulos = [];
-                var i = rows.length;
-
-                if (i === 0) {
-                    res.send(G.utils.r(req.url, "Listado de modulos rol", 200, {parametrizacion_perfiles: {modulos_empresas: []}}));
-                    return;
+                if (--i === 0) {
+                    res.send(G.utils.r(req.url, "Listado de modulos", 200, {parametrizacion_perfiles: {modulos_empresas: modulos}}));
                 }
-
-                //solo deben retornarse los modulos hijos para el plugin jstree
-                rows.forEach(function(modulo) {
-
-                    that.m_modulo.obtenerModulosHijos(modulo.modulo_id, function(err, hijos) {
-                        if (hijos.length === 0) {
-                            modulos.push(modulo);
-                        }
-
-                        if (--i === 0) {
-                            res.send(G.utils.r(req.url, "Listado de modulos", 200, {parametrizacion_perfiles: {modulos_empresas: modulos}}));
-                        }
-
-                    });
-
-                });
-
 
             });
 
-        } else {
-            res.send(G.utils.r(req.url, "", 200, {parametrizacion_perfiles: {modulos_empresas: []}}));
-        }
+        });
+
 
     });
-
 };
 
 
 Roles.prototype.guardarOpcion = function(req, res) {
     var that = this;
     var args = req.body.data;
-   
-    
+
+
     if (args.parametrizacion_perfiles === undefined) {
         res.send(G.utils.r(req.url, 'No se a seleccionado ningun modulo', 500, {parametrizacion_perfiles: {}}));
         return;
     }
-    
+
     var modulo = args.parametrizacion_perfiles.modulo || undefined;
 
     if (modulo === undefined || modulo.length === 0) {
         res.send(G.utils.r(req.url, 'No se a seleccionado ningun modulo', 500, {parametrizacion_perfiles: {}}));
         return;
     }
-    
-    if(modulo.rolesModulos.length === 0){
+
+    if (modulo.rolesModulos.length === 0) {
         res.send(G.utils.r(req.url, 'No se selecciono el rol', 500, {parametrizacion_perfiles: {}}));
         return;
     }
@@ -246,19 +224,19 @@ Roles.prototype.guardarOpcion = function(req, res) {
         }
 
         var id = 0;
-        
+
         if (rows.length > 0 && rows[0].id) {
             id = rows[0].id;
         }
 
-        res.send(G.utils.r(req.url, "Se guardo la opcion correctamente", 200, {parametrizacion_perfiles: {id:id}}));
+        res.send(G.utils.r(req.url, "Se guardo la opcion correctamente", 200, {parametrizacion_perfiles: {id: id}}));
 
     });
 
 };
 
 
-Roles.prototype.listarRolesModulosOpciones = function(req, res ){
+Roles.prototype.listarRolesModulosOpciones = function(req, res) {
     var that = this;
     var args = req.body.data;
 
@@ -270,8 +248,8 @@ Roles.prototype.listarRolesModulosOpciones = function(req, res ){
     var rol_modulo_id = args.parametrizacion_perfiles.modulo.rol_modulo_id;
     var rol_id = args.parametrizacion_perfiles.modulo.rol_id;
     var empresa_id = args.parametrizacion_perfiles.modulo.empresa_id;
-    
-    that.m_rol.listarRolesModulosOpciones(modulo,rol_id,rol_modulo_id,empresa_id, function(err, rows) {
+
+    that.m_rol.listarRolesModulosOpciones(modulo, rol_id, rol_modulo_id, empresa_id, function(err, rows) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error listando las opciones del modulo', 500, {parametrizacion_perfiles: {}}));
             return;

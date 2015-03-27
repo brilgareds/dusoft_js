@@ -227,7 +227,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li><a href="javascript:void(0);" ng-click="onVerCotizacion(row.entity)" >Ver</a></li>\
+                                                <li><a href="javascript:void(0);" ng-click="onVerPedido(row.entity)" >Ver</a></li>\
                                                 <li></li>\
                                                 <li ng-if="(row.entity.estado_actual_pedido == 0 || row.entity.estado_actual_pedido == 1) && !row.entity.estado_separacion"><a href="javascript:void(0);" ng-click="onEditarPedido(row.entity)">Modificar</a></li>\
                                                 <li ng-if="(row.entity.estado_actual_pedido == 0 || row.entity.estado_actual_pedido == 1) && !row.entity.estado_separacion"></li>\
@@ -444,6 +444,23 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     }
                 });
                 
+            };
+            
+            $scope.onVerPedido = function(data){
+                
+                $scope.rootPedidosClientes.Empresa.setPedidoSeleccionado(data);
+                
+                $scope.rootPedidosClientes.Empresa.getPedidoSeleccionado().setEditable(false);
+                        
+                that.consultarContratoCliente(data, function(contrato_cliente_id){
+
+                    $scope.rootPedidosClientes.Empresa.getPedidoSeleccionado().getCliente().setContratoId(contrato_cliente_id);
+
+                    //console.log(">>>> Objeto Empresa - Pedido Seleccionado: ", $scope.rootPedidosClientes.Empresa.getPedidoSeleccionado());
+
+                    $state.go('CotizacionCliente');
+
+                });
             };
             
             $scope.onEditarPedido = function(data) {

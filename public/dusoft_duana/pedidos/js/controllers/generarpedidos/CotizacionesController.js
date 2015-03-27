@@ -373,6 +373,22 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
             };
             
+            $scope.onVerCotizacion = function(data){
+                
+                $scope.rootCotizaciones.Empresa.setPedidoSeleccionado(data);
+                
+                $scope.rootCotizaciones.Empresa.getPedidoSeleccionado().setEditable(false);
+                
+                that.consultarContratoCliente(data, function(contrato_cliente_id){
+                            
+                    $scope.rootCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setContratoId(contrato_cliente_id);
+                    
+                    $state.go('CotizacionCliente');
+                            
+                });
+                
+            };
+            
             $scope.onEditarCotizacion = function(data) {
 
                 that.consultarEstadoCotizacion(data, function(estado){

@@ -17,6 +17,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.tipo = 1;
             this.observacion = "";
             this.editable = true;
+            this.encabezado_bloqueado = false;
 //            this.tipo_id_vendedor = "";
 //            this.vendedor_id = "";
             this.vendedor = {};
@@ -99,6 +100,14 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         
         PedidoVenta.prototype.getEditable = function() {
             return this.editable;
+        };
+        
+        PedidoVenta.prototype.setEncabezadoBloqueado = function(valor_booleano) {
+            this.encabezado_bloqueado = valor_booleano;
+        };
+        
+        PedidoVenta.prototype.getEncabezadoBloqueado = function() {
+            return this.encabezado_bloqueado;
         };
         
 //        PedidoVenta.prototype.setTipoIdVendedor = function(tipo_id_vendedor) {

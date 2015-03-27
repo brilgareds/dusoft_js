@@ -19,7 +19,8 @@ requirejs.config({
         socket: "../includes/socket/socket.io/socket.io",
         socketservice: "../includes/socket/socket",
         uiselect2: "../../javascripts/select",
-        storage: "../../javascripts/angular/storage"
+        storage: "../../javascripts/angular/storage",
+        dragndropfile:"../../javascripts/dragndropfile/ng-flow-standalone"
     },
     shim: {
         "angular": {
@@ -55,6 +56,9 @@ requirejs.config({
         },
         "storage": {
             deps: ["angular"]
+        },
+        "dragndropfile":{
+            deps:["angular"]
         }
     }
 });

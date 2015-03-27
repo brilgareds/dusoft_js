@@ -30,7 +30,8 @@ define([
     "directive/Modulos/ArbolModulos",
     "directive/Modulos/DirectivaGeneralModulos",
     "models/Modulo/Empresa_Modulo",
-    "models/Modulo/EmpresaParametrizacion"
+    "models/Modulo/EmpresaParametrizacion",
+    "dragndropfile"
 ], function(angular) {
     /* App Module and its dependencies */
 
@@ -44,7 +45,8 @@ define([
         'Url',
         'services',
         'ui.select',
-        'LocalStorageModule'
+        'LocalStorageModule',
+        'flow'
     ]);
 
 

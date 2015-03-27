@@ -16,3 +16,24 @@
 textarea.observacion_modulo{
     height:150px;
 }
+
+
+.contenedorEstado{
+    position: absolute;
+    bottom:20px;
+    right:0px;
+}
+
+.contenedorFoto{
+    width:130px;
+    height: 140px;
+}
+
+.contenedorOpcionesFoto{
+    position: absolute;
+    top: 0px;
+}
+
+.contenedorOpcionesFoto .btn-sm{
+    padding: 1px 4px;
+}

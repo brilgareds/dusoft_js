@@ -99,7 +99,7 @@ define(["angular", "js/controllers", "js/models",
                                     roles[i].nombre,
                                     roles[i].observacion,
                                     $scope.rootRoles.empresaSeleccionada.getCodigo()
-                                    );
+                            );
 
                             $scope.rootRoles.empresaSeleccionada.agregarRol(rol);
 

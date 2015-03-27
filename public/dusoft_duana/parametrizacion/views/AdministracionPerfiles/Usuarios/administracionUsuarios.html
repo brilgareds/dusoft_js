@@ -1,37 +1,86 @@
 
 <div class="row" directiva-general-modulos>
-    <div class="col-md-5">
+    <div class="col-md-4">
         <tabset>
             <tab>
                 <tab-heading>
-                    Detalle Modulo
+                    Datos de usuario
                 </tab-heading>
 
                 <div class="panel">
                     <div class="panel-body">
 
-                        <p class="input-group contenedor_combo_grande">
+                        <div class="input-group contenedor_combo_grande">
+                            
+                            <div class="pull-right contenedorEstado">
+                                <label for="habilitar" style='margin-right: 5px;' >Activar</label>
+                                <input-check ng-model="rootUsuario.usuarioAGuardar.estado" id="habilitar"  ></input-check>
+                            </div>
+                            
+                            <div  flow-init="opciones_archivo"  flow-file-success="respuesta_archivo_plano($file, $message);" flow-file-added="!!{xls:1,xlsx:1}[$file.getExtension()]" flow-files-submitted="cargar_archivo_plano($flow)" class="ng-scope pull-left contenedorFoto" flow-prevent-drop=""  flow-drag-enter="dropClass='drag-over'" flow-drag-leave="dropClass=''" >
+                                    <div class="drop txt-center" flow-drop="" flow-drop-enabled="!(vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '')" ng-class="dropClass" >
 
-                            <label for="habilitar" style='margin-right: 5px;' >Activar</label>
-                        <input-check ng-model="rootUsuario.usuarioAGuardar.estado" id="habilitar"  ></input-check>
+                                        <div class="col-md-12 well">
+                                            <img  ng-hide="$flow.files.length" src="../../../images/avatar_empty.png" style="width: 80px;"/>
+                                            <img ng-show="$flow.files.length" src="../../../images/xls.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
+                                        </div>
 
-                        </p>
+                                    </div>
 
-                        <p class="input-group contenedor_combo_grande">
+                                    <br>
 
-                            <!--ui-select ng-model="rootUsuario.moduloPadre"
-                                       theme="select2"
-                                       ng-disabled = "rootUsuario.usuarioAGuardar.nodo_principal"
-                                       ng-change="onModuloPadreSeleccionado()"
-                                       class="contenedor_combo_grande">
-                                <ui-select-match  placeholder="Seleccionar Empresa">{{$select.selected.text}}</ui-select-match>
-                                <ui-select-choices repeat="modulo in rootUsuario.modulos | filter:$select.search">
-                                    {{modulo.text}}
-                                </ui-select-choices>
-                            </ui-select-->
+                                    <div class="contenedorOpcionesFoto">
+                                        <span class="btn btn-default btn-sm" flow-btn="" ng-hide="$flow.files.length" ng-disabled="vista_previa">
+                                            <span class="glyphicon glyphicon-folder-open" style="margin-right: 5px;"></span>
+                                            <input type="file" style="visibility: hidden; position: absolute;">
+                                        </span>                                                
+                                        <button class="btn btn-default" ng-click="$flow.cancel()" ng-disabled="" ng-show="$flow.files.length">
+                                            <span class="glyphicon glyphicon-minus" ></span> Remover
+                                        </button>
+                                        <button class="btn btn-default" ng-click="subir_archivo_plano()" ng-disabled="vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '' " ng-show="$flow.files.length">
+                                            <span class="glyphicon glyphicon-cloud-upload" ></span> Subir
+                                        </button>
+                                    </div>
+                                </div>
 
 
-                        </p>
+                        </div>
+
+                        <!--p class="input-group contenedor_combo_grande">
+
+                           <div flow-init="opciones_archivo"  flow-file-success="respuesta_archivo_plano($file, $message);" flow-file-added="!!{xls:1,xlsx:1}[$file.getExtension()]" flow-files-submitted="cargar_archivo_plano($flow)" class="ng-scope" flow-prevent-drop=""  flow-drag-enter="dropClass='drag-over'" flow-drag-leave="dropClass=''" >
+                                            <div class="drop txt-center" flow-drop="" flow-drop-enabled="!(vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '')" ng-class="dropClass" >
+
+                                                <div class="col-md-12">
+                                                    <img  ng-hide="$flow.files.length" src="../../../images/Cloud-Upload-Blue.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
+                                                    <img ng-show="$flow.files.length" src="../../../images/xls.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
+                                                </div>
+                                                <div ng-hide="$flow.files.length">
+                                                    <b>OR</b> Arrastrar y Soltar el archivo AQUI!!..                                                    
+                                                </div>
+                                                <div class="" ng-repeat="file in $flow.files" ng-show="$flow.files.length">
+                                                    Nombre Archivo : <label>{{file.name}}</label>                                                                                                                                                       
+                                                </div>
+                                            </div>
+
+                                            <br>
+
+                                            <div class="well txt-center">
+                                                <span class="btn btn-default" flow-btn="" ng-hide="$flow.files.length" ng-disabled="vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '' ">
+                                                    <span class="glyphicon glyphicon-folder-open" style="margin-right: 5px;"></span> Seleccionar Archivo
+                                                    <input type="file" style="visibility: hidden; position: absolute;">
+                                                </span>                                                
+                                                <button class="btn btn-default" ng-click="$flow.cancel()" ng-disabled="" ng-show="$flow.files.length">
+                                                    <span class="glyphicon glyphicon-minus" ></span> Remover
+                                                </button>
+                                                <button class="btn btn-default" ng-click="subir_archivo_plano()" ng-disabled="vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '' " ng-show="$flow.files.length">
+                                                    <span class="glyphicon glyphicon-cloud-upload" ></span> Subir
+                                                </button>
+                                            </div>
+                                        </div>
+
+
+                        </p-->
 
                         <p class="input-group">
 
@@ -54,14 +103,20 @@
                                 <i class="glyphicon glyphicon-lock"></i>
                             </span>
                         </p> 
+                        
+                        <p class="input-group">
+                            <input type="password" class="form-control" ng-model='rootUsuario.usuarioAGuardar.state'  placeholder="Email"  />
+                            <span class="input-group-addon">
+                                <i class="glyphicon glyphicon-envelope"></i>
+                            </span>
+                        </p> 
 
                         <p class="input-group">
 
-                            <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="fechainicial" is-open="abrirfechainicial" min="minDate"   readonly  close-text="Cerrar" ng-change="fechainicialselected()" clear-text="Borrar" current-text="Hoy" placeholder="Fecha inicio" show-weeks="false" toggle-weeks-text="#"  />
-                            <!--input type="text" ng-datepickerange /-->
-                            <span class="input-group-btn">
+                            <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="fecha" is-open="abrir" readonly  close-text="Cerrar" ng-change="fechaSeleccionada()" clear-text="Borrar" current-text="Hoy" placeholder="Fecha Caducación" show-weeks="false" toggle-weeks-text="#" ng-click = "abrir = true"  />
+                            <span class="input-group-addon">
 
-                                <button class="btn btn-default" ng-click="abrirFechaInicial($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                <i class="glyphicon glyphicon-calendar"></i>
                             </span>
                         </p>
 
@@ -70,7 +125,7 @@
 
             </tab>
 
-            <tab ng-controller="OpcionesModulosController" ng-init='init({eliminar:true, detalle:true})' disabled='rootUsuario.usuarioAGuardar.nodo_principal || rootUsuario.usuarioAGuardar.getModulosHijo() > 0'>
+            <!--tab ng-controller="OpcionesModulosController" ng-init='init({eliminar:true, detalle:true})' disabled='rootUsuario.usuarioAGuardar.nodo_principal || rootUsuario.usuarioAGuardar.getModulosHijo() > 0'>
                 <tab-heading>
                     Opciones
                 </tab-heading>
@@ -132,7 +187,7 @@
                     </div>
                 </div>
             </tab>
-        </tabset>
+        </tabset-->
 
 
 

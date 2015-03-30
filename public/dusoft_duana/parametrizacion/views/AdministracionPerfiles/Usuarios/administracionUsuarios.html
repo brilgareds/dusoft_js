@@ -11,37 +11,36 @@
                     <div class="panel-body">
 
                         <div class="input-group contenedor_combo_grande">
-                            
+
                             <div class="pull-right contenedorEstado">
                                 <label for="habilitar" style='margin-right: 5px;' >Activar</label>
                                 <input-check ng-model="rootUsuario.usuarioAGuardar.estado" id="habilitar"  ></input-check>
                             </div>
-                            
-                            <div  flow-init="opciones_archivo"  flow-file-success="respuesta_archivo_plano($file, $message);" flow-file-added="!!{xls:1,xlsx:1}[$file.getExtension()]" flow-files-submitted="cargar_archivo_plano($flow)" class="ng-scope pull-left contenedorFoto" flow-prevent-drop=""  flow-drag-enter="dropClass='drag-over'" flow-drag-leave="dropClass=''" >
-                                    <div class="drop txt-center" flow-drop="" flow-drop-enabled="!(vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '')" ng-class="dropClass" >
+                            <div  flow-init="opciones_archivo"  flow-file-added="!!{jpg:1,png:1}[$file.getExtension()]" class="ng-scope pull-left contenedorFoto" flow-prevent-drop=""  flow-drag-enter="dropClass='drag-over'" flow-drag-leave="dropClass=''" >
+                                <div class="drop txt-center" flow-drop="" ng-class="dropClass" >
 
-                                        <div class="col-md-12 well">
-                                            <img  ng-hide="$flow.files.length" src="../../../images/avatar_empty.png" style="width: 80px;"/>
-                                            <img ng-show="$flow.files.length" src="../../../images/xls.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
-                                        </div>
-
+                                    <div class="col-md-12 well">
+                                        <img  ng-hide="$flow.files.length" src="../../../images/avatar_empty.png" style="height:  80px;"/>
+                                        <img ng-show="$flow.files.length" flow-img="$flow.files[0]" style="height:  80px;" class="avatarUsuario" />
                                     </div>
 
-                                    <br>
-
-                                    <div class="contenedorOpcionesFoto">
-                                        <span class="btn btn-default btn-sm" flow-btn="" ng-hide="$flow.files.length" ng-disabled="vista_previa">
-                                            <span class="glyphicon glyphicon-folder-open" style="margin-right: 5px;"></span>
-                                            <input type="file" style="visibility: hidden; position: absolute;">
-                                        </span>                                                
-                                        <button class="btn btn-default" ng-click="$flow.cancel()" ng-disabled="" ng-show="$flow.files.length">
-                                            <span class="glyphicon glyphicon-minus" ></span> Remover
-                                        </button>
-                                        <button class="btn btn-default" ng-click="subir_archivo_plano()" ng-disabled="vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '' " ng-show="$flow.files.length">
-                                            <span class="glyphicon glyphicon-cloud-upload" ></span> Subir
-                                        </button>
-                                    </div>
                                 </div>
+
+                                <br>
+
+                                <div class="contenedorOpcionesFoto">
+                                    <span class="btn btn-default btn-sm" flow-btn="" ng-hide="$flow.files.length" ng-disabled="vista_previa">
+                                        <span class="glyphicon glyphicon-folder-open" style="margin-right: 5px;"></span>
+                                        <input type="file" style="visibility: hidden; position: absolute;">
+                                    </span>                                                
+                                    <button class="btn btn-default btn-sm" ng-click="$flow.cancel()" ng-disabled="" ng-show="$flow.files.length">
+                                        <span class="glyphicon glyphicon-minus" ></span>
+                                    </button>
+                                    <button class="btn btn-default btn-sm" ng-click="subir_archivo_plano()" ng-disabled="vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '' " ng-show="$flow.files.length">
+                                        <span class="glyphicon glyphicon-cloud-upload" ></span>
+                                    </button>
+                                </div>
+                            </div>
 
 
                         </div>
@@ -91,21 +90,21 @@
                         </p> 
 
                         <p class="input-group">
-                            <input type="text" class="form-control validar_caracteres validar_espacios" ng-model='rootUsuario.usuarioAGuardar.state'  placeholder="Usuario" name="srch-term" />
+                            <input type="text" class="form-control validar_caracteres validar_espacios" ng-model='rootUsuario.usuarioAGuardar.usuario'  placeholder="Usuario" name="srch-term" />
                             <span class="input-group-addon">
                                 <i class="glyphicon glyphicon-user"></i>
                             </span>
                         </p>
 
                         <p class="input-group">
-                            <input type="password" class="form-control" ng-model='rootUsuario.usuarioAGuardar.state'  placeholder="Clave"  />
+                            <input type="password" class="form-control" ng-model='rootUsuario.usuarioAGuardar.clave'  placeholder="Clave"  />
                             <span class="input-group-addon">
                                 <i class="glyphicon glyphicon-lock"></i>
                             </span>
                         </p> 
-                        
+
                         <p class="input-group">
-                            <input type="password" class="form-control" ng-model='rootUsuario.usuarioAGuardar.state'  placeholder="Email"  />
+                            <input type="text" class="form-control" ng-model='rootUsuario.usuarioAGuardar.email'  placeholder="Email"  />
                             <span class="input-group-addon">
                                 <i class="glyphicon glyphicon-envelope"></i>
                             </span>
@@ -118,85 +117,47 @@
 
                                 <i class="glyphicon glyphicon-calendar"></i>
                             </span>
-                        </p>
+                        </p></br>
 
-                    </div>
-                </div>
+                        <button class="btn btn-default btn-sm pull-left" ng-click='onVolver()'>
+                            Cancelar
+                            <span class="glyphicon glyphicon-menu-left"></span>
+                        </button>
 
-            </tab>
-
-            <!--tab ng-controller="OpcionesModulosController" ng-init='init({eliminar:true, detalle:true})' disabled='rootUsuario.usuarioAGuardar.nodo_principal || rootUsuario.usuarioAGuardar.getModulosHijo() > 0'>
-                <tab-heading>
-                    Opciones
-                </tab-heading>
-
-                <div class="panel">
-                    <div class="panel-body">
-                        <p class="input-group contenedor_combo_grande">
-                            <label for="habilitar_opcion" style='margin-right: 5px;'>Habilitar Opcion</label>
-                        <input-check ng-model="rootUsuario.usuarioAGuardar.opcionAGuardar.estado" style='margin-right: 15px;' id="habilitar_opcion" ></input-check>
-
-                        </p>
-                        <p class="input-group">
-                            <input type="text" ng-model='rootUsuario.usuarioAGuardar.opcionAGuardar.nombre' class="form-control"  placeholder="Nombre Opcion" />
-                            <span class="input-group-addon">
-                                <i class="glyphicon glyphicon-ok"></i>
-                            </span>
-                        </p> 
-
-                        <p class="input-group">
-                            <input type="text" class="form-control" ng-model='rootUsuario.usuarioAGuardar.opcionAGuardar.alias'  placeholder="Alias" />
-                            <span class="input-group-addon">
-                                <i class="glyphicon glyphicon-ok"></i>
-                            </span>
-                        </p> 
-
-                        <p class="input-group contenedor_combo_grande">
-                            <textarea class="form-control observacion_modulo" ng-model='rootUsuario.usuarioAGuardar.opcionAGuardar.observacion' placeholder="Observacion"></textarea>
-
-                        </p> 
-                        <p class="input-group" >
-                        <div class="table-responsive" >
-                            <div class="grid-responsive listado_opciones" ng-grid="listado_opciones">
-
-                            </div>
-                        </div>
-                        </p>
-
-
-
-                        <p class="input-group pull-right">
-                            <button class="btn btn-warning btn-sm" ng-click='onLimpiarFormularioOpcion()'>
+                        <div class="pull-right">
+                            <button class="btn btn-warning btn-sm" ng-click='onLimpiarFormulario()'>
                                 Nuevo
                                 <span class="glyphicon glyphicon-plus"></span>
                             </button>
-                            <span ng-switch="rootUsuario.usuarioAGuardar.modulo_id != 0">
 
-                                <button ng-switch-when="true" class="btn btn-success btn-sm" ng-click='onGuardarOpcion()'>
-                                    Guardar
-                                    <span class="glyphicon glyphicon-floppy-disk"></span>
-                                </button>
+                            <button class="btn btn-success btn-sm" ng-click='onGuardarUsuario()'>
+                                Guardar
+                                <span class="glyphicon glyphicon-floppy-disk"></span>
+                            </button>
 
-                                <button ng-switch-when="false" disabled="disabled" class="btn btn-success btn-sm">
-                                    Guardar
-                                    <span class="glyphicon glyphicon-floppy-disk"></span>
-                                </button>
-                            </span>
-                        </p>
+                        </div>
 
                     </div>
                 </div>
+
             </tab>
-        </tabset-->
+
+
 
 
 
     </div>
 
-    <div class="col-md-7">
+    <div class="col-md-4" >
+        <div arbol-modulos plugins='checkbox,contextmenu' tipo='multiple' estado='modulos_empresas' multiples_nodos="true"></div>
+    </div>
 
-        <!--div arbol-modulos plugins='checkbox,wholerow,state,contextmenu' tipo='multiple' estado='arbolmodulos'></div-->
-        <div arbol-modulos plugins='wholerow,state' tipo='multiple' estado='arbolmodulos'></div>
+    <div class="col-md-4" ng-if='rootUsuario.rolAGuardar.id > 0' ng-controller='OpcionesModulosController' ng-init='init({eliminar:false, detalle:false, seleccionar:true})'>
+        <div class="table-responsive" >
+            <div class="grid-responsive listado_opciones" ng-grid="listado_opciones">
+
+            </div>
+        </div>
     </div>
 </div>
 

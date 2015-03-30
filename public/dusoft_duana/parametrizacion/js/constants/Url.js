@@ -12,7 +12,8 @@
 	    	'MODIFICAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/modificar"
 	    },
 	    'USUARIOS':{
-	    	'LISTAR_USUARIOS':BASE_URL+"/Usuarios/listar"
+	    	'LISTAR_USUARIOS':BASE_URL+"/Usuarios/listar",
+                'GUARDAR_USUARIO':BASE_URL+"/Usuarios/guardarUsuario"
 	    },
             'MODULOS':{
                 'LISTAR_MODULOS': BASE_URL+"/Modulos/listarModulos",

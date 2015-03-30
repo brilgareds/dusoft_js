@@ -24,7 +24,7 @@ define(["angular","js/directive"], function(angular, directive){
                         if(v){
                             el.show();
                             that.startTimer();
-                        }else{
+                        } else {
                            that.root.css("background-color","transparent");
                            el.hide();
                            that.stopTimer();
@@ -35,8 +35,11 @@ define(["angular","js/directive"], function(angular, directive){
                     var elpos=el.offset().top;
                     $(window).scroll(function () {
                         var y=$(this).scrollTop();
-                        if(y<elpos){el.stop().animate({'top':0},0);}
-                        else{el.stop().animate({'top':y-elpos},0);}
+                        if(y<elpos){
+                            el.stop().animate({'top':0},0);
+                        } else {
+                            el.stop().animate({'top':y-elpos},0);
+                        }
                     });
 
                });

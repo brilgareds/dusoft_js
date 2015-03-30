@@ -63,4 +63,62 @@ UsuariosModel.prototype.cambiar_contrasenia = function(usuario, contrasenia, cal
     });
 };
 
+
+//gestiona para modificar o insertar el rol
+UsuariosModel.prototype.guardarUsuario = function(usuario, callback) {
+    var self = this;
+
+    if (usuario.id && usuario.id !== 0) {
+        self.modificarUsuario(usuario, function(err, rows) {
+            callback(err, rows);
+        });
+    } else {
+        self.insertarUsuario(usuario, function(err, rows) {
+            callback(err, rows);
+        });
+    }
+};
+
+
+UsuariosModel.prototype.insertarUsuario = function(usuario, callback) {
+
+    var sql = "INSERT INTO system_usuarios (usuario, nombre, passwd, activo,\
+               fecha_caducidad_contrasena, email) VALUES ($1, $2, $3, $4, $5, $6) RETURNING usuario_id";
+
+
+    var params = [
+        usuario.usuario, usuario.nombre, "md5('"+usuario.clave+"')", Number(usuario.estado), usuario.fecha_caducidad, usuario.email
+    ];
+
+    G.db.query(sql, params, function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+UsuariosModel.prototype.modificarUsuario = function(rol, callback) {
+
+
+    var sql = "UPDATE roles SET  nombre = $1, observacion = $2, usuario_id = $3, usuario_id_modifica = $4,\
+               estado = $5, fecha_modificacion = $6, empresa_id =$7 WHERE id = $8  \
+               ";
+
+    var params = [
+        rol.nombre, rol.observacion, rol.usuario_id, rol.usuario_id,
+        Number(rol.estado), 'now()', rol.empresa_id, rol.id
+    ];
+
+    G.db.query(sql, params, function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+UsuariosModel.prototype.obtenerUsuarioPorNombre = function(usuario, callback) {
+    var sql = "SELECT  nombre, usuario_id  FROM system_usuarios WHERE usuario ILIKE $1";
+
+    G.db.query(sql, [usuario + "%"], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+
 module.exports = UsuariosModel;

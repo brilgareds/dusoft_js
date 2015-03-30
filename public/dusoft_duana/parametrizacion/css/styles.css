@@ -27,6 +27,8 @@ textarea.observacion_modulo{
 .contenedorFoto{
     width:130px;
     height: 140px;
+    overflow: hidden;
+    text-align: center;
 }
 
 .contenedorOpcionesFoto{
@@ -36,4 +38,10 @@ textarea.observacion_modulo{
 
 .contenedorOpcionesFoto .btn-sm{
     padding: 1px 4px;
+}
+
+.avatarUsuario{
+    position: relative; /* allows repositioning */
+    left: 100%; /* move the whole width of the image to the right */
+    margin-left: -200%;
 }

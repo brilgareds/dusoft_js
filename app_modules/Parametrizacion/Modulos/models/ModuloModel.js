@@ -3,12 +3,22 @@ var ModuloModel = function() {
 };
 
 
-ModuloModel.prototype.listar_modulos = function(callback) {
+ModuloModel.prototype.listar_modulos = function(termino, callback) {
+    
+    var parametros = [];
+    var sql_aux = "";
+    
+    
+    if(termino.length > 0){
+        parametros = ["%"+termino+"%"];
+        sql_aux = " WHERE nombre ILIKE $1 ";
+    }
+    
+    console.log("buscando termino "+sql_aux, parametros, termino);
 
+    var sql = "SELECT * FROM modulos "+sql_aux+" ORDER BY id ASC ";
 
-    var sql = "SELECT * FROM modulos ORDER BY id ASC ";
-
-    G.db.query(sql, [], function(err, rows, result) {
+    G.db.query(sql, parametros, function(err, rows, result) {
         callback(err, rows);
     });
 };

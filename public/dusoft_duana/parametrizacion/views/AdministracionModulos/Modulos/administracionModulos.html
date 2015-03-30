@@ -28,7 +28,7 @@
                                    ng-change="onModuloPadreSeleccionado()"
                                    class="contenedor_combo_grande">
                             <ui-select-match  placeholder="Seleccionar Modulo Padre">{{$select.selected.text}}</ui-select-match>
-                            <ui-select-choices repeat="modulo in rootModulos.modulos | filter:$select.search">
+                            <ui-select-choices refresh="onTraerModulos($select.search)" refresh-delay="0" repeat="modulo in rootModulos.modulos_filtrados | filter:$select.search">
                                 {{modulo.text}}
                             </ui-select-choices>
                         </ui-select>

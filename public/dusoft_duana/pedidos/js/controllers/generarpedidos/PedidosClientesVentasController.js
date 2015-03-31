@@ -182,21 +182,21 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
-                    {field: 'numero_pedido', displayName: 'Numero Pedido'},
+                    {field: 'numero_pedido', displayName: 'Número Pedido', width: "9%"},
                     {field: 'cliente.nombre_tercero', displayName: 'Cliente'},
                     {field: 'vendedor.nombre_tercero', displayName: 'Vendedor'},
-                    {field: 'fecha_registro', displayName: 'Fecha'},
-                    {field: 'valor_pedido', displayName: '$ Valor', cellFilter: "currency:'$ '"},
+                    {field: 'fecha_registro', displayName: 'Fecha', width: "10%"},
+                    {field: 'valor_pedido', displayName: '$ Valor', cellFilter: "currency:'$ '", width: "10%"},
                     //{field: 'estado', displayName: 'Estado'},
                     
-                    {field: 'estado', displayName: 'Estado Pedido', cellClass: "txt-center",
+                    {field: 'estado', displayName: 'Estado Pedido', cellClass: "txt-center", width: "9%",
                         cellTemplate:   "   <button ng-if='row.entity.estado==0'>Inactivo</button>\
                                             <button ng-if='row.entity.estado==1'>Activo</button>\
                                             <button ng-if='row.entity.estado==2'>Anulado</button>\
                                             <button ng-if='row.entity.estado==3'>Entregado</button>\
                                         "},
                     
-                    {field: 'estado_pedido', displayName: 'Estado Proceso', cellClass: "txt-center",
+                    {field: 'estado_pedido', displayName: 'Estado Proceso', cellClass: "txt-center", width: "9%",
                         cellTemplate:   "   <button ng-if='row.entity.estado_actual_pedido==0' ng-class='agregarClase(row.entity.estado_actual_pedido)'>\
                                                 <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> No Asignado\
                                             </button>\

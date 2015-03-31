@@ -179,14 +179,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
-                    {field: 'numero_cotizacion', displayName: 'Numero Cotización'},
+                    {field: 'numero_cotizacion', displayName: 'Número Cotización', width: "10%"},
                     {field: 'cliente.nombre_tercero', displayName: 'Cliente'},
                     {field: 'vendedor.nombre_tercero', displayName: 'Vendedor'},
-                    {field: 'fecha_registro', displayName: 'Fecha'},
-                    {field: 'valor_cotizacion', displayName: '$ Valor', cellFilter: "currency:'$ '"},
+                    {field: 'fecha_registro', displayName: 'Fecha', width: "10%"},
+                    {field: 'valor_cotizacion', displayName: '$ Valor', cellFilter: "currency:'$ '", width: "10%"},
                     //{field: 'estado', displayName: 'Estado'},
                     
-                    {field: 'estado', displayName: 'Estado', cellClass: "txt-center",
+                    {field: 'estado', displayName: 'Estado', cellClass: "txt-center", width: "7%",
                         cellTemplate: " <button ng-if='row.entity.estado==0' ng-class='agregarClase(row.entity.estado)'>\
                                             Inactivo\
                                         </button>\
@@ -213,8 +213,49 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
             
             /*NUEVO*/
-            
             $scope.onCambiarEstado = function(obj){
+                
+                                var template = ' <div class="modal-header">\
+                                        <button type="button" class="close" ng-click="close()">&times;</button>\
+                                        <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                    </div>\
+                                    <div class="modal-body">\
+                                        <h4>Seguro desea Inactivar la cotización '+obj.numero_cotizacion+' ? </h4> \
+                                    </div>\
+                                    <div class="modal-footer">\
+                                        <button class="btn btn-warning" ng-click="close()">No</button>\
+                                        <button class="btn btn-primary" ng-click="aceptaInactivar()" ng-disabled="" >Si</button>\
+                                    </div>';
+
+                controller = function($scope, $modalInstance) {
+
+                    $scope.aceptaInactivar = function() {
+                        
+                        //Se acepta eliminar y se procede
+                        that.cambiarEstado(obj);
+
+                        $modalInstance.close();
+                    };
+
+                    $scope.close = function() {
+                        $modalInstance.close();
+                    };
+                };
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: template,
+                    scope: $scope,
+                    controller: controller
+                };
+
+                var modalInstance = $modal.open($scope.opts);
+            };
+            
+            that.cambiarEstado = function(obj){
                 if(obj.estado === '1') {
                     
                     //obj.estado = '0';

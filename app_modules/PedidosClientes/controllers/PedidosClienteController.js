@@ -695,6 +695,7 @@ PedidosCliente.prototype.insertarPedidoCliente = function(req, res) {
 
     //Parámetro a insertar
     var numero_cotizacion = args.pedido_cliente.numero_cotizacion;
+    var usuario_id = req.session.user.usuario_id;
 
     that.m_pedidos_clientes.insertar_pedido_cliente(numero_cotizacion, function(err, rows) {
 
@@ -702,8 +703,48 @@ PedidosCliente.prototype.insertarPedidoCliente = function(req, res) {
             res.send(G.utils.r(req.url, 'Error en la inserción del Pedido', 500, {}));
             return;
         }
+        
+        var numero_pedido = rows.rows[0].pedido_cliente_id;
+        //res.send(G.utils.r(req.url, 'Inserción Exitosa del Pedido', 200, {numero_pedido: rows.rows[0].pedido_cliente_id}));
+        
+        /*Inicio - Modificación para estados*/
 
-        res.send(G.utils.r(req.url, 'Inserción Exitosa del Pedido', 200, {numero_pedido: rows.rows[0].pedido_cliente_id}));
+        that.m_terceros.seleccionar_operario_por_usuario_id(usuario_id, function(err, operario_array) {
+
+            if (err) {
+                res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Selección del Operario', 500, {}));
+                return;
+            }
+            else {
+
+                var responsable = operario_array[0].operario_id;
+
+                that.m_pedidos_clientes.asignar_responsables_pedidos(numero_pedido, '0', responsable, usuario_id, function(err, rows, responsable_estado_pedido) {
+
+                    if (err) {
+                        res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Asignacion de Resposables', 500, {}));
+                        return;
+                    }
+
+                    /*Inicio - Actualización sw_terminado*/
+                    that.m_pedidos_clientes.terminar_estado_pedido(numero_pedido, ['0'], '1', function(err, rows, results) {
+
+                        if (err) {
+                            res.send(G.utils.r(req.url, 'Error Finalizando el Documento Temporal Farmacias', 500, {documento_temporal: {}}));
+                            return;
+                        }
+
+                        res.send(G.utils.r(req.url, 'Encabezado del pedido almacenado exitosamente', 200, {numero_pedido: numero_pedido}));
+                        return;
+
+                    });
+                    /*Fin - Actualización sw_terminado*/
+
+                });
+
+            }
+        });
+        /*Fin - Modificación para estados*/
 
     });
  
@@ -862,7 +903,6 @@ PedidosCliente.prototype.listarDetalleCotizacion = function(req, res) {
         return;
     }
 
-    //Parámetro a insertar
     var numero_cotizacion = args.detalle_cotizacion.numero_cotizacion;
 
     that.m_pedidos_clientes.listar_detalle_cotizacion(numero_cotizacion, function(err, detalle_cotizacion) {
@@ -895,7 +935,6 @@ PedidosCliente.prototype.listarDetallePedido = function(req, res) {
         return;
     }
 
-    //Parámetro a insertar
     var numero_pedido = args.detalle_pedido.numero_pedido;
 
     that.m_pedidos_clientes.listar_detalle_pedido(numero_pedido, function(err, detalle_pedido) {
@@ -928,7 +967,7 @@ PedidosCliente.prototype.eliminarRegistroDetalleCotizacion = function(req, res) 
         return;
     }
 
-    //Parámetro a insertar
+    //Parámetro de búsqueda
     var numero_cotizacion = args.eliminar_detalle_cotizacion.numero_cotizacion;
     var codigo_producto = args.eliminar_detalle_cotizacion.codigo_producto;
     var usuario_solicitud = req.session.user.usuario_id;
@@ -963,7 +1002,7 @@ PedidosCliente.prototype.cambiarEstadoCotizacion = function(req, res) {
         return;
     }
 
-    //Parámetro a insertar
+    //Parámetros para actualización
     var numero_cotizacion = args.estado_cotizacion.numero_cotizacion;
     var nuevo_estado = args.estado_cotizacion.nuevo_estado;
 

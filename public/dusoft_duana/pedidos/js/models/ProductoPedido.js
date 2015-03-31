@@ -27,6 +27,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.total_sin_iva = 0;
             this.total_con_iva = 0;
             this.estado = 0;
+            this.es_regulado = 0;
             
             //propiedades pendientes
             this.existencia_lotes = "";
@@ -121,6 +122,15 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
         ProductoPedido.prototype.getEstado = function() {
             return this.estado;
         };
+        
+        ProductoPedido.prototype.setEsRegulado = function(valor) {
+            this.es_regulado = valor; // 0: No es regulado, 1: Es regulado
+        };
+        
+        ProductoPedido.prototype.getEsRegulado = function() {
+            return this.es_regulado;
+        };        
+        
         
         ProductoPedido.prototype.agregarLote = function(lote) {
             this.lotesSeleccionados.push(lote);

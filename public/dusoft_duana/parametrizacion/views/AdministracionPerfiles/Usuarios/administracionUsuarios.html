@@ -28,7 +28,7 @@
 
                                 <br>
 
-                                <div class="contenedorOpcionesFoto">
+                                <div class="contenedorOpcionesFoto" ng-if="rootUsuario.usuarioAGuardar.id != ''">
                                     <span class="btn btn-default btn-sm" flow-btn="" ng-hide="$flow.files.length" ng-disabled="vista_previa">
                                         <span class="glyphicon glyphicon-folder-open" style="margin-right: 5px;"></span>
                                         <input type="file" style="visibility: hidden; position: absolute;">
@@ -45,79 +45,80 @@
 
                         </div>
 
-                        <!--p class="input-group contenedor_combo_grande">
-
-                           <div flow-init="opciones_archivo"  flow-file-success="respuesta_archivo_plano($file, $message);" flow-file-added="!!{xls:1,xlsx:1}[$file.getExtension()]" flow-files-submitted="cargar_archivo_plano($flow)" class="ng-scope" flow-prevent-drop=""  flow-drag-enter="dropClass='drag-over'" flow-drag-leave="dropClass=''" >
-                                            <div class="drop txt-center" flow-drop="" flow-drop-enabled="!(vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '')" ng-class="dropClass" >
-
-                                                <div class="col-md-12">
-                                                    <img  ng-hide="$flow.files.length" src="../../../images/Cloud-Upload-Blue.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
-                                                    <img ng-show="$flow.files.length" src="../../../images/xls.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
-                                                </div>
-                                                <div ng-hide="$flow.files.length">
-                                                    <b>OR</b> Arrastrar y Soltar el archivo AQUI!!..                                                    
-                                                </div>
-                                                <div class="" ng-repeat="file in $flow.files" ng-show="$flow.files.length">
-                                                    Nombre Archivo : <label>{{file.name}}</label>                                                                                                                                                       
-                                                </div>
-                                            </div>
-
-                                            <br>
-
-                                            <div class="well txt-center">
-                                                <span class="btn btn-default" flow-btn="" ng-hide="$flow.files.length" ng-disabled="vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '' ">
-                                                    <span class="glyphicon glyphicon-folder-open" style="margin-right: 5px;"></span> Seleccionar Archivo
-                                                    <input type="file" style="visibility: hidden; position: absolute;">
-                                                </span>                                                
-                                                <button class="btn btn-default" ng-click="$flow.cancel()" ng-disabled="" ng-show="$flow.files.length">
-                                                    <span class="glyphicon glyphicon-minus" ></span> Remover
-                                                </button>
-                                                <button class="btn btn-default" ng-click="subir_archivo_plano()" ng-disabled="vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '' " ng-show="$flow.files.length">
-                                                    <span class="glyphicon glyphicon-cloud-upload" ></span> Subir
-                                                </button>
-                                            </div>
-                                        </div>
-
-
-                        </p-->
-
                         <p class="input-group">
 
-                            <input type="text" class="form-control validar_caracteres" ng-model='rootUsuario.usuarioAGuardar.nombre' placeholder="Nombre" name="srch-term" id="srch-term"  />
+                            <input type="text" class="form-control validar_caracteres" ng-model='rootUsuario.usuarioAGuardar.nombre' placeholder="Nombre"  />
                             <span class="input-group-addon">
                                 <i class="glyphicon glyphicon-ok"></i>
                             </span>
                         </p> 
 
                         <p class="input-group">
-                            <input type="text" class="form-control validar_caracteres validar_espacios" ng-model='rootUsuario.usuarioAGuardar.usuario'  placeholder="Usuario" name="srch-term" />
+                            <input type="text" class="form-control camelCase" ng-model='rootUsuario.usuarioAGuardar.usuario'  placeholder="Usuario" name="srch-term" />
                             <span class="input-group-addon">
                                 <i class="glyphicon glyphicon-user"></i>
                             </span>
                         </p>
 
-                        <p class="input-group">
-                            <input type="password" class="form-control" ng-model='rootUsuario.usuarioAGuardar.clave'  placeholder="Clave"  />
-                            <span class="input-group-addon">
-                                <i class="glyphicon glyphicon-lock"></i>
-                            </span>
-                        </p> 
-
-                        <p class="input-group">
-                            <input type="text" class="form-control" ng-model='rootUsuario.usuarioAGuardar.email'  placeholder="Email"  />
-                            <span class="input-group-addon">
-                                <i class="glyphicon glyphicon-envelope"></i>
-                            </span>
-                        </p> 
 
                         <p class="input-group">
 
-                            <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="fecha" is-open="abrir" readonly  close-text="Cerrar" ng-change="fechaSeleccionada()" clear-text="Borrar" current-text="Hoy" placeholder="Fecha Caducación" show-weeks="false" toggle-weeks-text="#" ng-click = "abrir = true"  />
+                            <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="rootUsuario.usuarioAGuardar.fechaCaducidad" is-open="abrir" readonly  close-text="Cerrar" ng-change="fechaSeleccionada()" clear-text="Borrar" current-text="Hoy" placeholder="Fecha Caducación" show-weeks="false" toggle-weeks-text="#" ng-click = "abrir = true"  />
                             <span class="input-group-addon">
 
                                 <i class="glyphicon glyphicon-calendar"></i>
                             </span>
-                        </p></br>
+                        </p>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="input-group">
+                                    <span class="input-group-addon">
+                                        <i class="glyphicon glyphicon-lock"></i>
+                                    </span>
+                                    <input type="password" class="form-control" ng-model='rootUsuario.usuarioAGuardar.clave'  placeholder="Clave"  />
+
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="input-group">
+                                    <input type="password" class="form-control" ng-model='rootUsuario.confirmacionClave'  placeholder="Confirmar Clave"  />
+                                    <span class="input-group-addon">
+                                        <i class="" 
+                                           ng-class="{'glyphicon glyphicon-remove':rootUsuario.confirmacionClave != rootUsuario.usuarioAGuardar.clave, 'glyphicon glyphicon-ok':rootUsuario.confirmacionClave == rootUsuario.usuarioAGuardar.clave}"></i>
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+
+
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="input-group">
+                                    <span class="input-group-addon">
+                                        <i class="glyphicon glyphicon-envelope"></i>
+                                    </span>
+                                    <input type="text" class="form-control" ng-model='rootUsuario.usuarioAGuardar.email'  placeholder="Email"  />
+
+                                </p> 
+                            </div>
+                            <div class="col-md-6">
+                                <p class="input-group">
+                                    <input type="text" class="form-control" ng-model='rootUsuario.confirmacionEmail'  placeholder="Confirmar Email"  />
+                                    <span class="input-group-addon">
+                                        <i class="" 
+                                           ng-class="{'glyphicon glyphicon-remove':rootUsuario.confirmacionEmail != rootUsuario.usuarioAGuardar.email, 'glyphicon glyphicon-ok':rootUsuario.confirmacionEmail == rootUsuario.usuarioAGuardar.email}"></i>
+                                    </span>
+                                </p> 
+                            </div>
+                        </div>
+
+                        <p class="input-group contenedor_combo_grande">
+                            <textarea class="form-control observacion_modulo input-sm" ng-model='rootUsuario.usuarioAGuardar.descripcion' placeholder="Observacion"></textarea>
+
+                        </p> 
+                        </br>
 
                         <button class="btn btn-default btn-sm pull-left" ng-click='onVolver()'>
                             Cancelar

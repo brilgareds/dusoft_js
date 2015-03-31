@@ -13,7 +13,8 @@
 	    },
 	    'USUARIOS':{
 	    	'LISTAR_USUARIOS':BASE_URL+"/Usuarios/listar",
-                'GUARDAR_USUARIO':BASE_URL+"/Usuarios/guardarUsuario"
+                'GUARDAR_USUARIO':BASE_URL+"/Usuarios/guardarUsuario",
+                'OBTENER_USUARIO_POR_ID':BASE_URL+"/Usuarios/obtenerUsuarioPorId"
 	    },
             'MODULOS':{
                 'LISTAR_MODULOS': BASE_URL+"/Modulos/listarModulos",

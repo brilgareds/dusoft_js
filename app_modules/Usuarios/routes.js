@@ -16,5 +16,10 @@ module.exports = function(app, di_container) {
          c_usuarios.guardarUsuario(req, res);
     });  
     
+    app.post('/api/Usuarios/obtenerUsuarioPorId', function(req, res) {
+         c_usuarios.obtenerUsuarioPorId(req, res);
+    });  
+    
+    
     
 };

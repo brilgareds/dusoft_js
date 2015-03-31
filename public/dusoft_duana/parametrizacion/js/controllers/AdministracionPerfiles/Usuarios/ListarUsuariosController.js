@@ -111,7 +111,7 @@ define(["angular", "js/controllers", "js/models",
             };
             
             $scope.onNuevoUsuario = function(){
-                localStorageService.set("rol_id", null);
+                localStorageService.set("usuario_id", null);
                 $state.go("AdministracionUsuarios");
             };
 

@@ -44,7 +44,7 @@ define(["angular","js/directive"], function(angular, directive){
                 //timer para opacar la ventana cuando el request se ha tomado cierto tiempo
                 this.startTimer = function(){
 
-                    if(this.timer != null){
+                    if(this.timer !== null){
                         return;
                     }
 
@@ -52,18 +52,18 @@ define(["angular","js/directive"], function(angular, directive){
                     this.timer = setInterval(function(){
                         var rgb = (that.colors[that.count])?that.colors[that.count]:that.colors[that.colors.length - 1];
                         that.root.css("background-color",rgb);
-                        if(that.count == (that.colors.length -1)){
+                        if(that.count === (that.colors.length -1)){
                             that.stopTimer();
                         }
                         that.count++;
                     },5000);
-                }
+                };
 
                 this.stopTimer = function(){
                     this.count = 0;
                     clearInterval(this.timer);
                     this.timer = null;
-                }
+                };
 
             }
         };

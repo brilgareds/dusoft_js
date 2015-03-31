@@ -21,6 +21,37 @@ define([
             $scope.rootModulos = {
                 
             };
+            
+            $scope.opcionesListaModulos = {
+                minimumInputLength: 3,
+                query: function (query) {
+                    console.log("query list ", query);
+
+                   function querySucceeded(response) {
+                        // give the {results:data-array} to the query callback
+                        query.callback(response);
+                   }
+
+                   function queryFailed(error) {
+                       // I don't know what you're supposed to do.
+                       // maybe return nothing in the query callback?
+                       // Tell the user SOMETHING and then
+                       query.callback({results:[]});      
+                   }
+               }     
+                        
+            };
+            
+            $scope.onTraerModulos = function(busquedad){
+                
+                if(busquedad.length < 3){
+                    return;
+                }
+                
+                self.traerModulos(busquedad, function(){
+                    
+                });
+            };
 
 
             //valida que la creacion del modulo se correcta
@@ -73,17 +104,26 @@ define([
 
             };
 
-            self.traerModulos = function(callback) {
+            self.traerModulos = function(termino, callback) {
                 var obj = {
                     session: $scope.rootModulos.session,
                     data: {
+                        termino:termino
                     }
                 };
 
                 Request.realizarRequest(API.MODULOS.LISTAR_MODULOS, "POST", obj, function(data) {
                     if (data.status === 200) {
                         var datos = data.obj.parametrizacion_modulos.modulos;
-                        $scope.rootModulos.modulos = [];
+                        
+                        if(termino.length ===  0){
+                            
+                            $scope.rootModulos.modulos = [];
+                        } else {
+                            $scope.rootModulos.modulos_filtrados = [];
+                        }
+                        
+                        
 
                         for (var i in datos) {
 
@@ -100,13 +140,18 @@ define([
                             /*modulo.state = {
                                 disabled: true
                             };*/
-
-                            $scope.rootModulos.modulos.push(modulo);
+                            
+                            if(termino.length === 0){
+                                
+                                $scope.rootModulos.modulos.push(modulo);
+                            } else {
+                                $scope.rootModulos.modulos_filtrados.push(modulo);
+                            }
                         }
 
                         // console.log(modulos);
                         callback();
-                        $scope.$broadcast("datosArbolCambiados", $scope.rootModulos.modulos);
+                        
                     }
 
                 });
@@ -124,8 +169,8 @@ define([
 
             //se carga los modulos despues que el arbol esta listo
             $scope.$on("arbolListoEnDom", function() {
-                self.traerModulos(function(){
-                    
+                self.traerModulos("", function(){
+                    $scope.$broadcast("datosArbolCambiados", $scope.rootModulos.modulos);
                 });
             });
 
@@ -205,8 +250,9 @@ define([
                             $scope.rootModulos.moduloAGuardar.setId(id);
                             modulo_guardar.setId(id);
                             
-                            self.traerModulos(function(){
+                            self.traerModulos("",function(){
                                 
+                                $scope.$broadcast("datosArbolCambiados", $scope.rootModulos.modulos);
                                 
                                 $scope.$on("arbolRefrescado",function(){
                                     console.log("arbol refrescado code 2")

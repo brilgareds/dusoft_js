@@ -13,9 +13,10 @@ Modulos.prototype.listar_modulos = function(req, res) {
 
 
     var args = req.body.data;
+    var termino = args.termino || "";
+    
 
-
-    that.m_modulo.listar_modulos(function(err, lista_modulos) {
+    that.m_modulo.listar_modulos(termino, function(err, lista_modulos) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error listando Modulos', 500, {parametrizacion_modulos: {}}));

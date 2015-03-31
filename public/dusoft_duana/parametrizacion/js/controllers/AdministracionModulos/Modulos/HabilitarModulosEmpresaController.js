@@ -80,7 +80,6 @@ define(["angular", "js/controllers", "js/models", "models/Perfiles/Rol", "models
             
            self.traerEmpresas = function() {
                 
-                
                 var ids = [moduloSeleccionado.getId()];
                 
                 ids = ids.concat(moduloSeleccionado.getModulosHijo());
@@ -354,7 +353,6 @@ define(["angular", "js/controllers", "js/models", "models/Perfiles/Rol", "models
                 ]
 
             };
-            
             
             
             $scope.onSeleccionarRol = function(rol){

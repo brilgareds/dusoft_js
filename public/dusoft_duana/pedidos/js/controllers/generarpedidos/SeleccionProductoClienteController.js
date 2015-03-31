@@ -185,6 +185,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 producto.setIva(obj.porc_iva);
 
+                producto.setEsRegulado(obj.sw_regulado);
+                
                 producto.setPrecioRegulado(obj.precio_regulado);
                 
                 producto.setPrecioVentaAnterior(obj.precio_venta_anterior);
@@ -210,27 +212,32 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     //selectedItems: $scope.selectedRow,
                     multiSelect: false,
                     columnDefs: [
-                        {field: 'codigo_producto', displayName: 'Código Producto'},
+                        {field: 'codigo_producto', displayName: 'Cód. Producto', width: "8%"},
                         {field: 'descripcion', displayName: 'Descripción'},
-                        {field: 'codigo_cum', displayName: 'CUM'},
-                        {field: 'codigo_invima', displayName: 'Código Invima'},
-                        {field: 'iva', displayName: 'Iva'},
-                        {field: 'precio_regulado', displayName: 'Precio Regulado'},
-                        {field: 'precio', displayName: 'Precio Venta',
+                        {field: 'codigo_cum', displayName: 'CUM', width: "7%"},
+                        {field: 'codigo_invima', displayName: 'Código Invima', width: "9%"},
+                        {field: 'iva', displayName: 'Iva', width: "4%"},
+                        {field: 'precio_regulado', displayName: 'Precio Regulado', width: "10%",
+                        cellTemplate : '<div class="ngCellText" ng-class="col.colIndex()">\
+                                                <span class="label label-success" ng-show="row.entity.getEsRegulado() == 1" >R</span>\
+                                                <span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\
+                                            </div>'
+                        },
+                        {field: 'precio', displayName: 'Precio Venta', width: "9%",
                             cellTemplate: ' <div class="col-xs-12">\n\
                                                 <input type="text" ng-model="row.entity.precio" validacion-numero class="form-control grid-inline-input"'+
                                                 'ng-keyup=""/>\n\
                                             </div>'},
-                        {field: 'existencia', displayName: 'Existencia'},
-                        {field: 'disponible', displayName: 'Disponible'},
+                        {field: 'existencia', displayName: 'Existencia', width: "6%"},
+                        {field: 'disponible', displayName: 'Disponible', width: "6%"},
                         //{field: 'cantidad_solicitada', displayName: 'Cantidad', enableCellEdit: true},
-                        {field: 'cantidad_solicitada', displayName: 'Cantidad', enableCellEdit: false, width: "10%",
+                        {field: 'cantidad_solicitada', displayName: 'Cantidad', enableCellEdit: false, width: "7%",
                             cellTemplate: ' <div class="col-xs-12">\n\
                                                 <input type="text" ng-model="row.entity.cantidad_solicitada" validacion-numero class="form-control grid-inline-input"'+
                                                 'ng-keyup="onTeclaIngresaProducto($event, row)"/>\n\
                                             </div>'
                         },
-                        {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "6%",
+                        {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
                             cellTemplate: ' <div class="row">\n\
                                                 <button ng-if="row.entity.estado==1" class="btn btn-default btn-xs" ng-click="onIncluirProducto(row)" '+
                                                 ' ng-disabled="row.entity.cantidad_solicitada<=0 || row.entity.cantidad_solicitada==null || !expreg.test(row.entity.cantidad_solicitada)">\n\
@@ -384,6 +391,51 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     /*Ventana Modal validacion costo última compra - Fin*/
                     return;
                         
+                }
+                
+                //console.log("Es Regulado - Estado: ", row.entity.getEsRegulado());
+                //console.log("Es Regulado - Valor: ", row.entity.getPrecioRegulado());
+                
+                if(row.entity.getEsRegulado() === '1') {
+                    if(parseFloat(row.entity.precio) > row.entity.getPrecioRegulado()) {
+                        
+                        $scope.rootSeleccionProductoCliente.no_incluir_producto = true;
+
+                        /*Ventana Modal validacion costo última compra - Inicio*/
+                        var template = ' <div class="modal-header">\
+                                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                                    <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                                </div>\
+                                                <div class="modal-body">\
+                                                    <h4>El precio está por encima del valor de precio regulado. <br> \n\
+                                                        El producto de código '+row.entity.getCodigoProducto()+' tiene el precio regulado <br>\n\
+                                                        $'+row.entity.getPrecioRegulado()+'. </h4> \
+                                                </div>\
+                                                <div class="modal-footer">\
+                                                    <button class="btn btn-warning" ng-click="close()">Aceptar</button>\
+                                                </div>';
+
+                        controller = function($scope, $modalInstance) {
+
+                            $scope.close = function() {
+                                $modalInstance.close();
+                            };
+                        };
+
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: template,
+                            scope: $scope,
+                            controller: controller
+                        };
+
+                        var modalInstance = $modal.open($scope.opts);
+                        /*Ventana Modal validacion costo última compra - Fin*/
+                        return;                          
+                    }
                 }
 
                 if ($scope.rootSeleccionProductoCliente.no_incluir_producto === false)
@@ -982,8 +1034,51 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
             };
             
+            $scope.onEliminarSeleccionado = function(row){
+                
+                var template = ' <div class="modal-header">\
+                                        <button type="button" class="close" ng-click="close()">&times;</button>\
+                                        <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                    </div>\
+                                    <div class="modal-body">\
+                                        <h4>Seguro desea eliminar el producto '+row.entity.codigo_producto+' - '+row.entity.descripcion+' ? </h4> \
+                                    </div>\
+                                    <div class="modal-footer">\
+                                        <button class="btn btn-warning" ng-click="close()">No</button>\
+                                        <button class="btn btn-primary" ng-click="aceptaEliminar()" ng-disabled="" >Si</button>\
+                                    </div>';
+
+                controller = function($scope, $modalInstance) {
+
+                    $scope.aceptaEliminar = function() {
+                        
+                        //Se acepta eliminar y se procede
+                        that.eliminarSeleccionado(row);
+
+                        $modalInstance.close();
+                    };
+
+                    $scope.close = function() {
+                        $modalInstance.close();
+                    };
+                };
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: template,
+                    scope: $scope,
+                    controller: controller
+                };
+
+                var modalInstance = $modal.open($scope.opts);
+                
+            };
+            
             /* Eliminar producto seleccionado - Inicio */
-            $scope.onEliminarSeleccionado = function(row) {
+            that.eliminarSeleccionado = function(row) {
 
                 if ($scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().obtenerProductos().length === 1)
                 {

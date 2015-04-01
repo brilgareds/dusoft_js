@@ -150,7 +150,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             $scope.onGuardarUsuario = function(){
                 console.log("usuario a guardar ",$scope.rootUsuario.usuarioAGuardar);
                 console.log("confirmar clave ",$scope.confirmarClave);
-                
+                 
                 var validacion = self.__validarCreacionUsuario();
                 
                 if (!validacion.valido) {
@@ -191,6 +191,21 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 });
                 
                 
+            };
+            
+             $scope.subirImagenUsuario = function() {
+
+                // Solo Subir Plano
+                $scope.opciones_archivo.opts.query.data = JSON.stringify({
+                    ordenes_compras: {
+                        empresa_id: '03',
+                        numero_orden: $scope.numero_orden,
+                        codigo_proveedor_id: $scope.codigo_proveedor_id
+                    }
+                });
+
+                $scope.opciones_archivo.upload();
+
             };
             
             var usuario_id = localStorageService.get("usuario_id");

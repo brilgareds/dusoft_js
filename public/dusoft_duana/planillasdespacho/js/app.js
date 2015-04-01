@@ -6,8 +6,9 @@ define([
     "loader",
     "includes/menu/menucontroller", "url", "includes/alert/Alert",
     "includes/header/HeaderController", 'storage', "httpinterceptor",
-    "includes/classes/Usuario", "includes/http/Request", "dragndropfile", 
+    "includes/classes/Usuario", "includes/http/Request", "dragndropfile",
     "controllers/generarplanilladespacho/ListarPlanillasController",
+    "controllers/generarplanilladespacho/GestionarPlanillasController",
     "includes/helpersdirectives/visualizarReporte"
 ], function(angular) {
     /* App Module and its dependencies */
@@ -39,6 +40,14 @@ define([
                 url: "/GestionarPlantillas",
                 text: "Administración Planillas Despacho",
                 templateUrl: "views/generarplanilladespacho/listarplanillasdespacho.html"
+            }).state('CrearPlanilla', {
+                url: "/CrearPlanilla",
+                text: "Gestionar Planillas Despacho",
+                templateUrl: "views/generarplanilladespacho/gestionarplanillas.html"
+            }).state('ModificarPlanilla', {
+                url: "/ModificarPlanilla",
+                text: "Gestionar Planillas Despacho",
+                templateUrl: "views/generarplanilladespacho/gestionarplanillas.html"
             });
 
 

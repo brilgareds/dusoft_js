@@ -62,6 +62,8 @@ define(["angular", "js/controllers",
                 console.log('== crear_planilla_despacho ==');
                 console.log('=============================');
 
+                $state.go('CrearPlanilla');
+
             };
 
             $scope.abrir_fecha_inicial = function($event) {
@@ -104,7 +106,7 @@ define(["angular", "js/controllers",
                                                 <li><a href="javascript:void(0);" ng-click="generar_reporte(row.entity,0)" >Ver PDF</a></li>\
                                                 <li><a href="javascript:void(0);" ng-disabled="true" ng-click="enviar_email(row.entity,0)" >Enviar por Email</a></li>\
                                             </ul>\
-                                        </div>'
+                                       </div>'
                     }
                 ]
             };
@@ -113,6 +115,8 @@ define(["angular", "js/controllers",
                 console.log('=================================');
                 console.log('== modificar_planilla_despacho ==');
                 console.log('=================================');
+                
+                $state.go('ModificarPlanilla');
             };
 
             $scope.generar_reporte = function(orden_compra) {

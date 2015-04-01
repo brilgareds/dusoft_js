@@ -39,7 +39,7 @@ UsuariosModel.prototype.obtenerUsuarioPorId = function(usuario_id , callback) {
     var sql = "SELECT * FROM system_usuarios a where a.usuario_id = $1; " ;
 
     G.db.query(sql, [usuario_id], function(err, rows, result) {
-        callback(err, rows);
+        callback(err, (rows.length > 0)?rows[0]:null);
     });
 };
 
@@ -62,5 +62,82 @@ UsuariosModel.prototype.cambiar_contrasenia = function(usuario, contrasenia, cal
         callback(err, rows, result);
     });
 };
+
+
+//gestiona para modificar o insertar el rol
+UsuariosModel.prototype.guardarUsuario = function(usuario, callback) {
+    var self = this;
+    console.log("usuario >> ",usuario);
+
+    if (usuario.id && usuario.id !== 0 && usuario.id !== "") {
+        
+        if(usuario.clave.length > 0){
+            self.cambiar_contrasenia(usuario.usuario, usuario.clave, function(err, rows){
+                
+                if(err){
+                    callback(err, rows);
+                    return;
+                }
+                
+                self.modificarUsuario(usuario, function(err, rows) {
+                    callback(err, rows);
+                });
+            });
+        } else {
+            self.modificarUsuario(usuario, function(err, rows) {
+                callback(err, rows);
+            });
+        }
+        
+    } else {
+        self.insertarUsuario(usuario, function(err, rows) {
+            callback(err, rows);
+        });
+    }
+};
+
+
+UsuariosModel.prototype.insertarUsuario = function(usuario, callback) {
+
+    var sql = "INSERT INTO system_usuarios (usuario, nombre, passwd, activo,\
+               fecha_caducidad_contrasena, descripcion, email) VALUES ($1, $2, md5($3), $4, $5, $6, $7) RETURNING usuario_id";
+
+
+    var params = [
+        usuario.usuario, usuario.nombre, usuario.clave, Number(usuario.estado), usuario.fechaCaducidad, usuario.descripcion, usuario.email
+    ];
+    
+    
+
+    G.db.query(sql, params, function(err, rows, result) {
+        var usuario_id = (rows)?rows[0]:undefined;
+        callback(err, usuario_id);
+    });
+};
+
+UsuariosModel.prototype.modificarUsuario = function(usuario, callback) {
+
+    var sql = "UPDATE system_usuarios SET  usuario = $1, nombre = $2, activo= $3, fecha_caducidad_contrasena =$4,\
+               email = $5, descripcion = $6  WHERE usuario_id = $7 RETURNING usuario_id";
+
+    var params = [
+        usuario.usuario, usuario.nombre, Number(usuario.estado), usuario.fechaCaducidad,
+        usuario.email, usuario.descripcion, usuario.id 
+    ];
+
+    G.db.query(sql, params, function(err, rows, result) {
+        var usuario_id = (rows)?rows[0]:undefined;
+        callback(err, usuario_id);
+    });
+};
+
+UsuariosModel.prototype.obtenerUsuarioPorNombreOEmail = function(usuario,email, callback) {
+    var sql = "SELECT  nombre, usuario_id, email  FROM system_usuarios WHERE usuario ILIKE $1 OR email = $2";
+
+    G.db.query(sql, [usuario + "%", email], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
 
 module.exports = UsuariosModel;

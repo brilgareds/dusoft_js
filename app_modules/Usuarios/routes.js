@@ -11,4 +11,15 @@ module.exports = function(app, di_container) {
     app.post('/api/Usuarios/listar', function(req, res) {
          c_usuarios.listarUsuarios(req, res);
     });    
+    
+    app.post('/api/Usuarios/guardarUsuario', function(req, res) {
+         c_usuarios.guardarUsuario(req, res);
+    });  
+    
+    app.post('/api/Usuarios/obtenerUsuarioPorId', function(req, res) {
+         c_usuarios.obtenerUsuarioPorId(req, res);
+    });  
+    
+    
+    
 };

@@ -34,6 +34,13 @@ define(["angular", "js/directive"], function(angular, directive) {
                 //notifica a angular el cambio
                 $(this).trigger('input');
             });
+            
+            element.on("blur",".camelCase",function(){
+                $(this).val(scope.camelCase($(this).val()));
+
+                //notifica a angular el cambio
+                $(this).trigger('input');
+            });
 
             scope.camelCase = function(input) {
                 return input.replace(/ (.)/g, function(match, group1) {

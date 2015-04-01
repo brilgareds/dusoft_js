@@ -105,10 +105,10 @@ ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro
 
         sql_aux = " and b.tipo_producto_id = $7 ";
          
-        array_parametros = [empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, "%" + termino_busqueda + "%", pedido_cliente_id_tmp, tipo_producto];
+        array_parametros = [empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, "%" + termino_busqueda + "%"/*, pedido_cliente_id_tmp*/, tipo_producto];
     }
     else {
-        array_parametros = [empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, "%" + termino_busqueda + "%", pedido_cliente_id_tmp];
+        array_parametros = [empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, "%" + termino_busqueda + "%"/*, pedido_cliente_id_tmp*/];
     }
     
     var sql = " select\n\
@@ -201,14 +201,14 @@ ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro
                          or fc_descripcion_producto(a.codigo_producto) ilike $5 \n\
                          or g.descripcion  ilike $5 \n\
                      ) "+
-                     "and a.codigo_producto not in( \
+                     "/*and a.codigo_producto not in( \
                                    select \
                                    codigo_producto \
                                    from \
                                    ventas_ordenes_pedidos_d_tmp \
                                    where \
                                    pedido_cliente_id_tmp = $6\
-                            )"+
+                            )*/"+
                      sql_aux +
                 "group by a.codigo_producto, a.precio_regulado, a.existencia, a.costo_anterior, a.costo, a.costo_penultima_compra, \n\
                     a.costo_ultima_compra, a.precio_venta_anterior, a.precio_venta, a.precio_minimo, a.precio_maximo, a.sw_vende, \n\
@@ -219,7 +219,7 @@ ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro
                 order by 3 asc";
         
 
-    G.db.pagination(sql, array_parametros, pagina, G.settings.limit, function(err, rows, result) {
+    G.db.paginated(sql, array_parametros, pagina, G.settings.limit, function(err, rows, result) {
         callback(err, rows);
     });
 

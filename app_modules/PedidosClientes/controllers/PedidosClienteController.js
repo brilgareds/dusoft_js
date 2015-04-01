@@ -1,5 +1,5 @@
 
-var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, productos, m_pedidos) {
+var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, productos, m_pedidos, m_terceros) {
 
     console.log("Modulo Pedidos Cliente  Cargado ");
 
@@ -7,6 +7,7 @@ var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, produc
     this.e_pedidos_clientes = eventos_pedidos_clientes;
     this.m_productos = productos;
     this.m_pedidos = m_pedidos;
+    this.m_terceros = m_terceros;
 };
 
 /**
@@ -808,7 +809,9 @@ PedidosCliente.prototype.listadoPedidosClientes = function(req, res) {
     var pagina = args.pedidos_cliente.pagina_actual;
 
     that.m_pedidos_clientes.listado_pedidos_clientes(empresa_id, termino_busqueda, pagina, function(err, listado_pedidos) {
-
+        
+        //console.log(">>>>>>>>>>>>> LISTADO PEDIDOS ............", listado_pedidos);
+        
         if (err) {
             res.send(G.utils.r(req.url, 'Error en consulta de Pedidos', 500, {}));
             return;
@@ -1580,6 +1583,6 @@ PedidosCliente.prototype.eliminarRegistroDetallePedido = function(req, res) {
  
 };
 
-PedidosCliente.$inject = ["m_pedidos_clientes", "e_pedidos_clientes", "m_productos", "m_pedidos"];
+PedidosCliente.$inject = ["m_pedidos_clientes", "e_pedidos_clientes", "m_productos", "m_pedidos", "m_terceros"];
 
 module.exports = PedidosCliente;

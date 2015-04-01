@@ -164,10 +164,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         obj.telefono_cliente   //telefono
                         );
                             
-                cliente.setPais(obj.pais);//pais
-                cliente.setDepartamento(obj.departamento);//departamento
-                cliente.setMunicipio(obj.municipio);//municipio
-                cliente.setUbicacion(); //ubicacion
+                cliente.setTipoPaisId(obj.tipo_pais_cliente);//pais
+                cliente.setTipoDepartamentoId(obj.tipo_departamento_cliente);//departamento
+                cliente.setTipoMunicipioId(obj.tipo_municipio_cliente);//municipio
+                //cliente.setUbicacion(); //ubicacion
 
                 pedido.setCliente(cliente);
 
@@ -181,14 +181,15 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 //data: 'rootPedidosClientes.listado_cotizaciones',
                 enableColumnResize: true,
                 enableRowSelection: false,
+                enableHighlighting: true,
+                //showFilter: true,
+                multiSelect: false,
                 columnDefs: [
                     {field: 'numero_pedido', displayName: 'Número Pedido', width: "9%"},
                     {field: 'cliente.nombre_tercero', displayName: 'Cliente'},
                     {field: 'vendedor.nombre_tercero', displayName: 'Vendedor'},
                     {field: 'fecha_registro', displayName: 'Fecha', width: "10%"},
                     {field: 'valor_pedido', displayName: '$ Valor', cellFilter: "currency:'$ '", width: "10%"},
-                    //{field: 'estado', displayName: 'Estado'},
-                    
                     {field: 'estado', displayName: 'Estado Pedido', cellClass: "txt-center", width: "9%",
                         cellTemplate:   "   <button ng-if='row.entity.estado==0'>Inactivo</button>\
                                             <button ng-if='row.entity.estado==1'>Activo</button>\
@@ -563,7 +564,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
             };
             
-            $scope.onBuscarPedido($scope.obtenerParametros(),"");
+            $scope.onTabPedidosClick = function(){
+                $scope.onBuscarPedido($scope.obtenerParametros(),"");
+            }
+            
+            //$scope.onBuscarPedido($scope.obtenerParametros(),"");
 
         }]);
 });

@@ -914,7 +914,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, termino
                 order by 1 desc\
 ";
     
-    G.db.pagination(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
+    G.db.paginated(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
         callback(err, rows);
     }); 
 
@@ -958,9 +958,9 @@ PedidosClienteModel.prototype.listado_pedidos_clientes = function(empresa_id, te
                     c.nombre_tercero as nombre_cliente,\
                     d.nombre as nombre_vendedor,\
                     d.telefono as telefono_vendedor,\
-                    e.pais,\
+                    /*e.pais,\
                     f.departamento,\
-                    g.municipio,\
+                    g.municipio,*/\
                     h.estado as estado_separacion\
                 from ventas_ordenes_pedidos a\
                     left join ventas_ordenes_pedidos_d b on b.pedido_cliente_id = a.pedido_cliente_id\
@@ -968,28 +968,31 @@ PedidosClienteModel.prototype.listado_pedidos_clientes = function(empresa_id, te
                         and c.tercero_id = a.tercero_id\
                     join vnts_vendedores d on d.tipo_id_vendedor = a.tipo_id_vendedor\
                         and d.vendedor_id = a.vendedor_id\
-                    left join tipo_pais as e on e.tipo_pais_id = c.tipo_pais_id\
+                    /*left join tipo_pais as e on e.tipo_pais_id = c.tipo_pais_id\
                     left join tipo_dptos as f on f.tipo_dpto_id = c.tipo_dpto_id\
                         and f.tipo_pais_id = e.tipo_pais_id \
                     left join tipo_mpios as g on g.tipo_mpio_id = c.tipo_mpio_id\
                         and g.tipo_dpto_id = f.tipo_dpto_id\
-                        and g.tipo_pais_id = e.tipo_pais_id\
+                        and g.tipo_pais_id = e.tipo_pais_id*/\
                     left join inv_bodegas_movimiento_tmp_despachos_clientes h on a.pedido_cliente_id = h.pedido_cliente_id  \
                 where a.empresa_id = $1\
                     and (   a.pedido_cliente_id ilike $2\
                             or c.nombre_tercero ilike $2\
-                            or d.nombre ilike $2    )\
+                            or d.nombre ilike $2 )\
                 group by a.pedido_cliente_id, a.empresa_id, a.tipo_id_tercero, a.tercero_id, a.fecha_registro, a.usuario_id, a.fecha_envio,\
                     a.tipo_id_vendedor, a.vendedor_id, a.estado, a.estado_pedido, a.fecha_registro_anulacion, a.usuario_anulador, a.observacion_anulacion,\
-                    a.observacion, c.tipo_pais_id, c.tipo_dpto_id, c.tipo_mpio_id, c.direccion, c.telefono, c.nombre_tercero, d.nombre, d.telefono, e.pais,\
-                    f.departamento, g.municipio, h.estado\
+                    a.observacion, c.tipo_pais_id, c.tipo_dpto_id, c.tipo_mpio_id, c.direccion, c.telefono, c.nombre_tercero, d.nombre, d.telefono,/* e.pais,\
+                    f.departamento, g.municipio,*/ h.estado\
                 order by 1 desc\
 ";
     
-    G.db.pagination(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
+    G.db.paginated(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result) {
         callback(err, rows);
     }); 
-
+    
+    /*G.db.query(sql, [empresa_id, "%" + termino_busqueda + "%"], function(err, rows, result) {
+        callback(err, rows, result);
+    });*/
 };
 
 

@@ -257,19 +257,19 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     //data: 'rootSeleccionProductoCliente.listado_productos_seleccionados',
                     enableColumnResize: true,
                     enableRowSelection: false,
-                    //enableCellSelection: true,
-                    //selectedItems: $scope.selectedRow,
+                    enableHighlighting: true,
+                    //showFilter: true,
                     multiSelect: false,
                             
                     columnDefs: [
-                        {field: 'codigo_producto', displayName: 'Código Producto'},
+                        {field: 'codigo_producto', displayName: 'Cód. Producto', width: "8%"},
                         {field: 'descripcion', displayName: 'Descripción'},
-                        {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada'},
-                        {field: 'iva', displayName: 'Iva'},
-                        {field: 'precio', displayName: 'Precio Unitario', cellFilter: "currency:'$ '"},
-                        {field: 'total_sin_iva', displayName: 'Total Sin Iva', cellFilter: "currency:'$ '"},
-                        {field: 'total_con_iva', displayName: 'Total Con Iva', cellFilter: "currency:'$ '"},
-                        {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
+                        {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada', width: "10%"},
+                        {field: 'iva', displayName: 'Iva', width: "8%"},
+                        {field: 'precio', displayName: 'Precio Unitario', cellFilter: "currency:'$ '", width: "10%"},
+                        {field: 'total_sin_iva', displayName: 'Total Sin Iva', cellFilter: "currency:'$ '", width: "10%"},
+                        {field: 'total_con_iva', displayName: 'Total Con Iva', cellFilter: "currency:'$ '", width: "10%"},
+                        {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
                             cellTemplate: ' <div class="row">\n\
                                                 <button ng-if="rootSeleccionProductoCliente.bloquear_eliminar == false" class="btn btn-danger btn-xs" ng-click="onEliminarSeleccionado(row)">\n\
                                                     <span class="glyphicon glyphicon-minus-sign">Eliminar</span>\n\

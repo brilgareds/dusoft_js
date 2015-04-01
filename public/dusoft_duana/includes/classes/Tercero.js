@@ -10,6 +10,9 @@ define(["angular", "js/models"], function(angular, models) {
             this.id = id || "";
             this.direccion = direccion || "";
             this.telefono = telefono || "";
+            this.tipo_pais_id = "";
+            this.tipo_departamento_id = "";
+            this.tipo_municipio_id = "";
             this.pais = "";
             this.departamento = "";
             this.municipio = "";
@@ -38,6 +41,30 @@ define(["angular", "js/models"], function(angular, models) {
         };
         
         //Operaciones Set y Get de atributos adicionales
+        Tercero.prototype.setTipoPaisId = function(tipo_pais_id) {
+            this.tipo_pais_id = tipo_pais_id;
+        };
+
+        Tercero.prototype.getTipoPaisId = function() {
+            return this.tipo_pais_id;
+        };
+
+        Tercero.prototype.setTipoDepartamentoId = function(tipo_departamento_id) {
+            this.tipo_departamento_id = tipo_departamento_id;
+        };
+
+        Tercero.prototype.getTipoDepartamentoId = function() {
+            return this.tipo_departamento_id;
+        };
+        
+        Tercero.prototype.setTipoMunicipioId = function(tipo_municipio_id) {
+            this.tipo_municipio_id = tipo_municipio_id;
+        };
+
+        Tercero.prototype.getTipoMunicipioId = function() {
+            return this.tipo_municipio_id;
+        };
+        
         Tercero.prototype.setPais = function(pais) {
             this.pais = pais;
         };

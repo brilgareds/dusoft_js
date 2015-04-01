@@ -242,6 +242,31 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     
                     $scope.rootCreaCotizaciones.observacion = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getObservacion();
                     
+                    //Hacer aquí consultas para traer nombres de pais, departamento y ciudad. Luego armar Ubicación con setUbicación
+                    
+                    /*
+                        cliente.setTipoPaisId(obj.tipo_pais_cliente);//pais
+                        cliente.setTipoDepartamentoId(obj.tipo_departamento_cliente);//departamento
+                        cliente.setTipoMunicipioId(obj.tipo_municipio_cliente);//municipio
+                        //cliente.setUbicacion(); //ubicacion
+                     */
+                    
+                    var tipo_pais_id = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getTipoPaisId();
+                    var tipo_dpto_id = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getTipoDepartamentoId();
+                    var tipo_mpio_id = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getTipoMunicipioId();
+                    
+                    console.log(">>>>>> Datos Cliente: ",$scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente());
+                    
+                    var nombre_pais = that.nombrePais(tipo_pais_id);
+                    var nombre_departamento = that.nombreDepartamento(tipo_pais_id, tipo_dpto_id);
+                    var nombre_municipio = that.nombreMunicipio(tipo_pais_id, tipo_dpto_id, tipo_mpio_id);
+                    
+                    /*$scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setPais(nombre_pais);
+                    $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setDepartamento(nombre_departamento);
+                    $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setMunicipio(nombre_municipio);
+                    
+                    $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setUbicacion();*/
+                    
                     // HACER CONSULTA DE PRODUCTOS DE LA COTIZACIÓN O PEDIDO (DETALLE)
                     console.log(">>>>>>>>> Numero Cotización: ", $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion());
                     
@@ -286,6 +311,94 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 }
 
             };
+            
+            that.nombrePais = function(tipo_pais_id){
+                var obj = {
+                        session: $scope.rootCreaCotizaciones.session,
+                        data: {
+                            pais: {
+                                tipo_pais_id: tipo_pais_id
+                            }
+                        }
+                    };
+                 
+                var url = API.TERCEROS.NOMBRE_PAIS;
+                    
+                Request.realizarRequest(url, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        console.log("Consulta exitosa: ", data.msj);
+                        
+                        console.log(">>>>>>>> CONSULTA PAIS", data);
+
+                        /*if (callback !== undefined && callback !== "" && callback !== 0) {
+                            callback(data);
+                        }*/
+                    }
+                    else {
+                        console.log("Error en la consulta: ", data.msj);
+                    }
+                });
+            };
+            
+            that.nombreDepartamento = function(tipo_pais_id, tipo_dpto_id){
+                var obj = {
+                        session: $scope.rootCreaCotizaciones.session,
+                        data: {
+                            departamento: {
+                                tipo_pais_id: tipo_pais_id,
+                                tipo_dpto_id: tipo_dpto_id
+                            }
+                        }
+                    };
+                 
+                var url = API.TERCEROS.NOMBRE_DEPARTAMENTO;
+                    
+                Request.realizarRequest(url, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        console.log("Consulta exitosa: ", data.msj);
+                        console.log(">>>>>>>> CONSULTA DEPARTAMENTO", data);
+
+                        /*if (callback !== undefined && callback !== "" && callback !== 0) {
+                            callback(data);
+                        }*/
+                    }
+                    else {
+                        console.log("Error en la consulta: ", data.msj);
+                    }
+                });
+            };
+            
+            that.nombreMunicipio = function(tipo_pais_id, tipo_dpto_id, tipo_mpio_id){
+                var obj = {
+                        session: $scope.rootCreaCotizaciones.session,
+                        data: {
+                            municipio: {
+                                tipo_pais_id: tipo_pais_id,
+                                tipo_dpto_id: tipo_dpto_id,
+                                tipo_mpio_id: tipo_mpio_id
+                            }
+                        }
+                    };
+                 
+                var url = API.TERCEROS.NOMBRE_MUNICIPIO;
+                    
+                Request.realizarRequest(url, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        console.log("Consulta exitosa: ", data.msj);
+                        console.log(">>>>>>>> CONSULTA MUNICIPIO", data);
+
+                        /*if (callback !== undefined && callback !== "" && callback !== 0) {
+                            callback(data);
+                        }*/
+                    }
+                    else {
+                        console.log("Error en la consulta: ", data.msj);
+                    }
+                });
+            };            
             
             that.consultarDetalleCotizacion = function(callback){
                 
@@ -394,6 +507,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_con_iva += parseFloat(obj.getTotalConIva());
                     
                     console.log(">>> Valor Parcial Total Sin Iva: ", $scope.rootCreaCotizaciones.valor_total_sin_iva);
+                    console.log(">>> Valor Parcial Total Con Iva: ", $scope.rootCreaCotizaciones.valor_total_con_iva);
                     
                     $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().agregarProducto(obj);
                     
@@ -435,11 +549,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             $scope.rootCreaCotizaciones.lista_productos = {
                 data: 'rootCreaCotizaciones.Empresa.getPedidoSeleccionado().obtenerProductos()',
-                //data: 'rootCreaCotizaciones.listado_productos',
                 enableColumnResize: true,
                 enableRowSelection: false,
-                //enableCellSelection: true,
-                //selectedItems: $scope.selectedRow,
+                enableHighlighting: true,
+                //showFilter: true,
                 multiSelect: false,
                 footerTemplate: '   <div class="row col-md-12">\
                                         <div class="col-md-3 pull-right">\
@@ -458,13 +571,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                         </div>\
                                     </div>',
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Código Producto'},
+                    {field: 'codigo_producto', displayName: 'Cód. Producto',  width: "8%"},
                     {field: 'descripcion', displayName: 'Descripción'},
-                    {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada'},
-                    {field: 'iva', displayName: 'Iva %'},
-                    {field: 'precio', displayName: 'Precio Unitario', cellFilter: "currency:'$ '"},
-                    {field: 'total_sin_iva', displayName: 'Total Sin Iva', cellFilter: "currency:'$ '"},
-                    {field: 'total_con_iva', displayName: 'Total Con Iva', cellFilter: "currency:'$ '"}
+                    {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada', width: "10%"},
+                    {field: 'iva', displayName: 'Iva %',  width: "8%"},
+                    {field: 'precio', displayName: 'Precio Unitario', cellFilter: "currency:'$ '",  width: "10%"},
+                    {field: 'total_sin_iva', displayName: 'Total Sin Iva', cellFilter: "currency:'$ '",  width: "10%"},
+                    {field: 'total_con_iva', displayName: 'Total Con Iva', cellFilter: "currency:'$ '",  width: "10%"}
                 ]
 
             };

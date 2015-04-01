@@ -315,7 +315,7 @@ define(["angular", "js/controllers",
 
                     }
                 });
-            }
+            };
 
             $scope.enviar_email = function(orden_compra) {
 

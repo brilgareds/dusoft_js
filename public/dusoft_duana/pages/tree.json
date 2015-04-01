@@ -159,7 +159,25 @@
         "icon": "glyphicon glyphicon-file",
         "state": "ListarUsuarios",
         "visible" :true
+    },
+    {
+        "id": "26",
+        "parent": "#",
+        "text": "Planillas Despacho",
+        "url": "planillasdespacho",
+        "visible" :true
+    },
+    {
+        "id": "27",
+        "parent": "26",
+        "text": "Gestionar Plantillas",
+        "url": "GestionarPlantillas",
+        "parentname": "planillasdespacho",
+        "icon": "glyphicon glyphicon-file",
+        "state": "GestionarPlantillas",
+        "visible" :true
     }
+    
     
     
 ]

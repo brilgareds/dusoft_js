@@ -1,0 +1,126 @@
+<div ng-controller="GestionarPlanillasController">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                    <div class="pull-left">
+                        <h3 class="text-center"><strong>Logo</strong></h3>
+                    </div>
+                    <div class="pull-right">
+                        <h3 class="text-center"><strong>Guia # {{ numero_orden }}</strong></h3>
+                    </div>
+                </div>
+                <div class="panel-body">                    
+                    <div class="row">
+                        <div class="col-md-4">
+
+                            <fieldset>
+                                <legend>Ciudad</legend>      
+
+                                <div class="row">
+                                    <div class="col-md-12">  
+                                        <select ui-select2=""  class="form-control selectgeneral pull-left" ng-model="codigo_proveedor_id" placeholder="Seleccionar Ciudad">
+                                            <option></option>    
+                                        </select>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>                        
+                        <div class="col-md-4">
+                            <fieldset>
+                                <legend>Tranportador</legend> 
+                                <div class="row">
+                                    <div class="col-md-12">  
+                                        <select ui-select2="{minimumInputLength: 3}"  class="form-control selectgeneral pull-left" ng-model="codigo_proveedor_id"  placeholder="Seleccionar Transportador" ng-change="seleccionar_proveedor()">
+                                            <option></option>                                             
+                                        </select>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-4">
+                            <fieldset>
+                                <legend>Fecha</legend> 
+                                <div class="row">
+                                    <div class="col-md-7" style="margin-top: -14px">  
+                                        <h3><strong>18/03/2015</strong></h3>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">  
+                        <div class="col-md-4">
+
+                            <fieldset>
+                                <legend>Observación</legend>                                 
+                                <div class="row">  
+                                    <div class="col-md-12">                                          
+                                        <textarea  class="col-lg-12 col-md-12 col-sm-12" rows="4" name="" placeholder="Ingresar Observación"></textarea>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-4">
+                            <fieldset>
+                                <legend>Estado</legend> 
+                                <div class="row">
+                                    <div class="col-md-7">  
+                                        <h3><strong>Activo/Anulado{{ descripcion_estado }}</strong></h3>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>   
+                    <br>
+                    <br>
+                    <div class="row">  
+                        <div class="col-md-12">
+
+                            <div class="row">  
+                                <div class="">
+                                    <div class="col-md-3">
+                                        <p class="input-group">
+                                            <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '' " ng-click="buscar_productos()">
+                                                <span class="glyphicon glyphicon-plus"></span> Buscar Remisiones
+                                            </button>
+                                        </p>
+                                    </div>
+
+                                    <div class="col-md-3 pull-right">
+                                        <p class="input-group">
+                                            <input type="text" class="form-control" ng-keypress="buscador_productos_orden_compra($event, termino_busqueda);" ng-model="termino_busqueda" placeholder="Buscar" name="" id="" />
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default" type="submit" ng-click="buscar_detalle_orden_compra(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="" style="height: 240px" ng-grid="lista_remisiones_bodega" > </div>
+
+                            <div class="row text-center col-md-12">
+                                <button type="button" class="btn btn-default btn-medium" ng-disabled="pagina_actual == 1" ng-click="pagina_anterior()">
+                                    <span class="glyphicon glyphicon-chevron-left" ></span>
+                                </button>
+                                <button type="button" class="btn btn-default btn-medium" ng-disabled="cantidad_items == 0" ng-click="pagina_siguiente()">
+                                    <span class="glyphicon glyphicon-chevron-right" ></span>
+                                </button>
+                            </div>  
+
+                            <div class="modal-footer col-md-12">
+                                <button class="btn btn-default" ng-click="">
+                                    <span class="glyphicon glyphicon-ok" ></span> Aceptar
+                                </button>
+                            </div>                            
+                        </div>
+                    </div>   
+                </div>
+            </div>       
+        </div>
+    </div>
+</div>
+
+

@@ -10,6 +10,7 @@ define(["angular", "js/models", "includes/classes/Usuario"], function(angular, m
                 this.estado = true;
                 this.fechaCaducidad = null;
                 this.descripcion = "";
+                this.rutaAvatar = "";
             }
 
             UsuarioParametrizacion.prototype = Object.create(Usuario.getClass().prototype);
@@ -34,6 +35,10 @@ define(["angular", "js/models", "includes/classes/Usuario"], function(angular, m
                 this.fechaCaducidad = fechaCaducidad;
             };
             
+            UsuarioParametrizacion.prototype.setRutaAvatar = function(rutaAvatar){
+                this.rutaAvatar = rutaAvatar || "";
+            };
+            
             UsuarioParametrizacion.prototype.getClave = function(){
                 return this.clave;
             };
@@ -52,6 +57,10 @@ define(["angular", "js/models", "includes/classes/Usuario"], function(angular, m
             
             UsuarioParametrizacion.prototype.getFechaCaducidad = function(){
                 return this.fechaCaducidad;
+            };
+            
+            UsuarioParametrizacion.prototype.getRutaAvatar = function(){
+                return this.rutaAvatar;
             };
 
             this.get = function(id, usuario, nombre) {

@@ -20,6 +20,12 @@ module.exports = function(app, di_container) {
          c_usuarios.obtenerUsuarioPorId(req, res);
     });  
     
+    app.post('/api/Usuarios/subirAvatarUsuario', function(req, res) {
+         c_usuarios.subirAvatarUsuario(req, res);
+    }); 
     
-    
+    app.post('/api/Usuarios/obtenerAvatarUsuario', function(req, res) {
+         c_usuarios.obtenerAvatarUsuario(req, res);
+    }); 
+        
 };

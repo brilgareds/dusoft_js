@@ -257,9 +257,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     
                     console.log(">>>>>> Datos Cliente: ",$scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente());
                     
-                    var nombre_pais = that.nombrePais(tipo_pais_id);
-                    var nombre_departamento = that.nombreDepartamento(tipo_pais_id, tipo_dpto_id);
-                    var nombre_municipio = that.nombreMunicipio(tipo_pais_id, tipo_dpto_id, tipo_mpio_id);
+                    var nombre_pais = '';
+                    var nombre_departamento = '';
+                    var nombre_municipio = '';
+                    
+                    //console.log(">>>>>> Nombre Pais: ", nombre_pais);
+                    //console.log(">>>>>> Nombre Departamento: ", nombre_departamento);
+                    //console.log(">>>>>> Nombre Ciudad: ", nombre_municipio);
                     
                     /*$scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setPais(nombre_pais);
                     $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setDepartamento(nombre_departamento);
@@ -268,51 +272,84 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setUbicacion();*/
                     
                     // HACER CONSULTA DE PRODUCTOS DE LA COTIZACIÓN O PEDIDO (DETALLE)
-                    console.log(">>>>>>>>> Numero Cotización: ", $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion());
+                    //console.log(">>>>>>>>> Numero Cotización: ", $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion());
                     
-                    if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== undefined)
-                    {
-                        console.log(">>>>>>>>>>>>>> Número Cotización con Valor");
+                    that.nombrePais(tipo_pais_id, function(data_pais){
                         
-                        $scope.rootCreaCotizaciones.encabezado_bloqueado = true;
-                        $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setEncabezadoBloqueado(true);
-                        $scope.rootCreaCotizaciones.bloquear_incluir_producto = false;
-                        //Por seguridad pero no influye mucho
-                        $scope.rootCreaCotizaciones.bloquear_upload = true;
+                        
+                        console.log("Consultando Nombre Pais");
+                        
+                        console.log("Nombre Pais: ", nombre_pais);
+                        
+                        nombre_pais = data_pais.obj.resultado_consulta[0].pais;
+                        
+                        that.nombreDepartamento(tipo_pais_id, tipo_dpto_id, function(data_departamento){
+                            console.log("Consultando Nombre Departamento");
+                            
+                            console.log("Nombre Departamento: ", nombre_departamento);
+                            
+                            nombre_departamento = data_departamento.obj.resultado_consulta[0].departamento;
+                            
+                            that.nombreMunicipio(tipo_pais_id, tipo_dpto_id, tipo_mpio_id, function(data_municipio){
+                                console.log("Consultando Nombre Municipio");
+                                
+                                console.log("Nombre Municipio: ", nombre_municipio);
+                                
+                                nombre_municipio = data_municipio.obj.resultado_consulta[0].municipio;
+                                
+                                $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setPais(nombre_pais);
+                                $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setDepartamento(nombre_departamento);
+                                $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setMunicipio(nombre_municipio);
 
-                        that.consultarDetalleCotizacion(function(data){
+                                $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setUbicacion();
+                                
+                                if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== undefined)
+                                {
+                                    console.log(">>>>>>>>>>>>>> Número Cotización con Valor");
 
-                            var detalle = data.obj.resultado_consulta;
-                            that.renderDetalleCotizacion(detalle);
+                                    $scope.rootCreaCotizaciones.encabezado_bloqueado = true;
+                                    $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setEncabezadoBloqueado(true);
+                                    $scope.rootCreaCotizaciones.bloquear_incluir_producto = false;
+                                    //Por seguridad pero no influye mucho
+                                    $scope.rootCreaCotizaciones.bloquear_upload = true;
 
+                                    that.consultarDetalleCotizacion(function(data){
+
+                                        var detalle = data.obj.resultado_consulta;
+                                        that.renderDetalleCotizacion(detalle);
+
+                                    });
+                                }                       
+                                else {
+
+                                    console.log(">>>>>>>>>>>>>> Número Cotización sin Valor");
+
+                                    $scope.rootCreaCotizaciones.encabezado_bloqueado = true;
+                                    $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setEncabezadoBloqueado(true);
+                                    $scope.rootCreaCotizaciones.bloquear_incluir_producto = false;
+                                    //Por seguridad pero no influye mucho
+                                    $scope.rootCreaCotizaciones.bloquear_upload = true;
+
+                                    $scope.rootCreaCotizaciones.es_cotizacion = false;
+
+                                    //Crear las siguientes Operaciones
+                                    that.consultarDetallePedido(function(data){
+
+                                        var detalle = data.obj.resultado_consulta;
+                                        that.renderDetalleCotizacion(detalle);
+
+                                    });
+                                }
+                            });
                         });
-                    }                       
-                    else {
-                        
-                        console.log(">>>>>>>>>>>>>> Número Cotización sin Valor");
-                        
-                        $scope.rootCreaCotizaciones.encabezado_bloqueado = true;
-                        $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setEncabezadoBloqueado(true);
-                        $scope.rootCreaCotizaciones.bloquear_incluir_producto = false;
-                        //Por seguridad pero no influye mucho
-                        $scope.rootCreaCotizaciones.bloquear_upload = true;
-                        
-                        $scope.rootCreaCotizaciones.es_cotizacion = false;
-                        
-                        //Crear las siguientes Operaciones
-                        that.consultarDetallePedido(function(data){
-
-                            var detalle = data.obj.resultado_consulta;
-                            that.renderDetalleCotizacion(detalle);
-
-                        });
-                    }
+                    });
+                    
                                                 
                 }
 
             };
             
-            that.nombrePais = function(tipo_pais_id){
+            that.nombrePais = function(tipo_pais_id, callback){
                 var obj = {
                         session: $scope.rootCreaCotizaciones.session,
                         data: {
@@ -329,19 +366,25 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     if (data.status === 200) {
                         console.log("Consulta exitosa: ", data.msj);
                         
-                        console.log(">>>>>>>> CONSULTA PAIS", data);
+                        //console.log(">>>>>>>> CONSULTA PAIS", data);
+                        
+                        //return data.obj.resultado_consulta[0].pais;
 
-                        /*if (callback !== undefined && callback !== "" && callback !== 0) {
+                        if (callback !== undefined && callback !== "" && callback !== 0) {
                             callback(data);
-                        }*/
+                        }
                     }
                     else {
                         console.log("Error en la consulta: ", data.msj);
+                        
+                        if (callback !== undefined && callback !== "" && callback !== 0) {
+                            callback(data);
+                        }
                     }
                 });
             };
             
-            that.nombreDepartamento = function(tipo_pais_id, tipo_dpto_id){
+            that.nombreDepartamento = function(tipo_pais_id, tipo_dpto_id, callback){
                 var obj = {
                         session: $scope.rootCreaCotizaciones.session,
                         data: {
@@ -358,19 +401,25 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                     if (data.status === 200) {
                         console.log("Consulta exitosa: ", data.msj);
-                        console.log(">>>>>>>> CONSULTA DEPARTAMENTO", data);
+                        //console.log(">>>>>>>> CONSULTA DEPARTAMENTO", data);
+                        
+                        //return data.obj.resultado_consulta[0].departamento;
 
-                        /*if (callback !== undefined && callback !== "" && callback !== 0) {
+                        if (callback !== undefined && callback !== "" && callback !== 0) {
                             callback(data);
-                        }*/
+                        }
                     }
                     else {
                         console.log("Error en la consulta: ", data.msj);
+                        
+                        if (callback !== undefined && callback !== "" && callback !== 0) {
+                            callback(data);
+                        }
                     }
                 });
             };
             
-            that.nombreMunicipio = function(tipo_pais_id, tipo_dpto_id, tipo_mpio_id){
+            that.nombreMunicipio = function(tipo_pais_id, tipo_dpto_id, tipo_mpio_id, callback){
                 var obj = {
                         session: $scope.rootCreaCotizaciones.session,
                         data: {
@@ -388,14 +437,19 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                     if (data.status === 200) {
                         console.log("Consulta exitosa: ", data.msj);
-                        console.log(">>>>>>>> CONSULTA MUNICIPIO", data);
+                        //console.log(">>>>>>>> CONSULTA MUNICIPIO", data);
+                        //return data.obj.resultado_consulta[0].municipio;
 
-                        /*if (callback !== undefined && callback !== "" && callback !== 0) {
+                        if (callback !== undefined && callback !== "" && callback !== 0) {
                             callback(data);
-                        }*/
+                        }
                     }
                     else {
                         console.log("Error en la consulta: ", data.msj);
+                        
+                        if (callback !== undefined && callback !== "" && callback !== 0) {
+                            callback(data);
+                        }
                     }
                 });
             };            

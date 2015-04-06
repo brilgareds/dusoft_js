@@ -36,7 +36,9 @@ UsuariosModel.prototype.listar_usuarios_sistema = function(termino_busqueda, est
 // Selecciona un usuario por el ID
 UsuariosModel.prototype.obtenerUsuarioPorId = function(usuario_id , callback) {
 
-    var sql = "SELECT * FROM system_usuarios a where a.usuario_id = $1; " ;
+    var sql = "SELECT a.*, b.ruta_avatar FROM system_usuarios a \
+               LEFT JOIN system_usuarios_configuraciones b ON a.usuario_id = b.usuario_id\
+               where a.usuario_id = $1; " ;
 
     G.db.query(sql, [usuario_id], function(err, rows, result) {
         callback(err, (rows.length > 0)?rows[0]:null);
@@ -136,6 +138,34 @@ UsuariosModel.prototype.obtenerUsuarioPorNombreOEmail = function(usuario,email, 
 
     G.db.query(sql, [usuario + "%", email], function(err, rows, result) {
         callback(err, rows);
+    });
+};
+
+UsuariosModel.prototype.guardarAvatarUsuario = function(usuario_id, nombreArchivo, callback) {
+    var sql = "UPDATE system_usuarios_configuraciones SET  ruta_avatar = $2 WHERE usuario_id = $1";
+
+    var params = [
+        usuario_id, nombreArchivo 
+    ];
+
+    G.db.query(sql, params, function(err, rows, result) {
+        
+        if(err){
+            callback(err);
+            return;
+        }
+        
+        if(result.rowCount === 0){
+            var sql = "INSERT INTO system_usuarios_configuraciones (usuario_id, ruta_avatar) VALUES($1, $2)";
+            
+             G.db.query(sql, params, function(err, rows) {
+                 callback(err, rows);
+                 
+             });
+        } else {
+            callback(false, true);
+        }
+        
     });
 };
 

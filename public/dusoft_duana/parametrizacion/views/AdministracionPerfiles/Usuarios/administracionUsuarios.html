@@ -16,12 +16,12 @@
                                 <label for="habilitar" style='margin-right: 5px;' >Activar</label>
                                 <input-check ng-model="rootUsuario.usuarioAGuardar.estado" id="habilitar"  ></input-check>
                             </div>
-                            <div  flow-init="opciones_archivo"  flow-file-added="!!{jpg:1,png:1}[$file.getExtension()]" class="ng-scope pull-left contenedorFoto" flow-prevent-drop=""  flow-drag-enter="dropClass='drag-over'" flow-drag-leave="dropClass=''" >
+                            <div  flow-init="opciones_archivo"  flow-file-added="!!{jpg:1,png:1}[$file.getExtension()]" class="ng-scope pull-left contenedorFoto" flow-prevent-drop=""  flow-drag-enter="dropClass='drag-over'" flow-drag-leave="dropClass=''" flow-files-submitted="cargar_archivo($flow)" flow-file-success="respuestaImagenAvatar($file, $message);" >
                                 <div class="drop txt-center" flow-drop="" ng-class="dropClass" >
 
                                     <div class="col-md-12 well">
-                                        <img  ng-hide="$flow.files.length" src="../../../images/avatar_empty.png" style="height:  80px;"/>
-                                        <img ng-show="$flow.files.length" flow-img="$flow.files[0]" style="height:  80px;" class="avatarUsuario" />
+                                        <img  ng-hide="$flow.files.length || rootUsuario.avatar != ''" ng-src="{{rootUsuario.avatar_empty}}" style="height:  80px;"/>
+                                        <img ng-show="$flow.files.length || rootUsuario.avatar != ''" ng-src="{{rootUsuario.avatar}}" flow-img="$flow.files[0]" style="height:  80px;" class="avatarUsuario" />
                                     </div>
 
                                 </div>

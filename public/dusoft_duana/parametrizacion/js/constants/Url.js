@@ -1,8 +1,10 @@
    define(["angular"], function(angular){
-	var Url = angular.module('Url', []);
+	
+    var Url = angular.module('Url', []);
 
-	var BASE_URL = "/api"; 
-
+    var BASE_URL = "/api"; 
+       
+    var BASE_URL_IMG = "/images";
 
     var data = {
 	  'API': {
@@ -14,7 +16,9 @@
 	    'USUARIOS':{
 	    	'LISTAR_USUARIOS':BASE_URL+"/Usuarios/listar",
                 'GUARDAR_USUARIO':BASE_URL+"/Usuarios/guardarUsuario",
-                'OBTENER_USUARIO_POR_ID':BASE_URL+"/Usuarios/obtenerUsuarioPorId"
+                'OBTENER_USUARIO_POR_ID':BASE_URL+"/Usuarios/obtenerUsuarioPorId",
+                'SUBIR_AVATAR_USUARIO':BASE_URL+"/Usuarios/subirAvatarUsuario",
+                'OBTENER_AVATAR_USUARIO':BASE_URL+"/Usuarios/obtenerAvatarUsuario"
 	    },
             'MODULOS':{
                 'LISTAR_MODULOS': BASE_URL+"/Modulos/listarModulos",
@@ -40,7 +44,11 @@
                 
                 
             }
-	  }
+	  },
+          'STATIC' :{
+              'BASE_IMG' : BASE_URL_IMG,
+              'RUTA_AVATAR' : BASE_URL_IMG+"/Usuarios/Avatars/"
+          }
 	};
 
 	angular.forEach(data,function(key,value) {

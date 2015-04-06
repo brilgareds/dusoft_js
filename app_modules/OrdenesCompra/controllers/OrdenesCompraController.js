@@ -726,7 +726,7 @@ OrdenesCompra.prototype.subirArchivoNovedades = function(req, res) {
                 return;
             } else {
 
-                __subir_archivo_novedad(req.body, req.files, function(continuar, nombre_archivo) {
+                __subir_archivo_novedad(req.body, req.files, function(continuar, nombre_archivo) { 
 
                     if (continuar) {
 

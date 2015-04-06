@@ -79,6 +79,80 @@ Usuarios.prototype.guardarUsuario = function(req, res) {
     });
 };
 
+
+Usuarios.prototype.subirAvatarUsuario = function(req, res) {
+     var that = this;
+
+    var args = req.body.data;
+
+    if (args.parametrizacion_usuarios.usuario_id === undefined || args.parametrizacion_usuarios.usuario_id.length === 0 ) {
+        res.send(G.utils.r(req.url, 'El id del usuario no esta definido', 404, {}));
+        return;
+    }
+    
+    
+    __subirAvatarUsuario(req.body, req.files, function(continuar,nombreArchivo){
+        if(!continuar){
+            res.send(G.utils.r(req.url, 'Se genero un error al subir la imagen', 403, {}));
+            return;
+        }
+        
+        that.m_usuarios.guardarAvatarUsuario(args.parametrizacion_usuarios.usuario_id, nombreArchivo, function(err, rows){
+            
+            if(err){
+                res.send(G.utils.r(req.url, 'Se genero un error al subir la imagen', 403, {}));
+                return;
+            }
+            
+            res.send(G.utils.r(req.url, 'Usuario guardado correctamente', 200, {parametrizacion_usuarios: {avatar: nombreArchivo}}));
+        });
+                
+        
+    });
+    
+};
+
+
+function __subirAvatarUsuario(data, files, callback) {
+
+    
+     
+    var ruta_tmp = files.file.path;
+    var ext = G.path.extname(data.flowFilename);
+    var usuario_id = data.data.parametrizacion_usuarios.usuario_id;
+    var nombre_archivo =  usuario_id  + ext;
+    var ruta_nueva = G.dirname + G.settings.carpeta_avatars + usuario_id+ "/";
+    
+
+    if (G.fs.existsSync(ruta_tmp)) {
+        
+        if(!G.fs.existsSync(ruta_nueva)){
+            G.fs.mkdirSync(ruta_nueva);
+        }
+        
+        // Copiar Archivo
+        G.fs.copy(ruta_tmp, ruta_nueva + nombre_archivo, function(err) {
+            if (err) {
+                // Borrar archivo fisico
+                G.fs.unlinkSync(ruta_tmp);
+                callback(false);
+                return;
+            } else {
+                G.fs.unlink(ruta_tmp, function(err) {
+                    if (err) {
+                        callback(false);
+                        return;
+                    } else {
+                        callback(true, nombre_archivo);
+                    }
+                });
+            }
+        });
+    } else {
+        callback(false);
+    }
+};
+
 function esEmailValido(email) {
     var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
     return re.test(email);

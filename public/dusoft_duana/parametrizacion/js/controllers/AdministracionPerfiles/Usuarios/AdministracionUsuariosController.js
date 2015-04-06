@@ -4,11 +4,11 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
     controllers.controller('AdministracionUsuariosController', [
         '$scope', '$rootScope', 'Request', '$modal', 'API',
         "socket", "$timeout", "$state", "AlertService",
-        "UsuarioParametrizacion","$filter","Usuario", "localStorageService",
+        "UsuarioParametrizacion","$filter","Usuario", "localStorageService","STATIC",
         function(
                 $scope, $rootScope, Request, $modal,
                 API, socket, $timeout, $state,
-                AlertService, UsuarioParametrizacion, $filter, Usuario, localStorageService) {
+                AlertService, UsuarioParametrizacion, $filter, Usuario, localStorageService, STATIC) {
                      
             var self = this;
             
@@ -20,10 +20,13 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 usuario_id: Usuario.usuario_id,
                 auth_token: Usuario.token
             };
+            
+            $scope.rootUsuario.avatar = "";
+            $scope.rootUsuario.avatar_empty = STATIC.BASE_IMG + "/avatar_empty.png"
 
              
             $scope.opciones_archivo = new Flow();
-            //$scope.opciones_archivo.target = API.ORDENES_COMPRA.SUBIR_ARCHIVO_PLANO;
+            $scope.opciones_archivo.target = API.USUARIOS.SUBIR_AVATAR_USUARIO;
             $scope.opciones_archivo.testChunks = false;
             $scope.opciones_archivo.singleFile = true;
             $scope.opciones_archivo.query = {
@@ -63,9 +66,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                     validacion.msj = "Debe tener un nombre de usuario";
                     return validacion;
                 }
-                
-                console.log("clave de usuario ",usuario.getClave());
-                
+                                
                 if (usuario.getClave() && usuario.getClave().length > 0 || usuario.getId() === "") {
                     
                     if(usuario.getClave().length < 5) {
@@ -125,8 +126,15 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                            $scope.rootUsuario.usuarioAGuardar.setEmail(_usuario.email);
                            $scope.rootUsuario.confirmacionEmail = _usuario.email;
                            $scope.rootUsuario.usuarioAGuardar.setDescripcion(_usuario.descripcion);
+                           $scope.rootUsuario.usuarioAGuardar.setRutaAvatar(_usuario.ruta_avatar);
+                           
+                           if(_usuario.ruta_avatar){
+                               
+                                $scope.rootUsuario.avatar = STATIC.RUTA_AVATAR+_usuario.usuario_id + "/" + _usuario.ruta_avatar || "";    
+                           }
                         }
-
+                        
+                        callback();
 
                     } else {
                         AlertService.mostrarMensaje("warning", data.msj);
@@ -193,27 +201,48 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 
             };
             
-             $scope.subirImagenUsuario = function() {
+            $scope.cargar_archivo = function($flow) {
 
+                $scope.opciones_archivo = $flow;
+            };
+            
+             $scope.subirImagenUsuario = function() {
                 // Solo Subir Plano
                 $scope.opciones_archivo.opts.query.data = JSON.stringify({
-                    ordenes_compras: {
-                        empresa_id: '03',
-                        numero_orden: $scope.numero_orden,
-                        codigo_proveedor_id: $scope.codigo_proveedor_id
+                    parametrizacion_usuarios: {
+                        usuario_id: $scope.rootUsuario.usuarioAGuardar.getId()
                     }
                 });
 
                 $scope.opciones_archivo.upload();
+                
+                console.log("file data ", $scope.opciones_archivo.opts);
 
             };
+            
+            $scope.respuestaImagenAvatar = function(file, message) {
+                
+                //$scope.opciones_archivo.cancel();
+                var data = (message !== undefined) ? JSON.parse(message) : {};
+
+                if (data.status === 200) {
+
+                    AlertService.mostrarMensaje("success", "Avatar actualizado correctamente");
+                
+                } else {
+                    AlertService.mostrarMensaje("success", "Se genero un error actualizando el avatar");
+                }
+            
+            };
+            
+
             
             var usuario_id = localStorageService.get("usuario_id");
             self.inicializarUsuarioACrear();
 
             if (usuario_id && usuario_id.length > 0) {
                 self.traerUsuarioPorId(usuario_id, function() {
-
+                    
                 });
             } 
             

@@ -161,10 +161,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         obj.telefono_cliente   //telefono
                         );
                             
-                cliente.setPais(obj.pais);//pais
-                cliente.setDepartamento(obj.departamento);//departamento
-                cliente.setMunicipio(obj.municipio);//municipio
-                cliente.setUbicacion(); //ubicacion
+//                cliente.setPais(obj.pais);//pais
+//                cliente.setDepartamento(obj.departamento);//departamento
+//                cliente.setMunicipio(obj.municipio);//municipio
+//                cliente.setUbicacion(); //ubicacion
+
+                cliente.setTipoPaisId(obj.tipo_pais_cliente);//pais
+                cliente.setTipoDepartamentoId(obj.tipo_departamento_cliente);//departamento
+                cliente.setTipoMunicipioId(obj.tipo_municipio_cliente);//municipio
 
                 cotizacion.setCliente(cliente);
 

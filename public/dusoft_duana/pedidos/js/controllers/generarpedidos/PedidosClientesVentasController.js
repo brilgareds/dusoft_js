@@ -163,13 +163,16 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         obj.cliente_id,        //id
                         obj.telefono_cliente   //telefono
                         );
-                            
+                           
+                //console.log(">>>> Objeto BD Datos: ",obj);
                 cliente.setTipoPaisId(obj.tipo_pais_cliente);//pais
                 cliente.setTipoDepartamentoId(obj.tipo_departamento_cliente);//departamento
                 cliente.setTipoMunicipioId(obj.tipo_municipio_cliente);//municipio
                 //cliente.setUbicacion(); //ubicacion
 
                 pedido.setCliente(cliente);
+                
+                //console.log(">>>> Objeto Cliente: ", pedido.getCliente());
 
                 return pedido;
             };            
@@ -471,13 +474,15 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                     //$scope.rootPedidosClientes.Empresa.setPedidoSeleccionado(data);
 
-                    console.log(">>>>>>>>> ESTADO PEDIDO: ", estado_pedido);
-                    console.log(">>>>>>>>> DATA ENCABEZADO PEDIDO: ",data);
+                    //console.log(">>>>>>>>> ESTADO PEDIDO: ", estado_pedido);
+                    //console.log(">>>>>>>>> DATA ENCABEZADO PEDIDO: ",data);
 
                     //(row.entity.estado_actual_pedido == 0 || row.entity.estado_actual_pedido == 1) && !row.entity.estado_separacion
                     if ((estado_pedido === '0' || estado_pedido === '1') && !estado_separacion) {
                     
-                        console.log(">>>>>>>>> ESTADO PEDIDO 0 ... INGRESO IF ");
+                        //console.log(">>>>>>>>> ESTADO PEDIDO 0 ... INGRESO IF ");
+                        
+                        //console.log(">>>> DATOS OBJETO PEDIDO SELECCIONADO: ", data);
                         
                         $scope.rootPedidosClientes.Empresa.setPedidoSeleccionado(data);
                         

@@ -9,8 +9,10 @@ define([
     "includes/classes/Usuario", "includes/http/Request", "dragndropfile",
     "controllers/generarplanilladespacho/ListarPlanillasController",
     "controllers/generarplanilladespacho/GestionarPlanillasController",
+    "controllers/generarplanilladespacho/GestionarDocumentosBodegaController",
     "includes/helpersdirectives/visualizarReporte"
 ], function(angular) {
+
     /* App Module and its dependencies */
 
     var planillas_despachos = angular.module('planillas_despachos', [
@@ -34,10 +36,10 @@ define([
 
             $httpProvider.interceptors.push('HttpInterceptor');
 
-            $urlRouterProvider.otherwise("/GestionarPlantillas");
+            $urlRouterProvider.otherwise("/GestionarPlanillas");
 
             $stateProvider.state('PlanillaDespachos', {
-                url: "/GestionarPlantillas",
+                url: "/GestionarPlanillas",
                 text: "Administración Planillas Despacho",
                 templateUrl: "views/generarplanilladespacho/listarplanillasdespacho.html"
             }).state('CrearPlanilla', {

@@ -170,11 +170,11 @@
     {
         "id": "27",
         "parent": "26",
-        "text": "Gestionar Plantillas",
-        "url": "GestionarPlantillas",
+        "text": "Gestionar Planillas",
+        "url": "GestionarPlanillas",
         "parentname": "planillasdespacho",
         "icon": "glyphicon glyphicon-file",
-        "state": "GestionarPlantillas",
+        "state": "GestionarPlanillas",
         "visible" :true
     }
     

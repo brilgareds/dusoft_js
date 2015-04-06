@@ -82,7 +82,7 @@
                                 <div class="">
                                     <div class="col-md-3">
                                         <p class="input-group">
-                                            <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '' " ng-click="buscar_productos()">
+                                            <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-click="gestionar_documentos_bodega()">
                                                 <span class="glyphicon glyphicon-plus"></span> Buscar Remisiones
                                             </button>
                                         </p>
@@ -99,7 +99,7 @@
                                 </div>
 
                             </div>
-                            <div class="" style="height: 240px" ng-grid="lista_remisiones_bodega" > </div>
+                            <div class="" style="height: 240px" ng-grid="lista_documentos_bodega" > </div>
 
                             <div class="row text-center col-md-12">
                                 <button type="button" class="btn btn-default btn-medium" ng-disabled="pagina_actual == 1" ng-click="pagina_anterior()">
@@ -120,6 +120,9 @@
                 </div>
             </div>       
         </div>
+    </div>
+    <div  class="slide" slide-content open-callback="gestionar_documentos_bodega" close-callback="cerrar_gestion_documentos_bodega"   >
+        <div ng-include src="slideurl"  ng-controller="GestionarDocumentosBodegaController"></div>
     </div>
 </div>
 

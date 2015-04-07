@@ -8,7 +8,7 @@ define(["angular","js/directive"], function(angular, directive){
         directive.replace = true;
         directive.require = "ngModel";
         directive.restrict = 'E';
-        directive.template ='<button class="btn btn-xs check-btn"  >'+
+        directive.template ='<button class="btn btn-xs check-btn input-check"  >'+
                         '<span class="glyphicon glyphicon-check"></span>'+
                     '</button>';
 

@@ -42,7 +42,7 @@ define(["angular", "js/controllers",
             localStorageService.add("vista_previa", '0'); //false
 
             // Variables
-            var fecha_actual = new Date()
+            var fecha_actual = new Date();
             $scope.fecha_inicial = $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd");
             $scope.fecha_final = $filter('date')(fecha_actual, "yyyy-MM-dd");
 
@@ -64,7 +64,7 @@ define(["angular", "js/controllers",
 
                 var termino = termino || "";
 
-                if ($scope.ultima_busqueda != $scope.termino_busqueda) {
+                if ($scope.ultima_busqueda !== $scope.termino_busqueda) {
                     $scope.pagina_actual = 1;
                 }
 
@@ -156,7 +156,7 @@ define(["angular", "js/controllers",
             };
 
             $scope.buscador_ordenes_compras = function(ev, termino_busqueda) {
-                if (ev.which == 13) {
+                if (ev.which === 13) {
                     $scope.buscar_ordenes_compras(termino_busqueda);
                 }
             };

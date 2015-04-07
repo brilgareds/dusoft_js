@@ -236,7 +236,7 @@ ModuloModel.prototype.listarModulosPorEmpresa = function(empresa_id, callback) {
 };
 
 ModuloModel.prototype.listarModulosEmpresaPorRol = function(rol_id, callback) {
-    var sql = " SELECT a.*, b.parent, b.nombre, b.state, b.icon, c.id as roles_modulos_id FROM modulos_empresas a\
+    var sql = " SELECT a.*, b.parent, c.estado as estado_rol, b.nombre, b.state, b.icon, c.id as roles_modulos_id FROM modulos_empresas a\
                 INNER JOIN modulos b ON a.modulo_id = b.id and a.estado = '1' and b.estado = '1'\
                 INNER JOIN roles_modulos c ON c.modulos_empresas_id = a.id\
                 WHERE c.rol_id = $1   ORDER BY id";

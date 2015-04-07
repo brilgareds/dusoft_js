@@ -42,6 +42,10 @@ define(["angular", "js/directive"], function(angular, directive) {
                         element.jstree("select_node",  parent_id);
                         element.jstree("select_node",  id);
                     });
+                    
+                    scope.$on("deshabilitarNodos", function(){
+                       element.jstree("deselect_all"); 
+                    });
 
                     scope.onSeleccionarNodo = function(nodo) {
                         //evita que se seleccione otro nodo diferente al actual

@@ -15,14 +15,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             var that = this;
             
-            $scope.$on('cargarGridSeleccionadoSlide', function(event, mass) {
+            /*$scope.$on('cargarGridSeleccionadoSlide', function(event, mass) {
                 
                 console.log("Recibimos la GRID del PADRE: ",mass)
                 $scope.rootSeleccionProductoCliente.listado_productos_seleccionados = mass;
                 //$scope.rootSeleccionProductoCliente.listado_productos = [];
                 //alert("Recibe Grid Padre");
                 
-            });
+            });*/
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
             
@@ -58,8 +58,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 $scope.rootSeleccionProductoCliente.paginaactual = 1;
                 //$scope.numero_pedido = "";
                 //$scope.obj = {};
-                $scope.rootSeleccionProductoCliente.listado_productos = [];
-                $scope.rootSeleccionProductoCliente.listado_productos_seleccionados = [];
+                //$scope.rootSeleccionProductoCliente.listado_productos = [];
+                //$scope.rootSeleccionProductoCliente.listado_productos_seleccionados = [];
                 
                 //Nueva Línea - Hay que construir de nuevo éste objeto destruido en último llamado.
                 //$scope.rootSeleccionProductoCliente.listado_productos = [];
@@ -678,7 +678,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 /* Fin - Inserción de objeto en grid de seleccionados */
                 //Aquí se debe cambiar la asignación. Como se usa un objeto, tal vez no sea necesaria ...
-                $scope.rootSeleccionProductoCliente.listado_productos_seleccionados = $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().obtenerProductos();
+                //$scope.rootSeleccionProductoCliente.listado_productos_seleccionados = $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().obtenerProductos();
                 $scope.$emit('cargarGridPrincipal', 1);
 
                 /* Inicio - Inserción del Detalle */
@@ -886,7 +886,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 /* Fin - Inserción de objeto en grid de seleccionados */
                 //Aquí se debe cambiar la asignación. Como se usa un objeto, tal vez no sea necesaria ...
-                $scope.rootSeleccionProductoCliente.listado_productos_seleccionados = $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().obtenerProductos();
+                //$scope.rootSeleccionProductoCliente.listado_productos_seleccionados = $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().obtenerProductos();
                 $scope.$emit('cargarGridPrincipal', 1);
 
                 /* Inicio - Inserción del Detalle */

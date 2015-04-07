@@ -1085,90 +1085,105 @@ PedidosCliente.prototype.pedidoClienteArchivoPlano = function(req, res) {
         if (continuar) {
 
             var lista_productos = contenido[0].data;
-
-            __validar_productos_archivo_plano(that, lista_productos, function(productos_validos, productos_invalidos) {
-
-                if (productos_validos.length === 0) {
-                    res.send(G.utils.r(req.url, 'Lista de Productos', 200, {pedido_cliente: {productos_validos: productos_validos, productos_invalidos: productos_invalidos}}));
-                    return;
-                }
-
-                var j = productos_validos.length;
+            
+            //console.log(">>>>>>> Cantidad de Columnas Es: ", lista_productos[0].length)
+            if(lista_productos[0].length < 3){
                 
-                var empresa_id = args.pedido_cliente.empresa_id;
-                var tipo_id_tercero = args.pedido_cliente.tipo_id_tercero;
-                var tercero_id = args.pedido_cliente.tercero_id;
-                var usuario_id = req.session.user.usuario_id;
-                var tipo_id_vendedor = args.pedido_cliente.tipo_id_vendedor;
-                var vendedor_id = args.pedido_cliente.vendedor_id;
-                var estado = args.pedido_cliente.estado;
-                var observaciones = args.pedido_cliente.observaciones;
+                //console.log(">>>>>>> La Cantidad de Columnas no es correcta. Debe tener al menos 3:")    
+                //console.log(">>>>>>> Cantidad de Columnas Es: ", lista_productos[0].length)  
                 
-                if(j>0){
-                    //INSERTAR ENCABEZADO
-                    that.m_pedidos_clientes.insertar_cotizacion(empresa_id, tipo_id_tercero, tercero_id, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones, function(err, array_pedido_cliente_id_tmp) {
+                res.send(G.utils.r(req.url, 'La Cantidad de Columnas no es correcta. Debe tener al menos 3 Columnas', 404, {}));
+                return;
+            }
+            else{
+                //console.log("El Número de columnas es CORRECTO!");
 
-                        if (err) {
-                            res.send(G.utils.r(req.url, 'Error en Inserción del Encabezado de Cotización', 500, {}));
-                            return;
-                        }
+                __validar_productos_archivo_plano(that, lista_productos, function(productos_validos, productos_invalidos) {
 
-                        var centro_utilidad_id = args.pedido_cliente.centro_utilidad_id;
-                        var bodega_id = args.pedido_cliente.bodega_id;
-                        var contrato_cliente_id = args.pedido_cliente.contrato_cliente_id;
-                        var pedido_cliente_id_tmp = array_pedido_cliente_id_tmp[0].pedido_cliente_id_tmp;
-                        var tipo_producto = args.pedido_cliente.tipo_producto;
-                        var pagina_actual = 1;
+                    if (productos_validos.length === 0) {
+                        res.send(G.utils.r(req.url, 'Lista de Productos', 200, {pedido_cliente: {productos_validos: productos_validos, productos_invalidos: productos_invalidos}}));
+                        return;
+                    }
 
-                        productos_validos.forEach(function(producto_valido) {
+                    var j = productos_validos.length;
 
-                            var termino_busqueda = producto_valido.codigo_producto;
+                    var empresa_id = args.pedido_cliente.empresa_id;
+                    var tipo_id_tercero = args.pedido_cliente.tipo_id_tercero;
+                    var tercero_id = args.pedido_cliente.tercero_id;
+                    var usuario_id = req.session.user.usuario_id;
+                    var tipo_id_vendedor = args.pedido_cliente.tipo_id_vendedor;
+                    var vendedor_id = args.pedido_cliente.vendedor_id;
+                    var estado = args.pedido_cliente.estado;
+                    var observaciones = args.pedido_cliente.observaciones;
 
-                            //Consultar tipo_producto_id y cantidad_pendiente
-                            that.m_productos.listar_productos_clientes(empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pedido_cliente_id_tmp, tipo_producto, pagina_actual, function(err, lista_productos) {
+                    if(j>0){
+                        //INSERTAR ENCABEZADO
+                        that.m_pedidos_clientes.insertar_cotizacion(empresa_id, tipo_id_tercero, tercero_id, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones, function(err, array_pedido_cliente_id_tmp) {
 
-                                var i = lista_productos.length;
+                            if (err) {
+                                res.send(G.utils.r(req.url, 'Error en Inserción del Encabezado de Cotización', 500, {}));
+                                return;
+                            }
 
-                                if (i === 0) {
-                                    res.send(G.utils.r(req.url, 'Lista de productos vacía', 200, {lista_productos: []}));
-                                    return;
-                                }
+                            var centro_utilidad_id = args.pedido_cliente.centro_utilidad_id;
+                            var bodega_id = args.pedido_cliente.bodega_id;
+                            var contrato_cliente_id = args.pedido_cliente.contrato_cliente_id;
+                            var pedido_cliente_id_tmp = array_pedido_cliente_id_tmp[0].pedido_cliente_id_tmp;
+                            var tipo_producto = args.pedido_cliente.tipo_producto;
+                            var pagina_actual = 1;
 
-                                lista_productos.forEach(function(producto) {
+                            productos_validos.forEach(function(producto_valido) {
 
-                                    //Datos a Insertar
-                                    var codigo_producto = producto_valido.codigo_producto;
-                                    var porc_iva = producto.porc_iva;
-                                    var numero_unidades = parseInt(producto_valido.cantidad_solicitada);
-                                    var valor_unitario = parseFloat(producto_valido.precio_unitario);
-                                    
-                                    //INSERTAR DETALLE
-                                    that.m_pedidos_clientes.insertar_detalle_cotizacion(pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, function(err, rows, result) {
-                                        if (err) {
-                                            productos_invalidos.push(producto);
-                                        }
-                                        if (--j === 0) {
-                                            res.send(G.utils.r(req.url, 'Lista de Productos', 200, {pedido_cliente_detalle: {numero_cotizacion: pedido_cliente_id_tmp, productos_validos: productos_validos, productos_invalidos: productos_invalidos}}));
-                                            return;
-                                        }
+                                var termino_busqueda = producto_valido.codigo_producto;
+
+                                //Consultar tipo_producto_id y cantidad_pendiente
+                                that.m_productos.listar_productos_clientes(empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pedido_cliente_id_tmp, tipo_producto, pagina_actual, function(err, lista_productos) {
+
+                                    var i = lista_productos.length;
+
+                                    if (i === 0) {
+                                        res.send(G.utils.r(req.url, 'Lista de productos vacía', 200, {lista_productos: []}));
+                                        return;
+                                    }
+
+                                    lista_productos.forEach(function(producto) {
+
+                                        //Datos a Insertar
+                                        var codigo_producto = producto_valido.codigo_producto;
+                                        var porc_iva = producto.porc_iva;
+                                        var numero_unidades = parseInt(producto_valido.cantidad_solicitada);
+                                        var valor_unitario = parseFloat(producto_valido.precio_unitario);
+
+                                        //INSERTAR DETALLE
+                                        that.m_pedidos_clientes.insertar_detalle_cotizacion(pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, function(err, rows, result) {
+                                            if (err) {
+                                                productos_invalidos.push(producto);
+                                            }
+                                            if (--j === 0) {
+                                                res.send(G.utils.r(req.url, 'Lista de Productos', 200, {pedido_cliente_detalle: {numero_cotizacion: pedido_cliente_id_tmp, productos_validos: productos_validos, productos_invalidos: productos_invalidos}}));
+                                                return;
+                                            }
+
+                                        });
 
                                     });
-
                                 });
                             });
                         });
-                    });
-                }
+                    }
 
-                else{
-                    res.send(G.utils.r(req.url, 'Lista de Productos', 200, {pedido_cliente_detalle: {numero_cotizacion: pedido_cliente_id_tmp, productos_validos: productos_validos, productos_invalidos: productos_invalidos}}));
-                    return;
-                }
-                
-            });
+                    else{
+                        res.send(G.utils.r(req.url, 'Lista de Productos', 200, {pedido_cliente_detalle: {numero_cotizacion: pedido_cliente_id_tmp, productos_validos: productos_validos, productos_invalidos: productos_invalidos}}));
+                        return;
+                    }
+
+                });
+            }
         } else {
             // Error
-            console.log('Se ha generado error subiendo el archivo Plano. Revise el formato!');
+            //console.log('Se ha generado error subiendo el archivo Plano. Revise el formato!');
+            res.send(G.utils.r(req.url, 'Se ha generado error subiendo el archivo Plano. Revise el formato!', 404, {}));
+            return;
         }
     });
 };
@@ -1224,6 +1239,11 @@ function __validar_productos_archivo_plano(contexto, contenido_archivo_plano, ca
 
 
     var i = filas.length;
+    
+    //Programar aquí la validación de la cantidad de columnas
+    //var cantidad_columnas = filas[0].length;
+    
+    //console.log(">>>>>>>>>>>>>> La Cantidad de Columnas es: ", cantidad_columnas);
 
     filas.forEach(function(row) {
         var codigo_producto = row[0] || '';

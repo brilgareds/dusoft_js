@@ -672,20 +672,23 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 var vendedor_seleccionado = $scope.rootCreaCotizaciones.seleccion_vendedor;
                 
                 /* Bloqueos Incluir Producto y Subir Archivo Plano */
-                if ($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getId() !== '' && $scope.rootCreaCotizaciones.seleccion_vendedor !== 0)
+                if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente() != undefined)
                 {
-                    $scope.rootCreaCotizaciones.bloquear_incluir_producto = false;
-                }
+                    if ($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getId() !== '' && $scope.rootCreaCotizaciones.seleccion_vendedor !== 0)
+                    {
+                        $scope.rootCreaCotizaciones.bloquear_incluir_producto = false;
+                    }
 
-                if ($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().id != '' && $scope.rootCreaCotizaciones.seleccion_vendedor !== 0
-                    && $scope.rootCreaCotizaciones.listado_productos.length === 0)
-                {
+                    if ($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().id !== '' && $scope.rootCreaCotizaciones.seleccion_vendedor !== 0
+                        && $scope.rootCreaCotizaciones.listado_productos.length === 0)
+                    {
 
-                    $scope.rootCreaCotizaciones.bloquear_upload = false;
-                }
-                else {
+                        $scope.rootCreaCotizaciones.bloquear_upload = false;
+                    }
+                    else {
 
-                    $scope.rootCreaCotizaciones.bloquear_upload = true;
+                        $scope.rootCreaCotizaciones.bloquear_upload = true;
+                    }
                 }
                 
                 $scope.rootCreaCotizaciones.Empresa.getVendedores().forEach(function(vendedor){

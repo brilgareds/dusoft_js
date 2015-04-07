@@ -1212,7 +1212,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 /* Fin - Borrado producto en BD */
             }            
 
-            //definicion y delegados del Tabla de pedidos clientes
+            //Grid Pedidos Farmacias
             $scope.rootCreaPedidoFarmacia.lista_productos = {
                 data: 'rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().lista_productos',
                 enableColumnResize: true,

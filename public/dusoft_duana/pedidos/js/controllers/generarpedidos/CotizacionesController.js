@@ -448,6 +448,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         that.consultarContratoCliente(data, function(contrato_cliente_id){
                             
                             $scope.rootCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setContratoId(contrato_cliente_id);
+                            $scope.rootCotizaciones.Empresa.getPedidoSeleccionado().setEditable(true);
                             
                             //console.log(">>>> Objeto Empresa - Pedido Seleccionado: ", $scope.rootCotizaciones.Empresa.getPedidoSeleccionado());
                             

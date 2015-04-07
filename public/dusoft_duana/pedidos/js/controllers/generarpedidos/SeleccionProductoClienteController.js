@@ -14,15 +14,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.expreg = new RegExp("^[0-9]*$");
             
             var that = this;
-            
-            /*$scope.$on('cargarGridSeleccionadoSlide', function(event, mass) {
-                
-                console.log("Recibimos la GRID del PADRE: ",mass)
-                $scope.rootSeleccionProductoCliente.listado_productos_seleccionados = mass;
-                //$scope.rootSeleccionProductoCliente.listado_productos = [];
-                //alert("Recibe Grid Padre");
-                
-            });*/
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
             
@@ -48,31 +39,19 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 $scope.rootSeleccionProductoCliente.cliente = cliente;
                 $scope.rootSeleccionProductoCliente.no_incluir_producto = false; //NUEVO
                 $scope.rootSeleccionProductoCliente.bloquear_eliminar = false; //NUEVO
-                
-                console.log(">>>>>>>>>> Información Cliente: ", cliente);
 
                 $scope.rootSeleccionProductoCliente.paginas = 0;
                 $scope.rootSeleccionProductoCliente.items = 0;
                 $scope.rootSeleccionProductoCliente.termino_busqueda = "";
                 $scope.rootSeleccionProductoCliente.ultima_busqueda = {};
                 $scope.rootSeleccionProductoCliente.paginaactual = 1;
-                //$scope.numero_pedido = "";
-                //$scope.obj = {};
-                //$scope.rootSeleccionProductoCliente.listado_productos = [];
-                //$scope.rootSeleccionProductoCliente.listado_productos_seleccionados = [];
-                
-                //Nueva Línea - Hay que construir de nuevo éste objeto destruido en último llamado.
-                //$scope.rootSeleccionProductoCliente.listado_productos = [];
                 
                 $scope.rootSeleccionProductoCliente.pedido_cliente_id_tmp = '';
                 $scope.lista_productos = {};
-                
-                
-                console.log(">>>>>>>>>>>>> Antes de onBuscarSeleccionProducto");
+
                 $scope.onBuscarSeleccionProducto($scope.obtenerParametros(),"");
             });
             
-            /**/
             $scope.obtenerParametros = function() {
 
                 //valida si cambio el termino de busqueda
@@ -99,7 +78,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 return obj;
             };    
             
-            /*Nuevo ->*/
             
             $scope.onBuscarSeleccionProducto = function(obj, paginando) {
 
@@ -107,8 +85,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 //that.renderGrid();
                 
                 var url = API.PEDIDOS.LISTAR_PRODUCTOS_CLIENTES;
-                
-                console.log(">>>>> Parámetros enviados: ", obj);
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
@@ -117,7 +93,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         $scope.rootSeleccionProductoCliente.ultima_busqueda = {
                             termino_busqueda: $scope.rootSeleccionProductoCliente.termino_busqueda
                         };
-                        console.log(">>>> Datos de la consulta de Productos Clientes: ", data);
+                        
+                        console.log("Consulta Exitosa! : ", data.msj);
+                        
                         that.renderProductos(data.obj, paginando);
                     }
                     else{
@@ -153,14 +131,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     $scope.rootSeleccionProductoCliente.Empresa.agregarProducto(producto_obj);
                     
                 });
-                
-                //console.log(">>>>>>>> Listado Clientes: ", $scope.rootSeleccionCliente.Empresa.getClientes());
 
             };     
 
             that.crearProducto = function(obj) {
-                
-                //console.log(">>>>>> Seleccion Cliente - Datos Creación Cliente: ",obj);
                 
                 var producto = ProductoPedido.get(
                                     obj.codigo_producto,        //codigo_producto
@@ -197,8 +171,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 return producto;
             };            
-
-            /**/
  
             /*  Construcción de Grid    */
             
@@ -230,7 +202,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                             </div>'},
                         {field: 'existencia', displayName: 'Existencia', width: "6%"},
                         {field: 'disponible', displayName: 'Disponible', width: "6%"},
-                        //{field: 'cantidad_solicitada', displayName: 'Cantidad', enableCellEdit: true},
                         {field: 'cantidad_solicitada', displayName: 'Cantidad', enableCellEdit: false, width: "7%",
                             cellTemplate: ' <div class="col-xs-12">\n\
                                                 <input type="text" ng-model="row.entity.cantidad_solicitada" validacion-numero class="form-control grid-inline-input"'+
@@ -254,7 +225,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 $scope.rootSeleccionProductoCliente.lista_productos_seleccionados = {    
                     data: 'rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().obtenerProductos()',
-                    //data: 'rootSeleccionProductoCliente.listado_productos_seleccionados',
                     enableColumnResize: true,
                     enableRowSelection: false,
                     enableHighlighting: true,
@@ -279,15 +249,15 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                                 </button>\n\
                                             </div>'
                         }
-                    ] //rootSeleccionProductoCliente.bloquear_eliminar
+                    ] 
 
                 };
             };
             
-            /*I-NUEVO*/
+
             //Inserta producto presionando ENTER
             $scope.onTeclaIngresaProducto = function(ev, row) {
-//                console.log("Key Evento: ", ev.which);
+
                 if (ev.which === 13) {
                     if (parseInt(row.entity.cantidad_solicitada) > 0) {
                         that.insertarProducto(row);
@@ -393,9 +363,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         
                 }
                 
-                //console.log("Es Regulado - Estado: ", row.entity.getEsRegulado());
-                //console.log("Es Regulado - Valor: ", row.entity.getPrecioRegulado());
-                
                 if(row.entity.getEsRegulado() === '1') {
                     if(parseFloat(row.entity.precio) > row.entity.getPrecioRegulado()) {
                         
@@ -443,26 +410,15 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     if( $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== ''
                         && $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== undefined )
                     {    
-                        
-                        console.log(">>>> Cotización Con Detalle");
-                        
-                        //that.insertarEncabezadoCotizacion(function(insert_encabezado_exitoso) {
 
-                            //if(insert_encabezado_exitoso) {
-                                $scope.rootSeleccionProductoCliente.bloquear_eliminar = false;
-                                that.insertarDetalleCotizacion(row);
-                            //} 
-                        //});
+                        $scope.rootSeleccionProductoCliente.bloquear_eliminar = false;
+                        that.insertarDetalleCotizacion(row);
+
                     }
                     else if ($scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().get_numero_pedido() !== ''
                         && $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().get_numero_pedido() !== undefined)
                     {
-                        
-                        
-                        console.log(">>>>> Detalle Pedido");
-                        console.log(">>>>> EMPRESA PEDIDO VACIO: ", $scope.rootSeleccionProductoCliente.Empresa);
 
-/**/
                         var numero_pedido = $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().get_numero_pedido();
                         
                         that.consultarEstadoPedido(numero_pedido, function(estado_pedido, estado_separacion){
@@ -503,14 +459,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                             }
 
                         }); //Fin consultarEstadoPedido  
-/**/
-                        //--that.insertarDetallePedido(row);
 
                     }
                     else if($scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getNumeroCotizacion() === ''
                         || $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getNumeroCotizacion() === undefined){
-                        
-                        console.log(">>>> Cotización Sin Detalle");
                         
                         that.insertarEncabezadoCotizacion(function(insert_encabezado_exitoso) {
 
@@ -525,9 +477,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             //Función que inserta el encabezado del pedido temporal
             that.insertarEncabezadoCotizacion = function(callback) {
-                
-                //var pedido = $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado();
-                /* empresa_id, tipo_id_tercero, tercero_id, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones */
                 
                 if($scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getNumeroCotizacion() === "") {
 
@@ -551,18 +500,12 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                     /* Inicio - Inserción del Encabezado */
 
-                    console.log(">>> lA iNFORMACION para el Encabezado (obj_encabezado) es: ", obj_encabezado);
-
                     var url_encabezado = API.PEDIDOS.CREAR_COTIZACION;
 
                     Request.realizarRequest(url_encabezado, "POST", obj_encabezado, function(data) {
 
-                        console.log(">>>>>>>>>> Lo datos enviados son: ", data);
-
                         if (data.status === 200) {
-                            console.log("Registro Insertado Exitosamente en Encabezado");
-                            
-                            //console.log(">>>>>>>>>>>> Resultado Inserción Encabezado", data);
+                            console.log("Registro Insertado Exitosamente en Encabezado: ", data.msj);
                             
                             var pedido_cliente_id_tmp = data.obj.resultado_consulta[0].pedido_cliente_id_tmp;
                             
@@ -678,7 +621,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 /* Fin - Inserción de objeto en grid de seleccionados */
                 //Aquí se debe cambiar la asignación. Como se usa un objeto, tal vez no sea necesaria ...
-                //$scope.rootSeleccionProductoCliente.listado_productos_seleccionados = $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().obtenerProductos();
+                
                 $scope.$emit('cargarGridPrincipal', 1);
 
                 /* Inicio - Inserción del Detalle */
@@ -717,8 +660,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                             if (data.status === 200) {
 
                                 console.log("Consulta de usuario bloqueante exitosa: ", data.msj);
-                                
-                                console.log(" >>>>#####>>>> Resultado Consulta Usuario Bloqueo: ", data);
 
 //                                var template = ' <div class="modal-header">\
 //                                                    <button type="button" class="close" ng-click="close()">&times;</button>\
@@ -883,10 +824,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     var modalInstance = $modal.open($scope.opts);
 
                 }
-
                 /* Fin - Inserción de objeto en grid de seleccionados */
+                
                 //Aquí se debe cambiar la asignación. Como se usa un objeto, tal vez no sea necesaria ...
-                //$scope.rootSeleccionProductoCliente.listado_productos_seleccionados = $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().obtenerProductos();
+                
                 $scope.$emit('cargarGridPrincipal', 1);
 
                 /* Inicio - Inserción del Detalle */
@@ -1237,8 +1178,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     
             };            
             
-            /*F-NUEVO*/
-            
             $scope.limpiarProductosEmpresa = function() {
                 $scope.rootSeleccionProductoCliente.Empresa.vaciarProductos();
             };
@@ -1249,16 +1188,12 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 //Este evento no funciona para los Slides, así que toca liberar memoria con el emit al cerrar el slide
                 //Las siguientes líneas son efectivas si se usa la view sin el slide
 
-//                $scope.listado_productos_farmacias = [];
-//                $scope.listado_productos_clientes = [];
-
                 $scope.rootSeleccionProductoCliente = {};
 
             });
             
             //eventos de widgets
             $scope.onTeclaBuscarSeleccionProducto = function(ev) {
-                 //if(!$scope.buscarSeleccionProducto($scope.DocumentoTemporal.bodegas_doc_id)) return;
 
                  if (ev.which == 13) {
                      $scope.onBuscarSeleccionProducto($scope.obtenerParametros());
@@ -1278,8 +1213,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.valorSeleccionado = function() {
 
             };
-            
-            //$scope.buscarSeleccionProducto("");
 
         }]);
 });

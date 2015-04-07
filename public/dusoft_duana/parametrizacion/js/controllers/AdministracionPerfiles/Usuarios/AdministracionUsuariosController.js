@@ -4,11 +4,13 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
     controllers.controller('AdministracionUsuariosController', [
         '$scope', '$rootScope', 'Request', '$modal', 'API',
         "socket", "$timeout", "$state", "AlertService",
-        "UsuarioParametrizacion","$filter","Usuario", "localStorageService","STATIC",
+        "UsuarioParametrizacion","$filter","Usuario",
+        "localStorageService","STATIC","EmpresaParametrizacion","Rol",
         function(
                 $scope, $rootScope, Request, $modal,
                 API, socket, $timeout, $state,
-                AlertService, UsuarioParametrizacion, $filter, Usuario, localStorageService, STATIC) {
+                AlertService, UsuarioParametrizacion, $filter, Usuario,
+                localStorageService, STATIC, EmpresaParametrizacion, Rol) {
                      
             var self = this;
             
@@ -16,14 +18,19 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 
             };
             
+            $scope.rootUsuario.empresas = [];
+            
+            $scope.rootUsuario.termino_busqueda = "";
+            $scope.rootUsuario.paginaactual = 1;
+            
             $scope.rootUsuario.session = {
                 usuario_id: Usuario.usuario_id,
                 auth_token: Usuario.token
             };
             
             $scope.rootUsuario.avatar = "";
-            $scope.rootUsuario.avatar_empty = STATIC.BASE_IMG + "/avatar_empty.png"
-
+            $scope.rootUsuario.avatar_empty = STATIC.BASE_IMG + "/avatar_empty.png";
+            
              
             $scope.opciones_archivo = new Flow();
             $scope.opciones_archivo.target = API.USUARIOS.SUBIR_AVATAR_USUARIO;
@@ -35,6 +42,23 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             
             $scope.abrir = false;
             var fechaActual = new Date();
+            
+            
+            $scope.listado_roles = {
+                data: 'rootUsuario.empresaSeleccionada.getRoles()',
+                enableColumnResize: true,
+                enableRowSelection: false,
+                columnDefs: [
+                    {field: 'nombre', displayName: 'Nombre'},
+                    {field: 'observacion', displayName: 'Observacion'},
+                    {field: 'accion', displayName: '', width: '70',
+                        cellTemplate: '<div class="ngCellText txt-center">\
+                                      <button class="btn btn-default btn-xs" ng-click="onEditarRol(row.entity)"><span class="glyphicon glyphicon-zoom-in"></span></button>\
+                                   </div>'
+                    }
+                ]
+
+            };
             
             
             self.inicializarUsuarioACrear = function() {
@@ -144,6 +168,95 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             };
             
             
+            self.traerEmpresas = function() {
+                var obj = {
+                    session: $scope.rootUsuario.session,
+                    data: {
+                    }
+                };
+
+                Request.realizarRequest(API.MODULOS.LISTAR_EMPRESAS, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        $scope.rootUsuario.empresas = [];
+                        var datos = data.obj.empresas;
+
+                        for (var i in datos) {
+
+                            var empresa = EmpresaParametrizacion.get(
+                                    datos[i].razon_social,
+                                    datos[i].empresa_id
+                            );
+
+                            $scope.rootUsuario.empresas.push(empresa);
+
+                            //se verifica cual es la empresa a la que pertenece el rol
+                           /* if ($scope.rootRoles.rolAGuardar.getId() > 0) {
+                                if ($scope.rootRoles.rolAGuardar.getEmpresaId() === empresa.getCodigo()) {
+                                    $scope.rootRoles.empresaSeleccionada = empresa;
+                                    $scope.onEmpresaSeleccionada();
+                                }
+                            }*/
+
+                        }
+
+                    }
+
+                });
+            };
+            
+            
+            
+            self.traerRoles = function() {
+                if (!$scope.rootUsuario.empresaSeleccionada || $scope.rootUsuario.empresaSeleccionada.getCodigo().length === 0) {
+                    $scope.rootUsuario.paginaactual = 1;
+                    return;
+                }
+
+                $scope.rootUsuario.empresaSeleccionada.vaciarRoles();
+
+                var obj = {
+                    session: $scope.rootUsuario.session,
+                    data: {
+                        parametrizacion_perfiles: {
+                            empresa_id: $scope.rootUsuario.empresaSeleccionada.getCodigo(),
+                            termino: $scope.rootUsuario.termino_busqueda,
+                            pagina_actual:$scope.rootUsuario.paginaactual
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PERFILES.LISTAR_ROLES, "POST", obj, function(data) {
+                    if (data.status === 200) {
+
+                        var roles = data.obj.parametrizacion_perfiles.roles;
+                        
+                        if(roles.length === 0){
+                            AlertService.mostrarMensaje("warning", "No se encontraron registros");
+                            return;
+                        }
+
+                        for (var i in roles) {
+
+                            var rol = Rol.get(
+                                    roles[i].id,
+                                    roles[i].nombre,
+                                    roles[i].observacion,
+                                    $scope.rootUsuario.empresaSeleccionada.getCodigo()
+                            );
+
+                            $scope.rootUsuario.empresaSeleccionada.agregarRol(rol);
+
+                        }
+
+                    } else {
+                        AlertService.mostrarMensaje("warning", "Ha ocurrido un error...");
+                    }
+
+                });
+
+            };
+            
+            
             $scope.onVolver = function(){
                 $state.go("ListarUsuarios");
             };
@@ -152,6 +265,13 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 self.inicializarUsuarioACrear();
                 $scope.rootUsuario.confirmacionEmail = "";
                 $scope.rootUsuario.confirmacionClave = "";
+            };
+            
+            $scope.onBuscarRol = function($event) {
+                if ($event.which === 13) {
+                    $scope.rootUsuario.paginaactual = 1;
+                    self.traerRoles();
+                }
             };
             
             
@@ -235,10 +355,24 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             
             };
             
-
+            $scope.onEmpresaSeleccionada = function() {
+                self.traerRoles();
+            };
             
+            $scope.paginaAnterior = function() {
+                $scope.rootUsuario.paginaactual--;
+                self.traerRoles();
+            };
+
+            $scope.paginaSiguiente = function() {
+                $scope.rootUsuario.paginaactual++;
+                self.traerRoles();
+            };
+
             var usuario_id = localStorageService.get("usuario_id");
             self.inicializarUsuarioACrear();
+            
+            self.traerEmpresas();
 
             if (usuario_id && usuario_id.length > 0) {
                 self.traerUsuarioPorId(usuario_id, function() {

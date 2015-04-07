@@ -1,8 +1,17 @@
-.listado_opciones{
+.listado_opciones, .listado_roles{
     height:250px;
     position:relative;
     width:100%;
     min-width: 100%;
+}
+
+.listado_roles{
+    margin:25px 0px 20px 0px;
+    height: 300px;
+}
+
+.contenedorBuscarRol{
+    margin-top:20px;
 }
 
 .contenedor_opciones{

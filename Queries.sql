@@ -440,6 +440,7 @@ CREATE TABLE "public"."login_empresas" (
   "usuario_id_modifica" INTEGER, 
   "fecha_modificacion" TIMESTAMP WITHOUT TIME ZONE, 
   "estado" CHAR(1), 
+  "rol_id" INTEGER, 
   CONSTRAINT "login_empresas_pkey" PRIMARY KEY("id"), 
   CONSTRAINT "login_empresa_fk" FOREIGN KEY ("login_id")
     REFERENCES "public"."system_usuarios"("usuario_id")
@@ -458,6 +459,11 @@ CREATE TABLE "public"."login_empresas" (
     NOT DEFERRABLE, 
   CONSTRAINT "login_empresa_fk3" FOREIGN KEY ("usuario_id_modifica")
     REFERENCES "public"."system_usuarios"("usuario_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "login_empresas_fk" FOREIGN KEY ("rol_id")
+    REFERENCES "public"."roles"("id")
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
     NOT DEFERRABLE
@@ -701,6 +707,19 @@ CREATE TABLE "public"."modulos_empresas" (
     ON UPDATE NO ACTION
     NOT DEFERRABLE
 ) WITH OIDS;
+
+
+CREATE TABLE "public"."system_usuarios_configuraciones" (
+  "id" SERIAL, 
+  "usuario_id" INTEGER, 
+  "ruta_avatar" CHAR(250), 
+  CONSTRAINT "system_usuarios_configuraciones_fk" FOREIGN KEY ("usuario_id")
+    REFERENCES "public"."system_usuarios"("usuario_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE
+) WITH OIDS;
+
 
 ------ roles y permisos -----
 

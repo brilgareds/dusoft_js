@@ -184,7 +184,7 @@ define(["angular", "js/controllers", "js/models",
                         for(var i in modulos){
                             //bloque 1
                             var modulo = Modulo.get(modulos[i].modulo_id, modulos[i].parent);
-                            modulo.setEstado(modulos[i].estado);
+                            modulo.setEstado(modulos[i].estado_rol);
                             
 
                             var rol_modulo = RolModulo.get(
@@ -286,7 +286,7 @@ define(["angular", "js/controllers", "js/models",
                 var modulos =  $scope.rootRoles.rolAGuardar.getModulos();
                 //console.log("modulos del rol ",modulos);
                 for (var i in modulos) {
-                    if (modulos[i].getModulo().getId() === modulo.getId()) {
+                    if (modulos[i].getModulo().getId() === modulo.getId() && modulos[i].getModulo().getEstado()) {
                         return modulos[i];
                     }
                 }

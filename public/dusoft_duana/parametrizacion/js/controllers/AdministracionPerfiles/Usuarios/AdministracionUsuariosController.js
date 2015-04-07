@@ -5,12 +5,12 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
         '$scope', '$rootScope', 'Request', '$modal', 'API',
         "socket", "$timeout", "$state", "AlertService",
         "UsuarioParametrizacion","$filter","Usuario",
-        "localStorageService","STATIC","EmpresaParametrizacion","Rol",
+        "localStorageService","STATIC","EmpresaParametrizacion","Rol","Empresa_Modulo", "Modulo","RolModulo",
         function(
                 $scope, $rootScope, Request, $modal,
                 API, socket, $timeout, $state,
                 AlertService, UsuarioParametrizacion, $filter, Usuario,
-                localStorageService, STATIC, EmpresaParametrizacion, Rol) {
+                localStorageService, STATIC, EmpresaParametrizacion, Rol, Empresa_Modulo, Modulo, RolModulo) {
                      
             var self = this;
             
@@ -51,10 +51,20 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 columnDefs: [
                     {field: 'nombre', displayName: 'Nombre'},
                     {field: 'observacion', displayName: 'Observacion'},
-                    {field: 'accion', displayName: '', width: '70',
-                        cellTemplate: '<div class="ngCellText txt-center">\
-                                      <button class="btn btn-default btn-xs" ng-click="onEditarRol(row.entity)"><span class="glyphicon glyphicon-zoom-in"></span></button>\
-                                   </div>'
+                    {field: 'opciones', displayName: "", cellClass: "txt-center dropdown-button", width: "18%",
+                        cellTemplate: '<div class="btn-group">\
+                                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción <span class="caret"></span></button>\
+                                            <ul class="dropdown-menu dropdown-options">\
+                                                <li><a href="javascript:void(0);" ng-click="seleccionrRol(row.entity);" >Seleccionar</a></li>\
+                                                <li><a href="javascript:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,0)" >Modificar</a></li>\
+                                                <li><a href="javascript:void(0);" ng-click="generar_reporte(row.entity,0)" >Ver PDF</a></li>\
+                                                <li><a href="javascript:void(0);" ng-disabled="true" ng-click="enviar_email(row.entity,0)" >Enviar por Email</a></li>\
+                                                <li class="divider"></li>\
+                                                <li><a href="javascript:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,1)" >Novedades</a></li>\
+                                                <li class="divider"></li>\
+                                                <li><a href="javascript:void(0);" ng-click="anular_orden_compra_seleccionada(row.entity)">Anular OC</a></li>\
+                                            </ul>\
+                                        </div>'
                     }
                 ]
 
@@ -256,6 +266,139 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
 
             };
             
+            //trae todos los modulos que estan disponibles para la empresa seleccionada
+            self.traerModulos = function() {
+                //$scope.$broadcast("deshabilitarNodos");
+                $scope.rootUsuario.empresaSeleccionada.vaciarListaEmpresas();
+                var obj = {
+                    session: $scope.rootUsuario.session,
+                    data: {
+                        parametrizacion_roles: {
+                            empresa_id: $scope.rootUsuario.empresaSeleccionada.getCodigo()
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.MODULOS.LISTAR_MODULOS_POR_EMPRESA, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        var datos = data.obj.parametrizacion_roles.modulos_empresas;
+                        /*Este arreglo es necesario para pasarlo al plugin de jstree, ya que los parents y children no devuleven el objeto 
+                         del modelo que estamos trabajando*/
+                        var modulos = [];
+
+                        //se crea una instancia de la relacion de modulos y empresas
+                        for (var i in datos) {
+                            var modulo = Modulo.get(
+                                    datos[i].modulo_id,
+                                    datos[i].parent,
+                                    datos[i].nombre,
+                                    datos[i].state
+                             );
+
+                            modulo.setIcon(datos[i].icon);
+                            
+                            var moduloRolSeleccionado = self.esModuloSeleccionado(modulo);   
+                                                        
+                            modulo.state = {
+                                selected:(moduloRolSeleccionado)?true:false,
+                                disabled: true
+                            };
+                            
+                            modulos.push(modulo);
+                            
+                            if(moduloRolSeleccionado){
+                                
+                                $scope.$broadcast("onseleccionarnodo",modulo.id);
+                            }
+                            
+                            console.log("modulo empresa ", modulo.getNombre(), " -- ", modulo.getId() , " >>>>>>>>>>>>>>>>>> " , modulo.state, " >>>>>>>>>>> ",moduloRolSeleccionado);
+
+                            //necesario para guardar en roles_modulos
+                            $scope.rootUsuario.empresaSeleccionada.agregarEmpresa(
+                                    Empresa_Modulo.get(
+                                        EmpresaParametrizacion.get($scope.rootUsuario.empresaSeleccionada.getCodigo()),
+                                        modulo,
+                                        true,
+                                        datos[i].id
+                                    )
+                            );
+
+                        }
+                        
+                        $scope.$broadcast("datosArbolCambiados", modulos);
+                    }
+
+                });
+
+            };
+            
+            self.traerModulosPorRol = function(callback) {
+                $scope.rootUsuario.rolAGuardar.vaciarModulos();
+                var obj = {
+                    session: $scope.rootUsuario.session,
+                    data: {
+                        parametrizacion_perfiles: {
+                            rol_id: $scope.rootUsuario.rolAGuardar.getId()
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PERFILES.OBTENER_MODULOS_POR_ROL, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        
+                        var modulos = data.obj.parametrizacion_perfiles.modulos_empresas;
+                        for(var i in modulos){
+                            //bloque 1
+                            var modulo = Modulo.get(modulos[i].modulo_id, modulos[i].parent);
+                            modulo.setEstado(modulos[i].estado_rol);
+                            
+
+                            var rol_modulo = RolModulo.get(
+                                    modulos[i].roles_modulos_id,
+                                    Rol.get(
+                                        $scope.rootUsuario.rolAGuardar.getId(),
+                                        $scope.rootUsuario.rolAGuardar.getNombre(),
+                                        $scope.rootUsuario.rolAGuardar.getObservacion(),
+                                        $scope.rootUsuario.rolAGuardar.getEmpresaId()
+                                    ),
+                                    modulo,
+                                    true
+                            );
+                            //console.log("traerModulosPorRol() modulos que pertenecn al rol >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", rol_modulo);   
+                                
+
+                            $scope.rootUsuario.rolAGuardar.agregarModulo(rol_modulo);
+                        }
+
+
+                        callback();
+                    } else {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+
+                });
+            };
+            
+            //se busca en el rol los modulo que le pertenecen
+            self.esModuloSeleccionado = function(modulo) {
+                var modulos =  $scope.rootUsuario.rolAGuardar.getModulos();
+                //console.log("modulos del rol ",modulos);
+                for (var i in modulos) {
+                    if (modulos[i].getModulo().getId() === modulo.getId() && modulos[i].getModulo().getEstado()) {
+                        return modulos[i];
+                    }
+                }
+                return null;
+            };
+            
+            
+            $scope.seleccionrRol = function(rol){
+                $scope.rootUsuario.rolAGuardar = rol;
+                
+                self.traerModulosPorRol(function(){
+                     self.traerModulos();
+                });
+            };
             
             $scope.onVolver = function(){
                 $state.go("ListarUsuarios");
@@ -265,6 +408,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 self.inicializarUsuarioACrear();
                 $scope.rootUsuario.confirmacionEmail = "";
                 $scope.rootUsuario.confirmacionClave = "";
+                $scope.rootUsuario.avatar = "";
             };
             
             $scope.onBuscarRol = function($event) {

@@ -5,7 +5,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
 
             function EmpresaParametrizacion(nombre, codigo, estado) {
                 Empresa.getClass().call(this, nombre, codigo);
-                this.empreasModulos = [];
+                this.empresasModulos = [];
                 this.seleccionado = false;
                 this.estado = Boolean(parseInt(estado));
                 this.roles = [];
@@ -15,11 +15,11 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
 
 
             EmpresaParametrizacion.prototype.vaciarListaEmpresas = function(opcion) {
-                this.empreasModulos = [];
+                this.empresasModulos = [];
             };
 
             EmpresaParametrizacion.prototype.getListaEmpresas = function() {
-                return this.empreasModulos;
+                return this.empresasModulos;
             };
             
             EmpresaParametrizacion.prototype.agregarEmpresa = function(empresa_modulo) {

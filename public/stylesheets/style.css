@@ -455,3 +455,11 @@ filter: none!important;
 .jstree-default .jstree-disabled.jstree-hovered {
     background: inherit!important;
 }
+
+.ngVerticalBar{
+    top:0px;
+}
+
+.input-check{
+      padding: 0px 3px 0px 3px!important;
+}

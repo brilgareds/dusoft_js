@@ -158,6 +158,7 @@
                                 {{empresa.getNombre()}}
                             </ui-select-choices>
                         </ui-select>
+                       
 
                         <div class="input-group contenedorBuscarRol">
 
@@ -167,7 +168,13 @@
                             </div>
 
                         </div>
-                        <div class="table-responsive" >
+                        
+                        <p class="input-group contenedorPredeterminado ">
+                                <label for="habilitar" style='margin-right: 5px;' >Predeterminado</label>
+                               <input-check ng-model="rootUsuario.empresaSeleccionada.predeterminada" ng-disabled="!rootUsuario.empresaSeleccionada"  ></input-check>
+                        </p>
+                        
+                        <div class="table-responsive tablaRoles" >
                             <div class="grid-responsive listado_roles" ng-grid="listado_roles">
 
                             </div>

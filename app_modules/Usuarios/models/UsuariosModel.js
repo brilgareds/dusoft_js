@@ -170,4 +170,23 @@ UsuariosModel.prototype.guardarAvatarUsuario = function(usuario_id, nombreArchiv
 };
 
 
+
+UsuariosModel.prototype.asignarRolUsuario = function(login_id, empresa_id, rol_id,  usuario_id, predeterminado, callback){
+    var sql = "INSERT INTO login_empresas (login_id, empresa_id, predeterminado, usuario_id,\
+               fecha_creacion, rol_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id";
+
+
+    var params = [
+        login_id, empresa_id, predeterminado, usuario_id , 'NOW()', rol_id
+    ];
+    
+    
+
+    G.db.query(sql, params, function(err, rows, result) {
+        var id = (rows)?rows[0]:undefined;
+        callback(err, usuario_id);
+    });
+};
+
+
 module.exports = UsuariosModel;

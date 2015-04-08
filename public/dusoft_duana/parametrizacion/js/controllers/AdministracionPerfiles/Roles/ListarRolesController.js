@@ -7,11 +7,11 @@ define(["angular", "js/controllers", "js/models",
     controllers.controller('ListarRolesController', [
         '$scope', '$rootScope', 'Request', '$modal', 'API',
         "socket", "$timeout", "AlertService", "Usuario",
-        "Rol", "EmpresaParametrizacion","localStorageService","$state",
+        "Rol", "EmpresaParametrizacion","localStorageService","$state","ParametrizacionService",
         function($scope, $rootScope, Request,
                 $modal, API, socket, $timeout,
                 AlertService, Usuario,
-                Rol, EmpresaParametrizacion,localStorageService, $state) {
+                Rol, EmpresaParametrizacion,localStorageService, $state, ParametrizacionService) {
 
             var self = this;
 
@@ -65,13 +65,9 @@ define(["angular", "js/controllers", "js/models",
             };
 
             self.traerRoles = function() {
-                if (!$scope.rootRoles.empresaSeleccionada || $scope.rootRoles.empresaSeleccionada.getCodigo().length === 0) {
-                    return;
-                }
-
-                $scope.rootRoles.empresaSeleccionada.vaciarRoles();
-
-                var obj = {
+                
+                                
+                var parametros = {
                     session: $scope.rootRoles.session,
                     data: {
                         parametrizacion_perfiles: {
@@ -81,36 +77,13 @@ define(["angular", "js/controllers", "js/models",
                         }
                     }
                 };
-
-                Request.realizarRequest(API.PERFILES.LISTAR_ROLES, "POST", obj, function(data) {
-                    if (data.status === 200) {
-
-                        var roles = data.obj.parametrizacion_perfiles.roles;
-                        
-                        if(roles.length === 0){
-                            AlertService.mostrarMensaje("warning", "No se encontraron registros");
-                            return;
-                        }
-
-                        for (var i in roles) {
-
-                            var rol = Rol.get(
-                                    roles[i].id,
-                                    roles[i].nombre,
-                                    roles[i].observacion,
-                                    $scope.rootRoles.empresaSeleccionada.getCodigo()
-                            );
-
-                            $scope.rootRoles.empresaSeleccionada.agregarRol(rol);
-
-                        }
-
-                    } else {
-                        AlertService.mostrarMensaje("warning", "Ha ocurrido un error...");
+                
+                ParametrizacionService.traerRoles(parametros, $scope.rootRoles.empresaSeleccionada, function(success, msg){
+                    if(!success){
+                        AlertService.mostrarMensaje("warning", msg);
                     }
-
                 });
-
+                
             };
 
 

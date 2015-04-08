@@ -27,5 +27,10 @@ module.exports = function(app, di_container) {
     app.post('/api/Usuarios/obtenerAvatarUsuario', function(req, res) {
          c_usuarios.obtenerAvatarUsuario(req, res);
     }); 
-        
+  
+    app.post('/api/Usuarios/asignarRolUsuario', function(req, res) {
+         c_usuarios.asignarRolUsuario(req, res);
+    }); 
+    
+    
 };

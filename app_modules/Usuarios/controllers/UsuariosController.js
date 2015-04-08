@@ -113,6 +113,47 @@ Usuarios.prototype.subirAvatarUsuario = function(req, res) {
 };
 
 
+Usuarios.prototype.asignarRolUsuario = function(req, res) {
+     var that = this;
+
+    var args = req.body.data;
+
+    if (args.parametrizacion_usuarios.usuario_id === undefined || args.parametrizacion_usuarios.usuario_id.length === 0 ) {
+        res.send(G.utils.r(req.url, 'El id del usuario no esta definido', 404, {}));
+        return;
+    }
+    
+    if (args.parametrizacion_usuarios.empresa_id === undefined || args.parametrizacion_usuarios.empresa_id.length === 0 ) {
+        res.send(G.utils.r(req.url, 'El codigo de la empresa no esta definido', 404, {}));
+        return;
+    }
+    
+    if (args.parametrizacion_usuarios.rol_id === undefined || args.parametrizacion_usuarios.rol_id.length === 0 ) {
+        res.send(G.utils.r(req.url, 'El id del rol no esta definido', 404, {}));
+        return;
+    }
+    
+    var login_id = args.parametrizacion_usuarios.usuario_id;
+    var empresa_id = args.parametrizacion_usuarios.empresa_id;
+    var rol_id = args.parametrizacion_usuarios.rol_id;
+    var usuario_id = req.session.user.usuario_id;
+    var predeterminado = Number(args.parametrizacion_usuarios.predeterminado) || '0';
+        
+    that.m_usuarios.asignarRolUsuario(login_id, empresa_id, rol_id,usuario_id,predeterminado, function(err, rows){
+
+        if(err){
+            res.send(G.utils.r(req.url, 'Se genero un error guardando el rol', 403, {}));
+            return;
+        }
+
+        res.send(G.utils.r(req.url, 'Usuario guardado correctamente', 200, {parametrizacion_usuarios: {login_empresa_id: rows}}));
+    });
+                
+        
+    
+};
+
+
 function __subirAvatarUsuario(data, files, callback) {
 
     

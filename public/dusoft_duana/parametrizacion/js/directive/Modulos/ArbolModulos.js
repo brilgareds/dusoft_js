@@ -22,6 +22,7 @@ define(["angular", "js/directive"], function(angular, directive) {
 
                     //determina que los datos del arbol cambiaron, actualiza los nodos
                     scope.$on("datosArbolCambiados", function(e, datos) {
+                       // console.log("refrescar arbol code 3");
                         if (datos) {
                             //valida si se debe refrescar el arbol o simplemente inicializarlo
                             if (element.jstree(true).settings) {
@@ -169,7 +170,7 @@ define(["angular", "js/directive"], function(angular, directive) {
                         }).on("deselect_node.jstree", function(node, selected, event) {
                             return false;
                         }).on("refresh.jstree", function(node, selected, event) {
-                            console.log("arbol refrescado code 1");
+                           // console.log("arbol refrescado code 1");
                             scope.$emit("arbolRefrescado");
                         });
                     }

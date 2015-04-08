@@ -31,6 +31,7 @@ define([
     "directive/Modulos/DirectivaGeneralModulos",
     "models/Modulo/Empresa_Modulo",
     "models/Modulo/EmpresaParametrizacion",
+    "services/ParametrizacionService",
     "dragndropfile"
 ], function(angular) {
     /* App Module and its dependencies */

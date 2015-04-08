@@ -106,6 +106,46 @@ define(["angular", "js/services"], function(angular, services) {
                 });
                
            };
+           
+           
+           self.traerRoles = function(parametros, empresaSeleccionada, callback) {
+                if (!empresaSeleccionada || empresaSeleccionada.getCodigo().length === 0) {
+                    return;
+                }
+
+                empresaSeleccionada.vaciarRoles();
+
+                Request.realizarRequest(API.PERFILES.LISTAR_ROLES, "POST", parametros, function(data) {
+                    if (data.status === 200) {
+
+                        var roles = data.obj.parametrizacion_perfiles.roles;
+                        
+                        if(roles.length === 0){
+                            callback(false, "No se encontraron registros");
+                            return;
+                        }
+
+                        for (var i in roles) {
+
+                            var rol = Rol.get(
+                                    roles[i].id,
+                                    roles[i].nombre,
+                                    roles[i].observacion,
+                                    empresaSeleccionada.getCodigo()
+                            );
+
+                            empresaSeleccionada.agregarRol(rol);
+
+                        }
+                        
+                        callback(true);
+                    } else {
+                        callback(false, "Ha ocurrido un error...");
+                    }
+
+                });
+
+            };
 
 
             return this;

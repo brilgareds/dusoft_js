@@ -218,14 +218,8 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             
             
             self.traerRoles = function() {
-                if (!$scope.rootUsuario.empresaSeleccionada || $scope.rootUsuario.empresaSeleccionada.getCodigo().length === 0) {
-                    $scope.rootUsuario.paginaactual = 1;
-                    return;
-                }
-
-                $scope.rootUsuario.empresaSeleccionada.vaciarRoles();
-
-                var obj = {
+                
+                var parametros = {
                     session: $scope.rootUsuario.session,
                     data: {
                         parametrizacion_perfiles: {
@@ -235,34 +229,11 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                         }
                     }
                 };
-
-                Request.realizarRequest(API.PERFILES.LISTAR_ROLES, "POST", obj, function(data) {
-                    if (data.status === 200) {
-
-                        var roles = data.obj.parametrizacion_perfiles.roles;
-                        
-                        if(roles.length === 0){
-                            AlertService.mostrarMensaje("warning", "No se encontraron registros");
-                            return;
-                        }
-
-                        for (var i in roles) {
-
-                            var rol = Rol.get(
-                                    roles[i].id,
-                                    roles[i].nombre,
-                                    roles[i].observacion,
-                                    $scope.rootUsuario.empresaSeleccionada.getCodigo()
-                            );
-
-                            $scope.rootUsuario.empresaSeleccionada.agregarRol(rol);
-
-                        }
-
-                    } else {
-                        AlertService.mostrarMensaje("warning", "Ha ocurrido un error...");
+                
+                ParametrizacionService.traerRoles(parametros, $scope.rootUsuario.empresaSeleccionada, function(success, msg){
+                    if(!success){
+                        AlertService.mostrarMensaje("warning", msg);
                     }
-
                 });
 
             };

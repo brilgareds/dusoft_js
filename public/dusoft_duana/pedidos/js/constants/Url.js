@@ -88,7 +88,11 @@ define(["angular"], function(angular) {
                 'CONSULTA_ESTADO_PEDIDO' :BASE_URL+'/PedidosClientes/estadoPedido',
                 'INSERTAR_DETALLE_PEDIDO_CLIENTE' :BASE_URL+'/PedidosClientes/insertarDetallePedido',
                 'ELIMINAR_REGISTRO_DETALLE_PEDIDO' :BASE_URL+'/PedidosClientes/eliminarRegistroDetallePedido',
-                'IMPRIMIR_PEDIDO_CLIENTE' :BASE_URL+'/PedidosClientes/imprimirPedidoCliente'
+                'IMPRIMIR_PEDIDO_CLIENTE' :BASE_URL+'/PedidosClientes/imprimirPedidoCliente',
+                'MODIFICAR_CANTIDADES_COTIZACION' :BASE_URL+'/PedidosClientes/modificarCantidadesCotizacion',
+                'MODIFICAR_CANTIDADES_PEDIDO' :BASE_URL+'/PedidosClientes/modificarCantidadesPedido'
+                //'ELIMINAR_CANTIDADES_COTIZACION' :BASE_URL+'/PedidosClientes/eliminarCantidadesCotizacion',
+                //'ELIMINAR_CANTIDADES_PEDIDO' :BASE_URL+'/PedidosClientes/eliminarCantidadesPedido'
 	    },
 	    'TERCEROS':{
 	    	'LISTAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/listar",

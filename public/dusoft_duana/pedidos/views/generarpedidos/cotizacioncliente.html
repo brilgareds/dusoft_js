@@ -12,7 +12,7 @@
                     <div class="panel-body">
 
                         <div class="row col-sm-6 col-md-12"> <!--Div Panel Superior-->
-                            <!--class="btn btn-accion btn-primary pull-left"-->
+
                             <button type="button" class="btn btn-default btn-sm" ng-if="rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEditable() && !rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEncabezadoBloqueado()" ng-click="onRowClickSelectCliente()">
                                 <span class="glyphicon glyphicon-user"></span> Seleccionar Cliente
                             </button>
@@ -110,15 +110,11 @@
                             </tab-heading>
 
                             <div class="panel-body">
+                                
                                 <button type="button" class="btn btn-default btn-sm" ng-disabled="rootCreaCotizaciones.bloquear_incluir_producto" ng-if="rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEditable()" ng-click="onRowClickSelectProducto(1)">
                                     <span class="glyphicon glyphicon-plus"></span> Incluir / Eliminar Producto
                                 </button>
-<!--                                <div class="input-group navbar-form paddingRightZero">
-                                    <input type="text" class="form-control pull-right" ng-disabled="bloquear" ng-keypress="onKeyDetalleDocumentoTemporalPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">
-                                    <div class="input-group-btn" >
-                                        <button class="btn btn-default pull-right" type="submit" ng-disabled="bloquear" ng-click="buscarDetalleDocumentoTemporal(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
-                                    </div>
-                                </div>-->
+
                             </div>
                             <div class="panel-body">
                                 <div class="auditadosGrid" ng-grid="rootCreaCotizaciones.lista_productos"></div>
@@ -131,8 +127,8 @@
                                 <b> Cargar Archivo Plano </b>
                             </tab-heading>
 
-                            <div> 
-
+                            <div class="panel-body">
+                            
                                 <br/>
 
                                 <div class="row col-md-8 col-md-offset-2" style="margin-top: 25px">    
@@ -166,7 +162,6 @@
 
                                         <div class="well txt-center">
                                             <span class="btn btn-default" flow-btn="" ng-disabled="rootCreaCotizaciones.bloqueo_upload" ng-hide="$flow.files.length" >
-                                                <!--ng-disabled="vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '' "-->
                                                 <span class="glyphicon glyphicon-folder-open" style="margin-right: 5px;"></span> Seleccionar Archivo
                                                 <input type="file" style="visibility: hidden; position: absolute;">
                                             </span>                                                
@@ -174,7 +169,6 @@
                                                 <span class="glyphicon glyphicon-minus" ></span> Remover
                                             </button>
                                             <button class="btn btn-default" ng-click="subir_archivo_plano()" ng-disabled="rootCreaCotizaciones.bloqueo_upload" ng-show="$flow.files.length">
-                                                <!--ng-disabled="vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '' "-->
                                                 <span class="glyphicon glyphicon-cloud-upload" ></span> Subir
                                             </button>
                                         </div>
@@ -183,6 +177,7 @@
                                 </div>
 
                             </div>
+                            
 
                         </tab>
 
@@ -193,13 +188,13 @@
         </div> <!-- / end class row --> 
 
         <div class="col-sm-12 btn-toolbar">
-<!--            <button type="submit" ng-disabled="!rootCreaCotizaciones.bloqueo_producto_incluido" class="btn btn-accion btn-success pull-right">Generar Pedido</button>-->
+
             <button type="submit" class="btn btn-accion btn-success pull-right" ng-if="rootCreaCotizaciones.es_cotizacion" ng-disabled="!rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEditable()" ng-click="generarPedidoCliente()">Generar Pedido</button>
             <button type="submit" class="btn btn-accion btn-danger pull-right" ng-if="rootCreaCotizaciones.es_cotizacion" ng-click="generarPdfCotizacionCliente()">Generar PDF</button>
             <button type="submit" class="btn btn-accion btn-danger pull-right" ng-if="!rootCreaCotizaciones.es_cotizacion" ng-click="generarPdfPedidoCliente()">Generar PDF</button>
             <button type="submit" class="btn btn-accion btn-warning pull-right" ng-if="rootCreaCotizaciones.es_cotizacion" ng-click="abrirViewPedidosClientes()">Guardar Cotización</button>
             <button type="submit" class="btn btn-accion btn-warning pull-right" ng-if="!rootCreaCotizaciones.es_cotizacion" ng-click="abrirViewPedidosClientes()">Guardar Pedido</button>
-            <!--ng-if="rootCreaCotizaciones.es_cotizacion"-->
+
         </div>
 
         <br/><br/><br/><br/><br/>

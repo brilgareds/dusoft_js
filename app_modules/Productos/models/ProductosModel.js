@@ -216,7 +216,7 @@ ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro
                     b.sw_regulado, b.tipo_producto_id, b.unidad_id, b.codigo_invima, b.vencimiento_codigo_invima, b.codigo_cum, \n\
                     b.contenido_unidad_venta, b.sw_control_fecha_vencimiento, b.grupo_id, b.clase_id, b.subclase_id, b.porc_iva, \n\
                     b.tipo_producto_id, g.subclase_id, g.descripcion\n\
-                order by 3 asc";
+                order by 22 desc, 3 asc";
         
 
     G.db.paginated(sql, array_parametros, pagina, G.settings.limit, function(err, rows, result) {

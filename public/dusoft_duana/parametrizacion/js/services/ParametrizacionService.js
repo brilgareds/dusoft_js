@@ -107,7 +107,7 @@ define(["angular", "js/services"], function(angular, services) {
                
            };
            
-           
+           //metodo usado por los controladores AdministracionUsuariosController, ListarRolesController
            self.traerRoles = function(parametros, empresaSeleccionada, callback) {
                 if (!empresaSeleccionada || empresaSeleccionada.getCodigo().length === 0) {
                     return;

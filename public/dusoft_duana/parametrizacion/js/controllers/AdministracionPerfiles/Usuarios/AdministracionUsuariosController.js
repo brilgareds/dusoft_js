@@ -19,6 +19,10 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 
             };
             
+            $scope.rootModulos = {
+                
+            };
+            
             $scope.rootUsuario.empresas = [];
             
             $scope.rootUsuario.termino_busqueda = "";
@@ -28,6 +32,8 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 usuario_id: Usuario.usuario_id,
                 auth_token: Usuario.token
             };
+            
+            $scope.rootModulos.session = $scope.rootUsuario.session;
             
             $scope.rootUsuario.avatar = "";
             $scope.rootUsuario.avatar_empty = STATIC.BASE_IMG + "/avatar_empty.png";
@@ -74,6 +80,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             
             self.inicializarUsuarioACrear = function() {
                 $scope.rootUsuario.usuarioAGuardar = UsuarioParametrizacion.get();
+                $scope.rootModulos.moduloAGuardar = Modulo.get();
             };
             
             self.esEmailValido = function(email){
@@ -302,11 +309,39 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             };
             
             
+            self.asignarRolUsuario = function(callback){
+                
+              var obj = {
+                    session: $scope.rootUsuario.session,
+                    data: {
+                        parametrizacion_usuarios:{
+                            usuario_id:$scope.rootUsuario.usuarioAGuardar.getId(),
+                            rol_id:$scope.rootUsuario.rolAGuardar.getId(),
+                            empresa_id:$scope.rootUsuario.empresaSeleccionada.getCodigo(),
+                            predeterminado:$scope.rootUsuario.empresaSeleccionada.getPredeterminado()
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.USUARIOS.ASIGNAR_ROL_USUARIO, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        console.log("rol asignado ", data);
+                        callback();
+                    } else {
+                        AlertService.mostrarMensaje("warning", "Se genero un error guardando el rol para el usuario");
+                    }
+
+                });
+            };
+            
+            
             $scope.seleccionrRol = function(rol){
                 $scope.rootUsuario.rolAGuardar = rol;
                 
-                self.traerModulosPorRol(function(){
-                     self.traerModulos();
+                self.asignarRolUsuario(function(){
+                    self.traerModulosPorRol(function(){
+                         self.traerModulos();
+                    });
                 });
             };
             
@@ -328,6 +363,69 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 }
             };
             
+            
+            $scope.$on("modulosSeleccionados", function(e, modulos_seleccionado) {
+                console.log("modulos seleccionados ", modulos_seleccionado)
+                //vacia los modulos del rol para enviar solo los seleccionados en el momento
+                /*$scope.rootRoles.rolAGuardar.vaciarModulos();
+                
+                var modulo = self.agregarModulo(modulos_seleccionado.seleccionado, true);
+
+                if (!modulo) {
+                    return;
+                }
+                
+                $scope.rootModulos.moduloAGuardar = modulo;
+
+
+                for (var i in modulos_seleccionado.padres) {
+                    self.agregarModulo(modulos_seleccionado.padres[i], true);
+                }
+
+                for (var ii in modulos_seleccionado.hijos) {
+                    self.agregarModulo(modulos_seleccionado.hijos[ii], true);
+                }
+                
+                self.habilitarModulosRol();
+                
+                console.log("modulos seleccionados >>>>>>>>>>>>>>>>>>", $scope.rootRoles.rolAGuardar.getModulos());*/
+            });
+            
+            
+            $scope.$on("traerOpcioesModuloSeleccionado", function(e, modulo_id) {
+                console.log("traer opciones del modulo", modulo_id);
+                //self.listarRolesModulosOpciones(modulo_id);
+                
+                $scope.rootModulos.moduloAGuardar = self.esModuloSeleccionado(Modulo.get(modulo_id)).getModulo();
+                
+                console.log("moduloAGuardar a guardar ",$scope.rootModulos.moduloAGuardar  );
+                
+                var obj = {
+                    session: $scope.rootModulos.session,
+                    data: {
+                        parametrizacion_perfiles: {
+                            modulo: {
+                                id: modulo_id,
+                                rol_modulo_id:0,
+                                rol_id:$scope.rootUsuario.rolAGuardar.getId(),
+                                empresa_id:$scope.rootUsuario.empresaSeleccionada.getCodigo()
+                            }
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PERFILES.LISTAR_ROLES_MODULOS_OPCIONES, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        var datos = data.obj.parametrizacion_perfiles.opciones_modulo;
+                        
+                        //se emite el evento con los datos al controllador de opciones
+                        $scope.$broadcast("traerOpcionesModulo", datos);
+
+                    }
+
+                });
+                
+            });
             
             $scope.onGuardarUsuario = function(){
                 console.log("usuario a guardar ",$scope.rootUsuario.usuarioAGuardar);

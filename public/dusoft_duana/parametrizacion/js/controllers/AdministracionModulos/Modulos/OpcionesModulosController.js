@@ -91,7 +91,7 @@ define([
             };
 
             self.inicializarOpcionACrear = function() {
-               // $scope.rootModulos.moduloAGuardar.opcionAGuardar = OpcionModulo.get();
+                $scope.rootModulos.moduloAGuardar.opcionAGuardar = OpcionModulo.get();
             };
             
             self.eliminarOpcion = function(opcion){

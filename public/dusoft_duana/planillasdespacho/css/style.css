@@ -1,59 +1,31 @@
-.features {
-    float: right;
-    width: 300px;
-    padding-left: 20px;
-}
-.features .heading {
-    font-size: 14px;
-    font-weight: bold;
+.animate-switch-container {
+    position:relative;
+    background:white;
+    border:1px solid black;
+    height:40px;
+    overflow:hidden;
 }
 
-.drop {
-    padding: 15px;
-    border: 2px #f1f1f1 dashed;
-    border-radius: 5px;
-    line-height: 34px;
-}
-.drop.drag-over {
-    background: #5CB85C;
-    color: #fff
-}
-.transfer-box {
-    margin-bottom: 5px;
-}
-.transfer-box .progress {
-    margin-bottom: 0;
+.animate-switch {
+    padding:10px;
 }
 
-.thumbnail {
-    line-height: 20px;
-    margin-bottom: 5px;
-    overflow: hidden;
-    word-break: normal;
-}
-.thumbnail img {
-    max-width: 200px;
-    max-height: 150px;
+.animate-switch.ng-animate {
+    -webkit-transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+    transition:all cubic-bezier(0.250, 0.460, 0.450, 0.940) 0.5s;
+
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
 }
 
-.gallery-box {
-    width: 200px;
-    padding: 5px;
-    margin: 7px;
-    float: left;
-    min-height: 200px;
-    border: 1px solid #ddd;
-    overflow: hidden;
+.animate-switch.ng-leave.ng-leave-active,
+.animate-switch.ng-enter {
+    top:-50px;
 }
-.gallery-box .progress {
-    margin-bottom: 0;
-}
-.gallery-box .thumbnail {
-    height: 188px;
-    width: 188px;
-}
-.gallery-box .title {
-    height: 22px;
-    overflow: hidden;
-    display: block;
+.animate-switch.ng-leave,
+.animate-switch.ng-enter.ng-enter-active {
+    top:0;
 }

@@ -1603,6 +1603,96 @@ PedidosCliente.prototype.eliminarRegistroDetallePedido = function(req, res) {
  
 };
 
+//Modificar Cantidades Cotización
+PedidosCliente.prototype.modificarCantidadesCotizacion = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.obj_pedido === undefined || args.obj_pedido.numero_cotizacion === undefined || args.obj_pedido.codigo_producto === undefined ) {
+        res.send(G.utils.r(req.url, 'numero_cotizacion o codigo_producto no están definidos', 404, {}));
+        return;
+    }
+    
+    if (args.obj_pedido.cantidad === undefined) {
+        res.send(G.utils.r(req.url, 'cantidad no está definida', 404, {}));
+        return;
+    }
+    
+    if (args.obj_pedido.numero_cotizacion === '' || args.obj_pedido.codigo_producto === '') {
+        res.send(G.utils.r(req.url, 'numero_cotizacion o codigo_producto están vacios', 404, {}));
+        return;
+    }
+    
+    if (args.obj_pedido.cantidad === '') {
+        res.send(G.utils.r(req.url, 'cantidad está vacia', 404, {}));
+        return;
+    }
+
+    //Parámetro a insertar
+    var numero_cotizacion = args.obj_pedido.numero_cotizacion;
+    var codigo_producto = args.obj_pedido.codigo_producto;
+    var usuario_solicitud = req.session.user.usuario_id;
+    var cantidad = args.obj_pedido.cantidad;
+    
+    that.m_pedidos_clientes.modificar_cantidades_cotizacion(numero_cotizacion, codigo_producto, usuario_solicitud, cantidad, function(err, rows) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error en Modificación Cantidad', 500, {}));
+            return;
+        }
+
+        res.send(G.utils.r(req.url, 'Modificación Cantidad Exitosa', 200, {}));
+    });
+};
+
+//Modificar Cantidades Pedido
+PedidosCliente.prototype.modificarCantidadesPedido = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.obj_pedido === undefined || args.obj_pedido.numero_pedido === undefined || args.obj_pedido.codigo_producto === undefined ) {
+        res.send(G.utils.r(req.url, 'numero_pedido o codigo_producto no están definidos', 404, {}));
+        return;
+    }
+    
+    if (args.obj_pedido.cantidad === undefined) {
+        res.send(G.utils.r(req.url, 'cantidad no está definida', 404, {}));
+        return;
+    }
+    
+    if (args.obj_pedido.numero_pedido === '' || args.obj_pedido.codigo_producto === '') {
+        res.send(G.utils.r(req.url, 'numero_pedido o codigo_producto están vacios', 404, {}));
+        return;
+    }
+    
+    if (args.obj_pedido.cantidad === '' ) {
+        res.send(G.utils.r(req.url, 'cantidad está vacia', 404, {}));
+        return;
+    }
+
+    //Parámetro a insertar
+    var numero_pedido = args.obj_pedido.numero_pedido;
+    var codigo_producto = args.obj_pedido.codigo_producto;
+    var usuario_solicitud = req.session.user.usuario_id;
+    var cantidad = args.obj_pedido.cantidad;
+    
+    that.m_pedidos_clientes.modificar_cantidades_pedido(numero_pedido, codigo_producto, usuario_solicitud, cantidad, function(err, rows) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error en Modificación Cantidad', 500, {}));
+            return;
+        }
+
+        res.send(G.utils.r(req.url, 'Modificación Cantidad Exitosa', 200, {}));
+
+    });
+ 
+};
+
 PedidosCliente.$inject = ["m_pedidos_clientes", "e_pedidos_clientes", "m_productos", "m_pedidos", "m_terceros"];
 
 module.exports = PedidosCliente;

@@ -40,6 +40,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.rootCreaCotizaciones.nombre_seleccion_vendedor = "";
             $scope.rootCreaCotizaciones.tipo_id_seleccion_vendedor = "";
             
+            $scope.rootCreaCotizaciones.bloquear_eliminar = false; //NUEVO
+            
             $scope.rootCreaCotizaciones.Empresa.setCodigo('03');
             $scope.rootCreaCotizaciones.Empresa.setNombre('DUANA & CIA LTDA.');
             
@@ -154,9 +156,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             });
 
-            $scope.$on('cargarGridPrincipal', function(event, data) {
+            $scope.$on('cargarGridPrincipal', function(event, bloquear_eliminar) {
                 
                 var cantidad_productos = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().obtenerProductos().length;
+                
+                $scope.rootCreaCotizaciones.bloquear_eliminar = bloquear_eliminar;
 
                 if (cantidad_productos) {
                     $scope.rootCreaCotizaciones.bloqueo_producto_incluido = true;
@@ -538,62 +542,213 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                                 </div>'
                     },
                     {field: 'iva', displayName: 'Iva %',  width: "8%"},
-                    {field: 'precio', displayName: 'Precio Unitario', cellFilter: "currency:'$ '",  width: "10%",
-                        cellTemplate: ' <div class="col-xs-12">\n\
-                                                    <input type="text" ng-model="row.entity.precio" validacion-numero class="form-control grid-inline-input"'+
-                                                    'ng-keyup="onTeclaModificarCantidad($event, row)" ng-disabled="!rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEditable()" />\n\
-                                                </div>'
-                    },
+                    {field: 'precio', displayName: 'Precio Unitario', cellFilter: "currency:'$ '",  width: "10%"},
                     {field: 'total_sin_iva', displayName: 'Total Sin Iva', cellFilter: "currency:'$ '",  width: "10%"},
                     {field: 'total_con_iva', displayName: 'Total Con Iva', cellFilter: "currency:'$ '",  width: "10%"},
-                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "13%",
+                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "13%",
                         cellTemplate: ' <div class="row">\n\
                                             <button class="btn btn-default btn-xs" ng-click="onModificarCantidad(row)"\n\
-                                                    ng-disabled="row.entity.cantidad_solicitada<=0 || row.entity.cantidad_solicitada==null || row.entity.precio<=0 || row.entity.precio==null\n\
+                                                    ng-disabled="row.entity.cantidad_solicitada<=0 || row.entity.cantidad_solicitada==null\n\
                                                         || !rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEditable()">\n\
                                                 <span class="glyphicon glyphicon-pencil">Modificar</span>\n\
                                             </button>\n\
-                                            <button class="btn btn-default btn-xs" ng-click="onEliminarProducto(row)"\n\
-                                                    ng-disabled="row.entity.cantidad_solicitada<=0 || row.entity.cantidad_solicitada==null || row.entity.precio<=0 || row.entity.precio==null\n\
+                                            <button ng-if="rootCreaCotizaciones.bloquear_eliminar == false" class="btn btn-default btn-xs" ng-click="onEliminarProducto(row)"\n\
+                                                    ng-disabled="row.entity.cantidad_solicitada<=0 || row.entity.cantidad_solicitada==null\n\
                                                         || !rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEditable()">\n\
                                                 <span class="glyphicon glyphicon-remove">Eliminar</span>\n\
                                             </button>\n\
+                                            <button ng-if="rootCreaCotizaciones.bloquear_eliminar == true" class="btn btn-default btn-xs" ng-click=""\n\
+                                                    ng-disabled="true">\n\
+                                                <span class="glyphicon glyphicon-remove">Eliminar</span>\n\
+                                            </button>\n\
                                         </div>'
-                    } //rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido !=0 || -- Para ng-disabled no confirmado
-                    //row.entity.cantidad_solicitada<=0 || row.entity.cantidad_solicitada==null || row.entity.precio<=0 || row.entity.precio==null\n\
-                        //|| !expreg.test(row.entity.cantidad_solicitada) || !expreg.test(row.entity.precio) ||
+                    } 
                 ]
 
             };
             
+            $scope.onTeclaModificarCantidad = function(ev, row) {
+
+                if (ev.which == 13) {
+                    
+                    $scope.onModificarCantidad(row);
+                    
+                }
+            };
+
+            
             $scope.onModificarCantidad = function(row){
+                
+                var template = ' <div class="modal-header">\
+                                        <button type="button" class="close" ng-click="close()">&times;</button>\
+                                        <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                    </div>\
+                                    <div class="modal-body">\
+                                        <h4>Seguro desea modificar el producto '+row.entity.codigo_producto+' - '+row.entity.descripcion+' ? </h4> \
+                                    </div>\
+                                    <div class="modal-footer">\
+                                        <button class="btn btn-warning" ng-click="close()">No</button>\
+                                        <button class="btn btn-primary" ng-click="aceptaModificar()" ng-disabled="" >Si</button>\
+                                    </div>';
+
+                controller = function($scope, $modalInstance) {
+
+                    $scope.aceptaModificar = function() {
+                        
+                        //Se acepta modificar y se procede
+                        that.modificarCantidad(row);
+
+                        $modalInstance.close();
+                    };
+
+                    $scope.close = function() {
+                        $modalInstance.close();
+                    };
+                };
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: template,
+                    scope: $scope,
+                    controller: controller
+                };
+
+                var modalInstance = $modal.open($scope.opts);
+
+            };
+            
+            that.modificarCantidad = function(row){
                 
                 if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== undefined)
                 {
-                    var obj_pedido = {
-                        session: $scope.rootCreaCotizaciones.session,
-                        data: {
-                        }
-                    };
-
-                    var url = API.PEDIDOS.MODIFICAR_CANTIDADES_COTIZACION;
+                    that.modificarCotizacion(row);
                 }
                 else if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido() !== undefined)
                 {
-                    var obj_pedido = {
+                    //that.modificarPedido(row);
+/**/
+                    var numero_pedido = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido();
+                        
+                    that.consultarEstadoPedido(numero_pedido, function(estado_pedido, estado_separacion){
+
+                        if ((estado_pedido === '0' || estado_pedido === '1') && !estado_separacion) {
+                            //Ejecuta la modificación
+                            that.modificarPedido(row);
+                        } //Fin IF estado_pedido
+                        else {
+                            //Muestra Alerta explicando porqué no puede eliminar
+                            $scope.opts = {
+                                backdrop: true,
+                                backdropClick: true,
+                                dialogFade: false,
+                                keyboard: true,
+                                template: ' <div class="modal-header">\
+                                                <button type="button" class="close" ng-click="close()">&times;</button>\
+                                                <h4 class="modal-title">Aviso: </h4>\
+                                            </div>\
+                                            <div class="modal-body row">\
+                                                <div class="col-md-12">\
+                                                    <h4 >El Pedido ' + numero_pedido + ' ya está siendo separado o en proceso de <br>despacho. No puede modificarse!</h4>\
+                                                </div>\
+                                            </div>\
+                                            <div class="modal-footer">\
+                                                <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                            </div>',
+                                scope: $scope,
+                                controller: function($scope, $modalInstance) {
+                                    $scope.close = function() {
+                                        $modalInstance.close();
+                                    };
+                                }
+                            };
+
+                            var modalInstance = $modal.open($scope.opts);
+                        }
+
+                    }); //Fin consultarEstadoPedido    
+/**/
+                }
+            }
+            
+            that.modificarCotizacion = function(row){
+                
+                var obj = {
                         session: $scope.rootCreaCotizaciones.session,
                         data: {
+                            obj_pedido: {
+                                numero_cotizacion: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion(),
+                                codigo_producto: row.entity.codigo_producto,
+                                cantidad: row.entity.cantidad_solicitada
+                            }
                         }
                     };
+                    
+                console.log("Objeto Modificar Cotización: ", obj);
 
-                    var url = API.PEDIDOS.MODIFICAR_CANTIDADES_PEDIDO;
-                }
-                
-                Request.realizarRequest(url, "POST", obj_pedido, function(data) {
+                var url = API.PEDIDOS.MODIFICAR_CANTIDADES_COTIZACION;
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
 
                     if (data.status === 200) {
                         console.log("Modificación Exitosa: ",data.msj);
-                        //that.renderVendedores(data.obj);
+                        
+                        //recalcular valores totales
+                        var listado_productos = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().obtenerProductos();
+                        
+                        $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_sin_iva = 0;
+                        $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_con_iva = 0;
+                        
+                        listado_productos.forEach(function(producto){
+                            
+                            $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_sin_iva += parseFloat(producto.total_sin_iva);
+                            $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_con_iva += parseFloat(producto.total_con_iva);
+
+                        });
+                    }
+                    else{
+                        console.log("Error al intentar Modificar: ", data.msj);
+                    }
+
+                });
+            };
+            
+            that.modificarPedido = function(row){
+                
+                var obj = {
+                        session: $scope.rootCreaCotizaciones.session,
+                        data: {
+                            obj_pedido: {
+                                numero_pedido: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido(),
+                                codigo_producto: row.entity.codigo_producto,
+                                cantidad: row.entity.cantidad_solicitada
+                            }
+                        }
+                    };
+                    
+                console.log("Objeto Modificar Pedido: ", obj);
+
+                var url = API.PEDIDOS.MODIFICAR_CANTIDADES_PEDIDO;
+                
+                Request.realizarRequest(url, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        console.log("Modificación Exitosa: ",data.msj);
+                        
+                        //recalcular valores totales
+                        var listado_productos = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().obtenerProductos();
+                        
+                        $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_sin_iva = 0;
+                        $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_con_iva = 0;
+                        
+                        listado_productos.forEach(function(producto){
+                            
+                            $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_sin_iva += parseFloat(producto.total_sin_iva);
+                            $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_con_iva += parseFloat(producto.total_con_iva);
+
+                        });
                     }
                     else{
                         console.log("Error al intentar Modificar: ", data.msj);
@@ -603,7 +758,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 
             };
             
-            $scope.onEliminarProducto = function(row){
+            /*$scope.onEliminarProducto = function(row){
                 
                 if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== undefined)
                 {
@@ -638,50 +793,246 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 });
                 
-            };
-            
-            /* GRID - Para Modificación Pedido o Cotización - Inicio */
-            
-            /* Opción para uso de celda con campo Input
-            {field: 'precio', displayName: 'Precio Venta', width: "9%",
-                            cellTemplate: ' <div class="col-xs-12">\n\
-                                                <input type="text" ng-model="row.entity.precio" validacion-numero class="form-control grid-inline-input"'+
-                                                'ng-keyup=""/>\n\
-                                            </div>'},*/
-            
-            //Grid para pedidos ya generados
-            /*$scope.rootCreaPedidoFarmacia.lista_productos_modificable = {
-                data: 'rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().lista_productos',
-                enableColumnResize: true,
-                enableRowSelection: false,
-                enableCellSelection: false,
-                multiSelect: false,
-                columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Código', width: "9%"},
-                    {field: 'descripcion', displayName: 'Descripción', width: "37%"},
-                    {field: 'cantidad_solicitada', displayName: 'Solicitado'},
-                    {field: 'cantidad_pendiente', displayName: 'Pendiente'},
-                    {field: 'nueva_cantidad', displayName: 'Modificar Cantidad', width: "10%",
-                                cellTemplate: ' <div class="col-xs-12">\n\
-                                                    <input type="text" ng-model="row.entity.nueva_cantidad" validacion-numero class="form-control grid-inline-input"'+
-                                                    'ng-keyup="onTeclaModificarCantidad($event, row)" ng-model="row.entity.cantidad_ingresada" ng-disabled="!rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEditable()" />\n\
-                                                </div>'
-                    },
-                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "13%",
-                        cellTemplate: ' <div class="row">\n\
-                                            <button class="btn btn-default btn-xs" ng-click="onModificarCantidad(row)" ng-disabled="row.entity.nueva_cantidad<=0 || row.entity.nueva_cantidad==null || !expreg.test(row.entity.nueva_cantidad) || rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido !=0 || !rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEditable()">\n\
-                                                <span class="glyphicon glyphicon-pencil">Modificar</span>\n\
-                                            </button>\n\
-                                            <button class="btn btn-default btn-xs" ng-click="onEliminarProducto(row)" ng-disabled="rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido !=0 || !rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEditable()">\n\
-                                                <span class="glyphicon glyphicon-remove">Eliminar</span>\n\
-                                            </button>\n\
-                                        </div>'
-                    }
-                ]
             };*/
             
-            /* GRID - Para Modificación Pedido o Cotización - Fin */
+/**/
+
+            $scope.onEliminarProducto = function(row){
+                
+                var template = ' <div class="modal-header">\
+                                        <button type="button" class="close" ng-click="close()">&times;</button>\
+                                        <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                    </div>\
+                                    <div class="modal-body">\
+                                        <h4>Seguro desea eliminar el producto '+row.entity.codigo_producto+' - '+row.entity.descripcion+' ? </h4> \
+                                    </div>\
+                                    <div class="modal-footer">\
+                                        <button class="btn btn-warning" ng-click="close()">No</button>\
+                                        <button class="btn btn-primary" ng-click="aceptaEliminar()" ng-disabled="" >Si</button>\
+                                    </div>';
+
+                controller = function($scope, $modalInstance) {
+
+                    $scope.aceptaEliminar = function() {
+                        
+                        //Se acepta eliminar y se procede
+                        that.eliminarProducto(row);
+
+                        $modalInstance.close();
+                    };
+
+                    $scope.close = function() {
+                        $modalInstance.close();
+                    };
+                };
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: template,
+                    scope: $scope,
+                    controller: controller
+                };
+
+                var modalInstance = $modal.open($scope.opts);
+                
+            };
             
+            /* Eliminar producto seleccionado - Inicio */
+            that.eliminarProducto = function(row) {
+
+                if ($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().obtenerProductos().length === 1)
+                {
+
+                    $scope.rootCreaCotizaciones.bloquear_eliminar = true;
+                    //Mensaje: Solo queda un producto. La cotización debe tener al menos un producto. No puede eliminar éste.
+                    var template = ' <div class="modal-header">\
+                                        <button type="button" class="close" ng-click="close()">&times;</button>\
+                                        <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                    </div>\
+                                    <div class="modal-body">\
+                                        <h4>Solo queda un producto en el detalle y debe haber al menos uno. <br>No puede eliminar más productos. </h4> \
+                                    </div>\
+                                    <div class="modal-footer">\
+                                        <button class="btn btn-warning" ng-click="close()">Aceptar</button>\
+                                    </div>';
+
+                    controller = function($scope, $modalInstance) {
+
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+                    };
+
+                    $scope.opts = {
+                        backdrop: true,
+                        backdropClick: true,
+                        dialogFade: false,
+                        keyboard: true,
+                        template: template,
+                        scope: $scope,
+                        controller: controller
+                    };
+
+                    var modalInstance = $modal.open($scope.opts);                            
+                }
+                else {
+
+                    if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== undefined)
+                    {
+                        that.eliminarDetalleCotizacion(row);
+                    }
+                    else if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido() !== ''
+                        && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido() !== undefined)
+                    {
+                        
+                        var numero_pedido = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido();
+                        
+                        that.consultarEstadoPedido(numero_pedido, function(estado_pedido, estado_separacion){
+
+                            if ((estado_pedido === '0' || estado_pedido === '1') && !estado_separacion) {
+                                //Ejecuta la eliminación
+                                that.eliminarDetallePedido(row);
+                            } //Fin IF estado_pedido
+                            else {
+                                //Muestra Alerta explicando porqué no puede eliminar
+                                $scope.opts = {
+                                    backdrop: true,
+                                    backdropClick: true,
+                                    dialogFade: false,
+                                    keyboard: true,
+                                    template: ' <div class="modal-header">\
+                                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                                    <h4 class="modal-title">Aviso: </h4>\
+                                                </div>\
+                                                <div class="modal-body row">\
+                                                    <div class="col-md-12">\
+                                                        <h4 >El Pedido ' + numero_pedido + ' ya está siendo separado o en proceso de <br>despacho. No puede modificarse!</h4>\
+                                                    </div>\
+                                                </div>\
+                                                <div class="modal-footer">\
+                                                    <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                                </div>',
+                                    scope: $scope,
+                                    controller: function($scope, $modalInstance) {
+                                        $scope.close = function() {
+                                            $modalInstance.close();
+                                        };
+                                    }
+                                };
+
+                                var modalInstance = $modal.open($scope.opts);
+                            }
+
+                        }); //Fin consultarEstadoPedido    
+                    }
+                }                        
+            };            
+            /* Eliminar producto seleccionado - Fin */
+            
+            //Eliminar Detalle Cotización
+            that.eliminarDetalleCotizacion = function(row){
+                
+                var obj_detalle = {
+                        session: $scope.rootCreaCotizaciones.session,
+                        data: {
+                            eliminar_detalle_cotizacion: {
+                                numero_cotizacion: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion(),
+                                codigo_producto: row.entity.codigo_producto
+                            }
+                        }
+                    };
+                    /* Fin - Objeto para Eliminar Registro del Detalle */
+
+                    /* Inicio - Borrado de registro en Detalle Pedido */
+
+                var url_eliminar_detalle_cotizacion = API.PEDIDOS.ELIMINAR_REGISTRO_DETALLE_COTIZACION;
+
+                Request.realizarRequest(url_eliminar_detalle_cotizacion, "POST", obj_detalle, function(data) {
+
+                    if (data.status == 200) {
+                        console.log("Eliminación de detalle Exitosa: ", data.msj);
+                        $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_sin_iva -= parseFloat(row.entity.total_sin_iva);
+                        $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_con_iva -= parseFloat(row.entity.total_con_iva);                        
+                        $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().eliminarProducto(row.rowIndex);
+                    }
+                    else
+                    {
+                        console.log("Eliminación Detalle Fallida: ", data.msj);
+                    }
+                });
+                    
+            };
+            
+            //Eliminar Detalle Pedido
+            that.eliminarDetallePedido = function(row){
+                
+                var obj_detalle = {
+                        session: $scope.rootCreaCotizaciones.session,
+                        data: {
+                            eliminar_detalle_pedido: {
+                                numero_pedido: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido(),
+                                codigo_producto: row.entity.codigo_producto
+                            }
+                        }
+                    };
+                    /* Fin - Objeto para Eliminar Registro del Detalle */
+
+                    /* Inicio - Borrado de registro en Detalle Pedido */
+
+                var url_eliminar_detalle_pedido = API.PEDIDOS.ELIMINAR_REGISTRO_DETALLE_PEDIDO;
+
+                Request.realizarRequest(url_eliminar_detalle_pedido, "POST", obj_detalle, function(data) {
+
+                    if (data.status == 200) {
+                        console.log("Eliminación de detalle Exitosa: ", data.msj);
+                        $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_sin_iva -= parseFloat(row.entity.total_sin_iva);
+                        $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_con_iva -= parseFloat(row.entity.total_con_iva);                        
+                        $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().eliminarProducto(row.rowIndex);
+                    }
+                    else
+                    {
+                        console.log("Eliminación Detalle Fallida: ", data.msj);
+                    }
+                });
+                    
+            };
+            
+            that.consultarEstadoPedido = function(numero_pedido, callback){
+                
+                var obj = {
+                    session: $scope.rootCreaCotizaciones.session,
+                    data: {
+                        estado_pedido: {
+                            numero_pedido: numero_pedido,
+                        }
+                    }
+                };
+                
+                var url = API.PEDIDOS.CONSULTA_ESTADO_PEDIDO;
+
+                Request.realizarRequest(url, "POST", obj, function(data_estado) {
+
+                    if (data_estado.status === 200) {
+                        console.log("Consulta exitosa: ", data_estado.msj);
+
+                        if (callback !== undefined && callback !== "" && callback !== 0) {
+
+                            var estado_pedido = data_estado.obj.resultado_consulta[0].estado_pedido;
+                            var estado_separacion = data_estado.obj.resultado_consulta[0].estado_separacion;
+                            
+                            callback(estado_pedido, estado_separacion);
+                        }
+                    }
+                    else {
+                        console.log("Error en la consulta: ", data_estado.msj);
+                    }
+                });
+                
+            };            
+/**/            
             $scope.abrirViewPedidosClientes = function()
             {
                 $state.go('PedidosClientes');

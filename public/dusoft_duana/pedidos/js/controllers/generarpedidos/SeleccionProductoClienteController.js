@@ -622,7 +622,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 /* Fin - Inserción de objeto en grid de seleccionados */
                 //Aquí se debe cambiar la asignación. Como se usa un objeto, tal vez no sea necesaria ...
                 
-                $scope.$emit('cargarGridPrincipal', 1);
+                $scope.$emit('cargarGridPrincipal', $scope.rootSeleccionProductoCliente.bloquear_eliminar);
 
                 /* Inicio - Inserción del Detalle */
 
@@ -828,7 +828,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
                 //Aquí se debe cambiar la asignación. Como se usa un objeto, tal vez no sea necesaria ...
                 
-                $scope.$emit('cargarGridPrincipal', 1);
+                $scope.$emit('cargarGridPrincipal', $scope.rootSeleccionProductoCliente.bloquear_eliminar);
 
                 /* Inicio - Inserción del Detalle */
 

@@ -1346,6 +1346,88 @@ function __log_eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, 
     });
 };
 
+//Modelo Modificar Cantidades Cotizacion
+PedidosClienteModel.prototype.modificar_cantidades_cotizacion = function(numero_cotizacion, codigo_producto, usuario_solicitud, cantidad, callback)
+{
+    
+    G.db.begin(function() {
+        
+        __log_eliminar_producto_detalle_cotizacion(numero_cotizacion, codigo_producto, usuario_solicitud, function(err, rows, result){
+            
+            if(err){
+                    callback(err);
+                    return;
+                }
+            
+            __modificar_cantidades_cotizacion(numero_cotizacion, codigo_producto, cantidad, function(err, rows, result){
+               
+                if(err){
+                    callback(err);
+                    return;
+                }
+                
+                G.db.commit(function(){
+                    callback(err, rows);
+                });
+            });
+        });
+    });
+};
+
+
+//Modelo Modificar Cantidades Pedido
+PedidosClienteModel.prototype.modificar_cantidades_pedido = function(numero_pedido, codigo_producto, usuario_solicitud, cantidad, callback)
+{
+    
+    G.db.begin(function() {
+        
+        __log_eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, usuario_solicitud, function(err, rows, result){
+            
+            if(err){
+                    callback(err);
+                    return;
+                }
+            
+            __modificar_cantidades_pedido(numero_pedido, codigo_producto, cantidad, function(err, rows, result){
+               
+                if(err){
+                    callback(err);
+                    return;
+                }
+                
+                G.db.commit(function(){
+                    callback(err, rows);
+                });
+            });
+        });
+    });
+};
+
+//FUNCIONES DE ACTUALIZAR
+
+function __modificar_cantidades_cotizacion(numero_cotizacion, codigo_producto, cantidad, callback)
+{
+    
+    var sql = " UPDATE ventas_ordenes_pedidos_d_tmp SET numero_unidades = $3\
+                WHERE pedido_cliente_id_tmp = $1\
+                AND codigo_producto = $2";
+
+    G.db.transaction(sql, [numero_cotizacion, codigo_producto, cantidad], function(err, rows, result){
+        callback(err, rows, result);
+    });
+};
+
+function __modificar_cantidades_pedido(numero_pedido, codigo_producto, cantidad, callback)
+{
+    
+    var sql = " UPDATE ventas_ordenes_pedidos_d SET numero_unidades = $3\
+                WHERE pedido_cliente_id = $1\
+                AND codigo_producto = $2";
+
+    G.db.transaction(sql, [numero_pedido, codigo_producto, cantidad], function(err, rows, result){
+        callback(err, rows, result);
+    });
+};
 
 PedidosClienteModel.$inject = ["m_productos"];
 

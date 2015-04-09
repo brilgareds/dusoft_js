@@ -111,4 +111,14 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/eliminarRegistroDetallePedido', function(req, res) {
         c_pedidos_clientes.eliminarRegistroDetallePedido(req, res);
     });
+    
+    //Modificar Detalle de Cotización
+    app.post('/api/PedidosClientes/modificarCantidadesCotizacion', function(req, res) {
+        c_pedidos_clientes.modificarCantidadesCotizacion(req, res);
+    });
+    
+    //Modificar Detalle de Pedido
+    app.post('/api/PedidosClientes/modificarCantidadesPedido', function(req, res) {
+        c_pedidos_clientes.modificarCantidadesPedido(req, res);
+    });
 };

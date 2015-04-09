@@ -13,6 +13,7 @@ define(["angular", "js/controllers",
 
             $scope.opcion_predeterminada = "0";
 
+
             // Variables de Sesion
             $scope.session = {
                 usuario_id: Sesion.usuario_id,

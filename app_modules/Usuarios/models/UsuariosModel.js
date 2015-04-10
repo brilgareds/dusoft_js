@@ -173,18 +173,9 @@ UsuariosModel.prototype.guardarAvatarUsuario = function(usuario_id, nombreArchiv
 
 UsuariosModel.prototype.asignarRolUsuario = function(login_id, empresa_id, rol_id,  usuario_id, predeterminado, callback){
     var that = this;
-    var sql = "INSERT INTO login_empresas (login_id, empresa_id, predeterminado, usuario_id,\
-               fecha_creacion, rol_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id";
 
-
-    var params = [
-        login_id, empresa_id, predeterminado, usuario_id , 'NOW()', rol_id
-    ];
-    
-    
-    
     G.db.begin(function() {
-        G.db.transaction(sql, params, function(err, result) {
+        that.guardarRolUsuario(login_id, empresa_id, rol_id,  usuario_id, predeterminado, function(err, result) {
             var rows = result.rows;
             var login_empresa_id = (rows.length > 0)?rows[0].id:undefined;
             //callback(err, id);
@@ -212,6 +203,46 @@ UsuariosModel.prototype.asignarRolUsuario = function(login_id, empresa_id, rol_i
 
         });
     });
+};
+
+//se encarga de asignar el rol del usuario y borrar registros del rol anterior por empresa
+UsuariosModel.prototype.guardarRolUsuario = function(login_id, empresa_id, rol_id,  usuario_id, predeterminado, callback){
+    var that = this;
+    
+    //borra los registros del modulo anterior
+    var usuarioRol = that.borrarRolAsignadoUsuario(rol_id, empresa_id, login_id , function(err){
+        if(err){
+            callback(err);
+            return;
+        }
+        
+        var sql = "INSERT INTO login_empresas (login_id, empresa_id, predeterminado, usuario_id,\
+           fecha_creacion, rol_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id";
+
+
+        var params = [
+            login_id, empresa_id, predeterminado, usuario_id , 'NOW()', rol_id
+        ];
+        
+        
+         G.db.transaction(sql, params, function(err, result) {
+             callback(err, result);
+         });
+        
+    });
+};
+
+
+UsuariosModel.prototype.borrarRolAsignadoUsuario = function(rol_id, empresa_id, usuario_id, callback){
+     var sql = "DELETE FROM login_empresas WHERE  empresa_id = $1 AND login_id = $2 ";
+     
+     var params = [
+        empresa_id, usuario_id
+     ];
+     
+     G.db.transaction(sql, params, function(err, rows) {
+         callback(err, rows);
+     });
 };
 
 UsuariosModel.prototype.sobreEscribirOpcionesDelRol = function(usuario_id,rol_id,empresa_id, modulos_ids, callback){

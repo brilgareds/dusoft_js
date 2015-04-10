@@ -13,6 +13,11 @@
                     "module": "Usuarios",
                     "model": "UsuariosModel",
                     "alias": "m_usuarios"
+                },
+                "rol_model": {
+                    "module": "Parametrizacion/Roles",
+                    "model": "RolModel",
+                    "alias": "m_rol"
                 }
             }],
         "events": [],

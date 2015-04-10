@@ -47,6 +47,21 @@ RolModel.prototype.obtenerModulosPorRol = function(rol_id, callback) {
     });
 };
 
+
+RolModel.prototype.obtenerModulosPorRolYEmpresa = function(rol_id, empresa_id, callback) {
+
+    var sql = " SELECT a. *, c.modulo_id FROM roles a\
+                INNER JOIN roles_modulos b ON b.rol_id = a.id\
+                INNER JOIN modulos_empresas c ON c.id = b.modulos_empresas_id AND c.empresa_id = a.empresa_id\
+                WHERE a.id = $1 AND b.estado = '1' AND a.empresa_id = $2 ";
+
+    G.db.query(sql, [rol_id, empresa_id], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+
+
 //gestiona para modificar o insertar el rol
 RolModel.prototype.guardarRol = function(rol, callback) {
     var self = this;
@@ -192,13 +207,9 @@ RolModel.prototype.listarRolesModulosOpciones = function(modulo_id, rol_id, rol_
 };
 
 
-RolModel.prototype.listarRolesPorEmpresa = function(){
-    
-};
-
 
 //funcion recursiva para actualizar listado de roles_modulos
-function __habilitarModulosEnRoles(that, usuario_id, rolesModulos, ids, callback) {
+function __habilitarModulosEnRoles(that, usuario_id, rolesModulos, ids, callback) {   
 
     //si el array esta vacio se termina la funcion recursiva
 
@@ -252,7 +263,6 @@ function __habilitarModulosEnRoles(that, usuario_id, rolesModulos, ids, callback
         }
     });
 
-}
-;
+};
 
 module.exports = RolModel;

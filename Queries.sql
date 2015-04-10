@@ -477,7 +477,7 @@ ALTER TABLE "public"."login_empresas"
 CREATE TABLE "public"."login_modulos_empresas" (
   "id" SERIAL, 
   "login_empresas_id" INTEGER, 
-  "modulos_id" INTEGER, 
+  "modulo_id" INTEGER, 
   "usuario_id" INTEGER, 
   "fecha_creacion" TIMESTAMP(0) WITHOUT TIME ZONE, 
   "usuario_id_modifica" INTEGER, 

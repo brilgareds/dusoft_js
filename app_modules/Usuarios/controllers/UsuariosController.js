@@ -1,9 +1,10 @@
 
-var Usuarios = function(usuarios) {
+var Usuarios = function(usuarios, m_rol) {
 
     console.log("Modulo Usuarios Cargado ");
 
     this.m_usuarios = usuarios;
+    this.m_rol = m_rol;
 };
 
 
@@ -138,15 +139,24 @@ Usuarios.prototype.asignarRolUsuario = function(req, res) {
     var rol_id = args.parametrizacion_usuarios.rol_id;
     var usuario_id = req.session.user.usuario_id;
     var predeterminado = Number(args.parametrizacion_usuarios.predeterminado) || '0';
-        
-    that.m_usuarios.asignarRolUsuario(login_id, empresa_id, rol_id,usuario_id,predeterminado, function(err, rows){
+    
+    
+    //asignar rol al usuario    
+    that.m_usuarios.asignarRolUsuario(login_id, empresa_id, rol_id,usuario_id,predeterminado, function(err, login_empresa, ids){
 
         if(err){
             res.send(G.utils.r(req.url, 'Se genero un error guardando el rol', 403, {}));
             return;
         }
+        
+        if(err){
+            res.send(G.utils.r(req.url, 'Se genero un error guardando el rol', 403, {}));
+            return;
+        }
 
-        res.send(G.utils.r(req.url, 'Usuario guardado correctamente', 200, {parametrizacion_usuarios: {login_empresa_id: rows}}));
+        res.send(G.utils.r(req.url, 'Usuario guardado correctamente', 200, {parametrizacion_usuarios: {login_empresa_id: login_empresa, ids_modulos:ids}}));
+        
+        
     });
                 
         
@@ -277,6 +287,6 @@ function __validarCreacionUsuario(that, usuario, callback) {
     });
 }
 
-Usuarios.$inject = ["m_usuarios"];
+Usuarios.$inject = ["m_usuarios", "m_rol"];
 
 module.exports = Usuarios;

@@ -491,7 +491,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         '',//disponible,
                         '',//molecula,
                         '',//existencia_farmacia,
-                        '',//tipo_producto_id,
+                        producto.tipo_producto,//tipo_producto_id,
                         '',//total_existencias_farmacia,
                         '',//existencia_disponible,
                         ''//cantidad_pendiente
@@ -533,7 +533,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                         </div>\
                                     </div>',
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Cód. Producto',  width: "8%"},
+                    {field: 'codigo_producto', displayName: 'Cód. Producto',  width: "10%",
+                        cellTemplate : '<div class="ngCellText" ng-class="col.colIndex()">\
+                                                <span class="label label-success" ng-show="row.entity.tipo_producto_id == 1" >N</span>\
+                                                <span class="label label-danger" ng-show="row.entity.tipo_producto_id == 2">A</span>\
+                                                <span class="label label-warning" ng-show="row.entity.tipo_producto_id == 3">C</span>\
+                                                <span class="label label-primary" ng-show="row.entity.tipo_producto_id == 4">I</span>\
+                                                <span class="label label-info" ng-show="row.entity.tipo_producto_id == 5">Ne</span>\
+                                                <span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\
+                                            </div>'
+                    },
                     {field: 'descripcion', displayName: 'Descripción'},
                     {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada', width: "10%",
                         cellTemplate: ' <div class="col-xs-12">\n\
@@ -685,8 +694,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             }
                         }
                     };
-                    
-                console.log("Objeto Modificar Cotización: ", obj);
 
                 var url = API.PEDIDOS.MODIFICAR_CANTIDADES_COTIZACION;
 
@@ -694,19 +701,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                     if (data.status === 200) {
                         console.log("Modificación Exitosa: ",data.msj);
-                        
-                        //recalcular valores totales
-                        var listado_productos = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().obtenerProductos();
-                        
-                        $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_sin_iva = 0;
-                        $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_con_iva = 0;
-                        
-                        listado_productos.forEach(function(producto){
-                            
-                            $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_sin_iva += parseFloat(producto.total_sin_iva);
-                            $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_con_iva += parseFloat(producto.total_con_iva);
+
+                        //Consultar Detalle de la Cotización para recargar Grid
+                        that.consultarDetalleCotizacion(function(data){
+
+                            var detalle = data.obj.resultado_consulta;
+                            that.renderDetalleCotizacion(detalle);
 
                         });
+                        
                     }
                     else{
                         console.log("Error al intentar Modificar: ", data.msj);
@@ -737,18 +740,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     if (data.status === 200) {
                         console.log("Modificación Exitosa: ",data.msj);
                         
-                        //recalcular valores totales
-                        var listado_productos = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().obtenerProductos();
-                        
-                        $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_sin_iva = 0;
-                        $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_con_iva = 0;
-                        
-                        listado_productos.forEach(function(producto){
+                        //Consultar Detalle del Pedido para recargar Grid
+                        that.consultarDetallePedido(function(data){
                             
-                            $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_sin_iva += parseFloat(producto.total_sin_iva);
-                            $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_con_iva += parseFloat(producto.total_con_iva);
+                            var detalle = data.obj.resultado_consulta;
+                            that.renderDetalleCotizacion(detalle);
+                            
+                        });                       
 
-                        });
                     }
                     else{
                         console.log("Error al intentar Modificar: ", data.msj);
@@ -1189,6 +1188,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $scope.rootCreaCotizaciones.opciones_archivo.opts.query.data = JSON.stringify({
 
                     pedido_cliente: {
+                        //DATOS PARA CONSULTA LISTADO PRODUCTOS
                         empresa_id: $scope.rootCreaCotizaciones.Empresa.getCodigo(),
                         centro_utilidad_id: '1 ',
                         bodega_id: '03',
@@ -1196,7 +1196,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         contrato_cliente_id: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getContratoId(),
                         pedido_cliente_id_tmp: '0',
 
-                        //DATOS PARA ENCABEZADO
+                        //DATOS PARA INSERCIÓN DE ENCABEZADO
                         tipo_id_tercero: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().tipo_id_tercero,
                         tercero_id: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().id,
                         tipo_id_vendedor: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getVendedor().getTipoId(),

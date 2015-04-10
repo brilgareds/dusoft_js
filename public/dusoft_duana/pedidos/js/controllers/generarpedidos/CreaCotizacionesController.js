@@ -518,6 +518,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 multiSelect: false,
                 footerTemplate: '   <div class="row col-md-12">\
                                         <div class="col-md-3 pull-right">\
+                                            <br>\
                                             <table class="table table-clear">\
                                                 <tbody>\
                                                     <tr>\

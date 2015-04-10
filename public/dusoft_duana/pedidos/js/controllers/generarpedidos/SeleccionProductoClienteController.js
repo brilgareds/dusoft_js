@@ -238,7 +238,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     enableCellSelection: false,
                     enableHighlighting: true,
                     showFilter: true,
-                    //selectedItems: $scope.selectedRow,
                     multiSelect: false,
                     columnDefs: [
                         {field: 'codigo_producto', displayName: 'Cód. Producto', width: "10%",

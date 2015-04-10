@@ -32,5 +32,17 @@ module.exports = function(app, di_container) {
          c_usuarios.asignarRolUsuario(req, res);
     }); 
     
+    app.post('/api/Usuarios/obtenerModulosPorUsuario', function(req, res) {
+         c_usuarios.obtenerModulosPorUsuario(req, res);
+    }); 
+    
+    app.post('/api/Usuarios/listarUsuariosModulosOpciones', function(req, res) {
+         c_usuarios.listarUsuariosModulosOpciones(req, res);
+    }); 
+    
+    
+    
+    
+    
     
 };

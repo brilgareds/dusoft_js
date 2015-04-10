@@ -274,20 +274,22 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             });
             
             
-            self.traerModulosPorRol = function(callback) {
+            self.traerModulosPorUsuario = function(callback) {
                 $scope.rootUsuario.rolAGuardar.vaciarModulos();
                 
                 
                 var parametros = {
                     session: $scope.rootUsuario.session,
                     data: {
-                        parametrizacion_perfiles: {
-                            rol_id: $scope.rootUsuario.rolAGuardar.getId()
+                        parametrizacion_usuarios: {
+                            rol_id: $scope.rootUsuario.rolAGuardar.getId(),
+                            empresa_id: $scope.rootUsuario.empresaSeleccionada.getCodigo(),   
+                            usuario_id:$scope.rootUsuario.usuarioAGuardar.getId()
                         }
                     }
                 };
                 
-                ParametrizacionService.traerModulosPorRol(parametros, $scope.rootUsuario.rolAGuardar, function(success){
+                ParametrizacionService.traerModulosPorUsuario(parametros, $scope.rootUsuario.rolAGuardar, function(success){
                     if(success){
                         console.log("modulos para el rol ",$scope.rootUsuario.rolAGuardar.getModulos());
                         var modulos = $scope.rootUsuario.rolAGuardar.getModulos();
@@ -347,7 +349,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 $scope.rootUsuario.rolAGuardar = rol;
                 
                 self.asignarRolUsuario(function(){
-                    self.traerModulosPorRol(function(){
+                    self.traerModulosPorUsuario(function(){
                          self.traerModulos();
                     });
                 });
@@ -411,20 +413,21 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 var obj = {
                     session: $scope.rootModulos.session,
                     data: {
-                        parametrizacion_perfiles: {
+                        parametrizacion_usuarios: {
                             modulo: {
                                 id: modulo_id,
                                 rol_modulo_id:0,
                                 rol_id:$scope.rootUsuario.rolAGuardar.getId(),
                                 empresa_id:$scope.rootUsuario.empresaSeleccionada.getCodigo()
-                            }
+                            },
+                            usuario_id:$scope.rootUsuario.usuarioAGuardar.getId()
                         }
                     }
                 };
 
-                Request.realizarRequest(API.PERFILES.LISTAR_ROLES_MODULOS_OPCIONES, "POST", obj, function(data) {
+                Request.realizarRequest(API.USUARIOS.LISTAR_USUARIO_OPCIONES, "POST", obj, function(data) {
                     if (data.status === 200) {
-                        var datos = data.obj.parametrizacion_perfiles.opciones_modulo;
+                        var datos = data.obj.parametrizacion_usuarios.opciones_modulo;
                         
                         //se emite el evento con los datos al controllador de opciones
                         $scope.$broadcast("traerOpcionesModulo", datos);

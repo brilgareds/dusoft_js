@@ -18,6 +18,11 @@
                     "module": "Parametrizacion/Roles",
                     "model": "RolModel",
                     "alias": "m_rol"
+                },
+                "modulo_model": {
+                    "module": "Parametrizacion/Modulos",
+                    "model": "ModuloModel",
+                    "alias": "m_modulo"
                 }
             }],
         "events": [],

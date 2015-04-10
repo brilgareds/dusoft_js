@@ -186,6 +186,10 @@ UsuariosModel.prototype.asignarRolUsuario = function(login_id, empresa_id, rol_i
                     return;
                 }
                 
+                //se inicializa un nuevo array para devolver los modulos creados
+                var modulos_ids = [];
+                modulos_ids = modulos_ids.concat(ids);
+                
                 that.sobreEscribirOpcionesDelRol(usuario_id,rol_id,empresa_id, ids, function(err){
                     if(err){
                         callback(err);
@@ -193,7 +197,7 @@ UsuariosModel.prototype.asignarRolUsuario = function(login_id, empresa_id, rol_i
                     }
                     
                     G.db.commit(function() {
-                        callback(err, login_empresa_id ,ids);
+                        callback(err, login_empresa_id ,modulos_ids);
                     });
                     
                 });

@@ -335,6 +335,10 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             };
             
             
+            $rootScope.$on("onSeleccionarOpcion", function(event, opcion){
+                console.log("on seleccion code 1 ", opcion)
+            });
+            
             $scope.seleccionrRol = function(rol){
                 $scope.rootUsuario.rolAGuardar = rol;
                 

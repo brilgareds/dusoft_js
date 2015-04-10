@@ -163,33 +163,7 @@ define([
             };
             
             $scope.onSeleccionarOpcion = function(opcion){
-                $scope.rootModulos.moduloAGuardar.opcionAGuardar  = opcion;
-                console.log("opcion a guardar ", opcion);
-                
-                if(!opcion.estado){
-                    return;
-                }
-                
-                var obj = {
-                    session: $scope.rootModulos.session,
-                    data: {
-                        parametrizacion_perfiles: {
-                            modulo: $scope.rootModulos.moduloAGuardar
-                        }
-                    }
-                };
-
-                Request.realizarRequest(API.PERFILES.GUARDAR_OPCION, "POST", obj, function(data) {
-                    if (data.status === 200) {
-                        AlertService.mostrarMensaje("success", "Opcion guardada correctamente");
-
-                    } else {
-                        AlertService.mostrarMensaje("warning", data.msj);
-                    }
-
-                });
-                
-                
+                $rootScope.$emit("onSeleccionarOpcion", opcion);
             };
             
             $scope.onEditarOpcion = function(opcion){

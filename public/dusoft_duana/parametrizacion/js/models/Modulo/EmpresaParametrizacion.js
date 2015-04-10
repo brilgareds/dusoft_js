@@ -10,6 +10,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
                 this.estado = Boolean(parseInt(estado));
                 this.roles = [];
                 this.predeterminada = false;
+                this.login_empresa_id = 0;
             }
 
             EmpresaParametrizacion.prototype = Object.create(Empresa.getClass().prototype);
@@ -42,6 +43,14 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             
             EmpresaParametrizacion.prototype.getEstado = function() {
                 return this.estado;
+            };
+            
+            EmpresaParametrizacion.prototype.setLoginEmpresaId = function(login_empresa_id) {
+                this.login_empresa_id =  login_empresa_id;
+            };
+            
+            EmpresaParametrizacion.prototype.getLoginEmpresaId = function() {
+                return this.login_empresa_id;
             };
             
             EmpresaParametrizacion.prototype.setPredeterminado= function(predeterminada) {

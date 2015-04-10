@@ -7,6 +7,7 @@ define(["angular", "js/models"], function(angular, models) {
                 this.rol = rol;
                 this.modulo = modulo;
                 this.estado = (estado === undefined) ? false : Boolean(Number(estado));
+                this.login_modulos_empresas_id = 0;
             }
 
             RolModulo.prototype.setId = function(id) {
@@ -16,6 +17,16 @@ define(["angular", "js/models"], function(angular, models) {
             RolModulo.prototype.getId = function() {
                 return this.id;
             };
+            
+            
+            RolModulo.prototype.setUsuarioEmpresaId = function(login_modulos_empresas_id) {
+                this.login_modulos_empresas_id = login_modulos_empresas_id;
+            };
+
+            RolModulo.prototype.getUsuarioEmpresaId = function() {
+                return this.login_modulos_empresas_id;
+            };
+
 
 
             RolModulo.prototype.setEstado = function(estado) {

@@ -108,16 +108,6 @@ define(["angular", "js/controllers", "js/models",
                 });
             };
 
-            //funcion util para saber cual modulo_empresa fue seleccionado en el arbol
-            self.obtenerModuloSeleccionado = function(modulo_id) {
-                //var modulos = $scope.rootRoles.modulos_empresa;
-                var modulos = $scope.rootRoles.empresaSeleccionada.getListaEmpresas();
-                for (var i in modulos) {
-                    if (modulos[i].getModulo().getId() === parseInt(modulo_id)) {
-                        return modulos[i];
-                    }
-                }
-            };
 
             self.traerRolPorId = function(rol_id, callback) {
                 var obj = {
@@ -228,36 +218,18 @@ define(["angular", "js/controllers", "js/models",
                 return null;
             };
             
+            
+            self.obtenerModuloSeleccionado = function(modulo_id) {
+                
+                return ParametrizacionService.obtenerModuloSeleccionado(modulo_id, $scope.rootRoles.empresaSeleccionada);
+                
+            };
+            
             //agrega modulo al rol actual buscandolo en los modulos seleccionados para la empresa por el id, se retorna el modulo que se guardo
             self.agregarModulo = function(modulo_id, estado) {
+                
+                return ParametrizacionService.agregarModulo($scope.rootRoles.rolAGuardar, $scope.rootRoles.empresaSeleccionada, modulo_id, estado);
 
-                var modulo_empresa = self.obtenerModuloSeleccionado(modulo_id);   
-                if (!modulo_empresa)
-                    return false;
-
-                var modulo = Modulo.get(modulo_empresa.getModulo().getId());
-                modulo.agregarEmpresa(modulo_empresa);
-                modulo.setEstado(estado);
-               //testing modulo.setRoles(modulo_empresa.getModulo().getRoles());
-
-                var rol_modulo = RolModulo.get(
-                        0,
-                        Rol.get(
-                            $scope.rootRoles.rolAGuardar.getId(),
-                            $scope.rootRoles.rolAGuardar.getNombre(),
-                            $scope.rootRoles.rolAGuardar.getObservacion(),
-                            $scope.rootRoles.rolAGuardar.getEmpresaId()
-                        ),
-                        modulo,
-                        estado
-                );
-                    
-               // console.log("self.agregarModulo _______________ ", $scope.rootRoles.rolAGuardar.getModulos())
-
-                $scope.rootRoles.rolAGuardar.agregarModulo(rol_modulo);
-               
-
-                return modulo;
             };
 
             //basado en los modulos seleccionados, se envian para ser habilitardos para el rol
@@ -347,7 +319,7 @@ define(["angular", "js/controllers", "js/models",
 
             $scope.$on("modulosSeleccionados", function(e, modulos_seleccionado) {
                 //vacia los modulos del rol para enviar solo los seleccionados en el momento
-                $scope.rootRoles.rolAGuardar.vaciarModulos();
+                $scope.rootRoles.rolAGuardar.vaciarModulos();  
                 
                 var modulo = self.agregarModulo(modulos_seleccionado.seleccionado, true);
 

@@ -110,6 +110,7 @@ define(["angular", "js/services"], function(angular, services) {
            self.traerModulosPorUsuario = function(parametros, rolAGuardar, callback){
                
                Request.realizarRequest(API.USUARIOS.OBTENER_MODULOS_USUARIO, "POST", parametros, function(data) {
+                   
                     if (data.status === 200) {
                         
                         var modulos = data.obj.parametrizacion_usuarios.modulos_usuario;
@@ -130,6 +131,8 @@ define(["angular", "js/services"], function(angular, services) {
                                     modulo,
                                     true
                             );
+                                
+                            rol_modulo.setUsuarioEmpresaId(modulos[i].login_modulos_empresas_id);
 
                             rolAGuardar.agregarModulo(rol_modulo);
                         }
@@ -182,6 +185,48 @@ define(["angular", "js/services"], function(angular, services) {
 
                 });
 
+            };
+            
+            
+            //agrega modulo al rol actual buscandolo en los modulos seleccionados para la empresa por el id, se retorna el modulo que se guardo
+            self.agregarModulo = function(rolAGuardar, empresaSeleccionada, modulo_id, estado) {
+
+                var modulo_empresa = self.obtenerModuloSeleccionado(modulo_id, empresaSeleccionada);     
+                if (!modulo_empresa)
+                    return false;
+
+                var modulo = Modulo.get(modulo_empresa.getModulo().getId());
+                modulo.agregarEmpresa(modulo_empresa);
+                modulo.setEstado(estado);
+               //testing modulo.setRoles(modulo_empresa.getModulo().getRoles());
+
+                var rol_modulo = RolModulo.get(
+                        0,
+                        Rol.get(
+                            rolAGuardar.getId(),
+                            rolAGuardar.getNombre(),
+                            rolAGuardar.getObservacion(),
+                            rolAGuardar.getEmpresaId()
+                        ),
+                        modulo,
+                        estado
+                );
+                    
+                rolAGuardar.agregarModulo(rol_modulo);
+               
+
+                return modulo;
+            };
+            
+            
+           //funcion util para saber cual modulo_empresa fue seleccionado en el arbol, usado por AdministracionRolesController
+            self.obtenerModuloSeleccionado = function(modulo_id, empresaSeleccionada) {
+                var modulos = empresaSeleccionada.getListaEmpresas();
+                for (var i in modulos) {
+                    if (modulos[i].getModulo().getId() === parseInt(modulo_id)) {
+                        return modulos[i];
+                    }
+                }
             };
 
 

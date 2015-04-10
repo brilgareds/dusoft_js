@@ -289,7 +289,11 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 
                 ParametrizacionService.traerModulosPorRol(parametros, $scope.rootUsuario.rolAGuardar, function(success){
                     if(success){
-                        
+                        console.log("modulos para el rol ",$scope.rootUsuario.rolAGuardar.getModulos());
+                        var modulos = $scope.rootUsuario.rolAGuardar.getModulos();
+                        for(var i in modulos){
+                            console.log("id modulo ", modulos[i].getModulo().getId(), modulos[i].getModulo().getEstado())
+                        }
                         callback();
                     }
                 });

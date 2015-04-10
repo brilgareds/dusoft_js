@@ -844,12 +844,12 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(empresa_id, tipo_id
  * @apiParam {Number} numero_pedido Numero del pedido a asignar
  * @apiParam {Function} callback Funcion de retorno de informacion.
  */
-PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, callback) {
+PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto, callback) {
     
-    var sql = "INSERT INTO ventas_ordenes_pedidos_d_tmp(pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, fecha_registro, usuario_id) \
-                VALUES($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, $6)";
+    var sql = "INSERT INTO ventas_ordenes_pedidos_d_tmp(pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, fecha_registro, usuario_id, tipo_producto) \
+                VALUES($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, $6, $7)";
 
-    G.db.query(sql, [pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id], function(err, rows, result) {
+    G.db.query(sql, [pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto], function(err, rows, result) {
         callback(err, rows, result);
     });
 
@@ -1059,7 +1059,8 @@ PedidosClienteModel.prototype.listar_detalle_cotizacion = function(numero_cotiza
                     valor_unitario,\
                     to_char(fecha_registro, 'dd-mm-yyyy hh:mm:ss') as fecha_registro,\
                     valor_unitario*numero_unidades as total_sin_iva,\
-                    round((valor_unitario + (valor_unitario * COALESCE(porc_iva, 0))/100) * numero_unidades, 2) as total_con_iva\
+                    round((valor_unitario + (valor_unitario * COALESCE(porc_iva, 0))/100) * numero_unidades, 2) as total_con_iva,\
+                    tipo_producto\
                 from\
                     ventas_ordenes_pedidos_d_tmp\
                 where pedido_cliente_id_tmp = $1";
@@ -1091,7 +1092,8 @@ PedidosClienteModel.prototype.listar_detalle_pedido = function(numero_pedido, ca
                     valor_unitario,\
                     to_char(fecha_registro, 'dd-mm-yyyy hh:mm:ss') as fecha_registro,\
                     valor_unitario*numero_unidades as total_sin_iva,\
-                    round((valor_unitario + (valor_unitario * COALESCE(porc_iva, 0))/100) * numero_unidades, 2) as total_con_iva\
+                    round((valor_unitario + (valor_unitario * COALESCE(porc_iva, 0))/100) * numero_unidades, 2) as total_con_iva,\
+                    tipo_producto\
                 from\
                     ventas_ordenes_pedidos_d\
                 where pedido_cliente_id = $1";
@@ -1252,8 +1254,8 @@ function __insertar_detalle_pedido_cliente(numero_pedido, numero_cotizacion, cal
         cantidad_despachada
         cantidad_facturada
     */
-    var sql = " INSERT INTO ventas_ordenes_pedidos_d(pedido_cliente_id, codigo_producto, porc_iva, numero_unidades, valor_unitario, fecha_registro, usuario_id)\
-                SELECT $1, codigo_producto, porc_iva, numero_unidades, valor_unitario, CURRENT_TIMESTAMP, usuario_id\
+    var sql = " INSERT INTO ventas_ordenes_pedidos_d(pedido_cliente_id, codigo_producto, porc_iva, numero_unidades, valor_unitario, fecha_registro, usuario_id, tipo_producto)\
+                SELECT $1, codigo_producto, porc_iva, numero_unidades, valor_unitario, CURRENT_TIMESTAMP, usuario_id, tipo_producto\
                 FROM ventas_ordenes_pedidos_d_tmp \
                 WHERE pedido_cliente_id_tmp = $2\
                 RETURNING pedido_cliente_id";
@@ -1264,12 +1266,12 @@ function __insertar_detalle_pedido_cliente(numero_pedido, numero_cotizacion, cal
 };
 
 
-PedidosClienteModel.prototype.insertar_detalle_pedido = function(numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, callback) {
+PedidosClienteModel.prototype.insertar_detalle_pedido = function(numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto, callback) {
     
-    var sql = "INSERT INTO ventas_ordenes_pedidos_d(pedido_cliente_id, codigo_producto, porc_iva, numero_unidades, valor_unitario, fecha_registro, usuario_id)\n\
-                    VALUES($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, $6)";
+    var sql = "INSERT INTO ventas_ordenes_pedidos_d(pedido_cliente_id, codigo_producto, porc_iva, numero_unidades, valor_unitario, fecha_registro, usuario_id, tipo_producto)\n\
+                    VALUES($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, $6, $7)";
     
-    G.db.query(sql, [numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id], function(err, rows, result) {
+    G.db.query(sql, [numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto], function(err, rows, result) {
         callback(err, rows, result);
     });
 };

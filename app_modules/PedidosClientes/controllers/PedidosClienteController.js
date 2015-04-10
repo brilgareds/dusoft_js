@@ -641,8 +641,8 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
         return;
     }
     
-    if (args.cotizacion_detalle.numero_unidades === undefined || args.cotizacion_detalle.valor_unitario === undefined) {
-        res.send(G.utils.r(req.url, 'numero_unidades o valor_unitario No Están Definidos', 404, {}));
+    if (args.cotizacion_detalle.numero_unidades === undefined || args.cotizacion_detalle.valor_unitario === undefined || args.cotizacion_detalle.tipo_producto === undefined) {
+        res.send(G.utils.r(req.url, 'numero_unidades, valor_unitario o tipo_producto No Están Definidos', 404, {}));
         return;
     }
 
@@ -651,8 +651,8 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
         return;
     }
     
-    if (args.cotizacion_detalle.numero_unidades === '' || args.cotizacion_detalle.valor_unitario === '') {
-        res.send(G.utils.r(req.url, 'numero_unidades o valor_unitario Están Vacios', 404, {}));
+    if (args.cotizacion_detalle.numero_unidades === '' || args.cotizacion_detalle.valor_unitario === '' || args.cotizacion_detalle.tipo_producto === '') {
+        res.send(G.utils.r(req.url, 'numero_unidades, valor_unitario o tipo_producto Están Vacios', 404, {}));
         return;
     }
 
@@ -662,9 +662,10 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
     var porc_iva = args.cotizacion_detalle.porc_iva;
     var numero_unidades = args.cotizacion_detalle.numero_unidades;
     var valor_unitario = args.cotizacion_detalle.valor_unitario;
+    var tipo_producto = args.cotizacion_detalle.tipo_producto;
     var usuario_id = req.session.user.usuario_id;
 
-    that.m_pedidos_clientes.insertar_detalle_cotizacion(pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, function(err, pedido_cliente_id_tmp) {
+    that.m_pedidos_clientes.insertar_detalle_cotizacion(pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto, function(err, pedido_cliente_id_tmp) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error en Inserción del Detalle de Cotización', 500, {}));
@@ -1153,9 +1154,10 @@ PedidosCliente.prototype.pedidoClienteArchivoPlano = function(req, res) {
                                         var porc_iva = producto.porc_iva;
                                         var numero_unidades = parseInt(producto_valido.cantidad_solicitada);
                                         var valor_unitario = parseFloat(producto_valido.precio_unitario);
+                                        var tipo_producto_id = producto.tipo_producto_id;
 
                                         //INSERTAR DETALLE
-                                        that.m_pedidos_clientes.insertar_detalle_cotizacion(pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, function(err, rows, result) {
+                                        that.m_pedidos_clientes.insertar_detalle_cotizacion(pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto_id, function(err, rows, result) {
                                             if (err) {
                                                 productos_invalidos.push(producto);
                                             }
@@ -1531,8 +1533,8 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res){
         return;
     }
     
-    if (args.detalle_pedido.numero_unidades === undefined || args.detalle_pedido.valor_unitario === undefined) {
-        res.send(G.utils.r(req.url, 'numero_unidades o valor_unitario No Están Definidos', 404, {}));
+    if (args.detalle_pedido.numero_unidades === undefined || args.detalle_pedido.valor_unitario === undefined || args.detalle_pedido.tipo_producto === undefined) {
+        res.send(G.utils.r(req.url, 'numero_unidades, valor_unitario o tipo_producto No Están Definidos', 404, {}));
         return;
     }
 
@@ -1541,8 +1543,8 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res){
         return;
     }
     
-    if (args.detalle_pedido.numero_unidades === '' || args.detalle_pedido.valor_unitario === '') {
-        res.send(G.utils.r(req.url, 'numero_unidades o valor_unitario Están Vacios', 404, {}));
+    if (args.detalle_pedido.numero_unidades === '' || args.detalle_pedido.valor_unitario === '' || args.detalle_pedido.tipo_producto === '') {
+        res.send(G.utils.r(req.url, 'numero_unidades, valor_unitario o tipo_producto Están Vacios', 404, {}));
         return;
     }
 
@@ -1552,11 +1554,12 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res){
     var porc_iva = args.detalle_pedido.porc_iva;
     var numero_unidades = args.detalle_pedido.numero_unidades;
     var valor_unitario = args.detalle_pedido.valor_unitario;
+    var tipo_producto = args.detalle_pedido.tipo_producto;
     var usuario_id = req.session.user.usuario_id;
     
     //insertar_detalle_pedido = function(numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, callback)
 
-    that.m_pedidos_clientes.insertar_detalle_pedido(numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, function(err, row) {
+    that.m_pedidos_clientes.insertar_detalle_pedido(numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto, function(err, row) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error en Inserción del Detalle de Pedido', 500, {}));

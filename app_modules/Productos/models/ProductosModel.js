@@ -94,11 +94,12 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
 // Descripcion : Lista productos Clientes
 // Calls       : Productos -> ProductosController -> listarProductosClientes();
 // 
-ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pedido_cliente_id_tmp, tipo_producto, pagina, callback) {
+ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pedido_cliente_id_tmp, tipo_producto, pagina, filtro, callback) {
     
     var sql_aux = "";
-    //var sql_aux2 = "";
+    var sql_filter = "";
     
+    //Armar String y Array para restricción de búsqueda según tipo de producto
     var array_parametros = [];
 
     if(tipo_producto !== '0') {
@@ -110,6 +111,27 @@ ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro
     else {
         array_parametros = [empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, "%" + termino_busqueda + "%"];
     }
+    
+    //Armar String para filtar termino_busqueda por código de producto, molécula o descripción
+    
+    console.log(">>>>>>>>Filtro = ", filtro);
+    
+    if(filtro.buscar_todo) {
+        sql_filter = " a.codigo_producto ilike $5 \
+                       or fc_descripcion_producto(a.codigo_producto) ilike $5 \
+                       or g.descripcion  ilike $5 ";
+    }
+    else if(filtro.buscar_por_codigo) {
+        sql_filter = " a.codigo_producto ilike $5 ";
+    }
+    else if(filtro.buscar_por_molecula) {
+        sql_filter = " g.descripcion  ilike $5 ";
+    }
+    else if(filtro.buscar_por_descripcion) {
+        sql_filter = " fc_descripcion_producto(a.codigo_producto) ilike $5 ";
+    }
+    
+    console.log(">>>>> sql_filter = ", sql_filter);
     
     var sql = " select\n\
                     a.codigo_producto,\n\
@@ -196,12 +218,8 @@ ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro
                      i.empresa_id = $1 \n\
                      and i.centro_utilidad = $2 \n\
                      and i.bodega = $3 \n\
-                     and ( \n\
-                         a.codigo_producto ilike $5 \n\
-                         or fc_descripcion_producto(a.codigo_producto) ilike $5 \n\
-                         or g.descripcion  ilike $5 \n\
-                     ) "+
-                     sql_aux +
+                     and ( " + sql_filter + " ) " +
+                     sql_aux + 
                 "group by a.codigo_producto, a.precio_regulado, a.existencia, a.costo_anterior, a.costo, a.costo_penultima_compra, \n\
                     a.costo_ultima_compra, a.precio_venta_anterior, a.precio_venta, a.precio_minimo, a.precio_maximo, a.sw_vende, \n\
                     a.grupo_contratacion_id, a.nivel_autorizacion_id, b.sw_requiereautorizacion_despachospedidos, b.estado, \n\

@@ -78,11 +78,39 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 $scope.onBuscarSeleccionProducto($scope.obtenerParametros(),"");
             });
             
-            $scope.obtenerParametros = function() {
+            $scope.obtenerParametros = function(filtro) {
 
                 //valida si cambio el termino de busqueda
                 if ($scope.rootSeleccionProductoCliente.ultima_busqueda.termino_busqueda !== $scope.rootSeleccionProductoCliente.termino_busqueda) {
                     $scope.rootSeleccionProductoCliente.paginaactual = 1;
+                }
+                
+                var seleccion = {
+                    buscar_todo: true,
+                    buscar_por_codigo: false,
+                    buscar_por_molecula: false,
+                    buscar_por_descripcion: false
+                };
+                
+                if(filtro !== undefined) {
+                    
+                    if(filtro === 0)
+                        seleccion.buscar_todo = true;
+                    
+                    if(filtro === 1) {
+                        seleccion.buscar_todo = false,
+                        seleccion.buscar_por_codigo = true;
+                    }
+                    
+                    if(filtro === 2) {
+                        seleccion.buscar_todo = false
+                        seleccion.buscar_por_molecula = true;
+                    }
+                    
+                    if(filtro === 3) {
+                        seleccion.buscar_todo = false
+                        seleccion.buscar_por_descripcion = true;
+                    }
                 }
 
                 var obj = {
@@ -96,7 +124,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                             bodega_id: '03',//$scope.rootSeleccionProductoCliente.de_bodega_id,
                             tipo_producto: $scope.rootSeleccionProductoCliente.tipoProducto,
                             contrato_cliente_id: $scope.rootSeleccionProductoCliente.cliente.contrato_id,
-                            pedido_cliente_id_tmp: '0' //$scope.rootSeleccionProductoCliente.pedido_cliente_id_tmp
+                            pedido_cliente_id_tmp: '0', //$scope.rootSeleccionProductoCliente.pedido_cliente_id_tmp
+                            filtro: seleccion
                         }
                     }
                 };
@@ -207,6 +236,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     enableColumnResize: true,
                     enableRowSelection: false,
                     enableCellSelection: false,
+                    enableHighlighting: true,
+                    showFilter: true,
                     //selectedItems: $scope.selectedRow,
                     multiSelect: false,
                     columnDefs: [

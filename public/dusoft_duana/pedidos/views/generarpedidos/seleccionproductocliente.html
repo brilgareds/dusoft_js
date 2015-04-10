@@ -52,7 +52,17 @@
 
                             <input type="text" class="form-control" ng-keypress="onTeclaBuscarSeleccionProducto($event)" ng-model="rootSeleccionProductoCliente.termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">
                             <div class="input-group-btn" >
-                                <button class="btn btn-default pull-right" type="submit" ng-click="onBuscarSeleccionProducto(obtenerParametros())"><i class="glyphicon glyphicon-search"></i></button>
+                                <button class="btn btn-default dropdown-toggle pull-right" data-toggle="dropdown" type="submit"><i class="glyphicon glyphicon-search"></i><span class="caret"></span></button>
+                                <ul class="dropdown-menu dropdown-options">
+                                    <li><a href="javascript:void(0);" ng-click="onBuscarSeleccionProducto(obtenerParametros(0))" >Todo</a></li>
+                                    <li></li>
+                                    <li><a href="javascript:void(0);" ng-click="onBuscarSeleccionProducto(obtenerParametros(1))">Cód. Producto</a></li>
+                                    <li></li>
+                                    <li><a href="javascript:void(0);" ng-click="onBuscarSeleccionProducto(obtenerParametros(2))">Molécula</a></li>
+                                    <li></li>
+                                    <li><a href="javascript:void(0);" ng-click="onBuscarSeleccionProducto(obtenerParametros(3))">Descripción</a></li>
+                                    <li></li>
+                                </ul>
                             </div>
 
                         </div>

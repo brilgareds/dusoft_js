@@ -69,7 +69,7 @@ define(["angular", "js/services"], function(angular, services) {
            });
            
            
-           //metodo usado por los controladores AdministracionUsuariosController, AdministracionRolesController
+           //metodo usado por los controladores AdministracionRolesController
            self.traerModulosPorRol = function(parametros, rolAGuardar, callback){
                
                Request.realizarRequest(API.PERFILES.OBTENER_MODULOS_POR_ROL, "POST", parametros, function(data) {
@@ -106,6 +106,43 @@ define(["angular", "js/services"], function(angular, services) {
                 });
                
            };
+           
+           self.traerModulosPorUsuario = function(parametros, rolAGuardar, callback){
+               
+               Request.realizarRequest(API.USUARIOS.OBTENER_MODULOS_USUARIO, "POST", parametros, function(data) {
+                    if (data.status === 200) {
+                        
+                        var modulos = data.obj.parametrizacion_usuarios.modulos_usuario;
+                        for(var i in modulos){
+                            //bloque 1
+                            var modulo = Modulo.get(modulos[i].modulo_id, modulos[i].parent);
+                            modulo.setEstado(modulos[i].estado_modulo_usuario);
+                            
+
+                            var rol_modulo = RolModulo.get(
+                                    modulos[i].login_modulos_empresas_id,
+                                    Rol.get(
+                                        rolAGuardar.getId(),
+                                        rolAGuardar.getNombre(),
+                                        rolAGuardar.getObservacion(),
+                                        rolAGuardar.getEmpresaId()
+                                    ),
+                                    modulo,
+                                    true
+                            );
+
+                            rolAGuardar.agregarModulo(rol_modulo);
+                        }
+
+                        callback(true);
+                    } else {
+                       callback(false);
+                    }
+
+                });
+               
+           };
+           
            
            //metodo usado por los controladores AdministracionUsuariosController, ListarRolesController
            self.traerRoles = function(parametros, empresaSeleccionada, callback) {

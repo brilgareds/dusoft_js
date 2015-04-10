@@ -186,6 +186,10 @@ UsuariosModel.prototype.asignarRolUsuario = function(login_id, empresa_id, rol_i
                     return;
                 }
                 
+                //se inicializa un nuevo array para devolver los modulos creados
+                var modulos_ids = [];
+                modulos_ids = modulos_ids.concat(ids);
+                
                 that.sobreEscribirOpcionesDelRol(usuario_id,rol_id,empresa_id, ids, function(err){
                     if(err){
                         callback(err);
@@ -193,7 +197,7 @@ UsuariosModel.prototype.asignarRolUsuario = function(login_id, empresa_id, rol_i
                     }
                     
                     G.db.commit(function() {
-                        callback(err, login_empresa_id ,ids);
+                        callback(err, login_empresa_id ,modulos_ids);
                     });
                     
                 });
@@ -202,6 +206,22 @@ UsuariosModel.prototype.asignarRolUsuario = function(login_id, empresa_id, rol_i
             });
 
         });
+    });
+};
+
+
+UsuariosModel.prototype.listarUsuarioModuloOpciones = function(modulo_id, rol_id, empresa_id, usuario_id, callback) {
+    var sql = "SELECT a.*, b.rol_id, b.rol_opcion_id, b.estado_opcion_rol FROM modulos_opciones as a\
+               LEFT JOIN (\
+                    SELECT cc.id as rol_opcion_id, bb.modulo_id, cc.modulos_opcion_id, cc.estado as estado_opcion_rol, aa.rol_id FROM login_empresas as aa\
+                    INNER JOIN login_modulos_empresas bb ON aa.id = bb.login_empresas_id AND bb.modulo_id = $1\
+                    INNER JOIN login_modulos_opciones cc ON cc.	login_modulos_empresa_id = bb.id\
+                    WHERE aa.empresa_id = $3   AND aa.rol_id = $2 AND aa.login_id = $4\
+               ) as b ON b.modulo_id = a.modulo_id AND b.modulos_opcion_id = a.id\
+               WHERE a.modulo_id =  $1 ORDER BY a.id DESC";
+
+    G.db.query(sql, [modulo_id, rol_id, empresa_id, usuario_id], function(err, rows, result) {
+        callback(err, rows, result);
     });
 };
 
@@ -217,11 +237,11 @@ UsuariosModel.prototype.guardarRolUsuario = function(login_id, empresa_id, rol_i
         }
         
         var sql = "INSERT INTO login_empresas (login_id, empresa_id, predeterminado, usuario_id,\
-           fecha_creacion, rol_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id";
+           fecha_creacion, rol_id, estado) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id";
 
 
         var params = [
-            login_id, empresa_id, predeterminado, usuario_id , 'NOW()', rol_id
+            login_id, empresa_id, predeterminado, usuario_id , 'NOW()', rol_id, '1'
         ];
         
         
@@ -277,7 +297,7 @@ UsuariosModel.prototype.sobreEscribirModulosDelRol = function(login_id, empresa_
                     modulo_id:rows[i].modulo_id,
                     empresasModulos:[{login_empresas_id:login_empresa}]
                 },
-                estado:true
+                estado:'1'
             };
             
             rolesModulos.push(rolModulo);

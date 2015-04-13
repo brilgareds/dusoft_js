@@ -1,0 +1,21 @@
+{
+    "module": "Ciudades",
+    "dependency": {
+        "controllers": [{
+                "ciudades_controller": {
+                    "module": "Parametrizacion/Ciudades",
+                    "controller": "CiudadesController",
+                    "alias": "c_ciudades"
+                }
+            }],
+        "models": [{
+                "ciudades_model": {
+                    "module": "Parametrizacion/Ciudades",
+                    "model": "CiudadesModel",
+                    "alias": "m_ciudades"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

@@ -727,23 +727,28 @@ CREATE TABLE "public"."system_usuarios_configuraciones" (
 /***************** PLANILAS DESPACHOS  ***************************/
 /*****************************************************************/
 
+
+
+/* Crear campo en tabla transportadoras */
 ALTER TABLE "public"."inv_transportadoras"
   ADD COLUMN "placa_vehiculo" CHAR(6);
 
 COMMENT ON COLUMN "public"."inv_transportadoras"."placa_vehiculo"
 IS 'Placa del vehiculo';
 
-
+/* Crear  tabla inv_planillas_despacho */
 CREATE TABLE "public"."inv_planillas_despacho" (
   "id" SERIAL, 
   "inv_transportador_id" INTEGER NOT NULL, 
+  "pais_id" INTEGER, 
+  "departamento_id" INTEGER, 
   "ciudad_id" VARCHAR(4) NOT NULL, 
   "nombre_conductor" VARCHAR(45) NOT NULL, 
   "observacion" TEXT, 
   "estado" CHAR(1) DEFAULT 1 NOT NULL, 
   "usuario_id" INTEGER NOT NULL, 
-  "fecha_registro" TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT now(), 
-  "fecha_despacho" TIMESTAMP(0) WITHOUT TIME ZONE, 
+  "fecha_registro" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, 
+  "fecha_despacho" TIMESTAMP(0) WITHOUT TIME ZONE,   
   CONSTRAINT "inv_planillas_despacho_pkey" PRIMARY KEY("id"), 
   CONSTRAINT "inv_planillas_despacho_fk" FOREIGN KEY ("inv_transportador_id")
     REFERENCES "public"."inv_transportadoras"("transportadora_id")
@@ -752,6 +757,11 @@ CREATE TABLE "public"."inv_planillas_despacho" (
     NOT DEFERRABLE, 
   CONSTRAINT "inv_planillas_despacho_fk1" FOREIGN KEY ("usuario_id")
     REFERENCES "public"."system_usuarios"("usuario_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "inv_planillas_despacho_fk2" FOREIGN KEY ("pais_id", "departamento_id", "ciudad_id")
+    REFERENCES "public"."tipo_mpios"("tipo_pais_id", "tipo_dpto_id", "tipo_mpio_id")
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
     NOT DEFERRABLE
@@ -787,6 +797,7 @@ COMMENT ON COLUMN "public"."inv_planillas_despacho"."fecha_despacho"
 IS 'Fecha en que se despacha los pedidos de la planilla';
 
 
+/* Crear  tabla inv_planillas_detalle_farmacias */
 CREATE TABLE "public"."inv_planillas_detalle_farmacias" (
   "id" SERIAL, 
   "inv_planillas_despacho_id" INTEGER NOT NULL, 
@@ -822,6 +833,7 @@ IS 'Almacenas los documentos de farmacias despachados';
 COMMENT ON COLUMN "public"."inv_planillas_detalle_farmacias"."inv_planillas_despacho_id"
 IS 'Identificador de la planilla';
 
+/* Crear  tabla inv_planillas_detalle_clientes */
 
 CREATE TABLE "public"."inv_planillas_detalle_clientes" (
   "id" SERIAL, 
@@ -858,6 +870,7 @@ IS 'Almacenas los documentos de clientes despachados';
 COMMENT ON COLUMN "public"."inv_planillas_detalle_clientes"."inv_planillas_despacho_id"
 IS 'Identificador de la planilla';
 
+/* Crear  tabla inv_planillas_detalle_empresas */
 
 CREATE TABLE "public"."inv_planillas_detalle_empresas" (
   "id" SERIAL, 

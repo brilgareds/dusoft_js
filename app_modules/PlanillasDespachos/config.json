@@ -1,0 +1,21 @@
+{
+    "module": "PlanillasDespachos",
+    "dependency": {
+        "controllers": [{
+                "planillas_despachos_controller": {
+                    "module": "PlanillasDespachos",
+                    "controller": "PlanillasDespachosController",
+                    "alias": "c_planillas_despachos"
+                }
+            }],
+        "models": [{
+                "planillas_despachos_model": {
+                    "module": "PlanillasDespachos",
+                    "model": "PlanillasDespachosModel",
+                    "alias": "m_planillas_despachos"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

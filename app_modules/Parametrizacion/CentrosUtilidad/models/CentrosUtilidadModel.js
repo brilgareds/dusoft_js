@@ -1,9 +1,9 @@
-var EmpresasModel = function() {
+var CentrosUtilidadModel = function() {
 
 };
 
 
-EmpresasModel.prototype.listar_centros_utilidad_empresa = function(empresa_id, callback) {
+CentrosUtilidadModel.prototype.listar_centros_utilidad_empresa = function(empresa_id, callback) {
 
 
     var sql = "SELECT centro_utilidad as centro_utilidad_id, descripcion FROM centros_utilidad WHERE  empresa_id = $1; ";
@@ -13,4 +13,25 @@ EmpresasModel.prototype.listar_centros_utilidad_empresa = function(empresa_id, c
     });
 };
 
-module.exports = EmpresasModel;
+CentrosUtilidadModel.prototype.listar_centros_utilidad_ciudad= function(pais_id, departamento_id, ciudad_id, callback) {
+
+
+    var sql = " select \
+                a.tipo_pais_id,\
+                a.tipo_dpto_id,\
+                a.tipo_mpio_id,\
+                a.empresa_id,\
+                a.centro_utilidad as centro_utilidad_id, \
+                a.descripcion,\
+                a.ubicacion,\
+                a.telefono\
+                from centros_utilidad a\
+                where a.tipo_pais_id = $1 and a.tipo_dpto_id= $2 and a.tipo_mpio_id= $3 and estado = '1' ";
+
+    G.db.query(sql,[pais_id, departamento_id, ciudad_id] , function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
+
+module.exports = CentrosUtilidadModel;

@@ -246,6 +246,19 @@ ModuloModel.prototype.listarModulosEmpresaPorRol = function(rol_id, callback) {
     });
 };
 
+
+ModuloModel.prototype.listarModulosUsuario = function(rol_id, empresa_id, login_id, callback) {
+    var sql = " SELECT a.*, c.parent, b.modulo_id, b.estado as estado_modulo_usuario, c.nombre, c.state, c.icon, b.id as login_modulos_empresas_id FROM login_empresas a\
+		INNER JOIN login_modulos_empresas b ON b.login_empresas_id = a.id\
+                INNER JOIN modulos c ON b.modulo_id = c.id and c.estado = '1'\
+                WHERE a.rol_id = $1 AND a.empresa_id = $2 AND a.login_id = $3   ORDER BY id";
+
+    G.db.query(sql, [rol_id, empresa_id, login_id], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+
 ModuloModel.prototype.obtenerModulosHijos = function(modulo_id, callback) {
 
     var sql = " SELECT b. * FROM modulos a\

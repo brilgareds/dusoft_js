@@ -1,10 +1,11 @@
 
-var Usuarios = function(usuarios, m_rol) {
+var Usuarios = function(usuarios, m_rol, m_modulo) {
 
     console.log("Modulo Usuarios Cargado ");
 
     this.m_usuarios = usuarios;
     this.m_rol = m_rol;
+    this.m_modulo = m_modulo;
 };
 
 
@@ -113,6 +114,120 @@ Usuarios.prototype.subirAvatarUsuario = function(req, res) {
     
 };
 
+Usuarios.prototype.obtenerRolUsuarioPorEmpresa = function(req, res) {
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.parametrizacion_usuarios.usuario_id === undefined || args.parametrizacion_usuarios.usuario_id.length === 0 ) {
+        res.send(G.utils.r(req.url, 'El id del usuario no esta definido', 404, {}));
+        return;
+    }
+    
+   if (args.parametrizacion_usuarios.empresa_id === undefined || args.parametrizacion_usuarios.empresa_id.length === 0 ) {
+        res.send(G.utils.r(req.url, 'La empresa no esta definida', 404, {}));
+        return;
+    }
+    
+    var empresa_id = args.parametrizacion_usuarios.empresa_id;
+    var usuario_id = args.parametrizacion_usuarios.usuario_id;
+    
+    
+    that.m_usurios.obtenerRolUsuarioPorEmpresa(empresa_id, usuario_id, function(err, rol){
+        if(err){
+            res.send(G.utils.r(req.url, 'Se genero un error consultando el rol del usuario', 403, {}));
+            return;
+        }
+            
+        res.send(G.utils.r(req.url, 'Rol del usuario', 200, {parametrizacion_usuarios: {rol: rol}}));
+    });
+    
+};
+
+Usuarios.prototype.obtenerModulosPorUsuario = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+
+    if (args.parametrizacion_usuarios.usuario_id === undefined || args.parametrizacion_usuarios.usuario_id.length === 0 ) {
+        res.send(G.utils.r(req.url, 'El id del usuario no esta definido', 404, {}));
+        return;
+    }
+    
+    if (args.parametrizacion_usuarios.empresa_id === undefined || args.parametrizacion_usuarios.empresa_id.length === 0 ) {
+        res.send(G.utils.r(req.url, 'El codigo de la empresa no esta definido', 404, {}));
+        return;
+    }
+    
+    if (args.parametrizacion_usuarios.rol_id === undefined || args.parametrizacion_usuarios.rol_id.length === 0 ) {
+        res.send(G.utils.r(req.url, 'El id del rol no esta definido', 404, {}));
+        return;
+    }
+    
+    var login_id = args.parametrizacion_usuarios.usuario_id;
+    var empresa_id = args.parametrizacion_usuarios.empresa_id;
+    var rol_id = args.parametrizacion_usuarios.rol_id;
+    var usuario_id = req.session.user.usuario_id;
+
+    that.m_modulo.listarModulosUsuario(rol_id, empresa_id, login_id, function(err, rows) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error listando modulos del rol', 500, {parametrizacion_usuarios: {}}));
+            return;
+        }
+        
+
+        var modulos = [];
+        var i = rows.length;
+
+        if (i === 0) {
+            res.send(G.utils.r(req.url, "Listado de modulos rol", 200, {parametrizacion_usuarios: {modulos_usuario: []}}));
+            return;
+        }
+
+        //solo deben retornarse los modulos hijos para el plugin jstree
+        rows.forEach(function(modulo) {
+
+            that.m_modulo.obtenerModulosHijos(modulo.modulo_id, function(err, hijos) {
+                if (hijos.length === 0) {
+                    modulos.push(modulo);
+                }
+
+                if (--i === 0) {
+                    res.send(G.utils.r(req.url, "Listado de modulos", 200, {parametrizacion_usuarios: {modulos_usuario: modulos}}));
+                }
+
+            });
+
+        });
+
+
+    });
+};
+
+
+Usuarios.prototype.listarUsuariosModulosOpciones = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+
+    if (args.parametrizacion_usuarios.modulo.id === undefined && args.parametrizacion_usuarios.modulo.id.length === '') {
+        res.send(G.utils.r(req.url, 'El id del modulo no esta definido', 500, {parametrizacion_modulos: {}}));
+        return;
+    }
+    var modulo = args.parametrizacion_usuarios.modulo.id;
+    var rol_id = args.parametrizacion_usuarios.modulo.rol_id;
+    var empresa_id = args.parametrizacion_usuarios.modulo.empresa_id;
+    var usuario_id = args.parametrizacion_usuarios.usuario_id;
+    
+    that.m_usuarios.listarUsuarioModuloOpciones(modulo, rol_id, empresa_id,usuario_id, function(err, rows) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error listando las opciones del modulo', 500, {parametrizacion_usuarios: {}}));
+            return;
+        }
+        res.send(G.utils.r(req.url, "Listado de opciones por modulo", 200, {parametrizacion_usuarios: {opciones_modulo: rows}}));
+
+    });
+};
+
+
 
 Usuarios.prototype.asignarRolUsuario = function(req, res) {
      var that = this;
@@ -161,6 +276,37 @@ Usuarios.prototype.asignarRolUsuario = function(req, res) {
                 
         
     
+};
+
+
+Usuarios.prototype.habilitarModulosDeUsuario = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+
+    var rolesModulos = args.parametrizacion_usuarios.rolesModulos;
+    var login_empresas_id = args.parametrizacion_usuarios.login_empresas_id;
+
+    if (rolesModulos === undefined || rolesModulos.length === 0) {
+        res.send(G.utils.r(req.url, 'No se a seleccionado ningun modulo', 500, {parametrizacion_perfiles: {}}));
+        return;
+    }
+    
+    if (login_empresas_id === undefined || login_empresas_id.length === 0) {
+        res.send(G.utils.r(req.url, 'No se a seleccionado ninguna empresa', 500, {parametrizacion_perfiles: {}}));
+        return;
+    }
+
+
+    that.m_usuarios.habilitarModulosDeUsuario(req.session.user.usuario_id, rolesModulos,login_empresas_id, function(err, rows, ids) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error habilitando las empresas para el usuario', 500, {parametrizacion_usuarios: {ids: ids}}));
+            return;
+        }
+
+        res.send(G.utils.r(req.url, "Se asigno correctamente los modulos seleccionados", 200, {parametrizacion_usuarios: {ids: ids}}));
+
+    });
+
 };
 
 
@@ -287,6 +433,6 @@ function __validarCreacionUsuario(that, usuario, callback) {
     });
 }
 
-Usuarios.$inject = ["m_usuarios", "m_rol"];
+Usuarios.$inject = ["m_usuarios", "m_rol", "m_modulo"];
 
 module.exports = Usuarios;

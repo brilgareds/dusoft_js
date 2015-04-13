@@ -19,7 +19,12 @@
                 'OBTENER_USUARIO_POR_ID':BASE_URL+"/Usuarios/obtenerUsuarioPorId",
                 'SUBIR_AVATAR_USUARIO':BASE_URL+"/Usuarios/subirAvatarUsuario",
                 'OBTENER_AVATAR_USUARIO':BASE_URL+"/Usuarios/obtenerAvatarUsuario",
-                'ASIGNAR_ROL_USUARIO':BASE_URL+"/Usuarios/asignarRolUsuario"
+                'ASIGNAR_ROL_USUARIO':BASE_URL+"/Usuarios/asignarRolUsuario",
+                'OBTENER_MODULOS_USUARIO':BASE_URL+"/Usuarios/obtenerModulosPorUsuario",
+                'LISTAR_USUARIO_OPCIONES':BASE_URL+"/Usuarios/listarUsuariosModulosOpciones",
+                'HABILITAR_MODULOS_USUARIO':BASE_URL+"/Usuarios/habilitarModulosDeUsuario",
+                'OBTENER_ROL_USUARIO':BASE_URL+"/Usuarios/obtenerRolUsuarioPorEmpresa"
+                
 	    },
             'MODULOS':{
                 'LISTAR_MODULOS': BASE_URL+"/Modulos/listarModulos",

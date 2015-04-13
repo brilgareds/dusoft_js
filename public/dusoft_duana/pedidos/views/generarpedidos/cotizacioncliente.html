@@ -1,28 +1,37 @@
-<div flow-init="{ target : '/upload'}" flow-file-added="!!{txt:1,csv:1}[$file.getExtension()]">
-    <div style="padding:5px" ng-controller="CreaCotizacionesController">  
+<!--<div flow-init="{ target : '/upload'}" flow-file-added="!!{txt:1,csv:1}[$file.getExtension()]">-->
+    <div class="padding5" ng-controller="CreaCotizacionesController">  
 
-        <div class="row"> 
-            <div class="col-sm-12 col-md-12">
+        <div class="row marginBottom5"> 
+            
+            <div class="col-sm-12 col-md-12 col-lg-12 marginBottom5">
 
-                <div class="panel panel-info marginBottom5">
+                <div class="panel panel-default marginBottom0 paddingBottomZero">
 
-                    <div class="panel-heading">
-                        <h4 class="h4MarginTopBottom">Información de Cliente</h4>
+                    <div class="panel-heading col-sm-12 col-md-12 col-lg-12">
+                        
+                        <div class="col-sm-6 col-md-6 col-lg-6">
+                            <h3 class="h4MarginTopBottom">Información de Cliente</h3>
+                        </div>
+                        
+                        <div class="col-sm-6 col-md-6 col-lg-6">
+                            <h3 class="h4MarginTopBottom" ng-if="rootCreaCotizaciones.es_cotizacion">Cotización N°: {{rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion()}}</h3>
+                            <h3 class="h4MarginTopBottom" ng-if="!rootCreaCotizaciones.es_cotizacion">Pedido N°: {{rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido()}}</h3>
+                        </div>
+
                     </div>
-                    <div class="panel-body">
+                    
+                    <div class="panel-body marginBottom0 paddingBottomZero marginRightZero">
 
                         <div class="row col-sm-6 col-md-12"> <!--Div Panel Superior-->
-
+                            <br/>
                             <button type="button" class="btn btn-default btn-sm" ng-if="rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEditable() && !rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEncabezadoBloqueado()" ng-click="onRowClickSelectCliente()">
                                 <span class="glyphicon glyphicon-user"></span> Seleccionar Cliente
                             </button>
-                            <div class="pull-right" ng-if="rootCreaCotizaciones.es_cotizacion"><h3><font color="blue">Cotización N°: {{rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion()}}</font></h3></div>
-                            <div class="pull-right" ng-if="!rootCreaCotizaciones.es_cotizacion"><h3><font color="blue">Pedido N°: {{rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido()}}</font></h3></div>
                         </div> <!--Div Panel Superior-->
 
                         <div class="row col-lg-9 col-md-9 col-sm-5"> <!-- Div Panel Izquierdo -->
                             <div class="row"> <!--Div Fila 1-->
-
+                                <br/>
                                 <div class="col-md-4"> <!--Contenedor Izquierdo-->
                                     <h4 class="h4MarginTopBottom">Cliente:</h4></br>
                                     {{rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().nombre_tercero}}
@@ -45,7 +54,7 @@
                                     </br></br>
                                     <h4 class="h4MarginTopBottom">Vendedor: </h4>
 
-                                    <select ui-select2="seleccionvendedor"  class="form-control selectgeneral pull-left" ng-disabled="rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEncabezadoBloqueado() || !rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEditable()" ng-model="rootCreaCotizaciones.seleccion_vendedor"  placeholder="Seleccionar Documento" ng-change="valorSeleccionado()">
+                                    <select ui-select2="seleccionvendedor"  class="form-control selectgeneral pull-left" ng-disabled="rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEncabezadoBloqueado() || !rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEditable()" ng-model="rootCreaCotizaciones.seleccion_vendedor"  placeholder="Seleccionar Vendedor" ng-change="valorSeleccionado()">
                                         <option></option>
                                         <option ng-repeat="vendedor in rootCreaCotizaciones.Empresa.getVendedores()"  ng-value="vendedor.id" >{{vendedor.nombre_tercero}}</option>
                                     </select>
@@ -90,10 +99,10 @@
         <div class="row">
             <div class="col-xs-12">
 
-                <div class="panel panel-info marginBottom5"> <!-- / begin banking details -->
+                <div class="panel panel-default marginBottom5"> <!-- / begin banking details -->
 
                     <div class="panel-heading">
-                        <h4 class="h4MarginTopBottom">Productos</h4>
+                        <h3 class="h4MarginTopBottom">Productos</h3>
                     </div>
 
                     <div>
@@ -109,16 +118,19 @@
                                 <b ng-if="!rootCreaCotizaciones.es_cotizacion"> Detalle Pedido</b>
                             </tab-heading>
 
-                            <div class="panel-body">
+                            <div class="input-group navbar-form">
                                 
-                                <button type="button" class="btn btn-default btn-sm" ng-disabled="rootCreaCotizaciones.bloquear_incluir_producto" ng-if="rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEditable()" ng-click="onRowClickSelectProducto(1)">
+                                <button type="button" class="btn btn-default btn-medium ng-scope" ng-disabled="rootCreaCotizaciones.bloquear_incluir_producto" ng-if="rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEditable()" ng-click="onRowClickSelectProducto(1)">
                                     <span class="glyphicon glyphicon-plus"></span> Incluir / Eliminar Producto
                                 </button>
 
                             </div>
-                            <div class="panel-body">
-                                <div class="auditadosGrid" ng-grid="rootCreaCotizaciones.lista_productos"></div>
-                            </div>
+                            
+                            <!--<div class="panel-body">-->
+                                <div class="table-responsive">
+                                    <div class="auditadosGrid grid-responsive" ng-grid="rootCreaCotizaciones.lista_productos"></div>
+                                </div>        
+                            <!--</div>-->
 
                         </tab>
 
@@ -189,11 +201,12 @@
 
         <div class="col-sm-12 btn-toolbar">
 
-            <button type="submit" class="btn btn-accion btn-success pull-right" ng-if="rootCreaCotizaciones.es_cotizacion" ng-disabled="!rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEditable()" ng-click="generarPedidoCliente()">Generar Pedido</button>
-            <button type="submit" class="btn btn-accion btn-danger pull-right" ng-if="rootCreaCotizaciones.es_cotizacion" ng-click="generarPdfCotizacionCliente()">Generar PDF</button>
-            <button type="submit" class="btn btn-accion btn-danger pull-right" ng-if="!rootCreaCotizaciones.es_cotizacion" ng-click="generarPdfPedidoCliente()">Generar PDF</button>
-            <button type="submit" class="btn btn-accion btn-warning pull-right" ng-if="rootCreaCotizaciones.es_cotizacion" ng-click="abrirViewPedidosClientes()">Guardar Cotización</button>
-            <button type="submit" class="btn btn-accion btn-warning pull-right" ng-if="!rootCreaCotizaciones.es_cotizacion" ng-click="abrirViewPedidosClientes()">Guardar Pedido</button>
+            <button type="submit" class="btn btn-default pull-right" ng-if="rootCreaCotizaciones.es_cotizacion" ng-disabled="!rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEditable()
+                    || !rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEncabezadoBloqueado()" ng-click="generarPedidoCliente()"><span class="glyphicon glyphicon-cog"></span> Generar Pedido</button>
+            <button type="submit" class="btn btn-default pull-right" ng-if="rootCreaCotizaciones.es_cotizacion" ng-click="generarPdfCotizacionCliente()"><span class="glyphicon glyphicon-file"></span> Generar PDF</button>
+            <button type="submit" class="btn btn-default pull-right" ng-if="!rootCreaCotizaciones.es_cotizacion" ng-click="generarPdfPedidoCliente()"><span class="glyphicon glyphicon-file"></span> Generar PDF</button>
+            <button type="submit" class="btn btn-default pull-right" ng-if="rootCreaCotizaciones.es_cotizacion" ng-click="abrirViewPedidosClientes()"><span class="glyphicon glyphicon-ok"></span> Guardar Cotización</button>
+            <button type="submit" class="btn btn-default pull-right" ng-if="!rootCreaCotizaciones.es_cotizacion" ng-click="abrirViewPedidosClientes()"><span class="glyphicon glyphicon-ok"></span> Guardar Pedido</button>
 
         </div>
 
@@ -205,4 +218,4 @@
 
     </div>
     <visualizar-reporte></visualizar-reporte>
-</div>
+<!--</div>-->

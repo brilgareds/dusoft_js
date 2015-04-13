@@ -6,4 +6,8 @@ module.exports = function(app, di_container) {
     app.post('/api/CentrosUtilidad/listarCentrosUtilidadEmpresa', function(req, res) {
         c_centros_utilidad.listar_centros_utilidad_empresa(req, res);
     });
+    
+    app.post('/api/CentrosUtilidad/listarCentrosUtilidadCiudad', function(req, res) {
+        c_centros_utilidad.listar_centros_utilidad_ciudad(req, res);
+    });
 };

@@ -1197,8 +1197,8 @@ PedidosClienteModel.prototype.insertar_pedido_cliente = function(numero_cotizaci
            var numero_pedido = rows.rows[0].pedido_cliente_id;
            var fecha_registro_encabezado = rows.rows[0].fecha_registro;
            
-           console.log(">>>>> DATA INSERTAR ENCABEZADO: ", rows);
-           console.log(">>>>> Número Pedido: ", numero_pedido);
+           //console.log(">>>>> DATA INSERTAR ENCABEZADO: ", rows);
+           //console.log(">>>>> Número Pedido: ", numero_pedido);
            
            __cambiar_estado_cotizacion(numero_cotizacion, '0', function(err, rows, result){
                if(err){

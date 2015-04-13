@@ -1139,10 +1139,17 @@ PedidosCliente.prototype.pedidoClienteArchivoPlano = function(req, res) {
 
                             productos_validos.forEach(function(producto_valido) {
 
+                                var filtro = {
+                                    buscar_todo: true,
+                                    buscar_por_codigo: false,
+                                    buscar_por_molecula: false,
+                                    buscar_por_descripcion: false
+                                };
+
                                 var termino_busqueda = producto_valido.codigo_producto;
 
                                 //Consultar tipo_producto_id y cantidad_pendiente
-                                that.m_productos.listar_productos_clientes(empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pedido_cliente_id_tmp, tipo_producto, pagina_actual, function(err, lista_productos) {
+                                that.m_productos.listar_productos_clientes(empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pedido_cliente_id_tmp, tipo_producto, pagina_actual, filtro, function(err, lista_productos) {
 
                                     var i = lista_productos.length;
 

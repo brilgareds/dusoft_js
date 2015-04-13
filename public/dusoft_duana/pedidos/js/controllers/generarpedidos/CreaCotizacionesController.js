@@ -634,7 +634,47 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 
                 if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== undefined)
                 {
-                    that.modificarCotizacion(row);
+                    
+                    var numero_cotizacion = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion();
+                
+                    //Consultar primero estado de la cotización
+                    that.consultarEstadoCotizacion(numero_cotizacion, function(estado_cotizacion){
+                    
+                        if (estado_cotizacion === '1') {
+                            that.modificarCotizacion(row);
+                        }
+                        else{
+                            /**/
+                            $scope.opts = {
+                                backdrop: true,
+                                backdropClick: true,
+                                dialogFade: false,
+                                keyboard: true,
+                                template: ' <div class="modal-header">\
+                                                <button type="button" class="close" ng-click="close()">&times;</button>\
+                                                <h4 class="modal-title">Aviso: </h4>\
+                                            </div>\
+                                            <div class="modal-body row">\
+                                                <div class="col-md-12">\
+                                                    <h4 >La Cotización ' + numero_cotizacion + ' se ha convertido en Pedido. No puede Modificarse!</h4>\
+                                                </div>\
+                                            </div>\
+                                            <div class="modal-footer">\
+                                                <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                            </div>',
+                                scope: $scope,
+                                controller: function($scope, $modalInstance) {
+                                    $scope.close = function() {
+                                        $modalInstance.close();
+                                    };
+                                }
+                            };
+
+                            var modalInstance = $modal.open($scope.opts);
+                            /**/
+                        }
+                    });
+                    
                 }
                 else if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido() !== undefined)
                 {
@@ -649,7 +689,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             that.modificarPedido(row);
                         } //Fin IF estado_pedido
                         else {
-                            //Muestra Alerta explicando porqué no puede eliminar
+                            //Muestra Alerta explicando porqué no puede modificar
                             $scope.opts = {
                                 backdrop: true,
                                 backdropClick: true,
@@ -882,7 +922,46 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                     if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== undefined)
                     {
-                        that.eliminarDetalleCotizacion(row);
+                         var numero_cotizacion = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion();
+                
+                        //Consultar primero estado de la cotización
+                        that.consultarEstadoCotizacion(numero_cotizacion, function(estado_cotizacion){
+
+                            if (estado_cotizacion === '1') {
+                                that.eliminarDetalleCotizacion(row);
+                            }
+                            else{
+                                /**/
+                                $scope.opts = {
+                                    backdrop: true,
+                                    backdropClick: true,
+                                    dialogFade: false,
+                                    keyboard: true,
+                                    template: ' <div class="modal-header">\
+                                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                                    <h4 class="modal-title">Aviso: </h4>\
+                                                </div>\
+                                                <div class="modal-body row">\
+                                                    <div class="col-md-12">\
+                                                        <h4 >La Cotización ' + numero_cotizacion + ' se ha convertido en Pedido. No puede Modificarse!</h4>\
+                                                    </div>\
+                                                </div>\
+                                                <div class="modal-footer">\
+                                                    <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                                </div>',
+                                    scope: $scope,
+                                    controller: function($scope, $modalInstance) {
+                                        $scope.close = function() {
+                                            $modalInstance.close();
+                                        };
+                                    }
+                                };
+
+                                var modalInstance = $modal.open($scope.opts);
+                                /**/
+                            }
+
+                        });
                     }
                     else if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido() !== ''
                         && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido() !== undefined)
@@ -1440,53 +1519,132 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         console.log("Error: ", data.msj);
                     }
                 });
-            };            
+            };   
             
+            //Consulta Estado de la Cotización
+            that.consultarEstadoCotizacion = function(numero_cotizacion, callback){
+                
+                //Objeto para consulta de encabezado pedido
+                var obj = {
+                    session: $scope.rootCreaCotizaciones.session,
+                    data: {
+                        estado_cotizacion: {
+                            numero_cotizacion: numero_cotizacion,
+                        }
+                    }
+                };
+                
+                var url = API.PEDIDOS.CONSULTA_ESTADO_COTIZACION;
+
+                Request.realizarRequest(url, "POST", obj, function(data_estado) {
+
+                    if (data_estado.status === 200) {
+                        console.log("Consulta exitosa: ", data_estado.msj);
+
+                        if (callback !== undefined && callback !== "" && callback !== 0) {
+
+                            var estado = data_estado.obj.resultado_consulta[0].estado;
+                            
+                            callback(estado);
+                        }
+                    }
+                    else {
+                        console.log("Error en la consulta: ", data_estado.msj);
+                    }
+                });
+                
+            };
+            
+            //Genera el pedido del cliente si la cotización está en estado "Activa"
             $scope.generarPedidoCliente = function (){
                 
-                var obj_encabezado = {
-                        session: $scope.rootCreaCotizaciones.session,
-                        data: {
-                            pedido_cliente: {
-                                numero_cotizacion: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion()
+                
+                var numero_cotizacion = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion();
+                
+                //Consultar primero estado de lacotización
+                that.consultarEstadoCotizacion(numero_cotizacion, function(estado_cotizacion){
+                    
+                    if (estado_cotizacion === '1') {
+
+                        var obj_encabezado = {
+                            session: $scope.rootCreaCotizaciones.session,
+                            data: {
+                                pedido_cliente: {
+                                    numero_cotizacion: numero_cotizacion
+                                }
                             }
-                        }
-                    };
-                    /* Fin - Objeto para inserción de Encabezado*/
+                        };
+                        /* Fin - Objeto para inserción de Encabezado*/
 
-                    /* Inicio - Validar Existencia de encabezado */
+                        /* Inicio - Validar Existencia de encabezado */
 
-                    var url_encabezado = API.PEDIDOS.INSERTAR_PEDIDO_CLIENTE;
+                        var url_encabezado = API.PEDIDOS.INSERTAR_PEDIDO_CLIENTE;
 
-                    Request.realizarRequest(url_encabezado, "POST", obj_encabezado, function(data) {
+                        Request.realizarRequest(url_encabezado, "POST", obj_encabezado, function(data) {
 
-                        if (data.status === 200) {
-                            
-                            console.log("Inserción de Pedido Cliente exitosa", data.msj);
-                            
-                            console.log(">>> DATA TRAS GENERAR PEDIDO: ", data);
-                            
-                            var numero_pedido = data.obj.numero_pedido;
-                            var fecha_registro = data.obj.fecha_registro;
-                            
-                            $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().numero_pedido = numero_pedido;
-                            $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().fecha_registro = fecha_registro;
-                            $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setNumeroCotizacion('');
-                            $scope.rootCreaCotizaciones.es_cotizacion = false;
-                            
-                            /* Mensaje para Usuario - Inicio */
-                            $scope.opts = {
+                            if (data.status === 200) {
+
+                                console.log("Inserción de Pedido Cliente exitosa", data.msj);
+
+                                console.log(">>> DATA TRAS GENERAR PEDIDO: ", data);
+
+                                var numero_pedido = data.obj.numero_pedido;
+                                var fecha_registro = data.obj.fecha_registro;
+
+                                $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().numero_pedido = numero_pedido;
+                                $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().fecha_registro = fecha_registro;
+                                $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setNumeroCotizacion('');
+                                $scope.rootCreaCotizaciones.es_cotizacion = false;
+
+                                /* Mensaje para Usuario - Inicio */
+                                $scope.opts = {
+                                backdrop: true,
+                                backdropClick: true,
+                                dialogFade: false,
+                                keyboard: true,
+                                template: ' <div class="modal-header">\
+                                                <button type="button" class="close" ng-click="close()">&times;</button>\
+                                                <h4 class="modal-title">Listado Productos </h4>\
+                                            </div>\
+                                            <div class="modal-body row">\
+                                                <div class="col-md-12">\
+                                                    <h4 >Número de Pedido: '+numero_pedido+' </h4>\
+                                                </div>\
+                                            </div>\
+                                            <div class="modal-footer">\
+                                                <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                            </div>',
+                                scope: $scope,
+                                controller: function($scope, $modalInstance) {
+                                    $scope.close = function() {
+                                        $modalInstance.close();
+                                    };
+                                }
+                            };
+
+                            var modalInstance = $modal.open($scope.opts);  
+
+                                /* Mensaje para Usuario - Fin */
+                            }
+                            else{
+                                console.log("Falló la Inserción de Pedido Cliente", data.msj);
+                            }
+                        });
+                    }
+                    else {
+                        //Avisar la no posibilidad de modiificar porque se ha convertido en Pedido
+                        $scope.opts = {
                             backdrop: true,
                             backdropClick: true,
                             dialogFade: false,
                             keyboard: true,
                             template: ' <div class="modal-header">\
                                             <button type="button" class="close" ng-click="close()">&times;</button>\
-                                            <h4 class="modal-title">Listado Productos </h4>\
+                                            <h4 class="modal-title">Aviso: </h4>\
                                         </div>\
                                         <div class="modal-body row">\
                                             <div class="col-md-12">\
-                                                <h4 >Número de Pedido: '+numero_pedido+' </h4>\
+                                                <h4 >La Cotización ' + numero_cotizacion + ' se ha convertido en Pedido. No puede generar otro Pedido!</h4>\
                                             </div>\
                                         </div>\
                                         <div class="modal-footer">\
@@ -1500,14 +1658,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             }
                         };
 
-                        var modalInstance = $modal.open($scope.opts);  
-
-                            /* Mensaje para Usuario - Fin */
-                        }
-                        else{
-                            console.log("Falló la Inserción de Pedido Cliente", data.msj);
-                        }
-                    });
+                        var modalInstance = $modal.open($scope.opts);
+                    }
+                }); //Fin that.consultarEstadoCotizacion
             };
             
             that.cargarListadoVendedores();

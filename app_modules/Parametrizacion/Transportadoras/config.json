@@ -1,0 +1,21 @@
+{
+    "module": "Transportadoras",
+    "dependency": {
+        "controllers": [{
+                "transportadoras_controller": {
+                    "module": "Parametrizacion/Transportadoras",
+                    "controller": "TransportadorasController",
+                    "alias": "c_transportadoras"
+                }
+            }],
+        "models": [{
+                "transportadoras_model": {
+                    "module": "Parametrizacion/Transportadoras",
+                    "model": "TransportadorasModel",
+                    "alias": "m_transportadoras"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

@@ -723,5 +723,169 @@ CREATE TABLE "public"."system_usuarios_configuraciones" (
 
 ------ roles y permisos -----
 
+/*****************************************************************/
+/***************** PLANILAS DESPACHOS  ***************************/
+/*****************************************************************/
 
+ALTER TABLE "public"."inv_transportadoras"
+  ADD COLUMN "placa_vehiculo" CHAR(6);
+
+COMMENT ON COLUMN "public"."inv_transportadoras"."placa_vehiculo"
+IS 'Placa del vehiculo';
+
+
+CREATE TABLE "public"."inv_planillas_despacho" (
+  "id" SERIAL, 
+  "inv_transportador_id" INTEGER NOT NULL, 
+  "ciudad_id" VARCHAR(4) NOT NULL, 
+  "nombre_conductor" VARCHAR(45) NOT NULL, 
+  "observacion" TEXT, 
+  "estado" CHAR(1) DEFAULT 1 NOT NULL, 
+  "usuario_id" INTEGER NOT NULL, 
+  "fecha_registro" TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT now(), 
+  "fecha_despacho" TIMESTAMP(0) WITHOUT TIME ZONE, 
+  CONSTRAINT "inv_planillas_despacho_pkey" PRIMARY KEY("id"), 
+  CONSTRAINT "inv_planillas_despacho_fk" FOREIGN KEY ("inv_transportador_id")
+    REFERENCES "public"."inv_transportadoras"("transportadora_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "inv_planillas_despacho_fk1" FOREIGN KEY ("usuario_id")
+    REFERENCES "public"."system_usuarios"("usuario_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE
+) WITH OIDS;
+
+COMMENT ON TABLE "public"."inv_planillas_despacho"
+IS 'Permite almacenar la informacion general del despacho de los pedidos';
+
+COMMENT ON COLUMN "public"."inv_planillas_despacho"."inv_transportador_id"
+IS 'Identificador de la tabla de transportadoras';
+
+COMMENT ON COLUMN "public"."inv_planillas_despacho"."ciudad_id"
+IS 'Identificador de la ciudad';
+
+COMMENT ON COLUMN "public"."inv_planillas_despacho"."nombre_conductor"
+IS 'Nombre del conductor';
+
+COMMENT ON COLUMN "public"."inv_planillas_despacho"."observacion"
+IS 'Observacion de la planilla';
+
+COMMENT ON COLUMN "public"."inv_planillas_despacho"."estado"
+IS '0 = Planilla Anulada
+1 = Planilla Activa
+2 = Planilla Despachada';
+
+COMMENT ON COLUMN "public"."inv_planillas_despacho"."usuario_id"
+IS 'Usuario que realiza la planilla';
+
+COMMENT ON COLUMN "public"."inv_planillas_despacho"."fecha_registro"
+IS 'Fecha en que se crea la planilla';
+
+COMMENT ON COLUMN "public"."inv_planillas_despacho"."fecha_despacho"
+IS 'Fecha en que se despacha los pedidos de la planilla';
+
+
+CREATE TABLE "public"."inv_planillas_detalle_farmacias" (
+  "id" SERIAL, 
+  "inv_planillas_despacho_id" INTEGER NOT NULL, 
+  "empresa_id" INTEGER NOT NULL, 
+  "prefijo" VARCHAR(45) NOT NULL, 
+  "numero" INTEGER NOT NULL, 
+  "cantidad_cajas" INTEGER NOT NULL, 
+  "cantidad_neveras" INTEGER DEFAULT 0 NOT NULL, 
+  "temperatura_neveras" DOUBLE PRECISION, 
+  "observacion" TEXT, 
+  "usuario_id" INTEGER NOT NULL, 
+  "fecha_registro" TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT now(), 
+  CONSTRAINT "inv_planillas_detalle_farmacias_fk" FOREIGN KEY ("inv_planillas_despacho_id")
+    REFERENCES "public"."inv_planillas_despacho"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "inv_planillas_detalle_farmacias_fk1" FOREIGN KEY ("empresa_id", "prefijo", "numero")
+    REFERENCES "public"."inv_bodegas_movimiento_despachos_farmacias"("empresa_id", "prefijo", "numero")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "inv_planillas_detalle_farmacias_fk2" FOREIGN KEY ("usuario_id")
+    REFERENCES "public"."system_usuarios"("usuario_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE
+) WITH OIDS;
+
+COMMENT ON TABLE "public"."inv_planillas_detalle_farmacias"
+IS 'Almacenas los documentos de farmacias despachados';
+
+COMMENT ON COLUMN "public"."inv_planillas_detalle_farmacias"."inv_planillas_despacho_id"
+IS 'Identificador de la planilla';
+
+
+CREATE TABLE "public"."inv_planillas_detalle_clientes" (
+  "id" SERIAL, 
+  "inv_planillas_despacho_id" INTEGER NOT NULL, 
+  "empresa_id" INTEGER NOT NULL, 
+  "prefijo" VARCHAR(45) NOT NULL, 
+  "numero" INTEGER NOT NULL, 
+  "cantidad_cajas" INTEGER NOT NULL, 
+  "cantidad_neveras" INTEGER DEFAULT 0 NOT NULL, 
+  "temperatura_neveras" DOUBLE PRECISION, 
+  "observacion" TEXT, 
+  "usuario_id" INTEGER NOT NULL, 
+  "fecha_registro" TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT now(), 
+  CONSTRAINT "inv_planillas_detalle_clientes_fk" FOREIGN KEY ("inv_planillas_despacho_id")
+    REFERENCES "public"."inv_planillas_despacho"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "inv_planillas_detalle_clientes_fk1" FOREIGN KEY ("empresa_id", "prefijo", "numero")
+    REFERENCES "public"."inv_bodegas_movimiento_despachos_clientes"("empresa_id", "prefijo", "numero")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "inv_planillas_detalle_clientes_fk2" FOREIGN KEY ("usuario_id")
+    REFERENCES "public"."system_usuarios"("usuario_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE
+) WITH OIDS;
+
+COMMENT ON TABLE "public"."inv_planillas_detalle_clientes"
+IS 'Almacenas los documentos de clientes despachados';
+
+COMMENT ON COLUMN "public"."inv_planillas_detalle_clientes"."inv_planillas_despacho_id"
+IS 'Identificador de la planilla';
+
+
+CREATE TABLE "public"."inv_planillas_detalle_empresas" (
+  "id" SERIAL, 
+  "inv_planillas_despacho_id" INTEGER NOT NULL, 
+  "empresa_id" INTEGER NOT NULL, 
+  "prefijo" VARCHAR(45) NOT NULL, 
+  "numero" INTEGER NOT NULL, 
+  "cantidad_cajas" INTEGER NOT NULL, 
+  "cantidad_neveras" INTEGER DEFAULT 0 NOT NULL, 
+  "temperatura_neveras" DOUBLE PRECISION, 
+  "observacion" TEXT, 
+  "usuario_id" INTEGER NOT NULL, 
+  "fecha_registro" TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT now(), 
+  CONSTRAINT "inv_planillas_detalle_empresas_fk" FOREIGN KEY ("inv_planillas_despacho_id")
+    REFERENCES "public"."inv_planillas_despacho"("id")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "inv_planillas_detalle_empresas_fk1" FOREIGN KEY ("usuario_id")
+    REFERENCES "public"."system_usuarios"("usuario_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE
+) WITH OIDS;
+
+COMMENT ON TABLE "public"."inv_planillas_detalle_empresas"
+IS 'Almacenas los documentos de otras empresas despachados';
+
+COMMENT ON COLUMN "public"."inv_planillas_detalle_empresas"."inv_planillas_despacho_id"
+IS 'Identificador de la planilla';
 

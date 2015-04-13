@@ -570,14 +570,14 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
     var estado = args.cotizacion_encabezado.estado;
     var observaciones = args.cotizacion_encabezado.observaciones;
 
-    that.m_pedidos_clientes.insertar_cotizacion(empresa_id, tipo_id_tercero, tercero_id, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones, function(err, pedido_cliente_id_tmp) {
+    that.m_pedidos_clientes.insertar_cotizacion(empresa_id, tipo_id_tercero, tercero_id, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones, function(err, row) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error en Inserción del Encabezado de Cotización', 500, {}));
             return;
         }
 
-        res.send(G.utils.r(req.url, 'Inserción del Encabezado Cotización Exitosa', 200, {resultado_consulta: pedido_cliente_id_tmp}));
+        res.send(G.utils.r(req.url, 'Inserción del Encabezado Cotización Exitosa', 200, {resultado_consulta: row}));
 
     });
  
@@ -665,7 +665,7 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
     var tipo_producto = args.cotizacion_detalle.tipo_producto;
     var usuario_id = req.session.user.usuario_id;
 
-    that.m_pedidos_clientes.insertar_detalle_cotizacion(pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto, function(err, pedido_cliente_id_tmp) {
+    that.m_pedidos_clientes.insertar_detalle_cotizacion(pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto, function(err, row) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error en Inserción del Detalle de Cotización', 500, {}));
@@ -699,7 +699,7 @@ PedidosCliente.prototype.insertarPedidoCliente = function(req, res) {
     var numero_cotizacion = args.pedido_cliente.numero_cotizacion;
     var usuario_id = req.session.user.usuario_id;
 
-    that.m_pedidos_clientes.insertar_pedido_cliente(numero_cotizacion, function(err, rows) {
+    that.m_pedidos_clientes.insertar_pedido_cliente(numero_cotizacion, function(err, rows, fecha_registro_encabezado) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error en la inserción del Pedido', 500, {}));
@@ -707,6 +707,10 @@ PedidosCliente.prototype.insertarPedidoCliente = function(req, res) {
         }
         
         var numero_pedido = rows.rows[0].pedido_cliente_id;
+        var fecha_registro = fecha_registro_encabezado;
+        
+        console.log(">>>> RESULTADO GENERAR PEDIDO: ", rows);
+        console.log(">>>>> FECHA REGISTRO ENCABEZADO: ", fecha_registro);
         //res.send(G.utils.r(req.url, 'Inserción Exitosa del Pedido', 200, {numero_pedido: rows.rows[0].pedido_cliente_id}));
         
         /*Inicio - Modificación para estados*/
@@ -736,7 +740,7 @@ PedidosCliente.prototype.insertarPedidoCliente = function(req, res) {
                             return;
                         }
 
-                        res.send(G.utils.r(req.url, 'Encabezado del pedido almacenado exitosamente', 200, {numero_pedido: numero_pedido}));
+                        res.send(G.utils.r(req.url, 'Encabezado del pedido almacenado exitosamente', 200, {numero_pedido: numero_pedido, fecha_registro: fecha_registro}));
                         return;
 
                     });

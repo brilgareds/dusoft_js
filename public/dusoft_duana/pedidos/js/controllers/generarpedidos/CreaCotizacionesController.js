@@ -1144,8 +1144,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             console.log("Registro Insertado Exitosamente en Encabezado");
 
                             var pedido_cliente_id_tmp = data.obj.resultado_consulta[0].pedido_cliente_id_tmp;
+                            var fecha_registro = data.obj.resultado_consulta[0].fecha_registro;
                             
                             $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setNumeroCotizacion(pedido_cliente_id_tmp);
+                            $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().fecha_registro = fecha_registro;
 
                             if(callback !== undefined && callback !== "" && callback !== 0){
                                 callback(true);
@@ -1462,9 +1464,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             
                             console.log("Inserción de Pedido Cliente exitosa", data.msj);
                             
+                            console.log(">>> DATA TRAS GENERAR PEDIDO: ", data);
+                            
                             var numero_pedido = data.obj.numero_pedido;
+                            var fecha_registro = data.obj.fecha_registro;
                             
                             $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().numero_pedido = numero_pedido;
+                            $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().fecha_registro = fecha_registro;
                             $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setNumeroCotizacion('');
                             $scope.rootCreaCotizaciones.es_cotizacion = false;
                             

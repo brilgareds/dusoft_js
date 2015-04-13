@@ -549,7 +549,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 }
             };
             
-            //Función que inserta el encabezado del pedido temporal
+            //Función que inserta el encabezado del la cotización
             that.insertarEncabezadoCotizacion = function(callback) {
                 
                 if($scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getNumeroCotizacion() === "") {
@@ -582,8 +582,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                             console.log("Registro Insertado Exitosamente en Encabezado: ", data.msj);
                             
                             var pedido_cliente_id_tmp = data.obj.resultado_consulta[0].pedido_cliente_id_tmp;
+                            var fecha_registro = data.obj.resultado_consulta[0].fecha_registro;
                             
                             $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().setNumeroCotizacion(pedido_cliente_id_tmp);
+                            $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().fecha_registro = fecha_registro;
                             $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().setEncabezadoBloqueado(true);
 
                             if(callback !== undefined && callback !== "" && callback !== 0){
@@ -769,6 +771,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                         if (data.status === 200) {
                             console.log("Registro Insertado Exitosamente en Detalle: ", data.msj);
+                            
+                            //Se toma la fecha del registro
+                            //var fecha_registro = data.obj.resultado_consulta[0].fecha_registro;
+                            
+                            //$scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().setFechaRegistro(fecha_registro);
 
                             //Sumar Parcial de Total Con IVA y Sin IVA
                             $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().valor_total_sin_iva += parseFloat(producto.getTotalSinIva());
@@ -1038,6 +1045,13 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                         if (data.status === 200) {
                             console.log("Registro Insertado Exitosamente en Detalle: ", data.msj);
+                            
+                            //console.log(">>> Dato Retorno INSERT Detalle Cotización: ", data);
+                            
+                            //Se toma la fecha del registro
+                            //var fecha_registro = data.obj.resultado_consulta[0].fecha_registro;
+                            
+                            //$scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().setFechaRegistro(fecha_registro);
 
                             //Sumar Parcial de Total Con IVA y Sin IVA
                             $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().valor_total_sin_iva += parseFloat(producto.getTotalSinIva());

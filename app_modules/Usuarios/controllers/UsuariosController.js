@@ -114,6 +114,35 @@ Usuarios.prototype.subirAvatarUsuario = function(req, res) {
     
 };
 
+Usuarios.prototype.obtenerRolUsuarioPorEmpresa = function(req, res) {
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.parametrizacion_usuarios.usuario_id === undefined || args.parametrizacion_usuarios.usuario_id.length === 0 ) {
+        res.send(G.utils.r(req.url, 'El id del usuario no esta definido', 404, {}));
+        return;
+    }
+    
+   if (args.parametrizacion_usuarios.empresa_id === undefined || args.parametrizacion_usuarios.empresa_id.length === 0 ) {
+        res.send(G.utils.r(req.url, 'La empresa no esta definida', 404, {}));
+        return;
+    }
+    
+    var empresa_id = args.parametrizacion_usuarios.empresa_id;
+    var usuario_id = args.parametrizacion_usuarios.usuario_id;
+    
+    
+    that.m_usurios.obtenerRolUsuarioPorEmpresa(empresa_id, usuario_id, function(err, rol){
+        if(err){
+            res.send(G.utils.r(req.url, 'Se genero un error consultando el rol del usuario', 403, {}));
+            return;
+        }
+            
+        res.send(G.utils.r(req.url, 'Rol del usuario', 200, {parametrizacion_usuarios: {rol: rol}}));
+    });
+    
+};
 
 Usuarios.prototype.obtenerModulosPorUsuario = function(req, res) {
     var that = this;
@@ -247,6 +276,37 @@ Usuarios.prototype.asignarRolUsuario = function(req, res) {
                 
         
     
+};
+
+
+Usuarios.prototype.habilitarModulosDeUsuario = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+
+    var rolesModulos = args.parametrizacion_usuarios.rolesModulos;
+    var login_empresas_id = args.parametrizacion_usuarios.login_empresas_id;
+
+    if (rolesModulos === undefined || rolesModulos.length === 0) {
+        res.send(G.utils.r(req.url, 'No se a seleccionado ningun modulo', 500, {parametrizacion_perfiles: {}}));
+        return;
+    }
+    
+    if (login_empresas_id === undefined || login_empresas_id.length === 0) {
+        res.send(G.utils.r(req.url, 'No se a seleccionado ninguna empresa', 500, {parametrizacion_perfiles: {}}));
+        return;
+    }
+
+
+    that.m_usuarios.habilitarModulosDeUsuario(req.session.user.usuario_id, rolesModulos,login_empresas_id, function(err, rows, ids) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error habilitando las empresas para el usuario', 500, {parametrizacion_usuarios: {ids: ids}}));
+            return;
+        }
+
+        res.send(G.utils.r(req.url, "Se asigno correctamente los modulos seleccionados", 200, {parametrizacion_usuarios: {ids: ids}}));
+
+    });
+
 };
 
 

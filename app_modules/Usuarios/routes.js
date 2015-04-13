@@ -40,9 +40,13 @@ module.exports = function(app, di_container) {
          c_usuarios.listarUsuariosModulosOpciones(req, res);
     }); 
     
+    app.post('/api/Usuarios/habilitarModulosDeUsuario', function(req, res) {
+         c_usuarios.habilitarModulosDeUsuario(req, res);
+    }); 
     
-    
-    
+    app.post('/api/Usuarios/obtenerRolUsuarioPorEmpresa', function(req, res) {
+         c_usuarios.obtenerRolUsuarioPorEmpresa(req, res);
+    }); 
     
     
 };

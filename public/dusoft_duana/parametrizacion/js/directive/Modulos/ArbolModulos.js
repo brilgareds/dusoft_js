@@ -88,7 +88,9 @@ define(["angular", "js/directive"], function(angular, directive) {
 
 
                         //console.log("modulos seleccionados ",scope.modulosSeleccionados)
-                        scope.$emit("modulosSeleccionados", scope.modulosSeleccionados);
+                        if(!nodo.original.modoLectura){
+                            scope.$emit("modulosSeleccionados", scope.modulosSeleccionados);
+                        }
                     };
 
 
@@ -172,6 +174,9 @@ define(["angular", "js/directive"], function(angular, directive) {
                         }).on("refresh.jstree", function(node, selected, event) {
                            // console.log("arbol refrescado code 1");
                             scope.$emit("arbolRefrescado");
+                        }).on("ready.jstree", function(){
+                           console.log("arbol cargado >>>>>>>>>>>>>"); 
+                           scope.$emit("arbolRefrescado");
                         });
                     }
 

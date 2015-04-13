@@ -171,7 +171,7 @@
                         
                         <p class="input-group contenedorPredeterminado ">
                                 <label for="habilitar" style='margin-right: 5px;' >Predeterminado</label>
-                               <input-check ng-model="rootUsuario.empresaSeleccionada.predeterminada" ng-disabled="!rootUsuario.empresaSeleccionada"  ></input-check>
+                        <input-check ng-model="rootUsuario.empresaSeleccionada.predeterminada" ng-change="onCambiarPredeterminadoEmpresa()" ng-disabled="rootUsuario.rolAGuardar.getId() == 0"  ></input-check>
                         </p>
                         
                         <div class="table-responsive tablaRoles" >

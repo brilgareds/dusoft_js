@@ -9,7 +9,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
                 this.seleccionado = false;
                 this.estado = Boolean(parseInt(estado));
                 this.roles = [];
-                this.predeterminada = false;
+                this.predeterminada = true;
                 this.login_empresa_id = 0;
             }
 

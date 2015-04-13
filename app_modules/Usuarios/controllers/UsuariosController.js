@@ -114,6 +114,35 @@ Usuarios.prototype.subirAvatarUsuario = function(req, res) {
     
 };
 
+Usuarios.prototype.cambiarPredeterminadoEmpresa = function(req, res){
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.parametrizacion_usuarios.usuario_id === undefined || args.parametrizacion_usuarios.usuario_id.length === 0 ) {
+        res.send(G.utils.r(req.url, 'El id del usuario no esta definido', 404, {}));
+        return;
+    }
+    
+   if (args.parametrizacion_usuarios.empresa_id === undefined || args.parametrizacion_usuarios.empresa_id.length === 0 ) {
+        res.send(G.utils.r(req.url, 'La empresa no esta definida', 404, {}));
+        return;
+    }
+    
+    var empresa_id = args.parametrizacion_usuarios.empresa_id;
+    var usuario_id = args.parametrizacion_usuarios.usuario_id;
+    
+    
+    that.m_usuarios.cambiarPredeterminadoEmpresa(empresa_id, usuario_id, function(err, rol){
+        if(err){
+            res.send(G.utils.r(req.url, 'Se genero un error modificando el usuario', 403, {}));
+            return;
+        }
+            
+        res.send(G.utils.r(req.url, 'Usuario', 200, {parametrizacion_usuarios: {rows: rows}}));
+    });
+};
+
 Usuarios.prototype.obtenerRolUsuarioPorEmpresa = function(req, res) {
     var that = this;
 
@@ -133,7 +162,7 @@ Usuarios.prototype.obtenerRolUsuarioPorEmpresa = function(req, res) {
     var usuario_id = args.parametrizacion_usuarios.usuario_id;
     
     
-    that.m_usurios.obtenerRolUsuarioPorEmpresa(empresa_id, usuario_id, function(err, rol){
+    that.m_usuarios.obtenerRolUsuarioPorEmpresa(empresa_id, usuario_id, function(err, rol){
         if(err){
             res.send(G.utils.r(req.url, 'Se genero un error consultando el rol del usuario', 403, {}));
             return;

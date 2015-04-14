@@ -190,6 +190,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                                if(empresas[i].getCodigo() === _usuario.empresa_id){
                                    $scope.rootUsuario.empresaSeleccionada = empresas[i];
                                    $scope.rootUsuario.empresaSeleccionada.setLoginEmpresaId(_usuario.login_empresas_id);
+                                   $scope.rootUsuario.empresaSeleccionada.setPredeterminado(true);
                                    break;
                                }
                            }
@@ -316,7 +317,28 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             };
             
             $scope.onCambiarPredeterminadoEmpresa = function(){
-                
+                var obj = {
+                    session: $scope.rootUsuario.session,
+                    data: {
+                        parametrizacion_usuarios:{
+                            
+                            rol_id: $scope.rootUsuario.rolAGuardar.getId(),
+                            empresa_id: $scope.rootUsuario.empresaSeleccionada.getCodigo(),   
+                            usuario_id:$scope.rootUsuario.usuarioAGuardar.getId(),
+                            predeterminado:Number($scope.rootUsuario.empresaSeleccionada.getPredeterminado())
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.USUARIOS.CAMBAR_PREDETERMINADO_EMPRESA, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                         AlertService.mostrarMensaje("success", "Se a seleccionado el rol como predeterminado");
+
+                    } else {
+                         AlertService.mostrarMensaje("warning", "Ha ocurrido un error...");
+                    }
+
+                });
             };
             
             $rootScope.$on("datosArbolCambiados",function(e, modulos){
@@ -377,8 +399,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                         parametrizacion_usuarios:{
                             usuario_id:$scope.rootUsuario.usuarioAGuardar.getId(),
                             rol_id:$scope.rootUsuario.rolAGuardar.getId(),
-                            empresa_id:$scope.rootUsuario.empresaSeleccionada.getCodigo(),
-                            predeterminado:'0'//$scope.rootUsuario.empresaSeleccionada.getPredeterminado()
+                            empresa_id:$scope.rootUsuario.empresaSeleccionada.getCodigo()
                         }
                     }
                 };
@@ -647,6 +668,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             
             //trae el rol seleccionado para la empresa por el usuario
             $scope.onEmpresaSeleccionada = function() {
+                $scope.rootUsuario.termino_busqueda = "";
                 var obj = {
                     session: $scope.rootUsuario.session,
                     data: {

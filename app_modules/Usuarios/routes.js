@@ -48,5 +48,11 @@ module.exports = function(app, di_container) {
          c_usuarios.obtenerRolUsuarioPorEmpresa(req, res);
     }); 
     
+    app.post('/api/Usuarios/cambiarPredeterminadoEmpresa', function(req, res) {
+         c_usuarios.cambiarPredeterminadoEmpresa(req, res);
+    }); 
+    
+    
+    
     
 };

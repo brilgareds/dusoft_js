@@ -9,7 +9,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
                 this.seleccionado = false;
                 this.estado = Boolean(parseInt(estado));
                 this.roles = [];
-                this.predeterminada = true;
+                this.predeterminada = false;
                 this.login_empresa_id = 0;
             }
 
@@ -53,7 +53,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
                 return this.login_empresa_id;
             };
             
-            EmpresaParametrizacion.prototype.setPredeterminado= function(predeterminada) {
+            EmpresaParametrizacion.prototype.setPredeterminado = function(predeterminada) {
                 this.predeterminada = Number(predeterminada);
             };
             

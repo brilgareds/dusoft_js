@@ -69,7 +69,7 @@ define(["angular", "js/directive"], function(angular, directive) {
                                 hijos: []
                             };
                         }
-
+                        
                         //se agrega el nodo seleccionado
                         scope.modulosSeleccionados.seleccionado = nodo.original.modulo_id;
 
@@ -90,6 +90,8 @@ define(["angular", "js/directive"], function(angular, directive) {
                         //console.log("modulos seleccionados ",scope.modulosSeleccionados)
                         if(!nodo.original.modoLectura){
                             scope.$emit("modulosSeleccionados", scope.modulosSeleccionados);
+                        } else {
+                            nodo.original.modoLectura = false;
                         }
                     };
 
@@ -145,6 +147,7 @@ define(["angular", "js/directive"], function(angular, directive) {
                                             "label": "Seleccionar",
                                             "action": function(obj) {
                                                 //scope.onSeleccionarNodo($node);
+                                                
                                                 if(!$node.state.selected){
                                                     element.jstree("select_node", "#" + $node.id);
                                                 } else {

@@ -414,6 +414,46 @@ Usuarios.prototype.habilitarModulosDeUsuario = function(req, res) {
 
 };
 
+Usuarios.prototype.guardarOpcion = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+    
+    if(args.parametrizacion_usuarios === undefined){
+        res.send(G.utils.r(req.url, 'La sintaxis del request no es valida', 404, {}));
+        return;
+    }
+
+    var opcion = args.parametrizacion_usuarios.opcion || undefined;
+    var login_modulos_empresa_id = args.parametrizacion_usuarios.login_modulos_empresa_id;
+
+    if (opcion === undefined || opcion.length === 0) {
+        res.send(G.utils.r(req.url, 'No se a seleccionado ninguna opcion', 500, {parametrizacion_usuarios: {}}));
+        return;
+    }
+    
+   if (login_modulos_empresa_id === undefined || login_modulos_empresa_id.length === 0) {
+        res.send(G.utils.r(req.url, 'No se a seleccionado ningun modulo', 500, {parametrizacion_usuarios: {}}));
+        return;
+    }
+
+    that.m_usuarios.guardarOpcion(req.session.user.usuario_id, opcion, login_modulos_empresa_id, function(err, rows) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error guardando la opcion para el modulo', 500, {parametrizacion_usuarios: {}}));
+            return;
+        }
+
+        var id = 0;
+
+        if (rows.length > 0 && rows[0].id) {
+            id = rows[0].id;
+        }
+
+        res.send(G.utils.r(req.url, "Se guardo la opcion correctamente", 200, {parametrizacion_usuarios: {id: id}}));
+
+    });
+
+};
+
 
 function __subirAvatarUsuario(data, files, callback) {
 

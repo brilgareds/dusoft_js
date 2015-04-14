@@ -63,14 +63,16 @@ define(["angular", "js/services"], function(angular, services) {
                         //console.log("refrescar arbol code 1");
                         $rootScope.$emit("datosArbolCambiados", modulos);
                         
-                        callback(true);
+                        if(callback){
+                            
+                            callback(true);
+                        }
                     }
 
                 });
            };
            
            $rootScope.$on("arbolRefrescado",function(){
-               //console.log("arbol refrescado ",modulosSeleccionados);
               for(var i in modulosSeleccionados){
                   var modulo = modulosSeleccionados[i];
                    $rootScope.$emit("onseleccionarnodo",modulo);

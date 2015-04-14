@@ -343,6 +343,11 @@ define(["angular", "js/controllers", "js/models",
                 //console.log("modulos seleccionados >>>>>>>>>>>>>>>>>>", $scope.rootRoles.rolAGuardar.getModulos());
             });
             
+            $rootScope.$on("onseleccionarnodo", function(e, modulo){
+               $scope.$broadcast("onseleccionarnodo",modulo.id); 
+            });
+            
+            
             $rootScope.$on("onSeleccionarOpcion", function(event, opcion){
                 $scope.rootModulos.moduloAGuardar.opcionAGuardar  = opcion;
                 

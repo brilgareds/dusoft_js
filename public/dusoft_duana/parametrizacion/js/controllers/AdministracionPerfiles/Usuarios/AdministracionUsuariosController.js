@@ -371,7 +371,6 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 
                 ParametrizacionService.traerModulosPorUsuario(parametros, $scope.rootUsuario.rolAGuardar, function(success){
                     if(success){
-                        console.log("modulos para el rol code 1 ",$scope.rootUsuario.rolAGuardar.getModulos());
                         /*var modulos = $scope.rootUsuario.rolAGuardar.getModulos();
                         for(var i in modulos){
                             console.log("id modulo ", modulos[i].getModulo().getId(), modulos[i].getModulo().getEstado())
@@ -457,13 +456,13 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                             
                             for(var ii in modulos){
                                 if(modulos[ii].getModulo().getId() === ids[i].modulo_id){
-                                    modulos[ii].setUsuarioEmpresaId(ids[i].login_modulos_empresas_id);
+                                    modulos[ii].setUsuarioEmpresaId(ids[i].login_modulos_empresas);
                                     break;
                                 }
                             }
                           
                         }
-                        
+                                                
 
                     } else {
                         AlertService.mostrarMensaje("warning", data.msj);
@@ -473,6 +472,32 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             };
             
             $rootScope.$on("onSeleccionarOpcion", function(event, opcion){
+                $scope.rootModulos.moduloAGuardar.opcionAGuardar  = opcion;
+                var modulo_rol = self.esModuloSeleccionado($scope.rootModulos.moduloAGuardar);
+                
+                if(!opcion.estado || !modulo_rol){
+                    return;
+                }
+                
+                var obj = {
+                    session: $scope.rootUsuario.session,
+                    data: {
+                        parametrizacion_usuarios: {
+                            opcion: opcion,
+                            login_modulos_empresa_id:modulo_rol.getUsuarioEmpresaId()
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.USUARIOS.GUARDAR_OPCION, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        AlertService.mostrarMensaje("success", "Opcion guardada correctamente");
+
+                    } else {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+
+                });
             });
             
             $scope.seleccionRol = function(rol){
@@ -560,7 +585,6 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             
             $scope.$on("traerOpcioesModuloSeleccionado", function(e, modulo_id) {
                 //self.listarRolesModulosOpciones(modulo_id);
-                console.log("modulos para el rol code 1 ",$scope.rootUsuario.rolAGuardar.getModulos());
                 $scope.rootModulos.moduloAGuardar = self.esModuloSeleccionado(Modulo.get(modulo_id)).getModulo();
                                 
                 var obj = {

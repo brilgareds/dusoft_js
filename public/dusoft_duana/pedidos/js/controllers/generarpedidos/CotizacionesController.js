@@ -459,7 +459,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     }
                     else {
 
-                        //Avisar la no posibilidad de modiificar porque el pedido está abierto en una tablet
+                        //Avisar la no posibilidad de modiificar porque se ha convertido en Pedido
                         $scope.opts = {
                             backdrop: true,
                             backdropClick: true,

@@ -91,8 +91,6 @@ define(["angular"], function(angular) {
                 'IMPRIMIR_PEDIDO_CLIENTE' :BASE_URL+'/PedidosClientes/imprimirPedidoCliente',
                 'MODIFICAR_CANTIDADES_COTIZACION' :BASE_URL+'/PedidosClientes/modificarCantidadesCotizacion',
                 'MODIFICAR_CANTIDADES_PEDIDO' :BASE_URL+'/PedidosClientes/modificarCantidadesPedido'
-                //'ELIMINAR_CANTIDADES_COTIZACION' :BASE_URL+'/PedidosClientes/eliminarCantidadesCotizacion',
-                //'ELIMINAR_CANTIDADES_PEDIDO' :BASE_URL+'/PedidosClientes/eliminarCantidadesPedido'
 	    },
 	    'TERCEROS':{
 	    	'LISTAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/listar",
@@ -109,7 +107,7 @@ define(["angular"], function(angular) {
 	    	'LISTAR_USUARIOS':BASE_URL+"/Usuarios/listar"
 	    },
             'DOCUMENTOS_DESPACHO':{
-                'IMPRIMIR_DOCUMENTO_DESPACHO':BASE_URL+"/movBodegas/imprimirDocumentoDespacho"
+                'IMPRIMIR_DOCUMENTO_DESPACHO':BASE_URL+"/movBodegas/E008/imprimirDocumentoDespacho"
             }
 	  }
     };

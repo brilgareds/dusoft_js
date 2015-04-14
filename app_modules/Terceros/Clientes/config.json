@@ -8,12 +8,7 @@
                     "alias": "c_clientes"
                 }
             }],
-        "models": [{
-                "pedidos_clientes_model": {
-                    "module": "PedidosClientes",
-                    "model": "PedidosClienteModel",
-                    "alias": "m_pedidos_clientes"
-                },
+        "models": [{                
                 "clientes_model": {
                     "module": "Terceros/Clientes",
                     "model": "ClientesModel",

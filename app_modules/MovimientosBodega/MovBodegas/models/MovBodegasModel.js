@@ -376,7 +376,7 @@ MovimientosBodegasModel.prototype.crear_documento = function(documento_temporal_
 };
 
 
-MovimientosBodegasModel.prototype.obtenerEncabezadoDocumentoDespacho = function(numero, prefijo, empresa, usuario_id, callback){
+/*MovimientosBodegasModel.prototype.obtenerEncabezadoDocumentoDespacho = function(numero, prefijo, empresa, usuario_id, callback){
     
     var sql = "select to_char(a.fecha_registro, 'dd-mm-yyyy hh:mi am') as fecha_registro,\
                 a.prefijo,\
@@ -437,10 +437,10 @@ MovimientosBodegasModel.prototype.obtenerEncabezadoDocumentoDespacho = function(
 
     });
     
-};
+};*/
 
 
-MovimientosBodegasModel.prototype.obtenerDetalleDocumentoDespacho = function(numero, prefijo, empresa, callback){
+MovimientosBodegasModel.prototype.consultar_detalle_documento_despacho = function(numero, prefijo, empresa, callback){
     var sql = "SELECT\
                a.codigo_producto,\
                a.lote,\
@@ -478,7 +478,7 @@ MovimientosBodegasModel.prototype.obtenerDetalleDocumentoDespacho = function(num
 };
 
 
-MovimientosBodegasModel.prototype.obtenerDatosAdicionalesPorDocumento = function(numero, prefijo,empresa_id, tipo_documento, callback){
+MovimientosBodegasModel.prototype.consultar_datos_adicionales_documento = function(numero, prefijo,empresa_id, tipo_documento, callback){
     
     var sql = "";
     

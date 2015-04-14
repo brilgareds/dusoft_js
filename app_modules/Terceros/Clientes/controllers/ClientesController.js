@@ -1,10 +1,9 @@
 
-var Clientes = function(clientes, pedidos_clientes) {
+var Clientes = function(clientes) {
 
-    console.log("Modulo Terceros  Cargado ");
+    console.log("Modulo Clientes  Cargado ");
 
     this.m_clientes = clientes;
-    this.m_pedidos_clientes = pedidos_clientes;
 
 
 };
@@ -13,12 +12,7 @@ Clientes.prototype.listarClientes = function(req, res) {
     var that = this;
 
     var args = req.body.data;
-    
-    /*
-      termino_busqueda: $scope.rootSeleccionCliente.termino_busqueda,
-      pagina_actual: $scope.rootSeleccionCliente.paginaactual,
-     */
-
+   
     if (args.clientes === undefined || args.clientes.empresa_id === undefined || args.clientes.pagina_actual === undefined) {
         res.send(G.utils.r(req.url, 'empresa_id o pagina_actual no están definidas.', 404, {}));
         return;
@@ -42,12 +36,54 @@ Clientes.prototype.listarClientes = function(req, res) {
     
 };
 
-Clientes.prototype.consultarContratoCliente = function(req, res) {
+Clientes.prototype.listarClientesCiudad = function(req, res) {
+    
     var that = this;
 
     var args = req.body.data;
+   
+    if (args.clientes === undefined || args.clientes.empresa_id === undefined || args.clientes.pagina_actual === undefined) {
+        res.send(G.utils.r(req.url, 'empresa_id o pagina_actual no están definidas.', 404, {}));
+        return;
+    }
     
-    //tipo_id_tercero, tercero_id, empresa_id
+    if (args.clientes.pais_id === undefined || args.clientes.departamento_id === undefined || args.clientes.ciudad_id=== undefined) {
+        res.send(G.utils.r(req.url, 'pais_id, departamento_id o ciudad_id no están definidas.', 404, {}));
+        return;
+    }
+    
+    if (args.clientes.empresa_id === '' || args.clientes.pagina_actual === '' || args.clientes.pagina_actual === '0') {
+        res.send(G.utils.r(req.url, 'empresa_id está vacio o pagina_actual es vacio o 0.', 404, {}));
+        return;
+    }
+    if (args.clientes.pais_id === '' || args.clientes.departamento_id === '' || args.clientes.ciudad_id=== '') {
+        res.send(G.utils.r(req.url, 'pais_id, departamento_id o ciudad_id están vacios.', 404, {}));
+        return;
+    }
+    
+
+    var empresa_id = args.clientes.empresa_id;
+    var pais_id = args.clientes.pais_id;
+    var departamento_id = args.clientes.departamento_id;
+    var ciudad_id = args.clientes.ciudad_id;
+    
+    var termino_busqueda = (args.clientes.termino_busqueda === undefined) ? '' : args.clientes.termino_busqueda;
+    var pagina_actual = args.clientes.pagina_actual;
+    
+    that.m_clientes.listar_clientes_ciudad(empresa_id, pais_id, departamento_id, ciudad_id, termino_busqueda, pagina_actual, function(err, listado_clientes) {
+        if(err)
+            res.send(G.utils.r(req.url, 'Error consultando clientes', 500, {}));
+        else
+            res.send(G.utils.r(req.url, 'Lista de clientes', 200, {listado_clientes: listado_clientes}));
+    });
+    
+};
+
+Clientes.prototype.consultarContratoCliente = function(req, res) {
+    
+    var that = this;
+
+    var args = req.body.data;   
 
     if (args.contrato_cliente === undefined || args.contrato_cliente.tipo_id_cliente === undefined || args.contrato_cliente.cliente_id === undefined)
     {
@@ -171,6 +207,6 @@ Clientes.prototype.nombreMunicipio = function(req, res) {
 /* CPDM */
 
 
-Clientes.$inject = ["m_clientes", "m_pedidos_clientes"];
+Clientes.$inject = ["m_clientes"];
 
 module.exports = Clientes;

@@ -484,9 +484,46 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     if( $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== ''
                         && $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== undefined )
                     {    
+                        var numero_cotizacion = $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getNumeroCotizacion();
+                        
+                        that.consultarEstadoCotizacion(numero_cotizacion, function(estado_cotizacion){
+                            
+                            if (estado_cotizacion === '1') {
+                            
+                                $scope.rootSeleccionProductoCliente.bloquear_eliminar = false;
+                                that.insertarDetalleCotizacion(row);
+                            
+                            }
+                            else {
+                                //Avisar la no posibilidad de modiificar porque se ha convertido en Pedido
+                                $scope.opts = {
+                                    backdrop: true,
+                                    backdropClick: true,
+                                    dialogFade: false,
+                                    keyboard: true,
+                                    template: ' <div class="modal-header">\
+                                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                                    <h4 class="modal-title">Aviso: </h4>\
+                                                </div>\
+                                                <div class="modal-body row">\
+                                                    <div class="col-md-12">\
+                                                        <h4 >La Cotización ' + numero_cotizacion + ' se ha convertido en Pedido. No puede modificarse!</h4>\
+                                                    </div>\
+                                                </div>\
+                                                <div class="modal-footer">\
+                                                    <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                                </div>',
+                                    scope: $scope,
+                                    controller: function($scope, $modalInstance) {
+                                        $scope.close = function() {
+                                            $modalInstance.close();
+                                        };
+                                    }
+                                };
 
-                        $scope.rootSeleccionProductoCliente.bloquear_eliminar = false;
-                        that.insertarDetalleCotizacion(row);
+                                var modalInstance = $modal.open($scope.opts);
+                            }
+                        }); // Fin - that.consultarEstadoCotizacion
 
                     }
                     else if ($scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().get_numero_pedido() !== ''
@@ -549,7 +586,43 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 }
             };
             
-            //Función que inserta el encabezado del pedido temporal
+/**/
+            //Consulta Estado de la Cotización
+            that.consultarEstadoCotizacion = function(numero_cotizacion, callback){
+                
+                //Objeto para consulta de encabezado pedido
+                var obj = {
+                    session: $scope.rootSeleccionProductoCliente.session,
+                    data: {
+                        estado_cotizacion: {
+                            numero_cotizacion: numero_cotizacion,
+                        }
+                    }
+                };
+                
+                var url = API.PEDIDOS.CONSULTA_ESTADO_COTIZACION;
+
+                Request.realizarRequest(url, "POST", obj, function(data_estado) {
+
+                    if (data_estado.status === 200) {
+                        console.log("Consulta exitosa: ", data_estado.msj);
+
+                        if (callback !== undefined && callback !== "" && callback !== 0) {
+
+                            var estado = data_estado.obj.resultado_consulta[0].estado;
+                            
+                            callback(estado);
+                        }
+                    }
+                    else {
+                        console.log("Error en la consulta: ", data_estado.msj);
+                    }
+                });
+                
+            };
+/**/
+            
+            //Función que inserta el encabezado del la cotización
             that.insertarEncabezadoCotizacion = function(callback) {
                 
                 if($scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getNumeroCotizacion() === "") {
@@ -582,8 +655,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                             console.log("Registro Insertado Exitosamente en Encabezado: ", data.msj);
                             
                             var pedido_cliente_id_tmp = data.obj.resultado_consulta[0].pedido_cliente_id_tmp;
+                            var fecha_registro = data.obj.resultado_consulta[0].fecha_registro;
                             
                             $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().setNumeroCotizacion(pedido_cliente_id_tmp);
+                            $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().fecha_registro = fecha_registro;
                             $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().setEncabezadoBloqueado(true);
 
                             if(callback !== undefined && callback !== "" && callback !== 0){
@@ -769,6 +844,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                         if (data.status === 200) {
                             console.log("Registro Insertado Exitosamente en Detalle: ", data.msj);
+                            
+                            //Se toma la fecha del registro
+                            //var fecha_registro = data.obj.resultado_consulta[0].fecha_registro;
+                            
+                            //$scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().setFechaRegistro(fecha_registro);
 
                             //Sumar Parcial de Total Con IVA y Sin IVA
                             $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().valor_total_sin_iva += parseFloat(producto.getTotalSinIva());
@@ -1038,6 +1118,13 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                         if (data.status === 200) {
                             console.log("Registro Insertado Exitosamente en Detalle: ", data.msj);
+                            
+                            //console.log(">>> Dato Retorno INSERT Detalle Cotización: ", data);
+                            
+                            //Se toma la fecha del registro
+                            //var fecha_registro = data.obj.resultado_consulta[0].fecha_registro;
+                            
+                            //$scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().setFechaRegistro(fecha_registro);
 
                             //Sumar Parcial de Total Con IVA y Sin IVA
                             $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().valor_total_sin_iva += parseFloat(producto.getTotalSinIva());

@@ -88,6 +88,43 @@ ClientesModel.prototype.listar_clientes = function(empresa_id, termino_busqueda,
     
 };
 
+ClientesModel.prototype.listar_clientes_ciudad = function(empresa_id, pais_id, departamento_id, ciudad_id, termino_busqueda, pagina, callback) {
+
+    var sql = " select\
+                a.tipo_id_tercero,\
+                a.tercero_id,\
+                a.nombre_tercero,\
+                g.tipo_pais_id as pais_id,\
+                g.pais as nombre_pais,\
+                f.tipo_dpto_id as departamento_id,\
+                f.departamento as nombre_departamento,\
+                e.tipo_mpio_id as ciudad_id,\
+                e.municipio as nombre_ciudad,\
+                a.direccion,\
+                a.telefono,\
+                a.email,\
+                a.tipo_bloqueo_id,\
+                c.descripcion as bloqueo\
+                from terceros a\
+                inner join terceros_clientes b on a.tipo_id_tercero = b.tipo_id_tercero AND a.tercero_id = b.tercero_id \
+                left join inv_tipos_bloqueos c on a.tipo_bloqueo_id = c.tipo_bloqueo_id\
+                left join tipo_mpios e on a.tipo_pais_id = e.tipo_pais_id AND a.tipo_dpto_id = e.tipo_dpto_id AND a.tipo_mpio_id = e.tipo_mpio_id\
+                left join tipo_dptos f on e.tipo_pais_id = f.tipo_pais_id AND e.tipo_dpto_id = f.tipo_dpto_id \
+                left join tipo_pais g on f.tipo_pais_id = g.tipo_pais_id\
+                WHERE b.empresa_id = $1 and a.tipo_pais_id = $2  and a.tipo_dpto_id= $3 and a.tipo_mpio_id= $4 and \
+                (\
+                    a.tipo_id_tercero ILIKE $5 or\
+                    a.tercero_id ILIKE $5 or\
+                    a.nombre_tercero ILIKE $5 \
+                )\
+                ORDER BY a.nombre_tercero ";
+
+    G.db.pagination(sql, [empresa_id, pais_id, departamento_id, ciudad_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
+        callback(err, rows);
+    });
+    
+};
+
 /**
  * @api {sql} consultar_contrato_cliente Consultar Contrato Cliente
  * @apiName Consultar Contrato Cliente

@@ -720,6 +720,70 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(doc
     });
 };
 
+
+DocuemntoBodegaE008.prototype.consultar_documento_despacho = function(numero, prefijo, empresa, usuario_id, callback){
+    
+    var sql = "select to_char(a.fecha_registro, 'dd-mm-yyyy hh:mi am') as fecha_registro,\
+                a.prefijo,\
+                a.numero,\
+                d.inv_tipo_movimiento as tipo_movimiento , d.descripcion as tipo_clase_documento,\
+                c.descripcion, e.pedido_cliente_id as numero_pedido,\
+                c.tipo_doc_general_id as tipo_doc_bodega_id,\
+                f.nombre as nombre_usuario,\
+                g.razon_social as nombre_empresa_destino,\
+                h.descripcion as nombre_bodega_destino,\
+                i.descripcion as nombre_centro_utilidad,\
+                (select nombre from system_usuarios where usuario_id = $4) as usuario_imprime,\
+                to_char(now(), 'dd-mm-yyyy hh:mi AM') as fecha_impresion,\
+                to_char(j.fecha_registro, 'dd-mm-yyyy hh:mi AM') as fecha_pedido\
+                from  inv_bodegas_movimiento as a\
+                inner join inv_bodegas_documentos as b on  a.documento_id = b.documento_id AND a.empresa_id = b.empresa_id AND a.centro_utilidad = b.centro_utilidad AND a.bodega = b.bodega\
+                inner join documentos as c on  c.documento_id = a.documento_id AND c.empresa_id = a.empresa_id\
+                inner join tipos_doc_generales as d on  d.tipo_doc_general_id = c.tipo_doc_general_id\
+                inner join inv_bodegas_movimiento_despachos_clientes as e on  e.empresa_id = a.empresa_id AND e.prefijo = a.prefijo AND e.numero = a.numero\
+                inner join system_usuarios f on a.usuario_id = f.usuario_id\
+                inner join empresas g on g.empresa_id = a.empresa_id\
+                inner join bodegas h on h.bodega = a.bodega and h.centro_utilidad = a.centro_utilidad and h.empresa_id = a.empresa_id\
+                inner join centros_utilidad i on  i.centro_utilidad = a.centro_utilidad and i.empresa_id = a.empresa_id\
+                inner join ventas_ordenes_pedidos j on j.pedido_cliente_id = e.pedido_cliente_id\
+                where a.empresa_id = $3\
+                and a.prefijo = $2\
+                and a.numero = $1\
+                union\
+                select to_char(a.fecha_registro, 'dd-mm-yyyy hh:mi am') as fecha_registro,\
+                a.prefijo,\
+                a.numero,\
+                d.inv_tipo_movimiento as tipo_movimiento , d.descripcion as tipo_clase_documento,\
+                c.descripcion, e.solicitud_prod_a_bod_ppal_id as numero_pedido,\
+                c.tipo_doc_general_id as tipo_doc_bodega_id,\
+                f.nombre as nombre_usuario,\
+                g.razon_social as nombre_empresa_destino,\
+                h.descripcion as nombre_bodega_destino,\
+                i.descripcion as nombre_centro_utilidad,\
+                (select nombre from system_usuarios where usuario_id = $4) as usuario_imprime,\
+                to_char(now(), 'dd-mm-yyyy hh:mi AM') as fecha_impresion,\
+                to_char(j.fecha_registro, 'dd-mm-yyyy hh:mi AM') as fecha_pedido\
+                from  inv_bodegas_movimiento as a\
+                inner join inv_bodegas_documentos as b on  a.documento_id = b.documento_id AND a.empresa_id = b.empresa_id AND a.centro_utilidad = b.centro_utilidad AND a.bodega = b.bodega\
+                inner join documentos as c on  c.documento_id = a.documento_id AND c.empresa_id = a.empresa_id\
+                inner join tipos_doc_generales as d on  d.tipo_doc_general_id = c.tipo_doc_general_id\
+                inner join inv_bodegas_movimiento_despachos_farmacias as e on  e.empresa_id = a.empresa_id AND e.prefijo = a.prefijo AND e.numero = a.numero\
+                inner join system_usuarios f on a.usuario_id = f.usuario_id\
+                inner join empresas g on g.empresa_id = a.empresa_id\
+                inner join bodegas h on h.bodega = a.bodega and h.centro_utilidad = a.centro_utilidad and h.empresa_id = a.empresa_id\
+                inner join centros_utilidad i on  i.centro_utilidad = a.centro_utilidad and i.empresa_id = a.empresa_id\
+                inner join solicitud_productos_a_bodega_principal j on j.solicitud_prod_a_bod_ppal_id = e.solicitud_prod_a_bod_ppal_id\
+                where a.empresa_id = $3\
+                and a.prefijo = $2\
+                and a.numero = $1";
+    
+    G.db.query(sql, [numero, prefijo, empresa, usuario_id], function(err, rows, result) {
+        callback(err, rows);
+
+    });
+    
+};
+
 /*==================================================================================================================================================================
  * 
  *                                                          FUNCIONES PRIVADAS

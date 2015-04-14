@@ -824,7 +824,7 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(empresa_id, tipo_id
     
     var sql = "INSERT INTO ventas_ordenes_pedidos_tmp(empresa_id, tipo_id_tercero, tercero_id, fecha_registro, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones) \
                 VALUES($1, $2, $3, CURRENT_TIMESTAMP, $4, $5, $6, $7, $8) \
-                RETURNING pedido_cliente_id_tmp";
+                RETURNING pedido_cliente_id_tmp, fecha_registro";
 
     G.db.query(sql, [empresa_id, tipo_id_tercero, tercero_id, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones], function(err, rows, result) {
         callback(err, rows, result);
@@ -1180,6 +1180,7 @@ function __cambiar_estado_cotizacion(numero_cotizacion, nuevo_estado, callback)
 
 };
 
+//Insert con Transacción para generación de pedidos
 PedidosClienteModel.prototype.insertar_pedido_cliente = function(numero_cotizacion, callback)
 {
     G.db.begin(function() {
@@ -1194,7 +1195,10 @@ PedidosClienteModel.prototype.insertar_pedido_cliente = function(numero_cotizaci
            //console.log(">>>>> DATA ROWS: ", rows.rows[0].pedido_cliente_id);
            //console.log(">>>>> DATA RESULT: ", result);
            var numero_pedido = rows.rows[0].pedido_cliente_id;
-           console.log(">>>>> Número Pedido: ", numero_pedido);
+           var fecha_registro_encabezado = rows.rows[0].fecha_registro;
+           
+           //console.log(">>>>> DATA INSERTAR ENCABEZADO: ", rows);
+           //console.log(">>>>> Número Pedido: ", numero_pedido);
            
            __cambiar_estado_cotizacion(numero_cotizacion, '0', function(err, rows, result){
                if(err){
@@ -1212,7 +1216,7 @@ PedidosClienteModel.prototype.insertar_pedido_cliente = function(numero_cotizaci
 
                     // Finalizar Transacción.
                     G.db.commit(function(){
-                        callback(err, rows);
+                        callback(err, rows, fecha_registro_encabezado);
                     });
                 });
                 /* Insertar Detalle */
@@ -1239,7 +1243,7 @@ function __insertar_encabezado_pedido_cliente(numero_cotizacion, callback)
                     vendedor_id, observaciones, 0\
                 FROM ventas_ordenes_pedidos_tmp \
                 WHERE pedido_cliente_id_tmp = $1 \
-                RETURNING pedido_cliente_id";
+                RETURNING pedido_cliente_id, fecha_registro";
 
     G.db.transaction(sql, [numero_cotizacion], function(err, rows, result){
         callback(err, rows, result);

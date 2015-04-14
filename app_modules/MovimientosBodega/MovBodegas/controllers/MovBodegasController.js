@@ -71,7 +71,7 @@ MovBodegasController.prototype.actualizarTipoDocumentoTemporal = function(req, r
 
 };
 
-MovBodegasController.prototype.imprimirDocumentoDespacho = function(req, res){
+/*MovBodegasController.prototype.imprimirDocumentoDespacho = function(req, res){
     var that = this;
     var args = req.body.data;
     
@@ -128,10 +128,10 @@ MovBodegasController.prototype.imprimirDocumentoDespacho = function(req, res){
         
     });
     
-};
+};*/
 
 
-function __generarPdfDespacho(datos, callback){
+/*function __generarPdfDespacho(datos, callback){
     G.jsreport.reporter.render({
         template: {
             content: G.fs.readFileSync('app_modules/MovimientosBodega/MovBodegas/reports/despacho.html', 'utf8'),
@@ -151,7 +151,7 @@ function __generarPdfDespacho(datos, callback){
 
         callback(nombreTmp);
     });
-}
+}*/
 
 
 MovBodegasController.$inject = ["m_movimientos_bodegas"];

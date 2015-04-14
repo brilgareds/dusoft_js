@@ -25,7 +25,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 $scope.rootSeleccionProductoCliente = {};
             };
             
-            $rootScope.$on("mostrarseleccionproducto", function(e, tipo_cliente, cliente) {
+            $rootScope.$on("mostrarseleccionproducto_cliente", function(e, tipo_cliente, cliente) {
 
                 $scope.rootSeleccionProductoCliente = {};
                 
@@ -1348,7 +1348,44 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                     if($scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== '' && $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== undefined)
                     {
-                        that.eliminarDetalleCotizacion(row);
+                        var numero_cotizacion = $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getNumeroCotizacion();
+                        
+                        that.consultarEstadoCotizacion(numero_cotizacion, function(estado_cotizacion){
+                            
+                            if (estado_cotizacion === '1') {
+                                that.eliminarDetalleCotizacion(row);
+                            }
+                            else {
+                                /**/
+                                $scope.opts = {
+                                    backdrop: true,
+                                    backdropClick: true,
+                                    dialogFade: false,
+                                    keyboard: true,
+                                    template: ' <div class="modal-header">\
+                                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                                    <h4 class="modal-title">Aviso: </h4>\
+                                                </div>\
+                                                <div class="modal-body row">\
+                                                    <div class="col-md-12">\
+                                                        <h4 >La Cotización ' + numero_cotizacion + ' se ha convertido en Pedido. No puede Modificarse!</h4>\
+                                                    </div>\
+                                                </div>\
+                                                <div class="modal-footer">\
+                                                    <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                                </div>',
+                                    scope: $scope,
+                                    controller: function($scope, $modalInstance) {
+                                        $scope.close = function() {
+                                            $modalInstance.close();
+                                        };
+                                    }
+                                };
+
+                                var modalInstance = $modal.open($scope.opts);
+                                /**/
+                            }
+                        });
                     }
                     else if($scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().get_numero_pedido() !== ''
                         && $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().get_numero_pedido() !== undefined)

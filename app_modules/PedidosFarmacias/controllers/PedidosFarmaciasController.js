@@ -1362,15 +1362,15 @@ PedidosFarmacias.prototype.insertarPedidoFarmaciaDefinitivo = function(req, res)
 
             /*Inicio - Modificación para estados*/
 
-            that.m_terceros.seleccionar_operario_por_usuario_id(usuario_id, function(err, operario_array) {
+            //that.m_terceros.seleccionar_operario_por_usuario_id(usuario_id, function(err, operario_array) {
 
-                if (err) {
-                    res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Selección del Operario', 500, {}));
-                    return;
-                }
-                else {
+//                if (err) {
+//                    res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Selección del Operario', 500, {}));
+//                    return;
+//                }
+                //else {
 
-                    var responsable = operario_array[0].operario_id;
+                    var responsable = null;//operario_array[0].operario_id;
 
                     that.m_pedidos_farmacias.asignar_responsables_pedidos(numero_pedido, '0', responsable, usuario_id, function(err, rows, responsable_estado_pedido) {
 
@@ -1395,8 +1395,8 @@ PedidosFarmacias.prototype.insertarPedidoFarmaciaDefinitivo = function(req, res)
 
                     });
 
-                }
-            });
+                //}
+            //});
             /*Fin - Modificación para estados*/
         }
 

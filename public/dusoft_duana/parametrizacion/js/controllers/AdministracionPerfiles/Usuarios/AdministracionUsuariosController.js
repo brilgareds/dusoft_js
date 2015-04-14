@@ -185,7 +185,6 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                             
                            //selecciona la empresa del dropdown
                            var empresas = $scope.rootUsuario.empresas;
-                           
                            for(var i in empresas){
                                if(empresas[i].getCodigo() === _usuario.empresa_id){
                                    $scope.rootUsuario.empresaSeleccionada = empresas[i];
@@ -206,8 +205,9 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                            
                             
                             self.traerModulosPorUsuario(function(){
-                                self.traerModulos();
-                                self.traerRoles();
+                                self.traerModulos(function(){                                   
+                                    self.traerRoles();
+                                });
                            });
                         }
                         
@@ -221,7 +221,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             };
             
             
-            self.traerEmpresas = function() {
+            self.traerEmpresas = function(callback) {
                 var obj = {
                     session: $scope.rootUsuario.session,
                     data: {
@@ -250,6 +250,8 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                             }*/
 
                         }
+                        
+                        callback();
 
                     }
 
@@ -276,7 +278,6 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                         AlertService.mostrarMensaje("warning", msg);
                         
                     }
-                    
                     self.onMarcarRolUsuarioPorEmpresa();
                 });
 
@@ -290,7 +291,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                     for(var i in roles){
                         if(roles[i].getId() === $scope.rootUsuario.rolAGuardar.getId()){
                             roles[i].setEstado(true);
-                            $scope.rootUsuario.rolAGuardar = roles[i];
+                            //$scope.rootUsuario.rolAGuardar = roles[i];
                             $scope.rootUsuario.rolAGuardar.setEstado(true);
                             break;
                         }
@@ -299,7 +300,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             };
             
             //trae todos los modulos que estan disponibles para la empresa seleccionada
-            self.traerModulos = function() {   
+            self.traerModulos = function(callback ) {   
                 $scope.$broadcast("deshabilitarNodos");
                 $scope.rootUsuario.empresaSeleccionada.vaciarListaEmpresas();
                 
@@ -312,7 +313,10 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                     }
                 };
                 
-                ParametrizacionService.traerModulos(parametros, $scope.rootUsuario.empresaSeleccionada, self.esModuloSeleccionado);
+                ParametrizacionService.traerModulos(parametros, $scope.rootUsuario.empresaSeleccionada, self.esModuloSeleccionado, function(){
+                   // console.log("modulos del rol ",$scope.rootUsuario.rolAGuardar.getModulos() 
+                   callback();
+                });
                 
             };
             
@@ -367,8 +371,8 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 
                 ParametrizacionService.traerModulosPorUsuario(parametros, $scope.rootUsuario.rolAGuardar, function(success){
                     if(success){
-                        /*console.log("modulos para el rol ",$scope.rootUsuario.rolAGuardar.getModulos());
-                        var modulos = $scope.rootUsuario.rolAGuardar.getModulos();
+                        console.log("modulos para el rol code 1 ",$scope.rootUsuario.rolAGuardar.getModulos());
+                        /*var modulos = $scope.rootUsuario.rolAGuardar.getModulos();
                         for(var i in modulos){
                             console.log("id modulo ", modulos[i].getModulo().getId(), modulos[i].getModulo().getEstado())
                         }*/
@@ -483,7 +487,9 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 $scope.rootUsuario.rolAGuardar.setEstado(true);
                 self.asignarRolUsuario(function(){
                     self.traerModulosPorUsuario(function(){
-                         self.traerModulos();
+                         self.traerModulos(function(){
+                             
+                         });
                     });
                 });
             };
@@ -509,8 +515,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             
             $scope.$on("modulosSeleccionados", function(e, modulos_seleccionado) {
                 //vacia los modulos del rol para enviar solo los seleccionados en el momento
-                $scope.rootUsuario.rolAGuardar.vaciarModulos();
-                
+                //$scope.rootUsuario.rolAGuardar.vaciarModulos();
                 var modulo = self.agregarModulo(modulos_seleccionado.seleccionado, true);
 
                 if (!modulo) {
@@ -555,7 +560,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             
             $scope.$on("traerOpcioesModuloSeleccionado", function(e, modulo_id) {
                 //self.listarRolesModulosOpciones(modulo_id);
-                
+                console.log("modulos para el rol code 1 ",$scope.rootUsuario.rolAGuardar.getModulos());
                 $scope.rootModulos.moduloAGuardar = self.esModuloSeleccionado(Modulo.get(modulo_id)).getModulo();
                                 
                 var obj = {
@@ -696,8 +701,9 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                             $scope.rootUsuario.rolAGuardar = rol;
                         }   
                         self.traerModulosPorUsuario(function(){
-                              self.traerModulos();
-                              self.traerRoles();
+                              self.traerModulos(function(){
+                                self.traerRoles();
+                              });
                          });
                             
                        
@@ -723,13 +729,15 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             var usuario_id = localStorageService.get("usuario_id");
             self.inicializarUsuarioACrear();
             
-            self.traerEmpresas();
+            self.traerEmpresas(function(){
 
-            if (usuario_id && usuario_id.length > 0) {
-                self.traerUsuarioPorId(usuario_id, function() {
-                           
-                });
-            } 
+                if (usuario_id && usuario_id.length > 0) {
+                    self.traerUsuarioPorId(usuario_id, function() {
+
+                    });
+                } 
+                
+            });
             
             
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {

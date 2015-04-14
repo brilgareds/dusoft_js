@@ -11,7 +11,7 @@ define(["angular", "js/services"], function(angular, services) {
            var modulosSeleccionados = [];
            
            //metodo usado por los controladores AdministracionUsuariosController, AdministracionRolesController
-           self.traerModulos = function(parametros, empresaSeleccionada, esModuloSeleccionado ){
+           self.traerModulos = function(parametros, empresaSeleccionada, esModuloSeleccionado, callback ){
                //$scope.$broadcast("deshabilitarNodos");
                modulosSeleccionados = [];
 
@@ -62,6 +62,8 @@ define(["angular", "js/services"], function(angular, services) {
                         }
                         //console.log("refrescar arbol code 1");
                         $rootScope.$emit("datosArbolCambiados", modulos);
+                        
+                        callback(true);
                     }
 
                 });

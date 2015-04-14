@@ -23,7 +23,9 @@
                 'OBTENER_MODULOS_USUARIO':BASE_URL+"/Usuarios/obtenerModulosPorUsuario",
                 'LISTAR_USUARIO_OPCIONES':BASE_URL+"/Usuarios/listarUsuariosModulosOpciones",
                 'HABILITAR_MODULOS_USUARIO':BASE_URL+"/Usuarios/habilitarModulosDeUsuario",
-                'OBTENER_ROL_USUARIO':BASE_URL+"/Usuarios/obtenerRolUsuarioPorEmpresa"
+                'OBTENER_ROL_USUARIO':BASE_URL+"/Usuarios/obtenerRolUsuarioPorEmpresa",
+                'CAMBAR_PREDETERMINADO_EMPRESA':BASE_URL+"/Usuarios/cambiarPredeterminadoEmpresa",
+                'GUARDAR_OPCION':BASE_URL+"/Usuarios/guardarOpcion"
                 
 	    },
             'MODULOS':{

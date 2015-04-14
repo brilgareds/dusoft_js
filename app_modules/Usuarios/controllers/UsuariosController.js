@@ -35,6 +35,11 @@ Usuarios.prototype.obtenerUsuarioPorId = function(req, res){
     var that = this;
 
     var args = req.body.data;
+    
+    if(args.parametrizacion_usuarios === undefined){
+        res.send(G.utils.r(req.url, 'La sintaxis del request no es valida', 404, {}));
+        return;
+    }
 
     if (args.parametrizacion_usuarios.usuario_id === undefined || args.parametrizacion_usuarios.usuario_id.length === 0) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
@@ -54,6 +59,11 @@ Usuarios.prototype.guardarUsuario = function(req, res) {
     var that = this;
 
     var args = req.body.data;
+    
+    if(args.parametrizacion_usuarios === undefined){
+        res.send(G.utils.r(req.url, 'La sintaxis del request no es valida', 404, {}));
+        return;
+    }
 
     if (args.parametrizacion_usuarios.usuario === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
@@ -86,6 +96,11 @@ Usuarios.prototype.subirAvatarUsuario = function(req, res) {
      var that = this;
 
     var args = req.body.data;
+    
+    if(args.parametrizacion_usuarios === undefined){
+        res.send(G.utils.r(req.url, 'La sintaxis del request no es valida', 404, {}));
+        return;
+    }
 
     if (args.parametrizacion_usuarios.usuario_id === undefined || args.parametrizacion_usuarios.usuario_id.length === 0 ) {
         res.send(G.utils.r(req.url, 'El id del usuario no esta definido', 404, {}));
@@ -114,10 +129,61 @@ Usuarios.prototype.subirAvatarUsuario = function(req, res) {
     
 };
 
+Usuarios.prototype.cambiarPredeterminadoEmpresa = function(req, res){
+    var that = this;
+
+    var args = req.body.data;
+    
+    if(args.parametrizacion_usuarios === undefined){
+        res.send(G.utils.r(req.url, 'La sintaxis del request no es valida', 404, {}));
+        return;
+    }
+
+    if (args.parametrizacion_usuarios.usuario_id === undefined || args.parametrizacion_usuarios.usuario_id.length === 0 ) {
+        res.send(G.utils.r(req.url, 'El id del usuario no esta definido', 404, {}));
+        return;
+    }
+    
+    if (args.parametrizacion_usuarios.empresa_id === undefined || args.parametrizacion_usuarios.empresa_id.length === 0 ) {
+        res.send(G.utils.r(req.url, 'La empresa no esta definida', 404, {}));
+        return;
+    }
+    
+    if (args.parametrizacion_usuarios.rol_id === undefined || args.parametrizacion_usuarios.rol_id.length === 0 ) {
+        res.send(G.utils.r(req.url, 'El rol no esta seleccionado', 404, {}));
+        return;
+    }
+    
+    if (args.parametrizacion_usuarios.predeterminado === undefined || args.parametrizacion_usuarios.predeterminado.length === 0 ) {
+        res.send(G.utils.r(req.url, 'Algunos datos obligatorios no se encontraron', 404, {}));
+        return;
+    }
+    
+    var empresa_id = args.parametrizacion_usuarios.empresa_id;
+    var usuario_id = args.parametrizacion_usuarios.usuario_id;
+    var rol_id = args.parametrizacion_usuarios.rol_id;
+    var predeterminado = args.parametrizacion_usuarios.predeterminado;
+    
+    
+    that.m_usuarios.cambiarPredeterminadoEmpresa(empresa_id, usuario_id, rol_id, predeterminado, function(err, rows){
+        if(err){
+            res.send(G.utils.r(req.url, 'Se genero un error modificando el usuario', 403, {}));
+            return;
+        }
+            
+        res.send(G.utils.r(req.url, 'Usuario', 200, {parametrizacion_usuarios: {rows: rows}}));
+    });
+};
+
 Usuarios.prototype.obtenerRolUsuarioPorEmpresa = function(req, res) {
     var that = this;
 
     var args = req.body.data;
+    
+    if(args.parametrizacion_usuarios === undefined){
+        res.send(G.utils.r(req.url, 'La sintaxis del request no es valida', 404, {}));
+        return;
+    }
 
     if (args.parametrizacion_usuarios.usuario_id === undefined || args.parametrizacion_usuarios.usuario_id.length === 0 ) {
         res.send(G.utils.r(req.url, 'El id del usuario no esta definido', 404, {}));
@@ -133,7 +199,7 @@ Usuarios.prototype.obtenerRolUsuarioPorEmpresa = function(req, res) {
     var usuario_id = args.parametrizacion_usuarios.usuario_id;
     
     
-    that.m_usurios.obtenerRolUsuarioPorEmpresa(empresa_id, usuario_id, function(err, rol){
+    that.m_usuarios.obtenerRolUsuarioPorEmpresa(empresa_id, usuario_id, function(err, rol){
         if(err){
             res.send(G.utils.r(req.url, 'Se genero un error consultando el rol del usuario', 403, {}));
             return;
@@ -147,6 +213,11 @@ Usuarios.prototype.obtenerRolUsuarioPorEmpresa = function(req, res) {
 Usuarios.prototype.obtenerModulosPorUsuario = function(req, res) {
     var that = this;
     var args = req.body.data;
+    
+    if(args.parametrizacion_usuarios === undefined){
+        res.send(G.utils.r(req.url, 'La sintaxis del request no es valida', 404, {}));
+        return;
+    }
 
     if (args.parametrizacion_usuarios.usuario_id === undefined || args.parametrizacion_usuarios.usuario_id.length === 0 ) {
         res.send(G.utils.r(req.url, 'El id del usuario no esta definido', 404, {}));
@@ -207,6 +278,11 @@ Usuarios.prototype.obtenerModulosPorUsuario = function(req, res) {
 Usuarios.prototype.listarUsuariosModulosOpciones = function(req, res) {
     var that = this;
     var args = req.body.data;
+    
+    if(args.parametrizacion_usuarios === undefined){
+        res.send(G.utils.r(req.url, 'La sintaxis del request no es valida', 404, {}));
+        return;
+    }
 
     if (args.parametrizacion_usuarios.modulo.id === undefined && args.parametrizacion_usuarios.modulo.id.length === '') {
         res.send(G.utils.r(req.url, 'El id del modulo no esta definido', 500, {parametrizacion_modulos: {}}));
@@ -233,7 +309,12 @@ Usuarios.prototype.asignarRolUsuario = function(req, res) {
      var that = this;
 
     var args = req.body.data;
-
+    
+    if(args.parametrizacion_usuarios === undefined){
+        res.send(G.utils.r(req.url, 'La sintaxis del request no es valida', 404, {}));
+        return;
+    }
+    
     if (args.parametrizacion_usuarios.usuario_id === undefined || args.parametrizacion_usuarios.usuario_id.length === 0 ) {
         res.send(G.utils.r(req.url, 'El id del usuario no esta definido', 404, {}));
         return;
@@ -268,8 +349,27 @@ Usuarios.prototype.asignarRolUsuario = function(req, res) {
             res.send(G.utils.r(req.url, 'Se genero un error guardando el rol', 403, {}));
             return;
         }
+        
+       that.m_usuarios.obtenerEmpresasPredeterminadas(that, empresa_id, login_id, function(err, rows){
+            if(err){
+               res.send(G.utils.r(req.url, 'Se genero un error seleccionando la empresa como predeterminado', 403, {}));
+               return;
+           }
+           
+           console.log("cantidad de predeterminados ", rows);
+                
+           //si no hay empresas predeterminadas se marca la recien asignada
+           if(rows.length ===  0){
+               that.m_usuarios.cambiarPredeterminadoEmpresa(empresa_id, login_id, rol_id, '1', function(){
+                   
+                    res.send(G.utils.r(req.url, 'Usuario guardado correctamente', 200, {parametrizacion_usuarios: {login_empresa_id: login_empresa, ids_modulos:ids}}));
+               });
+           } else {
+               res.send(G.utils.r(req.url, 'Usuario guardado correctamente', 200, {parametrizacion_usuarios: {login_empresa_id: login_empresa, ids_modulos:ids}}));
+           }
+               
+        });
 
-        res.send(G.utils.r(req.url, 'Usuario guardado correctamente', 200, {parametrizacion_usuarios: {login_empresa_id: login_empresa, ids_modulos:ids}}));
         
         
     });
@@ -282,6 +382,11 @@ Usuarios.prototype.asignarRolUsuario = function(req, res) {
 Usuarios.prototype.habilitarModulosDeUsuario = function(req, res) {
     var that = this;
     var args = req.body.data;
+    
+    if(args.parametrizacion_usuarios === undefined){
+        res.send(G.utils.r(req.url, 'La sintaxis del request no es valida', 404, {}));
+        return;
+    }
 
     var rolesModulos = args.parametrizacion_usuarios.rolesModulos;
     var login_empresas_id = args.parametrizacion_usuarios.login_empresas_id;
@@ -304,6 +409,46 @@ Usuarios.prototype.habilitarModulosDeUsuario = function(req, res) {
         }
 
         res.send(G.utils.r(req.url, "Se asigno correctamente los modulos seleccionados", 200, {parametrizacion_usuarios: {ids: ids}}));
+
+    });
+
+};
+
+Usuarios.prototype.guardarOpcion = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+    
+    if(args.parametrizacion_usuarios === undefined){
+        res.send(G.utils.r(req.url, 'La sintaxis del request no es valida', 404, {}));
+        return;
+    }
+
+    var opcion = args.parametrizacion_usuarios.opcion || undefined;
+    var login_modulos_empresa_id = args.parametrizacion_usuarios.login_modulos_empresa_id;
+
+    if (opcion === undefined || opcion.length === 0) {
+        res.send(G.utils.r(req.url, 'No se a seleccionado ninguna opcion', 500, {parametrizacion_usuarios: {}}));
+        return;
+    }
+    
+   if (login_modulos_empresa_id === undefined || login_modulos_empresa_id.length === 0) {
+        res.send(G.utils.r(req.url, 'No se a seleccionado ningun modulo', 500, {parametrizacion_usuarios: {}}));
+        return;
+    }
+
+    that.m_usuarios.guardarOpcion(req.session.user.usuario_id, opcion, login_modulos_empresa_id, function(err, rows) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error guardando la opcion para el modulo', 500, {parametrizacion_usuarios: {}}));
+            return;
+        }
+
+        var id = 0;
+
+        if (rows.length > 0 && rows[0].id) {
+            id = rows[0].id;
+        }
+
+        res.send(G.utils.r(req.url, "Se guardo la opcion correctamente", 200, {parametrizacion_usuarios: {id: id}}));
 
     });
 

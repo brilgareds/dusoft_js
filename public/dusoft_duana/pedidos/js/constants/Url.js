@@ -107,7 +107,7 @@ define(["angular"], function(angular) {
 	    	'LISTAR_USUARIOS':BASE_URL+"/Usuarios/listar"
 	    },
             'DOCUMENTOS_DESPACHO':{
-                'IMPRIMIR_DOCUMENTO_DESPACHO':BASE_URL+"/movBodegas/imprimirDocumentoDespacho"
+                'IMPRIMIR_DOCUMENTO_DESPACHO':BASE_URL+"/movBodegas/E008/imprimirDocumentoDespacho"
             }
 	  }
     };

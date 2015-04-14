@@ -188,15 +188,51 @@ UsuariosModel.prototype.obtenerRolUsuarioPorEmpresa = function(empresa_id, usuar
     });
 };
 
+
+UsuariosModel.prototype.cambiarPredeterminadoEmpresa = function(empresa_id, usuario_id, rol_id, predeterminado, callback){
+    
+    var that = this;
+        
+    __desmarcarPredeterminadoEmpresas(that, empresa_id, usuario_id, function(err, rows, result){ 
+        
+        if(err){
+            callback(true);
+            return;
+        }
+        
+        __cambiarPredeterminadoEmpresa(that, empresa_id, usuario_id, rol_id, predeterminado, function(err, rows){
+             if(err){
+                callback(true);
+                return;
+             }
+             
+             callback(err,rows);
+             
+        });
+        
+        
+    });
+
+};
+
+UsuariosModel.prototype.obtenerEmpresasPredeterminadas = function(that, empresa_id, usuario_id,  callback){
+    var sql = "SELECT a.predeterminado FROM login_empresas a WHERE a.login_id = $1  AND a.predeterminado = '1'";
+
+    G.db.query(sql, [usuario_id], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
+
 UsuariosModel.prototype.asignarRolUsuario = function(login_id, empresa_id, rol_id,  usuario_id, predeterminado, callback){
     var that = this;
-
+ 
     G.db.begin(function() {
-        that.guardarRolUsuario(login_id, empresa_id, rol_id,  usuario_id, predeterminado, function(err, result) {
+        that.guardarRolUsuario(login_id, empresa_id, rol_id,  usuario_id, function(err, result) {
             var rows = result.rows;
             var login_empresa_id = (rows.length > 0)?rows[0].id:undefined;
             //callback(err, id);
-
+            
              that.sobreEscribirModulosDelRol(login_id, empresa_id, rol_id, usuario_id, login_empresa_id, function(err, rows, ids){
                 if(err){
                     callback(err);
@@ -228,10 +264,19 @@ UsuariosModel.prototype.asignarRolUsuario = function(login_id, empresa_id, rol_i
 
 
 UsuariosModel.prototype.habilitarModulosDeUsuario = function(usuario_id, rolesModulos, login_empresas_id, callback){
-    var that = this;
+    var that = this;  
     
-     __habilitarModulosDeUsuario(that, usuario_id, rolesModulos, login_empresas_id, [], function(err, rows, ids){
-         callback(err, rows ,ids);
+     G.db.begin(function() {
+        __habilitarModulosDeUsuario(that, usuario_id, rolesModulos, login_empresas_id, [], function(err, rows, ids){
+            if(err){
+                callback(err);
+                return;
+            }
+
+            G.db.commit(function() {
+                callback(err, rows, ids);
+            });
+        });
      });
 };
 
@@ -251,7 +296,7 @@ UsuariosModel.prototype.listarUsuarioModuloOpciones = function(modulo_id, rol_id
 };
 
 //se encarga de asignar el rol del usuario y borrar registros del rol anterior por empresa
-UsuariosModel.prototype.guardarRolUsuario = function(login_id, empresa_id, rol_id,  usuario_id, predeterminado, callback){
+UsuariosModel.prototype.guardarRolUsuario = function(login_id, empresa_id, rol_id,  usuario_id, callback){
     var that = this;
     
     //borra los registros del modulo anterior
@@ -261,12 +306,12 @@ UsuariosModel.prototype.guardarRolUsuario = function(login_id, empresa_id, rol_i
             return;
         }
         
-        var sql = "INSERT INTO login_empresas (login_id, empresa_id, predeterminado, usuario_id,\
-           fecha_creacion, rol_id, estado) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id";
+        var sql = "INSERT INTO login_empresas (login_id, empresa_id, usuario_id,\
+           fecha_creacion, rol_id, estado) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id";
 
 
         var params = [
-            login_id, empresa_id, predeterminado, usuario_id , 'NOW()', rol_id, '1'
+            login_id, empresa_id, usuario_id , 'NOW()', rol_id, '1'
         ];
         
         
@@ -279,10 +324,10 @@ UsuariosModel.prototype.guardarRolUsuario = function(login_id, empresa_id, rol_i
 
 
 UsuariosModel.prototype.borrarRolAsignadoUsuario = function(rol_id, empresa_id, usuario_id, callback){
-     var sql = "DELETE FROM login_empresas WHERE  empresa_id = $1 AND login_id = $2 ";
-     
+     var sql = "DELETE FROM login_empresas WHERE  empresa_id = $1 AND login_id = "+usuario_id;
+     console.log(" empresa_id ", empresa_id, " login_id ",usuario_id)
      var params = [
-        empresa_id, usuario_id
+        empresa_id
      ];
      
      G.db.transaction(sql, params, function(err, rows) {
@@ -337,37 +382,38 @@ UsuariosModel.prototype.sobreEscribirModulosDelRol = function(login_id, empresa_
         
 };
 
-UsuariosModel.prototype.guardarOpcion = function(usuario_id, opcion, callback){
-    var sql = "UPDATE login_modulos_opciones SET estado = $4, usuario_id_modifica = $1, fecha_modificacion = now()  \
-                WHERE login_modulos_empresa_id = $2 AND modulos_opcion_id = $3  RETURNING id";
+UsuariosModel.prototype.guardarOpcion = function(usuario_id, opcion, login_modulos_empresa_id, callback){
+    var that = this;
+    
+    G.db.begin(function() {
+      __guardarOpcion(that, usuario_id, opcion, login_modulos_empresa_id, function(err, rows, ids){
+          if(err){
+              callback(err);
+              return;
+          }
 
-    G.db.transaction(sql, [usuario_id, opcion.login_modulos_empresa_id, opcion.modulos_opcion_id, opcion.estado], function(err, result) {
-        
-        if (err) {
-            callback(err, result);
-            return;
-        }
-        //si la actualizacion no devuelve resultado se trata de hacer el insert
-        var rows = result.rows;
-        if (result.rowCount === 0) {
-            sql = "INSERT INTO login_modulos_opciones (login_modulos_empresa_id, modulos_opcion_id, usuario_id, fecha_creacion, estado)\
-                   VALUES($1, $2, $3, now(), $4) RETURNING id";
+          G.db.commit(function() {
+              callback(err, rows, ids);
+          });
+      });
+   });
+};
 
-            G.db.transaction(sql, [opcion.login_modulos_empresa_id, opcion.modulos_opcion_id, usuario_id, opcion.estado], function(err, result) {
-                if (err) {
-                    callback(err, rows);
-                    return;
-                } 
-                
-                rows = result.rows;
 
-               callback(err, rows);
-            });
+function __cambiarPredeterminadoEmpresa(that, empresa_id, usuario_id, rol_id, predeterminado, callback){
+    var sql = "UPDATE login_empresas  SET predeterminado = $4 WHERE empresa_id = $1 AND login_id = $2 AND rol_id = $3";
 
-        } else {
+    G.db.query(sql, [empresa_id, usuario_id, rol_id, predeterminado], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
 
-           callback(err, rows);
-        }
+
+function __desmarcarPredeterminadoEmpresas(that, empresa_id, usuario_id, callback){
+    var sql = "UPDATE login_empresas  SET predeterminado = '0' WHERE login_id = $1 AND predeterminado = '1'";
+
+    G.db.query(sql, [usuario_id], function(err, rows, result) {
+        callback(err, rows, result);
     });
 };
 
@@ -429,15 +475,15 @@ function __guardarOpciones(that, usuario_id, login_modulos_empresa_id, opciones,
    // console.log("opcion >>>>>>>>>>>>>>>>>>>>> ",_opcion)
     
     var opcion = {
-        modulos_opcion_id:_opcion.id,
-        login_modulos_empresa_id:login_modulos_empresa_id,
-        estado:'1'
+        id:_opcion.id,
+        //login_modulos_empresa_id:login_modulos_empresa_id,
+        seleccionados:true
     };
     
     //valida que la opcion este seleccionada en el rol
     if(_opcion.estado_opcion_rol === '1'){
         
-        that.guardarOpcion(usuario_id, opcion, function(err){
+        __guardarOpcion(that, usuario_id, opcion, login_modulos_empresa_id, function(err){
             if(err){
                 callback(err);
                 return;
@@ -474,11 +520,10 @@ function __habilitarModulosDeUsuario(that, usuario_id, rolesModulos, login_empre
 
     
 
-    var sql = "UPDATE login_modulos_empresas SET estado = $4, usuario_id_modifica = $1, fecha_modificacion = now()  \
+    var sql = "UPDATE login_modulos_empresas SET estado = $4, usuario_id_modifica = $1, fecha_modificacion = now()\
                 WHERE login_empresas_id = $2 AND modulo_id = $3  RETURNING id";
 
     G.db.transaction(sql, [usuario_id, login_empresas_id, modulo_id, estado], function(err, result) {
-        
         if (err) {
             callback(err, result, ids);
             return;
@@ -521,6 +566,44 @@ function __habilitarModulosDeUsuario(that, usuario_id, rolesModulos, login_empre
     });
 
 };
+
+function __guardarOpcion(that, usuario_id, opcion, login_modulos_empresa_id,  callback){
+        
+     var sql = "UPDATE login_modulos_opciones SET estado = $4, usuario_id_modifica = $1, fecha_modificacion = now()  \
+                WHERE login_modulos_empresa_id = $2 AND modulos_opcion_id = $3  RETURNING id";
+    
+    
+    console.log("login_modulos_empresa_id >>>>>>>>>>> ",login_modulos_empresa_id, " modulos_opcion_id >>>>>> ",opcion.id);
+
+    G.db.transaction(sql, [usuario_id, login_modulos_empresa_id, opcion.id, Number(opcion.seleccionado)], function(err, result) {
+        
+        if (err) {
+            callback(err, result);
+            return;
+        }
+        //si la actualizacion no devuelve resultado se trata de hacer el insert
+        var rows = result.rows;
+        if (result.rowCount === 0) {
+            sql = "INSERT INTO login_modulos_opciones (login_modulos_empresa_id, modulos_opcion_id, usuario_id, fecha_creacion, estado)\
+                   VALUES($1, $2, $3, now(), $4) RETURNING id";
+
+            G.db.transaction(sql, [login_modulos_empresa_id, opcion.id, usuario_id, Number(opcion.seleccionado)], function(err, result) {
+                if (err) {
+                    callback(err, rows);
+                    return;
+                } 
+                
+                rows = result.rows;
+
+               callback(err, rows);
+            });
+
+        } else {
+
+           callback(err, rows);
+        }
+    });
+}
 
 
 UsuariosModel.$inject = ["m_rol"];

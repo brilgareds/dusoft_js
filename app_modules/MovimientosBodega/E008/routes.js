@@ -129,12 +129,6 @@ module.exports = function(app, di_container) {
         c_e008.actualizarCajaDeTemporales(req, res);
     });
 
-    // Imprimir Rotulo 
-    app.post('/api/movBodegas/E008/imprimirRotulosCaja', function(req, res) {
-
-    });
-
-
     // Auditar Producto Documento Temporal
     app.post('/api/movBodegas/E008/auditarProductoDocumentoTemporal', function(req, res) {
         c_e008.auditarProductoDocumentoTemporal(req, res);
@@ -158,6 +152,12 @@ module.exports = function(app, di_container) {
     app.post('/api/movBodegas/E008/imprimirRotuloFarmacias', function(req, res){
        c_e008.imprimirRotuloFarmacias(req, res); 
     });
+    
+    app.post('/api/movBodegas/E008/imprimirDocumentoDespacho', function(req, res) {
+        c_e008.imprimirDocumentoDespacho(req, res);
+    });
+    
+    
     // ======== FIN Auditoria de Documento de Despacho ====================
 
     // ======== Events E008 ========

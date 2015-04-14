@@ -8,11 +8,12 @@ define(["angular", "js/services"], function(angular, services) {
              API, RolModulo, Rol) {
         
            var self = this;
+           var modulosSeleccionados = [];
            
            //metodo usado por los controladores AdministracionUsuariosController, AdministracionRolesController
-           self.traerModulos = function(parametros, empresaSeleccionada, esModuloSeleccionado ){
+           self.traerModulos = function(parametros, empresaSeleccionada, esModuloSeleccionado, callback ){
                //$scope.$broadcast("deshabilitarNodos");
-
+               modulosSeleccionados = [];
 
                 Request.realizarRequest(API.MODULOS.LISTAR_MODULOS_POR_EMPRESA, "POST", parametros, function(data) {
                     if (data.status === 200) {
@@ -35,7 +36,7 @@ define(["angular", "js/services"], function(angular, services) {
                             var moduloRolSeleccionado = esModuloSeleccionado(modulo);   
                                                         
                             modulo.state = {
-                                selected:(moduloRolSeleccionado)?true:false,
+                               // selected:(moduloRolSeleccionado)?true:false,
                                 disabled: true
                             };
                             
@@ -43,7 +44,9 @@ define(["angular", "js/services"], function(angular, services) {
                             
                             if(moduloRolSeleccionado){
                                 
-                                $rootScope.$emit("onseleccionarnodo",modulo);
+                               // $rootScope.$emit("onseleccionarnodo",modulo);
+                                modulosSeleccionados.push(modulo);
+                                modulo.modoLectura = true;
                             };
 
                             //necesario para guardar en roles_modulos
@@ -59,13 +62,21 @@ define(["angular", "js/services"], function(angular, services) {
                         }
                         //console.log("refrescar arbol code 1");
                         $rootScope.$emit("datosArbolCambiados", modulos);
+                        
+                        if(callback){
+                            
+                            callback(true);
+                        }
                     }
 
                 });
            };
            
            $rootScope.$on("arbolRefrescado",function(){
-              // console.log("arbol refrescado");
+              for(var i in modulosSeleccionados){
+                  var modulo = modulosSeleccionados[i];
+                   $rootScope.$emit("onseleccionarnodo",modulo);
+              }
            });
            
            

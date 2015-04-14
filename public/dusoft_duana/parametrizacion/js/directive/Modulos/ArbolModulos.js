@@ -69,7 +69,7 @@ define(["angular", "js/directive"], function(angular, directive) {
                                 hijos: []
                             };
                         }
-
+                        
                         //se agrega el nodo seleccionado
                         scope.modulosSeleccionados.seleccionado = nodo.original.modulo_id;
 
@@ -88,7 +88,11 @@ define(["angular", "js/directive"], function(angular, directive) {
 
 
                         //console.log("modulos seleccionados ",scope.modulosSeleccionados)
-                        scope.$emit("modulosSeleccionados", scope.modulosSeleccionados);
+                        if(!nodo.original.modoLectura){
+                            scope.$emit("modulosSeleccionados", scope.modulosSeleccionados);
+                        } else {
+                            nodo.original.modoLectura = false;
+                        }
                     };
 
 
@@ -143,6 +147,7 @@ define(["angular", "js/directive"], function(angular, directive) {
                                             "label": "Seleccionar",
                                             "action": function(obj) {
                                                 //scope.onSeleccionarNodo($node);
+                                                
                                                 if(!$node.state.selected){
                                                     element.jstree("select_node", "#" + $node.id);
                                                 } else {
@@ -172,6 +177,9 @@ define(["angular", "js/directive"], function(angular, directive) {
                         }).on("refresh.jstree", function(node, selected, event) {
                            // console.log("arbol refrescado code 1");
                             scope.$emit("arbolRefrescado");
+                        }).on("ready.jstree", function(){
+                           console.log("arbol cargado >>>>>>>>>>>>>"); 
+                           scope.$emit("arbolRefrescado");
                         });
                     }
 

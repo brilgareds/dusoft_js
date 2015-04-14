@@ -53,7 +53,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
                 return this.login_empresa_id;
             };
             
-            EmpresaParametrizacion.prototype.setPredeterminado= function(predeterminada) {
+            EmpresaParametrizacion.prototype.setPredeterminado = function(predeterminada) {
                 this.predeterminada = Number(predeterminada);
             };
             

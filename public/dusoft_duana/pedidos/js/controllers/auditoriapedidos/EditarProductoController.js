@@ -124,7 +124,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                         pedidos: {
                             numero_pedido: $scope.rootEditarProducto.pedido.numero_pedido,
                             codigo_producto: $scope.rootEditarProducto.producto.codigo_producto,
-                            identificador: ($scope.rootEditarProducto.pedido.tipo == 1)?"CL":"FM",
+                            identificador: ($scope.rootEditarProducto.pedido.tipo === 1)?"CL":"FM",
                             limite:100,
                             empresa_id:"03"
                         }

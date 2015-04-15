@@ -430,13 +430,13 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             
             
             //basado en los modulos seleccionados, se envian para ser habilitardos para el usuario
-            self.habilitarModulosRol = function() {
+            self.habilitarModulosRol = function(nodo) {
 
                 var obj = {
                     session: $scope.rootUsuario.session,
                     data: {
                         parametrizacion_usuarios: {
-                            rolesModulos: $scope.rootUsuario.rolAGuardar.getModulos(),
+                            rolesModulos: nodo,
                             login_empresas_id:$scope.rootUsuario.empresaSeleccionada.getLoginEmpresaId()
                         }
                     }
@@ -456,7 +456,8 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                             
                             for(var ii in modulos){
                                 if(modulos[ii].getModulo().getId() === ids[i].modulo_id){
-                                    modulos[ii].setUsuarioEmpresaId(ids[i].login_modulos_empresas);
+                                    console.log("buscando en ",modulos[ii].getModulo().getId(), " con ",ids[i].modulo_id, " login_modulos_empresas ",ids[i].login_modulos_empresas_id );
+                                    modulos[ii].setUsuarioEmpresaId(ids[i].login_modulos_empresas_id);
                                     break;
                                 }
                             }
@@ -501,6 +502,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             });
             
             $scope.seleccionRol = function(rol){
+                $scope.rootModulos.moduloAGuardar.vaciarOpciones();
                 $scope.rootUsuario.rolAGuardar = rol;
                 
                 //cambia el estado de los roles
@@ -538,27 +540,31 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             };
             
             
-            $scope.$on("modulosSeleccionados", function(e, modulos_seleccionado) {
-                //vacia los modulos del rol para enviar solo los seleccionados en el momento
-                //$scope.rootUsuario.rolAGuardar.vaciarModulos();
+            $scope.$on("modulosSeleccionados", function(e, modulos_seleccionado) {                  
+                //determina el nodo que se va a guardar, de esta forma solo se envia los modulos del nodo
+                var nodo = [];
                 var modulo = self.agregarModulo(modulos_seleccionado.seleccionado, true);
 
                 if (!modulo) {
                     return;
                 }
                 
-                $scope.rootModulos.moduloAGuardar = modulo;
-
+                $scope.rootModulos.moduloAGuardar = modulo.getModulo();
+                
+                nodo.push(modulo);
 
                 for (var i in modulos_seleccionado.padres) {
-                    self.agregarModulo(modulos_seleccionado.padres[i], true);
+                    modulo =  self.agregarModulo(modulos_seleccionado.padres[i], true);
+                    nodo.push(modulo);
                 }
 
                 for (var ii in modulos_seleccionado.hijos) {
-                    self.agregarModulo(modulos_seleccionado.hijos[ii], true);
+                    modulo = self.agregarModulo(modulos_seleccionado.hijos[ii], true);
+                    nodo.push(modulo);
                 }
                 
-                self.habilitarModulosRol();
+                
+                self.habilitarModulosRol(nodo);
                 
             });
             
@@ -566,20 +572,25 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             $scope.$on("modulosDeshabilitados", function(e, modulos_seleccionados) {
                 //console.log("modulos a deshabilitar ", modulos_seleccionados);
 
-                $scope.rootUsuario.rolAGuardar.vaciarModulos();
+                //$scope.rootUsuario.rolAGuardar.vaciarModulos();
+                //determina el nodo que se va a guardar, de esta forma solo se envia los modulos del nodo
+                var nodo = [];
                 var modulo = self.agregarModulo(modulos_seleccionados.seleccionado, false);
 
                 if (!modulo) {
                     return;
                 }
 
-                $scope.rootModulos.moduloAGuardar = modulo;
+                $scope.rootModulos.moduloAGuardar = modulo.getModulo();
+                
+                nodo.push(modulo);
 
                 for (var ii in modulos_seleccionados.hijos) {
-                    self.agregarModulo(modulos_seleccionados.hijos[ii], false);
+                    modulo = self.agregarModulo(modulos_seleccionados.hijos[ii], false);
+                    nodo.push(modulo);
                 }
 
-                self.habilitarModulosRol();
+                self.habilitarModulosRol(nodo);
             });
             
             
@@ -697,6 +708,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             
             //trae el rol seleccionado para la empresa por el usuario
             $scope.onEmpresaSeleccionada = function() {
+                $scope.rootModulos.moduloAGuardar.vaciarOpciones();
                 $scope.rootUsuario.termino_busqueda = "";
                 var obj = {
                     session: $scope.rootUsuario.session,
@@ -709,7 +721,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 };
 
                 Request.realizarRequest(API.USUARIOS.OBTENER_ROL_USUARIO, "POST", obj, function(data) {
-                    
+                   // $scope.rootUsuario.empresaSeleccionada.setLoginEmpresaId(login_empresa_id);
                     if (data.status === 200) {
                         var _rol = data.obj.parametrizacion_usuarios.rol;
                         if(_rol){
@@ -723,6 +735,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                            
                            
                             $scope.rootUsuario.rolAGuardar = rol;
+                            $scope.rootUsuario.empresaSeleccionada.setLoginEmpresaId(_rol.login_empresa_id);
                         }   
                         self.traerModulosPorUsuario(function(){
                               self.traerModulos(function(){

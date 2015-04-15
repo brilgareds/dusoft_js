@@ -226,7 +226,7 @@ define(["angular", "js/services"], function(angular, services) {
                 rolAGuardar.agregarModulo(rol_modulo);
                
 
-                return modulo;
+                return rol_modulo;
             };
             
             

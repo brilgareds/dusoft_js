@@ -715,15 +715,15 @@ PedidosCliente.prototype.insertarPedidoCliente = function(req, res) {
         
         /*Inicio - Modificación para estados*/
 
-        that.m_terceros.seleccionar_operario_por_usuario_id(usuario_id, function(err, operario_array) {
+        //that.m_terceros.seleccionar_operario_por_usuario_id(usuario_id, function(err, operario_array) {
 
-            if (err) {
-                res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Selección del Operario', 500, {}));
-                return;
-            }
-            else {
+//            if (err) {
+//                res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Selección del Operario', 500, {}));
+//                return;
+//            }
+            //else {
 
-                var responsable = operario_array[0].operario_id;
+                var responsable = null;//operario_array[0].operario_id;
 
                 that.m_pedidos_clientes.asignar_responsables_pedidos(numero_pedido, '0', responsable, usuario_id, function(err, rows, responsable_estado_pedido) {
 
@@ -748,8 +748,8 @@ PedidosCliente.prototype.insertarPedidoCliente = function(req, res) {
 
                 });
 
-            }
-        });
+            //} // fin else
+        //});
         /*Fin - Modificación para estados*/
 
     });
@@ -1092,12 +1092,12 @@ PedidosCliente.prototype.pedidoClienteArchivoPlano = function(req, res) {
             var lista_productos = contenido[0].data;
             
             //console.log(">>>>>>> Cantidad de Columnas Es: ", lista_productos[0].length)
-            if(lista_productos[0].length < 3){
+            if(lista_productos[0].length < 2){ // Para archivo de 2 columnas
                 
                 //console.log(">>>>>>> La Cantidad de Columnas no es correcta. Debe tener al menos 3:")    
                 //console.log(">>>>>>> Cantidad de Columnas Es: ", lista_productos[0].length)  
                 
-                res.send(G.utils.r(req.url, 'La Cantidad de Columnas no es correcta. Debe tener al menos 3 Columnas', 404, {}));
+                res.send(G.utils.r(req.url, 'La Cantidad de Columnas no es correcta. Debe tener al menos 2 Columnas', 404, {}));
                 return;
             }
             else{
@@ -1164,7 +1164,14 @@ PedidosCliente.prototype.pedidoClienteArchivoPlano = function(req, res) {
                                         var codigo_producto = producto_valido.codigo_producto;
                                         var porc_iva = producto.porc_iva;
                                         var numero_unidades = parseInt(producto_valido.cantidad_solicitada);
-                                        var valor_unitario = parseFloat(producto_valido.precio_unitario);
+                                        //var valor_unitario = parseFloat(producto_valido.precio_unitario);
+                                        var valor_unitario = 0;
+                                        
+                                        if(parseFloat(producto.precio_contrato) > 0)
+                                            valor_unitario = parseFloat(producto.precio_contrato);
+                                        else
+                                            valor_unitario = parseFloat(producto.precio_venta_anterior);
+                                        
                                         var tipo_producto_id = producto.tipo_producto_id;
 
                                         //INSERTAR DETALLE
@@ -1261,11 +1268,12 @@ function __validar_productos_archivo_plano(contexto, contenido_archivo_plano, ca
     filas.forEach(function(row) {
         var codigo_producto = row[0] || '';
         var cantidad_solicitada = row[1] || 0;
-        var precio_unitario = row[2] || 0;
+        //var precio_unitario = row[2] || 0;
 
         that.m_productos.validar_producto(codigo_producto, function(err, existe_producto) {
 
-            var producto = {codigo_producto: codigo_producto, cantidad_solicitada: cantidad_solicitada, precio_unitario: precio_unitario};
+            //var producto = {codigo_producto: codigo_producto, cantidad_solicitada: cantidad_solicitada, precio_unitario: precio_unitario};
+            var producto = {codigo_producto: codigo_producto, cantidad_solicitada: cantidad_solicitada};
 
             if (existe_producto.length > 0 && cantidad_solicitada > 0) {
                 productos_validos.push(producto);

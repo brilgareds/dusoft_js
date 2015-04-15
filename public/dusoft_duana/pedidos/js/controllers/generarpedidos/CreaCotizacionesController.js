@@ -1132,7 +1132,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 
                 console.log(">>>> Observación: ", $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getObservacion());
                 
-                $scope.$emit('mostrarseleccionproducto', tipo_cliente, cliente);
+                $scope.$emit('mostrarseleccionproducto_cliente', tipo_cliente, cliente);
 
             };
 

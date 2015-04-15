@@ -149,6 +149,11 @@
 
                 <div class="panel">
                     <div class="panel-body">
+                        
+                        <p class="contenedorPredeterminado ">
+                                <label for="habilitar" style='margin-right: 5px;' >Empresa Predeterminada</label>
+                                <input-check ng-model="rootUsuario.empresaSeleccionada.predeterminada" ng-change="onCambiarPredeterminadoEmpresa()" ng-disabled="rootUsuario.rolAGuardar.getId() == 0 || rootUsuario.empresaSeleccionada.predeterminada"   ></input-check>
+                        </p>
                         <ui-select ng-model="rootUsuario.empresaSeleccionada"
                                    theme="select2"
                                    ng-change="onEmpresaSeleccionada()"
@@ -162,17 +167,13 @@
 
                         <div class="input-group contenedorBuscarRol">
 
-                            <input type="text" class="form-control pull-right input-sm" ng-keypress="onBuscarRol($event)" ng-model="rootUsuario.termino_busqueda" placeholder="Buscar" />
+                            <input type="text" class="form-control pull-right input-sm" ng-keypress="onBuscarRol($event)" ng-model="rootUsuario.termino_busqueda" placeholder="Buscar Rol" />
                             <div class="input-group-btn" >
                                 <button class="btn btn-default input-sm" type="submit" ng-click="onBuscarRol({which:13})"><i class="glyphicon glyphicon-search"></i></button>
                             </div>
 
                         </div>
                         
-                        <p class="input-group contenedorPredeterminado ">
-                                <label for="habilitar" style='margin-right: 5px;' >Predeterminado</label>
-                        <input-check ng-model="rootUsuario.empresaSeleccionada.predeterminada" ng-change="onCambiarPredeterminadoEmpresa()" ng-disabled="rootUsuario.rolAGuardar.getId() == 0 || rootUsuario.empresaSeleccionada.predeterminada"   ></input-check>
-                        </p>
                         
                         <div class="table-responsive tablaRoles" >
                             <div class="grid-responsive listado_roles" ng-grid="listado_roles">
@@ -194,7 +195,7 @@
 
     </div>
 
-    <div class="col-md-4" >
+    <div class="col-md-4" ng-if='rootUsuario.rolAGuardar.id > 0' >
         <div arbol-modulos plugins='checkbox,contextmenu' tipo='multiple' estado='modulos_empresas_usuario' multiples_nodos="true"></div>
     </div>
 

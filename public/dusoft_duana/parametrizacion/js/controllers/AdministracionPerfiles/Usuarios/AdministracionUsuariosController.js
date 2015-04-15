@@ -64,14 +64,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción <span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li><a href="javascript:void(0);" ng-click="seleccionRol(row.entity);" >Seleccionar</a></li>\
-                                                <li><a href="javascript:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,0)" >Modificar</a></li>\
-                                                <li><a href="javascript:void(0);" ng-click="generar_reporte(row.entity,0)" >Ver PDF</a></li>\
-                                                <li><a href="javascript:void(0);" ng-disabled="true" ng-click="enviar_email(row.entity,0)" >Enviar por Email</a></li>\
-                                                <li class="divider"></li>\
-                                                <li><a href="javascript:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,1)" >Novedades</a></li>\
-                                                <li class="divider"></li>\
-                                                <li><a href="javascript:void(0);" ng-click="anular_orden_compra_seleccionada(row.entity)">Anular OC</a></li>\
+                                                <li><a href="javascript:void(0);" ng-click="seleccionRol(row.entity);" >Seleccionar Rol</a></li>\
                                             </ul>\
                                         </div>'
                     }
@@ -502,6 +495,47 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             });
             
             $scope.seleccionRol = function(rol){
+                
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Desea asignar el rol al usuario?</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <h5>Se sobreescribirán todos los permisos existentes, esta acción no puede deshacerse. </h5>\
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-warning" ng-click="close()">No</button>\
+                                    <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
+                                </div>',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.confirmar = function() {
+                            $scope.confirmarAsignarRol(rol);
+                            $modalInstance.close();
+                        };
+
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+
+                    },
+                    resolve: {
+                        rol: function() {
+                            return rol;
+                        }
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+                               
+            };
+            
+            $scope.confirmarAsignarRol = function(rol){
                 $scope.rootModulos.moduloAGuardar.vaciarOpciones();
                 $scope.rootUsuario.rolAGuardar = rol;
                 

@@ -1,0 +1,21 @@
+{
+    "module": "Paises",
+    "dependency": {
+        "controllers": [{
+                "paises_controller": {
+                    "module": "Parametrizacion/Paises",
+                    "controller": "PaisesController",
+                    "alias": "c_paises"
+                }
+            }],
+        "models": [{
+                "paises_model": {
+                    "module": "Parametrizacion/Paises",
+                    "model": "PaisesModel",
+                    "alias": "m_paises"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

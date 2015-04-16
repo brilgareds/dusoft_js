@@ -106,6 +106,15 @@ define(["angular"], function(angular) {
 	    'USUARIOS':{
 	    	'LISTAR_USUARIOS':BASE_URL+"/Usuarios/listar"
 	    },
+            'PAISES':{
+                'BUSCAR_PAIS' :BASE_URL+'/Paises/seleccionarPais'
+            },
+            'DEPARTAMENTOS':{
+                'BUSCAR_DEPARTAMENTO' :BASE_URL+'/Departamentos/seleccionarDepartamento'
+            },
+            'CIUDADES':{
+                'BUSCAR_CIUDAD' :BASE_URL+'/Ciudades/seleccionarCiudad'
+            },
             'DOCUMENTOS_DESPACHO':{
                 'IMPRIMIR_DOCUMENTO_DESPACHO':BASE_URL+"/movBodegas/E008/imprimirDocumentoDespacho"
             }

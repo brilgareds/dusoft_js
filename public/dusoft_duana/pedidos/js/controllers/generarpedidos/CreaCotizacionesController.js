@@ -212,17 +212,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     var nombre_departamento = '';
                     var nombre_municipio = '';
                     
-                    that.nombrePais(tipo_pais_id, function(data_pais){
+                    that.nombrePais(tipo_pais_id, function(result_nombre_pais){
                         
-                        nombre_pais = data_pais.obj.resultado_consulta[0].pais;
+                        nombre_pais = result_nombre_pais;
                         
-                        that.nombreDepartamento(tipo_pais_id, tipo_dpto_id, function(data_departamento){
+                        that.nombreDepartamento(tipo_pais_id, tipo_dpto_id, function(result_nombre_departamento){
                             
-                            nombre_departamento = data_departamento.obj.resultado_consulta[0].departamento;
+                            nombre_departamento = result_nombre_departamento;
                             
-                            that.nombreMunicipio(tipo_pais_id, tipo_dpto_id, tipo_mpio_id, function(data_municipio){
+                            that.nombreMunicipio(tipo_pais_id, tipo_dpto_id, tipo_mpio_id, function(result_nombre_municipio){
                                 
-                                nombre_municipio = data_municipio.obj.resultado_consulta[0].municipio;
+                                nombre_municipio = result_nombre_municipio;
                                 
                                 $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setPais(nombre_pais);
                                 $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setDepartamento(nombre_departamento);
@@ -271,16 +271,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
             
             that.nombrePais = function(tipo_pais_id, callback){
+                
                 var obj = {
                         session: $scope.rootCreaCotizaciones.session,
                         data: {
-                            pais: {
-                                tipo_pais_id: tipo_pais_id
+                            paises: {
+                                pais_id: tipo_pais_id
                             }
                         }
                     };
-                 
-                var url = API.TERCEROS.NOMBRE_PAIS;
+                
+                var url = API.PAISES.BUSCAR_PAIS;
                     
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
@@ -288,31 +289,34 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         console.log("Consulta exitosa: ", data.msj);
 
                         if (callback !== undefined && callback !== "" && callback !== 0) {
-                            callback(data);
+                            
+                            var nombre_pais = data.obj.paises[0].nombre_pais;
+                            callback(nombre_pais);
                         }
                     }
                     else {
                         console.log("Error en la consulta: ", data.msj);
                         
                         if (callback !== undefined && callback !== "" && callback !== 0) {
-                            callback(data);
+                            callback('');
                         }
                     }
                 });
             };
             
             that.nombreDepartamento = function(tipo_pais_id, tipo_dpto_id, callback){
+                
                 var obj = {
                         session: $scope.rootCreaCotizaciones.session,
                         data: {
-                            departamento: {
-                                tipo_pais_id: tipo_pais_id,
-                                tipo_dpto_id: tipo_dpto_id
+                            departamentos: {
+                                pais_id: tipo_pais_id,
+                                departamento_id: tipo_dpto_id
                             }
                         }
                     };
-                 
-                var url = API.TERCEROS.NOMBRE_DEPARTAMENTO;
+                
+                var url = API.DEPARTAMENTOS.BUSCAR_DEPARTAMENTO;
                     
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
@@ -320,32 +324,34 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         console.log("Consulta exitosa: ", data.msj);
 
                         if (callback !== undefined && callback !== "" && callback !== 0) {
-                            callback(data);
+                            var nombre_departamento = data.obj.departamentos[0].nombre_departamento;
+                            callback(nombre_departamento);
                         }
                     }
                     else {
                         console.log("Error en la consulta: ", data.msj);
                         
                         if (callback !== undefined && callback !== "" && callback !== 0) {
-                            callback(data);
+                            callback('');
                         }
                     }
                 });
             };
             
             that.nombreMunicipio = function(tipo_pais_id, tipo_dpto_id, tipo_mpio_id, callback){
+                
                 var obj = {
                         session: $scope.rootCreaCotizaciones.session,
                         data: {
-                            municipio: {
-                                tipo_pais_id: tipo_pais_id,
-                                tipo_dpto_id: tipo_dpto_id,
-                                tipo_mpio_id: tipo_mpio_id
+                            ciudades: {
+                                pais_id: tipo_pais_id,
+                                departamento_id: tipo_dpto_id,
+                                ciudad_id: tipo_mpio_id
                             }
                         }
                     };
-                 
-                var url = API.TERCEROS.NOMBRE_MUNICIPIO;
+                
+                var url = API.CIUDADES.BUSCAR_CIUDAD;
                     
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
@@ -353,14 +359,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         console.log("Consulta exitosa: ", data.msj);
 
                         if (callback !== undefined && callback !== "" && callback !== 0) {
-                            callback(data);
+                            
+                            var nombre_ciudad = data.obj.ciudades[0].nombre_ciudad;
+                            callback(nombre_ciudad);
                         }
                     }
                     else {
                         console.log("Error en la consulta: ", data.msj);
                         
                         if (callback !== undefined && callback !== "" && callback !== 0) {
-                            callback(data);
+                            callback('');
                         }
                     }
                 });

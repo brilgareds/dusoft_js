@@ -1,0 +1,21 @@
+{
+    "module": "Departamentos",
+    "dependency": {
+        "controllers": [{
+                "departamentos_controller": {
+                    "module": "Parametrizacion/Departamentos",
+                    "controller": "DepartamentosController",
+                    "alias": "c_departamentos"
+                }
+            }],
+        "models": [{
+                "departamentos_model": {
+                    "module": "Parametrizacion/Departamentos",
+                    "model": "DepartamentosModel",
+                    "alias": "m_departamentos"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

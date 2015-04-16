@@ -175,7 +175,7 @@ UsuariosModel.prototype.guardarAvatarUsuario = function(usuario_id, nombreArchiv
 };
 
 UsuariosModel.prototype.obtenerRolUsuarioPorEmpresa = function(empresa_id, usuario_id, callback){
-    var sql = "SELECT b. * FROM login_empresas a\
+    var sql = "SELECT b. *, a.id as login_empresa_id FROM login_empresas a\
                INNER JOIN roles b ON a.rol_id = b.id\
                WHERE a.empresa_id = $1 AND a.login_id = $2";
 
@@ -477,7 +477,7 @@ function __guardarOpciones(that, usuario_id, login_modulos_empresa_id, opciones,
     var opcion = {
         id:_opcion.id,
         //login_modulos_empresa_id:login_modulos_empresa_id,
-        seleccionados:true
+        seleccionado:true
     };
     
     //valida que la opcion este seleccionada en el rol
@@ -556,7 +556,7 @@ function __habilitarModulosDeUsuario(that, usuario_id, rolesModulos, login_empre
         } else {
             rolesModulos.splice(0, 1);
             if (rows.length > 0 && rows[0].id) {
-                ids.push({login_modulos_empresas: rows[0].id, login_empresas_id: login_empresas_id, modulo_id: modulo_id});
+                ids.push({login_modulos_empresas_id: rows[0].id, login_empresas_id: login_empresas_id, modulo_id: modulo_id});
             }
             
             setTimeout(function(){

@@ -280,10 +280,10 @@ define(["angular", "js/controllers", "js/models",
                     return;
                 }
                 
-                $scope.rootModulos.moduloAGuardar = modulo;
+                $scope.rootModulos.moduloAGuardar = modulo.getModulo();
                 $scope.rootModulos.moduloAGuardar.vaciarRoles();
                 
-                var rolModulo = self.esModuloSeleccionado(modulo);
+                var rolModulo = self.esModuloSeleccionado(modulo.getModulo());
                 
                 $scope.rootModulos.moduloAGuardar.agregarRol(rolModulo);
                 var rol_modulo_id = rolModulo.getId();
@@ -327,7 +327,7 @@ define(["angular", "js/controllers", "js/models",
                     return;
                 }
                 
-                $scope.rootModulos.moduloAGuardar = modulo;
+                $scope.rootModulos.moduloAGuardar = modulo.getModulo();
 
 
                 for (var i in modulos_seleccionado.padres) {
@@ -389,7 +389,7 @@ define(["angular", "js/controllers", "js/models",
                     return;
                 }
 
-                $scope.rootModulos.moduloAGuardar = modulo;
+                $scope.rootModulos.moduloAGuardar = modulo.getModulo();
 
                 for (var ii in modulos_seleccionados.hijos) {
                     self.agregarModulo(modulos_seleccionados.hijos[ii], false);

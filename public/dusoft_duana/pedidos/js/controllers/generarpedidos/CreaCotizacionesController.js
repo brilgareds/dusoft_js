@@ -555,7 +555,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'descripcion', displayName: 'Descripción'},
                     {field: 'cantidad_solicitada', displayName: 'Cantidad Solicitada', width: "10%",
                         cellTemplate: ' <div class="col-xs-12">\n\
-                                                    <input type="text" ng-model="row.entity.cantidad_solicitada" validacion-numero class="form-control grid-inline-input"'+
+                                                    <input type="text" ng-model="row.entity.cantidad_solicitada" validacion-numero-entero class="form-control grid-inline-input"'+
                                                     'ng-keyup="onTeclaModificarCantidad($event, row)" ng-disabled="!rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEditable()" />\n\
                                                 </div>'
                     },

@@ -208,6 +208,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                     ''                          //cantidad_pendiente
                                 );
                 
+                producto.cantidad_solicitada = "";
+                
                 producto.setCodigoCum(obj.codigo_cum);
 
                 producto.setCodigoInvima(obj.codigo_invima);
@@ -269,7 +271,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         {field: 'disponible', displayName: 'Disponible', width: "6%"},
                         {field: 'cantidad_solicitada', displayName: 'Cantidad', enableCellEdit: false, width: "7%",
                             cellTemplate: ' <div class="col-xs-12">\n\
-                                                <input type="text" ng-model="row.entity.cantidad_solicitada" validacion-numero class="form-control grid-inline-input"'+
+                                                <input type="text" ng-model="row.entity.cantidad_solicitada" validacion-numero-entero class="form-control grid-inline-input"'+
                                                 'ng-keyup="onTeclaIngresaProducto($event, row)"/>\n\
                                             </div>'
                         },

@@ -593,7 +593,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     
                 }
             };
-
             
             $scope.onModificarCantidad = function(row){
                 
@@ -1424,6 +1423,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 var nombre_cliente = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getNombre();
                 var ciudad_cliente = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getMunicipio();
                 var direccion_cliente = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getDireccion();
+                var email_cliente = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getEmail();
 
                 var fecha_registro = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getFechaRegistro();
                 var observacion = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getObservacion();
@@ -1444,6 +1444,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             nombre_cliente: nombre_cliente,
                             ciudad_cliente: ciudad_cliente,
                             direccion_cliente: direccion_cliente,
+                            email_cliente: email_cliente,
 
                             fecha_registro: fecha_registro,
                             observacion: observacion,
@@ -1482,6 +1483,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 var nombre_cliente = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getNombre();
                 var ciudad_cliente = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getMunicipio();
                 var direccion_cliente = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getDireccion();
+                var email_cliente = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getEmail();
+                console.log(">>>> Email Cliente: ",email_cliente);
 
                 var fecha_registro = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getFechaRegistro();
                 var observacion = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getObservacion();
@@ -1502,6 +1505,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             nombre_cliente: nombre_cliente,
                             ciudad_cliente: ciudad_cliente,
                             direccion_cliente: direccion_cliente,
+                            email_cliente: email_cliente,
 
                             fecha_registro: fecha_registro,
                             observacion: observacion,

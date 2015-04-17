@@ -98,10 +98,10 @@ define(["angular"], function(angular) {
 	    	'MODIFICAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/modificar",
                 'LISTAR_CLIENTES':BASE_URL+"/Terceros/Clientes/listarClientes",
                 'LISTAR_VENDEDORES':BASE_URL+"/Terceros/Vendedores/listarVendedores",
-                'CONSULTAR_CONTRATO_CLIENTE':BASE_URL+'/Terceros/Clientes/consultarContratoCliente',
-                'NOMBRE_PAIS' :BASE_URL+'/Terceros/Clientes/nombrePais',
-                'NOMBRE_DEPARTAMENTO' :BASE_URL+'/Terceros/Clientes/nombreDepartamento',
-                'NOMBRE_MUNICIPIO' :BASE_URL+'/Terceros/Clientes/nombreMunicipio'
+                'CONSULTAR_CONTRATO_CLIENTE':BASE_URL+'/Terceros/Clientes/consultarContratoCliente'
+                //'NOMBRE_PAIS' :BASE_URL+'/Terceros/Clientes/nombrePais',
+                //'NOMBRE_DEPARTAMENTO' :BASE_URL+'/Terceros/Clientes/nombreDepartamento',
+                //'NOMBRE_MUNICIPIO' :BASE_URL+'/Terceros/Clientes/nombreMunicipio'
 	    },
 	    'USUARIOS':{
 	    	'LISTAR_USUARIOS':BASE_URL+"/Usuarios/listar"

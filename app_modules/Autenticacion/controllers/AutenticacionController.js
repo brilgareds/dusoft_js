@@ -200,13 +200,14 @@ Autenticacion.prototype.recuperarContrasenia = function(req, res) {
     var constrasenia = G.random.randomKey(2, 8);
 
 
-    var smtpTransport = this.emails.createTransport("SMTP", {
-        service: "Gmail",
-        auth: {
-            user: "desarrollo1@duanaltda.com",
-            pass: "S0p0rt3."
-        }
-    });
+    var smtpTransport = this.emails.createTransport();
+//    var smtpTransport = this.emails.createTransport("SMTP", {
+//        service: "Gmail",
+//        auth: {
+//            user: "desarrollo1@duanaltda.com",
+//            pass: "S0p0rt3."
+//        }
+//    });
 
 
     this.m_usuarios.obtenerUsuarioPorLogin(nombre_usuario, function(err, rows) {

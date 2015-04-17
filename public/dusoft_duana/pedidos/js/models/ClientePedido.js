@@ -10,6 +10,7 @@ define(["angular", "js/models", "includes/classes/Cliente"], function(angular, m
             this.ubicacion;
             this.contrato_id;
             this.estado_contrato;
+            this.email;
         }
 
         this.get = function(nombre, direccion, tipo_id, id, telefono) {
@@ -48,6 +49,14 @@ define(["angular", "js/models", "includes/classes/Cliente"], function(angular, m
         
         ClientePedido.prototype.getEstadoContrato = function() {
             return this.estado_contrato;
+        };
+        
+        ClientePedido.prototype.setEmail = function(email) {
+            this.email = email;
+        };
+        
+        ClientePedido.prototype.getEmail = function() {
+            return this.email;
         };
         
         return this;

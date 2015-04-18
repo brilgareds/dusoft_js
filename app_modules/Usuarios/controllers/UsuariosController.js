@@ -129,6 +129,41 @@ Usuarios.prototype.subirAvatarUsuario = function(req, res) {
     
 };
 
+
+Usuarios.prototype.obtenerParametrizacionUsuario = function(req, res){
+    var that = this;
+
+    var args = req.body.data;
+    
+    
+    if(args.parametrizacion_usuarios === undefined){
+        res.send(G.utils.r(req.url, 'La sintaxis del request no es valida', 404, {}));
+        return;
+    }
+    
+    var usuario_id = args.parametrizacion_usuarios.usuario_id;
+
+    if (usuario_id === undefined || usuario_id.length === 0 ) {
+        res.send(G.utils.r(req.url, 'El id del usuario no esta definido', 404, {}));
+        return;
+    }
+    
+
+    that.m_usuarios.obtenerParametrizacionUsuario(usuario_id, function(err, parametrizacion){
+
+        if(err){
+            res.send(G.utils.r(req.url, 'Se genero un error al subir la imagen', 403, {}));
+            return;
+        }
+
+        res.send(G.utils.r(req.url, 'Usuario guardado correctamente', 200, {parametrizacion_usuarios: {parametrizacion: parametrizacion}}));
+    });
+    
+    
+    
+};
+
+
 Usuarios.prototype.cambiarPredeterminadoEmpresa = function(req, res){
     var that = this;
 

@@ -34,6 +34,35 @@ define(["angular", "js/directive"], function(angular, directive) {
                         }
                     });
                     
+                    scope.$on("obtenerHijos",function(e, parent_id){
+                        //var hijos = element.jstree(true)._get_children(parent_id);
+                        var hijos = element.jstree("get_selected",  parent_id);
+                        
+                        scope.$emit("deshabilitarNodosPadre",parent_id, hijos);
+                        
+                    });
+                    
+                    $rootScope.obtenerHijos = function(parent_id){
+                      /* $("#modulo_"+parent_id).find("li").andSelf().each(function (i) { 
+                            console.log(this.id); 
+                        }); */
+                        var hijos = [];
+                        //console.log("parent id >>>>>>>>>>>>>>>>>>>>>>>>>>>", parent_id);
+                        $("#modulo_"+parent_id).find("li").each( function( idx, listItem ) {
+                            var child = $(listItem); 
+                            
+                            if(element.jstree(true).is_selected(child)){
+                                
+                                hijos.push(listItem);
+                            }
+                           // console.log("child ",child, " is selected ", element.jstree(true).is_selected(child))
+                        });
+                        //console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+                        
+                        return hijos;
+                        //return element._get_children(parent_id);
+                    };
+                    
                     
                     scope.$on("onseleccionarnodo", function(e, id, parent_id){
                         var node = "#" + id;

@@ -52,8 +52,13 @@ module.exports = function(app, di_container) {
          c_usuarios.cambiarPredeterminadoEmpresa(req, res);
     }); 
     
-   app.post('/api/Usuarios/guardarOpcion', function(req, res) {
+    app.post('/api/Usuarios/guardarOpcion', function(req, res) {
          c_usuarios.guardarOpcion(req, res);
     }); 
+    
+   app.post('/api/Usuarios/obtenerParametrizacionUsuario', function(req, res) {
+         c_usuarios.obtenerParametrizacionUsuario(req, res);
+    }); 
+    
     
 };

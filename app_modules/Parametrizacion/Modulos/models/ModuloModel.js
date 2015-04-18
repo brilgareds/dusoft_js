@@ -206,6 +206,22 @@ ModuloModel.prototype.listarOpcionesPorModulo = function(modulo_id, rol_modulo_i
     });
 };
 
+ModuloModel.prototype.listarUsuarioModuloOpciones = function(modulo_id, rol_id, empresa_id, usuario_id, callback) {
+    var sql = "SELECT a.*, b.rol_id, b.rol_opcion_id, b.estado_opcion_rol FROM modulos_opciones as a\
+               LEFT JOIN (\
+                    SELECT cc.id as rol_opcion_id, bb.modulo_id, cc.modulos_opcion_id, cc.estado as estado_opcion_rol, aa.rol_id FROM login_empresas as aa\
+                    INNER JOIN login_modulos_empresas bb ON aa.id = bb.login_empresas_id AND bb.modulo_id = $1\
+                    INNER JOIN login_modulos_opciones cc ON cc.	login_modulos_empresa_id = bb.id\
+                    WHERE aa.empresa_id = $3   AND aa.rol_id = $2 AND aa.login_id = $4\
+               ) as b ON b.modulo_id = a.modulo_id AND b.modulos_opcion_id = a.id\
+               WHERE a.modulo_id =  $1 ORDER BY a.id DESC";
+
+    G.db.query(sql, [modulo_id, rol_id, empresa_id, usuario_id], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
+
 ModuloModel.prototype.eliminarOpcion = function(id, callback) {
     var sql = "DELETE FROM modulos_opciones WHERE id = $1";
 

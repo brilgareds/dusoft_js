@@ -1,10 +1,11 @@
 define(["angular", "js/controllers", "treemenu"], function(angular, controllers) {
 
-    controllers.controller('menucontroller', ['$scope', '$rootScope', "$state", "Request",
-        function($scope, $rootScope, $state,Request) {
+    controllers.controller('menucontroller', ['$scope', '$rootScope', "$state", "Request","Usuario",
+        function($scope, $rootScope, $state,Request, Usuario) {
 
             $scope.$on("nodeSelected", function(e, data) {
-
+                
+                var self = this;
                 var parent = data.parent;
                 var url = data.url;
 
@@ -39,11 +40,18 @@ define(["angular", "js/controllers", "treemenu"], function(angular, controllers)
                     clearTimeout(timer);
                 }, 100);
             };
-
-
-            Request.realizarRequest("../pages/tree.json","GET",{},function(data) {
-                $scope.treedata = data;
+            
+            $rootScope.$on("modulosUsuario", function(e, modulos){
+                $scope.treedata = modulos;
             });
+            
+            
+
+            console.log("usuarios ><>>>>>>>>>>>> ",Usuario.usuario_id);
+            
+            /*Request.realizarRequest("../pages/tree.json","GET",{},function(data) {
+                $scope.treedata = data;
+            });*/
 
 
             $scope.titulo = "Menu de navegacion";

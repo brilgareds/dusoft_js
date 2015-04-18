@@ -1,13 +1,74 @@
-define(["angular", "js/controllers", "includes/classes/Usuario", "includes/header/lockscreen", "includes/content/rutamodulo"], function(angular, controllers) {
-    controllers.controller('HeaderController', ['$scope', '$rootScope', "$state", "Request", "Usuario","socket",
-        function($scope, $rootScope, $state, Request, Usuario, socket) {
-
+define(["angular", "js/controllers", "includes/classes/Usuario","includes/Constants/Url",
+        "includes/header/lockscreen", "includes/content/rutamodulo" ], function(angular, controllers) {
+    controllers.controller('HeaderController', [
+        '$scope', '$rootScope', "$state", "Request",
+        "Usuario","socket","URL",
+        function($scope, $rootScope, $state,
+        Request, Usuario, socket, URL) {
+            var self = this;
             $scope.mostarLock = false;
             $scope.unlockform = {};
+            
             $scope.obj = {
                 usuario:"",
                 clave:""
             };
+            
+            var session = {
+                usuario_id: Usuario.usuario_id,
+                auth_token: Usuario.token
+            };
+            
+            console.log("api >>>>>>>>>>>>>>>>" , URL.CONSTANTS.API.USUARIOS.OBTENER_PARAMETRIZACION_USUARIO)
+            
+            
+           self.traerParametrizacionPorUsuario = function(){
+
+                var obj = {
+                    session: session,
+                    data: {
+                        parametrizacion_usuarios: {
+                            usuario_id: Usuario.usuario_id
+                        }
+                    }
+                };
+                
+                Request.realizarRequest(URL.CONSTANTS.API.USUARIOS.OBTENER_PARAMETRIZACION_USUARIO, "POST", obj, function(data) {
+                    var obj = data.obj.parametrizacion_usuarios.parametrizacion;
+                    
+                    if(obj){
+                        var modulos = obj.modulos || [];
+                        var _modulos = [];
+                        
+                        //se hace el set correspondiente para el plugin de jstree
+                        for(var i in modulos){
+                            var modulo = modulos[i];
+                            if(modulo.estado_modulo_usuario === '1'){
+                                modulo.text = modulo.nombre;
+                                modulo.id = "usuario_modulo_"+modulo.modulo_id;
+
+                                if(!modulo.parent){
+                                    modulo.parent = "#";
+                                } else {
+                                    modulo.parent =  "usuario_modulo_"+modulo.parent;
+                                }
+
+                                _modulos.push(modulo);
+
+                              //console.log("modulo id ", modulo.id, " parent ", modulo.parent, " nombre ",modulo.nombre);
+                                //console.log(modulo);
+                            }
+                        
+                        }
+                        if(modulos.length > 0){
+                            //estando los modulos preparados se envian al controlador del menu                      
+                            $rootScope.$emit("modulosUsuario", _modulos);
+                        }
+                    }
+                    
+                });
+            };
+            
            
             $scope.cerraSesionBtnClick = function($event) {
                 $event.preventDefault();
@@ -15,7 +76,6 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/heade
                     window.location = "../login";
                 });
                 
-
             };  
 
             $scope.cerraSesion = function(callback){
@@ -89,6 +149,8 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/heade
 
                 socket.emit("onActualizarSesion",obj);
              });   
+            
+            self.traerParametrizacionPorUsuario();
 
         }]);
 });

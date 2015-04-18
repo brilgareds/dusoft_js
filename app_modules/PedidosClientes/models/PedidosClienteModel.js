@@ -155,7 +155,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
                         or c.nombre ilike $2) \
                 /*AND (a.estado IN ('0','1','2','3'))*/  order by 1 desc ";
 
-    G.db.pagination(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
+    G.db.paginated(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
         callback(err, rows);
     });
 

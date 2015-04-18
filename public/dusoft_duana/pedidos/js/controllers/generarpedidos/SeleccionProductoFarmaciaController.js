@@ -239,7 +239,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         {field: 'disponibilidad_bodega', displayName: 'Disponible'/*, width: "6%"*/},
                         {field: 'cantidad_solicitada', displayName: 'Solicitado', enableCellEdit: false, width: "10%",
                             cellTemplate: ' <div class="col-xs-12">\n\
-                                                <input type="text" ng-model="row.entity.cantidad_solicitada" validacion-numero class="form-control grid-inline-input"'+
+                                                <input type="text" ng-model="row.entity.cantidad_solicitada" validacion-numero-entero class="form-control grid-inline-input"'+
                                                 'ng-keyup="onTeclaIngresaProducto($event, row)"/>\n\
                                             </div>'
                         },

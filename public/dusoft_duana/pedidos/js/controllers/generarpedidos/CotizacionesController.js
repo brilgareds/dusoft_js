@@ -169,6 +169,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 cliente.setTipoPaisId(obj.tipo_pais_cliente);//pais
                 cliente.setTipoDepartamentoId(obj.tipo_departamento_cliente);//departamento
                 cliente.setTipoMunicipioId(obj.tipo_municipio_cliente);//municipio
+                cliente.setEmail(obj.email); //email
 
                 cotizacion.setCliente(cliente);
 

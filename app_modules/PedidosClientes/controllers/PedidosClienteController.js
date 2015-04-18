@@ -1,5 +1,5 @@
 
-var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, productos, m_pedidos, m_terceros) {
+var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, productos, m_pedidos, m_terceros, emails) {
 
     console.log("Modulo Pedidos Cliente  Cargado ");
 
@@ -8,6 +8,7 @@ var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, produc
     this.m_productos = productos;
     this.m_pedidos = m_pedidos;
     this.m_terceros = m_terceros;
+    this.emails = emails;
 };
 
 /**
@@ -1313,6 +1314,12 @@ PedidosCliente.prototype.imprimirCotizacionCliente = function(req, res) {
         return;
     }
     
+//    if (args.encabezado_pedido_cliente.email_cliente === undefined) {
+//
+//        res.send(G.utils.r(req.url, 'email_cliente no está definido', 404, {}));
+//        return;
+//    }
+    
     if (args.encabezado_pedido_cliente.valor_total_sin_iva === undefined || args.encabezado_pedido_cliente.valor_total_con_iva === undefined) {
 
         res.send(G.utils.r(req.url, 'valor_total_sin_iva o valor_total_con_iva no están definidos', 404, {}));
@@ -1387,14 +1394,14 @@ PedidosCliente.prototype.imprimirCotizacionCliente = function(req, res) {
         });
     }
 
-    _generarDocumentoCotizacion(args, function(nombreTmp){
+    _generarDocumentoCotizacion(that, args, function(nombreTmp, error, response){
         res.send(G.utils.r(req.url, 'Url reporte pedido', 200, {reporte_pedido: {nombre_reporte: nombreTmp}}));
         return;
      });
 
 };
 
-function _generarDocumentoCotizacion(obj, callback) {
+function _generarDocumentoCotizacion(that, obj, callback) {
     G.jsreport.reporter.render({
         template: {
             content: G.fs.readFileSync('app_modules/PedidosClientes/reports/cotizacion.html', 'utf8'),
@@ -1409,8 +1416,28 @@ function _generarDocumentoCotizacion(obj, callback) {
         var fecha = new Date();
         var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
         G.fs.copySync(name, G.dirname + "/public/reports/" + nombreTmp);
+        
+        var nombre_archivo = "Cotizacion No" + obj.encabezado_pedido_cliente.numero_cotizacion+".pdf";
+        //var destinatario = obj.encabezado_pedido_cliente.email_cliente;
+        var destinatario = "mauricio.barrios@duanaltda.com, pedro.meneses@duanaltda.com";
+        //var destinatario = "alxlopez.duana.desarrollo@gmail.com, alxlopez@hotmail.com, pedro.meneses@duanaltda.com";
+        var subject = "Dusoft :: Cotización DUANA y Cia Ltda.";
 
-        callback(nombreTmp);
+        __emailDocumento(that, destinatario, name, nombre_archivo, subject, function(error, response){
+            
+            if(error) {
+
+                callback(nombreTmp, error, response);
+                return;
+            }
+            else {
+
+                callback(nombreTmp, error, response);
+                return;
+            }
+            
+        });
+
     });
 };
 
@@ -1438,6 +1465,12 @@ PedidosCliente.prototype.imprimirPedidoCliente = function(req, res) {
         res.send(G.utils.r(req.url, 'id_cliente, nombre_cliente, ciudad_cliente o direccion_cliente no están definidos', 404, {}));
         return;
     }
+    
+//    if (args.encabezado_pedido_cliente.email_cliente === undefined) {
+//
+//        res.send(G.utils.r(req.url, 'email_cliente no está definido', 404, {}));
+//        return;
+//    }
     
     if (args.encabezado_pedido_cliente.valor_total_sin_iva === undefined || args.encabezado_pedido_cliente.valor_total_con_iva === undefined) {
 
@@ -1513,14 +1546,14 @@ PedidosCliente.prototype.imprimirPedidoCliente = function(req, res) {
         });
     }
 
-    _generarDocumentoPedido(args, function(nombreTmp){
+    _generarDocumentoPedido(that, args, function(nombreTmp){
         res.send(G.utils.r(req.url, 'Url reporte pedido', 200, {reporte_pedido: {nombre_reporte: nombreTmp}}));
         return;
      });
 
 };
 
-function _generarDocumentoPedido(obj, callback) {
+function _generarDocumentoPedido(that, obj, callback) {
     G.jsreport.reporter.render({
         template: {
             content: G.fs.readFileSync('app_modules/PedidosClientes/reports/pedido.html', 'utf8'),
@@ -1535,8 +1568,29 @@ function _generarDocumentoPedido(obj, callback) {
         var fecha = new Date();
         var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
         G.fs.copySync(name, G.dirname + "/public/reports/" + nombreTmp);
+        
+        var nombre_archivo = "Pedido No" + obj.encabezado_pedido_cliente.numero_pedido+".pdf";
+        //var destinatario = obj.encabezado_pedido_cliente.email_cliente;
+        var destinatario = "mauricio.barrios@duanaltda.com, pedro.meneses@duanaltda.com";
+        //var destinatario = "alxlopez.duana.desarrollo@gmail.com, alxlopez@hotmail.com, pedro.meneses@duanaltda.com";
+        var subject = "Dusoft :: Pedido DUANA y Cia Ltda."
 
-        callback(nombreTmp);
+        __emailDocumento(that, destinatario, name, nombre_archivo, subject, function(error, response){
+            
+            if(error) {
+
+                callback(nombreTmp, error, response);
+                return;
+            }
+            else {
+
+                callback(nombreTmp, error, response);
+                return;
+            }
+            
+        });
+
+        //callback(nombreTmp);
     });
 };
 
@@ -1715,6 +1769,49 @@ PedidosCliente.prototype.modificarCantidadesPedido = function(req, res) {
  
 };
 
-PedidosCliente.$inject = ["m_pedidos_clientes", "e_pedidos_clientes", "m_productos", "m_pedidos", "m_terceros"];
+function __emailDocumento(that, destinatario, ruta_archivo, nombre_archivo, subject, callback ) {
+
+//    var smtpTransport = that.emails.createTransport("SMTP", {
+//        service: "Gmail",
+//        auth: {
+//            user: "alxlopez.duana.desarrollo@gmail.com",
+//            pass: ""
+//        }
+//    });
+
+    var smtpTransport = that.emails.createTransport();
+
+    G.fs.readFile(ruta_archivo, function(err, data){
+        
+        if(err) {
+            
+            callback(err, null);
+            return;
+        }
+        
+        var configuracion_email = {};
+        configuracion_email.from = G.settings.email_sender;
+        configuracion_email.to = destinatario;
+        configuracion_email.subject = subject;
+        configuracion_email.text = "Este es un email de Prueba";
+        configuracion_email.html = "Correo enviado a: <b>"+destinatario+"</b>";
+        configuracion_email.attachments = [{'filename': nombre_archivo,'contents':data}]        
+
+        smtpTransport.sendMail(configuracion_email, function(error, response) {
+
+            if (error) {
+                callback(error, response);
+                return;
+            } else {
+                smtpTransport.close();
+                callback(error, response);
+                return;
+            }
+        });
+        
+    });
+};
+
+PedidosCliente.$inject = ["m_pedidos_clientes", "e_pedidos_clientes", "m_productos", "m_pedidos", "m_terceros", "emails"];
 
 module.exports = PedidosCliente;

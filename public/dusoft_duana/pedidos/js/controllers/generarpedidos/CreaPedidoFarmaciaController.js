@@ -813,7 +813,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'cantidad_pendiente', displayName: 'Pendiente'},
                     {field: 'nueva_cantidad', displayName: 'Modificar Cantidad', width: "10%",
                                 cellTemplate: ' <div class="col-xs-12">\n\
-                                                    <input type="text" ng-model="row.entity.nueva_cantidad" validacion-numero class="form-control grid-inline-input"'+
+                                                    <input type="text" ng-model="row.entity.nueva_cantidad" validacion-numero-entero class="form-control grid-inline-input"'+
                                                     'ng-keyup="onTeclaModificarCantidad($event, row)" ng-model="row.entity.cantidad_ingresada" ng-disabled="!rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEditable()" />\n\
                                                 </div>'
                     },

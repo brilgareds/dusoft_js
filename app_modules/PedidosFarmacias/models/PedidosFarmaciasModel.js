@@ -417,8 +417,8 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
                       or b.descripcion ilike $2 \
                       or e.nombre ilike $2 ) \
                 order by 1 desc ";
-
-    G.db.pagination(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result) {
+    
+    G.db.paginated(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result) {
         callback(err, rows);
     });
 };
@@ -451,7 +451,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_temporales_farmacias = function(e
                       or e.nombre ilike $2)\
                 order by 2 desc ";
 
-    G.db.pagination(sql, [empresa_id, "%" + termino_busqueda + "%", usuario], pagina, G.settings.limit, function(err, rows, result) {
+    G.db.paginated(sql, [empresa_id, "%" + termino_busqueda + "%", usuario], pagina, G.settings.limit, function(err, rows, result) {
         callback(err, rows);
     });
 };

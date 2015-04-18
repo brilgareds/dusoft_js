@@ -98,14 +98,23 @@ define(["angular"], function(angular) {
 	    	'MODIFICAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/modificar",
                 'LISTAR_CLIENTES':BASE_URL+"/Terceros/Clientes/listarClientes",
                 'LISTAR_VENDEDORES':BASE_URL+"/Terceros/Vendedores/listarVendedores",
-                'CONSULTAR_CONTRATO_CLIENTE':BASE_URL+'/Terceros/Clientes/consultarContratoCliente',
-                'NOMBRE_PAIS' :BASE_URL+'/Terceros/Clientes/nombrePais',
-                'NOMBRE_DEPARTAMENTO' :BASE_URL+'/Terceros/Clientes/nombreDepartamento',
-                'NOMBRE_MUNICIPIO' :BASE_URL+'/Terceros/Clientes/nombreMunicipio'
+                'CONSULTAR_CONTRATO_CLIENTE':BASE_URL+'/Terceros/Clientes/consultarContratoCliente'
+                //'NOMBRE_PAIS' :BASE_URL+'/Terceros/Clientes/nombrePais',
+                //'NOMBRE_DEPARTAMENTO' :BASE_URL+'/Terceros/Clientes/nombreDepartamento',
+                //'NOMBRE_MUNICIPIO' :BASE_URL+'/Terceros/Clientes/nombreMunicipio'
 	    },
 	    'USUARIOS':{
 	    	'LISTAR_USUARIOS':BASE_URL+"/Usuarios/listar"
 	    },
+            'PAISES':{
+                'BUSCAR_PAIS' :BASE_URL+'/Paises/seleccionarPais'
+            },
+            'DEPARTAMENTOS':{
+                'BUSCAR_DEPARTAMENTO' :BASE_URL+'/Departamentos/seleccionarDepartamento'
+            },
+            'CIUDADES':{
+                'BUSCAR_CIUDAD' :BASE_URL+'/Ciudades/seleccionarCiudad'
+            },
             'DOCUMENTOS_DESPACHO':{
                 'IMPRIMIR_DOCUMENTO_DESPACHO':BASE_URL+"/movBodegas/E008/imprimirDocumentoDespacho"
             }

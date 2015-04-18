@@ -137,6 +137,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 cliente.setUbicacion();                         //ubicacion = pais + departamento + municipio
                 cliente.setContratoId(obj.contrato_cliente_id); //contrato_id
                 cliente.setEstadoContrato(obj.estado_contrato);  //tipo_bloqueo_id
+                cliente.setEmail(obj.email);                    //email
 
                 return cliente;
             };

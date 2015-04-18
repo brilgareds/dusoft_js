@@ -83,7 +83,8 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
                 "+where_tipo+"\
                 ORDER BY 7 ASC ";
 
-    G.db.pagination(sql, array_parametros, pagina, G.settings.limit, function(err, rows, result) {
+    //G.db.paginated(sql, array_parametros, pagina, G.settings.limit, function(err, rows, result) {
+    G.db.paginated(sql, array_parametros, pagina, G.settings.limit, function(err, rows, result) {
         callback(err, rows);
     });
 

@@ -1675,6 +1675,30 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 }); //Fin that.consultarEstadoCotizacion
             };
             
+            //COPIA CÓDIGO
+            // Opciones de la ventana Modal
+            $scope.opcionesPDF = function(Empresa) {
+                
+                // Accion = 0 -> Crear
+                // Accion = 1 -> Modificar
+                
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    templateUrl: 'views/generarpedidos/opcionespdf.html',
+                    controller: "OpcionesPdfController",
+                    resolve :{
+                          Empresa : function(){
+                              return Empresa;
+                          }
+                    }
+                };
+
+                var modalInstance = $modal.open($scope.opts);
+            };
+            
             that.cargarListadoVendedores();
             
             $scope.buscarCotizaciones("");

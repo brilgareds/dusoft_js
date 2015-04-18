@@ -1,0 +1,57 @@
+<div class="modal-header">
+    <button type="button" class="close" ng-click="close()">&times;</button>
+    <h4 class="modal-title">{{titulo}}</h4>
+</div>
+<div class="modal-body">
+
+    <alert  type="danger" close="closeAlert();" ng-show="alert">{{msg}}</alert>
+
+    <form name="form_operario">
+        <div class="row">
+
+            <div class="form-group">
+                <label>Nombre del Operario</label>
+                <input type="text" name='nombre_operario' class="form-control" id="exampleInputEmail1" placeholder="Ingresar el Nombre" ng-model='operario.nombre_operario' ng-value="operario.nombre_operario" required>
+            </div>
+            <div class="form-group">
+                <label>Login del Operario -- {{usuario.usuario}} </label>            
+            </div>
+
+            <!--select class="input-medium" style="width:300px" ui-select2 data-placeholder="Seleccionar Login" ng-model="operario.usuario_id" ng-change="loginSeleccionado()"  >
+                <option ng-repeat="usuario in  usuarios"  value="{{usuario.id}}">{{usuario.nombre_usuario}}-{{ usuario.usuario }}</option>
+            </select-->
+
+            <!--ui-select ng-model="usuario"
+                       theme="select2"
+                       style="width:300px"
+                       ng-change="loginSeleccionado($select.selected)"
+                       class="contenedor_combo_grande">
+                <ui-select-match  placeholder="Seleccionar Login">{{$select.selected.nombre_usuario}}-{{$select.selected.usuario}}</ui-select-match>
+                <ui-select-choices repeat="usuario in usuarios | filter:$select.search">
+                    {{usuario.nombre_usuario}}-{{usuario.usuario}}
+                </ui-select-choices>
+            </ui-select-->
+
+            <div class="table-responsive" >
+
+                <div class="grid-responsive" style='height: 200px; width:200px; min-width: 100%' ng-grid="listado_usuarios">
+
+                </div>
+            </div>
+
+
+            <div style="margin-top: 20px;">
+                <label>
+                    Activo
+                </label>
+                <input-check  ng-model='operario.activo' ng-change='onEstadoChange()' /> 
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-primary" ng-disabled='form_operario.nombre_operario.$error.required' ng-click="realizarAccion()" >{{ label_btn }}</button>
+            <button class="btn btn-warning" ng-click="close()">Cancelar</button>
+
+        </div>
+    </form>
+</div>

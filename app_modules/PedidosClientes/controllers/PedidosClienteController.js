@@ -1420,6 +1420,7 @@ function _generarDocumentoCotizacion(that, obj, callback) {
         var nombre_archivo = "Cotizacion No" + obj.encabezado_pedido_cliente.numero_cotizacion+".pdf";
         //var destinatario = obj.encabezado_pedido_cliente.email_cliente;
         var destinatario = "mauricio.barrios@duanaltda.com, pedro.meneses@duanaltda.com";
+        //var destinatario = "alxlopez.duana.desarrollo@gmail.com, alxlopez@hotmail.com, pedro.meneses@duanaltda.com";
         var subject = "Dusoft :: Cotización DUANA y Cia Ltda.";
 
         __emailDocumento(that, destinatario, name, nombre_archivo, subject, function(error, response){
@@ -1571,6 +1572,7 @@ function _generarDocumentoPedido(that, obj, callback) {
         var nombre_archivo = "Pedido No" + obj.encabezado_pedido_cliente.numero_pedido+".pdf";
         //var destinatario = obj.encabezado_pedido_cliente.email_cliente;
         var destinatario = "mauricio.barrios@duanaltda.com, pedro.meneses@duanaltda.com";
+        //var destinatario = "alxlopez.duana.desarrollo@gmail.com, alxlopez@hotmail.com, pedro.meneses@duanaltda.com";
         var subject = "Dusoft :: Pedido DUANA y Cia Ltda."
 
         __emailDocumento(that, destinatario, name, nombre_archivo, subject, function(error, response){

@@ -15,9 +15,10 @@ CiudadesModel.prototype.listar_ciudades = function(termino_busqueda, callback) {
                 a.municipio as nombre_ciudad\
                 from tipo_mpios a \
                 inner join tipo_dptos b on a.tipo_pais_id = b.tipo_pais_id and a.tipo_dpto_id = b.tipo_dpto_id\
-                inner join tipo_pais c on b.tipo_pais_id = c.tipo_pais_id ";
+                inner join tipo_pais c on b.tipo_pais_id = c.tipo_pais_id \
+                where a.municipio ilike $1 ; ";
 
-    G.db.query(sql, [], function(err, rows, result) {
+    G.db.query(sql, ["%"+termino_busqueda+"%"], function(err, rows, result) {
         callback(err, rows);
     });
 };

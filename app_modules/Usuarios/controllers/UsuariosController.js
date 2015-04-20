@@ -129,6 +129,32 @@ Usuarios.prototype.subirAvatarUsuario = function(req, res) {
     
 };
 
+Usuarios.prototype.obtenerEmpresasUsuario = function(req, res){
+    var that = this;
+
+    var args = req.body.data;
+    
+    if(args.parametrizacion_usuarios === undefined){
+        res.send(G.utils.r(req.url, 'La sintaxis del request no es valida', 404, {}));
+        return;
+    }
+
+    if (args.parametrizacion_usuarios.usuario_id === undefined || args.parametrizacion_usuarios.usuario_id.length === 0 ) {
+        res.send(G.utils.r(req.url, 'El id del usuario no esta definido', 404, {}));
+        return;
+    }
+    
+    that.m_usuarios.obtenerEmpresasUsuario(args.parametrizacion_usuarios.usuario_id, function(err, rows){
+
+        if(err){
+            res.send(G.utils.r(req.url, 'Error consultando las empresas', 403, {}));
+            return;
+        }
+
+        res.send(G.utils.r(req.url, 'Lista empresas usuario', 200, {parametrizacion_usuarios: {empresas: rows}}));
+    });
+};
+
 
 Usuarios.prototype.obtenerParametrizacionUsuario = function(req, res){
     var that = this;
@@ -142,21 +168,31 @@ Usuarios.prototype.obtenerParametrizacionUsuario = function(req, res){
     }
     
     var usuario_id = args.parametrizacion_usuarios.usuario_id;
+    var empresa_id = args.parametrizacion_usuarios.empresa_id;
 
     if (usuario_id === undefined || usuario_id.length === 0 ) {
         res.send(G.utils.r(req.url, 'El id del usuario no esta definido', 404, {}));
         return;
     }
     
+    if (usuario_id === undefined || usuario_id.length === 0 ) {
+        res.send(G.utils.r(req.url, 'El id del usuario no esta definido', 404, {}));
+        return;
+    }
+    
+    if (empresa_id === undefined || empresa_id.length === 0 ) {
+        res.send(G.utils.r(req.url, 'El id de la empresa no esta definido', 404, {}));
+        return;
+    }
 
-    that.m_usuarios.obtenerParametrizacionUsuario(usuario_id, function(err, parametrizacion){
+    that.m_usuarios.obtenerParametrizacionUsuario(usuario_id, empresa_id, function(err, parametrizacion){
 
         if(err){
-            res.send(G.utils.r(req.url, 'Se genero un error al subir la imagen', 403, {}));
+            res.send(G.utils.r(req.url, 'Se genero un error', 403, {}));
             return;
         }
 
-        res.send(G.utils.r(req.url, 'Usuario guardado correctamente', 200, {parametrizacion_usuarios: {parametrizacion: parametrizacion}}));
+        res.send(G.utils.r(req.url, 'Parametrizacion de usuario', 200, {parametrizacion_usuarios: {parametrizacion: parametrizacion}}));
     });
     
     
@@ -328,7 +364,7 @@ Usuarios.prototype.listarUsuariosModulosOpciones = function(req, res) {
     var empresa_id = args.parametrizacion_usuarios.modulo.empresa_id;
     var usuario_id = args.parametrizacion_usuarios.usuario_id;
     
-    that.m_usuarios.listarUsuarioModuloOpciones(modulo, rol_id, empresa_id,usuario_id, function(err, rows) {
+    that.m_modulo.listarUsuarioModuloOpciones(modulo, rol_id, empresa_id,usuario_id, function(err, rows) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error listando las opciones del modulo', 500, {parametrizacion_usuarios: {}}));
             return;

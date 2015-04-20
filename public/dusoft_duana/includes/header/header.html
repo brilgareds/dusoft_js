@@ -12,6 +12,7 @@
             </button>
             <a class="navbar-brand" href="#">Dusoft</a>
         </div>
+        
 
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">            
             <ul class="nav navbar-nav navbar-right">                  
@@ -30,15 +31,16 @@
                             <div class="navbar-content">
                                 <div class="row">
                                     <div class="col-md-5">
-                                        <img src="/images/avatar.png"
-                                             alt="Alternate Text" class="img-responsive" />
-                                        <!--p class="text-center small">
-                                            <a href="#">Cambiar Foto</a></p-->
+                                       
+                                        
+                                        
+                                        <img ng-show="Usuario.rutaAvatar != ''" ng-src="{{Usuario.getRutaAvatar()}}"  style="height:  80px;"  />
+
                                     </div>
                                     <div class="col-md-7">
-                                        <span>admin</span>
+                                        <span>{{::Usuario.usuario}}</span>
                                         <p class="text-muted small">
-                                            admin@duanaltda.com</p>
+                                            {{::Usuario.email}}</p>
                                         <div class="divider">
                                         </div>
                                         <a href="#" class="btn btn-primary btn-sm active">Perfil</a>
@@ -62,6 +64,19 @@
                     </ul>
                 </li>
             </ul>
+        </div>
+        
+        <div class=" navbar-right navbar-brand" style="position:absolute; top:0px; right: 100px; padding:9px;">    
+           <ui-select ng-model="Usuario.empresa"
+              theme="bootstrap"
+             ng-change="onEmpresaSeleccionada()"
+             style="width: 200px; margin-right: 20px"
+             class="">
+              <ui-select-match  placeholder="Seleccionar Empresa">{{$select.selected.getNombre()}}</ui-select-match>
+              <ui-select-choices repeat="empresa in empresas | filter:$select.search">
+                  {{empresa.getNombre()}}
+              </ui-select-choices>
+          </ui-select>
         </div>
     </div>
 

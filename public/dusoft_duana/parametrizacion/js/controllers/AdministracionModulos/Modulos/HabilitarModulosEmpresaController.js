@@ -18,8 +18,8 @@ define(["angular", "js/controllers", "js/models", "models/Perfiles/Rol", "models
             $scope.root = {};
 
             $scope.root.session = {
-                usuario_id: Usuario.usuario_id,
-                auth_token: Usuario.token
+                 usuario_id: Usuario.getUsuarioActual().getId(),
+                 auth_token: Usuario.getUsuarioActual().getToken()
             };
             
             moduloSeleccionado.vaciarListaEmpresas();

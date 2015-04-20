@@ -18,12 +18,14 @@
                     'OBTENER_MODULOS_USUARIO':BASE_URL+"/Usuarios/obtenerModulosPorUsuario",
                     'LISTAR_USUARIO_OPCIONES':BASE_URL+"/Usuarios/listarUsuariosModulosOpciones",
                     'OBTENER_ROL_USUARIO':BASE_URL+"/Usuarios/obtenerRolUsuarioPorEmpresa",
-                    'OBTENER_PARAMETRIZACION_USUARIO':BASE_URL+"/Usuarios/obtenerParametrizacionUsuario"
+                    'OBTENER_PARAMETRIZACION_USUARIO':BASE_URL+"/Usuarios/obtenerParametrizacionUsuario",
+                    'OBTENER_EMPRESAS_USUARIO':BASE_URL+"/Usuarios/obtenerEmpresasUsuario"
+                    
 
                 }
               },
               'STATIC' :{
-
+                  'RUTA_AVATAR' : BASE_URL_IMG+"/Usuarios/Avatars/"
               }
             };
 

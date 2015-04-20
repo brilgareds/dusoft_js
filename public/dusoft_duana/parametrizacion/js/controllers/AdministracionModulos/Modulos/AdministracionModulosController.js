@@ -42,13 +42,13 @@ define([
                         
             };
             
-            $scope.onTraerModulos = function(busquedad){
+            $scope.onTraerModulos = function(busqueda){
                 
-                if(busquedad.length < 3){
+                if(busqueda.length < 3){
                     return;
                 }
                 
-                self.traerModulos(busquedad, function(){
+                self.traerModulos(busqueda, function(){
                     
                 });
             };
@@ -158,8 +158,8 @@ define([
             };
 
             $scope.rootModulos.session = {
-                usuario_id: Usuario.usuario_id,
-                auth_token: Usuario.token
+                 usuario_id: Usuario.getUsuarioActual().getId(),
+                 auth_token: Usuario.getUsuarioActual().getToken()
             };
 
             $scope.rootModulos.iconos = [

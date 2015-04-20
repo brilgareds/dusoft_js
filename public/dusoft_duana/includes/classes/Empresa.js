@@ -26,8 +26,8 @@ define(["angular", "js/models"], function(angular, models) {
             return this.codigo;
         };
 
-        this.get = function() {
-            return new Empresa();
+        this.get = function(nombre, codigo) {
+            return new Empresa(nombre, codigo);
         };
 
         this.getClass = function(){

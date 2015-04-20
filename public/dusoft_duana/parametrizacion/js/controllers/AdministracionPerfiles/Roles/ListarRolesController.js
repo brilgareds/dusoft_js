@@ -24,8 +24,8 @@ define(["angular", "js/controllers", "js/models",
             $scope.rootRoles.empresas = [];
 
             $scope.rootRoles.session = {
-                usuario_id: Usuario.usuario_id,
-                auth_token: Usuario.token
+                usuario_id: Usuario.getUsuarioActual().getId(),
+                auth_token: Usuario.getUsuarioActual().getToken()
             };
 
             $scope.rootRoles.paginaactual = 1;

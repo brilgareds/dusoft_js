@@ -30,8 +30,8 @@ define(["angular", "js/controllers",'models/ClientePedido',
            
 
             $scope.session = {
-                usuario_id: Usuario.usuario_id,
-                auth_token: Usuario.token
+                 usuario_id: Usuario.getUsuarioActual().getId(),
+                 auth_token: Usuario.getUsuarioActual().getToken()
             };
 
             $scope.rootEditarProducto.caja  = {

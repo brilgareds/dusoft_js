@@ -1,16 +1,16 @@
 
 define(["angular", "js/controllers", "js/models",
-        "models/Perfiles/UsuarioParametrizacion"
+        "includes/classes/Usuario"
 ], function(angular, controllers) {
 
     controllers.controller('ListarUsuariosController', [
         '$scope', '$rootScope', 'Request', '$modal', 'API',
         "socket", "$timeout", "AlertService", "Usuario",
-        "Rol", "UsuarioParametrizacion","localStorageService","$state",
+        "Rol", "Usuario","localStorageService","$state",
         function($scope, $rootScope, Request,
                 $modal, API, socket, $timeout,
                 AlertService, Usuario,
-                Rol, UsuarioParametrizacion,localStorageService, $state) {
+                Rol, Usuario,localStorageService, $state) {
 
             var self = this;
 
@@ -23,8 +23,8 @@ define(["angular", "js/controllers", "js/models",
             $scope.rootUsuarios.usuarios = [];
 
             $scope.rootUsuarios.session = {
-                usuario_id: Usuario.usuario_id,
-                auth_token: Usuario.token
+                 usuario_id: Usuario.getUsuarioActual().getId(),
+                 auth_token: Usuario.getUsuarioActual().getToken()
             };
 
             $scope.rootUsuarios.paginaactual = 1;
@@ -56,7 +56,7 @@ define(["angular", "js/controllers", "js/models",
 
                         for (var i in usuarios) {
 
-                            var usuario = UsuarioParametrizacion.get(
+                            var usuario = Usuario.get(
                                     usuarios[i].usuario_id,
                                     usuarios[i].usuario,
                                     usuarios[i].nombre

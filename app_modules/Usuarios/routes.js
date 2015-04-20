@@ -60,5 +60,9 @@ module.exports = function(app, di_container) {
          c_usuarios.obtenerParametrizacionUsuario(req, res);
     }); 
     
+    app.post('/api/Usuarios/obtenerEmpresasUsuario', function(req, res) {
+         c_usuarios.obtenerEmpresasUsuario(req, res);
+    }); 
+    
     
 };

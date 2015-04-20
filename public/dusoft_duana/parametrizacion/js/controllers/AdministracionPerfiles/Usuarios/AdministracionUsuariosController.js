@@ -4,16 +4,17 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
     controllers.controller('AdministracionUsuariosController', [
         '$scope', '$rootScope', 'Request', '$modal', 'API',
         "socket", "$timeout", "$state", "AlertService",
-        "UsuarioParametrizacion","$filter","Usuario",
+        "Usuario","$filter",
         "localStorageService","STATIC","EmpresaParametrizacion","Rol","Empresa_Modulo", 
         "Modulo","RolModulo","ParametrizacionService",
         function($scope, $rootScope, Request, $modal,
                 API, socket, $timeout, $state,
-                AlertService, UsuarioParametrizacion, $filter, Usuario,
+                AlertService, Usuario, $filter,
                 localStorageService, STATIC, EmpresaParametrizacion, Rol, Empresa_Modulo, 
                 Modulo, RolModulo, ParametrizacionService) {
                      
             var self = this;
+            console.log("usuario >>>>>>>", Usuario)
             
             $scope.rootUsuario = {
                 
@@ -29,8 +30,8 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             $scope.rootUsuario.paginaactual = 1;
             
             $scope.rootUsuario.session = {
-                usuario_id: Usuario.usuario_id,
-                auth_token: Usuario.token
+                 usuario_id: Usuario.getUsuarioActual().getId(),
+                 auth_token: Usuario.getUsuarioActual().getToken()
             };
             
             $scope.rootModulos.session = $scope.rootUsuario.session;
@@ -74,7 +75,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             
             
             self.inicializarUsuarioACrear = function() {
-                $scope.rootUsuario.usuarioAGuardar = UsuarioParametrizacion.get();
+                $scope.rootUsuario.usuarioAGuardar = Usuario.get();
                 $scope.rootModulos.moduloAGuardar = Modulo.get();
                 $scope.rootUsuario.rolAGuardar = Rol.get();
             };
@@ -160,7 +161,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                         var _usuario = data.obj.parametrizacion_usuarios.usuario;
                         
                         if(_usuario){
-                           $scope.rootUsuario.usuarioAGuardar = UsuarioParametrizacion.get(_usuario.usuario_id, _usuario.usuario, _usuario.nombre);
+                           $scope.rootUsuario.usuarioAGuardar = Usuario.get(_usuario.usuario_id, _usuario.usuario, _usuario.nombre);
                            $scope.rootUsuario.usuarioAGuardar.setFechaCaducidad(_usuario.fecha_caducidad_contrasena);
                            $scope.rootUsuario.usuarioAGuardar.setEmail(_usuario.email);
                            $scope.rootUsuario.confirmacionEmail = _usuario.email;

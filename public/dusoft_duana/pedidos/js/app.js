@@ -75,13 +75,9 @@
               });
 
 
-    }]).run( ["$rootScope", "Usuario", "localStorageService", function($rootScope,Usuario,localStorageService){
+    }]).run( ["$rootScope", function($rootScope){
         $rootScope.titulo_modulo = "pedidos";   
-        console.log(Usuario) 
-        var obj = localStorageService.get("session");
-        if(!obj) return;
-        Usuario.setToken(obj.auth_token);
-        Usuario.setUsuarioId(obj.usuario_id);    
+ 
     }]);
 
     angular.bootstrap(document, ['pedidos']);

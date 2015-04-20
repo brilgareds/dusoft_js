@@ -1,11 +1,18 @@
 define(["angular", "js/controllers", "includes/classes/Usuario","includes/Constants/Url",
-        "includes/header/lockscreen", "includes/content/rutamodulo" ], function(angular, controllers) {
+        "includes/header/lockscreen", "includes/content/rutamodulo", "includes/classes/Empresa" ], function(angular, controllers) {
     controllers.controller('HeaderController', [
         '$scope', '$rootScope', "$state", "Request",
-        "Usuario","socket","URL",
+        "Usuario","socket","URL","localStorageService","Empresa",
         function($scope, $rootScope, $state,
-        Request, Usuario, socket, URL) {
+        Request, Usuario, socket, URL, localStorageService,Empresa) {
             var self = this;
+            var obj = localStorageService.get("session");
+            console.log("session obj ", obj)
+            if(!obj) return;
+            
+            setUsuarioActual(obj);
+
+                
             $scope.mostarLock = false;
             $scope.unlockform = {};
             
@@ -15,20 +22,86 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
             };
             
             var session = {
-                usuario_id: Usuario.usuario_id,
-                auth_token: Usuario.token
+                usuario_id: $scope.Usuario.getId(),
+                auth_token: $scope.Usuario.getToken()
             };
             
-            console.log("api >>>>>>>>>>>>>>>>" , URL.CONSTANTS.API.USUARIOS.OBTENER_PARAMETRIZACION_USUARIO)
+            $scope.empresas = [];
+           
             
-            
-           self.traerParametrizacionPorUsuario = function(){
+           function setUsuarioActual(obj){
+                var usuario = Usuario.get(obj.usuario_id, obj.detalle.usuario, obj.detalle.nombre);
+                
+                usuario.setRutaAvatar("/images/avatar_empty.png");
+                        
+                usuario.setToken(obj.auth_token);
+                usuario.setUsuarioId(obj.usuario_id); 
+                
+                if(obj.detalle.ruta_avatar && obj.detalle.ruta_avatar.length > 0){
+                    
+                    usuario.setRutaAvatar(URL.CONSTANTS.STATIC.RUTA_AVATAR+usuario.getId() + "/" +obj.detalle.ruta_avatar);
+                }
+                
+                usuario.setNombre(obj.detalle.nombre);
+                usuario.setNombreUsuario(obj.detalle.usuario);
+                usuario.setEmail(obj.detalle.email);
+                
+                var empresa = Empresa.get("", obj.detalle.empresa_id);
+                usuario.setEmpresa(empresa);
+                
+                console.log("ruta de avatar ", usuario.getRutaAvatar())
+                Usuario.setUsuarioActual(usuario);
+
+                $scope.Usuario = usuario;
+           };
+           
+           
+           self.obtenerEmpresasUsuario = function(callback){
 
                 var obj = {
                     session: session,
                     data: {
                         parametrizacion_usuarios: {
-                            usuario_id: Usuario.usuario_id
+                            usuario_id: $scope.Usuario.getId()
+                        }
+                    }
+                };
+                
+                Request.realizarRequest(URL.CONSTANTS.API.USUARIOS.OBTENER_EMPRESAS_USUARIO, "POST", obj, function(data) {
+                    var obj = data.obj.parametrizacion_usuarios;
+                    
+                    if(obj){
+                        var empresas = obj.empresas || [];
+                        
+                        //se hace el set correspondiente para el plugin de jstree
+                        for(var i in empresas){
+                            var empresa = Empresa.get(empresas[i].razon_social, empresas[i].empresa_id);
+                            
+                            if(empresa.getCodigo() === $scope.Usuario.getEmpresa().getCodigo()){
+                                   $scope.Usuario.setEmpresa(empresa);
+                            }
+                            
+                            $scope.empresas.push(empresa);
+                            
+                        
+                        }
+                        
+                        
+                        callback();
+                    }
+                    
+                });
+            };
+                        
+               
+           self.traerParametrizacionPorUsuario = function(empresa_id, callback){
+
+                var obj = {
+                    session: session,
+                    data: {
+                        parametrizacion_usuarios: {
+                            usuario_id: $scope.Usuario.getId(),
+                            empresa_id:empresa_id
                         }
                     }
                 };
@@ -55,8 +128,6 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
 
                                 _modulos.push(modulo);
 
-                              //console.log("modulo id ", modulo.id, " parent ", modulo.parent, " nombre ",modulo.nombre);
-                                //console.log(modulo);
                             }
                         
                         }
@@ -64,11 +135,29 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
                             //estando los modulos preparados se envian al controlador del menu                      
                             $rootScope.$emit("modulosUsuario", _modulos);
                         }
+                        
+                        callback(obj);
                     }
                     
                 });
             };
             
+            
+            $scope.onEmpresaSeleccionada = function(){
+                self.traerParametrizacionPorUsuario($scope.Usuario.getEmpresa().getCodigo(),function(parametrizacion){
+                    
+                    var obj = localStorageService.get("session");
+                    console.log("parametrizacion ", parametrizacion)
+                    console.log("session ", obj);
+                    
+                    obj.detalle.empresa_id = parametrizacion.rol.empresa_id;
+                    obj.detalle.login_empresas_id =  parametrizacion.rol.login_empresa_id;
+                    obj.detalle.id_rol = parametrizacion.rol.id;
+                    
+                    localStorageService.add("session", JSON.stringify(obj));
+                    location.reload();
+                });
+            };
            
             $scope.cerraSesionBtnClick = function($event) {
                 $event.preventDefault();
@@ -150,7 +239,15 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
                 socket.emit("onActualizarSesion",obj);
              });   
             
-            self.traerParametrizacionPorUsuario();
+            
+
+            self.traerParametrizacionPorUsuario($scope.Usuario.getEmpresa().getCodigo(),function(parametrizacion){
+                self.obtenerEmpresasUsuario(function(){
+                    $rootScope.$emit("parametrizacionUsuarioLista", parametrizacion);
+                });
+                
+            });
+            
 
         }]);
 });

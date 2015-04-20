@@ -13,8 +13,8 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
 
             $scope.pedidosSeleccionados = [];
             $scope.session = {
-                usuario_id: Usuario.usuario_id,
-                auth_token: Usuario.token
+                 usuario_id: Usuario.getUsuarioActual().getId(),
+                 auth_token: Usuario.getUsuarioActual().getToken()
             };
             $scope.paginas = 0;
             $scope.items = 0;

@@ -30,10 +30,12 @@
                             <div class="navbar-content">
                                 <div class="row">
                                     <div class="col-md-5">
-                                        <img src="/images/avatar.png"
-                                             alt="Alternate Text" class="img-responsive" />
-                                        <!--p class="text-center small">
-                                            <a href="#">Cambiar Foto</a></p-->
+                                       
+                                        
+                                        
+                                        <img  ng-hide="Usuario.avatar == ''" ng-src="/images/avatar_empty.png" style="height:  80px;"/>
+                                        <img ng-show="Usuario.avatar != ''" ng-src="{{Usuario.avatar}}"  style="height:  80px;" class="avatarUsuario" />
+
                                     </div>
                                     <div class="col-md-7">
                                         <span>admin</span>

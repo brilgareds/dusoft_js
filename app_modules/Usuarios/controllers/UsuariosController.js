@@ -328,7 +328,7 @@ Usuarios.prototype.listarUsuariosModulosOpciones = function(req, res) {
     var empresa_id = args.parametrizacion_usuarios.modulo.empresa_id;
     var usuario_id = args.parametrizacion_usuarios.usuario_id;
     
-    that.m_usuarios.listarUsuarioModuloOpciones(modulo, rol_id, empresa_id,usuario_id, function(err, rows) {
+    that.m_modulo.listarUsuarioModuloOpciones(modulo, rol_id, empresa_id,usuario_id, function(err, rows) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error listando las opciones del modulo', 500, {parametrizacion_usuarios: {}}));
             return;

@@ -93,7 +93,16 @@ Autenticacion.prototype.loginUsuario = function(req, res) {
                     if (err) {
                         res.send(G.utils.r(req.url, 'No se ha podido Autenticar el Usuario', 500, {sesion: {}}));
                     } else {
-                        res.send(G.utils.r(req.url, 'Usuario Autenticado Correctamente', 200, {sesion: sesion_usuario}));
+                        
+                        
+                        that.m_usuarios.obtenerUsuarioPorId(sesion_usuario.usuario_id, function(err, detalle) {
+                            delete detalle.passwd;
+                            delete detalle.usuario_id;
+                            
+                            sesion_usuario.detalle = detalle;
+                            res.send(G.utils.r(req.url, 'Usuario Autenticado Correctamente', 200, {sesion: sesion_usuario}));
+                        });
+                        
                     }
                 });
             }

@@ -2,10 +2,24 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
         "includes/header/lockscreen", "includes/content/rutamodulo" ], function(angular, controllers) {
     controllers.controller('HeaderController', [
         '$scope', '$rootScope', "$state", "Request",
-        "Usuario","socket","URL",
+        "Usuario","socket","URL","localStorageService",
         function($scope, $rootScope, $state,
-        Request, Usuario, socket, URL) {
+        Request, Usuario, socket, URL, localStorageService) {
             var self = this;
+            var obj = localStorageService.get("session");
+            console.log("session obj ", obj)
+            if(!obj) return;
+            
+            
+            var usuario = Usuario.get(obj.usuario_id, obj.detalle.usuario, obj.detalle.nombre);
+                        
+            usuario.setToken(obj.auth_token);
+            usuario.setUsuarioId(obj.usuario_id); 
+            usuario.setRutaAvatar(obj.ruta_avatar);
+            Usuario.setUsuarioActual(usuario);
+            
+            $scope.Usuario = Usuario;
+                
             $scope.mostarLock = false;
             $scope.unlockform = {};
             
@@ -15,20 +29,18 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
             };
             
             var session = {
-                usuario_id: Usuario.usuario_id,
-                auth_token: Usuario.token
+                usuario_id: usuario.getId(),
+                auth_token: usuario.getToken()
             };
-            
-            console.log("api >>>>>>>>>>>>>>>>" , URL.CONSTANTS.API.USUARIOS.OBTENER_PARAMETRIZACION_USUARIO)
-            
-            
-           self.traerParametrizacionPorUsuario = function(){
+                        
+               
+           self.traerParametrizacionPorUsuario = function(callback){
 
                 var obj = {
                     session: session,
                     data: {
                         parametrizacion_usuarios: {
-                            usuario_id: Usuario.usuario_id
+                            usuario_id: usuario.getId()
                         }
                     }
                 };
@@ -55,8 +67,6 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
 
                                 _modulos.push(modulo);
 
-                              //console.log("modulo id ", modulo.id, " parent ", modulo.parent, " nombre ",modulo.nombre);
-                                //console.log(modulo);
                             }
                         
                         }
@@ -64,6 +74,8 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
                             //estando los modulos preparados se envian al controlador del menu                      
                             $rootScope.$emit("modulosUsuario", _modulos);
                         }
+                        
+                        callback(obj);
                     }
                     
                 });
@@ -150,7 +162,13 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
                 socket.emit("onActualizarSesion",obj);
              });   
             
-            self.traerParametrizacionPorUsuario();
+            
+
+            self.traerParametrizacionPorUsuario(function(parametrizacion){
+
+                $rootScope.$emit("parametrizacionUsuarioLista", parametrizacion);
+            });
+            
 
         }]);
 });

@@ -1,6 +1,6 @@
 var DocuemntoBodegaE008 = function(movientos_bodegas, m_pedidos_clientes, m_pedidos_farmacias) {
 
-    this.m_movientos_bodegas = movientos_bodegas;
+    this.m_movimientos_bodegas = movientos_bodegas;
     this.m_pedidos_clientes = m_pedidos_clientes;
     this.m_pedidos_farmacias = m_pedidos_farmacias;
 
@@ -16,7 +16,7 @@ DocuemntoBodegaE008.prototype.ingresar_despacho_clientes_temporal = function(bod
     var that = this;
 
 
-    that.m_movientos_bodegas.obtener_identificicador_movimiento_temporal(usuario_id, function(err, doc_tmp_id) {
+    that.m_movimientos_bodegas.obtener_identificicador_movimiento_temporal(usuario_id, function(err, doc_tmp_id) {
 
         if (err) {
             callback(err);
@@ -27,7 +27,7 @@ DocuemntoBodegaE008.prototype.ingresar_despacho_clientes_temporal = function(bod
 
         G.db.begin(function() {
 
-            that.m_movientos_bodegas.ingresar_movimiento_bodega_temporal(movimiento_temporal_id, usuario_id, bodegas_doc_id, observacion, function(err) {
+            that.m_movimientos_bodegas.ingresar_movimiento_bodega_temporal(movimiento_temporal_id, usuario_id, bodegas_doc_id, observacion, function(err) {
 
                 if (err) {
                     callback(err);
@@ -59,7 +59,7 @@ DocuemntoBodegaE008.prototype.ingresar_despacho_farmacias_temporal = function(bo
 
     var that = this;
 
-    that.m_movientos_bodegas.obtener_identificicador_movimiento_temporal(usuario_id, function(err, doc_tmp_id) {
+    that.m_movimientos_bodegas.obtener_identificicador_movimiento_temporal(usuario_id, function(err, doc_tmp_id) {
 
         if (err) {
             callback(err);
@@ -71,7 +71,7 @@ DocuemntoBodegaE008.prototype.ingresar_despacho_farmacias_temporal = function(bo
 
         G.db.begin(function() {
 
-            that.m_movientos_bodegas.ingresar_movimiento_bodega_temporal(movimiento_temporal_id, usuario_id, bodegas_doc_id, observacion, function(err) {
+            that.m_movimientos_bodegas.ingresar_movimiento_bodega_temporal(movimiento_temporal_id, usuario_id, bodegas_doc_id, observacion, function(err) {
 
                 if (err) {
                     callback(err);
@@ -331,7 +331,7 @@ DocuemntoBodegaE008.prototype.eliminar_documento_temporal_clientes = function(do
     G.db.begin(function() {
 
         // Eliminar Detalle del Documento Temporal
-        that.m_movientos_bodegas.eliminar_detalle_movimiento_bodega_temporal(doc_tmp_id, usuario_id, function(err) {
+        that.m_movimientos_bodegas.eliminar_detalle_movimiento_bodega_temporal(doc_tmp_id, usuario_id, function(err) {
             if (err) {
                 callback(err);
                 return;
@@ -350,7 +350,7 @@ DocuemntoBodegaE008.prototype.eliminar_documento_temporal_clientes = function(do
                                 return;
                             } else {
                                 // Eliminar Cabecera Documento Temporal
-                                that.m_movientos_bodegas.eliminar_movimiento_bodega_temporal(doc_tmp_id, usuario_id, function(err, rows) {
+                                that.m_movimientos_bodegas.eliminar_movimiento_bodega_temporal(doc_tmp_id, usuario_id, function(err, rows) {
                                     if (err) {
                                         callback(err);
                                         return;
@@ -377,7 +377,7 @@ DocuemntoBodegaE008.prototype.eliminar_documento_temporal_farmacias = function(d
     // Inicia Transaccion.
     G.db.begin(function() {
         // Eliminar Detalle del Documento Temporal
-        that.m_movientos_bodegas.eliminar_detalle_movimiento_bodega_temporal(doc_tmp_id, usuario_id, function(err) {
+        that.m_movimientos_bodegas.eliminar_detalle_movimiento_bodega_temporal(doc_tmp_id, usuario_id, function(err) {
             if (err) {
                 callback(err);
                 return;
@@ -391,7 +391,7 @@ DocuemntoBodegaE008.prototype.eliminar_documento_temporal_farmacias = function(d
                         return;
                     } else {
                         // Eliminar Cabecera Documento Temporal
-                        that.m_movientos_bodegas.eliminar_movimiento_bodega_temporal(doc_tmp_id, usuario_id, function(err, rows) {
+                        that.m_movimientos_bodegas.eliminar_movimiento_bodega_temporal(doc_tmp_id, usuario_id, function(err, rows) {
                             if (err) {
                                 callback(err);
                                 return;
@@ -599,7 +599,7 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_farmacias = function(do
     G.db.begin(function() {
 
         // Generar Documento de Despacho.
-        that.m_movientos_bodegas.crear_documento(documento_temporal_id, usuario_id, function(err, empresa_id, prefijo_documento, numero_documento) {
+        that.m_movimientos_bodegas.crear_documento(documento_temporal_id, usuario_id, function(err, empresa_id, prefijo_documento, numero_documento) {
 
             if (err) {
                 callback(err);
@@ -665,7 +665,7 @@ DocuemntoBodegaE008.prototype.generar_documento_despacho_clientes = function(doc
     G.db.begin(function() {
 
         // Generar Documento de Despacho.
-        that.m_movientos_bodegas.crear_documento(documento_temporal_id, usuario_id, function(err, empresa_id, prefijo_documento, numero_documento) {
+        that.m_movimientos_bodegas.crear_documento(documento_temporal_id, usuario_id, function(err, empresa_id, prefijo_documento, numero_documento) {
 
             if (err) {
                 callback(err);
@@ -928,6 +928,6 @@ function __asignar_responsable_despacho(empresa_id, prefijo_documento, numero_do
 }
 ;
 
-DocuemntoBodegaE008.$inject = ["m_movientos_bodegas", "m_pedidos_clientes", "m_pedidos_farmacias"];
+DocuemntoBodegaE008.$inject = ["m_movimientos_bodegas", "m_pedidos_clientes", "m_pedidos_farmacias"];
 
 module.exports = DocuemntoBodegaE008;

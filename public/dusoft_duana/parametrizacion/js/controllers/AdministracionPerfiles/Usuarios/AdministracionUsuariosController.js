@@ -622,13 +622,11 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 
                 nodo.push(modulo);
                 
-                //deshabilita los modulos padre si es necesario 
+                //deshabilita los modulos padre si no posee algun modulo hijo seleccionado
                 for (var i in modulos_seleccionados.padres) {
-                    //$scope.$broadcast("obtenerHijos",modulos_seleccionados.padres[i]);
-                    var hijos = $rootScope.obtenerHijos(modulos_seleccionados.padres[i]);
+                    var hijos = $scope.obtenerHijosSeleccionados(modulos_seleccionados.padres[i]);
                     var modulo = self.agregarModulo(modulos_seleccionados.padres[i], false);
-                   // console.log("padre >>>>>>>>", modulos_seleccionados.padres[i], "hijos >>>>>>>>>>>> ", hijos.length, " modulo ",modulo);
-                    
+                        
                     if(hijos.length === 0 && modulo ){
                        
                         nodo.push(modulo);

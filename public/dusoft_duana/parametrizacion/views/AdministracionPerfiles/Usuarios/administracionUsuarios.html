@@ -196,7 +196,7 @@
     </div>
 
     <div class="col-md-4" ng-if='rootUsuario.rolAGuardar.id > 0' >
-        <div arbol-modulos plugins='checkbox,contextmenu' tipo='multiple' estado='modulos_empresas_usuario' multiples_nodos="true"></div>
+        <div arbol-modulos  obtenerHijos="obtenerHijos()" plugins='checkbox,contextmenu' tipo='multiple' estado='modulos_empresas_usuario' multiples_nodos="true"></div>
     </div>
 
     <div class="col-md-4" ng-if='rootUsuario.rolAGuardar.id > 0' ng-controller='OpcionesModulosController' ng-init='init({eliminar:false, detalle:false, seleccionar:true})'>

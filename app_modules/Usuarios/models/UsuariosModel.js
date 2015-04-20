@@ -176,7 +176,7 @@ UsuariosModel.prototype.guardarAvatarUsuario = function(usuario_id, nombreArchiv
 };
 
 UsuariosModel.prototype.obtenerRolUsuarioPorEmpresa = function(empresa_id, usuario_id, callback){
-    var sql = "SELECT b. *, a.id as login_empresa_id FROM login_empresas a\
+    var sql = "SELECT b. *, a.id as login_empresa_id, a.empresa_id FROM login_empresas a\
                INNER JOIN roles b ON a.rol_id = b.id\
                WHERE a.empresa_id = $1 AND a.login_id = $2";
 
@@ -309,27 +309,28 @@ UsuariosModel.prototype.guardarRolUsuario = function(login_id, empresa_id, rol_i
     });
 };
 
-UsuariosModel.prototype.obtenerParametrizacionUsuario = function(usuario_id, callback){
+UsuariosModel.prototype.obtenerParametrizacionUsuario = function(usuario_id, empresa_id, callback){
     var that = this;
     
     var parametrizacion = {};
     
-    that.obtenerUsuarioPorId(usuario_id, function(err, usuario){
-        console.log("usuario obtenido ", usuario); 
+    that.obtenerRolUsuarioPorEmpresa(empresa_id, usuario_id, function(err, rol){
+        console.log("usuario obtenido ", rol); 
         
         //el usuario no tiene un rol asignado como predeterminado
-        if(!usuario.id_rol){
+        if(!rol.id){
             callback(err, parametrizacion);
             return;
         }
         
-        that.m_modulo.listarModulosUsuario(usuario.id_rol, usuario.empresa_id, usuario_id, function(err, rows){
+        that.m_modulo.listarModulosUsuario(rol.id, empresa_id, usuario_id, function(err, rows){
             if(err){
                 callback(err);
                 return;
             }
             
             parametrizacion.modulos = rows;
+            parametrizacion.rol = rol;
             
             callback(err, parametrizacion);
             
@@ -413,6 +414,18 @@ UsuariosModel.prototype.guardarOpcion = function(usuario_id, opcion, login_modul
           });
       });
    });
+};
+
+UsuariosModel.prototype.obtenerEmpresasUsuario = function(usuario_id, callback){
+    var that = this;
+    
+    var sql = "SELECT b.empresa_id, b.razon_social FROM login_empresas a \
+               INNER JOIN empresas b ON b.empresa_id = a.empresa_id\
+                WHERE a.login_id = $1  AND a.estado= '1'";
+
+    G.db.query(sql, [usuario_id], function(err, rows, result) {
+        callback(err, rows, result);
+    });
 };
 
 

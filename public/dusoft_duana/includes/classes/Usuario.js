@@ -19,7 +19,7 @@ define(["angular", "js/models"], function(angular, models) {
                 this.nombre =  nombre || ""; 
                 this.token = "";
                 this.usuario_id = "";
-                this.empresa_id = "";
+                this.empresa;
                 this.clave = "";
                 this.email = "";
                 this.estado = true;
@@ -66,12 +66,12 @@ define(["angular", "js/models"], function(angular, models) {
                 return this.usuario;
             };
 
-            Usuario.prototype.setEmpresaId = function(empresa_id) {
-                this.empresa_id = empresa_id;
+            Usuario.prototype.setEmpresa = function(empresa) {
+                this.empresa = empresa;
             };
 
-            Usuario.prototype.getEmpresaId= function() {
-                return this.empresa_id;
+            Usuario.prototype.getEmpresa= function() {
+                return this.empresa;
             };
             
             Usuario.prototype.setClave = function(clave){

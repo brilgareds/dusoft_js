@@ -42,13 +42,13 @@ define([
                         
             };
             
-            $scope.onTraerModulos = function(busquedad){
+            $scope.onTraerModulos = function(busqueda){
                 
-                if(busquedad.length < 3){
+                if(busqueda.length < 3){
                     return;
                 }
                 
-                self.traerModulos(busquedad, function(){
+                self.traerModulos(busqueda, function(){
                     
                 });
             };

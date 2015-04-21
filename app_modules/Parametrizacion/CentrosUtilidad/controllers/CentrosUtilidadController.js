@@ -56,8 +56,10 @@ CentrosUtilidad.prototype.listar_centros_utilidad_ciudad = function(req, res) {
     var pais_id = args.centro_utilidad.pais_id;
     var departamento_id = args.centro_utilidad.departamento_id;
     var ciudad_id = args.centro_utilidad.ciudad_id;
+    
+    var termino_busqueda = (args.centro_utilidad.termino_busqueda === undefined) ? '' : args.centro_utilidad.termino_busqueda;
 
-    that.m_centros_utilidad.listar_centros_utilidad_ciudad(pais_id, departamento_id, ciudad_id, function(err, lista_centros_utilidad) {
+    that.m_centros_utilidad.listar_centros_utilidad_ciudad(pais_id, departamento_id, ciudad_id, termino_busqueda, function(err, lista_centros_utilidad) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error listado centros utilidad', 500, {centros_utilidad: {}}));

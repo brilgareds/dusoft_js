@@ -15,13 +15,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             var that = this;
             $scope.Empresa = Empresa;
+            
+            
             // Variables de Sesion
             $scope.session = {
-                usuario_id: Sesion.usuario_id,
-                auth_token: Sesion.token
+                 usuario_id: Sesion.getUsuarioActual().getId(),
+                 auth_token: Sesion.getUsuarioActual().getToken()
             };
-            
-            console.log(Sesion);
+           
 
             // Variables 
             $scope.planilla = PlanillaDespacho.get();
@@ -141,12 +142,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 }
             };
             $scope.gestionar_documentos_bodega = function() {
-                
-                console.log('================================');
-                console.log($scope.planilla);
-                console.log('================================');
-                return;
-
+               
                 $scope.slideurl = "views/generarplanilladespacho/gestionardocumentosbodegas.html?time=" + new Date().getTime();
                 $scope.$emit('gestionar_documentos_bodega');
             };

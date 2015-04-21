@@ -13,6 +13,12 @@ define(["angular"], function(angular) {
             'TRANSPORTADORAS': {
                 'LISTAR_TRANSPORTADORAS': BASE_URL + '/Transportadoras/listar'
             },
+            'CENTROS_UTILIDAD': {
+                'LISTAR_CENTROS_UTILIDAD': BASE_URL + '/CentrosUtilidad/listarCentrosUtilidadCiudad'
+            },
+            'CLIENTES': {
+                'LISTAR_CLIENTES': BASE_URL + '/Terceros/Clientes/listarClientesCiudad'
+            },
             
         }
     };

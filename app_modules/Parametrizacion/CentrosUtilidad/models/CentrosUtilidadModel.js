@@ -13,7 +13,7 @@ CentrosUtilidadModel.prototype.listar_centros_utilidad_empresa = function(empres
     });
 };
 
-CentrosUtilidadModel.prototype.listar_centros_utilidad_ciudad= function(pais_id, departamento_id, ciudad_id, callback) {
+CentrosUtilidadModel.prototype.listar_centros_utilidad_ciudad= function(pais_id, departamento_id, ciudad_id, termino_busqueda, callback) {
 
 
     var sql = " select \
@@ -26,9 +26,9 @@ CentrosUtilidadModel.prototype.listar_centros_utilidad_ciudad= function(pais_id,
                 a.ubicacion,\
                 a.telefono\
                 from centros_utilidad a\
-                where a.tipo_pais_id = $1 and a.tipo_dpto_id= $2 and a.tipo_mpio_id= $3 and estado = '1' ";
+                where a.tipo_pais_id = $1 and a.tipo_dpto_id= $2 and a.tipo_mpio_id= $3 and estado = '1' and a.descripcion ilike $4 ";
 
-    G.db.query(sql,[pais_id, departamento_id, ciudad_id] , function(err, rows, result) {
+    G.db.query(sql,[pais_id, departamento_id, ciudad_id, "%"+termino_busqueda+"%"] , function(err, rows, result) {
         callback(err, rows, result);
     });
 };

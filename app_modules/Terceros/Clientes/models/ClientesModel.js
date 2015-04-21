@@ -88,7 +88,7 @@ ClientesModel.prototype.listar_clientes = function(empresa_id, termino_busqueda,
     
 };
 
-ClientesModel.prototype.listar_clientes_ciudad = function(empresa_id, pais_id, departamento_id, ciudad_id, termino_busqueda, pagina, callback) {
+ClientesModel.prototype.listar_clientes_ciudad = function(empresa_id, pais_id, departamento_id, ciudad_id, termino_busqueda, callback) {
 
     var sql = " select\
                 a.tipo_id_tercero,\
@@ -119,7 +119,7 @@ ClientesModel.prototype.listar_clientes_ciudad = function(empresa_id, pais_id, d
                 )\
                 ORDER BY a.nombre_tercero ";
 
-    G.db.pagination(sql, [empresa_id, pais_id, departamento_id, ciudad_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
+    G.db.query(sql, [empresa_id, pais_id, departamento_id, ciudad_id, "%" + termino_busqueda + "%"], function(err, rows, result, total_records) {
         callback(err, rows);
     });
     

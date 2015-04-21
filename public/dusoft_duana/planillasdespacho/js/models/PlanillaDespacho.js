@@ -6,10 +6,10 @@ define(["angular", "js/models"], function(angular, models) {
                 this.id = id;
                 this.transportadora = transportadora;
                 this.ciudad = ciudad;
-                this.nombre_conductor = nombre_conductor;
-                this.observacion = observacion;
+                this.nombre_conductor = nombre_conductor || '';
+                this.observacion = observacion || '';
                 this.usuario = usuario;
-                this.fecha_registro = fecha_registro;
+                this.fecha_registro = fecha_registro || '';
                 this.fecha_despacho = fecha_despacho || '';
                 this.estado = estado || '1'; // 0 Inactivo - 1 Activo
                 this.descripcion_estado = descripcion_estado || 'Activo'; // 0 Inactivo - 1 Activo

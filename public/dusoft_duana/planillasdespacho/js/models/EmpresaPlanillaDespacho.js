@@ -7,6 +7,8 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             EmpresaPlanillaDespacho.transportadoras = [];
             EmpresaPlanillaDespacho.ciudades = [];
             EmpresaPlanillaDespacho.planillas = [];
+            EmpresaPlanillaDespacho.clientes = [];
+            EmpresaPlanillaDespacho.farmacias = [];
             
             // Transportadoras
             EmpresaPlanillaDespacho.set_transportadoras = function(transportadora) {
@@ -45,6 +47,32 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             
              EmpresaPlanillaDespacho.limpiar_planillas = function() {
                 this.planillas = [];
+            };
+            
+            // Clientes
+            EmpresaPlanillaDespacho.set_clientes = function(cliente) {
+                this.clientes.push(cliente);
+            };
+            
+            EmpresaPlanillaDespacho.get_clientes = function() {
+                return this.clientes;
+            };
+            
+             EmpresaPlanillaDespacho.limpiar_clientes = function() {
+                this.clientes = [];
+            };
+            
+            // Farmacias
+            EmpresaPlanillaDespacho.set_farmacias = function(farmacia) {
+                this.farmacias.push(farmacia);
+            };
+            
+            EmpresaPlanillaDespacho.get_farmacias = function() {
+                return this.farmacias;
+            };
+            
+             EmpresaPlanillaDespacho.limpiar_farmacias = function() {
+                this.farmacias = [];
             };
 
             return EmpresaPlanillaDespacho;

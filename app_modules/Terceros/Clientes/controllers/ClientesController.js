@@ -42,8 +42,8 @@ Clientes.prototype.listarClientesCiudad = function(req, res) {
 
     var args = req.body.data;
    
-    if (args.clientes === undefined || args.clientes.empresa_id === undefined || args.clientes.pagina_actual === undefined) {
-        res.send(G.utils.r(req.url, 'empresa_id o pagina_actual no están definidas.', 404, {}));
+    if (args.clientes === undefined || args.clientes.empresa_id === undefined) {
+        res.send(G.utils.r(req.url, 'empresa_id no están definidas.', 404, {}));
         return;
     }
     
@@ -52,8 +52,8 @@ Clientes.prototype.listarClientesCiudad = function(req, res) {
         return;
     }
     
-    if (args.clientes.empresa_id === '' || args.clientes.pagina_actual === '' || args.clientes.pagina_actual === '0') {
-        res.send(G.utils.r(req.url, 'empresa_id está vacio o pagina_actual es vacio o 0.', 404, {}));
+    if (args.clientes.empresa_id === '' ) {
+        res.send(G.utils.r(req.url, 'empresa_id está vacio', 404, {}));
         return;
     }
     if (args.clientes.pais_id === '' || args.clientes.departamento_id === '' || args.clientes.ciudad_id=== '') {
@@ -68,9 +68,8 @@ Clientes.prototype.listarClientesCiudad = function(req, res) {
     var ciudad_id = args.clientes.ciudad_id;
     
     var termino_busqueda = (args.clientes.termino_busqueda === undefined) ? '' : args.clientes.termino_busqueda;
-    var pagina_actual = args.clientes.pagina_actual;
     
-    that.m_clientes.listar_clientes_ciudad(empresa_id, pais_id, departamento_id, ciudad_id, termino_busqueda, pagina_actual, function(err, listado_clientes) {
+    that.m_clientes.listar_clientes_ciudad(empresa_id, pais_id, departamento_id, ciudad_id, termino_busqueda, function(err, listado_clientes) {
         if(err)
             res.send(G.utils.r(req.url, 'Error consultando clientes', 500, {}));
         else

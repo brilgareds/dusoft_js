@@ -63,10 +63,11 @@ define([
     }]).run(["$rootScope", "localStorageService", "Usuario","$state","$location", function($rootScope,localStorageService, Usuario, $state,$location) {
         
         $rootScope.name = "parametrizacion";
+        var vistaDefecto = "OperariosBodega";
         
         //este evento indica que la parametrizacion del usuario esta lista (modulos, opciones)
         $rootScope.$on("parametrizacionUsuarioLista", function(e, parametrizacion){
-            Parametrizacion.urlRouterProvider.otherwise("/OperariosBodega");
+            Parametrizacion.urlRouterProvider.otherwise(vistaDefecto);
 
             Parametrizacion.stateProvider
                 .state('OperariosBodega', {
@@ -97,18 +98,23 @@ define([
                 url: "/AdministracionUsuarios",
                 text:"Administracion Usuarios",
                 templateUrl: "views/AdministracionPerfiles/Usuarios/administracionUsuarios.html",
-                controller: "AdministracionUsuariosController"
+                controller: "AdministracionUsuariosController",
+                parent_name:"ListarUsuarios"
             })
             .state('ListarUsuarios', {
                 url: "/ListarUsuarios",
                 text:"Listar Usuarios",
                 templateUrl: "views/AdministracionPerfiles/Usuarios/listarUsuarios.html",
                 controller: "ListarUsuariosController"
+                
             });
             
-            console.log("path ", $location.path().replace("/", ""));
-            //se encarga de ir al ultimo path, despues que se configura las rutas del modulo
-            $state.go($location.path().replace("/", ""));
+            if($location.path() === ""){
+                $state.go(vistaDefecto);
+            } else {
+                //se encarga de ir al ultimo path, despues que se configura las rutas del modulo
+                $state.go($location.path().replace("/", ""));
+            }
         
         });
         

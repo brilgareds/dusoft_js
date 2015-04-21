@@ -24,12 +24,13 @@ define(["angular", "js/controllers",
 
             $rootScope.$on('gestionar_documentos_bodegaCompleto', function(e, parametros) {
 
-                $scope.opcion_predeterminada = "0";
-                $scope.termino_busqueda = '';
-                
-
                 console.log('=============== Iniciando Slider =============');
                 console.log($scope.planilla);
+
+                $scope.opcion_predeterminada = "0";
+                $scope.termino_busqueda = '';
+
+                $scope.seleccionar_cliente_farmacia();
             });
 
             $rootScope.$on('cerrar_gestion_documentos_bodegaCompleto', function(e, parametros) {
@@ -142,7 +143,7 @@ define(["angular", "js/controllers",
                     $scope.Empresa.set_farmacias(farmacia);
                 });
 
-                $scope.datos_clientes_farmacias = $scope.Empresa.get_farmacias();                
+                $scope.datos_clientes_farmacias = $scope.Empresa.get_farmacias();
             };
 
             that.documentos_bodega_farmacias = function() {
@@ -181,9 +182,6 @@ define(["angular", "js/controllers",
                     }
                 ]
             };
-
-
-            $scope.seleccionar_cliente_farmacia();
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;

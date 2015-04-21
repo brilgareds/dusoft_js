@@ -7,11 +7,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         '$scope', '$rootScope', 'Request',
         'EmpresaPedido', 'ClientePedido', 'PedidoVenta',
         'API', "socket", "AlertService",
-        '$state','VendedorPedido', 'Usuario', 'ProductoPedido', "$modal",
-        function($scope, $rootScope, Request, EmpresaPedido, ClientePedido, PedidoVenta, API, socket, AlertService, $state, VendedorPedido, Usuario, ProductoPedido, $modal) {
+        '$state','VendedorPedido', 'Usuario', 'ProductoPedido', "$modal", 'STATIC',
+        function($scope, $rootScope, Request, EmpresaPedido, ClientePedido, PedidoVenta, API, socket, AlertService, $state, VendedorPedido, Usuario, ProductoPedido, $modal, STATIC) {
 
             var that = this;
             
+            console.log(">>>> STATIC - CreaCotiz : ", STATIC);
+
             $scope.expreg = new RegExp("^[0-9]*$");
             
             $scope.rootCreaCotizaciones = {};
@@ -542,7 +544,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                         </div>\
                                     </div>',
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Cód. Producto',  width: "10%",
+                    {field: 'codigo_producto', displayName: 'Cód. Producto',  width: "9%",
                         cellTemplate : '<div class="ngCellText" ng-class="col.colIndex()">\
                                                 <span class="label label-success" ng-show="row.entity.tipo_producto_id == 1" >N</span>\
                                                 <span class="label label-danger" ng-show="row.entity.tipo_producto_id == 2">A</span>\
@@ -567,12 +569,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         cellTemplate: ' <div class="row">\n\
                                             <button class="btn btn-default btn-xs" ng-click="onModificarCantidad(row)"\n\
                                                     ng-disabled="row.entity.cantidad_solicitada<=0 || row.entity.cantidad_solicitada==null\n\
-                                                        || !rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEditable()">\n\
+                                                        || !rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEditable() || !expreg.test(row.entity.cantidad_solicitada)">\n\
                                                 <span class="glyphicon glyphicon-pencil">Modificar</span>\n\
                                             </button>\n\
                                             <button ng-if="rootCreaCotizaciones.bloquear_eliminar == false" class="btn btn-default btn-xs" ng-click="onEliminarProducto(row)"\n\
                                                     ng-disabled="row.entity.cantidad_solicitada<=0 || row.entity.cantidad_solicitada==null\n\
-                                                        || !rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEditable()">\n\
+                                                        || !rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEditable() || !expreg.test(row.entity.cantidad_solicitada)">\n\
                                                 <span class="glyphicon glyphicon-remove">Eliminar</span>\n\
                                             </button>\n\
                                             <button ng-if="rootCreaCotizaciones.bloquear_eliminar == true" class="btn btn-default btn-xs" ng-click=""\n\
@@ -1412,7 +1414,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             };
             
-            $scope.generarPdfCotizacionCliente = function(){
+            that.generarPdfCotizacionCliente = function(){
                 
                 var codigo_empresa_origen = $scope.rootCreaCotizaciones.Empresa.getCodigo();
                 var nombre_empresa_origen = $scope.rootCreaCotizaciones.Empresa.getNombre();
@@ -1450,7 +1452,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             observacion: observacion,
                     
                             valor_total_sin_iva: valor_total_sin_iva,
-                            valor_total_con_iva: valor_total_con_iva
+                            valor_total_con_iva: valor_total_con_iva,
+                            
+                            email: false
                         },
                         detalle_pedido_cliente: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().obtenerProductos()
                     }
@@ -1472,7 +1476,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 });
             };
             
-            $scope.generarPdfPedidoCliente = function(){
+            that.generarPdfPedidoCliente = function(){
                 
                 var codigo_empresa_origen = $scope.rootCreaCotizaciones.Empresa.getCodigo();
                 var nombre_empresa_origen = $scope.rootCreaCotizaciones.Empresa.getNombre();
@@ -1511,7 +1515,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             observacion: observacion,
                     
                             valor_total_sin_iva: valor_total_sin_iva,
-                            valor_total_con_iva: valor_total_con_iva
+                            valor_total_con_iva: valor_total_con_iva,
+                            
+                            email: false
                         },
                         detalle_pedido_cliente: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().obtenerProductos()
                     }
@@ -1675,29 +1681,101 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 }); //Fin that.consultarEstadoCotizacion
             };
             
-            //COPIA CÓDIGO
+
             // Opciones de la ventana Modal
-            $scope.opcionesPDF = function(Empresa) {
+            $scope.opcionesPDF = function() {
                 
-                // Accion = 0 -> Crear
-                // Accion = 1 -> Modificar
+                var template = ' <div class="modal-header">\
+                                        <button type="button" class="close" ng-click="close()">&times;</button>\
+                                        <h4 class="modal-title">Qué desea hacer ?</h4>\
+                                    </div>\
+                                    <div class="modal-body">\
+                                        <button class="btn btn-success" ng-click="aceptaPDF()">Guardar PDF</button>\
+                                        <button class="btn btn-primary" ng-click="aceptaEmail()">Enviar PDF via Email</button>\
+                                    </div>';
+
+                controller = function($scope, $modalInstance) {
+
+                    $scope.aceptaPDF = function() {
+                        that.guardarPDF();
+                        $modalInstance.close();
+                    };
+                    
+                    $scope.aceptaEmail = function() {
+                        that.mailPDF();
+                        $modalInstance.close();
+                    };
+
+                    $scope.close = function() {
+                        $modalInstance.close();
+                    };
+                };
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: template,
+                    scope: $scope,
+                    controller: controller,
+                    windowClass: 'app-modal-window-pdf'
+                };
+
+                var modalInstance = $modal.open($scope.opts);                
+                
+            };
+            
+            that.guardarPDF = function() {
+                
+                if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== undefined) {
+                    
+                    that.generarPdfCotizacionCliente();
+                    
+                }
+                else if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido() !== undefined) {
+                    
+                    that.generarPdfPedidoCliente();
+                    
+                }
+                
+            }
+            
+            that.mailPDF = function() {
+                
+                var tipo_documento = '';
+                
+                if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== undefined) {
+                    
+                    tipo_documento = 'c';
+                    
+                }
+                else if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido() !== undefined) {
+                    
+                    tipo_documento = 'p';
+                    
+                }
                 
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
                     dialogFade: false,
                     keyboard: true,
-                    templateUrl: 'views/generarpedidos/opcionespdf.html',
-                    controller: "OpcionesPdfController",
+                    templateUrl: 'views/generarpedidos/mailpdf.html',
+                    controller: "MailPdfController",
                     resolve :{
-                          Empresa : function(){
-                              return Empresa;
-                          }
+                        Empresa : function(){
+                           return $scope.rootCreaCotizaciones.Empresa;
+                        },
+                        tipo_documento: function(){
+                           return tipo_documento;
+                        }
                     }
                 };
 
                 var modalInstance = $modal.open($scope.opts);
-            };
+                
+            }
             
             that.cargarListadoVendedores();
             

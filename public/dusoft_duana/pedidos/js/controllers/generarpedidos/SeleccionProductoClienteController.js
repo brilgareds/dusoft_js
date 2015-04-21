@@ -299,7 +299,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     multiSelect: false,
                             
                     columnDefs: [
-                        {field: 'codigo_producto', displayName: 'Cód. Producto', width: "8%",
+                        {field: 'codigo_producto', displayName: 'Cód. Producto', width: "9%",
                             cellTemplate : '<div class="ngCellText" ng-class="col.colIndex()">\
                                                     <span class="label label-success" ng-show="row.entity.tipo_producto_id == 1" >N</span>\
                                                     <span class="label label-danger" ng-show="row.entity.tipo_producto_id == 2">A</span>\

@@ -50,63 +50,74 @@ define([
         'flow'
     ]);
 
-
+    Parametrizacion.urlRouterProvider;
+    Parametrizacion.stateProvider;
 
     Parametrizacion.config(["$stateProvider", "$urlRouterProvider", "$httpProvider", function($stateProvider, $urlRouterProvider,$httpProvider) {
 
         // For any unmatched url, send to /route1
-
         $httpProvider.interceptors.push('HttpInterceptor');
+        Parametrizacion.urlRouterProvider = $urlRouterProvider;
+        Parametrizacion.stateProvider = $stateProvider;
+        
+    }]).run(["$rootScope", "localStorageService", "Usuario","$state","$location", function($rootScope,localStorageService, Usuario, $state,$location) {
+        
+        $rootScope.name = "parametrizacion";
+        var vistaDefecto = "OperariosBodega";
+        
+        //este evento indica que la parametrizacion del usuario esta lista (modulos, opciones)
+        $rootScope.$on("parametrizacionUsuarioLista", function(e, parametrizacion){
+            Parametrizacion.urlRouterProvider.otherwise(vistaDefecto);
 
-        $urlRouterProvider.otherwise("/OperariosBodega");
-
-        $stateProvider
-            .state('OperariosBodega', {
-            url: "/OperariosBodega",
-            text:"Operarios Bodega",
-            templateUrl: "views/OperariosBodega/listaOperarios.html",
-            controller: "OperariosBodegaController"
-        })
-        .state('AdministracionModulos', {
-            url: "/AdministracionModulos",
-            text:"Administracion Modulos",
-            templateUrl: "views/AdministracionModulos/Modulos/administracionModulos.html",
-            controller: "AdministracionModulosController"
-        })
-        .state('AdministracionRoles', {
-            url: "/AdministracionRoles",
-            text:"Administracion Roles",
-            templateUrl: "views/AdministracionPerfiles/Roles/administrarRoles.html",
-            controller: "AdministracionRolesController"
-        })
-        .state('ListarRoles', {
-            url: "/ListarRoles",
-            text:"Listar Roles",
-            templateUrl: "views/AdministracionPerfiles/Roles/listarRoles.html",
-            controller: "ListarRolesController"
-        })
-        .state('AdministracionUsuarios', {
-            url: "/AdministracionUsuarios",
-            text:"Administracion Usuarios",
-            templateUrl: "views/AdministracionPerfiles/Usuarios/administracionUsuarios.html",
-            controller: "AdministracionUsuariosController"
-        })
-        .state('ListarUsuarios', {
-            url: "/ListarUsuarios",
-            text:"Listar Usuarios",
-            templateUrl: "views/AdministracionPerfiles/Usuarios/listarUsuarios.html",
-            controller: "ListarUsuariosController"
+            Parametrizacion.stateProvider
+                .state('OperariosBodega', {
+                url: "/OperariosBodega",
+                text:"Operarios Bodega",
+                templateUrl: "views/OperariosBodega/listaOperarios.html",
+                controller: "OperariosBodegaController"
+            })
+            .state('AdministracionModulos', {
+                url: "/AdministracionModulos",
+                text:"Administracion Modulos",
+                templateUrl: "views/AdministracionModulos/Modulos/administracionModulos.html",
+                controller: "AdministracionModulosController"
+            })
+            .state('AdministracionRoles', {
+                url: "/AdministracionRoles",
+                text:"Administracion Roles",
+                templateUrl: "views/AdministracionPerfiles/Roles/administrarRoles.html",
+                controller: "AdministracionRolesController"
+            })
+            .state('ListarRoles', {
+                url: "/ListarRoles",
+                text:"Listar Roles",
+                templateUrl: "views/AdministracionPerfiles/Roles/listarRoles.html",
+                controller: "ListarRolesController"
+            })
+            .state('AdministracionUsuarios', {
+                url: "/AdministracionUsuarios",
+                text:"Administracion Usuarios",
+                templateUrl: "views/AdministracionPerfiles/Usuarios/administracionUsuarios.html",
+                controller: "AdministracionUsuariosController",
+                parent_name:"ListarUsuarios"
+            })
+            .state('ListarUsuarios', {
+                url: "/ListarUsuarios",
+                text:"Listar Usuarios",
+                templateUrl: "views/AdministracionPerfiles/Usuarios/listarUsuarios.html",
+                controller: "ListarUsuariosController"
+                
+            });
+            
+            if($location.path() === ""){
+                $state.go(vistaDefecto);
+            } else {
+                //se encarga de ir al ultimo path, despues que se configura las rutas del modulo
+                $state.go($location.path().replace("/", ""));
+            }
+        
         });
         
-        
-        
-
-    }]).run(["$rootScope", "localStorageService", "Usuario", function($rootScope,localStorageService, Usuario) {
-        $rootScope.name = "parametrizacion";
-        var obj = localStorageService.get("session");
-        if(!obj) return;
-        Usuario.setToken(obj.auth_token);
-        Usuario.setUsuarioId(obj.usuario_id);
     }]);
 
     angular.bootstrap(document, ['parametrizacion']);

@@ -3,27 +3,34 @@ define(["angular", "js/controllers",
 ], function(angular, controllers) {
 
     controllers.controller('GestionarDocumentosBodegaController', [
-        '$scope', '$rootScope', 'Request',
-        '$modal', 'API', "socket", "$timeout",
-        "AlertService", "localStorageService", "$state",
+        '$scope',
+        '$rootScope',
+        'Request',
+        '$modal',
+        'API',
+        "socket",
+        "$timeout",
+        "AlertService",
+        "localStorageService",
+        "$state",
+        "EmpresaPlanillaDespacho",
+        "ClientePlanillaDespacho",
+        "FarmaciaPlanillaDespacho",
         "Usuario",
-        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, Sesion) {
+        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, Empresa, ClientePlanilla, FarmaciaPlanilla, Sesion) {
 
             var that = this;
-
-            $scope.opcion_predeterminada = "0";
-
-
-            // Variables de Sesion
-            $scope.session = {
-                usuario_id: Sesion.usuario_id,
-                auth_token: Sesion.token
-            };
 
 
             $rootScope.$on('gestionar_documentos_bodegaCompleto', function(e, parametros) {
 
+                console.log('=============== Iniciando Slider =============');
+                console.log($scope.planilla);
 
+                $scope.opcion_predeterminada = "0";
+                $scope.termino_busqueda = '';
+
+                $scope.seleccionar_cliente_farmacia();
             });
 
             $rootScope.$on('cerrar_gestion_documentos_bodegaCompleto', function(e, parametros) {
@@ -39,11 +46,6 @@ define(["angular", "js/controllers",
 
             $scope.seleccionar_cliente_farmacia = function() {
 
-                console.log('==================================');
-                console.log('== seleccionar_cliente_farmacia ==');
-                console.log($scope.opcion_predeterminada);
-                console.log('==================================');
-
                 if ($scope.opcion_predeterminada === "0") {
                     that.buscar_farmacias();
                 }
@@ -57,13 +59,43 @@ define(["angular", "js/controllers",
 
             that.buscar_clientes = function() {
 
-                $scope.datos_clientes_farmacias = [];
 
-                for (i = 0; i < 30; i++) {
-                    $scope.datos_clientes_farmacias.push({nombre: 'nombre_cliente_' + i});
-                }
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        clientes: {
+                            empresa_id: '03',
+                            pais_id: $scope.planilla.get_ciudad().get_pais_id(),
+                            departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
+                            ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
+                            termino_busqueda: $scope.termino_busqueda
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.CLIENTES.LISTAR_CLIENTES, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        that.render_clientes(data.obj.listado_clientes);
+
+                    }
+                });
 
                 that.documentos_bodega_clientes();
+            };
+
+            that.render_clientes = function(clientes) {
+
+                $scope.Empresa.limpiar_clientes();
+
+                clientes.forEach(function(data) {
+
+                    var cliente = ClientePlanilla.get(data.nombre_tercero, data.direccion, data.tipo_id_tercero, data.tercero_id, data.telefono);
+                    $scope.Empresa.set_clientes(cliente);
+                });
+
+                $scope.datos_clientes_farmacias = $scope.Empresa.get_clientes();
+
             };
 
             that.documentos_bodega_clientes = function() {
@@ -77,12 +109,41 @@ define(["angular", "js/controllers",
 
             that.buscar_farmacias = function() {
 
-                $scope.datos_clientes_farmacias = [];
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        centro_utilidad: {
+                            empresa_id: '03',
+                            pais_id: $scope.planilla.get_ciudad().get_pais_id(),
+                            departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
+                            ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
+                            termino_busqueda: $scope.termino_busqueda
+                        }
+                    }
+                };
 
-                for (i = 0; i < 30; i++) {
-                    $scope.datos_clientes_farmacias.push({nombre: 'nombre_farmacia_' + i});
-                }
+                Request.realizarRequest(API.CENTROS_UTILIDAD.LISTAR_CENTROS_UTILIDAD, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        that.render_centros_utilidad(data.obj.centros_utilidad);
+
+                    }
+                });
+
                 that.documentos_bodega_farmacias();
+            };
+
+            that.render_centros_utilidad = function(centros_utilidad) {
+
+                $scope.Empresa.limpiar_farmacias();
+
+                centros_utilidad.forEach(function(data) {
+
+                    var farmacia = FarmaciaPlanilla.get(data.descripcion, data.centro_utilidad_id);
+                    $scope.Empresa.set_farmacias(farmacia);
+                });
+
+                $scope.datos_clientes_farmacias = $scope.Empresa.get_farmacias();
             };
 
             that.documentos_bodega_farmacias = function() {
@@ -99,7 +160,7 @@ define(["angular", "js/controllers",
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
-                    {field: 'nombre', displayName: 'Nombre', width: "85%"},
+                    {field: 'getNombre()', displayName: 'Nombre', width: "85%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs"  ><span class="glyphicon glyphicon-ok"></span></button>\
@@ -121,9 +182,6 @@ define(["angular", "js/controllers",
                     }
                 ]
             };
-
-
-            $scope.seleccionar_cliente_farmacia();
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;

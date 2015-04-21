@@ -42,13 +42,9 @@
                 templateUrl: "views/route1.item.html"
             });
 
-    }]).run(["$rootScope", "localStorageService", "Usuario", function($rootScope, localStorageService, Usuario){
+    }]).run(["$rootScope", "localStorageService", function($rootScope, localStorageService){
         //se inicializa el usuario y la empresa para el modulo
          $rootScope.name = "Kardex";
-        var obj = localStorageService.get("session");
-        if(!obj) return;
-        Usuario.setToken(obj.auth_token);
-        Usuario.setUsuarioId(obj.usuario_id);
     }]);
 
     angular.bootstrap(document, ['Kardex']);

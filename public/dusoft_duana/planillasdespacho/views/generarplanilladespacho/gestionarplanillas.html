@@ -17,25 +17,23 @@
                             <fieldset>
                                 <legend>Ciudad</legend>      
 
-                                <div class="row">
-                                    <div class="col-md-12">  
-                                        <select ui-select2=""  class="form-control selectgeneral pull-left" ng-model="codigo_proveedor_id" placeholder="Seleccionar Ciudad">
-                                            <option></option>    
-                                        </select>
-                                    </div>
-                                </div>
+                                <ui-select ng-model="ciudad_seleccionada.ciudad" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_ciudad()">
+                                    <ui-select-match  placeholder="Seleccionar ciudad">{{ $select.selected.get_nombre_ciudad() }}</ui-select-match>
+                                    <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="ciudad in Empresa.get_ciudades() | filter:$select.search">
+                                        {{ ciudad.get_nombre_ciudad() }}
+                                    </ui-select-choices>
+                                </ui-select>                                   
                             </fieldset>
                         </div>                        
                         <div class="col-md-4">
                             <fieldset>
                                 <legend>Tranportador</legend> 
-                                <div class="row">
-                                    <div class="col-md-12">  
-                                        <select ui-select2="{minimumInputLength: 3}"  class="form-control selectgeneral pull-left" ng-model="codigo_proveedor_id"  placeholder="Seleccionar Transportador" ng-change="seleccionar_proveedor()">
-                                            <option></option>                                             
-                                        </select>
-                                    </div>
-                                </div>
+                                <ui-select ng-model="transportadora_seleccionada.transportadora" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_transportadora()">
+                                    <ui-select-match  placeholder="Seleccionar transportadora">{{ $select.selected.get_descripcion() }}</ui-select-match>
+                                    <ui-select-choices repeat="transportadora in Empresa.get_transportadoras() | filter:$select.search">
+                                        {{ transportadora.get_descripcion() }}
+                                    </ui-select-choices>
+                                </ui-select>
                             </fieldset>
                         </div>
                         <div class="col-md-4">
@@ -43,7 +41,7 @@
                                 <legend>Fecha</legend> 
                                 <div class="row">
                                     <div class="col-md-7" style="margin-top: -14px">  
-                                        <h3><strong>18/03/2015</strong></h3>
+                                        <h3><strong>{{planilla.get_fecha_registro()}}</strong></h3>
                                     </div>
                                 </div>
                             </fieldset>
@@ -57,7 +55,7 @@
                                 <legend>Observación</legend>                                 
                                 <div class="row">  
                                     <div class="col-md-12">                                          
-                                        <textarea  class="col-lg-12 col-md-12 col-sm-12" rows="4" name="" placeholder="Ingresar Observación"></textarea>
+                                        <textarea  ng-model="planilla.observacion" class="col-lg-12 col-md-12 col-sm-12" rows="4" name="" placeholder="Ingresar Observación"></textarea>
                                     </div>
                                 </div>
                             </fieldset>
@@ -68,7 +66,7 @@
                                 <legend>Conductor</legend>                                 
                                 <div class="row">  
                                     <div class="col-md-12">                                          
-                                         <input type="text" class="form-control"  placeholder="Ingrese Nombre del Conductor" name="" id="" />
+                                        <input type="text" ng-model="planilla.nombre_conductor" class="form-control"  placeholder="Ingrese Nombre del Conductor" name="" id="" />
                                     </div>
                                 </div>
                             </fieldset>
@@ -78,7 +76,7 @@
                                 <legend>Estado</legend> 
                                 <div class="row">
                                     <div class="col-md-7" style="margin-top: -14px">  
-                                        <h3><strong>Activo/Anulado{{ descripcion_estado }}</strong></h3>
+                                        <h3><strong>{{planilla.get_descripcion_estado()}}</strong></h3>
                                     </div>
                                 </div>
                             </fieldset>
@@ -93,7 +91,8 @@
                                 <div class="">
                                     <div class="col-md-3">
                                         <p class="input-group">
-                                            <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-click="gestionar_documentos_bodega()">
+                                            <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-click="gestionar_documentos_bodega()" >
+                                                    <!--ng-disabled="planilla.get_ciudad()== null || planilla.get_transportadora()== null || planilla.get_nombre_conductor() == '' ||  planilla.get_observacion() == '' "--> 
                                                 <span class="glyphicon glyphicon-plus"></span> Buscar Remisiones
                                             </button>
                                         </p>

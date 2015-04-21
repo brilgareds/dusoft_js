@@ -38,6 +38,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 });
 
             };
+            
 
             $scope.recuperarContrasenia = function() {
                 if ($scope.forgoutform.$invalid) {

@@ -1,5 +1,6 @@
-var UsuariosModel = function(m_rol) {
+var UsuariosModel = function(m_rol, m_modulo) {
     this.m_rol = m_rol;
+    this.m_modulo = m_modulo;
 };
 
 
@@ -175,7 +176,7 @@ UsuariosModel.prototype.guardarAvatarUsuario = function(usuario_id, nombreArchiv
 };
 
 UsuariosModel.prototype.obtenerRolUsuarioPorEmpresa = function(empresa_id, usuario_id, callback){
-    var sql = "SELECT b. *, a.id as login_empresa_id FROM login_empresas a\
+    var sql = "SELECT b. *, a.id as login_empresa_id, a.empresa_id FROM login_empresas a\
                INNER JOIN roles b ON a.rol_id = b.id\
                WHERE a.empresa_id = $1 AND a.login_id = $2";
 
@@ -280,20 +281,6 @@ UsuariosModel.prototype.habilitarModulosDeUsuario = function(usuario_id, rolesMo
      });
 };
 
-UsuariosModel.prototype.listarUsuarioModuloOpciones = function(modulo_id, rol_id, empresa_id, usuario_id, callback) {
-    var sql = "SELECT a.*, b.rol_id, b.rol_opcion_id, b.estado_opcion_rol FROM modulos_opciones as a\
-               LEFT JOIN (\
-                    SELECT cc.id as rol_opcion_id, bb.modulo_id, cc.modulos_opcion_id, cc.estado as estado_opcion_rol, aa.rol_id FROM login_empresas as aa\
-                    INNER JOIN login_modulos_empresas bb ON aa.id = bb.login_empresas_id AND bb.modulo_id = $1\
-                    INNER JOIN login_modulos_opciones cc ON cc.	login_modulos_empresa_id = bb.id\
-                    WHERE aa.empresa_id = $3   AND aa.rol_id = $2 AND aa.login_id = $4\
-               ) as b ON b.modulo_id = a.modulo_id AND b.modulos_opcion_id = a.id\
-               WHERE a.modulo_id =  $1 ORDER BY a.id DESC";
-
-    G.db.query(sql, [modulo_id, rol_id, empresa_id, usuario_id], function(err, rows, result) {
-        callback(err, rows, result);
-    });
-};
 
 //se encarga de asignar el rol del usuario y borrar registros del rol anterior por empresa
 UsuariosModel.prototype.guardarRolUsuario = function(login_id, empresa_id, rol_id,  usuario_id, callback){
@@ -321,6 +308,42 @@ UsuariosModel.prototype.guardarRolUsuario = function(login_id, empresa_id, rol_i
         
     });
 };
+
+UsuariosModel.prototype.obtenerParametrizacionUsuario = function(usuario_id, empresa_id, callback){
+    var that = this;
+    
+    var parametrizacion = {};
+    
+    that.obtenerRolUsuarioPorEmpresa(empresa_id, usuario_id, function(err, rol){
+        console.log("usuario obtenido ", rol); 
+        
+        //el usuario no tiene un rol asignado como predeterminado
+        if(!rol.id){
+            callback(err, parametrizacion);
+            return;
+        }
+        
+        that.m_modulo.listarModulosUsuario(rol.id, empresa_id, usuario_id, function(err, modulos){
+            if(err){
+                callback(err);
+                return;
+            }
+            
+           parametrizacion.rol = rol;
+           for(var ii in modulos){
+               console.log("modulos >>>>>>>>>>>>>>>>>>>>>>> ", modulos[ii].nombre);
+           }
+            
+           asignarOpcionesModulo(that, modulos, 0 , rol.id, empresa_id, usuario_id, function(err, modulos){
+                parametrizacion.modulos = modulos;
+                callback(err, parametrizacion);
+           });            
+            
+        });
+                
+    });
+};
+
 
 
 UsuariosModel.prototype.borrarRolAsignadoUsuario = function(rol_id, empresa_id, usuario_id, callback){
@@ -397,6 +420,18 @@ UsuariosModel.prototype.guardarOpcion = function(usuario_id, opcion, login_modul
           });
       });
    });
+};
+
+UsuariosModel.prototype.obtenerEmpresasUsuario = function(usuario_id, callback){
+    var that = this;
+    
+    var sql = "SELECT b.empresa_id, b.razon_social FROM login_empresas a \
+               INNER JOIN empresas b ON b.empresa_id = a.empresa_id\
+                WHERE a.login_id = $1  AND a.estado= '1'";
+
+    G.db.query(sql, [usuario_id], function(err, rows, result) {
+        callback(err, rows, result);
+    });
 };
 
 
@@ -511,6 +546,7 @@ function __habilitarModulosDeUsuario(that, usuario_id, rolesModulos, login_empre
     //si el array esta vacio se termina la funcion recursiva
 
     if (rolesModulos.length === 0) {
+        
         callback(false, true, ids);
         return;
     }
@@ -606,6 +642,32 @@ function __guardarOpcion(that, usuario_id, opcion, login_modulos_empresa_id,  ca
 }
 
 
-UsuariosModel.$inject = ["m_rol"];
+function asignarOpcionesModulo(that, modulos,index, rol_id,empresa_id, usuario_id, callback){
+    
+    var modulo = modulos[index];
+    
+    if(!modulo){
+        
+        callback(false, modulos);
+        return;
+        
+    }
+    
+    that.m_modulo.listarUsuarioModuloOpciones(modulo.modulo_id, rol_id, empresa_id, usuario_id, function(err, opciones) {
+        if(err){
+            callback(err);
+            return;
+        }        
+        modulo.opciones = opciones;
+        
+        index++;
+        setTimeout(function(){
+            asignarOpcionesModulo(that,modulos,index,rol_id,empresa_id, usuario_id,callback);
+        },0);
+    });
+}
+
+
+UsuariosModel.$inject = ["m_rol", "m_modulo"];
 
 module.exports = UsuariosModel;

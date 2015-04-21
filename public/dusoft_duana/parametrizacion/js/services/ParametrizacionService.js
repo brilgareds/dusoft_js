@@ -239,6 +239,7 @@ define(["angular", "js/services"], function(angular, services) {
                     }
                 }
             };
+            
 
 
             return this;

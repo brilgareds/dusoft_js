@@ -24,10 +24,8 @@ define(["angular", "js/models"], function(angular, models) {
             };
 
             RolModulo.prototype.getUsuarioEmpresaId = function() {
-                return this.login_modulos_empresas_id;
+                return this.login_modulos_empresas_id; 
             };
-
-
 
             RolModulo.prototype.setEstado = function(estado) {
                 this.estado = Boolean(Number(estado));

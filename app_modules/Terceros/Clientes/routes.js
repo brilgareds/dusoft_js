@@ -6,6 +6,10 @@ module.exports = function(app, di_container) {
          c_clientes.listarClientes(req, res);
     });
     
+    app.post('/api/Terceros/Clientes/listarClientesCiudad', function(req, res) {
+         c_clientes.listarClientesCiudad(req, res);
+    });
+    
     //Consulta Contrato Clientes
     app.post('/api/Terceros/Clientes/consultarContratoCliente', function(req, res) {
          c_clientes.consultarContratoCliente(req, res);

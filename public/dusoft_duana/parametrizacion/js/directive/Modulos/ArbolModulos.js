@@ -35,6 +35,20 @@ define(["angular", "js/directive"], function(angular, directive) {
                     });
                     
                     
+                    scope.$parent.obtenerHijosSeleccionados = function(parent_id){
+                        var hijos = [];
+                        $("#modulo_"+parent_id).find("li").each( function( idx, listItem ) {
+                            var child = $(listItem); 
+                            
+                            if(element.jstree(true).is_selected(child)){
+                                hijos.push(listItem);
+                            }
+                        });
+                        
+                        return hijos;
+                    };
+                    
+                    
                     scope.$on("onseleccionarnodo", function(e, id, parent_id){
                         var node = "#" + id;
                         var padre = "#" +parent_id;

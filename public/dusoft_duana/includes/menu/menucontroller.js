@@ -1,11 +1,12 @@
 define(["angular", "js/controllers", "treemenu"], function(angular, controllers) {
 
-    controllers.controller('menucontroller', ['$scope', '$rootScope', "$state", "Request",
-        function($scope, $rootScope, $state,Request) {
+    controllers.controller('menucontroller', ['$scope', '$rootScope', "$state", "Request","Usuario",
+        function($scope, $rootScope, $state,Request, Usuario) {
 
             $scope.$on("nodeSelected", function(e, data) {
-
-                var parent = data.parent;
+                
+                var self = this;
+                var parent = data.parent.replace( /^\D+/g, '');;
                 var url = data.url;
 
                 //se valida si tiene una url
@@ -39,11 +40,18 @@ define(["angular", "js/controllers", "treemenu"], function(angular, controllers)
                     clearTimeout(timer);
                 }, 100);
             };
-
-
-            Request.realizarRequest("../pages/tree.json","GET",{},function(data) {
-                $scope.treedata = data;
+            
+            $rootScope.$on("modulosUsuario", function(e){
+                $scope.treedata = Usuario.getUsuarioActual().getModulos();
             });
+            
+            
+
+            console.log("usuarios ><>>>>>>>>>>>> ",Usuario.usuario_id);
+            
+            /*Request.realizarRequest("../pages/tree.json","GET",{},function(data) {
+                $scope.treedata = data;
+            });*/
 
 
             $scope.titulo = "Menu de navegacion";

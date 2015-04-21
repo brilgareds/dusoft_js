@@ -2,15 +2,15 @@ define(["angular"], function(angular) {
     var Url = angular.module('Url', []);
 
     var BASE_URL = "/api";
-
+    
+    var BASE_URL_IMG = "/images";
 
     var data = {
-        
-	  'API': {
-	    'BASE_URL': BASE_URL,
-         'DOCUMENTOS_TEMPORALES' : {
-	    	'LISTAR_DOCUMENTOS_TEMPORALES_CLIENTES': BASE_URL+'/movBodegas/E008/consultarDocumentosTemporalesClientes',	
-	    	'LISTAR_DOCUMENTOS_TEMPORALES_FARMACIAS': BASE_URL+'/movBodegas/E008/consultarDocumentosTemporalesFarmacias',
+        'API': {
+            'BASE_URL': BASE_URL,
+            'DOCUMENTOS_TEMPORALES' : {
+                'LISTAR_DOCUMENTOS_TEMPORALES_CLIENTES': BASE_URL+'/movBodegas/E008/consultarDocumentosTemporalesClientes',	
+                'LISTAR_DOCUMENTOS_TEMPORALES_FARMACIAS': BASE_URL+'/movBodegas/E008/consultarDocumentosTemporalesFarmacias',
                 'CONSULTAR_DOCUMENTO_TEMPORAL_CLIENTES': BASE_URL+'/movBodegas/E008/consultarDocumentoTemporalClientes',
                 'CONSULTAR_DOCUMENTO_TEMPORAL_FARMACIAS': BASE_URL+'/movBodegas/E008/consultarDocumentoTemporalFarmacias',
                 'CONSULTAR_DOCUMENTO_TEMPORAL':BASE_URL+'/movBodegas/E008/auditoriaProductosDocumentoTemporal',
@@ -32,16 +32,16 @@ define(["angular"], function(angular) {
                 'ACTUALIZAR_CAJA_TEMPORALES':BASE_URL+'/movBodegas/E008/actualizarCajaDeTemporales',
                 'IMPRIMIR_ROTULO_CLIENTES':BASE_URL+'/movBodegas/E008/imprimirRotuloClientes',
                 'IMPRIMIR_ROTULO_FARMACIAS':BASE_URL+'/movBodegas/E008/imprimirRotuloFarmacias'
-	    },
-	    'PEDIDOS' : {
-	    	'LISTAR_PEDIDOS': BASE_URL+'/PedidosClientes/listarPedidos',	
-	    	'LISTAR_PEDIDOS_FARMACIAS': BASE_URL+'/PedidosFarmacias/listarPedidos',	
-	    	'ASIGNAR_RESPONSABLE_CLIENTE':BASE_URL+'/PedidosClientes/asignarResponsable',
-	    	'ELIMINAR_RESPONSABLE_CLIENTE':BASE_URL+'/PedidosClientes/eliminarResponsablesPedido',
-	    	'ASIGNAR_RESPONSABLE_FARMACIA':BASE_URL+'/PedidosFarmacias/asignarResponsable',
-	    	'ELIMIAR_RESPONSABLE_FARMACIA':BASE_URL+'/PedidosFarmacias/eliminarResponsablesPedido',
-	    	'LISTAR_EMPRESAS':BASE_URL+'/PedidosFarmacias/obtenerEmpresas',
-	    	'DISPONIBILIDAD':BASE_URL+'/Pedidos/consultarDisponibilidad',
+            },
+            'PEDIDOS' : {
+                'LISTAR_PEDIDOS': BASE_URL+'/PedidosClientes/listarPedidos',	
+                'LISTAR_PEDIDOS_FARMACIAS': BASE_URL+'/PedidosFarmacias/listarPedidos',	
+                'ASIGNAR_RESPONSABLE_CLIENTE':BASE_URL+'/PedidosClientes/asignarResponsable',
+                'ELIMINAR_RESPONSABLE_CLIENTE':BASE_URL+'/PedidosClientes/eliminarResponsablesPedido',
+                'ASIGNAR_RESPONSABLE_FARMACIA':BASE_URL+'/PedidosFarmacias/asignarResponsable',
+                'ELIMIAR_RESPONSABLE_FARMACIA':BASE_URL+'/PedidosFarmacias/eliminarResponsablesPedido',
+                'LISTAR_EMPRESAS':BASE_URL+'/PedidosFarmacias/obtenerEmpresas',
+                'DISPONIBILIDAD':BASE_URL+'/Pedidos/consultarDisponibilidad',
                 'LISTAR_EMPRESAS_GRUPO':BASE_URL+'/Empresas/listarEmpresas',
                 'CENTROS_UTILIDAD_EMPRESAS_GRUPO':BASE_URL+'/CentrosUtilidad/listarCentrosUtilidadEmpresa',
                 'BODEGAS_EMPRESAS_GRUPO':BASE_URL+'/Bodegas/listarBodegasEmpresas',
@@ -91,21 +91,21 @@ define(["angular"], function(angular) {
                 'IMPRIMIR_PEDIDO_CLIENTE' :BASE_URL+'/PedidosClientes/imprimirPedidoCliente',
                 'MODIFICAR_CANTIDADES_COTIZACION' :BASE_URL+'/PedidosClientes/modificarCantidadesCotizacion',
                 'MODIFICAR_CANTIDADES_PEDIDO' :BASE_URL+'/PedidosClientes/modificarCantidadesPedido'
-	    },
-	    'TERCEROS':{
-	    	'LISTAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/listar",
-	    	'CREAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/crear",
-	    	'MODIFICAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/modificar",
+            },
+            'TERCEROS':{
+                'LISTAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/listar",
+                'CREAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/crear",
+                'MODIFICAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/modificar",
                 'LISTAR_CLIENTES':BASE_URL+"/Terceros/Clientes/listarClientes",
                 'LISTAR_VENDEDORES':BASE_URL+"/Terceros/Vendedores/listarVendedores",
                 'CONSULTAR_CONTRATO_CLIENTE':BASE_URL+'/Terceros/Clientes/consultarContratoCliente'
                 //'NOMBRE_PAIS' :BASE_URL+'/Terceros/Clientes/nombrePais',
                 //'NOMBRE_DEPARTAMENTO' :BASE_URL+'/Terceros/Clientes/nombreDepartamento',
                 //'NOMBRE_MUNICIPIO' :BASE_URL+'/Terceros/Clientes/nombreMunicipio'
-	    },
-	    'USUARIOS':{
-	    	'LISTAR_USUARIOS':BASE_URL+"/Usuarios/listar"
-	    },
+            },
+            'USUARIOS':{
+                'LISTAR_USUARIOS':BASE_URL+"/Usuarios/listar"
+            },
             'PAISES':{
                 'BUSCAR_PAIS' :BASE_URL+'/Paises/seleccionarPais'
             },
@@ -118,7 +118,11 @@ define(["angular"], function(angular) {
             'DOCUMENTOS_DESPACHO':{
                 'IMPRIMIR_DOCUMENTO_DESPACHO':BASE_URL+"/movBodegas/E008/imprimirDocumentoDespacho"
             }
-	  }
+        },
+        'STATIC' :{
+            'BASE_IMG' : BASE_URL_IMG
+            //'RUTA_AVATAR' : BASE_URL_IMG+"/Usuarios/Avatars/"
+        }
     };
 
 

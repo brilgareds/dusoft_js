@@ -13,7 +13,11 @@ define(["angular", "js/controllers", "js/models",
                 Rol, Usuario,localStorageService, $state) {
 
             var self = this;
-
+            
+            $scope.opciones = Usuario.getUsuarioActual().getModuloActual().getOpciones(true);
+            
+            console.log("opciones >>>>>>>>> ", $scope.opciones)
+            
 
             $scope.rootUsuarios = {
             };

@@ -2,11 +2,18 @@
 define([
     "angular", "socketservice", "route",
     "bootstrap", "js/controllers", "js/models",
-    "js/services", "js/directive", "nggrid", "includes/validation/ValidacionNumero", "includes/widgets/InputCheck", "uiselect2",
+    "js/services", "js/directive", "nggrid", 
+    "includes/validation/ValidacionNumero", "includes/widgets/InputCheck", "uiselect2",
     "loader",
     "includes/menu/menucontroller", "url", "includes/alert/Alert",
     "includes/header/HeaderController", 'storage', "httpinterceptor",
     "includes/classes/Usuario", "includes/http/Request", "dragndropfile",
+    "models/Ciudad",
+    "models/Documento",
+    "models/Transportadora",
+    "models/UsuarioPlanillaDespacho",
+    "models/EmpresaPlanillaDespacho",
+    "models/PlanillaDespacho",
     "controllers/generarplanilladespacho/ListarPlanillasController",
     "controllers/generarplanilladespacho/GestionarPlanillasController",
     "controllers/generarplanilladespacho/GestionarDocumentosBodegaController",
@@ -24,7 +31,7 @@ define([
         'directive',
         'Url',
         'services',
-        'ui.select2',
+        'ui.select',
         'LocalStorageModule',
         'flow'
     ]);
@@ -55,7 +62,7 @@ define([
 
         }]).run(["$rootScope", "Usuario", "localStorageService", function($rootScope, Usuario, localStorageService) {
             $rootScope.titulo_modulo = "Administración Planillas Despacho";
-            console.log(Usuario)
+            
             var obj = localStorageService.get("session");
             if (!obj)
                 return;

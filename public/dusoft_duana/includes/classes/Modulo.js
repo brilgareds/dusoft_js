@@ -49,7 +49,7 @@ define(["angular", "js/models"], function(angular, models) {
             };
 
             Modulo.prototype.getOpciones = function(objetoValor) {
-                
+                //se retorna un objeto llave valor para facilitar el acceso en los permisos
                 if(objetoValor){
                     var _opciones = {};
                     for(var i in this.opciones){

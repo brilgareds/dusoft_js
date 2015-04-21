@@ -105,7 +105,8 @@ define([
                 url: "/ListarUsuarios",
                 text:"Listar Usuarios",
                 templateUrl: "views/AdministracionPerfiles/Usuarios/listarUsuarios.html",
-                controller: "ListarUsuariosController"
+                controller: "ListarUsuariosController",
+                parent_name:"ListarRoles"
                 
             });
             

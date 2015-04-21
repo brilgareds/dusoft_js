@@ -323,21 +323,27 @@ UsuariosModel.prototype.obtenerParametrizacionUsuario = function(usuario_id, emp
             return;
         }
         
-        that.m_modulo.listarModulosUsuario(rol.id, empresa_id, usuario_id, function(err, rows){
+        that.m_modulo.listarModulosUsuario(rol.id, empresa_id, usuario_id, function(err, modulos){
             if(err){
                 callback(err);
                 return;
             }
             
-            parametrizacion.modulos = rows;
-            parametrizacion.rol = rol;
+           parametrizacion.rol = rol;
+           for(var ii in modulos){
+               console.log("modulos >>>>>>>>>>>>>>>>>>>>>>> ", modulos[ii].nombre);
+           }
             
-            callback(err, parametrizacion);
+           asignarOpcionesModulo(that, modulos, 0 , rol.id, empresa_id, usuario_id, function(err, modulos){
+                parametrizacion.modulos = modulos;
+                callback(err, parametrizacion);
+           });            
             
         });
                 
     });
 };
+
 
 
 UsuariosModel.prototype.borrarRolAsignadoUsuario = function(rol_id, empresa_id, usuario_id, callback){
@@ -632,6 +638,32 @@ function __guardarOpcion(that, usuario_id, opcion, login_modulos_empresa_id,  ca
 
            callback(err, rows);
         }
+    });
+}
+
+
+function asignarOpcionesModulo(that, modulos,index, rol_id,empresa_id, usuario_id, callback){
+    
+    var modulo = modulos[index];
+    
+    if(!modulo){
+        
+        callback(false, modulos);
+        return;
+        
+    }
+    
+    that.m_modulo.listarUsuarioModuloOpciones(modulo.modulo_id, rol_id, empresa_id, usuario_id, function(err, opciones) {
+        if(err){
+            callback(err);
+            return;
+        }        
+        modulo.opciones = opciones;
+        
+        index++;
+        setTimeout(function(){
+            asignarOpcionesModulo(that,modulos,index,rol_id,empresa_id, usuario_id,callback);
+        },0);
     });
 }
 

@@ -1,5 +1,5 @@
 
-define(["angular", "js/controllers", "js/models", "models/Perfiles/Rol", "models/Perfiles/RolModulo"], function(angular, controllers) {
+define(["angular", "js/controllers", "js/models", "includes/classes/Rol", "models/Perfiles/RolModulo"], function(angular, controllers) {
 
     controllers.controller('HabilitarModulosEmpresaController', [
         '$scope', '$rootScope', 'Request', 'API',

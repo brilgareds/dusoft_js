@@ -26,9 +26,12 @@ define(["angular", "js/models"], function(angular, models) {
                 this.fechaCaducidad = null;
                 this.descripcion = "";
                 this.rutaAvatar = "";
+                this.rol;
+                this.modulos = [];
+                this.moduloActual;
             }
-
             
+                                 
             Usuario.prototype.setToken = function(token){
                 this.token = token;
             };
@@ -120,6 +123,30 @@ define(["angular", "js/models"], function(angular, models) {
             
             Usuario.prototype.getRutaAvatar = function(){
                 return this.rutaAvatar;
+            };
+            
+            Usuario.prototype.setModulos = function(modulos){
+                this.modulos = modulos;
+            };
+
+            Usuario.prototype.getModulos = function(){
+                return this.modulos;
+            };
+            
+            Usuario.prototype.setModuloActual = function(modulo){
+                this.moduloActual = modulo;
+            };
+
+            Usuario.prototype.getModuloActual = function(){
+                return this.moduloActual;
+            };
+            
+            Usuario.prototype.setRol = function(rol){
+                this.rol = rol;
+            };
+
+            Usuario.prototype.getRol = function(){
+                return this.rol;
             };
 
             this.get = function(id, usuario, nombre) {

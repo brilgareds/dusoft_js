@@ -1,7 +1,7 @@
 
 define([
     "angular", "js/controllers", "js/models",
-    "models/Modulo/OpcionModulo","controllers/AdministracionModulos/Modulos/HabilitarModulosEmpresaController"
+    "includes/classes/OpcionModulo","controllers/AdministracionModulos/Modulos/HabilitarModulosEmpresaController"
 ], function(angular, controllers) {
 
     controllers.controller('OpcionesModulosController', [

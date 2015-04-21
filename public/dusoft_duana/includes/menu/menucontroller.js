@@ -6,7 +6,7 @@ define(["angular", "js/controllers", "treemenu"], function(angular, controllers)
             $scope.$on("nodeSelected", function(e, data) {
                 
                 var self = this;
-                var parent = data.parent;
+                var parent = data.parent.replace( /^\D+/g, '');;
                 var url = data.url;
 
                 //se valida si tiene una url
@@ -41,8 +41,8 @@ define(["angular", "js/controllers", "treemenu"], function(angular, controllers)
                 }, 100);
             };
             
-            $rootScope.$on("modulosUsuario", function(e, modulos){
-                $scope.treedata = modulos;
+            $rootScope.$on("modulosUsuario", function(e){
+                $scope.treedata = Usuario.getUsuarioActual().getModulos();
             });
             
             

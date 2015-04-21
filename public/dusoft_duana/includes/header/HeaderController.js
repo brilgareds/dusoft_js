@@ -1,10 +1,13 @@
 define(["angular", "js/controllers", "includes/classes/Usuario","includes/Constants/Url",
-        "includes/header/lockscreen", "includes/content/rutamodulo", "includes/classes/Empresa" ], function(angular, controllers) {
+        "includes/header/lockscreen", "includes/content/rutamodulo",
+        "includes/classes/Empresa", "includes/classes/Modulo", "includes/classes/Rol","includes/classes/OpcionModulo" ], function(angular, controllers) {
     controllers.controller('HeaderController', [
         '$scope', '$rootScope', "$state", "Request",
         "Usuario","socket","URL","localStorageService","Empresa",
+        "Modulo","Rol","OpcionModulo",
         function($scope, $rootScope, $state,
-        Request, Usuario, socket, URL, localStorageService,Empresa) {
+        Request, Usuario, socket, URL, localStorageService,Empresa,
+        Modulo, Rol,  OpcionModulo) {
             var self = this;
             var obj_session = localStorageService.get("session");
             console.log("session obj_session ", obj_session)
@@ -93,7 +96,6 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
                         
                         }
                         
-                        
                         callback();
                     }
                     
@@ -147,27 +149,41 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
                         
                         //se hace el set correspondiente para el plugin de jstree
                         for(var i in modulos){
+                            
+                            
                             var modulo = modulos[i];
+                            
                             if(modulo.estado_modulo_usuario === '1'){
-                                modulo.text = modulo.nombre;
-                                modulo.id = "usuario_modulo_"+modulo.modulo_id;
-
-                                if(!modulo.parent){
-                                    modulo.parent = "#";
-                                } else {
-                                    modulo.parent =  "usuario_modulo_"+modulo.parent;
+                                var _modulo = Modulo.get(
+                                        modulo.modulo_id,
+                                        modulo.parent,
+                                        modulo.nombre,
+                                        modulo.state,
+                                        "usuario_modulo_"
+                                );
+                                
+                                _modulo.setIcon(modulo.icon);
+                                
+                                var _opciones = modulo.opciones;
+                                
+                                for(var ii in _opciones){
+                                    var _opcion = _opciones[ii];
+                                    var opcion = OpcionModulo.get(_opcion.id, _opcion.nombre, _opcion.alias, _opcion.modulo_id);
+                                    _modulo.agregarOpcion(opcion);
                                 }
-
-                                _modulos.push(modulo);
+                                              
+                                _modulos.push(_modulo);
+                                _modulos.parentname = "Parametrizacion";
 
                             }
                         
                         }
                         
-                        console.log("modulos del sistema ", _modulos);
+                        console.log("modulos del usuario ", _modulos)
                         if(_modulos.length > 0){
+                            $scope.Usuario.setModulos(_modulos);
                             //estando los modulos preparados se envian al controlador del menu                      
-                            $rootScope.$emit("modulosUsuario", _modulos);
+                            $rootScope.$emit("modulosUsuario");
                         }
                         
                         callback(obj);
@@ -280,15 +296,19 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
              });   
             
                             
-            var empresa_id = obj_session.empresa_id;
 
-            if(!empresa_id){
-                empresa_id = $scope.Usuario.getEmpresa().getCodigo();
-            }
             
             self.traerUsuarioPorId(obj_session.usuario_id, function(){
+                var empresa_id = obj_session.empresa_id;
+
+                if(!empresa_id){
+                    empresa_id = $scope.Usuario.getEmpresa().getCodigo();
+                }
                 
                 self.traerParametrizacionPorUsuario(empresa_id,function(parametrizacion){
+                    
+                    console.log("parametrizacion >>>>>>>>>>>>>", parametrizacion);
+                    
                     self.obtenerEmpresasUsuario(function(){
                         console.log("usuario ", $scope.Usuario);
                         $rootScope.$emit("parametrizacionUsuarioLista", parametrizacion);

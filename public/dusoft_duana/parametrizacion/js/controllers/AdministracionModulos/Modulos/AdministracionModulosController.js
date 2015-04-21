@@ -2,7 +2,7 @@
 define([
     "angular", "js/controllers", "js/models",
     "controllers/AdministracionModulos/Modulos/OpcionesModulosController",
-    "models/Modulo/Modulo"
+    "includes/classes/Modulo"
 ], function(angular, controllers) {
 
     controllers.controller('AdministracionModulosController', [

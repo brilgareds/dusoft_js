@@ -1,7 +1,7 @@
 
 define(["angular", "js/controllers", "js/models",
     "controllers/AdministracionModulos/Modulos/OpcionesModulosController",
-    "models/Perfiles/Rol", "models/Perfiles/RolModulo"
+    "includes/classes/Rol", "models/Perfiles/RolModulo"
 ], function(angular, controllers) {
 
     controllers.controller('ListarRolesController', [

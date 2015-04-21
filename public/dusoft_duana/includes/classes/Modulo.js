@@ -2,10 +2,12 @@ define(["angular", "js/models"], function(angular, models) {
 
     models.factory('Modulo', [function() {
 
-            function Modulo(id, parent, text, url) {
+            function Modulo(id, parent, text, url, prefijo) {
+                
                 //propiedades necesarias para el plugin de jstree
-                this.id = (id) ? "modulo_" + id : 0;
-                this.parent = (parent) ? "modulo_" + parent : "#";
+                this.prefijo = (prefijo)?prefijo:"modulo_";
+                this.id = (id) ? this.prefijo + id : 0;
+                this.parent = (parent) ? this.prefijo + parent : "#";
                 this.text = text || "";
                 this.icon = "";
                 //
@@ -34,7 +36,7 @@ define(["angular", "js/models"], function(angular, models) {
             }
 
             Modulo.prototype.setId = function(id) {
-                this.id = "modulo_" + id;
+                this.id = this.prefijo + id;
                 this.modulo_id = id;
             };
             
@@ -46,7 +48,20 @@ define(["angular", "js/models"], function(angular, models) {
                 return  this.nombre ;
             };
 
-            Modulo.prototype.getOpciones = function() {
+            Modulo.prototype.getOpciones = function(objetoValor) {
+                
+                if(objetoValor){
+                    var _opciones = {};
+                    for(var i in this.opciones){
+                        var opcion = this.opciones[i];
+                        _opciones[opcion.alias] = (opcion.estado_opcion_rol === '1')?true:false;
+
+                    }
+                    
+                    return _opciones;
+                }
+                
+                
                 return this.opciones;
             };
 
@@ -190,8 +205,8 @@ define(["angular", "js/models"], function(angular, models) {
                 this.rolesModulos.push(rolModulo);
             };
             
-            this.get = function(id, parent, text, url) {
-                return new Modulo(id, parent, text, url);
+            this.get = function(id, parent, text, url, prefijo) {
+                return new Modulo(id, parent, text, url, prefijo);
             };
 
             return this;

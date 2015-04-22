@@ -32,52 +32,108 @@
           'flow'
       ]);
 
-      
+      // se debe declarar estas propiedades para tener la referencia del urlProvider
+      pedidos.urlRouterProvider;
+      pedidos.stateProvider;
 
       pedidos.config( ["$stateProvider", "$urlRouterProvider", "$httpProvider", function($stateProvider, $urlRouterProvider, $httpProvider){
 
-          // For any unmatched url, send to /route1
-          console.log($httpProvider, "http provider");
-          $httpProvider.interceptors.push('HttpInterceptor');
-
-          $urlRouterProvider.otherwise("/AsignarPedidos");
+            // For any unmatched url, send to /route1
+            //console.log($httpProvider, "http provider");
+            //intercepta los http para validar el usuario
+            $httpProvider.interceptors.push('HttpInterceptor');
           
-          $stateProvider
+            //se pasa la referencia del urlRouterProvider y del stateProvider, ya no debe declararse los routers en esta parte
+            pedidos.urlRouterProvider = $urlRouterProvider;
+            pedidos.stateProvider = $stateProvider;
+
+//            $urlRouterProvider.otherwise("/AsignarPedidos");
+//          
+//            $stateProvider
+//              .state('AsignarPedidos', {
+//                  url: "/AsignarPedidos",
+//                  text:"Asignar Pedidos",
+//                  templateUrl: "views/asignarpedidos/AsignarPedidos.html"
+//                  //controller:"pedidoscontroller"
+//              })
+//              .state('AuditarPedidos', {
+//                  url: "/AuditarPedidos",
+//                  text:"Auditar Pedidos",
+//                  templateUrl: "views/auditoriapedidos/AuditoriaPedidos.html"
+//                })
+//              .state('PedidosClientes', {
+//                  url: "/PedidosClientes",
+//                  text:"Pedidos Clientes",
+//                  templateUrl: "views/generarpedidos/pedidosclientes.html"
+//                })
+//              .state('CotizacionCliente', {
+//                  url: "/CotizacionCliente",
+//                  text:"Cotización Clientes",
+//                  templateUrl: "views/generarpedidos/cotizacioncliente.html"
+//                })
+//              .state('VerPedidosFarmacias', {
+//                  url: "/VerPedidosFarmacias",
+//                  text:"Pedidos Farmacias",
+//                  templateUrl: "views/generarpedidos/verpedidosfarmacias.html"
+//                })
+//              .state('CreaPedidosFarmacias', {
+//                  url: "/CreaPedidosFarmacias",
+//                  text:"Crear/Editar Pedidos Farmacias",
+//                  templateUrl: "views/generarpedidos/creapedidosfarmacias.html"
+//                });
+
+
+    }]).run( ["$rootScope","$location","$state", function($rootScope,$location, $state){
+        //$rootScope.titulo_modulo = "pedidos";
+        $rootScope.name = "pedidos";
+        var vistaDefecto = "AsignarPedidos";
+        
+        //este evento se dispara cuando los permisos del usuario esta listos
+        $rootScope.$on("parametrizacionUsuarioLista",  function(e, parametrizacion){
+             
+            pedidos.urlRouterProvider.otherwise(vistaDefecto);
+            
+            pedidos.stateProvider
             .state('AsignarPedidos', {
-                url: "/AsignarPedidos",
-                text:"Asignar Pedidos",
-                templateUrl: "views/asignarpedidos/AsignarPedidos.html"
-                //controller:"pedidoscontroller"
-            })
-            .state('AuditarPedidos', {
-                url: "/AuditarPedidos",
-                text:"Auditar Pedidos",
-                templateUrl: "views/auditoriapedidos/AuditoriaPedidos.html"
+                  url: "/AsignarPedidos",
+                  text:"Asignar Pedidos",
+                  templateUrl: "views/asignarpedidos/AsignarPedidos.html"
+                  //controller:"pedidoscontroller"
               })
-            .state('PedidosClientes', {
-                url: "/PedidosClientes",
-                text:"Pedidos Clientes",
-                templateUrl: "views/generarpedidos/pedidosclientes.html"
-              })
-            .state('CotizacionCliente', {
-                url: "/CotizacionCliente",
-                text:"Cotización Clientes",
-                templateUrl: "views/generarpedidos/cotizacioncliente.html"
-              })
-            .state('VerPedidosFarmacias', {
-                url: "/VerPedidosFarmacias",
-                text:"Pedidos Farmacias",
-                templateUrl: "views/generarpedidos/verpedidosfarmacias.html"
-              })
-            .state('CreaPedidosFarmacias', {
-                url: "/CreaPedidosFarmacias",
-                text:"Crear/Editar Pedidos Farmacias",
-                templateUrl: "views/generarpedidos/creapedidosfarmacias.html"
-              });
-
-
-    }]).run( ["$rootScope", function($rootScope){
-        $rootScope.titulo_modulo = "pedidos";   
+              .state('AuditarPedidos', {
+                  url: "/AuditarPedidos",
+                  text:"Auditar Pedidos",
+                  templateUrl: "views/auditoriapedidos/AuditoriaPedidos.html"
+                })
+              .state('PedidosClientes', {
+                  url: "/PedidosClientes",
+                  text:"Pedidos Clientes",
+                  templateUrl: "views/generarpedidos/pedidosclientes.html"
+                })
+              .state('CotizacionCliente', {
+                  url: "/CotizacionCliente",
+                  text:"Cotización Clientes",
+                  templateUrl: "views/generarpedidos/cotizacioncliente.html"
+                })
+              .state('VerPedidosFarmacias', {
+                  url: "/VerPedidosFarmacias",
+                  text:"Pedidos Farmacias",
+                  templateUrl: "views/generarpedidos/verpedidosfarmacias.html"
+                })
+              .state('CreaPedidosFarmacias', {
+                  url: "/CreaPedidosFarmacias",
+                  text:"Crear/Editar Pedidos Farmacias",
+                  templateUrl: "views/generarpedidos/creapedidosfarmacias.html"
+                });
+                
+            if($location.path() === "") {
+                $state.go(vistaDefecto);
+            }else {
+                 //se encarga de ir al ultimo path, despues que se configura las rutas del modulo
+                $state.go($location.path().replace("/", ""));
+            }
+             
+        });
  
     }]);
 

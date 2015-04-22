@@ -25,8 +25,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             $scope.rootCotizaciones.listado_cotizaciones = [];
             
             $scope.rootCotizaciones.session = {
-                usuario_id: Usuario.usuario_id,
-                auth_token: Usuario.token
+                usuario_id: Usuario.getUsuarioActual().getId(),
+                auth_token: Usuario.getUsuarioActual().getToken()
             };
 
             that.estados = [ "btn btn-warning btn-xs", "btn btn-success btn-xs" ];

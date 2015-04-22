@@ -64,7 +64,7 @@ define(["angular", "js/models"], function(angular, models) {
                     var _opciones = {};
                     for(var i in this.opciones){
                         var opcion = this.opciones[i];
-                        _opciones[opcion.alias] = (opcion.estado_opcion_rol === '1')?true:false;
+                        _opciones[opcion.alias] = opcion.estado_opcion_rol;
 
                     }
                     

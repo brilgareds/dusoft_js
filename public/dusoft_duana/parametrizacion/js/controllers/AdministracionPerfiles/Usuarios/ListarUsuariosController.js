@@ -15,8 +15,28 @@ define(["angular", "js/controllers", "js/models",
             var self = this;
             
             $scope.opciones = Usuario.getUsuarioActual().getModuloActual().getOpciones(true);
+            $scope.foo = "Duana";
             
             console.log("opciones >>>>>>>>> ", $scope.opciones)
+            console.log($scope.opciones.sw_crear_usuario && !$scope.foo === 'Duanas');
+            
+
+            
+            
+            $scope.opcionesModulo = {
+                btnCrear : {
+                    'click':$scope.opciones.sw_crear_usuario
+                },
+                buscador:{
+                    //'keypress':$scope.opciones.sw_crear_usuario
+                },
+                btnEditarUsuario:{
+                    //'click':false
+                }
+                                    
+            };
+            
+            
             
 
             $scope.rootUsuarios = {
@@ -88,7 +108,7 @@ define(["angular", "js/controllers", "js/models",
                     {field: 'usuario', displayName: 'Usuario'},
                     {field: 'accion', displayName: '', width: '70',
                         cellTemplate: '<div class="ngCellText txt-center">\
-                                      <button class="btn btn-default btn-xs" ng-click="onEditarUsuario(row.entity)"><span class="glyphicon glyphicon-zoom-in"></span></button>\
+                                      <button class="btn btn-default btn-xs" ng-validate-events="{{validaciones.btnEditarUsuario}}" ng-click="onEditarUsuario(row.entity)"><span class="glyphicon glyphicon-zoom-in"></span></button>\
                                    </div>'
                     }
                 ]

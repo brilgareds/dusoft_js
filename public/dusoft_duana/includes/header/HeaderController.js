@@ -170,6 +170,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
                                 for(var ii in _opciones){
                                     var _opcion = _opciones[ii];
                                     var opcion = OpcionModulo.get(_opcion.id, _opcion.nombre, _opcion.alias, _opcion.modulo_id);
+                                    //opcion.set
                                     _modulo.agregarOpcion(opcion);
                                 }
                                               
@@ -279,8 +280,8 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
                 //no se encontro el modulo, el usuario no tiene permisos para verlo
                 if(!moduloActual){
                     event.preventDefault();
-                    AlertService.mostrarMensaje("warning", "El usuario no tiene permisos para ver la sección de "+ toState.name);
-                    return;
+                   // //AlertService.mostrarMensaje("warning", "El usuario no tiene permisos para ver la sección de "+ toState.name);
+                   // return;
                 }
 
                 $scope.Usuario.setModuloActual(moduloActual);

@@ -73,6 +73,12 @@ define([
                     validacion.msj = "El modulo debe tener un nombre";
                     return validacion;
                 }
+                
+                if (modulo.getCarpetaRaiz() === undefined || modulo.getCarpetaRaiz().length === 0) {
+                    validacion.valido = false;
+                    validacion.msj = "El modulo debe tener una carpeta raíz";
+                    return validacion;
+                }
 
                 if (modulo.state === undefined || modulo.state.length === 0) {
                     validacion.valido = false;
@@ -136,6 +142,7 @@ define([
                              );
 
                             modulo.setIcon(datos[i].icon);
+                            modulo.setCarpetaRaiz(datos[i].carpeta_raiz);
                             
                             /*modulo.state = {
                                 disabled: true
@@ -321,6 +328,7 @@ define([
                         _modulo.setState(modulo.state);
                         _modulo.setObservacion(modulo.observacion);
                         _modulo.setEstado(modulo.estado);
+                        _modulo.setCarpetaRaiz(modulo.carpeta_raiz);
                         
                         //valida si tiene padres
                         if(modulos_seleccionado.padres.length > 0){

@@ -6,29 +6,36 @@ define(["angular", "js/controllers", "treemenu"], function(angular, controllers)
             $scope.$on("nodeSelected", function(e, data) {
                 
                 var self = this;
-                var parent = data.parent.replace( /^\D+/g, '');;
+                var parent = data.parent.replace( /^\D+/g, '');
                 var url = data.url;
-
+                
+                
                 //se valida si tiene una url
                 if (url !== undefined || (url && url.length > 0)) {
                     //se valida si es un padre
+                    
                     if (isNaN(parent)) {
                         url = "../" + url;
                         $scope.changelocation(url);
                     } else {
-                        
                         //si no posee la propiedad parentname se coloca por default el nombre del modulo actual
-                        var parentname = (data.parentname === undefined) ? $rootScope.name : data.parentname;
+                       // var parentname = (data.parentname === undefined) ? $rootScope.name : data.parentname;
+                        var carpetaRaiz = data.carpetaRaiz;
                         
-                        if ($rootScope.name === parentname) {
+                        if(carpetaRaiz){
                             
-                            $state.go(data.url);
+                            if ($rootScope.name === carpetaRaiz) {
+                                $state.go(data.url);
+                            } else {
+                                url = "../" + carpetaRaiz + "/#/" + url;
+                                $scope.changelocation(url);
+                            }
+                            //se ecargar de cerrar cualquier slide que este abierto
+                            $rootScope.$emit("cerrarslide", {animado:false});
+                            
                         } else {
-                            url = "../" + parentname + "/#/" + url;
-                            $scope.changelocation(url);
+                            console.log("la carpeta raiz del modulo no es valida");
                         }
-                        //se ecargar de cerrar cualquier slide que este abierto
-                        $rootScope.$emit("cerrarslide", {animado:false});
                     }
                 } else {
                     console.log("No se encontro el url");

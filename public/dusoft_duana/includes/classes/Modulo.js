@@ -10,6 +10,7 @@ define(["angular", "js/models"], function(angular, models) {
                 this.parent = (parent) ? this.prefijo + parent : "#";
                 this.text = text || "";
                 this.icon = "";
+                this.carpetaRaiz = "";
                 //
 
                 this.nombre = this.text;
@@ -42,6 +43,15 @@ define(["angular", "js/models"], function(angular, models) {
             
             Modulo.prototype.getId = function(id) {
                 return  this.modulo_id ;
+            };
+            
+            
+            Modulo.prototype.setCarpetaRaiz = function(carpeta) {
+                this.carpetaRaiz = carpeta;
+            };
+            
+            Modulo.prototype.getCarpetaRaiz = function() {
+                return  this.carpetaRaiz ;
             };
             
             Modulo.prototype.getNombre = function() {

@@ -173,7 +173,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
                                     _modulo.agregarOpcion(opcion);
                                 }
                                               
-                                _modulo.parentname = "parametrizacion";
+                                _modulo.setCarpetaRaiz(modulo.carpeta_raiz); 
                                 _modulos.push(_modulo);
 
                             }
@@ -267,24 +267,23 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
             
             
           $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
-                    /*console.log("to staste ", toState);
-                    
-                    var moduloActual = self.obtenerModuloActual(toState.name);
-                    
-                    //se busca en el parent name el modulo actual
-                    if(!moduloActual &&  toState.parent_name){
-                        moduloActual = self.obtenerModuloActual(toState.parent_name);
-                    }
-                    
-                    //no se encontro el modulo, el usuario no tiene permisos para verlo
-                    if(!moduloActual){
-                        console.log("El usuario no tiene permisos para ver la seccion de ", toState.name)
-                        event.preventDefault();
-                        AlertService.mostrarMensaje("warning", "El usuario no tiene permisos para ver la sección de "+ toState.name);
-                        return;
-                    }
-                    
-                    $scope.Usuario.setModuloActual(moduloActual);*/
+                console.log("to staste ", toState);
+
+                var moduloActual = self.obtenerModuloActual(toState.name);
+
+                //se busca en el parent name el modulo actual
+                if(!moduloActual &&  toState.parent_name){
+                    moduloActual = self.obtenerModuloActual(toState.parent_name);
+                }
+
+                //no se encontro el modulo, el usuario no tiene permisos para verlo
+                if(!moduloActual){
+                    event.preventDefault();
+                    AlertService.mostrarMensaje("warning", "El usuario no tiene permisos para ver la sección de "+ toState.name);
+                    return;
+                }
+
+                $scope.Usuario.setModuloActual(moduloActual);
               
                     
            });

@@ -10,12 +10,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         '$state', "Usuario", "localStorageService", "$modal",
         function($scope, $rootScope, Request, EmpresaPedido, FarmaciaVenta, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService, $modal) {
 
-
-            console.log('>>>>>>>>>>>>>>>>>>>>>>>>>');
-            console.log(socket);
-            console.log('>>>>>>>>>>>>>>>>>>>>>>>>>');
-
-
             var that = this;
 
             that.pedido = PedidoVenta.get();
@@ -39,8 +33,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.rootVerPedidosFarmacias.seleccion = "FD";
 
             $scope.rootVerPedidosFarmacias.session = {
-                usuario_id: Usuario.usuario_id,
-                auth_token: Usuario.token
+                usuario_id: Usuario.getUsuarioActual().getId(),
+                auth_token: Usuario.getUsuarioActual().getToken()
             };
 
             $scope.rootVerPedidosFarmacias.listado_farmacias = [];

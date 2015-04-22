@@ -334,7 +334,7 @@ UsuariosModel.prototype.obtenerParametrizacionUsuario = function(usuario_id, emp
                console.log("modulos >>>>>>>>>>>>>>>>>>>>>>> ", modulos[ii].nombre);
            }
             
-           asignarOpcionesModulo(that, modulos, 0 , rol.id, empresa_id, usuario_id, function(err, modulos){
+           __asignarOpcionesModulo(that, modulos, 0 , rol.id, empresa_id, usuario_id, function(err, modulos){
                 parametrizacion.modulos = modulos;
                 callback(err, parametrizacion);
            });            
@@ -642,7 +642,7 @@ function __guardarOpcion(that, usuario_id, opcion, login_modulos_empresa_id,  ca
 }
 
 
-function asignarOpcionesModulo(that, modulos,index, rol_id,empresa_id, usuario_id, callback){
+function __asignarOpcionesModulo(that, modulos,index, rol_id,empresa_id, usuario_id, callback){
     
     var modulo = modulos[index];
     
@@ -662,7 +662,7 @@ function asignarOpcionesModulo(that, modulos,index, rol_id,empresa_id, usuario_i
         
         index++;
         setTimeout(function(){
-            asignarOpcionesModulo(that,modulos,index,rol_id,empresa_id, usuario_id,callback);
+            __asignarOpcionesModulo(that,modulos,index,rol_id,empresa_id, usuario_id,callback);
         },0);
     });
 }

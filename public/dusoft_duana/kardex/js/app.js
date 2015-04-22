@@ -28,7 +28,7 @@
 
           // For any unmatched url, send to /route1
           //intercepta los http para validar el usuario
-          $httpProvider.interceptors.push('HttpInterceptor');
+        $httpProvider.interceptors.push('HttpInterceptor');
           
          Kardex.urlRouterProvider = $urlRouterProvider;
          Kardex.stateProvider = $stateProvider;

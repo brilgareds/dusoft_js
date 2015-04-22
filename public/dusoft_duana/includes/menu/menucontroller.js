@@ -6,7 +6,7 @@ define(["angular", "js/controllers", "treemenu"], function(angular, controllers)
             $scope.$on("nodeSelected", function(e, data) {
                 
                 var self = this;
-                var parent = data.parent.replace( /^\D+/g, '');;
+                var parent = data.parent;
                 var url = data.url;
 
                 //se valida si tiene una url
@@ -16,12 +16,9 @@ define(["angular", "js/controllers", "treemenu"], function(angular, controllers)
                         url = "../" + url;
                         $scope.changelocation(url);
                     } else {
-                        
                         //si no posee la propiedad parentname se coloca por default el nombre del modulo actual
                         var parentname = (data.parentname === undefined) ? $rootScope.name : data.parentname;
-                        
                         if ($rootScope.name === parentname) {
-                            
                             $state.go(data.url);
                         } else {
                             url = "../" + parentname + "/#/" + url;
@@ -44,17 +41,17 @@ define(["angular", "js/controllers", "treemenu"], function(angular, controllers)
                 }, 100);
             };
             
-            $rootScope.$on("modulosUsuario", function(e){
-                $scope.treedata = Usuario.getUsuarioActual().getModulos();
-            });
+           /* $rootScope.$on("modulosUsuario", function(e, modulos){
+                $scope.treedata = modulos;
+            });*/
             
             
 
             console.log("usuarios ><>>>>>>>>>>>> ",Usuario.usuario_id);
             
-            /*Request.realizarRequest("../pages/tree.json","GET",{},function(data) {
+            Request.realizarRequest("../pages/tree.json","GET",{},function(data) {
                 $scope.treedata = data;
-            });*/
+            });
 
 
             $scope.titulo = "Menu de navegacion";

@@ -14,24 +14,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             var that = this;
 
-           // $scope.$on('cargarGridSeleccionadoSlide', function(event/*, mass*/) {
-                //Recibimos la GRID del PADRE: -> mass
-                //$scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados = mass;
-
-                //console.log("EL CONTENIDO RECIBIDO ES: ", mass);
-
-                /*if ($scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados) {
-
-                    console.log("Listado desde MASS: ", $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados);
-
-                    $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.forEach(function(valor) {
-                        console.log("Código Producto: ", valor.codigo_producto);
-                        console.log("Cantidad Solicitada: ", valor.cantidad_solicitada);
-                    });
-                }*/
-
-           // });
-
             $scope.cerrar = function() {
                 $scope.$emit('cerrarseleccionproducto', {animado: true});
 
@@ -40,18 +22,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             $rootScope.$on("mostrarseleccionproducto", function(e, tipo_cliente, datos_de, datos_para, observacion, pedido) {
 
-//                console.log("Pedido desde CrearPedidoFarmacia: ", pedido);
-
                 $scope.rootSeleccionProductoFarmacia = {};
-                
-                //Arreglo para convenciones de tipo_producto
-                /*$scope.rootSeleccionProductoFarmacia.convenciones_tipo_producto = [
-                                {val:1,txt:'Normales', label:'label label-success'},
-                                {val:2,txt:'Alto Costo', label:'label label-danger'},
-                                {val:3,txt:'Controlados', label:'label label-warning'},
-                                {val:4,txt:'Insumos', label:'label label-default'},
-                                {val:5,txt:'Nevera', label:'label label-info'}
-                            ];*/
                 
                 //Variable Tipo Producto
                 $scope.rootSeleccionProductoFarmacia.tipoProducto = '0';
@@ -59,8 +30,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $scope.rootSeleccionProductoFarmacia.Empresa = EmpresaPedido;
 
                 $scope.rootSeleccionProductoFarmacia.session = {
-                    usuario_id: Usuario.usuario_id,
-                    auth_token: Usuario.token
+                    usuario_id: Usuario.getUsuarioActual().getId(),
+                    auth_token: Usuario.getUsuarioActual().getToken()
                 };
 
                 $scope.rootSeleccionProductoFarmacia.no_incluir_producto = false;

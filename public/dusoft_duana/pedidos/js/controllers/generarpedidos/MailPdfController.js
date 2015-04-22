@@ -18,9 +18,9 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             $scope.rootMailPdf = {};
             
             $scope.rootMailPdf.session = {
-                         usuario_id: Usuario.usuario_id,
-                         auth_token: Usuario.token
-                     };
+                usuario_id: Usuario.getUsuarioActual().getId(),
+                auth_token: Usuario.getUsuarioActual().getToken()
+            };
 
 //            console.log(">>>> SESSION: ", Session);
 //

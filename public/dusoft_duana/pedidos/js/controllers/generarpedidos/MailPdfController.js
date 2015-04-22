@@ -360,18 +360,20 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 
                 if($scope.rootMailPdf.tipo_documento === 'c') {
                     that.generarPdfCotizacionCliente(function(){
-                        $scope.close();
+                        //$scope.close();
+                        var test = true;
                     });
                 }
                 
                 if($scope.rootMailPdf.tipo_documento === 'p') {
                     that.generarPdfPedidoCliente(function(){
-                        $scope.close();
+                        //$scope.close();
+                        var test = true;
                     });
                 }
                 
-//                if($scope.rootMailPdf.cerrar_modal_principal === true)
-//                    $scope.close();
+                if($scope.rootMailPdf.cerrar_modal_principal === true)
+                    $scope.close();
 
             };
 

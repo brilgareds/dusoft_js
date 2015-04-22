@@ -16,12 +16,11 @@ requirejs.config({
         jquery:"../../javascripts/jquery",
         treemenu:"../includes/menu/myTree",
         tree:"../../javascripts/jstree",
-        select:"../../javascripts/select2",
         loader:"../includes/loader/loader",
         url:"js/constants/Url",
         socket:"../includes/socket/socket.io/socket.io",
         socketservice:"../includes/socket/socket",
-        uiselect2:"../../javascripts/uiselect2",
+        uiselect2: "../../javascripts/select",
         storage:"../../javascripts/angular/storage",
         httpinterceptor:"../includes/http/HttpInterceptor",
         dragndropfile:"../../javascripts/dragndropfile/ng-flow-standalone"
@@ -49,18 +48,14 @@ requirejs.config({
         "treemenu":{
             deps:["tree"]
         },
-        "select":{
-            deps:["jquery"]
-        },
-
         "url":{
             deps:["angular"]
         },
         "socketservice":{
             deps:["socket"]
         },
-        "uiselect2":{
-            deps:["angular","select"]
+        "uiselect2": {
+            deps: ["angular", "jquery"]
         },
         "storage":{
             deps:["angular"]

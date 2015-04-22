@@ -86,8 +86,6 @@ define(["angular", "js/controllers",
 
                     }
                 });
-
-                that.documentos_bodega_clientes();
             };
 
             that.render_clientes = function(clientes) {
@@ -102,15 +100,6 @@ define(["angular", "js/controllers",
 
                 $scope.datos_clientes_farmacias = $scope.Empresa.get_clientes();
 
-            };
-
-            that.documentos_bodega_clientes = function() {
-
-                $scope.datos_documentos_bodega = [];
-
-                for (i = 0; i < 30; i++) {
-                    $scope.datos_documentos_bodega.push({documento_bodega: 'EFC Clientes' + i});
-                }
             };
 
             that.buscar_farmacias = function() {
@@ -135,8 +124,6 @@ define(["angular", "js/controllers",
 
                     }
                 });
-
-                that.documentos_bodega_farmacias();
             };
 
             that.render_centros_utilidad = function(centros_utilidad) {
@@ -150,6 +137,30 @@ define(["angular", "js/controllers",
                 });
 
                 $scope.datos_clientes_farmacias = $scope.Empresa.get_farmacias();
+            };
+
+
+            $scope.buscar_documentos_bodega= function(tercero){
+                console.log('======= buscar_documentos_bodega=========');
+                console.log(tercero);
+                
+                if ($scope.datos_view.opcion_predeterminada === "0") {
+                    that.documentos_bodega_farmacias();
+                }
+
+                if ($scope.datos_view.opcion_predeterminada === "1") {
+                    that.documentos_bodega_clientes();
+                }
+                
+            };
+
+            that.documentos_bodega_clientes = function() {
+
+                $scope.datos_documentos_bodega = [];
+
+                for (i = 0; i < 30; i++) {
+                    $scope.datos_documentos_bodega.push({documento_bodega: 'EFC Clientes' + i});
+                }
             };
 
             that.documentos_bodega_farmacias = function() {
@@ -169,7 +180,7 @@ define(["angular", "js/controllers",
                     {field: 'getNombre()', displayName: 'Nombre', width: "85%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs"  ><span class="glyphicon glyphicon-ok"></span></button>\
+                                            <button class="btn btn-default btn-xs" ng-click="buscar_documentos_bodega(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
                                         </div>'
                     }
                 ]

@@ -1719,7 +1719,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     template: template,
                     scope: $scope,
                     controller: controller,
-                    //windowClass: 'app-modal-window-pdf'
+                    windowClass: 'app-modal-window-pdf'
                 };
 
                 var modalInstance = $modal.open($scope.opts);                

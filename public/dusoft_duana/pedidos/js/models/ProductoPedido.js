@@ -20,6 +20,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             //Campos exclusivos pedido clientes
             this.codigo_cum = "";
             this.codigo_invima = "";
+            this.vencimiento_codigo_invima = "";
             this.iva = 0;
             this.precio_regulado = 0;
             this.precio_venta_anterior = 0;
@@ -64,6 +65,15 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
         
         ProductoPedido.prototype.getCodigoInvima = function() {
             return this.codigo_invima;
+        };
+        
+        //this.vencimiento_codigo_invima
+        ProductoPedido.prototype.setVencimientoCodigoInvima = function(vencimiento_codigo_invima) {
+            this.vencimiento_codigo_invima = vencimiento_codigo_invima;
+        };
+        
+        ProductoPedido.prototype.getVencimientoCodigoInvima = function() {
+            return this.vencimiento_codigo_invima;
         };
         
         ProductoPedido.prototype.setIva = function(iva) {

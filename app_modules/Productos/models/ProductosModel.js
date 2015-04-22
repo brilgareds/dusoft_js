@@ -166,7 +166,7 @@ ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro
                     b.tipo_producto_id,\n\
                     b.unidad_id,\n\
                     b.codigo_invima,\n\
-                    b.vencimiento_codigo_invima,\n\
+                    to_char(b.vencimiento_codigo_invima, 'DD-MM-YYYY') as vencimiento_codigo_invima,\n\
                     b.codigo_cum,\n\
                     b.contenido_unidad_venta,\n\
                     b.sw_control_fecha_vencimiento,\n\

@@ -213,6 +213,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 producto.setCodigoCum(obj.codigo_cum);
 
                 producto.setCodigoInvima(obj.codigo_invima);
+                
+                producto.setVencimientoCodigoInvima(obj.vencimiento_codigo_invima);
 
                 producto.setIva(obj.porc_iva);
 
@@ -242,7 +244,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     showFilter: true,
                     multiSelect: false,
                     columnDefs: [
-                        {field: 'codigo_producto', displayName: 'Cód. Producto', width: "10%",
+                        {field: 'codigo_producto', displayName: 'Cód. Producto', width: "9%",
                             cellTemplate : '<div class="ngCellText" ng-class="col.colIndex()">\
                                                 <span class="label label-success" ng-show="row.entity.tipo_producto_id == 1" >N</span>\
                                                 <span class="label label-danger" ng-show="row.entity.tipo_producto_id == 2">A</span>\
@@ -255,8 +257,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         {field: 'descripcion', displayName: 'Descripción'},
                         {field: 'codigo_cum', displayName: 'CUM', width: "7%"},
                         {field: 'codigo_invima', displayName: 'Código Invima', width: "9%"},
+                        {field: 'vencimiento_codigo_invima', displayName: 'Ven. Invim', width: "6%"},
                         {field: 'iva', displayName: 'Iva', width: "4%"},
-                        {field: 'precio_regulado', displayName: 'Precio Regulado', width: "10%",
+                        {field: 'precio_regulado', displayName: '$ Regulado', width: "7%",
                             cellTemplate : '<div class="ngCellText" ng-class="col.colIndex()">\
                                                 <span class="label label-success" ng-show="row.entity.getEsRegulado() == 1" >R</span>\
                                                 <span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\
@@ -726,6 +729,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                     
                 producto.setCodigoCum(row.entity.getCodigoCum());
                 producto.setCodigoInvima(row.entity.getCodigoInvima());
+                producto.setVencimientoCodigoInvima(row.entity.getVencimientoCodigoInvima());
                 producto.setIva(parseFloat(row.entity.getIva()));
                 producto.setPrecioRegulado(row.entity.getPrecioRegulado());
                 producto.setPrecioVentaAnterior(row.entity.getPrecioVentaAnterior());
@@ -1001,6 +1005,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                     
                 producto.setCodigoCum(row.entity.getCodigoCum());
                 producto.setCodigoInvima(row.entity.getCodigoInvima());
+                producto.setVencimientoCodigoInvima(row.entity.getVencimientoCodigoInvima());
                 producto.setIva(parseFloat(row.entity.getIva()));
                 producto.setPrecioRegulado(row.entity.getPrecioRegulado());
                 producto.setPrecioVentaAnterior(row.entity.getPrecioVentaAnterior());

@@ -7,24 +7,14 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             
             var that = this;
 
-//            $scope.rootMailPdf.titulo_modulo= "Administracion de Operarios de Bodega";
-//            $scope.operario = angular.copy(operario);
-//            $scope.operario.activo = Boolean(Number(operario.estado));
-//            $scope.usuarios = [];
-//            $scope.usuario = {};
-//            $scope.alert = false;
-//            $scope.msg = "";
-
             $scope.rootMailPdf = {};
             
             $scope.rootMailPdf.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
-
-//            console.log(">>>> SESSION: ", Session);
-//
-//            $scope.rootMailPdf.session = Session;
+            
+            $scope.rootMailPdf.modalInstance = $modalInstance;
             
             $scope.rootMailPdf.Empresa = Empresa;
             $scope.rootMailPdf.tipo_documento = tipo_documento;
@@ -40,9 +30,8 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             
             $scope.rootMailPdf.label_btn = "Enviar";
             
-            $scope.rootMailPdf.cerrar_modal_principal = false;
-            
-            $modalInstance.opened.then(function() {
+            //$modalInstance.opened.then(function() {
+            $scope.rootMailPdf.modalInstance.opened.then(function() {
                 $timeout(function(){
                     
                     if($scope.rootMailPdf.Empresa.getPedidoSeleccionado().getCliente().getEmail() !== undefined && $scope.rootMailPdf.Empresa.getPedidoSeleccionado().getCliente().getEmail() !== '') {
@@ -87,7 +76,6 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                                     if(punto_mail !== undefined && punto_mail.length > 1) {
 
                                         if(punto_mail[0] !== '' && punto_mail[1] !== '') {
-                                            //mail_valido = true;
                                             conteo_validos++;
                                         }
                                     }
@@ -106,7 +94,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 
             };            
 
-            that.generarPdfCotizacionCliente = function(callback){
+            that.generarPdfCotizacionCliente = function(){
                 
                 var codigo_empresa_origen = $scope.rootMailPdf.Empresa.getCodigo();
                 var nombre_empresa_origen = $scope.rootMailPdf.Empresa.getNombre();
@@ -164,15 +152,15 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
 
                         if (data.status === 200) {
                             console.log("Éxito: ", data.msj);
-                            that.msgMailExitoso();
-                            $scope.rootMailPdf.cerrar_modal_principal = true;
-                            callback();
+                            that.msgMailExitoso(function(){
+                                $scope.rootMailPdf.modalInstance.close();
+                            });
                         }
                         else{
                             console.log("Error: ", data.msj);
-                            that.msgMailFallido();
-                            $scope.rootMailPdf.cerrar_modal_principal = true;
-                            callback();
+                            that.msgMailFallido(function(){
+                                $scope.rootMailPdf.modalInstance.close();
+                            });
                         }
                     });                    
                     
@@ -183,7 +171,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
 
             };
             
-            that.generarPdfPedidoCliente = function(callback){
+            that.generarPdfPedidoCliente = function(){
                 
                 var codigo_empresa_origen = $scope.rootMailPdf.Empresa.getCodigo();
                 var nombre_empresa_origen = $scope.rootMailPdf.Empresa.getNombre();
@@ -242,15 +230,15 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                         if (data.status === 200) {
                             
                             console.log("Éxito: ", data.msj);
-                            that.msgMailExitoso();
-                            $scope.rootMailPdf.cerrar_modal_principal = true;
-                            callback();
+                            that.msgMailExitoso(function(){
+                                $scope.rootMailPdf.modalInstance.close();
+                            });
                         }
                         else{
                             console.log("Error: ", data.msj);
-                            that.msgMailFallido();
-                            $scope.rootMailPdf.cerrar_modal_principal = true;
-                            callback();
+                            that.msgMailFallido(function(){
+                                $scope.rootMailPdf.modalInstance.close();
+                            });
                         }
                     });                    
                     
@@ -294,7 +282,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 
             };
             
-            that.msgMailExitoso = function() {
+            that.msgMailExitoso = function(callback) {
                 
                 $scope.opts = {
                     backdrop: true,
@@ -317,6 +305,9 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                     controller: function($scope, $modalInstance) {
                         $scope.close = function() {
                             $modalInstance.close();
+                            if(callback !== undefined && callback !== '') {
+                                callback();
+                            }
                         };
                     }
                 };
@@ -325,7 +316,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 
             };
             
-            that.msgMailFallido = function() {
+            that.msgMailFallido = function(callback) {
                 
                 $scope.opts = {
                     backdrop: true,
@@ -348,6 +339,9 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                     controller: function($scope, $modalInstance) {
                         $scope.close = function() {
                             $modalInstance.close();
+                            if(callback !== undefined && callback !== '') {
+                                callback();
+                            }
                         };
                     }
                 };
@@ -359,26 +353,17 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             $scope.enviarMail = function() {
                 
                 if($scope.rootMailPdf.tipo_documento === 'c') {
-                    that.generarPdfCotizacionCliente(function(){
-                        //$scope.close();
-                        var test = true;
-                    });
+                    that.generarPdfCotizacionCliente();
                 }
                 
                 if($scope.rootMailPdf.tipo_documento === 'p') {
-                    that.generarPdfPedidoCliente(function(){
-                        //$scope.close();
-                        var test = true;
-                    });
+                    that.generarPdfPedidoCliente();
                 }
-                
-                if($scope.rootMailPdf.cerrar_modal_principal === true)
-                    $scope.close();
 
             };
 
             $scope.close = function() {
-                $modalInstance.close();
+                $scope.rootMailPdf.modalInstance.close();
             };
 
             $scope.closeAlert = function() {

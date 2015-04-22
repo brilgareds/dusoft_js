@@ -170,7 +170,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
                                 for(var ii in _opciones){
                                     var _opcion = _opciones[ii];
                                     var opcion = OpcionModulo.get(_opcion.id, _opcion.nombre, _opcion.alias, _opcion.modulo_id);
-                                    //opcion.set
+                                    opcion.setEstado_opcion_rol(_opcion.estado_opcion_rol);
                                     _modulo.agregarOpcion(opcion);
                                 }
                                               
@@ -270,7 +270,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
           $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
                 console.log("to staste ", toState);
 
-                var moduloActual = self.obtenerModuloActual(toState.name);
+               /* var moduloActual = self.obtenerModuloActual(toState.name);
 
                 //se busca en el parent name el modulo actual
                 if(!moduloActual &&  toState.parent_name){
@@ -280,11 +280,11 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
                 //no se encontro el modulo, el usuario no tiene permisos para verlo
                 if(!moduloActual){
                     event.preventDefault();
-                   // //AlertService.mostrarMensaje("warning", "El usuario no tiene permisos para ver la sección de "+ toState.name);
-                   // return;
+                    AlertService.mostrarMensaje("warning", "El usuario no tiene permisos para ver la sección de "+ toState.name);
+                    return;
                 }
 
-                $scope.Usuario.setModuloActual(moduloActual);
+                $scope.Usuario.setModuloActual(moduloActual);*/
               
                     
            });

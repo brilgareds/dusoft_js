@@ -53,7 +53,7 @@ ModuloModel.prototype.guardarModulo = function(modulo, callback) {
 ModuloModel.prototype.insertarModulo = function(modulo, callback) {
 
     var sql = "INSERT INTO modulos (parent, nombre, url, parent_name, icon, state, observacion, usuario_id,\
-               fecha_creacion, estado, carpeta_raiz) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id";
+               fecha_creacion, estado, carpeta_raiz) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id";
 
 
     var params = [

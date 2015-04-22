@@ -27,6 +27,7 @@ define([
     "storage",
     "includes/classes/Usuario",
     "includes/widgets/InputCheck",
+    "includes/validation/NgValidateEvents",
     "directive/Modulos/ArbolModulos",
     "directive/Modulos/DirectivaGeneralModulos",
     "models/Modulo/Empresa_Modulo",
@@ -86,7 +87,8 @@ define([
                 url: "/AdministracionRoles",
                 text:"Administracion Roles",
                 templateUrl: "views/AdministracionPerfiles/Roles/administrarRoles.html",
-                controller: "AdministracionRolesController"
+                controller: "AdministracionRolesController",
+                parent_name:"ListarRoles"
             })
             .state('ListarRoles', {
                 url: "/ListarRoles",

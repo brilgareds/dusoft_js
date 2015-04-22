@@ -1,14 +1,15 @@
 
 <div class="col-md-1">
-    <button class="btn btn-default btn-sm" ng-click='onNuevoUsuario()' ng-hide="!opciones.sw_crear_usuario">
+    <button class="btn btn-default btn-sm"  ng-click='onNuevoUsuario()' ng-validate-events="{{validaciones.btn_crear_usuario}}"  name='btn_crear_usuario'>
             Nuevo 
             <span class="glyphicon glyphicon-plus"></span>
      </button>
+    
 </div>
 
 <div class="input-group  navbar-form buscadorgeneral">
 
-    <input type="text" class="form-control pull-right" ng-keypress="onBuscarUsuario($event)" ng-model="rootUsuarios.termino_busqueda" placeholder="Buscar" />
+    <input type="text" class="form-control pull-right" ng-validate-events="{{validaciones.buscador}}" ng-keypress="onBuscarUsuario($event)" ng-model="rootUsuarios.termino_busqueda" placeholder="Buscar" />
     <div class="input-group-btn" >
         <button class="btn btn-default" type="submit" ng-click="onBuscarUsuario({which:13})"><i class="glyphicon glyphicon-search"></i></button>
     </div>

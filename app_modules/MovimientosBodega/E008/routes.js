@@ -50,12 +50,7 @@ module.exports = function(app, di_container) {
     app.post('/api/movBodegas/E008/consultarDocumentoTemporalFarmacias', function(req, res) {
         c_e008.consultarDocumentoTemporalFarmacias(req, res);
     });
-
-    // Consultar Detalle Documento Temporal
-    app.post('/api/movBodegas/E008/consultarDetalleDocumentoTemporal', function(req, res) {
-        // ========= Falta ===========
-    });
-
+    
     // Eliminar Producto Documento Temporal CLIENTES / FARMACIAS
     app.post('/api/movBodegas/E008/eliminarProductoDocumentoTemporal', function(req, res) {
         c_e008.eliminarProductoDocumentoTemporal(req, res);
@@ -157,8 +152,39 @@ module.exports = function(app, di_container) {
         c_e008.imprimirDocumentoDespacho(req, res);
     });
     
-    
     // ======== FIN Auditoria de Documento de Despacho ====================
+    
+    
+    //========================== Despachos de bodegas ==========================
+    
+    // Consultar todos los documentos de despachos generados
+    app.post('/api/movBodegas/E008/consultarDocumentosDespachos', function(req, res) {
+        
+    });
+    
+    // Consultar los documentos de despachos clientes generados
+    app.post('/api/movBodegas/E008/consultarDocumentosDespachosClientes', function(req, res) {
+        
+    });
+    
+    // Consultar los documentos de despachos farmacias generados
+    app.post('/api/movBodegas/E008/consultarDocumentosDespachosFarmacias', function(req, res) {
+        
+    });    
+    
+    // Consultar los documentos de despacho de un cliente 
+    app.post('/api/movBodegas/E008/documentosDespachosPorCliente', function(req, res) {
+        c_e008.consultarDocumentosDespachosPorCliente(req, res);
+    });
+    
+    // Consultar los documentos de despacho de un farmacua 
+    app.post('/api/movBodegas/E008/documentosDespachosPorFarmacia', function(req, res) {
+        c_e008.consultarDocumentosDespachosPorFarmacia(req, res);
+    });    
+    
+    //========================== FIN Despachos bodegas =========================
+    
+    
 
     // ======== Events E008 ========
     io.sockets.on('connection', function(socket) {

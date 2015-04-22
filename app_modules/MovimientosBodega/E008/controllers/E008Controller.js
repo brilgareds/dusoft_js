@@ -1743,7 +1743,7 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                                                     } else {
                                                         console.log("========================================== generar documento despacho clientes satisfactorio ============================");
                                                         that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
-                                                        res.send(G.utils.r(req.url, 'Se ha generado el documento', 200, {movimientos_bodegas: {prefijo_documento: prefijo_documento, numero_documento: numero_documento, empresa_id:empresa_id}}));
+                                                        res.send(G.utils.r(req.url, 'Se ha generado el documento', 200, {movimientos_bodegas: {prefijo_documento: prefijo_documento, numero_documento: numero_documento, empresa_id: empresa_id}}));
 
                                                     }
                                                 });
@@ -1910,7 +1910,7 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
                                                         } else {
                                                             console.log("========================================== generar documento despacho clientes satisfactorio ============================");
                                                             that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
-                                                            res.send(G.utils.r(req.url, 'Se ha generado el documento', 200, {movimientos_bodegas: {prefijo_documento: prefijo_documento, numero_documento: numero_documento, empresa_id:empresa_id}}));
+                                                            res.send(G.utils.r(req.url, 'Se ha generado el documento', 200, {movimientos_bodegas: {prefijo_documento: prefijo_documento, numero_documento: numero_documento, empresa_id: empresa_id}}));
                                                         }
                                                     });
 
@@ -2077,65 +2077,97 @@ E008Controller.prototype.actualizarCajaDeTemporales = function(req, res) {
 };
 
 
-E008Controller.prototype.imprimirDocumentoDespacho = function(req, res){
-    
+E008Controller.prototype.imprimirDocumentoDespacho = function(req, res) {
+
     var that = this;
     var args = req.body.data;
-    
-    
+
+
     if (args.movimientos_bodegas === undefined || args.movimientos_bodegas.numero === undefined || args.movimientos_bodegas.prefijo === undefined
-        || args.movimientos_bodegas.empresa === undefined) {
-    
+            || args.movimientos_bodegas.empresa === undefined) {
+
         res.send(G.utils.r(req.url, 'El numero, empresa o prefijo NO estan definidos', 404, {}));
         return;
     }
-    
+
     if (args.movimientos_bodegas.numero === "" || args.movimientos_bodegas.prefijo === "" || args.movimientos_bodegas.empresa === "") {
         res.send(G.utils.r(req.url, 'El numero, empresa o prefijo NO estan vacios', 404, {}));
         return;
     }
-    
+
     var numero = args.movimientos_bodegas.numero;
     var prefijo = args.movimientos_bodegas.prefijo;
     var empresa = args.movimientos_bodegas.empresa;
     var datos_documento = {};
-    
-    that.m_e008.consultar_documento_despacho(numero, prefijo, empresa, req.session.user.usuario_id, function(err, rows){
-        
+
+    that.m_e008.consultar_documento_despacho(numero, prefijo, empresa, req.session.user.usuario_id, function(err, rows) {
+
         if (err || rows.length === 0) {
 
             res.send(G.utils.r(req.url, 'Error consultando documento despacho', 500, {movimientos_bodegas: {}}));
             return;
         }
         datos_documento.encabezado = rows[0];
-        
-        that.m_movimientos_bodegas.consultar_detalle_documento_despacho(numero, prefijo, empresa, function(err, rows){
+
+        that.m_movimientos_bodegas.consultar_detalle_documento_despacho(numero, prefijo, empresa, function(err, rows) {
             if (err) {
                 res.send(G.utils.r(req.url, 'Error consultando documento despacho', 500, {movimientos_bodegas: {}}));
                 return;
             }
-            
+
             datos_documento.detalle = rows;
-            that.m_movimientos_bodegas.consultar_datos_adicionales_documento(numero, prefijo, empresa, datos_documento.encabezado.tipo_doc_bodega_id, function(err, rows){
-                if (err || rows.length === 0 ) {
+            that.m_movimientos_bodegas.consultar_datos_adicionales_documento(numero, prefijo, empresa, datos_documento.encabezado.tipo_doc_bodega_id, function(err, rows) {
+                if (err || rows.length === 0) {
                     res.send(G.utils.r(req.url, 'Error consultando documento despacho', 500, {movimientos_bodegas: {}}));
                     return;
                 }
-                                
+
                 datos_documento.adicionales = that.m_movimientos_bodegas.darFormatoTituloAdicionesDocumento(rows[0]);
-                
-                __generarPdfDespacho(datos_documento, function(nombre_pdf){
+
+                __generarPdfDespacho(datos_documento, function(nombre_pdf) {
                     console.log("nombre generado ", nombre_pdf);
-                    res.send(G.utils.r(req.url, 'Documento Generado Correctamete', 200, {movimientos_bodegas: {nombre_pdf:nombre_pdf}}));
+                    res.send(G.utils.r(req.url, 'Documento Generado Correctamete', 200, {movimientos_bodegas: {nombre_pdf: nombre_pdf}}));
                 });
 
             });
-            
-            
+
+
         });
-        
+
     });
-    
+
+};
+
+// Consultar los documentos de despacho de un cliente 
+E008Controller.prototype.consultarDocumentosDespachosPorCliente = function(req, res) {
+
+    var that = this;
+    var args = req.body.data;
+
+    if (args.movimientos_bodegas === undefined || args.movimientos_bodegas.empresa_id === undefined || args.movimientos_bodegas.tipo_id === undefined || args.movimientos_bodegas.tercero_id === undefined) {
+
+        res.send(G.utils.r(req.url, 'El empresa_id, tipo_id o tercero_id NO estan definidos', 404, {}));
+        return;
+    }
+
+    if (args.movimientos_bodegas.empresa_id === "" || args.movimientos_bodegas.tipo_id === "" || args.movimientos_bodegas.tercero_id === "") {
+        res.send(G.utils.r(req.url, 'El empresa_id, tipo_id o tercero_id estan vacios', 404, {}));
+        return;
+    }
+
+    var empresa_id = args.movimientos_bodegas.empresa_id;
+    var tipo_id = args.movimientos_bodegas.tipo_id;
+    var tercero_id = args.movimientos_bodegas.tercero_id;
+
+    that.m_e008.consultar_documentos_despachos_por_cliente(empresa_id, tipo_id, tercero_id, function(err, lista_documendos_despachos) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {movimientos_bodegas: []}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Lista Documentos Despachos Clientes', 200, {movimientos_bodegas: lista_documendos_despachos}));
+            return;
+        }
+    });
 };
 
 
@@ -2403,7 +2435,7 @@ function __validar_responsable_pedidos_farmacias(contexto, numero_pedido, respon
     });
 }
 
-function __generarPdfDespacho(datos, callback){
+function __generarPdfDespacho(datos, callback) {
     G.jsreport.reporter.render({
         template: {
             content: G.fs.readFileSync('app_modules/MovimientosBodega/E008/reports/despacho.html', 'utf8'),
@@ -2411,7 +2443,7 @@ function __generarPdfDespacho(datos, callback){
             engine: 'jsrender',
             phantom: {
                 margin: "10px",
-                width:'700px'
+                width: '700px'
             }
         },
         data: datos

@@ -784,6 +784,39 @@ DocuemntoBodegaE008.prototype.consultar_documento_despacho = function(numero, pr
     
 };
 
+// Consultar los documentos de despacho de un cliente 
+DocuemntoBodegaE008.prototype.consultar_documentos_despachos_por_cliente = function(empresa_id, tipo_id, tercero_id, callback){
+    
+    var sql = " select \
+                '1' as tipo,\
+                'CLIENTES' as descripcion_tipo,\
+                a.empresa_id,\
+                a.prefijo,\
+                a.numero,\
+                a.pedido_cliente_id as numero_pedido,\
+                a.fecha_registro\
+                from inv_bodegas_movimiento_despachos_clientes a\
+                where a.empresa_id= $1 and a.tipo_id_tercero = $2 and a.tercero_id = $3 \
+                order by a.fecha_registro desc";
+    
+    G.db.query(sql, [empresa_id, tipo_id, tercero_id], function(err, rows, result) {
+        callback(err, rows);
+
+    });    
+};
+
+// Consultar los documentos de despachos de una farmacia
+DocuemntoBodegaE008.prototype.consultar_documentos_despachos_por_farmacia = function(numero, prefijo, empresa, usuario_id, callback){
+    
+    var sql = " ";
+    
+    G.db.query(sql, [numero, prefijo, empresa, usuario_id], function(err, rows, result) {
+        callback(err, rows);
+
+    });
+    
+};
+
 /*==================================================================================================================================================================
  * 
  *                                                          FUNCIONES PRIVADAS

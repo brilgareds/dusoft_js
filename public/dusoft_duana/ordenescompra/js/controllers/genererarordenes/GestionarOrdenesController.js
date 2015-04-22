@@ -22,9 +22,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.Empresa = Empresa;
 
             // Variables de Sesion
-            $scope.session = {
-                usuario_id: Sesion.usuario_id,
-                auth_token: Sesion.token
+             $scope.session = {
+                 usuario_id: Sesion.getUsuarioActual().getId(),
+                 auth_token: Sesion.getUsuarioActual().getToken()
             };
 
             // Variables

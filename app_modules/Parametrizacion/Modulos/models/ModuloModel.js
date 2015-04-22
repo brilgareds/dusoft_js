@@ -53,12 +53,12 @@ ModuloModel.prototype.guardarModulo = function(modulo, callback) {
 ModuloModel.prototype.insertarModulo = function(modulo, callback) {
 
     var sql = "INSERT INTO modulos (parent, nombre, url, parent_name, icon, state, observacion, usuario_id,\
-               fecha_creacion, estado) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id";
+               fecha_creacion, estado, carpeta_raiz) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id";
 
 
     var params = [
         modulo.parent, modulo.nombre, modulo.url, modulo.parent_name, modulo.icon,
-        modulo.state, modulo.observacion, modulo.usuario_id, 'now()', Number(modulo.estado)
+        modulo.state, modulo.observacion, modulo.usuario_id, 'now()', Number(modulo.estado), modulo.carpetaRaiz
     ];
 
     G.db.query(sql, params, function(err, rows, result) {
@@ -71,12 +71,12 @@ ModuloModel.prototype.modificarModulo = function(modulo, callback) {
     var that = this;
     var sql = "UPDATE modulos SET parent = $1, nombre = $2, url =$3, parent_name = $4,\
                icon = $5, state = $6, observacion = $7, usuario_id = $8, usuario_id_modifica = $9,\
-               estado = $10, fecha_modificacion = $11 WHERE id = $12 ";
+               estado = $10, fecha_modificacion = $11, carpeta_raiz = $12 WHERE id = $13 ";
 
     var params = [
         modulo.parent, modulo.nombre, modulo.url, modulo.parent_name, modulo.icon,
         modulo.state, modulo.observacion, modulo.usuario_id, modulo.usuario_id,
-        Number(modulo.estado), 'now()', modulo.modulo_id
+        Number(modulo.estado), 'now()', modulo.carpetaRaiz, modulo.modulo_id
     ];
 
     G.db.query(sql, params, function(err, rows, result) {
@@ -265,7 +265,8 @@ ModuloModel.prototype.listarModulosEmpresaPorRol = function(rol_id, callback) {
 
 ModuloModel.prototype.listarModulosUsuario = function(rol_id, empresa_id, login_id, callback) {
     //console.log("rol_id ", rol_id, " empresa id ",empresa_id, " login_id ", login_id, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-    var sql = " SELECT a.*, c.parent, b.modulo_id, b.estado as estado_modulo_usuario, c.nombre, c.state, c.icon, b.id as login_modulos_empresas_id FROM login_empresas a\
+    var sql = " SELECT a.*, c.parent, b.modulo_id, b.estado as estado_modulo_usuario, c.nombre, c.state, c.url, c.icon, c.carpeta_raiz,\
+                b.id as login_modulos_empresas_id FROM login_empresas a\
 		INNER JOIN login_modulos_empresas b ON b.login_empresas_id = a.id\
                 INNER JOIN modulos c ON b.modulo_id = c.id and c.estado = '1'\
                 WHERE a.rol_id = $1 AND a.empresa_id = $2 AND a.login_id = $3   ORDER BY id";

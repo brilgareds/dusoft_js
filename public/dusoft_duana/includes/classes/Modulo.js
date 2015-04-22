@@ -10,6 +10,7 @@ define(["angular", "js/models"], function(angular, models) {
                 this.parent = (parent) ? this.prefijo + parent : "#";
                 this.text = text || "";
                 this.icon = "";
+                this.carpetaRaiz = "";
                 //
 
                 this.nombre = this.text;
@@ -44,12 +45,21 @@ define(["angular", "js/models"], function(angular, models) {
                 return  this.modulo_id ;
             };
             
+            
+            Modulo.prototype.setCarpetaRaiz = function(carpeta) {
+                this.carpetaRaiz = carpeta;
+            };
+            
+            Modulo.prototype.getCarpetaRaiz = function() {
+                return  this.carpetaRaiz ;
+            };
+            
             Modulo.prototype.getNombre = function() {
                 return  this.nombre ;
             };
 
             Modulo.prototype.getOpciones = function(objetoValor) {
-                
+                //se retorna un objeto llave valor para facilitar el acceso en los permisos
                 if(objetoValor){
                     var _opciones = {};
                     for(var i in this.opciones){

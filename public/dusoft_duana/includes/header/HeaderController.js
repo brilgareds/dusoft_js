@@ -4,10 +4,10 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
     controllers.controller('HeaderController', [
         '$scope', '$rootScope', "$state", "Request",
         "Usuario","socket","URL","localStorageService","Empresa",
-        "Modulo","Rol","OpcionModulo",
+        "Modulo","Rol","OpcionModulo","AlertService",
         function($scope, $rootScope, $state,
         Request, Usuario, socket, URL, localStorageService,Empresa,
-        Modulo, Rol,  OpcionModulo) {
+        Modulo, Rol,  OpcionModulo, AlertService) {
             var self = this;
             var obj_session = localStorageService.get("session");
             console.log("session obj_session ", obj_session)
@@ -163,23 +163,24 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
                                 );
                                 
                                 _modulo.setIcon(modulo.icon);
+                                _modulo.setState(modulo.state);
                                 
                                 var _opciones = modulo.opciones;
                                 
                                 for(var ii in _opciones){
                                     var _opcion = _opciones[ii];
                                     var opcion = OpcionModulo.get(_opcion.id, _opcion.nombre, _opcion.alias, _opcion.modulo_id);
+                                    //opcion.set
                                     _modulo.agregarOpcion(opcion);
                                 }
                                               
+                                _modulo.setCarpetaRaiz(modulo.carpeta_raiz); 
                                 _modulos.push(_modulo);
-                                _modulos.parentname = "Parametrizacion";
 
                             }
                         
                         }
                         
-                        console.log("modulos del usuario ", _modulos)
                         if(_modulos.length > 0){
                             $scope.Usuario.setModulos(_modulos);
                             //estando los modulos preparados se envian al controlador del menu                      
@@ -267,14 +268,38 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
             
             
           $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
-                    /*console.log("event === ", event);
-                    console.log("toState === ", toState);
-                    console.log("toParams === ", toParams);
-                    console.log("fromState === ", fromState);
-                    console.log("fromParams === ", fromParams);*/
-                    //event.preventDefault();
+                console.log("to staste ", toState);
+
+                var moduloActual = self.obtenerModuloActual(toState.name);
+
+                //se busca en el parent name el modulo actual
+                if(!moduloActual &&  toState.parent_name){
+                    moduloActual = self.obtenerModuloActual(toState.parent_name);
+                }
+
+                //no se encontro el modulo, el usuario no tiene permisos para verlo
+                if(!moduloActual){
+                    event.preventDefault();
+                   // //AlertService.mostrarMensaje("warning", "El usuario no tiene permisos para ver la sección de "+ toState.name);
+                   // return;
+                }
+
+                $scope.Usuario.setModuloActual(moduloActual);
+              
                     
            });
+           
+           self.obtenerModuloActual = function(state){
+                var modulos = $scope.Usuario.getModulos();
+                for(var i in modulos){
+                    var modulo = modulos[i];
+                    console.log("buscando ", modulo.getState(), " con ", state);
+                    if(modulo.getState() === state){
+                       return modulo;
+                    }
+                }
+                return null;
+           };
 
             socket.on("onCerrarSesion",function(){
                 console.log("onCerrarSesion");

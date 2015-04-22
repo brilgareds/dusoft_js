@@ -22,20 +22,21 @@ define(["angular", "js/controllers",
             var that = this;
 
 
+
             $rootScope.$on('gestionar_documentos_bodegaCompleto', function(e, parametros) {
 
-                console.log('=============== Iniciando Slider =============');
-                console.log($scope.planilla);
+                $scope.datos_view = {
+                    opcion_predeterminada: "0",
+                    termino_busqueda: ''
+                };
 
-                $scope.opcion_predeterminada = "0";
-                $scope.termino_busqueda = '';
+                $scope.datos_clientes_farmacias = [];
+                $scope.datos_documentos_bodega = [];
 
                 $scope.seleccionar_cliente_farmacia();
             });
 
             $rootScope.$on('cerrar_gestion_documentos_bodegaCompleto', function(e, parametros) {
-
-
 
                 $scope.$$watchers = null;
             });
@@ -44,17 +45,22 @@ define(["angular", "js/controllers",
             $scope.datos_clientes_farmacias = [];
             $scope.datos_documentos_bodega = [];
 
+            $scope.buscador_cliente_farmacia = function(ev) {
+
+                if (ev.which == 13) {
+                    $scope.seleccionar_cliente_farmacia();
+                }
+            };
+
             $scope.seleccionar_cliente_farmacia = function() {
 
-                if ($scope.opcion_predeterminada === "0") {
+                if ($scope.datos_view.opcion_predeterminada === "0") {
                     that.buscar_farmacias();
                 }
 
-                if ($scope.opcion_predeterminada === "1") {
+                if ($scope.datos_view.opcion_predeterminada === "1") {
                     that.buscar_clientes();
                 }
-
-
             };
 
             that.buscar_clientes = function() {
@@ -68,7 +74,7 @@ define(["angular", "js/controllers",
                             pais_id: $scope.planilla.get_ciudad().get_pais_id(),
                             departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
                             ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
-                            termino_busqueda: $scope.termino_busqueda
+                            termino_busqueda: $scope.datos_view.termino_busqueda
                         }
                     }
                 };
@@ -117,7 +123,7 @@ define(["angular", "js/controllers",
                             pais_id: $scope.planilla.get_ciudad().get_pais_id(),
                             departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
                             ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
-                            termino_busqueda: $scope.termino_busqueda
+                            termino_busqueda: $scope.datos_view.termino_busqueda
                         }
                     }
                 };

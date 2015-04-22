@@ -267,7 +267,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
             
             
           $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
-                    console.log("to staste ", toState);
+                    /*console.log("to staste ", toState);
                     
                     var moduloActual = self.obtenerModuloActual(toState.name);
                     
@@ -284,7 +284,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
                         return;
                     }
                     
-                    $scope.Usuario.setModuloActual(moduloActual);
+                    $scope.Usuario.setModuloActual(moduloActual);*/
               
                     
            });

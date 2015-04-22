@@ -30,8 +30,8 @@ define(["angular", "js/controllers",
 
             // Variables de Sesion
             $scope.session = {
-                usuario_id: Sesion.usuario_id,
-                auth_token: Sesion.token
+                usuario_id: Sesion.getUsuarioActual().getId(),
+                auth_token: Sesion.getUsuarioActual().getToken()
             };
 
 
@@ -347,7 +347,7 @@ define(["angular", "js/controllers",
                     };
                     var modalInstance = $modal.open($scope.opts);
                 } else {
-                    AlertService.mostrarMensaje("warning", "La ordend de compra No. "+orden_compra.get_numero_orden()+" no ha sido finalizada!!.");
+                    AlertService.mostrarMensaje("warning", "La ordend de compra No. " + orden_compra.get_numero_orden() + " no ha sido finalizada!!.");
                     return;
                 }
             };

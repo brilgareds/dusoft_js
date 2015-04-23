@@ -147,8 +147,9 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
                         obj = obj.parametrizacion;
                         var modulos = obj.modulos || [];
                         var _modulos = [];
+                        var _modulosObjetoValor = {};
                         
-                        //se hace el set correspondiente para el plugin de jstree
+                        //se hace el set correspondiente para el plugin de jstree, y se crea un objeto valor de los modulos y opciones para facilidad de acceso del modulo actual
                         for(var i in modulos){
                             
                             
@@ -162,7 +163,8 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
                                         modulo.state,
                                         "usuario_modulo_"
                                 );
-                                
+                                    
+                                  
                                 _modulo.setIcon(modulo.icon);
                                 _modulo.setState(modulo.state);
                                 
@@ -178,6 +180,17 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
                                               
                                 _modulo.setCarpetaRaiz(modulo.carpeta_raiz); 
                                 _modulos.push(_modulo);
+                                
+                                //objeto para mejorar el perfomance en el momento de buscar el modulo actual cada vez que cambie el router
+                                _modulosObjetoValor[modulo.state] = {
+                                    id: "usuario_modulo_"+modulo.modulo_id,
+                                    parent: modulo.parent,
+                                    nombre: modulo.nombre,
+                                    state : modulo.state,
+                                    icon : modulo.icon,
+                                    opciones : _modulo.getOpciones(true)
+                                };
+                                
 
                             }
                         
@@ -185,6 +198,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
                         
                         if(_modulos.length > 0){
                             $scope.Usuario.setModulos(_modulos);
+                            $scope.Usuario.setObjetoModulos(_modulosObjetoValor);
                             //estando los modulos preparados se envian al controlador del menu                      
                             $rootScope.$emit("modulosUsuario");
                         }
@@ -274,7 +288,6 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
             
             
           $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
-                console.log("to staste ", toState);
 
                 var moduloActual = self.obtenerModuloActual(toState.name);
 
@@ -295,16 +308,13 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
                     
            });
            
-           self.obtenerModuloActual = function(state){
-                var modulos = $scope.Usuario.getModulos();
-                for(var i in modulos){
-                    var modulo = modulos[i];
-                    console.log("buscando ", modulo.getState(), " con ", state);
-                    if(modulo.getState() === state){
-                       return modulo;
-                    }
-                }
-                return null;
+           self.obtenerModuloActual = function(state){               
+                var obj = $scope.Usuario.getObjetoModulos();
+                 
+                var modulo = obj[state];
+                                
+                return modulo;
+               
            };
 
             socket.on("onCerrarSesion",function(){

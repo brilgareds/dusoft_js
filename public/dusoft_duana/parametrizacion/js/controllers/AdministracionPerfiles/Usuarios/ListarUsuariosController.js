@@ -14,7 +14,7 @@ define(["angular", "js/controllers", "js/models",
 
             var self = this;
             
-            $scope.opciones = Usuario.getUsuarioActual().getModuloActual().getOpciones(true);
+            $scope.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
             $scope.foo = "Duana";
             
             console.log("opciones >>>>>>>>> ", $scope.opciones)

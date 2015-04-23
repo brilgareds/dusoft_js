@@ -66,8 +66,8 @@
             </ul>
         </div>
         
-        <div class=" navbar-right navbar-brand" style="position:absolute; top:0px; right: 100px; padding:9px;">    
-           <ui-select ng-model="Usuario.empresa"
+        <div class="btn-group" style="position:absolute; top:0px; right: 90px; padding:9px; " ng-if="Usuario.empresa.getNombre() != ''">    
+           <!--ui-select ng-model="Usuario.empresa"
               theme="bootstrap"
              ng-change="onEmpresaSeleccionada()"
              style="width: 200px; margin-right: 20px"
@@ -76,7 +76,20 @@
               <ui-select-choices repeat="empresa in empresas | filter:$select.search">
                   {{empresa.getNombre()}}
               </ui-select-choices>
-          </ui-select>
+          </ui-select-->
+           
+           <!--button type="button" class="btn btn-default">Empresa</button-->
+           <div class="btn-group" role="group"     >
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" >
+                    <span>{{Usuario.empresa.getNombre()}}</span>
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu" >
+                  <li role="presentation" ng-repeat="empresa in empresas"><a role="menuitem" tabindex="-1" href="javascript:void(0);" ng-click="onEmpresaSeleccionada(empresa)">{{empresa.getNombre()}}</a></li>
+                </ul>
+          </div>
+           
+           
         </div>
     </div>
 

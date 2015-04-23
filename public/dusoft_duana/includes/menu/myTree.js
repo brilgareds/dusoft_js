@@ -9,11 +9,10 @@ define(["angular", "js/directive"], function(angular, directive) {
                         $rootScope.$emit("configurarslide");
                     });
                     //evento para saber el state del url
-                    //$rootScope.$on('$stateChangeSuccess', function(e, toState, toParams, fromState, fromParams){ 
                     //observador para cuando los datos del arbol se carguen del servidor
-
-                    var listener = scope.$watch(scope.$parent.treedata, function(e) {
-                        console.log("cambio de datos");
+                    
+                    $rootScope.$on("inicializarDatosArbol", function(e){
+                        console.log("cambio de datos>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
                         var data = localStorage.getItem("tree");
 
                         if (data) {
@@ -35,50 +34,43 @@ define(["angular", "js/directive"], function(angular, directive) {
                             };
                         };
 
-                        //timer para dar una espera en chrome
-                       $timeout(function() {
-                            for (var i in scope.$parent.treedata) {
-                                var obj = scope.$parent.treedata[i];
-                              //  console.log("url object " + obj.state + " current state" + $state.current.name)
-                                if (obj.state !== undefined && obj.state !== "") {
+                        for (var i in scope.$parent.treedata) {
+                            var obj = scope.$parent.treedata[i];
+                          //  console.log("url object " + obj.state + " current state" + $state.current.name)
+                            if (obj.state !== undefined && obj.state !== "") {
 
-                                    if (obj.state === $state.current.name) {
-                                        //console.log(obj.id)
-                                        data.state.core.selected = [obj.id];
+                                if (obj.state === $state.current.name) {
+                                    //console.log(obj.id)
+                                    data.state.core.selected = [obj.id];
 
-                                        localStorage.setItem("tree", JSON.stringify(data));
-                                        break;
-                                    }
+                                    localStorage.setItem("tree", JSON.stringify(data));
+                                    break;
                                 }
                             }
-                            //remueve el listener
-                            listener();
-                            scope.iniTree();
-                        }, 500);
+                        }
 
+                        scope.iniTree();
                     });
 
+
                     scope.iniTree = function() {
-                        //inicializacion del elemento cuando el dom este listo
-                        angular.element(document).ready(function() {
-                            $(element).jstree({
-                                'core': {
-                                    data: scope.$parent.treedata,
-                                    "open_parents": true
+                        $(element).jstree({
+                            'core': {
+                                data: scope.$parent.treedata,
+                                "open_parents": true
 
-                                },
-                                "state": {"key": "tree"},
-                                plugins: ["state"]
+                            },
+                            "state": {"key": "tree"},
+                            plugins: ["state","search"]
 
-                            }).on("select_node.jstree", function(node, selected, event) {
-                                //se valida si fue por medio de un evento o por el state del plugin
-                                //configura el slide para el modulo visto en el menu
-                                $rootScope.$emit("configurarslide");
+                        }).on("select_node.jstree", function(node, selected, event) {
+                            //se valida si fue por medio de un evento o por el state del plugin
+                            //configura el slide para el modulo visto en el menu
+                            $rootScope.$emit("configurarslide");
 
-                                if (selected.event) {
-                                    scope.$emit("nodeSelected", selected.node.original);
-                                }
-                            });
+                            if (selected.event) {
+                                scope.$emit("nodeSelected", selected.node.original);
+                            }
                         });
 
                         $(".botonmenu").on("click",function (e) {

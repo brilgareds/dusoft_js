@@ -10,11 +10,32 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         '$state', "Usuario", "localStorageService", "$modal",
         function($scope, $rootScope, Request, EmpresaPedido, FarmaciaVenta, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService, $modal) {
 
+
             var that = this;
+            
+            console.log(">>>>> Scope: ", $scope);
+            
+            
 
             that.pedido = PedidoVenta.get();
 
             $scope.rootVerPedidosFarmacias = {};
+            
+            //$scope.rootVerPedidosFarmacias.opciones = $scope.$parent.$parent.opciones;
+            $scope.rootVerPedidosFarmacias.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
+            
+            $scope.rootVerPedidosFarmacias.opciones.sw_ver_columna_estado_pedidos = true;
+            //var opciones = $scope.$parent.$parent.opciones;
+            //var opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
+            
+            $scope.rootVerPedidosFarmacias.opcionesModulo = {
+                btnModificarPedido: {
+                    'click': true//$scope.rootVerPedidosFarmacias.opciones.sw_modificar_pedido
+                }
+            };
+            
+            console.log(">>>>>> Opciones Eventos: ", $scope.rootVerPedidosFarmacias.opcionesModulo);
+            
 
             $scope.rootVerPedidosFarmacias.Empresa = EmpresaPedido;
             $scope.rootVerPedidosFarmacias.Pedido = PedidoVenta;
@@ -216,13 +237,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'zona', displayName: 'Zona'},
                     {field: 'fecha_registro', displayName: 'Fecha'},
                     {field: 'estado_actual_pedido', displayName: 'EstadoId', visible: false},
-                    {field: 'descripcion_estado_actual_pedido', displayName: 'Estado', cellClass: "txt-center",
+                    {field: 'descripcion_estado_actual_pedido', displayName: 'Estado', cellClass: "txt-center", visible: $scope.rootVerPedidosFarmacias.opciones.sw_ver_columna_estado_pedidos,
                         cellTemplate: "<button ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center dropdown-button", width: "8%",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)"><a href="javascript:void(0);" ng-click="onEditarPedidoFarmacia(row.entity)">Modificar</a></li>\
+                                                <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)"><a href="javascript:void(0);" ng-click="onEditarPedidoFarmacia(row.entity)" ng-validate-events="{{rootVerPedidosFarmacias.opcionesModulo.btnModificarPedido}}" >Modificar</a></li>\
                                                 <li class="divider" ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)"></li>\
                                                 <li><a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity)" >Ver</a></li>\
                                             </ul>\n\

@@ -11,7 +11,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         function($scope, $rootScope, Request, EmpresaPedido, FarmaciaVenta, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService, $modal) {
 
             var that = this;
-
             that.pedido = PedidoVenta.get();
 
             $scope.rootVerPedidosTempFarmacias = {};

@@ -29,6 +29,7 @@ define(["angular", "js/models"], function(angular, models) {
                 this.rol;
                 this.modulos = [];
                 this.moduloActual;
+                this.objetoModulos = {};
             }
             
                                  
@@ -131,6 +132,14 @@ define(["angular", "js/models"], function(angular, models) {
 
             Usuario.prototype.getModulos = function(){
                 return this.modulos;
+            };
+            
+            Usuario.prototype.setObjetoModulos = function(obj){
+                this.objetoModulos = obj;
+            };
+
+            Usuario.prototype.getObjetoModulos = function(){
+                return this.objetoModulos;
             };
             
             Usuario.prototype.setModuloActual = function(modulo){

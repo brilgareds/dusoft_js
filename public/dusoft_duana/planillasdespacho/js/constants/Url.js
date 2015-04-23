@@ -19,6 +19,10 @@ define(["angular"], function(angular) {
             'CLIENTES': {
                 'LISTAR_CLIENTES': BASE_URL + '/Terceros/Clientes/listarClientesCiudad'
             },
+            'DOCUMENTOS': {
+                'LISTAR_DOCUMENTOS_CLIENTES': BASE_URL + '/movBodegas/E008/documentosDespachosPorCliente',
+                'LISTAR_DOCUMENTOS_FARMACIAS': BASE_URL + '/movBodegas/E008/documentosDespachosPorFarmacia'
+            }
             
         }
     };

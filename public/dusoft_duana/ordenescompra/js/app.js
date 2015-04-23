@@ -52,26 +52,6 @@ define([
             ordenes_compras.urlRouterProvider = $urlRouterProvider;
             ordenes_compras.stateProvider = $stateProvider;
 
-
-            /*$httpProvider.interceptors.push('HttpInterceptor');
-             
-             $urlRouterProvider.otherwise("/ListarOrdenes");
-             
-             $stateProvider.state('ListarOrdenes', {
-             url: "/ListarOrdenes",
-             text: "Administración Ordenes de Compra",
-             templateUrl: "views/genererarordenes/listarordenes.html"
-             }).state('OrdenCompra', {
-             url: "/OrdenCompra",
-             text: "Administración Ordenes de Compra",
-             templateUrl: "views/genererarordenes/gestionarordenes.html"
-             }).state('Novedades', {
-             url: "/Novedades",
-             text: "Administración Novedades Ordenes de Compra",
-             templateUrl: "views/novedadesordenes/gestionarnovedades.html"
-             });*/
-
-
         }]).run(["$rootScope", "localStorageService", "Usuario", "$state", "$location", function($rootScope, localStorageService, Usuario, $state, $location) {
             $rootScope.name = "Administración Ordenes de Compra";
 

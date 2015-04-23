@@ -88,11 +88,13 @@ define([
                 }).state('OrdenCompra', {
                     url: "/OrdenCompra",
                     text: "Administración Ordenes de Compra",
-                    templateUrl: "views/genererarordenes/gestionarordenes.html"
+                    templateUrl: "views/genererarordenes/gestionarordenes.html",
+                    parent_name:"ListarOrdenes"
                 }).state('Novedades', {
                     url: "/Novedades",
                     text: "Administración Novedades Ordenes de Compra",
-                    templateUrl: "views/novedadesordenes/gestionarnovedades.html"
+                    templateUrl: "views/novedadesordenes/gestionarnovedades.html",
+                    parent_name:"ListarOrdenes"
                 });
 
                 if ($location.path() === "")

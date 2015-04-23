@@ -1,8 +1,8 @@
-<div>
+<div ng-controller='ContenedorPedidosFarmaciasController'>
     <div> <!--ng-controller="VerPedidosFarmaciasController"-->
 
         <tabset>
-            
+
             <tab ng-controller="VerPedidosFarmaciasController">
                 <tab-heading>
                     Pedidos Farmacias <!--<span ng-show="notificacionclientes > 0" class="badge badge-warning">{{notificacionclientes}}</span>-->
@@ -10,15 +10,15 @@
 
                 <div class="row">
                     <br/>
-                    
+
                     <div class="col-sm-1 col-md-1 col-lg-1">
                         <div class="input-group">
-                            <button type="button" class="btn btn-default btn-medium ng-scope" ng-click="abrirViewPedidoFarmacia()">
+                            <button type="button" class="btn btn-default btn-medium ng-scope" ng-click="abrirViewPedidoFarmacia()" ng-validate-events="{{root.opcionesModulo.btnCrearPedidos}}" name="btnCrearPedidos">
                                 <span class="glyphicon glyphicon-plus"></span> Crear Pedido
                             </button>
                         </div>
                     </div>
-                    
+
                     <div class="col-sm-4 col-md-4 col-lg-4 marginLeft">
                         <div class="input-group">
                             <select ui-select2  class="pull-left anchoSeleccionEmpresa" ng-model="rootVerPedidosFarmacias.seleccion" data-placeholder="Seleccionar Farmacia" ng-change="valorSeleccionado()">
@@ -27,7 +27,7 @@
 
                         </div>
                     </div>
-                    
+
                     <div class="col-sm-3 col-md-3 col-lg-3 pull-right">
                         <div class="input-group">
                             <input type="text" class="form-control pull-right" ng-keypress="onTeclaBuscarPedidosFarmacias($event)" ng-model="rootVerPedidosFarmacias.termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
@@ -56,16 +56,15 @@
 
                 </br>
             </tab>
-            
-            <tab ng-controller="VerPedidosTempFarmaciasController"> <!-- ng-controller="VerPedidosTempFarmaciasController" -->
-                <tab-heading>
-                   Pedidos Temporales
+
+            <tab ng-controller="VerPedidosTempFarmaciasController"  ng-if="root.opciones.sw_ver_listado_temporales"  > <!-- ng-controller="VerPedidosTempFarmaciasController" -->
+                <tab-heading >
+                    Pedidos Temporales
                 </tab-heading>
-               
-               <div class="row">
-                   
-                   <br/>
-                   
+                <div class="row">
+
+                    <br/>
+
                     <div class="col-sm-1 col-md-1 col-lg-1">
                         <div class="input-group">
                             <button type="button" class="btn btn-default btn-medium ng-scope" ng-click="abrirViewPedidoFarmaciaTemp()">
@@ -73,7 +72,7 @@
                             </button>
                         </div>
                     </div>
-                   
+
                     <div class="col-sm-4 col-md-4 col-lg-4 marginLeft">
                         <div class="input-group">
                             <select ui-select2  class="pull-left anchoSeleccionEmpresa" ng-model="rootVerPedidosTempFarmacias.seleccion" data-placeholder="Seleccionar Farmacia" ng-change="valorSeleccionadoTemp()">
@@ -99,7 +98,7 @@
                     <div class="defaultGrid grid-responsive" ng-grid="rootVerPedidosTempFarmacias.lista_pedidos_temporales_farmacias"></div>
                 </div>
 
-                
+
 
                 <div class="row text-center">
                     <br/>
@@ -112,7 +111,6 @@
                 </div>
 
                 </br>
-                
             </tab>                
 
         </tabset>

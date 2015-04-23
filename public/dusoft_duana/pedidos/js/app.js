@@ -8,12 +8,12 @@
   "controllers/auditoriapedidos/DetallepedidoSeparadoFarmaciaController", "controllers/generarpedidos/CreaCotizacionesController","controllers/generarpedidos/SeleccionClienteController",
   "controllers/generarpedidos/SeleccionProductoClienteController", "controllers/generarpedidos/SeleccionProductoFarmaciaController", "controllers/generarpedidos/CreaPedidoFarmaciaController",
   "controllers/generarpedidos/VerPedidosFarmaciasController", "controllers/generarpedidos/VerPedidosTempFarmaciasController","controllers/generarpedidos/PedidosClientesVentasController",
-  "controllers/generarpedidos/MailPdfController",
+  "controllers/generarpedidos/MailPdfController","controllers/generarpedidos/ContenedorPedidosFarmaciasController",
   "loader",  "models/EmpresaPedido",
   "includes/menu/menucontroller", "url", "includes/alert/Alert",
   "includes/header/HeaderController", 'storage', "httpinterceptor",
   "includes/classes/Usuario", "includes/http/Request", "dragndropfile",
-  "includes/helpersdirectives/visualizarReporte"
+  "includes/helpersdirectives/visualizarReporte", "includes/validation/NgValidateEvents"
 
   ], function(angular){
   /* App Module and its dependencies */
@@ -98,38 +98,34 @@
                   url: "/AsignarPedidos",
                   text:"Asignar Pedidos",
                   templateUrl: "views/asignarpedidos/AsignarPedidos.html",
-                  parent_name: vistaDefecto
                   //controller:"pedidoscontroller"
               })
               .state('AuditarPedidos', {
                   url: "/AuditarPedidos",
                   text:"Auditar Pedidos",
                   templateUrl: "views/auditoriapedidos/AuditoriaPedidos.html",
-                  parent_name: vistaDefecto
                 })
               .state('PedidosClientes', {
                   url: "/PedidosClientes",
                   text:"Pedidos Clientes",
                   templateUrl: "views/generarpedidos/pedidosclientes.html",
-                  parent_name: vistaDefecto
                 })
               .state('CotizacionCliente', {
                   url: "/CotizacionCliente",
                   text:"Cotización Clientes",
                   templateUrl: "views/generarpedidos/cotizacioncliente.html",
-                  parent_name: vistaDefecto
+                  parent_name: "PedidosClientes"
                 })
               .state('VerPedidosFarmacias', {
                   url: "/VerPedidosFarmacias",
                   text:"Pedidos Farmacias",
-                  templateUrl: "views/generarpedidos/verpedidosfarmacias.html",
-                  parent_name: vistaDefecto
+                  templateUrl: "views/generarpedidos/verpedidosfarmacias.html"
                 })
               .state('CreaPedidosFarmacias', {
                   url: "/CreaPedidosFarmacias",
                   text:"Crear/Editar Pedidos Farmacias",
                   templateUrl: "views/generarpedidos/creapedidosfarmacias.html",
-                  parent_name: vistaDefecto
+                  parent_name: "VerPedidosFarmacias"
                 });
                 
             if($location.path() === "") {

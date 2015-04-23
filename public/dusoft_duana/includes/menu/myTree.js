@@ -61,7 +61,7 @@ define(["angular", "js/directive"], function(angular, directive) {
 
                             },
                             "state": {"key": "tree"},
-                            plugins: ["state"]
+                            plugins: ["state","search"]
 
                         }).on("select_node.jstree", function(node, selected, event) {
                             //se valida si fue por medio de un evento o por el state del plugin

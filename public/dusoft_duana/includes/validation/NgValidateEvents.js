@@ -15,6 +15,7 @@ define(["angular","js/directive", "includes/slide/transition"], function(angular
              for(var i in eventos){
                  var valor = eventos[i];
                  if(!valor){
+                     
                      element.removeAttr("ng-"+i);
                      element.bind(i, function (e) {
                          AlertService.mostrarMensaje("warning", "El usuario no tiene permisos para realizar esta accion!");

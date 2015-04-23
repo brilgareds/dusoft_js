@@ -52,7 +52,9 @@ define(["angular", "js/controllers", "treemenu"], function(angular, controllers)
             };
             
             $rootScope.$on("modulosUsuario", function(e){
+                console.log("modulos del sistema >>>>>>>>>>>>>",Usuario.getUsuarioActual().getModulos());
                 $scope.treedata = Usuario.getUsuarioActual().getModulos();
+                $rootScope.$emit("inicializarDatosArbol");
             });
             
             

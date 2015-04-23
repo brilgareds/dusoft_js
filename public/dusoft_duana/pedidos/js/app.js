@@ -97,33 +97,39 @@
             .state('AsignarPedidos', {
                   url: "/AsignarPedidos",
                   text:"Asignar Pedidos",
-                  templateUrl: "views/asignarpedidos/AsignarPedidos.html"
+                  templateUrl: "views/asignarpedidos/AsignarPedidos.html",
+                  parent_name: vistaDefecto
                   //controller:"pedidoscontroller"
               })
               .state('AuditarPedidos', {
                   url: "/AuditarPedidos",
                   text:"Auditar Pedidos",
-                  templateUrl: "views/auditoriapedidos/AuditoriaPedidos.html"
+                  templateUrl: "views/auditoriapedidos/AuditoriaPedidos.html",
+                  parent_name: vistaDefecto
                 })
               .state('PedidosClientes', {
                   url: "/PedidosClientes",
                   text:"Pedidos Clientes",
-                  templateUrl: "views/generarpedidos/pedidosclientes.html"
+                  templateUrl: "views/generarpedidos/pedidosclientes.html",
+                  parent_name: vistaDefecto
                 })
               .state('CotizacionCliente', {
                   url: "/CotizacionCliente",
                   text:"Cotización Clientes",
-                  templateUrl: "views/generarpedidos/cotizacioncliente.html"
+                  templateUrl: "views/generarpedidos/cotizacioncliente.html",
+                  parent_name: vistaDefecto
                 })
               .state('VerPedidosFarmacias', {
                   url: "/VerPedidosFarmacias",
                   text:"Pedidos Farmacias",
-                  templateUrl: "views/generarpedidos/verpedidosfarmacias.html"
+                  templateUrl: "views/generarpedidos/verpedidosfarmacias.html",
+                  parent_name: vistaDefecto
                 })
               .state('CreaPedidosFarmacias', {
                   url: "/CreaPedidosFarmacias",
                   text:"Crear/Editar Pedidos Farmacias",
-                  templateUrl: "views/generarpedidos/creapedidosfarmacias.html"
+                  templateUrl: "views/generarpedidos/creapedidosfarmacias.html",
+                  parent_name: vistaDefecto
                 });
                 
             if($location.path() === "") {

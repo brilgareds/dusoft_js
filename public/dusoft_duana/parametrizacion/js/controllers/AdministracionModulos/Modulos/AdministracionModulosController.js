@@ -74,7 +74,7 @@ define([
                     return validacion;
                 }
                 
-                if (modulo.getCarpetaRaiz() === undefined || modulo.getCarpetaRaiz().length === 0) {
+                if (!modulo.getCarpetaRaiz()) {
                     validacion.valido = false;
                     validacion.msj = "El modulo debe tener una carpeta raíz";
                     return validacion;

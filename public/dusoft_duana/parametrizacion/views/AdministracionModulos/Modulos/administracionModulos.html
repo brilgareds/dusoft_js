@@ -90,14 +90,14 @@
                         </p> 
 
                         <div class="pull-right">
-                            <button class="btn btn-warning btn-sm" ng-click='onLimpiarFormulario()'>
-                                Nuevo
+                            <button class="btn btn-default btn-sm" ng-click='onLimpiarFormulario()'>
                                 <span class="glyphicon glyphicon-plus"></span>
+                                Nuevo
                             </button>
 
-                            <button class="btn btn-success btn-sm" ng-click='onGuardarModulo()'>
-                                Guardar
+                            <button class="btn btn-default btn-sm" ng-click='onGuardarModulo()'>
                                 <span class="glyphicon glyphicon-floppy-disk"></span>
+                                Guardar
                             </button>
 
                         </div>
@@ -147,15 +147,15 @@
 
 
                         <p class="input-group pull-right">
-                            <button class="btn btn-warning btn-sm" ng-click='onLimpiarFormularioOpcion()'>
-                                Nuevo
+                            <button class="btn btn-default btn-sm" ng-click='onLimpiarFormularioOpcion()'>
                                 <span class="glyphicon glyphicon-plus"></span>
+                                Nuevo
                             </button>
                             <span ng-switch="rootModulos.moduloAGuardar.modulo_id != 0">
 
-                                <button ng-switch-when="true" class="btn btn-success btn-sm" ng-click='onGuardarOpcion()'>
-                                    Guardar
+                                <button ng-switch-when="true" class="btn btn-default btn-sm" ng-click='onGuardarOpcion()'>
                                     <span class="glyphicon glyphicon-floppy-disk"></span>
+                                    Guardar
                                 </button>
 
                                 <button ng-switch-when="false" disabled="disabled" class="btn btn-success btn-sm">

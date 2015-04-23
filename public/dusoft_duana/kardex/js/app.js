@@ -37,7 +37,7 @@
     }]).run(["$rootScope", "localStorageService","$location","$state", function($rootScope, localStorageService,$location, $state){
         //se inicializa el usuario y la empresa para el modulo
          $rootScope.name = "Kardex";
-         var vistaDefecto = "listarproductos";
+         var vistaDefecto = "ListarProductos";
          
          $rootScope.$on("parametrizacionUsuarioLista",  function(e, parametrizacion){
             
@@ -45,18 +45,17 @@
             Kardex.urlRouterProvider.otherwise(vistaDefecto);
           
             Kardex.stateProvider
-              .state('listarproductos', {
-                  url: "/listarproductos",
+              .state('ListarProductos', {
+                  url: "/ListarProductos",
                   text:"Listado de Productos",
                   templateUrl: "views/listarproductos.html",
                   controller:"productoscontroller"
               }).
-              state('listarproductos.verkardex', {
+              state('ListarProductos.verkardex', {
                   url: "/listarproductos.verkardex",
                   text:"Kardex",
                   templateUrl: "views/route1.item.html"
               });
-              
               
             if($location.path() === ""){
                 $state.go(vistaDefecto);

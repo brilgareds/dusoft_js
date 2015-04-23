@@ -61,6 +61,9 @@ requirejs.config({
         "transition":{
             deps:["jquery"]
         },
+        "select":{
+            deps:["jquery"]
+        },
         "uiselect2":{
             deps:["angular","select"]
         }

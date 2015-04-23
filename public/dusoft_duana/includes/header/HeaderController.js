@@ -214,7 +214,8 @@ define(["angular", "js/controllers", "includes/classes/Usuario","includes/Consta
             };
             
             
-            $scope.onEmpresaSeleccionada = function(){
+            $scope.onEmpresaSeleccionada = function(empresa){
+                $scope.Usuario.setEmpresa(empresa);
                 self.traerParametrizacionPorUsuario($scope.Usuario.getEmpresa().getCodigo(),function(parametrizacion){
                     
                     var obj = localStorageService.get("session");

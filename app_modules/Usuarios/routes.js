@@ -71,9 +71,14 @@ module.exports = function(app, di_container) {
     
     app.post('/api/Usuarios/deshabilitarBodegasUsuario', function(req, res) {
          c_usuarios.deshabilitarBodegasUsuario(req, res);
-         
     }); 
     
+    app.post('/api/Usuarios/obtenerCentrosUtilidadUsuario', function(req, res) {
+         c_usuarios.obtenerCentrosUtilidadUsuario(req, res);
+    }); 
     
+    app.post('/api/Usuarios/obtenerBodegasUsuario', function(req, res) {
+         c_usuarios.obtenerBodegasUsuario(req, res);
+    }); 
     
 };

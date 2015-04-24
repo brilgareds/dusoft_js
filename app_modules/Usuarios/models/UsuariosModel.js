@@ -481,6 +481,34 @@ UsuariosModel.prototype.obtenerEmpresasUsuario = function(usuario_id, callback){
 };
 
 
+UsuariosModel.prototype.obtenerCentrosUtilidadUsuario = function(empresa_id, login_id, callback){
+     var that = this;
+    
+    var sql =  "SELECT a.centro_utilidad, a.descripcion FROM centros_utilidad a\
+                INNER JOIN login_centros_utilidad_bodega b ON b.centro_utilidad_id = a.centro_utilidad\
+                INNER JOIN login_empresas c ON c.empresa_id = a.empresa_id\
+                WHERE a.empresa_id = $1 AND c.login_id = $2 GROUP BY 1, 2";
+
+    G.db.query(sql, [empresa_id, login_id], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
+UsuariosModel.prototype.obtenerBodegasUsuario = function(empresa_id, login_id, centro_utilidad_id, callback){
+     var that = this;
+    
+    var sql = "SELECT a.centro_utilidad, a.descripcion FROM bodegas a\
+               INNER JOIN login_centros_utilidad_bodega b ON b.bodega_id = a.bodega\
+               INNER JOIN login_empresas c ON c.empresa_id = a.empresa_id \
+               WHERE b.empresa_id = $1 AND c.login_id = $2 AND b.centro_utilidad_id = $3";
+
+    G.db.query(sql, [empresa_id, login_id, centro_utilidad_id], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
+
+
 function __cambiarPredeterminadoEmpresa(that, empresa_id, usuario_id, rol_id, predeterminado, callback){
     var sql = "UPDATE login_empresas  SET predeterminado = $4 WHERE empresa_id = $1 AND login_id = $2 AND rol_id = $3";
 

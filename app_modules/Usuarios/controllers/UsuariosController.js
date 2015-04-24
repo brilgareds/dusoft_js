@@ -568,6 +568,86 @@ Usuarios.prototype.deshabilitarBodegasUsuario = function(req, res) {
 };
 
 
+Usuarios.prototype.obtenerCentrosUtilidadUsuario = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+    
+    if(args.parametrizacion_usuarios === undefined){
+        res.send(G.utils.r(req.url, 'La sintaxis del request no es valida', 404, {}));
+        return;
+    }
+
+    var empresa_id = args.parametrizacion_usuarios.empresa_id || undefined;
+    var usuario_id = args.parametrizacion_usuarios.usuario_id;
+
+    if (usuario_id === undefined || usuario_id.length === 0) {
+        res.send(G.utils.r(req.url, 'El usuario no es valido', 500, {parametrizacion_usuarios: {}}));
+        return;
+    }
+    
+    if (empresa_id === undefined || empresa_id.length === 0) {
+        res.send(G.utils.r(req.url, 'La empresa no es valida', 500, {parametrizacion_usuarios: {}}));
+        return;
+    }
+    
+
+    that.m_usuarios.obtenerCentrosUtilidadUsuario(empresa_id, usuario_id, function(err, rows) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error consultando los centros de utilidad del usuario', 500, {parametrizacion_usuarios: {}}));
+            return;
+        }
+
+        res.send(G.utils.r(req.url, "Lista centros de utilidad", 200, {parametrizacion_usuarios: {centros_utilidad:rows}}));
+
+    });
+
+};
+
+
+
+Usuarios.prototype.obtenerBodegasUsuario = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+    
+    if(args.parametrizacion_usuarios === undefined){
+        res.send(G.utils.r(req.url, 'La sintaxis del request no es valida', 404, {}));
+        return;
+    }
+
+    var empresa_id = args.parametrizacion_usuarios.empresa_id || undefined;
+    var usuario_id = args.parametrizacion_usuarios.usuario_id || undefined;
+    var centro_utilidad_id = args.parametrizacion_usuarios.centro_utilidad_id;
+
+    if (usuario_id === undefined || usuario_id.length === 0) {
+        res.send(G.utils.r(req.url, 'El usuario no es valido', 500, {parametrizacion_usuarios: {}}));
+        return;
+    }
+    
+    if (empresa_id === undefined || empresa_id.length === 0) {
+        res.send(G.utils.r(req.url, 'La empresa no es valida', 500, {parametrizacion_usuarios: {}}));
+        return;
+    }
+    
+        
+    if (centro_utilidad_id === undefined || centro_utilidad_id.length === 0) {
+        res.send(G.utils.r(req.url, 'El centro de utilidad no es valido', 500, {parametrizacion_usuarios: {}}));
+        return;
+    }
+    
+
+    that.m_usuarios.obtenerCentrosUtilidadUsuario(empresa_id, usuario_id, centro_utilidad_id,  function(err, rows) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error consultando las bodegas del centro de utilidad', 500, {parametrizacion_usuarios: {}}));
+            return;
+        }
+
+        res.send(G.utils.r(req.url, "Lista bodegas", 200, {parametrizacion_usuarios: {centros_utilidad:rows}}));
+
+    });
+
+};
+
+
 Usuarios.prototype.guardarCentroUtilidadBodegaUsuario = function(req, res) {
     var that = this;
     var args = req.body.data;

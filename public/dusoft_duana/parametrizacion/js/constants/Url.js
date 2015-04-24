@@ -27,7 +27,9 @@
                 'CAMBAR_PREDETERMINADO_EMPRESA':BASE_URL+"/Usuarios/cambiarPredeterminadoEmpresa",
                 'GUARDAR_OPCION':BASE_URL+"/Usuarios/guardarOpcion",
                 'LISTAR_CENTROS_UTILIDAD':BASE_URL+"/CentrosUtilidad/listarCentrosUtilidadEmpresa",
-                'LISTAR_BODEGAS':BASE_URL+"/Bodegas/listarBodegasEmpresas"
+                'LISTAR_BODEGAS':BASE_URL+"/Bodegas/listarBodegasEmpresas",
+                'GUARDAR_CENTRO_UTILIDAD_BODEGA':BASE_URL+"/Usuarios/guardarCentroUtilidadBodegaUsuario",
+                'DESHABILITAR_BODEGAS':BASE_URL+"/Usuarios/deshabilitarBodegasUsuario"
                 
 	    },
             'MODULOS':{

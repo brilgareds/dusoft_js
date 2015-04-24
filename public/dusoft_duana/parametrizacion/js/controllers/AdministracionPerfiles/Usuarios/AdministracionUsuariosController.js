@@ -99,8 +99,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
             $scope.listado_bodegas = {
                 data: 'rootUsuario.empresaSeleccionada.getCentroUtilidadSeleccionado().getBodegas()',
                 enableColumnResize: true,
-                enableRowSelection: true,
-                multiSelect:false,
+                enableRowSelection: false,
                 showFilter:true,
                 columnDefs: [
                 {field: 'opciones', displayName: "", cellClass: "txt-center", width: "10%",
@@ -111,8 +110,8 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción <span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li><a href="javascript:void(0);" ng-click="seleccioanrBodega(row.entity);" >Seleccionar</a></li>\
-                                                <li><a href="javascript:void(0);" ng-click="removerBodega(row.entity);" >Remover</a></li>\
+                                                <li><a href="javascript:void(0);" ng-click="seleccionarBodega(row.entity);" >Seleccionar</a></li>\
+                                                <li ng-if="row.entity.estado"><a href="javascript:void(0);" ng-click="removerBodega(row.entity);" >Remover</a></li>\
                                             </ul>\
                                         </div>'
                     }
@@ -125,6 +124,39 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                self.traerBodegas(function(){
                    
                });
+           };
+           
+           $scope.seleccionarBodega = function(bodega){
+               var estado = !bodega.getEstado();
+                var obj = {
+                    session: $scope.rootUsuario.session,
+                    data: {
+                        parametrizacion_usuarios:{
+                            empresa_id:$scope.rootUsuario.empresaSeleccionada.getCodigo(),
+                            centro_utilidad_id:$scope.rootUsuario.empresaSeleccionada.getCentroUtilidadSeleccionado().getCodigo(),
+                            bodega_id:bodega.getCodigo(),
+                            login_empresa_id:$scope.rootUsuario.empresaSeleccionada.getLoginEmpresaId(),
+                            estado:Number(estado)
+                            
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.USUARIOS.GUARDAR_CENTRO_UTILIDAD_BODEGA, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        var msg = "Bodega asignada correctamente";
+                        
+                        if(!estado){
+                            msg = "La bodega se removio del usuario correctamente";
+                        }
+                        
+                         AlertService.mostrarMensaje("success",msg);
+                         bodega.setEstado(estado);
+                    } else {
+                        AlertService.mostrarMensaje("warning","Se genero un error asignando la bodega");
+                    }
+
+                });
            };
            
             
@@ -151,7 +183,9 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                         $scope.centroUtilidad = centroUtilidad;
                         
                         $scope.confirmar = function() {
-                            $scope.confirmarAsignarRol(rol);
+                            self.deshabilitarBodegasUsuario(function(){
+                                
+                            });
                             $modalInstance.close();
                         };
 
@@ -192,7 +226,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                     controller: function($scope, $modalInstance) {
 
                         $scope.confirmar = function() {
-                            $scope.confirmarAsignarRol(rol);
+                            $scope.seleccionarBodega(bodega);
                             $modalInstance.close();
                         };
 
@@ -395,7 +429,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
             
             self.traerCentrosUtilidadEmpresa = function(callback){
                 
-                    var obj = {
+                var obj = {
                     session: $scope.rootUsuario.session,
                     data: {
                         centro_utilidad:{
@@ -458,6 +492,31 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                 });
             };
             
+            
+            self.deshabilitarBodegasUsuario = function(callback){
+              
+                var obj = {
+                    session: $scope.rootUsuario.session,
+                    data: {
+                        parametrizacion_usuarios:{
+                            empresa_id:$scope.rootUsuario.empresaSeleccionada.getCodigo(),
+                            centro_utilidad_id:$scope.rootUsuario.empresaSeleccionada.getCentroUtilidadSeleccionado().getCodigo(),
+                            login_empresa_id:$scope.rootUsuario.empresaSeleccionada.getLoginEmpresaId()
+                            
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.USUARIOS.DESHABILITAR_BODEGAS, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                         $scope.rootUsuario.empresaSeleccionada.getCentroUtilidadSeleccionado().vaciarBodegas();
+                         AlertService.mostrarMensaje("success","El centro de utilidad y sus bodegas se removieron del usuario correctamente");
+                    } else {
+                        AlertService.mostrarMensaje("warning","Se genero un error...");
+                    }
+
+                });
+            };
             
             self.traerRoles = function(callback) {
                 

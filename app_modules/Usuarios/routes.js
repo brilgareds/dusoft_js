@@ -64,5 +64,16 @@ module.exports = function(app, di_container) {
          c_usuarios.obtenerEmpresasUsuario(req, res);
     }); 
     
+    app.post('/api/Usuarios/guardarCentroUtilidadBodegaUsuario', function(req, res) {
+         c_usuarios.guardarCentroUtilidadBodegaUsuario(req, res);
+         
+    }); 
+    
+    app.post('/api/Usuarios/deshabilitarBodegasUsuario', function(req, res) {
+         c_usuarios.deshabilitarBodegasUsuario(req, res);
+         
+    }); 
+    
+    
     
 };

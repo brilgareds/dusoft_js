@@ -23,6 +23,10 @@ define(["angular", "js/models", "includes/classes/Cliente"], function(angular, m
                 return this.documentos;
             };
             
+            ClientePlanillaDespacho.prototype.limpiar_documentos = function() {
+                return this.documentos = [];
+            };
+            
             
             return this;
         }]);

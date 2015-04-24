@@ -10,6 +10,7 @@ define([
     "js/directive",
     "nggrid",
     "includes/validation/ValidacionNumero",
+    "includes/validation/ValidacionNumeroEntero",
     "includes/widgets/InputCheck",
     "uiselect2",
     "loader",
@@ -78,11 +79,13 @@ define([
                 }).state('CrearPlanilla', {
                     url: "/CrearPlanilla",
                     text: "Gestionar Planillas Despacho",
-                    templateUrl: "views/generarplanilladespacho/gestionarplanillas.html"
+                    templateUrl: "views/generarplanilladespacho/gestionarplanillas.html",
+                    parent_name : "GestionarPlanillas"
                 }).state('ModificarPlanilla', {
                     url: "/ModificarPlanilla",
                     text: "Gestionar Planillas Despacho",
-                    templateUrl: "views/generarplanilladespacho/gestionarplanillas.html"
+                    templateUrl: "views/generarplanilladespacho/gestionarplanillas.html",
+                    parent_name : "GestionarPlanillas"
                 });
 
                 if ($location.path() === "")

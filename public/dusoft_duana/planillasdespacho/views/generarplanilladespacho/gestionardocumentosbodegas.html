@@ -65,7 +65,7 @@
                                         <div class="col-md-5 pull-right">
                                             <p class="input-group">
 
-                                                <input type="text" class="form-control" placeholder="Buscar" name="" id="" />
+                                                <input type="text" class="form-control" ng-keypress="buscador_documentos($event);" ng-model="datos_view.termino_busqueda_documentos" placeholder="Buscar" name="" id="" />
                                                 <span class="input-group-btn">
                                                     <button class="btn btn-default" type="submit" ng-click=""><i class="glyphicon glyphicon-search"></i></button>
                                                 </span>

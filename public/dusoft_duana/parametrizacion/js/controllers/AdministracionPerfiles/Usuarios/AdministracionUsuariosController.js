@@ -1,17 +1,17 @@
 
-define(["angular", "js/controllers", "js/models"], function(angular, controllers) {
+define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilidad", "includes/classes/Bodega"], function(angular, controllers) {
 
     controllers.controller('AdministracionUsuariosController', [
         '$scope', '$rootScope', 'Request', '$modal', 'API',
         "socket", "$timeout", "$state", "AlertService",
         "Usuario","$filter",
         "localStorageService","STATIC","EmpresaParametrizacion","Rol","Empresa_Modulo", 
-        "Modulo","RolModulo","ParametrizacionService",
+        "Modulo","RolModulo","ParametrizacionService","CentroUtilidad","Bodega",
         function($scope, $rootScope, Request, $modal,
                 API, socket, $timeout, $state,
                 AlertService, Usuario, $filter,
                 localStorageService, STATIC, EmpresaParametrizacion, Rol, Empresa_Modulo, 
-                Modulo, RolModulo, ParametrizacionService) {
+                Modulo, RolModulo, ParametrizacionService, CentroUtilidad, Bodega) {
                      
             var self = this;
             console.log("usuario >>>>>>>", Usuario)
@@ -75,16 +75,15 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             
             
             $scope.listado_centros_utilidad = {
-                data: 'rootUsuario.empresaSeleccionada.getRoles()',
+                data: 'rootUsuario.empresaSeleccionada.getCentrosUtilidad()',
                 enableColumnResize: true,
-                enableRowSelection: true,
-                multiSelect:false,
+                enableRowSelection: false,
                 showFilter:true,
                 columnDefs: [
                 {field: 'opciones', displayName: "", cellClass: "txt-center", width: "10%",
                         cellTemplate: '<div ng-if="row.entity.estado" style="color:#5cb85c;"><i class="glyphicon glyphicon-ok icon-success"></i></div>'},
-                    {field: 'nombre', displayName: 'Centro Utilidad'},
-                    {field: 'observacion', displayName: 'Observacion'},
+                    {field: 'codigo', displayName: 'Centro Utilidad', width:120},
+                    {field: 'nombre', displayName: 'Nombre'},
                     {field: 'opciones', displayName: "", cellClass: "txt-center dropdown-button", width: "18%",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción <span class="caret"></span></button>\
@@ -98,7 +97,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
             };
             
             $scope.listado_bodegas = {
-                data: 'rootUsuario.empresaSeleccionada.getRoles()',
+                data: 'rootUsuario.empresaSeleccionada.getCentroUtilidadSeleccionado().getBodegas()',
                 enableColumnResize: true,
                 enableRowSelection: true,
                 multiSelect:false,
@@ -106,8 +105,8 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 columnDefs: [
                 {field: 'opciones', displayName: "", cellClass: "txt-center", width: "10%",
                         cellTemplate: '<div ng-if="row.entity.estado" style="color:#5cb85c;"><i class="glyphicon glyphicon-ok icon-success"></i></div>'},
-                    {field: 'nombre', displayName: 'Bodega'},
-                    {field: 'observacion', displayName: 'Observacion'},
+                    {field: 'codigo', displayName: 'Bodega', width:120},
+                    {field: 'nombre', displayName: 'Observacion'},
                     {field: 'opciones', displayName: "", cellClass: "txt-center dropdown-button", width: "18%",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción <span class="caret"></span></button>\
@@ -120,7 +119,14 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 ]
             };
             
-            
+           
+           $scope.seleccionarCentroUtilidad = function(centroUtilidad){
+               $scope.rootUsuario.empresaSeleccionada.setCentroUtilidadSeleccionado(centroUtilidad);
+               self.traerBodegas(function(){
+                   
+               });
+           };
+           
             
            $scope.removerCentroUtilidad = function(centroUtilidad){
                 
@@ -131,7 +137,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                     keyboard: true,
                     template: ' <div class="modal-header">\
                                     <button type="button" class="close" ng-click="close()">&times;</button>\
-                                    <h4 class="modal-title">Desea remover este centro de utilidad del usuario?</h4>\
+                                    <h4 class="modal-title">Desea remover el centro de utilidad {{centroUtilidad.getNombre()}} del usuario?</h4>\
                                 </div>\
                                 <div class="modal-body">\
                                     <h5>Este centro de utilidad y las bodegas asociadas no estarán disponibles para el usuario. </h5>\
@@ -142,7 +148,8 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                                 </div>',
                     scope: $scope,
                     controller: function($scope, $modalInstance) {
-
+                        $scope.centroUtilidad = centroUtilidad;
+                        
                         $scope.confirmar = function() {
                             $scope.confirmarAsignarRol(rol);
                             $modalInstance.close();
@@ -386,9 +393,73 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 });
             };
             
+            self.traerCentrosUtilidadEmpresa = function(callback){
+                
+                    var obj = {
+                    session: $scope.rootUsuario.session,
+                    data: {
+                        centro_utilidad:{
+                            empresa_id:$scope.rootUsuario.empresaSeleccionada.getCodigo()
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.USUARIOS.LISTAR_CENTROS_UTILIDAD, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        var datos = data.obj.centros_utilidad;
+
+                        for (var i in datos) {
+                            var _centroUtilidad = datos[i];
+                            
+                            var centroUtilidad = CentroUtilidad.get(_centroUtilidad.descripcion, _centroUtilidad.centro_utilidad_id);
+                            
+                            $scope.rootUsuario.empresaSeleccionada.agregarCentroUtilidad(centroUtilidad);
+
+                        }
+                        
+                        callback();
+
+                    }
+
+                });
+            };
+            
+            self.traerBodegas = function(callback){
+                
+                var centroUtilidad = $scope.rootUsuario.empresaSeleccionada.getCentroUtilidadSeleccionado();
+                
+                var obj = {
+                    session: $scope.rootUsuario.session,
+                    data: {
+                        bodegas:{
+                            empresa_id:$scope.rootUsuario.empresaSeleccionada.getCodigo(),
+                            centro_utilidad_id:centroUtilidad.getCodigo()
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.USUARIOS.LISTAR_BODEGAS, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        var datos = data.obj.bodegas;
+
+                        for (var i in datos) {
+                            var _bodega = datos[i];
+                            
+                            var bodega = Bodega.get(_bodega.descripcion, _bodega.bodega_id);
+                            
+                            centroUtilidad.agregarBodega(bodega);
+
+                        }
+                        
+                        callback();
+                        
+                    }
+
+                });
+            };
             
             
-            self.traerRoles = function() {
+            self.traerRoles = function(callback) {
                 
                 var parametros = {
                     session: $scope.rootUsuario.session,
@@ -407,6 +478,9 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                         
                     }
                     self.onMarcarRolUsuarioPorEmpresa();
+                    if(callback){
+                        callback();
+                    }
                 });
 
             };
@@ -942,7 +1016,11 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                         }   
                         self.traerModulosPorUsuario(function(){
                               self.traerModulos(function(){
-                                self.traerRoles();
+                                self.traerRoles(function(){
+                                    self.traerCentrosUtilidadEmpresa(function(){
+
+                                    });
+                                });
                               });
                          });
                             
@@ -973,7 +1051,9 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
 
                 if (usuario_id && usuario_id.length > 0) {
                     self.traerUsuarioPorId(usuario_id, function() {
-
+                        self.traerCentrosUtilidadEmpresa(function(){
+                            
+                        });
                     });
                 } 
                 

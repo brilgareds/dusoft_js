@@ -1,14 +1,20 @@
-.listado_opciones, .listado_roles{
+.listado_opciones, .listado_roles, .listado_centros_utilidad, .listado_bodegas{
     height:250px;
     position:relative;
     width:100%;
     min-width: 100%;
 }
 
-.listado_roles{
+.listado_roles, .listado_centros_utilidad, .listado_bodegas{
     margin:25px 0px 20px 0px;
     height: 300px;
 }
+
+.listado_centros_utilidad, .listado_bodegas{
+    margin:25px 0px 20px 0px;
+    height: 150px;
+}
+
 
 .contenedorBuscarRol{
     margin-top:20px;

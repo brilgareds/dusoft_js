@@ -59,7 +59,7 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 columnDefs: [
                 {field: 'opciones', displayName: "", cellClass: "txt-center", width: "10%",
                         cellTemplate: '<div ng-if="row.entity.estado" style="color:#5cb85c;"><i class="glyphicon glyphicon-ok icon-success"></i></div>'},
-                    {field: 'nombre', displayName: 'Nombre'},
+                    {field: 'nombre', displayName: 'Rol'},
                     {field: 'observacion', displayName: 'Observacion'},
                     {field: 'opciones', displayName: "", cellClass: "txt-center dropdown-button", width: "18%",
                         cellTemplate: '<div class="btn-group">\
@@ -72,6 +72,140 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 ]
 
             };
+            
+            
+            $scope.listado_centros_utilidad = {
+                data: 'rootUsuario.empresaSeleccionada.getRoles()',
+                enableColumnResize: true,
+                enableRowSelection: true,
+                multiSelect:false,
+                showFilter:true,
+                columnDefs: [
+                {field: 'opciones', displayName: "", cellClass: "txt-center", width: "10%",
+                        cellTemplate: '<div ng-if="row.entity.estado" style="color:#5cb85c;"><i class="glyphicon glyphicon-ok icon-success"></i></div>'},
+                    {field: 'nombre', displayName: 'Centro Utilidad'},
+                    {field: 'observacion', displayName: 'Observacion'},
+                    {field: 'opciones', displayName: "", cellClass: "txt-center dropdown-button", width: "18%",
+                        cellTemplate: '<div class="btn-group">\
+                                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción <span class="caret"></span></button>\
+                                            <ul class="dropdown-menu dropdown-options">\
+                                                <li><a href="javascript:void(0);" ng-click="seleccionarCentroUtilidad(row.entity);" >Seleccionar</a></li>\
+                                                <li><a href="javascript:void(0);" ng-click="removerCentroUtilidad(row.entity);" >Remover</a></li>\
+                                            </ul>\
+                                        </div>'
+                    }
+                ]
+            };
+            
+            $scope.listado_bodegas = {
+                data: 'rootUsuario.empresaSeleccionada.getRoles()',
+                enableColumnResize: true,
+                enableRowSelection: true,
+                multiSelect:false,
+                showFilter:true,
+                columnDefs: [
+                {field: 'opciones', displayName: "", cellClass: "txt-center", width: "10%",
+                        cellTemplate: '<div ng-if="row.entity.estado" style="color:#5cb85c;"><i class="glyphicon glyphicon-ok icon-success"></i></div>'},
+                    {field: 'nombre', displayName: 'Bodega'},
+                    {field: 'observacion', displayName: 'Observacion'},
+                    {field: 'opciones', displayName: "", cellClass: "txt-center dropdown-button", width: "18%",
+                        cellTemplate: '<div class="btn-group">\
+                                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción <span class="caret"></span></button>\
+                                            <ul class="dropdown-menu dropdown-options">\
+                                                <li><a href="javascript:void(0);" ng-click="seleccioanrBodega(row.entity);" >Seleccionar</a></li>\
+                                                <li><a href="javascript:void(0);" ng-click="removerBodega(row.entity);" >Remover</a></li>\
+                                            </ul>\
+                                        </div>'
+                    }
+                ]
+            };
+            
+            
+            
+           $scope.removerCentroUtilidad = function(centroUtilidad){
+                
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Desea remover este centro de utilidad del usuario?</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <h5>Este centro de utilidad y las bodegas asociadas no estarán disponibles para el usuario. </h5>\
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-warning" ng-click="close()">No</button>\
+                                    <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
+                                </div>',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.confirmar = function() {
+                            $scope.confirmarAsignarRol(rol);
+                            $modalInstance.close();
+                        };
+
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+
+                    },
+                    resolve: {
+                        centroUtilidad: function() {
+                            return centroUtilidad;
+                        }
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+                               
+            };
+            
+            $scope.removerBodega = function(bodega){
+                
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Desea remover esta bodega del usuario?</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <h5>Esta bodega no estará mas asociada al usuario. </h5>\
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-warning" ng-click="close()">No</button>\
+                                    <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
+                                </div>',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.confirmar = function() {
+                            $scope.confirmarAsignarRol(rol);
+                            $modalInstance.close();
+                        };
+
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+
+                    },
+                    resolve: {
+                        bodega: function() {
+                            return bodega;
+                        }
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+                               
+            };
+            
+            
+            
             
             
             self.inicializarUsuarioACrear = function() {

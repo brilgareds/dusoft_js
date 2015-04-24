@@ -6,6 +6,7 @@ define(["angular", "js/models"], function(angular, models) {
         function Bodega (nombre, codigo) {
             this.nombre = nombre || "";
             this.codigo = codigo || "";
+            this.estado = false;
             //this.clientes = []; 
             //this.proveedores = [];
         };
@@ -16,6 +17,14 @@ define(["angular", "js/models"], function(angular, models) {
 
         Bodega.prototype.getNombre = function() {
             return this.nombre;
+        };
+        
+        Bodega.prototype.setEstado = function(estado) {
+            this.estado = estado;
+        };
+
+        Bodega.prototype.getEstado = function() {
+            return this.estado;
         };
 
         Bodega.prototype.setCodigo = function(codigo) {

@@ -13,6 +13,7 @@ define(["angular", "js/models"], function(angular, models) {
                 this.fecha_despacho = fecha_despacho || '';
                 this.estado = estado || '1'; // 0 Inactivo - 1 Activo
                 this.descripcion_estado = descripcion_estado || 'Activo'; // 0 Inactivo - 1 Activo
+                this.documento = '';
                 this.documentos = [];
             }
 
@@ -39,6 +40,10 @@ define(["angular", "js/models"], function(angular, models) {
             
             PlanillaDespacho.prototype.set_fecha_registro = function(fecha_registro) {
                 this.fecha_registro = fecha_registro;
+            };
+            
+            PlanillaDespacho.prototype.set_documento = function(documento) {
+                this.documento= documento;
             };
             
             PlanillaDespacho.prototype.set_documentos = function(documento) {
@@ -82,6 +87,10 @@ define(["angular", "js/models"], function(angular, models) {
             
             PlanillaDespacho.prototype.get_descripcion_estado= function() {
                 return this.descripcion_estado;
+            };
+            
+            PlanillaDespacho.prototype.get_documento = function() {
+                return this.documento;
             };
             
             PlanillaDespacho.prototype.get_documentos = function() {

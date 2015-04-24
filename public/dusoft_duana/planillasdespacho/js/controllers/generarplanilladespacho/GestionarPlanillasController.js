@@ -15,26 +15,25 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             var that = this;
             $scope.Empresa = Empresa;
-            
-            
+
+
             // Variables de Sesion
             $scope.session = {
-                 usuario_id: Sesion.getUsuarioActual().getId(),
-                 auth_token: Sesion.getUsuarioActual().getToken()
+                usuario_id: Sesion.getUsuarioActual().getId(),
+                auth_token: Sesion.getUsuarioActual().getToken()
             };
-           
 
             // Variables 
             $scope.planilla = PlanillaDespacho.get();
-            
+
             $scope.planilla.set_numero_guia(0);
             $scope.planilla.set_fecha_registro($filter('date')(new Date(), "dd/MM/yyyy"));
-            
 
-            $scope.ciudad_seleccionada = {};
-            $scope.termino_busqueda_ciudades = '';
-
-            $scope.transportadora_seleccionada = {};
+            $scope.datos_view = {
+                ciudad_seleccionada: Ciudad.get(),
+                transportadora_seleccionada: Transportadora.get(),
+                termino_busqueda_ciudades : ''                
+            };
 
             $scope.datos_planilla = [];
 
@@ -57,7 +56,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     return;
                 }
 
-                $scope.termino_busqueda_ciudades = termino_busqueda;
+                $scope.datos_view.termino_busqueda_ciudades = termino_busqueda;
                 that.buscar_ciudades(function(ciudades) {
                     that.render_ciudades(ciudades);
                 });
@@ -69,7 +68,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     session: $scope.session,
                     data: {
                         ciudades: {
-                            termino_busqueda: $scope.termino_busqueda_ciudades
+                            termino_busqueda: $scope.datos_view.termino_busqueda_ciudades
                         }
                     }
                 };
@@ -93,8 +92,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 });
             };
 
-            $scope.seleccionar_ciudad = function() {                
-                $scope.planilla.set_ciudad($scope.ciudad_seleccionada.ciudad);
+            $scope.seleccionar_ciudad = function() {
+                $scope.planilla.set_ciudad($scope.datos_view.ciudad_seleccionada);
             };
 
             that.buscar_transportadoras = function(callback) {
@@ -129,7 +128,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
             $scope.seleccionar_transportadora = function() {
-                $scope.planilla.set_transportadora($scope.transportadora_seleccionada.transportadora);
+                $scope.planilla.set_transportadora($scope.datos_view.transportadora_seleccionada);
             };
 
             $scope.buscar_documentos_bodega = function(termino, paginando) {
@@ -142,7 +141,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 }
             };
             $scope.gestionar_documentos_bodega = function() {
-               
+
                 $scope.slideurl = "views/generarplanilladespacho/gestionardocumentosbodegas.html?time=" + new Date().getTime();
                 $scope.$emit('gestionar_documentos_bodega');
             };

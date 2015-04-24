@@ -2158,8 +2158,42 @@ E008Controller.prototype.consultarDocumentosDespachosPorCliente = function(req, 
     var empresa_id = args.movimientos_bodegas.empresa_id;
     var tipo_id = args.movimientos_bodegas.tipo_id;
     var tercero_id = args.movimientos_bodegas.tercero_id;
+    var termino_busqueda = (args.movimientos_bodegas.termino_busqueda === undefined)?'': args.movimientos_bodegas.termino_busqueda;
 
-    that.m_e008.consultar_documentos_despachos_por_cliente(empresa_id, tipo_id, tercero_id, function(err, lista_documendos_despachos) {
+    that.m_e008.consultar_documentos_despachos_por_cliente(empresa_id, tipo_id, tercero_id, termino_busqueda, function(err, lista_documendos_despachos) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {movimientos_bodegas: []}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Lista Documentos Despachos Clientes', 200, {movimientos_bodegas: lista_documendos_despachos}));
+            return;
+        }
+    });
+};
+
+// Consultar los documentos de despacho de una farmacia 
+E008Controller.prototype.consultarDocumentosDespachosPorFarmacia = function(req, res) {
+
+    var that = this;
+    var args = req.body.data;
+
+    if (args.movimientos_bodegas === undefined || args.movimientos_bodegas.empresa_id === undefined || args.movimientos_bodegas.farmacia_id === undefined || args.movimientos_bodegas.centro_utilidad_id === undefined) {
+
+        res.send(G.utils.r(req.url, 'El empresa_id, farmacia_id o centro_utilidad_id NO estan definidos', 404, {}));
+        return;
+    }
+
+    if (args.movimientos_bodegas.empresa_id === "" || args.movimientos_bodegas.farmacia_id === "" || args.movimientos_bodegas.centro_utilidad_id === "") {
+        res.send(G.utils.r(req.url, 'El empresa_id, farmacia_id o centro_utilidad_id estan vacios', 404, {}));
+        return;
+    }
+
+    var empresa_id = args.movimientos_bodegas.empresa_id;
+    var farmacia_id = args.movimientos_bodegas.farmacia_id;
+    var centro_utilidad_id = args.movimientos_bodegas.centro_utilidad_id;
+    var termino_busqueda = (args.movimientos_bodegas.termino_busqueda === undefined)?'': args.movimientos_bodegas.termino_busqueda;
+
+    that.m_e008.consultar_documentos_despachos_por_farmacia(empresa_id, farmacia_id, centro_utilidad_id, termino_busqueda, function(err, lista_documendos_despachos) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {movimientos_bodegas: []}));
             return;

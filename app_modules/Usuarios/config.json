@@ -23,6 +23,11 @@
                     "module": "Parametrizacion/Modulos",
                     "model": "ModuloModel",
                     "alias": "m_modulo"
+                },
+                "bodegas_model": {
+                    "module": "Parametrizacion/Bodegas",
+                    "model": "BodegasModel",
+                    "alias": "m_bodegas"
                 }
             }],
         "events": [],

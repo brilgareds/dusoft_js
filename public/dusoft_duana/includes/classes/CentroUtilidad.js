@@ -6,6 +6,7 @@ define(["angular", "js/models"], function(angular, models) {
         function CentroUtilidad (nombre, codigo) {
             this.nombre = nombre || "";
             this.codigo = codigo || "";
+            this.bodegas = [];
             //this.clientes = []; 
             //this.proveedores = [];
         };
@@ -24,6 +25,26 @@ define(["angular", "js/models"], function(angular, models) {
 
         CentroUtilidad.prototype.getCodigo = function() {
             return this.codigo;
+        };
+        
+        CentroUtilidad.prototype.agregarBodega = function(bodega) {
+            for(var i in this.bodegas){
+                var _bodega = this.bodegas[i];
+                
+                if(_bodega.getCodigo() === bodega.getCodigo()){
+                    return false;
+                }
+            }
+            
+            this.bodegas.push(bodega);
+        };
+        
+        CentroUtilidad.prototype.getBodegas = function() {
+            return this.bodegas;
+        };
+        
+        CentroUtilidad.prototype.vaciarBodegas = function() {
+            this.bodegas = [];
         };
 
         this.get = function(nombre, codigo) {

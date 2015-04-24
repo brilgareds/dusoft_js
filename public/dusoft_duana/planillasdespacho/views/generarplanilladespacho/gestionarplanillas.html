@@ -7,7 +7,7 @@
                         <h3 class="text-center"><strong>Logo</strong></h3>
                     </div>
                     <div class="pull-right">
-                        <h3 class="text-center"><strong>Guia # {{ numero_orden }}</strong></h3>
+                        <h3 class="text-center"><strong>Guia # {{ planilla.get_numero_guia() }}</strong></h3>
                     </div>
                 </div>
                 <div class="panel-body">                    
@@ -17,7 +17,7 @@
                             <fieldset>
                                 <legend>Ciudad</legend>      
 
-                                <ui-select ng-model="ciudad_seleccionada.ciudad" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_ciudad()">
+                                <ui-select ng-model="datos_view.ciudad_seleccionada" ng-disabled="planilla.get_numero_guia() > 0" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_ciudad()">
                                     <ui-select-match  placeholder="Seleccionar ciudad">{{ $select.selected.get_nombre_ciudad() }}</ui-select-match>
                                     <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="ciudad in Empresa.get_ciudades() | filter:$select.search">
                                         {{ ciudad.get_nombre_ciudad() }}
@@ -28,7 +28,7 @@
                         <div class="col-md-4">
                             <fieldset>
                                 <legend>Tranportador</legend> 
-                                <ui-select ng-model="transportadora_seleccionada.transportadora" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_transportadora()">
+                                <ui-select ng-model="datos_view.transportadora_seleccionada" ng-disabled="planilla.get_numero_guia() > 0" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_transportadora()">
                                     <ui-select-match  placeholder="Seleccionar transportadora">{{ $select.selected.get_descripcion() }}</ui-select-match>
                                     <ui-select-choices repeat="transportadora in Empresa.get_transportadoras() | filter:$select.search">
                                         {{ transportadora.get_descripcion() }}
@@ -55,7 +55,7 @@
                                 <legend>Observación</legend>                                 
                                 <div class="row">  
                                     <div class="col-md-12">                                          
-                                        <textarea  ng-model="planilla.observacion" class="col-lg-12 col-md-12 col-sm-12" rows="4" name="" placeholder="Ingresar Observación"></textarea>
+                                        <textarea  ng-model="planilla.observacion" ng-disabled="planilla.get_numero_guia() > 0" class="col-lg-12 col-md-12 col-sm-12" rows="4" name="" placeholder="Ingresar Observación"></textarea>
                                     </div>
                                 </div>
                             </fieldset>
@@ -66,7 +66,7 @@
                                 <legend>Conductor</legend>                                 
                                 <div class="row">  
                                     <div class="col-md-12">                                          
-                                        <input type="text" ng-model="planilla.nombre_conductor" class="form-control"  placeholder="Ingrese Nombre del Conductor" name="" id="" />
+                                        <input type="text" ng-model="planilla.nombre_conductor" ng-disabled="planilla.get_numero_guia() > 0" class="form-control"  placeholder="Ingrese Nombre del Conductor" name="" id="" />
                                     </div>
                                 </div>
                             </fieldset>
@@ -91,8 +91,7 @@
                                 <div class="">
                                     <div class="col-md-3">
                                         <p class="input-group">
-                                            <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-click="gestionar_documentos_bodega()"  >
-                                                    <!--ng-disabled="planilla.get_ciudad()== null || planilla.get_transportadora()== null || planilla.get_nombre_conductor() == '' ||  planilla.get_observacion() == ''"--> 
+                                            <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-click="gestionar_documentos_bodega()" ng-disabled="planilla.get_ciudad()== null || planilla.get_transportadora()== null || planilla.get_nombre_conductor() == '' ||  planilla.get_observacion() == ''" > 
                                                 <span class="glyphicon glyphicon-plus"></span> Buscar Remisiones
                                             </button>
                                         </p>

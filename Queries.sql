@@ -759,15 +759,15 @@ IS 'Placa del vehiculo';
 CREATE TABLE "public"."inv_planillas_despacho" (
   "id" SERIAL, 
   "inv_transportador_id" INTEGER NOT NULL, 
-  "pais_id" INTEGER, 
-  "departamento_id" INTEGER, 
   "ciudad_id" VARCHAR(4) NOT NULL, 
   "nombre_conductor" VARCHAR(45) NOT NULL, 
   "observacion" TEXT, 
   "estado" CHAR(1) DEFAULT 1 NOT NULL, 
   "usuario_id" INTEGER NOT NULL, 
-  "fecha_registro" TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, 
-  "fecha_despacho" TIMESTAMP(0) WITHOUT TIME ZONE,   
+  "fecha_registro" TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT now() NOT NULL, 
+  "fecha_despacho" TIMESTAMP(0) WITHOUT TIME ZONE, 
+  "pais_id" VARCHAR(4), 
+  "departamento_id" VARCHAR(4), 
   CONSTRAINT "inv_planillas_despacho_pkey" PRIMARY KEY("id"), 
   CONSTRAINT "inv_planillas_despacho_fk" FOREIGN KEY ("inv_transportador_id")
     REFERENCES "public"."inv_transportadoras"("transportadora_id")
@@ -820,7 +820,7 @@ IS 'Fecha en que se despacha los pedidos de la planilla';
 CREATE TABLE "public"."inv_planillas_detalle_farmacias" (
   "id" SERIAL, 
   "inv_planillas_despacho_id" INTEGER NOT NULL, 
-  "empresa_id" INTEGER NOT NULL, 
+  "empresa_id" VARCHAR(2) NOT NULL, 
   "prefijo" VARCHAR(45) NOT NULL, 
   "numero" INTEGER NOT NULL, 
   "cantidad_cajas" INTEGER NOT NULL, 
@@ -857,7 +857,7 @@ IS 'Identificador de la planilla';
 CREATE TABLE "public"."inv_planillas_detalle_clientes" (
   "id" SERIAL, 
   "inv_planillas_despacho_id" INTEGER NOT NULL, 
-  "empresa_id" INTEGER NOT NULL, 
+  "empresa_id" VARCHAR(2) NOT NULL, 
   "prefijo" VARCHAR(45) NOT NULL, 
   "numero" INTEGER NOT NULL, 
   "cantidad_cajas" INTEGER NOT NULL, 
@@ -894,7 +894,7 @@ IS 'Identificador de la planilla';
 CREATE TABLE "public"."inv_planillas_detalle_empresas" (
   "id" SERIAL, 
   "inv_planillas_despacho_id" INTEGER NOT NULL, 
-  "empresa_id" INTEGER NOT NULL, 
+  "empresa_id" VARCHAR(2) NOT NULL, 
   "prefijo" VARCHAR(45) NOT NULL, 
   "numero" INTEGER NOT NULL, 
   "cantidad_cajas" INTEGER NOT NULL, 

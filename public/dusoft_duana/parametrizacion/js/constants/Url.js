@@ -25,7 +25,15 @@
                 'HABILITAR_MODULOS_USUARIO':BASE_URL+"/Usuarios/habilitarModulosDeUsuario",
                 'OBTENER_ROL_USUARIO':BASE_URL+"/Usuarios/obtenerRolUsuarioPorEmpresa",
                 'CAMBAR_PREDETERMINADO_EMPRESA':BASE_URL+"/Usuarios/cambiarPredeterminadoEmpresa",
-                'GUARDAR_OPCION':BASE_URL+"/Usuarios/guardarOpcion"
+                'GUARDAR_OPCION':BASE_URL+"/Usuarios/guardarOpcion",
+                'LISTAR_CENTROS_UTILIDAD':BASE_URL+"/CentrosUtilidad/listarCentrosUtilidadEmpresa",
+                'LISTAR_BODEGAS':BASE_URL+"/Bodegas/listarBodegasEmpresas",
+                'GUARDAR_CENTRO_UTILIDAD_BODEGA':BASE_URL+"/Usuarios/guardarCentroUtilidadBodegaUsuario",
+                'DESHABILITAR_BODEGAS':BASE_URL+"/Usuarios/deshabilitarBodegasUsuario",
+                'OBTENER_CENTROS_UTILIDAD_USUARIO':BASE_URL+"/Usuarios/obtenerCentrosUtilidadUsuario",
+                'OBTENER_BODEGAS_USUARIO':BASE_URL+"/Usuarios/obtenerBodegasUsuario"
+                
+                
                 
 	    },
             'MODULOS':{

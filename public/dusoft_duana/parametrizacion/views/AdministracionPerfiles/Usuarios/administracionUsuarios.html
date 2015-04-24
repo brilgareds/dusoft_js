@@ -4,7 +4,7 @@
         <tabset>
             <tab>
                 <tab-heading>
-                    Datos de usuario
+                    Usuario
                 </tab-heading>
 
                 <div class="panel">
@@ -191,6 +191,29 @@
                         </div>
                     </div>
                 </div>
+            </tab>
+            
+            <tab ng-if='rootUsuario.rolAGuardar.id > 0'>
+                <tab-heading>
+                    Centro Utilidad
+                </tab-heading>
+                
+                        
+                        
+                        <div class="table-responsive tablaRoles" >
+                            <div class="grid-responsive listado_centros_utilidad" ng-grid="listado_centros_utilidad">
+
+                            </div>
+                        </div>
+                        
+                        
+                        
+                        <div class="table-responsive tablaRoles" >
+                            <div class="grid-responsive listado_bodegas" ng-grid="listado_bodegas">
+
+                            </div>
+                        </div>
+                
             </tab>
 
     </div>

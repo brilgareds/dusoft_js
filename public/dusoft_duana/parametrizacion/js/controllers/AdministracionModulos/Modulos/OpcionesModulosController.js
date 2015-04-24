@@ -145,7 +145,7 @@ define([
                 enableRowSelection: false,
                 showFilter: true,
                 columnDefs: [
-                    {field: 'nombre', displayName: 'Nombre'},
+                    {field: 'nombre', displayName: 'Nombre Opcion'},
                     {field: 'alias', displayName: 'Alias'},
                     {field: 'accion', displayName: '', width: '70',
                         cellTemplate: '<div class="ngCellText txt-center">\

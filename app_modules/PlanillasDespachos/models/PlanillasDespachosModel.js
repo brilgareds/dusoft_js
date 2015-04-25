@@ -82,4 +82,27 @@ PlanillasDespachosModel.prototype.consultar_planilla_despacho = function(termino
     });
 };
 
+
+PlanillasDespachosModel.prototype.ingresar_planilla_despacho = function(pais_id, departamento_id, ciudad_id, inv_transportador_id, nombre_conductor, observacion, usuario_id, callback) {
+
+    var sql = " insert into  inv_planillas_despacho (pais_id, departamento_id, ciudad_id, inv_transportador_id, nombre_conductor, observacion, usuario_id ) \
+                values ($1, $2, $3, $4, $5, $6, $7) RETURNING id;";
+     
+    G.db.query(sql, [pais_id, departamento_id, ciudad_id, inv_transportador_id, nombre_conductor, observacion, usuario_id], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
+PlanillasDespachosModel.prototype.ingresar_documentos_planilla = function(tabla, planilla_id, empresa_id, prefijo, numero, cantidad_cajas, cantidad_neveras, temperatura_neveras, observacion, usuario_id, callback) {
+
+    var sql = " insert into " + tabla + " (inv_planillas_despacho_id, empresa_id, prefijo, numero, cantidad_cajas, cantidad_neveras, temperatura_neveras, observacion, usuario_id) \
+                values ($1, $2, $3, $4, $5, $6, $7, $8, $9)"; 
+    
+    G.db.query(sql, [planilla_id, empresa_id, prefijo, numero, cantidad_cajas, cantidad_neveras, temperatura_neveras, observacion, usuario_id], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
+
+
 module.exports = PlanillasDespachosModel;

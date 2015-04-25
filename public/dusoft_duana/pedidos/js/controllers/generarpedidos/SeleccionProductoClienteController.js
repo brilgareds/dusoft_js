@@ -39,6 +39,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 $scope.rootSeleccionProductoCliente.cliente = cliente;
                 $scope.rootSeleccionProductoCliente.no_incluir_producto = false; //NUEVO
                 $scope.rootSeleccionProductoCliente.bloquear_eliminar = false; //NUEVO
+                $scope.rootSeleccionProductoCliente.bloqueo_contrato = false; //NUEVO
 
                 $scope.rootSeleccionProductoCliente.paginas = 0;
                 $scope.rootSeleccionProductoCliente.items = 0;
@@ -177,6 +178,22 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 $scope.rootSeleccionProductoCliente.Empresa.vaciarProductos();
                 
+                
+                console.log(">>>>> contrato_id Tipo Dato: ", typeof $scope.rootSeleccionProductoCliente.cliente.contrato_id);
+                console.log(">>>>> contrato_id: ", $scope.rootSeleccionProductoCliente.cliente.contrato_id);
+                
+                if($scope.rootSeleccionProductoCliente.cliente.contrato_id > 0){
+                    
+                    console.log("Mayor que cero")
+                
+                    $scope.rootSeleccionProductoCliente.bloqueo_contrato = true;
+                }
+                else {
+                    $scope.rootSeleccionProductoCliente.bloqueo_contrato = false;
+                    
+                    console.log("Valor Cero")
+                }
+                
                 var producto_obj = {};
                 
                 data.lista_productos.forEach(function(producto){
@@ -267,7 +284,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         },
                         {field: 'precio', displayName: 'Precio Venta', width: "9%",
                             cellTemplate: ' <div class="col-xs-12">\n\
-                                                <input type="text" ng-model="row.entity.precio" validacion-numero class="form-control grid-inline-input"'+
+                                                <input type="text" ng-disabled = "rootSeleccionProductoCliente.bloqueo_contrato" ng-model="row.entity.precio" validacion-numero class="form-control grid-inline-input"'+
                                                 'ng-keyup=""/>\n\
                                             </div>'},
                         {field: 'existencia', displayName: 'Existencia', width: "6%"},

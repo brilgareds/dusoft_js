@@ -20,11 +20,8 @@ define(["angular", "js/controllers",
 
             var that = this;
             $scope.Empresa = Empresa;
-            // Variables de Sesion
-            $scope.session = {
-                usuario_id: Sesion.usuario_id,
-                auth_token: Sesion.token
-            };
+            
+            
             //variables
             $scope.laboratorio_id = '';
             $scope.codigo_proveedor_id = '';

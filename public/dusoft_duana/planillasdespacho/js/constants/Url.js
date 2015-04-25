@@ -7,6 +7,10 @@ define(["angular"], function(angular) {
     var data = {
         'API': {
             'BASE_URL': BASE_URL, 
+            'PLANILLAS': {
+                'GENERAR_PLANILLA': BASE_URL + '/PlanillasDespachos/generarPlanillaDespacho',
+                'INGRESAR_DOCUMENTOS': BASE_URL + '/PlanillasDespachos/ingresarDocumentosPlanilla'
+            },
             'CIUDADES': {
                 'LISTAR_CIUDADES': BASE_URL + '/Ciudades/listar'
             },

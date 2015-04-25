@@ -635,13 +635,13 @@ Usuarios.prototype.obtenerBodegasUsuario = function(req, res) {
     }
     
 
-    that.m_usuarios.obtenerCentrosUtilidadUsuario(empresa_id, usuario_id, centro_utilidad_id,  function(err, rows) {
+    that.m_usuarios.obtenerBodegasUsuario(empresa_id, usuario_id, centro_utilidad_id,  function(err, rows) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error consultando las bodegas del centro de utilidad', 500, {parametrizacion_usuarios: {}}));
             return;
         }
 
-        res.send(G.utils.r(req.url, "Lista bodegas", 200, {parametrizacion_usuarios: {centros_utilidad:rows}}));
+        res.send(G.utils.r(req.url, "Lista bodegas", 200, {parametrizacion_usuarios: {bodegas:rows}}));
 
     });
 

@@ -484,10 +484,10 @@ UsuariosModel.prototype.obtenerEmpresasUsuario = function(usuario_id, callback){
 UsuariosModel.prototype.obtenerCentrosUtilidadUsuario = function(empresa_id, login_id, callback){
      var that = this;
     
-    var sql =  "SELECT a.centro_utilidad, a.descripcion FROM centros_utilidad a\
+    var sql =  "SELECT a.centro_utilidad AS centro_utilidad_id, a.descripcion FROM centros_utilidad a\
                 INNER JOIN login_centros_utilidad_bodega b ON b.centro_utilidad_id = a.centro_utilidad\
                 INNER JOIN login_empresas c ON c.empresa_id = a.empresa_id\
-                WHERE a.empresa_id = $1 AND c.login_id = $2 GROUP BY 1, 2";
+                WHERE a.empresa_id = $1 AND c.login_id = $2 AND b.estado = '1' GROUP BY 1, 2";
 
     G.db.query(sql, [empresa_id, login_id], function(err, rows, result) {
         callback(err, rows, result);
@@ -497,10 +497,10 @@ UsuariosModel.prototype.obtenerCentrosUtilidadUsuario = function(empresa_id, log
 UsuariosModel.prototype.obtenerBodegasUsuario = function(empresa_id, login_id, centro_utilidad_id, callback){
      var that = this;
     
-    var sql = "SELECT a.centro_utilidad, a.descripcion FROM bodegas a\
+    var sql = "SELECT a.centro_utilidad AS centro_utilidad_id, a.descripcion, a.bodega AS bodega_id FROM bodegas a\
                INNER JOIN login_centros_utilidad_bodega b ON b.bodega_id = a.bodega\
                INNER JOIN login_empresas c ON c.empresa_id = a.empresa_id \
-               WHERE b.empresa_id = $1 AND c.login_id = $2 AND b.centro_utilidad_id = $3";
+               WHERE b.empresa_id = $1 AND c.login_id = $2 AND b.centro_utilidad_id = $3 AND b.estado = '1'";
 
     G.db.query(sql, [empresa_id, login_id, centro_utilidad_id], function(err, rows, result) {
         callback(err, rows, result);

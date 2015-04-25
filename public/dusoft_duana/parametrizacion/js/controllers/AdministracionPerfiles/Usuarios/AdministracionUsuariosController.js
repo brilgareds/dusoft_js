@@ -88,7 +88,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción <span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li><a href="javascript:void(0);" ng-click="seleccionarCentroUtilidad(row.entity);" >Seleccionar</a></li>\
+                                                <li><a href="javascript:void(0);" ng-click="seleccionarCentroUtilidad(row.entity);" >Listar Bodegas</a></li>\
                                                 <li><a href="javascript:void(0);" ng-click="removerCentroUtilidad(row.entity);" >Remover</a></li>\
                                             </ul>\
                                         </div>'
@@ -121,19 +121,22 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
            
            $scope.seleccionarCentroUtilidad = function(centroUtilidad){
                $scope.rootUsuario.empresaSeleccionada.setCentroUtilidadSeleccionado(centroUtilidad);
-               self.traerBodegas(function(){
-                   
+               self.traerBodegasUsuario(function(){
+                    self.traerBodegas(function(){
+
+                    });
                });
            };
            
            $scope.seleccionarBodega = function(bodega){
                var estado = !bodega.getEstado();
+               var centroUtilidad = $scope.rootUsuario.empresaSeleccionada.getCentroUtilidadSeleccionado();
                 var obj = {
                     session: $scope.rootUsuario.session,
                     data: {
                         parametrizacion_usuarios:{
                             empresa_id:$scope.rootUsuario.empresaSeleccionada.getCodigo(),
-                            centro_utilidad_id:$scope.rootUsuario.empresaSeleccionada.getCentroUtilidadSeleccionado().getCodigo(),
+                            centro_utilidad_id:centroUtilidad.getCodigo(),
                             bodega_id:bodega.getCodigo(),
                             login_empresa_id:$scope.rootUsuario.empresaSeleccionada.getLoginEmpresaId(),
                             estado:Number(estado)
@@ -148,10 +151,19 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                         
                         if(!estado){
                             msg = "La bodega se removio del usuario correctamente";
+
+                        } else {
+                            centroUtilidad.setEstado(true);
                         }
                         
                          AlertService.mostrarMensaje("success",msg);
                          bodega.setEstado(estado);
+                         
+                        var bodegas = centroUtilidad.obtenerBodegasSeleccionadas();
+                        if(bodegas.length === 0){
+                            centroUtilidad.setEstado(false);
+                        }
+                         
                     } else {
                         AlertService.mostrarMensaje("warning","Se genero un error asignando la bodega");
                     }
@@ -442,20 +454,50 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                     if (data.status === 200) {
                         var datos = data.obj.centros_utilidad;
 
-                        for (var i in datos) {
-                            var _centroUtilidad = datos[i];
-                            
-                            var centroUtilidad = CentroUtilidad.get(_centroUtilidad.descripcion, _centroUtilidad.centro_utilidad_id);
-                            
-                            $scope.rootUsuario.empresaSeleccionada.agregarCentroUtilidad(centroUtilidad);
-
-                        }
+                        self.agregarCentroUtilidad(datos, false);
                         
                         callback();
 
                     }
 
                 });
+            };
+            
+            self.traerCentrosUtilidadUsuario = function(callback){
+                
+                var obj = {
+                    session: $scope.rootUsuario.session,
+                    data: {
+                        parametrizacion_usuarios:{
+                            empresa_id:$scope.rootUsuario.empresaSeleccionada.getCodigo(),
+                            usuario_id:$scope.rootUsuario.usuarioAGuardar.getId()
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.USUARIOS.OBTENER_CENTROS_UTILIDAD_USUARIO, "POST", obj, function(data) {
+                    console.log("centros utilidad usuario ", data)
+                    if (data.status === 200) {
+                        var datos = data.obj.parametrizacion_usuarios.centros_utilidad;
+
+                        self.agregarCentroUtilidad(datos, true);
+                        
+                        callback();
+
+                    }
+
+                });
+            };
+            
+            self.agregarCentroUtilidad = function(centrosUtilidad, seleccionado){
+                 for (var i in centrosUtilidad) {
+                    var _centroUtilidad = centrosUtilidad[i];
+
+                    var centroUtilidad = CentroUtilidad.get(_centroUtilidad.descripcion, _centroUtilidad.centro_utilidad_id);
+                    centroUtilidad.setEstado(seleccionado);
+
+                    $scope.rootUsuario.empresaSeleccionada.agregarCentroUtilidad(centroUtilidad);
+                 }
             };
             
             self.traerBodegas = function(callback){
@@ -476,20 +518,52 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                     if (data.status === 200) {
                         var datos = data.obj.bodegas;
 
-                        for (var i in datos) {
-                            var _bodega = datos[i];
-                            
-                            var bodega = Bodega.get(_bodega.descripcion, _bodega.bodega_id);
-                            
-                            centroUtilidad.agregarBodega(bodega);
-
-                        }
+                        self.agregarBodegas(datos, false);
                         
                         callback();
                         
                     }
 
                 });
+            };
+            
+            self.traerBodegasUsuario = function(callback){
+                                
+                var obj = {
+                    session: $scope.rootUsuario.session,
+                    data: {
+                        parametrizacion_usuarios:{
+                            empresa_id:$scope.rootUsuario.empresaSeleccionada.getCodigo(),
+                            centro_utilidad_id:$scope.rootUsuario.empresaSeleccionada.getCentroUtilidadSeleccionado().getCodigo(),
+                            usuario_id:$scope.rootUsuario.usuarioAGuardar.getId()
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.USUARIOS.OBTENER_BODEGAS_USUARIO, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        var datos = data.obj.parametrizacion_usuarios.bodegas;
+
+                        self.agregarBodegas(datos, true);
+                        callback();
+                        
+                    }
+
+                });
+            };
+            
+            
+            self.agregarBodegas = function(bodegas, estado){
+                var centroUtilidad = $scope.rootUsuario.empresaSeleccionada.getCentroUtilidadSeleccionado();
+                for (var i in bodegas) {
+                    var _bodega = bodegas[i];
+
+                    var bodega = Bodega.get(_bodega.descripcion, _bodega.bodega_id);
+                    bodega.setEstado(estado);
+
+                    centroUtilidad.agregarBodega(bodega);
+
+                }
             };
             
             
@@ -510,6 +584,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                 Request.realizarRequest(API.USUARIOS.DESHABILITAR_BODEGAS, "POST", obj, function(data) {
                     if (data.status === 200) {
                          $scope.rootUsuario.empresaSeleccionada.getCentroUtilidadSeleccionado().vaciarBodegas();
+                         $scope.rootUsuario.empresaSeleccionada.getCentroUtilidadSeleccionado().setEstado(false);   
                          AlertService.mostrarMensaje("success","El centro de utilidad y sus bodegas se removieron del usuario correctamente");
                     } else {
                         AlertService.mostrarMensaje("warning","Se genero un error...");
@@ -1076,8 +1151,10 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                         self.traerModulosPorUsuario(function(){
                               self.traerModulos(function(){
                                 self.traerRoles(function(){
-                                    self.traerCentrosUtilidadEmpresa(function(){
+                                    self.traerCentrosUtilidadUsuario(function(){
+                                        self.traerCentrosUtilidadEmpresa(function(){
 
+                                        });
                                     });
                                 });
                               });
@@ -1110,9 +1187,13 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
 
                 if (usuario_id && usuario_id.length > 0) {
                     self.traerUsuarioPorId(usuario_id, function() {
-                        self.traerCentrosUtilidadEmpresa(function(){
-                            
-                        });
+                        if($scope.rootUsuario.empresaSeleccionada){
+                            self.traerCentrosUtilidadUsuario(function(){
+                                self.traerCentrosUtilidadEmpresa(function(){
+
+                                });
+                            });
+                        }
                     });
                 } 
                 

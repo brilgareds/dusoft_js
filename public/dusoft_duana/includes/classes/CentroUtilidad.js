@@ -7,6 +7,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.nombre = nombre || "";
             this.codigo = codigo || "";
             this.bodegas = [];
+            this.estado = false;
             //this.clientes = []; 
             //this.proveedores = [];
         };
@@ -27,6 +28,14 @@ define(["angular", "js/models"], function(angular, models) {
             return this.codigo;
         };
         
+        CentroUtilidad.prototype.setEstado = function(estado) {
+            this.estado = estado;
+        };
+
+        CentroUtilidad.prototype.getEstado = function() {
+            return this.estado;
+        };
+        
         CentroUtilidad.prototype.agregarBodega = function(bodega) {
             for(var i in this.bodegas){
                 var _bodega = this.bodegas[i];
@@ -37,6 +46,20 @@ define(["angular", "js/models"], function(angular, models) {
             }
             
             this.bodegas.push(bodega);
+        };
+        
+        CentroUtilidad.prototype.obtenerBodegasSeleccionadas = function(){
+           var bodegas = [];
+           
+           for(var i in this.bodegas){
+               var bodega = this.bodegas[i];
+               
+               if(bodega.getEstado()){
+                   bodegas.push(bodega);
+               }
+           }
+           
+           return bodegas;
         };
         
         CentroUtilidad.prototype.getBodegas = function() {

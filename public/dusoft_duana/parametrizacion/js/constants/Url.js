@@ -33,8 +33,6 @@
                 'OBTENER_CENTROS_UTILIDAD_USUARIO':BASE_URL+"/Usuarios/obtenerCentrosUtilidadUsuario",
                 'OBTENER_BODEGAS_USUARIO':BASE_URL+"/Usuarios/obtenerBodegasUsuario"
                 
-                
-                
 	    },
             'MODULOS':{
                 'LISTAR_MODULOS': BASE_URL+"/Modulos/listarModulos",

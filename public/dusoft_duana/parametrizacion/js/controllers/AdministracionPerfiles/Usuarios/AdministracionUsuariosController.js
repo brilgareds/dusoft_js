@@ -123,7 +123,6 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
             };
             
             $scope.onSeleccionMultipleBodegas = function(estado){
-                console.log("seleccionar bodegas ? ", estado);
                 var bodegas = $scope.rootUsuario.empresaSeleccionada.getCentroUtilidadSeleccionado().getBodegas();
                 
                 if(bodegas.length === 0){

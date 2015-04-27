@@ -48,8 +48,8 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
                 $timeout(function(){
                     
                     $scope.session = {
-                         usuario_id: Usuario.usuario_id,
-                         auth_token: Usuario.token
+                          usuario_id: Usuario.getUsuarioActual().getId(),
+                          auth_token: Usuario.getUsuarioActual().getToken()
                      };
 
                      Request.realizarRequest(API.USUARIOS.LISTAR_USUARIOS, "POST", { session: $scope.session, data: { lista_usuarios : { termino_busqueda: '' , estado_registro : '1' } }}, function(data) {

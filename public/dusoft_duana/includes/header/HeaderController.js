@@ -2,18 +2,17 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
     "includes/header/lockscreen", "includes/content/rutamodulo",
     "includes/classes/Empresa", "includes/classes/Modulo",
     "includes/classes/Rol", "includes/classes/OpcionModulo",
-    "includes/classes/CentroUtilidad", "includes/classes/Bodega"], function(angular, controllers) {
+    "includes/classes/CentroUtilidad", "includes/classes/Bodega", "includes/classes/VariableModulo"], function(angular, controllers) {
     controllers.controller('HeaderController', [
         '$scope', '$rootScope', "$state", "Request",
         "Usuario", "socket", "URL", "localStorageService", "Empresa",
-        "Modulo", "Rol", "OpcionModulo", "AlertService", "CentroUtilidad", "Bodega",
+        "Modulo", "Rol", "OpcionModulo", "AlertService", "CentroUtilidad", "Bodega","VariableModulo",
         function($scope, $rootScope, $state,
                 Request, Usuario, socket, URL, localStorageService, Empresa,
-                Modulo, Rol, OpcionModulo, AlertService, CentroUtilidad, Bodega) {
+                Modulo, Rol, OpcionModulo, AlertService, CentroUtilidad, Bodega, VariableModulo) {
 
             var self = this;
             var obj_session = localStorageService.get("session");
-            console.log("session obj_session ", obj_session)
             if (!obj_session)
                 return;
 

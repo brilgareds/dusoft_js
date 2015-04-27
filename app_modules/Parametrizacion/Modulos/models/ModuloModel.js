@@ -197,6 +197,82 @@ ModuloModel.prototype.obtenerOpcionPorNombre = function(nombre, callback) {
 };
 
 
+ModuloModel.prototype.guardarVariable = function(variable, callback) {
+    var self = this;
+
+    self.modificarVariable(variable, function(err, rows) {
+        callback(err, rows);
+    });
+
+};
+
+
+ModuloModel.prototype.insertarVariable = function(variable, callback) {
+
+    var sql = "INSERT INTO modulos_variables (nombre, valor, observacion, modulo_id, estado,\
+               fecha_creacion) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id";
+
+
+    var params = [
+        variable.nombre, variable.valor, variable.observacion,
+        variable.modulo_id, Number(Boolean(variable.estado)) || '0', 'now()'
+    ];
+
+    G.db.query(sql, params, function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+ModuloModel.prototype.modificarVariable = function(variable, callback) {
+    var self = this;
+
+    var sql = "UPDATE modulos_variables SET nombre = $1, valor =$2,\
+               observacion = $3,  usuario_id_modifica = $4,\
+               estado = $5, fecha_modificacion = $6 WHERE id = $7";
+
+    var params = [
+        variable.nombre, variable.valor, variable.observacion,
+        variable.usuario_id, Number(Boolean(variable.estado)), 'now()', variable.id
+    ];
+
+    G.db.query(sql, params, function(err, rows, result) {
+        
+        if(err){
+            callback(err, rows);
+            return;
+        }
+        
+        if(result.rowCount === 0){
+            self.insertarVariable(variable, function(err, rows) {
+                callback(err, rows);
+            });
+        } else {
+            callback(err, rows);
+        }
+        
+        
+    });
+};
+
+
+ModuloModel.prototype.listarVariablesPorModulo = function(modulo_id, callback) {
+    var sql = "SELECT * FROM modulos_variables  a\
+               WHERE a.modulo_id =  $1 ORDER BY a.id";
+
+    G.db.query(sql, [modulo_id], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+
+ModuloModel.prototype.obtenerVariablePorNombre = function(nombre, callback) {
+    var sql = "SELECT  nombre, id FROM modulos_variables WHERE nombre ILIKE $1";
+
+    G.db.query(sql, [nombre + "%"], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
 ModuloModel.prototype.listarOpcionesPorModulo = function(modulo_id, rol_modulo_id, callback) {
     var sql = "SELECT * FROM modulos_opciones  a\
                WHERE a.modulo_id =  $1 ORDER BY a.id";

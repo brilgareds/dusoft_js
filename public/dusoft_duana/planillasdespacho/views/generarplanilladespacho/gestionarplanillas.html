@@ -17,7 +17,7 @@
                             <fieldset>
                                 <legend>Ciudad</legend>      
 
-                                <ui-select ng-model="datos_view.ciudad_seleccionada" ng-disabled="planilla.get_numero_guia() > 0" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_ciudad()">
+                                <ui-select ng-model="planilla.ciudad" ng-disabled="planilla.get_numero_guia() > 0" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_ciudad()">
                                     <ui-select-match  placeholder="Seleccionar ciudad">{{ $select.selected.get_nombre_ciudad() }}</ui-select-match>
                                     <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="ciudad in Empresa.get_ciudades() | filter:$select.search">
                                         {{ ciudad.get_nombre_ciudad() }}
@@ -28,7 +28,7 @@
                         <div class="col-md-4">
                             <fieldset>
                                 <legend>Tranportador</legend> 
-                                <ui-select ng-model="datos_view.transportadora_seleccionada" ng-disabled="planilla.get_numero_guia() > 0" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_transportadora()">
+                                <ui-select ng-model="planilla.transportadora" ng-disabled="planilla.get_numero_guia() > 0" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_transportadora()">
                                     <ui-select-match  placeholder="Seleccionar transportadora">{{ $select.selected.get_descripcion() }}</ui-select-match>
                                     <ui-select-choices repeat="transportadora in Empresa.get_transportadoras() | filter:$select.search">
                                         {{ transportadora.get_descripcion() }}
@@ -120,6 +120,9 @@
                             </div>  
 
                             <div class="modal-footer col-md-12">
+                                <button class="btn btn-default" ng-click="cancelar_planilla_despacho()">
+                                    <span class="glyphicon glyphicon-remove" ></span> Cancelar
+                                </button>
                                 <button class="btn btn-default" ng-click="">
                                     <span class="glyphicon glyphicon-ok" ></span> Aceptar
                                 </button>

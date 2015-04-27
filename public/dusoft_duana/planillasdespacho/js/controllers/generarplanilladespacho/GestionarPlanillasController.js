@@ -9,14 +9,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         "EmpresaPlanillaDespacho",
         "Ciudad",
         "Transportadora",
+        "UsuarioPlanillaDespacho",
         "PlanillaDespacho",
         "Usuario",
-        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Empresa, Ciudad, Transportadora, PlanillaDespacho, Sesion) {
+        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Empresa, Ciudad, Transportadora, UsuarioPlanilla, PlanillaDespacho, Sesion) {
 
             var that = this;
             $scope.Empresa = Empresa;
-
-
+            
+            $scope.Empresa.limpiar_ciudades();
+            $scope.Empresa.limpiar_transportadoras();
+            
             // Variables de Sesion
             $scope.session = {
                 usuario_id: Sesion.getUsuarioActual().getId(),
@@ -25,14 +28,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             // Variables 
             $scope.planilla = PlanillaDespacho.get();
-
-            $scope.planilla.set_numero_guia(0);
+            $scope.planilla.set_numero_guia(parseInt(localStorageService.get("numero_guia")) || 0);
             $scope.planilla.set_fecha_registro($filter('date')(new Date(), "dd/MM/yyyy"));
+            
+            console.log('=== Planilla =====');
+            console.log($scope.planilla);
 
             $scope.datos_view = {
-                ciudad_seleccionada: Ciudad.get(),
-                transportadora_seleccionada: Transportadora.get(),
-                termino_busqueda_ciudades : ''                
+                //ciudad_seleccionada: Ciudad.get(),
+                //transportadora_seleccionada: Transportadora.get(),
+                termino_busqueda_ciudades: ''
             };
 
             $scope.datos_planilla = [];
@@ -41,11 +46,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 that.buscar_ciudades(function(ciudades) {
 
-                    if ($scope.numero_guia > 0)
+                    if ($scope.planilla.get_numero_guia() > 0)
                         that.render_ciudades(ciudades);
 
                     that.buscar_transportadoras(function() {
 
+                        if ($scope.planilla.get_numero_guia() > 0) {
+                            that.consultar_planilla_despacho();
+                        }
                     });
                 });
             };
@@ -76,7 +84,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 Request.realizarRequest(API.CIUDADES.LISTAR_CIUDADES, "POST", obj, function(data) {
 
                     if (data.status === 200) {
-                        //that.render_ciudades(data.obj.ciudades);
                         callback(data.obj.ciudades);
                     }
                 });
@@ -93,7 +100,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
             $scope.seleccionar_ciudad = function() {
-                $scope.planilla.set_ciudad($scope.datos_view.ciudad_seleccionada);
+                //$scope.planilla.set_ciudad($scope.datos_view.ciudad_seleccionada);
             };
 
             that.buscar_transportadoras = function(callback) {
@@ -106,10 +113,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         }
                     }
                 };
+
                 Request.realizarRequest(API.TRANSPORTADORAS.LISTAR_TRANSPORTADORAS, "POST", obj, function(data) {
 
                     if (data.status === 200) {
-
                         that.render_transportadoras(data.obj.transportadoras);
                         callback(true);
                     }
@@ -128,10 +135,37 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
             $scope.seleccionar_transportadora = function() {
-                $scope.planilla.set_transportadora($scope.datos_view.transportadora_seleccionada);
+                //$scope.planilla.set_transportadora($scope.datos_view.transportadora_seleccionada);
             };
 
-            $scope.buscar_documentos_bodega = function(termino, paginando) {
+            that.consultar_planilla_despacho = function() {
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        planillas_despachos: {
+                            planilla_id: $scope.planilla.get_numero_guia()
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PLANILLAS.CONSULTAR_PLANILLA, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        that.render_planilla(data.obj.planillas_despachos[0]);
+                    }
+                });
+
+            };
+
+            that.render_planilla = function(datos) {
+
+                var ciudad = Ciudad.get(datos.pais_id, datos.nombre_pais, datos.departamento_id, datos.nombre_departamento, datos.ciudad_id, datos.nombre_ciudad);
+                var transportadora = Transportadora.get(datos.transportadora_id, datos.nombre_transportadora, datos.placa_vehiculo, datos.estado_transportadora);
+                var usuario = UsuarioPlanilla.get(datos.usuario_id, datos.nombre_usuario);
+                $scope.planilla = PlanillaDespacho.get(datos.id, transportadora, ciudad, datos.nombre_conductor, datos.observacion, usuario, datos.fecha_registro, datos.fecha_despacho, datos.estado, datos.descripcion_estado);                                
+            };
+
+            $scope.buscar_documentos_bodega = function() {
 
                 console.log('==============================');
                 console.log('== buscar_documentos_bodega ==');
@@ -169,8 +203,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 ]
             };
 
+            $scope.cancelar_planilla_despacho = function() {
+
+                $state.go('GestionarPlanillas');
+            };
+
             that.gestionar_consultas();
-            //$scope.buscar_documentos_bodega();
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;

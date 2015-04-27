@@ -8,6 +8,8 @@ define(["angular"], function(angular) {
         'API': {
             'BASE_URL': BASE_URL, 
             'PLANILLAS': {
+                'LISTAR_PLANILLAS': BASE_URL + '/PlanillasDespachos/listar',
+                'CONSULTAR_PLANILLA': BASE_URL + '/PlanillasDespachos/consultarPlanillaDespacho',
                 'GENERAR_PLANILLA': BASE_URL + '/PlanillasDespachos/generarPlanillaDespacho',
                 'INGRESAR_DOCUMENTOS': BASE_URL + '/PlanillasDespachos/ingresarDocumentosPlanilla'
             },

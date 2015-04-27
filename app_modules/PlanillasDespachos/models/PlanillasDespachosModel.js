@@ -3,7 +3,7 @@ var PlanillasDespachosModel = function() {
 };
 
 
-PlanillasDespachosModel.prototype.listar_planillas_despachos = function(termino_busqueda, callback) {
+PlanillasDespachosModel.prototype.listar_planillas_despachos = function(fecha_inicial, fecha_final, termino_busqueda, callback) {
 
 
     var sql = " select \
@@ -23,8 +23,12 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function(termino_
                 a.observacion,\
                 a.usuario_id,\
                 f.nombre as nombre_usuario,\
-                a.fecha_registro,\
-                a.fecha_despacho\
+                a.estado,\
+                case when a.estado = 0 then 'Anulada' \
+                     when a.estado = 1 then 'Activa' \
+                     when a.estado = 2 then 'Despachada' end as descripcion_estado, \
+                To_char(a.fecha_registro,'dd-mm-yyyy') as fecha_registro,\
+                To_char(a.fecha_despacho,'dd-mm-yyyy') as fecha_despacho\
                 from inv_planillas_despacho a \
                 inner join inv_transportadoras b on a.inv_transportador_id = b.transportadora_id\
                 inner join tipo_mpios c on a.ciudad_id = c.tipo_mpio_id and a.departamento_id = c.tipo_dpto_id and a.pais_id = c.tipo_pais_id\
@@ -40,14 +44,14 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function(termino_
                     d.departamento ilike $3 or\
                     c.municipio ilike $3 or\
                     a.nombre_conductor ilike $3 \
-                )";
+                ); ";
 
-    G.db.query(sql, [], function(err, rows, result) {
+    G.db.query(sql, [fecha_inicial, fecha_final, "%"+termino_busqueda+"%"], function(err, rows, result) {
         callback(err, rows);
     });
 };
 
-PlanillasDespachosModel.prototype.consultar_planilla_despacho = function(termino_busqueda, callback) {
+PlanillasDespachosModel.prototype.consultar_planilla_despacho = function(planilla_id, callback) {
 
 
     var sql = " select \
@@ -67,17 +71,21 @@ PlanillasDespachosModel.prototype.consultar_planilla_despacho = function(termino
                 a.observacion,\
                 a.usuario_id,\
                 f.nombre as nombre_usuario,\
-                a.fecha_registro,\
-                a.fecha_despacho\
+                a.estado,\
+                case when a.estado = 0 then 'Anulada' \
+                     when a.estado = 1 then 'Activa' \
+                     when a.estado = 2 then 'Despachada' end as descripcion_estado, \
+                To_char(a.fecha_registro,'dd-mm-yyyy') as fecha_registro,\
+                To_char(a.fecha_despacho,'dd-mm-yyyy') as fecha_despacho\
                 from inv_planillas_despacho a \
                 inner join inv_transportadoras b on a.inv_transportador_id = b.transportadora_id\
                 inner join tipo_mpios c on a.ciudad_id = c.tipo_mpio_id and a.departamento_id = c.tipo_dpto_id and a.pais_id = c.tipo_pais_id\
                 inner join tipo_dptos d on c.tipo_dpto_id = d.tipo_dpto_id and c.tipo_pais_id = d.tipo_pais_id\
                 inner join tipo_pais e on d.tipo_pais_id = e.tipo_pais_id\
                 inner join system_usuarios f on a.usuario_id = f.usuario_id\
-                where a.id = $1 ";
+                where a.id = $1 ; ";
     
-    G.db.query(sql, [], function(err, rows, result) {
+    G.db.query(sql, [planilla_id], function(err, rows, result) {
         callback(err, rows);
     });
 };

@@ -660,7 +660,7 @@ Usuarios.prototype.guardarCentroUtilidadBodegaUsuario = function(req, res) {
     var centro_utilidad_id = args.parametrizacion_usuarios.centro_utilidad_id || undefined;
     var login_empresa_id = args.parametrizacion_usuarios.login_empresa_id;
     var empresa_id = args.parametrizacion_usuarios.empresa_id;
-    var bodega_id = args.parametrizacion_usuarios.bodega_id;
+    var bodegas = args.parametrizacion_usuarios.bodegas;
     var estado = args.parametrizacion_usuarios.estado;
 
     if (centro_utilidad_id === undefined || centro_utilidad_id.length === 0) {
@@ -678,8 +678,8 @@ Usuarios.prototype.guardarCentroUtilidadBodegaUsuario = function(req, res) {
         return;
     }
     
-    if (bodega_id === undefined || bodega_id.length === 0) {
-        res.send(G.utils.r(req.url, 'La bodega no es valida', 500, {parametrizacion_usuarios: {}}));
+    if (bodegas === undefined || bodegas.length === 0) {
+        res.send(G.utils.r(req.url, 'No se encontraron bodegas validas', 500, {parametrizacion_usuarios: {}}));
         return;
     }
     
@@ -690,7 +690,7 @@ Usuarios.prototype.guardarCentroUtilidadBodegaUsuario = function(req, res) {
 
 
 
-    that.m_usuarios.guardarCentroUtilidadBodegaUsuario(req.session.user.usuario_id, login_empresa_id,empresa_id, centro_utilidad_id, bodega_id,estado, function(err, rows) {
+    that.m_usuarios.guardarCentroUtilidadBodegaUsuario(req.session.user.usuario_id, login_empresa_id,empresa_id, centro_utilidad_id, bodegas,estado, function(err, rows) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error guardando la opcion para el modulo', 500, {parametrizacion_usuarios: {}}));
             return;

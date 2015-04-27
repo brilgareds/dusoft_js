@@ -297,33 +297,10 @@ UsuariosModel.prototype.deshabilitarBodegasUsuario = function(usuario_id, login_
 };
 
 
-UsuariosModel.prototype.guardarCentroUtilidadBodegaUsuario = function(usuario_id, login_empresa_id,empresa_id, centro_utilidad_id, bodega_id,estado, callback){
-    
-    var sql = "UPDATE login_centros_utilidad_bodega SET usuario_id_modifica = $1, fecha_modificacion = now(), estado = $5 \
-                WHERE empresa_id = $2 AND centro_utilidad_id = $3 AND  bodega_id = $4 RETURNING id";
-
-    G.db.query(sql, [usuario_id, empresa_id, centro_utilidad_id, bodega_id, estado], function(err,rows, result) {
-        if (err) {
-            callback(err, result);
-            return;
-        }
-        if (result.rowCount === 0) {
-            sql = "INSERT INTO login_centros_utilidad_bodega (fecha_modificacion, usuario_id_modifica, login_empresa_id, empresa_id, centro_utilidad_id, bodega_id, estado, fecha_creacion)\
-                   VALUES(now(), $1, $2, $3, $4, $5, $6, now()) RETURNING id";
-
-            G.db.query(sql, [usuario_id, login_empresa_id, empresa_id, centro_utilidad_id, bodega_id, estado], function(err, rows, result) {
-                if (err) {
-                    callback(err, rows);
-                    return;
-                } 
-                
-                callback(err, rows);
-                
-            });
-
-        } else {
-            callback(err, rows);
-        }
+UsuariosModel.prototype.guardarCentroUtilidadBodegaUsuario = function(usuario_id, login_empresa_id,empresa_id, centro_utilidad_id, bodegas ,estado, callback){
+    var that = this;
+    __guardarCentroUtilidadBodegaUsuario(that,usuario_id, login_empresa_id,empresa_id, centro_utilidad_id, bodegas , estado, function(err){
+        callback(err);
     });
 };
 
@@ -749,17 +726,62 @@ function __deshabilitarBodegasUsuario(that, usuario_id, login_empresa_id,empresa
     }
     var bodega = bodegas[0];
     
-    that.guardarCentroUtilidadBodegaUsuario(usuario_id, login_empresa_id,empresa_id, centro_utilidad_id, bodega.bodega_id,'0', function(err, rows){
+    that.guardarCentroUtilidadBodegaUsuario(usuario_id, login_empresa_id,empresa_id, centro_utilidad_id, [bodega.bodega_id],'0', function(err, rows){
          if (err) {
             callback(err, rows);
             return;
         }
         
         bodegas.splice(0, 1);
-        __deshabilitarBodegasUsuario(that, usuario_id, login_empresa_id,empresa_id, centro_utilidad_id, bodegas, callback);
+        setTimeout(function(){
+            __deshabilitarBodegasUsuario(that, usuario_id, login_empresa_id,empresa_id, centro_utilidad_id, bodegas, callback);
+        },0);
         
-    });
+    });    
+}
+
+function __guardarCentroUtilidadBodegaUsuario(that,usuario_id, login_empresa_id,empresa_id, centro_utilidad_id, bodegas,estado, callback ){
+    if(bodegas.length === 0){
+        callback(false);
+        return;
+    }
     
+    var bodega = bodegas[0];
+    
+    var sql = "UPDATE login_centros_utilidad_bodega SET usuario_id_modifica = $1, fecha_modificacion = now(), estado = $5 \
+                WHERE empresa_id = $2 AND centro_utilidad_id = $3 AND  bodega_id = $4 ";
+
+    G.db.query(sql, [usuario_id, empresa_id, centro_utilidad_id, bodega, estado], function(err,rows, result) {
+        if (err) {
+            callback(err, result);
+            return;
+        }
+        if (result.rowCount === 0) {
+            sql = "INSERT INTO login_centros_utilidad_bodega (fecha_modificacion, usuario_id_modifica, login_empresa_id, empresa_id, centro_utilidad_id, bodega_id, estado, fecha_creacion)\
+                   VALUES(now(), $1, $2, $3, $4, $5, $6, now())";
+
+            G.db.query(sql, [usuario_id, login_empresa_id, empresa_id, centro_utilidad_id, bodega, estado], function(err, rows, result) {
+                if (err) {
+                    callback(err, rows);
+                    return;
+                } 
+                
+                bodegas.splice(0,1);
+                
+                setTimeout(function(){
+                     __guardarCentroUtilidadBodegaUsuario(that,usuario_id, login_empresa_id,empresa_id, centro_utilidad_id, bodegas,estado, callback);
+                },0);
+                
+            });
+
+        } else {
+            bodegas.splice(0,1);
+            
+            setTimeout(function(){
+                __guardarCentroUtilidadBodegaUsuario(that,usuario_id, login_empresa_id,empresa_id, centro_utilidad_id, bodegas,estado, callback);
+            },0); 
+        }
+    });
     
 }
 

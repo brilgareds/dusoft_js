@@ -58,8 +58,8 @@ define(["angular", "js/controllers",
                     session: $scope.session,
                     data: {
                         planillas_despachos: {
-                            fecha_inicial: $scope.datos_view.fecha_inicial,
-                            fecha_final: $scope.datos_view.fecha_final,
+                            fecha_inicial: $scope.datos_view.fecha_inicial + " 00:00:00",
+                            fecha_final: $scope.datos_view.fecha_final + " 23:59:00",
                             termino_busqueda: $scope.datos_view.termino_busqueda
                         }
                     }
@@ -85,19 +85,6 @@ define(["angular", "js/controllers",
                     var planilla = PlanillaDespacho.get(data.id, transportadora, ciudad, data.nombre_conductor, data.observacion, usuario, data.fecha_registro, data.fecha_despacho, data.estado, data.descripcion_estado);
                     $scope.Empresa.set_planillas(planilla);
                 });
-            };
-
-            $scope.gestionar_planilla_despacho = function(planilla_despacho, opcion) {
-
-                localStorageService.add("numero_guia", 0);
-
-                if (opcion) {
-                    // Modificar Planilla
-                    localStorageService.add("numero_guia", planilla_despacho.get_numero_guia());
-                }
-
-                $state.go('CrearPlanilla');
-
             };
 
             $scope.abrir_fecha_inicial = function($event) {
@@ -146,12 +133,17 @@ define(["angular", "js/controllers",
                 ]
             };
 
-            $scope.modificar_planilla_despacho = function(orden_compra) {
-                console.log('=================================');
-                console.log('== modificar_planilla_despacho ==');
-                console.log('=================================');
+            $scope.gestionar_planilla_despacho = function(planilla_despacho, opcion) {
 
-                $state.go('ModificarPlanilla');
+                localStorageService.add("numero_guia", 0);
+
+                if (opcion) {
+                    // Modificar Planilla
+                    localStorageService.add("numero_guia", planilla_despacho.get_numero_guia());
+                }
+
+                $state.go('CrearPlanilla');
+
             };
 
             $scope.generar_reporte = function(orden_compra) {

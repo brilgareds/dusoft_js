@@ -99,9 +99,9 @@
 
                                     <div class="col-md-3 pull-right">
                                         <p class="input-group">
-                                            <input type="text" class="form-control" ng-keypress="buscador_productos_orden_compra($event, termino_busqueda);" ng-model="termino_busqueda" placeholder="Buscar" name="" id="" />
+                                            <input type="text" class="form-control" ng-keypress="buscador_documentos_planillas($event);" ng-model="datos_view.termino_busqueda_documentos" placeholder="Buscar" name="" id="" />
                                             <span class="input-group-btn">
-                                                <button class="btn btn-default" type="submit" ng-click="buscar_detalle_orden_compra(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                                                <button class="btn btn-default" type="submit" ng-click="consultar_documentos_planilla_despacho()"><i class="glyphicon glyphicon-search"></i></button>
                                             </span>
                                         </p>
                                     </div>
@@ -123,8 +123,8 @@
                                 <button class="btn btn-default" ng-click="cancelar_planilla_despacho()">
                                     <span class="glyphicon glyphicon-remove" ></span> Cancelar
                                 </button>
-                                <button class="btn btn-default" ng-click="">
-                                    <span class="glyphicon glyphicon-ok" ></span> Aceptar
+                                <button class="btn btn-default" ng-click="confirmar_despacho_planilla()">
+                                    <span class="glyphicon glyphicon-ok" ></span> Despachar
                                 </button>
                             </div>                            
                         </div>

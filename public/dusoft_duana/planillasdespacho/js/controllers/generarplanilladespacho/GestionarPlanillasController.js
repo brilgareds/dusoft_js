@@ -11,15 +11,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         "Transportadora",
         "UsuarioPlanillaDespacho",
         "PlanillaDespacho",
+        "Documento",
         "Usuario",
-        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Empresa, Ciudad, Transportadora, UsuarioPlanilla, PlanillaDespacho, Sesion) {
+        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Empresa, Ciudad, Transportadora, UsuarioPlanilla, PlanillaDespacho, Documento, Sesion) {
 
             var that = this;
             $scope.Empresa = Empresa;
-            
+
             $scope.Empresa.limpiar_ciudades();
             $scope.Empresa.limpiar_transportadoras();
-            
+
             // Variables de Sesion
             $scope.session = {
                 usuario_id: Sesion.getUsuarioActual().getId(),
@@ -30,14 +31,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             $scope.planilla = PlanillaDespacho.get();
             $scope.planilla.set_numero_guia(parseInt(localStorageService.get("numero_guia")) || 0);
             $scope.planilla.set_fecha_registro($filter('date')(new Date(), "dd/MM/yyyy"));
-            
-            console.log('=== Planilla =====');
-            console.log($scope.planilla);
 
             $scope.datos_view = {
-                //ciudad_seleccionada: Ciudad.get(),
-                //transportadora_seleccionada: Transportadora.get(),
-                termino_busqueda_ciudades: ''
+                termino_busqueda_ciudades: '',
+                termino_busqueda_documentos: ''
             };
 
             $scope.datos_planilla = [];
@@ -52,7 +49,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     that.buscar_transportadoras(function() {
 
                         if ($scope.planilla.get_numero_guia() > 0) {
-                            that.consultar_planilla_despacho();
+                            that.consultar_planilla_despacho(function(continuar) {
+                                if (continuar) {
+                                    $scope.consultar_documentos_planilla_despacho();
+                                }
+                            });
                         }
                     });
                 });
@@ -100,7 +101,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
             $scope.seleccionar_ciudad = function() {
-                //$scope.planilla.set_ciudad($scope.datos_view.ciudad_seleccionada);
+
             };
 
             that.buscar_transportadoras = function(callback) {
@@ -135,10 +136,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
             $scope.seleccionar_transportadora = function() {
-                //$scope.planilla.set_transportadora($scope.datos_view.transportadora_seleccionada);
+
             };
 
-            that.consultar_planilla_despacho = function() {
+            $scope.buscador_documentos_planillas = function(ev) {
+                if (ev.which == 13) {
+                    $scope.consultar_documentos_planilla_despacho()
+                }
+            };
+
+            that.consultar_planilla_despacho = function(callback) {
+
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -152,9 +160,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                     if (data.status === 200) {
                         that.render_planilla(data.obj.planillas_despachos[0]);
+                        callback(true);
+                    } else {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                        callback(false);
                     }
                 });
-
             };
 
             that.render_planilla = function(datos) {
@@ -162,50 +173,150 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var ciudad = Ciudad.get(datos.pais_id, datos.nombre_pais, datos.departamento_id, datos.nombre_departamento, datos.ciudad_id, datos.nombre_ciudad);
                 var transportadora = Transportadora.get(datos.transportadora_id, datos.nombre_transportadora, datos.placa_vehiculo, datos.estado_transportadora);
                 var usuario = UsuarioPlanilla.get(datos.usuario_id, datos.nombre_usuario);
-                $scope.planilla = PlanillaDespacho.get(datos.id, transportadora, ciudad, datos.nombre_conductor, datos.observacion, usuario, datos.fecha_registro, datos.fecha_despacho, datos.estado, datos.descripcion_estado);                                
+                $scope.planilla = PlanillaDespacho.get(datos.id, transportadora, ciudad, datos.nombre_conductor, datos.observacion, usuario, datos.fecha_registro, datos.fecha_despacho, datos.estado, datos.descripcion_estado);
             };
 
-            $scope.buscar_documentos_bodega = function() {
+            $scope.consultar_documentos_planilla_despacho = function() {
 
-                console.log('==============================');
-                console.log('== buscar_documentos_bodega ==');
-                console.log('==============================');
-                for (i = 0; i < 30; i++) {
-                    $scope.datos_planilla.push({nombre_cliente: 'nombre_cliente_' + i, documento: 'EFC ' + i, cajas: i, neveras: i, temperatura_neveras: i});
-                }
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        planillas_despachos: {
+                            planilla_id: $scope.planilla.get_numero_guia(),
+                            termino_busqueda: $scope.datos_view.termino_busqueda_documentos
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PLANILLAS.DOCUMENTOS_PLANILLA, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        that.render_documentos(data.obj.planillas_despachos);
+                    } else {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+                });
+
             };
+            that.render_documentos = function(documentos) {
+
+                $scope.planilla.limpiar_documentos();
+
+                documentos.forEach(function(data) {
+
+                    var documento = Documento.get(data.id, data.empresa_id, data.prefijo, data.numero, data.numero_pedido, data.cantidad_cajas, data.cantidad_neveras, data.temperatura_neveras, data.observacion, data.tipo);
+                    documento.set_tercero(data.descripcion_destino);
+
+                    $scope.planilla.set_documentos(documento);
+                });
+
+            };
+
+
             $scope.gestionar_documentos_bodega = function() {
 
                 $scope.slideurl = "views/generarplanilladespacho/gestionardocumentosbodegas.html?time=" + new Date().getTime();
                 $scope.$emit('gestionar_documentos_bodega');
+
+
             };
 
             $scope.cerrar_gestion_documentos_bodega = function() {
 
                 $scope.$emit('cerrar_gestion_documentos_bodega', {animado: true});
+
+                localStorageService.add("numero_guia", $scope.planilla.get_numero_guia());
+
+                that.gestionar_consultas();
+
             };
 
+
+            $scope.confirmar_despacho_planilla = function() {
+
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                        <button type="button" class="close" ng-click="close()">&times;</button>\
+                                        <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                    </div>\
+                                    <div class="modal-body">\
+                                        <h4>¿Desea despachar la <b>Guía No {{ planilla.get_numero_guia() }} </b> con destino a la ciudad de<br><b>{{ planilla.get_ciudad().get_nombre_ciudad() }}</b>?</h4>\
+                                    </div>\
+                                    <div class="modal-footer">\
+                                        <button class="btn btn-warning" ng-click="cancelar_despacho()">Cancelar</button>\
+                                        <button class="btn btn-primary" ng-click="aceptar_despacho()">Aceptar</button>\
+                                    </div>',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.aceptar_despacho = function() {
+                            $scope.despachar_planilla_despacho();
+                            $modalInstance.close();
+                        };
+
+                        $scope.cancelar_despacho = function() {
+                            $modalInstance.close();
+                        };
+                    },
+                    resolve: {
+                        mensaje_sistema: function() {
+                            return $scope.mensaje_sistema;
+                        }
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+
+            };
+
+            $scope.despachar_planilla_despacho = function() {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        planillas_despachos: {
+                            planilla_id: $scope.planilla.get_numero_guia(),
+                        }
+                    }
+                };
+
+
+                Request.realizarRequest(API.PLANILLAS.DESPACHAR_PLANILLA, "POST", obj, function(data) {
+
+                    AlertService.mostrarMensaje("warning", data.msj);
+
+                    if (data.status === 200) {
+                        $state.go('GestionarPlanillas');
+                    }
+                });
+            };
+
+            $scope.cancelar_planilla_despacho = function() {
+
+                $state.go('GestionarPlanillas');
+            };
+
+
             $scope.lista_documentos_bodega = {
-                data: 'datos_planilla',
+                data: 'planilla.get_documentos()',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
-                    {field: 'nombre_cliente', displayName: 'Cliente', width: "35%"},
-                    {field: 'documento', displayName: 'Documento', width: "25%"},
-                    {field: 'cajas', displayName: 'Cant. Cajas', width: "10%"},
-                    {field: 'neveras', displayName: 'Cant. Neveras', width: "10%"},
-                    {field: 'temperatura_neveras', displayName: 'Temp. Neveras', width: "10%"},
+                    {field: 'get_tercero()', displayName: 'Cliente', width: "35%"},
+                    {field: 'get_descripcion()', displayName: 'Documento', width: "25%"},
+                    {field: 'get_cantidad_cajas()', displayName: 'Cant. Cajas', width: "10%"},
+                    {field: 'get_cantidad_neveras()', displayName: 'Cant. Neveras', width: "10%"},
+                    {field: 'get_temperatura_neveras()', displayName: 'Temp. Neveras', width: "10%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs" ng-click="eliminar_producto_orden_compra(row)" ng-disabled="vista_previa" ><span class="glyphicon glyphicon-remove"></span></button>\
                                         </div>'
                     }
                 ]
-            };
-
-            $scope.cancelar_planilla_despacho = function() {
-
-                $state.go('GestionarPlanillas');
             };
 
             that.gestionar_consultas();

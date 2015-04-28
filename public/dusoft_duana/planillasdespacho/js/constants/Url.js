@@ -6,7 +6,7 @@ define(["angular"], function(angular) {
 
     var data = {
         'API': {
-            'BASE_URL': BASE_URL, 
+            'BASE_URL': BASE_URL,
             'PLANILLAS': {
                 'LISTAR_PLANILLAS': BASE_URL + '/PlanillasDespachos/listar',
                 'CONSULTAR_PLANILLA': BASE_URL + '/PlanillasDespachos/consultarPlanillaDespacho',
@@ -14,7 +14,9 @@ define(["angular"], function(angular) {
                 'GENERAR_PLANILLA': BASE_URL + '/PlanillasDespachos/generarPlanillaDespacho',
                 'INGRESAR_DOCUMENTOS': BASE_URL + '/PlanillasDespachos/ingresarDocumentosPlanilla',
                 'ELIMINAR_DOCUMENTO': BASE_URL + '/PlanillasDespachos/eliminarDocumentoPlanilla',
-                'DESPACHAR_PLANILLA': BASE_URL + '/PlanillasDespachos/despacharPlanilla'
+                'DESPACHAR_PLANILLA': BASE_URL + '/PlanillasDespachos/despacharPlanilla',
+                'LISTAR_DOCUMENTOS_FARMACIAS': BASE_URL + '/PlanillasDespachos/documentosDespachosPorFarmacia',
+                'LISTAR_DOCUMENTOS_CLIENTES': BASE_URL + '/PlanillasDespachos/documentosDespachosPorCliente',
             },
             'CIUDADES': {
                 'LISTAR_CIUDADES': BASE_URL + '/Ciudades/listar'
@@ -27,10 +29,6 @@ define(["angular"], function(angular) {
             },
             'CLIENTES': {
                 'LISTAR_CLIENTES': BASE_URL + '/Terceros/Clientes/listarClientesCiudad'
-            },
-            'DOCUMENTOS': {
-                'LISTAR_DOCUMENTOS_CLIENTES': BASE_URL + '/movBodegas/E008/documentosDespachosPorCliente',
-                'LISTAR_DOCUMENTOS_FARMACIAS': BASE_URL + '/movBodegas/E008/documentosDespachosPorFarmacia'
             }            
         }
     };

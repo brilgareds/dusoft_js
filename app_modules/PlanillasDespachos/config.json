@@ -13,9 +13,25 @@
                     "module": "PlanillasDespachos",
                     "model": "PlanillasDespachosModel",
                     "alias": "m_planillas_despachos"
+                },
+                "pedidos_farmacias_model": {
+                    "module": "PedidosFarmacias",
+                    "model": "PedidosFarmaciasModel",
+                    "alias": "m_pedidos_farmacias"
+                },
+                "E008_model": {
+                    "module": "MovimientosBodega/E008",
+                    "model": "DocBodegaE008",
+                    "alias": "m_e008"
                 }
             }],
-        "events": [],
+        "events": [{
+                "pedidos_farmacias_events": {
+                    "module": "PedidosFarmacias",
+                    "event": "PedidosFarmaciasEvents",
+                    "alias": "e_pedidos_farmacias"
+                }
+            }],
         "cronJobs": []
     }
 }

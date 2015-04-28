@@ -7,6 +7,16 @@ module.exports = function(app, di_container) {
         c_planillas_despachos.listarPlanillasDespachos(req, res);
     });
     
+    // Consultar los documentos de despacho de un farmacua 
+    app.post('/api/PlanillasDespachos/documentosDespachosPorFarmacia', function(req, res) {
+        c_planillas_despachos.consultarDocumentosDespachosPorFarmacia(req, res);
+    }); 
+    
+    // Consultar los documentos de despacho de un cliente 
+    app.post('/api/PlanillasDespachos/documentosDespachosPorCliente', function(req, res) {
+        c_planillas_despachos.consultarDocumentosDespachosPorCliente(req, res);
+    });
+    
     app.post('/api/PlanillasDespachos/consultarPlanillaDespacho', function(req, res) {
         c_planillas_despachos.consultarPlanillaDespacho(req, res);
     });

@@ -921,3 +921,7 @@ IS 'Almacenas los documentos de otras empresas despachados';
 COMMENT ON COLUMN "public"."inv_planillas_detalle_empresas"."inv_planillas_despacho_id"
 IS 'Identificador de la planilla';
 
+
+ALTER TABLE inv_planillas_detalle_farmacias ADD CONSTRAINT inv_planillas_detalle_farmacias_unique UNIQUE (empresa_id, prefijo, numero);
+ALTER TABLE inv_planillas_detalle_clientes ADD CONSTRAINT inv_planillas_detalle_clientes_unique UNIQUE (empresa_id, prefijo, numero);
+ALTER TABLE inv_planillas_detalle_empresas ADD CONSTRAINT inv_planillas_detalle_empresas_unique UNIQUE (empresa_id, prefijo, numero);

@@ -78,7 +78,19 @@ define(["angular", "js/models"], function(angular, models) {
             };
 
 
-            Modulo.prototype.getVariables = function() {
+            Modulo.prototype.getVariables = function(objetoValor) {
+
+                if (objetoValor) {
+                    var _variables = {};
+                    for (var i in this.variables) {
+                        var variable = this.variables[i];
+                        _variables[variable.nombre] = variable.valor;
+
+                    }
+
+                    return _variables;
+                }
+
                 return this.variables;
             };
 

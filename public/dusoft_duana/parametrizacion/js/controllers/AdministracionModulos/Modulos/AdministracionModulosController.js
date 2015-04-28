@@ -313,6 +313,7 @@ define([
                         for(var i in datos){
                             var _variable = datos[i];
                             var variable = VariableModulo.get(_variable.id, _variable.nombre, _variable.valor, _variable.observacion);
+                            variable.setEstado(_variable.estado);
                             $scope.rootModulos.moduloAGuardar.agregarVariable(variable);
                         }
 

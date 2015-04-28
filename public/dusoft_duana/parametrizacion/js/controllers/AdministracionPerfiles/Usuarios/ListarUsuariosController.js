@@ -17,7 +17,7 @@ define(["angular", "js/controllers", "js/models",
             $scope.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
             $scope.foo = "Duana";
             
-            console.log("opciones >>>>>>>>> ", Usuario.getUsuarioActual().getModuloActual())
+            console.log("opciones >>>>>>>>> ", Usuario.getUsuarioActual().getModuloActual().variables)
             console.log($scope.opciones.sw_crear_usuario && !$scope.foo === 'Duanas');
             
 

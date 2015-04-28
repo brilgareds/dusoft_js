@@ -4,7 +4,7 @@
         <div class="col-md-3">
             <p class="input-group">
 
-                <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-click="crear_planilla_despacho()">
+                <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-click="gestionar_planilla_despacho()">
                     <span class="glyphicon glyphicon-plus"></span> Generar Planilla
                 </button>
             </p>
@@ -13,7 +13,7 @@
         <div class="col-md-3">
             <p class="input-group">
 
-                <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="fecha_inicial" is-open="datepicker_fecha_inicial" min="minDate"   readonly  close-text="Cerrar" ng-change="" clear-text="Borrar" current-text="Hoy" placeholder="Fecha Inicial" show-weeks="false" toggle-weeks-text="#"  />
+                <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="datos_view.fecha_inicial" is-open="datos_view.datepicker_fecha_inicial" min="minDate"   readonly  close-text="Cerrar" ng-change="" clear-text="Borrar" current-text="Hoy" placeholder="Fecha Inicial" show-weeks="false" toggle-weeks-text="#"  />
 
                 <span class="input-group-btn">
                     <button class="btn btn-default" ng-click="abrir_fecha_inicial($event);"><i class="glyphicon glyphicon-calendar"></i></button>
@@ -24,7 +24,7 @@
         <div class="col-md-3">
             <p class="input-group">
 
-                <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="fecha_final" is-open="datepicker_fecha_final" min="fecha_inicial"  readonly  close-text="Cerrar"
+                <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="datos_view.fecha_final" is-open="datos_view.datepicker_fecha_final" min="datos_view.fecha_inicial"  readonly  close-text="Cerrar"
                        clear-text="Borrar"  placeholder="Fecha Final" current-text="Hoy" show-weeks="false" toggle-weeks-text="#" />
                 <span class="input-group-btn">
 
@@ -36,7 +36,7 @@
         <div class="col-md-2 pull-right">
             <p class="input-group">
 
-                <input type="text" class="form-control" ng-keypress="buscador_planillas_despacho($event, termino_busqueda);" ng-model="termino_busqueda" placeholder="Buscar" name="" id="" />
+                <input type="text" class="form-control" ng-keypress="buscador_planillas_despacho($event);" ng-model="datos_view.termino_busqueda" placeholder="Buscar" name="" id="" />
                 <span class="input-group-btn">
                     <button class="btn btn-default" type="submit" ng-click="buscar_planillas_despacho(termino_busqueda);"><i class="glyphicon glyphicon-search"></i></button>
                 </span>

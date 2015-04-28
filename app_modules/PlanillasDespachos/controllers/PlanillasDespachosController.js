@@ -14,14 +14,21 @@ PlanillasDespachos.prototype.listarPlanillasDespachos = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.planillas_despachos === undefined || args.planillas_despachos.termino_busqueda === undefined) {
-        res.send(G.utils.r(req.url, 'termino_busqueda no esta definido', 404, {}));
+    if (args.planillas_despachos === undefined || args.planillas_despachos.fecha_inicial === undefined || args.planillas_despachos.fecha_final === undefined || args.planillas_despachos.termino_busqueda === undefined) {
+        res.send(G.utils.r(req.url, 'fecha_inicial, fecha_final o termino_busqueda no esta definido', 404, {}));
         return;
     }
 
+    if (args.planillas_despachos.fecha_inicial === '' || args.planillas_despachos.fecha_final === '') {
+        res.send(G.utils.r(req.url, 'fecha_inicial o fecha_final estan vacíos', 404, {}));
+        return;
+    }
+
+    var fecha_inicial = args.planillas_despachos.fecha_inicial;
+    var fecha_final = args.planillas_despachos.fecha_final;
     var termino_busqueda = args.planillas_despachos.termino_busqueda;
 
-    that.m_planillas_despachos.listar_planillas_despachos(termino_busqueda, function(err, lista_planillas_despachos) {
+    that.m_planillas_despachos.listar_planillas_despachos(fecha_inicial, fecha_final, termino_busqueda, function(err, lista_planillas_despachos) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error listando las planillas_despachos', 500, {planillas_despachos: {}}));
@@ -38,19 +45,48 @@ PlanillasDespachos.prototype.consultarPlanillaDespacho = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.planillas_despachos === undefined || args.planillas_despachos.termino_busqueda === undefined) {
-        res.send(G.utils.r(req.url, 'termino_busqueda no esta definido', 404, {}));
+    if (args.planillas_despachos === undefined || args.planillas_despachos.planilla_id === undefined) {
+        res.send(G.utils.r(req.url, 'planilla_id no esta definido', 404, {}));
         return;
     }
 
-    var termino_busqueda = args.planillas_despachos.termino_busqueda;
+    var planilla_id = args.planillas_despachos.planilla_id;
 
-    that.m_planillas_despachos.consultar_planilla_despacho(termino_busqueda, function(err, lista_planillas_despachos) {
+    that.m_planillas_despachos.consultar_planilla_despacho(planilla_id, function(err, planilla_despacho) {
 
         if (err) {
-            res.send(G.utils.r(req.url, 'Error listando las planillas_despachos', 500, {planillas_despachos: {}}));
+            res.send(G.utils.r(req.url, 'Error consultado la planilla', 500, {planillas_despachos: {}}));
         } else {
-            res.send(G.utils.r(req.url, 'Lista de planillas_despachos', 200, {planillas_despachos: lista_planillas_despachos}));
+            res.send(G.utils.r(req.url, 'Planilla despacho', 200, {planillas_despachos: planilla_despacho}));
+        }
+    });
+};
+
+PlanillasDespachos.prototype.consultarDocumentosPlanillaDespacho = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.planillas_despachos === undefined || args.planillas_despachos.planilla_id === undefined || args.planillas_despachos.termino_busqueda === undefined) {
+        res.send(G.utils.r(req.url, 'planilla_id no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.planilla_id === '') {
+        res.send(G.utils.r(req.url, 'planilla_id esta vacio', 404, {}));
+        return;
+    }
+
+    var planilla_id = args.planillas_despachos.planilla_id;
+    var termino_busqueda = args.planillas_despachos.termino_busqueda;
+
+    that.m_planillas_despachos.consultar_documentos_planilla_despacho(planilla_id, termino_busqueda, function(err, planilla_despacho) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error consultado los documentos de la  planilla', 500, {planillas_despachos: {}}));
+        } else {
+            res.send(G.utils.r(req.url, 'Documentos planilla despacho', 200, {planillas_despachos: planilla_despacho}));
         }
     });
 };
@@ -169,6 +205,37 @@ PlanillasDespachos.prototype.ingresarDocumentosPlanillaDespacho = function(req, 
             return;
         } else {
             res.send(G.utils.r(req.url, 'documento regitrado correctamente', 200, {planillas_despachos: {}}));
+            return;
+        }
+    });
+};
+
+PlanillasDespachos.prototype.despacharPlanilla = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.planillas_despachos === undefined || args.planillas_despachos.planilla_id === undefined) {
+        res.send(G.utils.r(req.url, 'planilla_id no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.planilla_id === '') {
+        res.send(G.utils.r(req.url, 'planilla_id esta vacio', 404, {}));
+        return;
+    }
+
+    var planilla_id = args.planillas_despachos.planilla_id;
+    var estado = '2'; // 0 = Anulada, 1 = Activa, 2 = Desachada
+
+    that.m_planillas_despachos.modificar_estado_planilla_despacho(planilla_id, estado, function(err, rows, result) {
+
+        if (err || result.rowCount === 0) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {planillas_despachos: []}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Planilla despachada correctamente', 200, {planillas_despachos: {}}));
             return;
         }
     });

@@ -122,4 +122,9 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.modificarCantidadesPedido(req, res);
     });
     
+    //Listar Productos Clientes
+    app.post('/api/PedidosClientes/listarProductosClientes', function(req, res) {
+        c_pedidos_clientes.listarProductosClientes(req, res);
+    });
+    
 };

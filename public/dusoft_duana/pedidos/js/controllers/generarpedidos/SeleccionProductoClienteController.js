@@ -178,20 +178,16 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 $scope.rootSeleccionProductoCliente.Empresa.vaciarProductos();
                 
-                
-                console.log(">>>>> contrato_id Tipo Dato: ", typeof $scope.rootSeleccionProductoCliente.cliente.contrato_id);
-                console.log(">>>>> contrato_id: ", $scope.rootSeleccionProductoCliente.cliente.contrato_id);
-                
                 if($scope.rootSeleccionProductoCliente.cliente.contrato_id > 0){
                     
-                    console.log("Mayor que cero")
+                    //console.log("Mayor que cero")
                 
                     $scope.rootSeleccionProductoCliente.bloqueo_contrato = true;
                 }
                 else {
                     $scope.rootSeleccionProductoCliente.bloqueo_contrato = false;
                     
-                    console.log("Valor Cero")
+                    //console.log("Valor Cero")
                 }
                 
                 var producto_obj = {};
@@ -307,7 +303,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                                 </button>\n\
                                             </div>'
                         }
-                    ]
+                    ]/*,
+                    sortInfo: {
+                        fields: ['disponible', 'descripcion'],
+                        directions: ['desc','asc']
+                    }*/
                 };
 
                 $scope.rootSeleccionProductoCliente.lista_productos_seleccionados = {    

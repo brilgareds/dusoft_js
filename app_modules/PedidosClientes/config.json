@@ -28,6 +28,11 @@
                     "module": "Pedidos",
                     "model": "PedidosModel",
                     "alias": "m_pedidos"
+                },
+                "pedidos_farmacias_model": {
+                    "module": "PedidosFarmacias",
+                    "model": "PedidosFarmaciasModel",
+                    "alias": "m_pedidos_farmacias"
                 }
             }],
         "events": [{

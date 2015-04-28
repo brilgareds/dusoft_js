@@ -835,7 +835,7 @@ PedidosFarmaciasModel.prototype.obtenerDetalleRotulo = function(numero_pedido, n
 };
 
 
-// Autor:      : Camila  Orozco 
+// Autor:      : Camilo  Orozco 
 // Descripcion : Calcula la cantidad TOTAL pendiente de un producto en pedidos farmacia
 // Calls       : PedidosFarmacias -> PedidosFarmaciasController -> listar_productos();
 //               
@@ -849,6 +849,36 @@ PedidosFarmaciasModel.prototype.calcular_cantidad_total_pendiente_producto = fun
                 group by 1";
     
     G.db.query(sql, [empresa_id, codigo_producto], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+// Autor:      : Alexander López
+// Descripcion : Calcula la cantidad TOTAL de un producto que está reservada en pedidos temporales de Farmacia
+// Calls       : PedidosFarmacias -> PedidosFarmaciasController -> listar_productos();
+//               
+
+PedidosFarmaciasModel.prototype.calcular_cantidad_reservada_temporales_farmacias = function(codigo_producto, callback) {
+    
+    var sql = " select codigo_producto, SUM(cantidad_solic) as total_reservado from solicitud_pro_a_bod_prpal_tmp where codigo_producto = $1\
+                group by codigo_producto";
+    
+    G.db.query(sql, [codigo_producto], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+// Autor:      : Alexander López
+// Descripcion : Calcula la cantidad TOTAL de un producto que está reservada en pedidos temporales de Farmacia
+// Calls       : PedidosFarmacias -> PedidosFarmaciasController -> listar_productos();
+//               
+
+PedidosFarmaciasModel.prototype.calcular_cantidad_reservada_temporales_farmacias = function(codigo_producto, callback) {
+    
+    var sql = " select codigo_producto, SUM(cantidad_solic) as total_reservado from solicitud_pro_a_bod_prpal_tmp where codigo_producto = $1\
+                group by codigo_producto";
+    
+    G.db.query(sql, [codigo_producto], function(err, rows, result) {
         callback(err, rows);
     });
 };

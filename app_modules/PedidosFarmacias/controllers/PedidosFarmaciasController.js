@@ -807,24 +807,30 @@ PedidosFarmacias.prototype.listar_productos = function(req, res) {
                         that.m_pedidos_clientes.calcular_cantidad_total_pendiente_producto(empresa_id, producto.codigo_producto, function(err, total_pendiente_clientes) {
 
                             var cantidad_total_pendiente_clientes = (total_pendiente_clientes.length > 0) ? total_pendiente_clientes[0].cantidad_total_pendiente : 0;
+                            
+                            that.m_pedidos_farmacias.calcular_cantidad_reservada_temporales_farmacias(producto.codigo_producto, function(err, total_reservado_temporales){
+                                
+                                var cantidad_reservada_temporales = (total_reservado_temporales.length > 0) ? total_reservado_temporales[0].total_reservado : 0;
 
-                            var disponibilidad_bodega = producto.existencia - cantidad_total_pendiente_farmacias - cantidad_total_pendiente_clientes;
+                                var disponibilidad_bodega = producto.existencia - cantidad_total_pendiente_farmacias - cantidad_total_pendiente_clientes - cantidad_reservada_temporales;
 
-                            producto.disponibilidad_bodega = (disponibilidad_bodega < 0) ? 0 : disponibilidad_bodega;
+                                producto.disponibilidad_bodega = (disponibilidad_bodega < 0) ? 0 : disponibilidad_bodega;
 
 
-                            if (--i === 0) {
+                                if (--i === 0) {
 
-                                if (err) {
-                                    res.send(G.utils.r(req.url, 'Se ha Generado un Error en la consulta de Productos', 500, {}));
-                                    return;
+                                    if (err) {
+                                        res.send(G.utils.r(req.url, 'Se ha Generado un Error en la consulta de Productos', 500, {}));
+                                        return;
+                                    }
+                                    else
+                                    {
+                                        res.send(G.utils.r(req.url, 'Listado de Productos', 200, {lista_productos: lista_productos}));
+                                        return;
+                                    }
                                 }
-                                else
-                                {
-                                    res.send(G.utils.r(req.url, 'Listado de Productos', 200, {lista_productos: lista_productos}));
-                                    return;
-                                }
-                            }
+                            
+                            });
 
                         });
                     });

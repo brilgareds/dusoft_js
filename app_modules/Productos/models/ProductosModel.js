@@ -115,8 +115,6 @@ ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro
     
     //Armar String para filtar termino_busqueda por código de producto, molécula o descripción
     
-    console.log(">>>>>>>>Filtro = ", filtro);
-    
     if(filtro.buscar_todo) {
         sql_filter = " a.codigo_producto ilike $5 \
                        or fc_descripcion_producto(a.codigo_producto) ilike $5 \
@@ -132,7 +130,100 @@ ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro
         sql_filter = " fc_descripcion_producto(a.codigo_producto) ilike $5 ";
     }
     
-    console.log(">>>>> sql_filter = ", sql_filter);
+//    var sql = " select\n\
+//                    a.codigo_producto,\n\
+//                    a.precio_regulado,\n\
+//                    fc_descripcion_producto(a.codigo_producto) as nombre_producto,\n\
+//                    btrim(fc_precio_producto_contrato_cliente($4, a.codigo_producto, $1), '@') as precio_contrato,\n\
+//                    a.existencia as existencia_total,\n\
+//                    a.costo_anterior,\n\
+//                    a.costo,\n\
+//                    CASE WHEN a.costo > 0 THEN ROUND (((a.precio_venta/a.costo) - 1) * 100) ELSE NULL END as porcentaje_utilidad,\n\
+//                    a.costo_penultima_compra,\n\
+//                    round((a.costo_ultima_compra)/((COALESCE(b.porc_iva,0)/100)+1),2) as costo_ultima_compra,\n\
+//                    a.precio_venta_anterior,\n\
+//                    a.precio_venta,\n\
+//                    a.precio_minimo,\n\
+//                    a.precio_maximo,\n\
+//                    SUM(a.existencia) as existencia,\n\
+//                    a.sw_vende,\n\
+//                    a.grupo_contratacion_id,\n\
+//                    a.nivel_autorizacion_id,\n\
+//                    b.sw_requiereautorizacion_despachospedidos,\n\
+//                    /*SUM(sq_b.cantidad_pendiente) as cantidad_pendiente_final,\n\
+//                    ((SUM(a.existencia)-SUM(COALESCE(sq_b.cantidad_pendiente,0)))-SUM(COALESCE(sq_c.total_cantidad,0))) as total_disponible,\n\
+//                    CASE\n\
+//                        WHEN ((SUM(a.existencia)-SUM(COALESCE(sq_b.cantidad_pendiente,0)))-SUM(COALESCE(sq_c.total_cantidad,0))) > 0\n\
+//                        THEN ((SUM(a.existencia)-SUM(COALESCE(sq_b.cantidad_pendiente,0)))-SUM(COALESCE(sq_c.total_cantidad,0)))\n\
+//                        ELSE '0'\n\
+//                    END as disponible,*/\n\
+//                    b.estado,\n\
+//                    b.sw_regulado,\n\
+//                    b.tipo_producto_id,\n\
+//                    b.unidad_id,\n\
+//                    b.codigo_invima,\n\
+//                    to_char(b.vencimiento_codigo_invima, 'DD-MM-YYYY') as vencimiento_codigo_invima,\n\
+//                    b.codigo_cum,\n\
+//                    b.contenido_unidad_venta,\n\
+//                    b.sw_control_fecha_vencimiento,\n\
+//                    b.grupo_id,\n\
+//                    b.clase_id,\n\
+//                    b.subclase_id,\n\
+//                    b.porc_iva,\n\
+//                    b.tipo_producto_id, \n\
+//                    g.subclase_id as molecula_id,\n\
+//                    g.descripcion as molecula_descripcion\n\
+//                from    inventarios a \n\
+//                    inner join inventarios_productos b on a.codigo_producto = b.codigo_producto \n\
+//                         and a.empresa_id = $1 \n\
+//                    /*left join ( \n\
+//                         select \n\
+//                             sq_a.codigo_producto, \n\
+//                             sq_a.cantidad_pendiente \n\
+//                         from ( \n\
+//                             select \n\
+//                                d.codigo_producto, \n\
+//                                sum(d.cantidad_pendiente) as cantidad_pendiente \n\
+//                             from \n\
+//                                 solicitud_productos_a_bodega_principal c \n\
+//                                 inner join solicitud_productos_a_bodega_principal_detalle d on d.solicitud_prod_a_bod_ppal_id = c.solicitud_prod_a_bod_ppal_id \n\
+//                                     and c.empresa_destino = $1 \n\
+//                                     --and   c.sw_despacho = '0' \n\
+//                                     and d.cantidad_pendiente > 0 \n\
+//                             group by 1 \n\
+//                         ) sq_a \n\
+//                     ) sq_b on a.codigo_producto = sq_b.codigo_producto \n\
+//                     left join ( \n\
+//                         select \n\
+//                             f.codigo_producto, \n\
+//                             sum((f.numero_unidades - f.cantidad_despachada)) as total_cantidad \n\
+//                         from \n\
+//                             ventas_ordenes_pedidos as e \n\
+//                              inner join ventas_ordenes_pedidos_d as f on e.pedido_cliente_id = f.pedido_cliente_id \n\
+//                                 and e.estado = '1' \n\
+//                                 and e.empresa_id = $1 \n\
+//                                 and f.numero_unidades <> f.cantidad_despachada \n\
+//                         group by f.codigo_producto \n\
+//                     ) sq_c on a.codigo_producto = sq_c.codigo_producto */\n\
+//                     inner join inv_subclases_inventarios g on b.subclase_id = g.subclase_id \n\
+//                         and b.grupo_id = g.grupo_id \n\
+//                         and b.clase_id = g.clase_id \n\
+//                     inner join inv_clases_inventarios h on b.grupo_id = h.grupo_id \n\
+//                         and b.clase_id = h.clase_id \n\
+//                     inner join existencias_bodegas i on a.codigo_producto = i.codigo_producto \n\
+//                where \n\
+//                     i.empresa_id = $1 \n\
+//                     and i.centro_utilidad = $2 \n\
+//                     and i.bodega = $3 \n\
+//                     and ( " + sql_filter + " ) " +
+//                     sql_aux + 
+//                "group by a.codigo_producto, a.precio_regulado, a.existencia, a.costo_anterior, a.costo, a.costo_penultima_compra, \n\
+//                    a.costo_ultima_compra, a.precio_venta_anterior, a.precio_venta, a.precio_minimo, a.precio_maximo, a.sw_vende, \n\
+//                    a.grupo_contratacion_id, a.nivel_autorizacion_id, b.sw_requiereautorizacion_despachospedidos, b.estado, \n\
+//                    b.sw_regulado, b.tipo_producto_id, b.unidad_id, b.codigo_invima, b.vencimiento_codigo_invima, b.codigo_cum, \n\
+//                    b.contenido_unidad_venta, b.sw_control_fecha_vencimiento, b.grupo_id, b.clase_id, b.subclase_id, b.porc_iva, \n\
+//                    b.tipo_producto_id, g.subclase_id, g.descripcion\n\
+//                order by 22 desc, 3 asc";
     
     var sql = " select\n\
                     a.codigo_producto,\n\
@@ -154,13 +245,6 @@ ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro
                     a.grupo_contratacion_id,\n\
                     a.nivel_autorizacion_id,\n\
                     b.sw_requiereautorizacion_despachospedidos,\n\
-                    SUM(sq_b.cantidad_pendiente) as cantidad_pendiente_final,\n\
-                    ((SUM(a.existencia)-SUM(COALESCE(sq_b.cantidad_pendiente,0)))-SUM(COALESCE(sq_c.total_cantidad,0))) as total_disponible,\n\
-                    CASE\n\
-                        WHEN ((SUM(a.existencia)-SUM(COALESCE(sq_b.cantidad_pendiente,0)))-SUM(COALESCE(sq_c.total_cantidad,0))) > 0\n\
-                        THEN ((SUM(a.existencia)-SUM(COALESCE(sq_b.cantidad_pendiente,0)))-SUM(COALESCE(sq_c.total_cantidad,0)))\n\
-                        ELSE '0'\n\
-                    END as disponible,\n\
                     b.estado,\n\
                     b.sw_regulado,\n\
                     b.tipo_producto_id,\n\
@@ -180,35 +264,6 @@ ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro
                 from    inventarios a \n\
                     inner join inventarios_productos b on a.codigo_producto = b.codigo_producto \n\
                          and a.empresa_id = $1 \n\
-                    left join ( \n\
-                         select \n\
-                             sq_a.codigo_producto, \n\
-                             sq_a.cantidad_pendiente \n\
-                         from ( \n\
-                             select \n\
-                                d.codigo_producto, \n\
-                                sum(d.cantidad_pendiente) as cantidad_pendiente \n\
-                             from \n\
-                                 solicitud_productos_a_bodega_principal c \n\
-                                 inner join solicitud_productos_a_bodega_principal_detalle d on d.solicitud_prod_a_bod_ppal_id = c.solicitud_prod_a_bod_ppal_id \n\
-                                     and c.empresa_destino = $1 \n\
-                                     --and   c.sw_despacho = '0' \n\
-                                     and d.cantidad_pendiente > 0 \n\
-                             group by 1 \n\
-                         ) sq_a \n\
-                     ) sq_b on a.codigo_producto = sq_b.codigo_producto \n\
-                     left join ( \n\
-                         select \n\
-                             f.codigo_producto, \n\
-                             sum((f.numero_unidades - f.cantidad_despachada)) as total_cantidad \n\
-                         from \n\
-                             ventas_ordenes_pedidos as e \n\
-                              inner join ventas_ordenes_pedidos_d as f on e.pedido_cliente_id = f.pedido_cliente_id \n\
-                                 and e.estado = '1' \n\
-                                 and e.empresa_id = $1 \n\
-                                 and f.numero_unidades <> f.cantidad_despachada \n\
-                         group by f.codigo_producto \n\
-                     ) sq_c on a.codigo_producto = sq_c.codigo_producto \n\
                      inner join inv_subclases_inventarios g on b.subclase_id = g.subclase_id \n\
                          and b.grupo_id = g.grupo_id \n\
                          and b.clase_id = g.clase_id \n\
@@ -228,7 +283,7 @@ ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro
                     b.contenido_unidad_venta, b.sw_control_fecha_vencimiento, b.grupo_id, b.clase_id, b.subclase_id, b.porc_iva, \n\
                     b.tipo_producto_id, g.subclase_id, g.descripcion\n\
                 order by 22 desc, 3 asc";
-        
+    
 
     G.db.paginated(sql, array_parametros, pagina, G.settings.limit, function(err, rows, result) {
         callback(err, rows);

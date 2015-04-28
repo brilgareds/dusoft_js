@@ -171,16 +171,7 @@ module.exports = function(app, di_container) {
     app.post('/api/movBodegas/E008/consultarDocumentosDespachosFarmacias', function(req, res) {
         
     });    
-    
-    // Consultar los documentos de despacho de un cliente 
-    app.post('/api/movBodegas/E008/documentosDespachosPorCliente', function(req, res) {
-        c_e008.consultarDocumentosDespachosPorCliente(req, res);
-    });
-    
-    // Consultar los documentos de despacho de un farmacua 
-    app.post('/api/movBodegas/E008/documentosDespachosPorFarmacia', function(req, res) {
-        c_e008.consultarDocumentosDespachosPorFarmacia(req, res);
-    });    
+      
     
     //========================== FIN Despachos bodegas =========================
     

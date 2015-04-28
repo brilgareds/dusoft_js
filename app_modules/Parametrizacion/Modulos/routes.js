@@ -49,4 +49,8 @@ module.exports = function(app, di_container) {
         c_modulos.listarVariablesPorModulo(req, res);
     });
 
+    app.post('/api/Modulos/eliminarVariable', function(req, res) {
+        c_modulos.eliminarVariable(req, res);
+    });
+
 };

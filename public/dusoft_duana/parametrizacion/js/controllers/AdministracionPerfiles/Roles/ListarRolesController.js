@@ -78,7 +78,7 @@ define(["angular", "js/controllers", "js/models",
                     }
                 };
                 
-                ParametrizacionService.traerRoles(parametros, $scope.rootRoles.empresaSeleccionada, function(success, msg){
+                ParametrizacionService.traerRoles(parametros, $scope.rootRoles.empresaSeleccionada,false, function(success, msg){
                     if(!success){
                         AlertService.mostrarMensaje("warning", msg);
                     }
@@ -92,6 +92,10 @@ define(["angular", "js/controllers", "js/models",
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
+                   /* {field: 'estado', displayName: "", cellClass: "txt-center", width: "30",
+                             cellTemplate: '<div ng-if="row.entity.estado" style="color:#5cb85c;" title="Activo"><i class="glyphicon glyphicon-ok icon-success"></i></div>\
+                                            <div ng-if="!row.entity.estado" style="color:#f0ad4e;" title="Inactivo"><i class="glyphicon glyphicon-info-sign" ></i></div>'
+                    },*/
                     {field: 'nombre', displayName: 'Nombre'},
                     {field: 'observacion', displayName: 'Observacion'},
                     {field: 'accion', displayName: '', width: '70',

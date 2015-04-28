@@ -206,6 +206,27 @@ Modulos.prototype.eliminarOpcion = function(req, res) {
 };
 
 
+Modulos.prototype.eliminarVariable = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+    
+    var variable_id = args.parametrizacion_modulos.variable_id; 
+
+    if (variable_id === undefined && variable_id.length === '') {
+        res.send(G.utils.r(req.url, 'El id de la variable no esta definida', 500, {parametrizacion_modulos: {}}));
+        return;
+    }
+
+    that.m_modulo.eliminarVariable(variable_id, function(err, rows) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error eliminando la variable', 500, {parametrizacion_modulo: {}}));
+            return;
+        }
+        res.send(G.utils.r(req.url, "Variable eliminada correctamente", 200, {parametrizacion_modulos: {variablees_modulo: {}}}));
+
+    });
+};
+
 
 Modulos.prototype.listarVariablesPorModulo = function(req, res) {
     var that = this;

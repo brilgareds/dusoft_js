@@ -27,7 +27,7 @@ define(["angular", "js/controllers",
             $rootScope.$on('gestionar_documentos_bodegaCompleto', function(e, parametros) {
 
                 $scope.datos_view = {
-                    opcion_predeterminada: "0", // 0 = farmacias 1 = clientes
+                    opcion_predeterminada: "0", // 0 = farmacias 1 = clientes 2 = Otras Empresas
                     termino_busqueda: '',
                     termino_busqueda_documentos: '',
                     tercero_seleccionado: FarmaciaPlanilla.get(), // tercero_seleccionado es una Farmacia por ser la opcion_predeterminada = 0
@@ -86,7 +86,7 @@ define(["angular", "js/controllers",
                     session: $scope.session,
                     data: {
                         clientes: {
-                            empresa_id: '03',
+                            empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
                             pais_id: $scope.planilla.get_ciudad().get_pais_id(),
                             departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
                             ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
@@ -174,8 +174,8 @@ define(["angular", "js/controllers",
                 var obj = {
                     session: $scope.session,
                     data: {
-                        movimientos_bodegas: {
-                            empresa_id: '03',
+                        planillas_despachos: {
+                            empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
                             tipo_id: $scope.datos_view.tercero_seleccionado.getTipoId(),
                             tercero_id: $scope.datos_view.tercero_seleccionado.getId(),
                             termino_busqueda: $scope.datos_view.termino_busqueda_documentos
@@ -183,10 +183,10 @@ define(["angular", "js/controllers",
                     }
                 };
 
-                Request.realizarRequest(API.DOCUMENTOS.LISTAR_DOCUMENTOS_CLIENTES, "POST", obj, function(data) {
+                Request.realizarRequest(API.PLANILLAS.LISTAR_DOCUMENTOS_CLIENTES, "POST", obj, function(data) {
 
                     if (data.status === 200) {
-                        that.render_documentos(data.obj.movimientos_bodegas);
+                        that.render_documentos(data.obj.planillas_despachos);
                     }
                 });
             };
@@ -196,8 +196,8 @@ define(["angular", "js/controllers",
                 var obj = {
                     session: $scope.session,
                     data: {
-                        movimientos_bodegas: {
-                            empresa_id: '03',
+                        planillas_despachos: {
+                            empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
                             farmacia_id: $scope.datos_view.tercero_seleccionado.get_empresa_id(),
                             centro_utilidad_id: $scope.datos_view.tercero_seleccionado.getCodigo(),
                             termino_busqueda: $scope.datos_view.termino_busqueda_documentos
@@ -205,11 +205,11 @@ define(["angular", "js/controllers",
                     }
                 };
 
-                Request.realizarRequest(API.DOCUMENTOS.LISTAR_DOCUMENTOS_FARMACIAS, "POST", obj, function(data) {
+                Request.realizarRequest(API.PLANILLAS.LISTAR_DOCUMENTOS_FARMACIAS, "POST", obj, function(data) {
 
                     if (data.status === 200) {
 
-                        that.render_documentos(data.obj.movimientos_bodegas);
+                        that.render_documentos(data.obj.planillas_despachos);
                     }
                 });
             };

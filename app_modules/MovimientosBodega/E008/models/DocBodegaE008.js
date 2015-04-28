@@ -726,6 +726,7 @@ DocuemntoBodegaE008.prototype.consultar_documento_despacho = function(numero, pr
     var sql = "select to_char(a.fecha_registro, 'dd-mm-yyyy hh:mi am') as fecha_registro,\
                 a.prefijo,\
                 a.numero,\
+                j.pedido_cliente_id as numero_pedido,\
                 d.inv_tipo_movimiento as tipo_movimiento , d.descripcion as tipo_clase_documento,\
                 c.descripcion, e.pedido_cliente_id as numero_pedido,\
                 c.tipo_doc_general_id as tipo_doc_bodega_id,\
@@ -753,6 +754,7 @@ DocuemntoBodegaE008.prototype.consultar_documento_despacho = function(numero, pr
                 select to_char(a.fecha_registro, 'dd-mm-yyyy hh:mi am') as fecha_registro,\
                 a.prefijo,\
                 a.numero,\
+                j.solicitud_prod_a_bod_ppal_id as numero_pedido,\
                 d.inv_tipo_movimiento as tipo_movimiento , d.descripcion as tipo_clase_documento,\
                 c.descripcion, e.solicitud_prod_a_bod_ppal_id as numero_pedido,\
                 c.tipo_doc_general_id as tipo_doc_bodega_id,\
@@ -778,71 +780,6 @@ DocuemntoBodegaE008.prototype.consultar_documento_despacho = function(numero, pr
                 and a.numero = $1";
     
     G.db.query(sql, [numero, prefijo, empresa, usuario_id], function(err, rows, result) {
-        callback(err, rows);
-
-    });
-    
-};
-
-// Consultar los documentos de despacho de un cliente 
-DocuemntoBodegaE008.prototype.consultar_documentos_despachos_por_cliente = function(empresa_id, tipo_id, tercero_id, termino_busqueda, callback){
-    
-    var sql = " select \
-                '1' as tipo,\
-                'CLIENTES' as descripcion_tipo,\
-                a.empresa_id,\
-                a.prefijo,\
-                a.numero,\
-                a.pedido_cliente_id as numero_pedido,\
-                a.fecha_registro\
-                from inv_bodegas_movimiento_despachos_clientes a\
-                where a.empresa_id= $1 and a.tipo_id_tercero = $2 and a.tercero_id = $3 and \
-                ( \
-                    a.prefijo || ' ' || a.numero ilike $4 or \
-                    a.numero ilike $4 or \
-                    a.pedido_cliente_id ilike $4 \
-                )\
-                order by a.fecha_registro desc";
-    
-    G.db.query(sql, [empresa_id, tipo_id, tercero_id, "%"+termino_busqueda+"%"], function(err, rows, result) {
-        callback(err, rows);
-
-    });    
-};
-
-// Consultar los documentos de despachos de una farmacia
-DocuemntoBodegaE008.prototype.consultar_documentos_despachos_por_farmacia = function(empresa_id, farmacia_id, centro_utilidad_id, termino_busqueda, callback){
-    
-    var sql = " select \
-                '0' as tipo,\
-                'FARMACIAS' as descripcion_tipo,\
-                b.farmacia_id,\
-                b.centro_utilidad,\
-                b.bodega,\
-                a.empresa_id,\
-                e.razon_social as nombre_empresa,\
-                d.centro_utilidad as centro_utilidad_id,\
-                d.descripcion as nombre_centro_utilidad,\
-                c.bodega as bodega_id,\
-                c.descripcion as nombre_bodega,\
-                a.prefijo,\
-                a.numero,\
-                a.solicitud_prod_a_bod_ppal_id as numero_pedido,\
-                a.fecha_registro\
-                from inv_bodegas_movimiento_despachos_farmacias a\
-                inner join solicitud_productos_a_bodega_principal b on a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id\
-                inner join bodegas c on b.farmacia_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad and b.bodega = c.bodega\
-                inner join centros_utilidad d on c.empresa_id = d.empresa_id and c.centro_utilidad = d.centro_utilidad\
-                inner join empresas e on d.empresa_id = e.empresa_id\
-                where a.empresa_id = $1 and b.farmacia_id = $2 and b.centro_utilidad = $3 and \
-                (\
-                    a.prefijo || ' ' || a.numero ilike $4 or\
-                    a.numero ilike $4 or\
-                    a.solicitud_prod_a_bod_ppal_id ilike $4 \
-                )\
-                order by a.fecha_registro desc";
-    
-    G.db.query(sql, [empresa_id, farmacia_id, centro_utilidad_id, "%"+termino_busqueda+"%"], function(err, rows, result) {
         callback(err, rows);
 
     });

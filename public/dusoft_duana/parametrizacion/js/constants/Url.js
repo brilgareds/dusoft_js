@@ -47,7 +47,8 @@
                 'LISTAR_MODULOS_POR_EMPRESA' : BASE_URL +"/Modulos/listarModulosPorEmpresa",
                 'LISTAR_ROLES_POR_MODULO' : BASE_URL+"/Modulos/listarRolesPorModulo",
                 'GUARDAR_VARIABLE':BASE_URL+"/Modulos/guardarVariable",
-                'LISTAR_VARIABLES':BASE_URL+"/Modulos/listarVariablesPorModulo"
+                'LISTAR_VARIABLES':BASE_URL+"/Modulos/listarVariablesPorModulo",
+                'ELIMINAR_VARIABLE' : BASE_URL+"/Modulos/eliminarVariable"
             },
             'PERFILES':{
                 'LISTAR_ROLES': BASE_URL+"/Roles/listarRoles",

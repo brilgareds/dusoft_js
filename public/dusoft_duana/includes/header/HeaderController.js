@@ -204,12 +204,23 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
 
                         var _opciones = modulo.opciones;
 
-                        for (var ii in _opciones) {
+                        for(var ii in _opciones) {
                             var _opcion = _opciones[ii];
                             // console.log("opcion >>>>>>>>>>>>>>> ", _opcion.estado_opcion_rol)
                             var opcion = OpcionModulo.get(_opcion.id, _opcion.nombre, _opcion.alias, _opcion.modulo_id);
                             opcion.setEstado_opcion_rol(_opcion.estado_opcion_rol);
                             _modulo.agregarOpcion(opcion);
+                        }
+                        
+                        var _variables = modulo.variables;
+                        
+                        for(var iii in _variables){
+                            var _variable = _variables[iii];
+                            if(_variable.estado === '1'){
+                                
+                                var variable = VariableModulo.get(_variable.id, _variable.nombre, _variable.valor, _variable.observacion);
+                                _modulo.agregarVariable(variable);
+                            }
                         }
 
                         _modulo.setCarpetaRaiz(modulo.carpeta_raiz);
@@ -222,9 +233,10 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                             nombre: modulo.nombre,
                             state: modulo.state,
                             icon: modulo.icon,
-                            opciones: _modulo.getOpciones(true)
+                            opciones: _modulo.getOpciones(true),
+                            variables:_modulo.getVariables(true)
                         };
-
+                        
                     }
 
                 }

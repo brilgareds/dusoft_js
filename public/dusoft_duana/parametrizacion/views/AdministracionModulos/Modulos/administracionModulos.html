@@ -106,7 +106,7 @@
 
             </tab>
 
-            <tab ng-controller="OpcionesModulosController" ng-init='init({eliminar:true, detalle:true})' disabled='rootModulos.moduloAGuardar.nodo_principal || rootModulos.moduloAGuardar.getModulosHijo() > 0'>
+            <tab ng-controller="OpcionesModulosController" ng-init='init({eliminar:true, detalle:true})' disabled='rootModulos.moduloAGuardar.nodo_principal || rootModulos.moduloAGuardar.getModulosHijo() > 0 || rootModulos.moduloAGuardar.getId() == 0'>
                 <tab-heading>
                     Opciones
                 </tab-heading>
@@ -182,7 +182,7 @@
 
                         </p>
                         <p class="input-group">
-                            <input type="text" ng-model='rootModulos.moduloAGuardar.variableAGuardar.nombre' class="form-control"  placeholder="Nombre Variable" />
+                            <input type="text" ng-model='rootModulos.moduloAGuardar.variableAGuardar.nombre' class="form-control validar_caracteres validar_espacios"  placeholder="Nombre Variable" />
                             <span class="input-group-addon">
                                 <i class="glyphicon glyphicon-ok"></i>
                             </span>

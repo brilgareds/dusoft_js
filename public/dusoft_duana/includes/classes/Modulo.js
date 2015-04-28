@@ -76,12 +76,24 @@ define(["angular", "js/models"], function(angular, models) {
 
                 return this.opciones;
             };
-            
-            
-            Modulo.prototype.getVariables = function() {
+
+
+            Modulo.prototype.getVariables = function(objetoValor) {
+
+                if (objetoValor) {
+                    var _variables = {};
+                    for (var i in this.variables) {
+                        var variable = this.variables[i];
+                        _variables[variable.nombre] = variable.valor;
+
+                    }
+
+                    return _variables;
+                }
+
                 return this.variables;
             };
-            
+
             Modulo.prototype.agregarOpcion = function(opcion) {
 
                 for (var i in this.opciones) {
@@ -98,6 +110,17 @@ define(["angular", "js/models"], function(angular, models) {
                 for (var i in this.opciones) {
                     if (this.opciones[i].id === opcion.id) {
                         this.opciones.splice(i, 1);
+                        break;
+                    }
+                }
+
+            };
+
+            Modulo.prototype.eliminarVariable = function(variable) {
+
+                for (var i in this.variables) {
+                    if (this.variables[i].id === variable.id) {
+                        this.variables.splice(i, 1);
                         break;
                     }
                 }
@@ -129,7 +152,7 @@ define(["angular", "js/models"], function(angular, models) {
             Modulo.prototype.vaciarOpciones = function() {
                 this.opciones = [];
             };
-            
+
             Modulo.prototype.vaciarVariables = function() {
                 this.variables = [];
             };

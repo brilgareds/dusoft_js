@@ -306,6 +306,15 @@ ModuloModel.prototype.eliminarOpcion = function(id, callback) {
     });
 };
 
+
+ModuloModel.prototype.eliminarVariable = function(id, callback) {
+    var sql = "DELETE FROM modulos_variables WHERE id = $1";
+
+    G.db.query(sql, [id], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
 ModuloModel.prototype.habilitarModuloEnEmpresas = function(usuario_id, empresas_modulos, modulo_id, callback) {
 
     var that = this;

@@ -159,7 +159,7 @@ define(["angular", "js/services"], function(angular, services) {
            
            
            //metodo usado por los controladores AdministracionUsuariosController, ListarRolesController
-           self.traerRoles = function(parametros, empresaSeleccionada, callback) {
+           self.traerRoles = function(parametros, empresaSeleccionada, validarEstado, callback) {
                 if (!empresaSeleccionada || empresaSeleccionada.getCodigo().length === 0) {
                     return;
                 }
@@ -184,8 +184,16 @@ define(["angular", "js/services"], function(angular, services) {
                                     roles[i].observacion,
                                     empresaSeleccionada.getCodigo()
                             );
-
-                            empresaSeleccionada.agregarRol(rol);
+                            
+                            rol.setEstado(roles[i].estado);
+                            
+                            if(validarEstado){
+                                if(rol.getEstado()){
+                                    empresaSeleccionada.agregarRol(rol);
+                                }
+                            } else {  
+                               empresaSeleccionada.agregarRol(rol);
+                            }
 
                         }
                         

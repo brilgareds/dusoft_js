@@ -8,7 +8,7 @@ define(["angular", "js/models"], function(angular, models) {
                 this.modulo_id = modulo_id || 0;
                 this.observacion = "";
                 this.alias = alias || "";
-                this.estado = false;
+                this.estado = true;
                 this.seleccionado = false;
                 this.estado_opcion_rol = 0;
                 

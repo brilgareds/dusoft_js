@@ -488,7 +488,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                     }
                 };
 
-                ParametrizacionService.traerRoles(parametros, $scope.rootUsuario.empresaSeleccionada, function(success, msg) {
+                ParametrizacionService.traerRoles(parametros, $scope.rootUsuario.empresaSeleccionada, true, function(success, msg) {
                     if (!success) {
                         AlertService.mostrarMensaje("warning", msg);
 

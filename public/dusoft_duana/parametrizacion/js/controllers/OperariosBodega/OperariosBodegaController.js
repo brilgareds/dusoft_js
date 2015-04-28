@@ -11,7 +11,10 @@ define(["angular", "js/controllers", "controllers/OperariosBodega/Administracion
 
             
             
-            $scope.session = { usuario_id: Usuario.usuario_id, auth_token: Usuario.token };
+            $scope.session = { 
+                 usuario_id: Usuario.getUsuarioActual().getId(),
+                 auth_token: Usuario.getUsuarioActual().getToken()
+            };
             
             $scope.buscarOperario = function(termino_busqueda) {
                 Request.realizarRequest(API.TERCEROS.LISTAR_OPERARIOS, "POST", {session: $scope.session, data: { lista_operarios : { termino_busqueda: termino_busqueda } }}, function(data) {                
@@ -34,7 +37,7 @@ define(["angular", "js/controllers", "controllers/OperariosBodega/Administracion
             };
 
             $scope.onKeyPress = function(ev, termino_busqueda) {
-                if (ev.which == 13) {
+                if (ev.which === 13) {
                     $scope.buscarOperario(termino_busqueda);
                 }
             };

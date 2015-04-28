@@ -120,6 +120,50 @@ Modulos.prototype.guardarOpcion = function(req, res) {
 };
 
 
+
+Modulos.prototype.guardarVariable = function(req, res) {
+    var that = this;
+
+    var args = req.body.data;
+
+    var variable = args.parametrizacion_modulos.variable;
+    var modulo_id = args.parametrizacion_modulos.modulo_id;
+    
+    
+    if (modulo_id === undefined && modulo_id.length === '') {
+        res.send(G.utils.r(req.url, 'El modulo no esta definido', 500, {parametrizacion_modulos: {}}));
+        return;
+    }
+    
+    variable.modulo_id = modulo_id;
+
+    __validarCreacionVariable(that, variable, function(validacion) {
+
+        if (!validacion.valido) {
+            res.send(G.utils.r(req.url, validacion.msj, 403, {parametrizacion_modulos: {}}));
+            return;
+        }
+
+        variable.usuario_id = req.session.user.usuario_id;
+        variable.usuario_id_modifica = req.session.user.usuario_id;
+
+        that.m_modulo.guardarVariable(variable, function(err, rows) {
+            if (err) {
+                console.log("error guardando opcion ", err);
+                res.send(G.utils.r(req.url, 'Error guardando la variable', 500, {parametrizacion_modulo: {}}));
+                return;
+            }
+
+            if (rows.length > 0 && rows[0].id) {
+                variable.id = rows[0].id;
+            }
+
+            res.send(G.utils.r(req.url, "Variable guardada con exito", 200, {parametrizacion_modulo: {variable: variable}}));
+        });
+    });
+};
+
+
 Modulos.prototype.listarOpcionesPorModulo = function(req, res) {
     var that = this;
     var args = req.body.data;
@@ -157,6 +201,29 @@ Modulos.prototype.eliminarOpcion = function(req, res) {
             return;
         }
         res.send(G.utils.r(req.url, "Opcion eliminada correctamente", 200, {parametrizacion_modulos: {opciones_modulo: {}}}));
+
+    });
+};
+
+
+
+Modulos.prototype.listarVariablesPorModulo = function(req, res) {
+    var that = this;
+    var args = req.body.data;
+    var modulo = args.parametrizacion_modulos.modulo_id;
+
+    if (modulo === undefined) {
+        res.send(G.utils.r(req.url, 'El id del modulo no esta definido', 500, {parametrizacion_modulos: {}}));
+        return;
+    }
+
+
+    that.m_modulo.listarVariablesPorModulo(modulo, function(err, rows) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error listando las variables del modulo', 500, {parametrizacion_modulo: {}}));
+            return;
+        }
+        res.send(G.utils.r(req.url, "Listado de variables por modulo", 200, {parametrizacion_modulos: {variables_modulo: rows}}));
 
     });
 };
@@ -327,69 +394,60 @@ function __validarCreacionModulo(that, modulo, callback) {
 ;
 
 
-function __validarCreacionOpcion(that, opcion, callback) {
+function __validarCreacionVariable(that, variable, callback) {
     var validacion = {
         valido: true,
         msj: ""
     };
 
-    if (opcion.modulo_id && opcion.modulo_id.length === '') {
+
+    if (variable.nombre === undefined || variable.nombre.length === 0) {
         validacion.valido = false;
-        validacion.msj = "La opcion debe tener un modulo asignado";
+        validacion.msj = "La variable debe tener un nombre";
         callback(validacion);
         return;
     }
 
-    if (opcion.nombre === undefined || opcion.nombre.length === 0) {
+    if (variable.valor === undefined) {
         validacion.valido = false;
-        validacion.msj = "La opcion debe tener un nombre";
-        callback(validacion);
-        return;
-    }
-
-    if (opcion.alias === undefined) {
-        validacion.valido = false;
-        validacion.msj = "La opcion debe tener un alias";
+        validacion.msj = "La variable debe tener un valor";
         callback(validacion);
         return;
     }
     
-    callback(validacion);
+    if (variable.observacion === undefined) {
+        validacion.valido = false;
+        validacion.msj = "La variable debe tener una observacion";
+        callback(validacion);
+        return;
+    }
 
-    //trae las opcion que hagan match con las primeras letras del nombre o el alias
-   /* that.m_modulo.obtenerOpcionPorNombre(opcion.nombre.substring(0, 4), function(err, rows) {
+    //trae las variable que hagan match con las primeras letras del nombre
+    that.m_modulo.obtenerVariablePorNombre(variable.nombre.substring(0, 4), function(err, rows) {
         if (err) {
             validacion.valido = false;
-            validacion.msj = "Ha ocurrido un error validando la opcion";
+            validacion.msj = "Ha ocurrido un error validando la variable";
             callback(validacion);
             return;
         }
 
 
-        var nombre_opcion = opcion.nombre.toLowerCase().replace(/ /g, "");
-        // var alias = opcion.alias.toLowerCase().replace(/ /g, "");
+        var nombre_variable = variable.nombre.toLowerCase().replace(/ /g, "");
+        // var alias = variable.alias.toLowerCase().replace(/ /g, "");
 
-        //determina si el nombre de la opcion ya esta en uso, insensible a mayusculas o espacios
+        //determina si el nombre de la variable ya esta en uso, insensible a mayusculas o espacios
         for (var i in rows) {
 
-            if (opcion.id !== rows[i].id) {
+            if (variable.id !== rows[i].id) {
 
-                var _nombre_opcion = rows[i].nombre.toLowerCase().replace(/ /g, "");
-                var _alias = rows[i].alias.toLowerCase().replace(/ /g, "");
+                var _nombre_variable = rows[i].nombre.toLowerCase().replace(/ /g, "");
 
-                if (nombre_opcion === _nombre_opcion) {
+                if (nombre_variable === _nombre_variable) {
                     validacion.valido = false;
-                    validacion.msj = "El nombre de la opcion no esta disponible";
+                    validacion.msj = "El nombre de la variable no esta disponible";
                     callback(validacion);
                     return;
                 }
-
-                 if (alias === _alias) {
-                 validacion.valido = false;
-                 validacion.msj = "El alias de la opcion no esta disponible";
-                 callback(validacion);
-                 return;
-                 }
             }
 
         }
@@ -397,7 +455,7 @@ function __validarCreacionOpcion(that, opcion, callback) {
         callback(validacion);
 
 
-    });*/
+    });
 
 }
 ;

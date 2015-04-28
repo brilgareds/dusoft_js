@@ -37,12 +37,14 @@ define(["angular", "js/controllers",
                 $scope.datos_clientes_farmacias = [];
 
                 $scope.seleccionar_cliente_farmacia();
+
             });
 
             $rootScope.$on('cerrar_gestion_documentos_bodegaCompleto', function(e, parametros) {
 
                 $scope.datos_view = null;
                 $scope.$$watchers = null;
+
             });
 
 
@@ -276,9 +278,9 @@ define(["angular", "js/controllers",
             $scope.aceptar_documentos_bodegas = function() {
 
                 if ($scope.datos_view.opcion_predeterminada === "2") {
-                    
+
                     $scope.datos_view.documento_seleccionado.set_empresa_id(Sesion.getUsuarioActual().getEmpresa().getCodigo());
-                    
+
                     that.gestionar_planilla_despacho(function(continuar) {
                         if (continuar)
                             $scope.cerrar_gestion_documentos_bodega();
@@ -287,7 +289,7 @@ define(["angular", "js/controllers",
                     $scope.cerrar_gestion_documentos_bodega();
                 }
             };
-                        
+
 
             that.gestionar_planilla_despacho = function(callback) {
 

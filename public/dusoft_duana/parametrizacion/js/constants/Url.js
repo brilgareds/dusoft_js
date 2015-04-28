@@ -33,8 +33,6 @@
                 'OBTENER_CENTROS_UTILIDAD_USUARIO':BASE_URL+"/Usuarios/obtenerCentrosUtilidadUsuario",
                 'OBTENER_BODEGAS_USUARIO':BASE_URL+"/Usuarios/obtenerBodegasUsuario"
                 
-                
-                
 	    },
             'MODULOS':{
                 'LISTAR_MODULOS': BASE_URL+"/Modulos/listarModulos",
@@ -47,7 +45,9 @@
                 'LISTAR_EMPRESAS' : BASE_URL+"/Empresas/listarEmpresas",
                 'HABILITAR_MODULO_EMPRESAS' : BASE_URL +"/Modulos/habilitarModuloEnEmpresas",
                 'LISTAR_MODULOS_POR_EMPRESA' : BASE_URL +"/Modulos/listarModulosPorEmpresa",
-                'LISTAR_ROLES_POR_MODULO' : BASE_URL+"/Modulos/listarRolesPorModulo"
+                'LISTAR_ROLES_POR_MODULO' : BASE_URL+"/Modulos/listarRolesPorModulo",
+                'GUARDAR_VARIABLE':BASE_URL+"/Modulos/guardarVariable",
+                'LISTAR_VARIABLES':BASE_URL+"/Modulos/listarVariablesPorModulo"
             },
             'PERFILES':{
                 'LISTAR_ROLES': BASE_URL+"/Roles/listarRoles",

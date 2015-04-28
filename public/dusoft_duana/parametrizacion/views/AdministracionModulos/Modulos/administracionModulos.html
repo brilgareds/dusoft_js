@@ -43,8 +43,8 @@
                                 <i class="glyphicon glyphicon-ok"></i>
                             </span>
                         </p> 
-                        
-                        
+
+
                         <p class="input-group">
                             <input type="text" class="form-control" ng-model='rootModulos.moduloAGuardar.carpetaRaiz'   placeholder="Carpeta Raíz del modulo"  />
                             <span class="input-group-addon">
@@ -115,7 +115,7 @@
                     <div class="panel-body">
                         <p class="input-group contenedor_combo_grande">
                             <label for="habilitar_opcion" style='margin-right: 5px;'>Habilitar Opcion</label>
-                            <input-check ng-model="rootModulos.moduloAGuardar.opcionAGuardar.estado" style='margin-right: 15px;' id="habilitar_opcion" ></input-check>
+                        <input-check ng-model="rootModulos.moduloAGuardar.opcionAGuardar.estado" style='margin-right: 15px;' id="habilitar_opcion" ></input-check>
 
                         </p>
                         <p class="input-group">
@@ -137,11 +137,11 @@
 
                         </p> 
                         <p class="input-group" >
-                            <div class="table-responsive" >
-                                <div class="grid-responsive listado_opciones" ng-grid="listado_opciones">
+                        <div class="table-responsive" >
+                            <div class="grid-responsive listado_opciones" ng-grid="listado_opciones">
 
-                                </div>
                             </div>
+                        </div>
                         </p>
 
 
@@ -168,6 +168,70 @@
                     </div>
                 </div>
             </tab>
+
+            <tab disabled='rootModulos.moduloAGuardar.getId() == 0'>
+                <tab-heading>
+                    Variables
+                </tab-heading>
+
+                <div class="panel">
+                    <div class="panel-body">
+                        <p class="input-group contenedor_combo_grande">
+                            <label for="habilitar_opcion" style='margin-right: 5px;'>Habilitar Variable</label>
+                            <input-check ng-model="rootModulos.moduloAGuardar.variableAGuardar.estado" style='margin-right: 15px;'  ></input-check>
+
+                        </p>
+                        <p class="input-group">
+                            <input type="text" ng-model='rootModulos.moduloAGuardar.variableAGuardar.nombre' class="form-control"  placeholder="Nombre Variable" />
+                            <span class="input-group-addon">
+                                <i class="glyphicon glyphicon-ok"></i>
+                            </span>
+                        </p> 
+
+                        <p class="input-group">
+                            <input type="text" class="form-control" ng-model='rootModulos.moduloAGuardar.variableAGuardar.valor'  placeholder="Valor" />
+                            <span class="input-group-addon">
+                                <i class="glyphicon glyphicon-ok"></i>
+                            </span>
+                        </p> 
+
+                        <p class="input-group contenedor_combo_grande">
+                            <textarea class="form-control observacion_modulo" ng-model='rootModulos.moduloAGuardar.variableAGuardar.observacion' placeholder="Observacion"></textarea>
+
+                        </p> 
+                        <p class="input-group" >
+                            <div class="table-responsive" >
+                                <div class="grid-responsive listado_opciones" ng-grid="listado_variables">
+    
+                                </div>
+                            </div>
+                        </p>
+
+
+
+                        <p class="input-group pull-right">
+                            <button class="btn btn-default btn-sm" ng-click='onLimpiarFormularioVariable()'>
+                                <span class="glyphicon glyphicon-plus"></span>
+                                Nuevo
+                            </button>
+                            <span ng-switch="rootModulos.moduloAGuardar.modulo_id != 0">
+
+                                <button ng-switch-when="true" class="btn btn-default btn-sm" ng-click='onGuardarVariable()'>
+                                    <span class="glyphicon glyphicon-floppy-disk"></span>
+                                    Guardar
+                                </button>
+
+                                <button ng-switch-when="false" disabled="disabled" class="btn btn-success btn-sm">
+                                    Guardar
+                                    <span class="glyphicon glyphicon-floppy-disk"></span>
+                                </button>
+                            </span>
+                        </p>
+
+                    </div>
+                </div>
+
+            </tab>
         </tabset>
 
 
@@ -177,7 +241,7 @@
     <div class="col-md-7">
 
         <!--div arbol-modulos plugins='checkbox,wholerow,state,contextmenu' tipo='multiple' estado='arbolmodulos'></div-->
-         <div arbol-modulos plugins='wholerow,state' tipo='multiple' estado='arbolmodulos'></div>
+        <div arbol-modulos plugins='wholerow,state' tipo='multiple' estado='arbolmodulos'></div>
     </div>
 </div>
 

@@ -4,6 +4,7 @@ define(["angular", "js/models"], function(angular, models) {
 
             function Documento(id, empresa_id, prefijo, numero, numero_pedido, cantidad_cajas, cantidad_neveras, temperatura_neveras, observacion, tipo) {
                 this.id = id || 0;
+                this.tercero = '';
                 this.empresa_id = empresa_id;
                 this.prefijo = prefijo;
                 this.numero = numero;
@@ -11,8 +12,8 @@ define(["angular", "js/models"], function(angular, models) {
                 this.cantidad_cajas = cantidad_cajas || '';
                 this.cantidad_neveras = cantidad_neveras || '';
                 this.temperatura_neveras = temperatura_neveras || '';
-                this.observacion = observacion || '';
-                this.tipo = tipo;
+                this.observacion = observacion || '';                
+                this.tipo = tipo;                
             }
 
             this.get = function(id, empresa_id, prefijo, numero, numero_pedido, cantidad_cajas, cantidad_neveras, temperatura_neveras, observacion, tipo) {
@@ -22,9 +23,21 @@ define(["angular", "js/models"], function(angular, models) {
             Documento.prototype.set_empresa_id = function(empresa_id) {
                 this.empresa_id = empresa_id;
             };
-
+            
+            Documento.prototype.set_temperatura_neveras = function(temperatura) {
+                this.temperatura_neveras = temperatura;
+            };
+            
+            Documento.prototype.set_tercero = function(tercero) {
+                this.tercero = tercero;
+            };
+            
             Documento.prototype.get_id = function() {
                 return this.id;
+            };
+            
+            Documento.prototype.get_tercero = function() {
+                return this.tercero;
             };
 
             Documento.prototype.get_empresa_id = function() {
@@ -57,10 +70,6 @@ define(["angular", "js/models"], function(angular, models) {
 
             Documento.prototype.get_cantidad_neveras = function() {
                 return this.cantidad_neveras;
-            };
-
-            Documento.prototype.set_temperatura_neveras = function(temperatura) {
-                this.temperatura_neveras = temperatura;
             };
 
             Documento.prototype.get_temperatura_neveras = function() {

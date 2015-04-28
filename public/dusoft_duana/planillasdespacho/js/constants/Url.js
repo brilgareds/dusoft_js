@@ -8,8 +8,12 @@ define(["angular"], function(angular) {
         'API': {
             'BASE_URL': BASE_URL, 
             'PLANILLAS': {
+                'LISTAR_PLANILLAS': BASE_URL + '/PlanillasDespachos/listar',
+                'CONSULTAR_PLANILLA': BASE_URL + '/PlanillasDespachos/consultarPlanillaDespacho',
+                'DOCUMENTOS_PLANILLA': BASE_URL + '/PlanillasDespachos/consultarDocumentosPlanillaDespacho',
                 'GENERAR_PLANILLA': BASE_URL + '/PlanillasDespachos/generarPlanillaDespacho',
-                'INGRESAR_DOCUMENTOS': BASE_URL + '/PlanillasDespachos/ingresarDocumentosPlanilla'
+                'INGRESAR_DOCUMENTOS': BASE_URL + '/PlanillasDespachos/ingresarDocumentosPlanilla',
+                'DESPACHAR_PLANILLA': BASE_URL + '/PlanillasDespachos/despacharPlanilla'
             },
             'CIUDADES': {
                 'LISTAR_CIUDADES': BASE_URL + '/Ciudades/listar'
@@ -26,8 +30,7 @@ define(["angular"], function(angular) {
             'DOCUMENTOS': {
                 'LISTAR_DOCUMENTOS_CLIENTES': BASE_URL + '/movBodegas/E008/documentosDespachosPorCliente',
                 'LISTAR_DOCUMENTOS_FARMACIAS': BASE_URL + '/movBodegas/E008/documentosDespachosPorFarmacia'
-            }
-            
+            }            
         }
     };
 

@@ -9,11 +9,11 @@ define([
         '$scope', '$rootScope', 'Request',
         '$modal', 'API', "socket",
         "$timeout", "AlertService", "Usuario",
-        "$modal", "Modulo",
+        "$modal", "Modulo", "VariableModulo",
         function($scope, $rootScope, Request,
                  $modal, API, socket, $timeout,
                  AlertService, Usuario, $modal,
-                 Modulo) {
+                 Modulo, VariableModulo) {
 
 
             var self = this;
@@ -42,6 +42,30 @@ define([
                         
             };
             
+            
+            $scope.listado_variables = {
+                data: 'rootModulos.moduloAGuardar.getVariables()',
+                enableColumnResize: true,
+                enableRowSelection: false,
+                showFilter: true,
+                columnDefs: [
+                    {field: 'nombre', displayName: 'Nombre Variable'},
+                    {field: 'valor', displayName: 'Valor'},
+                    {field: 'accion', displayName: '', width: '70',
+                        cellTemplate: '<div class="ngCellText txt-center">\
+                                      <button  class="btn btn-default btn-xs" ng-click="onEditarVariable(row.entity)">\
+                                        <span class="glyphicon glyphicon-zoom-in"></span>\
+                                      </button>\
+                                      <button  class="btn btn-default btn-xs" ng-click="onBorrarVariable(row.entity)">\
+                                        <span class="glyphicon glyphicon-remove"></span>\
+                                      </button>\
+                                      <input-check ng-if="rootOpciones.opciones.seleccionar" ng-disabled="!row.entity.estado"  ng-model="row.entity.seleccionado"  ng-change="onSeleccionarOpcion(row.entity)">\
+                                   </div>'
+                    }
+                ]
+
+            };
+            
             $scope.onTraerModulos = function(busqueda){
                 
                 if(busqueda.length < 3){
@@ -51,6 +75,54 @@ define([
                 self.traerModulos(busqueda, function(){
                     
                 });
+            };
+            
+            $scope.onEditarVariable = function(variable){
+                $scope.rootModulos.moduloAGuardar.setVariableAGuardar(variable);
+            };
+            
+            $scope.onBorrarVariable = function(variable) {
+                //console.log("opcion a eliminar ", opcion);
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                  //  size: 'sm',
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Desea eliminar la variable?</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <h4>Variable:</h4>\
+                                    <h5> {{ variable.getNombre() }}</h5>\
+                                    <h4>Descripcion:</h4>\
+                                    <h5> {{ variable.getObservacion() }} </h5>\
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-primary" ng-click="close()">No</button>\
+                                    <button class="btn btn-warning" ng-click="confirmar()" ng-disabled="" >Si</button>\
+                                </div>',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance, variable) {
+                        $scope.variable = variable;
+                        $scope.confirmar = function() {
+                             //self.eliminarOpcion(opcion);
+                            $modalInstance.close();
+                        };
+
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+
+                    },
+                    resolve: {
+                        variable: function() {
+                            return variable;
+                        }
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
             };
 
 
@@ -101,13 +173,46 @@ define([
                 return validacion;
 
             };
+            
+            
+            //valida que la creacion de la variable sea correcta
+            self.validarCreacionVariable = function() {
+                var variable = $scope.rootModulos.moduloAGuardar.getVariableAGuardar();
+                
+                var validacion = {
+                    valido: true,
+                    msj: ""
+                };
+
+                if (variable.nombre === undefined || variable.nombre.length === 0) {
+                    validacion.valido = false;
+                    validacion.msj = "La variable debe tener un nombre";
+                    return validacion;
+                }
+
+                if (variable.valor === undefined || variable.valor.length === 0) {
+                    validacion.valido = false;
+                    validacion.msj = "La variable debe tener un valor";
+                    return validacion;
+                }
+
+                if (variable.observacion === undefined || variable.observacion.length === 0) {
+                    validacion.valido = false;
+                    validacion.msj = "La variable debe tener una observacion";
+                    return validacion;
+                }
+
+                return validacion;
+
+            };
+
 
             self.inicializarModuloACrear = function() {
                 $scope.rootModulos.moduloAGuardar = Modulo.get();
+                $scope.rootModulos.moduloAGuardar.setVariableAGuardar(VariableModulo.get());
                 $scope.rootModulos.moduloAGuardar.setNodoPrincipal(false);
                 $scope.rootModulos.moduloAGuardar.setEstado(false);
                 $scope.rootModulos.moduloPadre = undefined;
-
             };
 
             self.traerModulos = function(termino, callback) {
@@ -163,6 +268,35 @@ define([
 
                 });
             };
+            
+            
+            self.traerVariablesModulo = function() {
+                                
+                $scope.rootModulos.moduloAGuardar.vaciarOpciones();
+                var obj = {
+                    session: $scope.rootModulos.session,
+                    data: {
+                        parametrizacion_modulos: {
+                             modulo_id: $scope.rootModulos.moduloAGuardar.modulo_id
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.MODULOS.LISTAR_VARIABLES, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        var datos = data.obj.parametrizacion_modulos.variables_modulo;
+
+                        for(var i in datos){
+                            var _variable = datos[i];
+                            var variable = VariableModulo.get(_variable.id, _variable.nombre, _variable.valor, _variable.observacion);
+                            $scope.rootModulos.moduloAGuardar.agregarVariable(variable);
+                        }
+
+                    }
+
+                });
+            };
+            
 
             $scope.rootModulos.session = {
                  usuario_id: Usuario.getUsuarioActual().getId(),
@@ -208,6 +342,10 @@ define([
             //limpia los datos del modulo
             $scope.onLimpiarFormulario = function() {
                 self.inicializarModuloACrear();
+            };
+            
+            $scope.onLimpiarFormularioVariable = function(){
+                $scope.rootModulos.moduloAGuardar.setVariableAGuardar(VariableModulo.get());
             };
 
             $scope.onGuardarModulo = function() {
@@ -276,6 +414,46 @@ define([
                 });
 
             };
+            
+            $scope.onGuardarVariable = function(){
+                var obj = self.validarCreacionVariable();
+                if (!obj.valido) {
+                    AlertService.mostrarMensaje("warning", obj.msj);
+                    return;
+                }
+                
+               var obj = {
+                    session: $scope.rootModulos.session,
+                    data: {
+                        parametrizacion_modulos: {
+                            variable: $scope.rootModulos.moduloAGuardar.getVariableAGuardar(),
+                            modulo_id: $scope.rootModulos.moduloAGuardar.getId()
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.MODULOS.GUARDAR_VARIABLE, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        AlertService.mostrarMensaje("success", "Variable guardada correctamente");
+                        var id = data.obj.parametrizacion_modulo.variable.id;
+                        if (id) {
+                            $scope.rootModulos.moduloAGuardar.getVariableAGuardar().setId(id);
+                            
+                            self.traerVariablesModulo(function(){
+                                
+                                
+                            });
+                        }
+                        
+                    } else {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+
+                });
+                
+                
+                
+            };
 
             $scope.onSeleccionIcono = function(icono) {
                 $scope.rootModulos.moduloAGuardar.icon = icono.clase;
@@ -340,6 +518,7 @@ define([
                         }
                         
                         $scope.rootModulos.moduloAGuardar = _modulo;
+                        $scope.rootModulos.moduloAGuardar.setVariableAGuardar(VariableModulo.get());
 
                         var modulos = $scope.rootModulos.modulos;
 
@@ -359,6 +538,8 @@ define([
                         }
                         
                         $scope.$broadcast("traerOpcionesModulo");
+                        
+                        self.traerVariablesModulo();
 
                     } else {
                         AlertService.mostrarMensaje("warning", "Se ha generado un error");

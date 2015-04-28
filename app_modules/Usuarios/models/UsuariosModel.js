@@ -297,33 +297,10 @@ UsuariosModel.prototype.deshabilitarBodegasUsuario = function(usuario_id, login_
 };
 
 
-UsuariosModel.prototype.guardarCentroUtilidadBodegaUsuario = function(usuario_id, login_empresa_id,empresa_id, centro_utilidad_id, bodega_id,estado, callback){
-    
-    var sql = "UPDATE login_centros_utilidad_bodega SET usuario_id_modifica = $1, fecha_modificacion = now(), estado = $5 \
-                WHERE empresa_id = $2 AND centro_utilidad_id = $3 AND  bodega_id = $4 RETURNING id";
-
-    G.db.query(sql, [usuario_id, empresa_id, centro_utilidad_id, bodega_id, estado], function(err,rows, result) {
-        if (err) {
-            callback(err, result);
-            return;
-        }
-        if (result.rowCount === 0) {
-            sql = "INSERT INTO login_centros_utilidad_bodega (fecha_modificacion, usuario_id_modifica, login_empresa_id, empresa_id, centro_utilidad_id, bodega_id, estado, fecha_creacion)\
-                   VALUES(now(), $1, $2, $3, $4, $5, $6, now()) RETURNING id";
-
-            G.db.query(sql, [usuario_id, login_empresa_id, empresa_id, centro_utilidad_id, bodega_id, estado], function(err, rows, result) {
-                if (err) {
-                    callback(err, rows);
-                    return;
-                } 
-                
-                callback(err, rows);
-                
-            });
-
-        } else {
-            callback(err, rows);
-        }
+UsuariosModel.prototype.guardarCentroUtilidadBodegaUsuario = function(usuario_id, login_empresa_id,empresa_id, centro_utilidad_id, bodegas ,estado, callback){
+    var that = this;
+    __guardarCentroUtilidadBodegaUsuario(that,usuario_id, login_empresa_id,empresa_id, centro_utilidad_id, bodegas , estado, function(err){
+        callback(err);
     });
 };
 
@@ -360,7 +337,7 @@ UsuariosModel.prototype.obtenerParametrizacionUsuario = function(usuario_id, emp
     
     var parametrizacion = {};
     
-    that.obtenerRolUsuarioPorEmpresa(empresa_id, usuario_id, function(err, rol){
+    that.obtenerRolUsuarioPorEmpresa(empresa_id, usuario_id, function(err, rol){ 
         console.log("usuario obtenido ", rol); 
         
         //el usuario no tiene un rol asignado como predeterminado
@@ -376,14 +353,38 @@ UsuariosModel.prototype.obtenerParametrizacionUsuario = function(usuario_id, emp
             }
             
            parametrizacion.rol = rol;
-           for(var ii in modulos){
+          /* for(var ii in modulos){
                console.log("modulos >>>>>>>>>>>>>>>>>>>>>>> ", modulos[ii].nombre);
-           }
+           }*/
             
            __asignarOpcionesModulo(that, modulos, 0 , rol.id, empresa_id, usuario_id, function(err, modulos){
                 parametrizacion.modulos = modulos;
-                callback(err, parametrizacion);
-           });            
+                
+                that.obtenerCentrosUtilidadUsuario(empresa_id, usuario_id, function(err, rows){
+                     if(err){
+                         callback(err);
+                         return;
+                     }
+                     
+                     console.log("centros utilidad usuario ", rows, empresa_id, usuario_id);
+                     //return;
+
+                     if(rows.length === 0){
+                         callback(err, parametrizacion);
+                         return;
+                     }
+
+                     __obtenerBodegasCentroUtilidadUsuario(that, 0, empresa_id, usuario_id, rows, function(err, centros){
+                         parametrizacion.centros_utilidad = centros;
+                         callback(err, parametrizacion);
+                     });
+
+
+                });
+           });      
+           
+           
+           
             
         });
                 
@@ -391,6 +392,30 @@ UsuariosModel.prototype.obtenerParametrizacionUsuario = function(usuario_id, emp
 };
 
 
+function __obtenerBodegasCentroUtilidadUsuario(that, index, empresa_id, usuario_id, centros, callback){
+    
+    var centro_utilidad = centros[index];
+    
+    if(!centro_utilidad){
+        callback(false, centros);
+        return;
+    }
+    
+    
+    that.obtenerBodegasUsuario(empresa_id, usuario_id, centro_utilidad.centro_utilidad_id, function(err, bodegas){
+        if(err){
+            callback(err);
+            return;
+        }        
+        
+        centro_utilidad.bodegas = bodegas;
+        
+        index++;
+        setTimeout(function(){
+            __obtenerBodegasCentroUtilidadUsuario(that,index,empresa_id,usuario_id, centros,callback);
+        },0); 
+    });
+}
 
 UsuariosModel.prototype.borrarRolAsignadoUsuario = function(rol_id, empresa_id, usuario_id, callback){
      var sql = "DELETE FROM login_empresas WHERE  empresa_id = $1 AND login_id = "+usuario_id;
@@ -484,10 +509,10 @@ UsuariosModel.prototype.obtenerEmpresasUsuario = function(usuario_id, callback){
 UsuariosModel.prototype.obtenerCentrosUtilidadUsuario = function(empresa_id, login_id, callback){
      var that = this;
     
-    var sql =  "SELECT a.centro_utilidad, a.descripcion FROM centros_utilidad a\
+    var sql =  "SELECT a.centro_utilidad AS centro_utilidad_id, a.descripcion FROM centros_utilidad a\
                 INNER JOIN login_centros_utilidad_bodega b ON b.centro_utilidad_id = a.centro_utilidad\
                 INNER JOIN login_empresas c ON c.empresa_id = a.empresa_id\
-                WHERE a.empresa_id = $1 AND c.login_id = $2 GROUP BY 1, 2";
+                WHERE a.empresa_id = $1 AND c.login_id = $2 AND b.estado = '1' GROUP BY 1, 2";
 
     G.db.query(sql, [empresa_id, login_id], function(err, rows, result) {
         callback(err, rows, result);
@@ -497,10 +522,10 @@ UsuariosModel.prototype.obtenerCentrosUtilidadUsuario = function(empresa_id, log
 UsuariosModel.prototype.obtenerBodegasUsuario = function(empresa_id, login_id, centro_utilidad_id, callback){
      var that = this;
     
-    var sql = "SELECT a.centro_utilidad, a.descripcion FROM bodegas a\
+    var sql = "SELECT a.centro_utilidad AS centro_utilidad_id, a.descripcion, a.bodega AS bodega_id FROM bodegas a\
                INNER JOIN login_centros_utilidad_bodega b ON b.bodega_id = a.bodega\
                INNER JOIN login_empresas c ON c.empresa_id = a.empresa_id \
-               WHERE b.empresa_id = $1 AND c.login_id = $2 AND b.centro_utilidad_id = $3";
+               WHERE b.empresa_id = $1 AND c.login_id = $2 AND b.centro_utilidad_id = $3 AND b.estado = '1'";
 
     G.db.query(sql, [empresa_id, login_id, centro_utilidad_id], function(err, rows, result) {
         callback(err, rows, result);
@@ -749,17 +774,62 @@ function __deshabilitarBodegasUsuario(that, usuario_id, login_empresa_id,empresa
     }
     var bodega = bodegas[0];
     
-    that.guardarCentroUtilidadBodegaUsuario(usuario_id, login_empresa_id,empresa_id, centro_utilidad_id, bodega.bodega_id,'0', function(err, rows){
+    that.guardarCentroUtilidadBodegaUsuario(usuario_id, login_empresa_id,empresa_id, centro_utilidad_id, [bodega.bodega_id],'0', function(err, rows){
          if (err) {
             callback(err, rows);
             return;
         }
         
         bodegas.splice(0, 1);
-        __deshabilitarBodegasUsuario(that, usuario_id, login_empresa_id,empresa_id, centro_utilidad_id, bodegas, callback);
+        setTimeout(function(){
+            __deshabilitarBodegasUsuario(that, usuario_id, login_empresa_id,empresa_id, centro_utilidad_id, bodegas, callback);
+        },0);
         
-    });
+    });    
+}
+
+function __guardarCentroUtilidadBodegaUsuario(that,usuario_id, login_empresa_id,empresa_id, centro_utilidad_id, bodegas,estado, callback ){
+    if(bodegas.length === 0){
+        callback(false);
+        return;
+    }
     
+    var bodega = bodegas[0];
+    
+    var sql = "UPDATE login_centros_utilidad_bodega SET usuario_id_modifica = $1, fecha_modificacion = now(), estado = $5 \
+                WHERE empresa_id = $2 AND centro_utilidad_id = $3 AND  bodega_id = $4 ";
+
+    G.db.query(sql, [usuario_id, empresa_id, centro_utilidad_id, bodega, estado], function(err,rows, result) {
+        if (err) {
+            callback(err, result);
+            return;
+        }
+        if (result.rowCount === 0) {
+            sql = "INSERT INTO login_centros_utilidad_bodega (fecha_modificacion, usuario_id_modifica, login_empresa_id, empresa_id, centro_utilidad_id, bodega_id, estado, fecha_creacion)\
+                   VALUES(now(), $1, $2, $3, $4, $5, $6, now())";
+
+            G.db.query(sql, [usuario_id, login_empresa_id, empresa_id, centro_utilidad_id, bodega, estado], function(err, rows, result) {
+                if (err) {
+                    callback(err, rows);
+                    return;
+                } 
+                
+                bodegas.splice(0,1);
+                
+                setTimeout(function(){
+                     __guardarCentroUtilidadBodegaUsuario(that,usuario_id, login_empresa_id,empresa_id, centro_utilidad_id, bodegas,estado, callback);
+                },0);
+                
+            });
+
+        } else {
+            bodegas.splice(0,1);
+            
+            setTimeout(function(){
+                __guardarCentroUtilidadBodegaUsuario(that,usuario_id, login_empresa_id,empresa_id, centro_utilidad_id, bodegas,estado, callback);
+            },0); 
+        }
+    });
     
 }
 

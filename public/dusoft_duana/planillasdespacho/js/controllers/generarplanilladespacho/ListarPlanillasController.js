@@ -6,16 +6,36 @@ define(["angular", "js/controllers",
         '$scope', '$rootScope', 'Request',
         '$modal', 'API', "socket", "$timeout",
         "AlertService", "localStorageService", "$state", "$filter",
+        "EmpresaPlanillaDespacho",
+        "Ciudad",
+        "Transportadora",
+        "UsuarioPlanillaDespacho",
+        "PlanillaDespacho",
         "Usuario",
-        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Sesion) {
+        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Empresa, Ciudad, Transportadora, UsuarioPlanilla, PlanillaDespacho, Sesion) {
 
             var that = this;
 
+            $scope.Empresa = Empresa;
+
+            // Variables de Sesion
+            $scope.session = {
+                usuario_id: Sesion.getUsuarioActual().getId(),
+                auth_token: Sesion.getUsuarioActual().getToken()
+            };
+
             // Variables
-            var fecha_actual = new Date()
-            $scope.fecha_inicial = $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd");
-            $scope.fecha_final = $filter('date')(fecha_actual, "yyyy-MM-dd");
-            $scope.datepicker_fecha_final = false;
+            var fecha_actual = new Date();
+
+            // numero de guia
+            localStorageService.add("numero_guia", 0);
+
+            $scope.datos_view = {
+                termino_busqueda: '',
+                fecha_inicial: $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"),
+                fecha_final: $filter('date')(fecha_actual, "yyyy-MM-dd"),
+                datepicker_fecha_final: false
+            };
 
             // Variable para paginacion
             $scope.paginas = 0;
@@ -25,45 +45,46 @@ define(["angular", "js/controllers",
             $scope.pagina_actual = 1;
 
 
+            $scope.buscador_planillas_despacho = function(ev) {
 
-            // Variables de Sesion
-            $scope.session = {
-                usuario_id: Sesion.usuario_id,
-                auth_token: Sesion.token
-            };
-
-            $scope.datos_planilla = [];
-
-            $scope.buscar_planillas_despacho = function(termino, paginando) {
-
-                console.log('===============================');
-                console.log('== buscar_planillas_despacho ==');
-                console.log('===============================');
-
-                for (i = 0; i < 30; i++) {
-                    $scope.datos_planilla.push({numero_guia: i, transportador: 'transporatdor_' + i, ciudad: 'ciudad_' + i, cajas: i, neveras: i, estado: 'estado_' + i, fecha: 'fecha_' + i});
-                }
-            };
-
-            $scope.buscador_planillas_despacho = function(ev, termino_busqueda) {
                 if (ev.which == 13) {
-
-                    console.log('=================================');
-                    console.log('== buscador_planillas_despacho ==');
-                    console.log('=================================');
-
-                    $scope.buscar_planillas_despacho(termino_busqueda);
+                    $scope.buscar_planillas_despacho();
                 }
             };
 
-            $scope.crear_planilla_despacho = function() {
+            $scope.buscar_planillas_despacho = function() {
 
-                console.log('=============================');
-                console.log('== crear_planilla_despacho ==');
-                console.log('=============================');
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        planillas_despachos: {
+                            fecha_inicial: $scope.datos_view.fecha_inicial + " 00:00:00",
+                            fecha_final: $scope.datos_view.fecha_final + " 23:59:00",
+                            termino_busqueda: $scope.datos_view.termino_busqueda
+                        }
+                    }
+                };
 
-                $state.go('CrearPlanilla');
+                Request.realizarRequest(API.PLANILLAS.LISTAR_PLANILLAS, "POST", obj, function(data) {
 
+                    if (data.status === 200) {
+                        that.render_planillas(data.obj.planillas_despachos);
+                    }
+                });
+            };
+
+            that.render_planillas = function(planillas) {
+
+                $scope.Empresa.limpiar_planillas();
+
+                planillas.forEach(function(data) {
+
+                    var ciudad = Ciudad.get(data.pais_id, data.nombre_pais, data.departamento_id, data.nombre_departamento, data.ciudad_id, data.nombre_ciudad);
+                    var transportadora = Transportadora.get(data.transportadora_id, data.nombre_transportadora, data.placa_vehiculo, data.estado_transportadora);
+                    var usuario = UsuarioPlanilla.get(data.usuario_id, data.nombre_usuario);
+                    var planilla = PlanillaDespacho.get(data.id, transportadora, ciudad, data.nombre_conductor, data.observacion, usuario, data.fecha_registro, data.fecha_despacho, data.estado, data.descripcion_estado);
+                    $scope.Empresa.set_planillas(planilla);
+                });
             };
 
             $scope.abrir_fecha_inicial = function($event) {
@@ -71,8 +92,8 @@ define(["angular", "js/controllers",
                 $event.preventDefault();
                 $event.stopPropagation();
 
-                $scope.datepicker_fecha_inicial = true;
-                $scope.datepicker_fecha_final = false;
+                $scope.datos_view.datepicker_fecha_inicial = true;
+                $scope.datos_view.datepicker_fecha_final = false;
 
             };
 
@@ -81,28 +102,29 @@ define(["angular", "js/controllers",
                 $event.preventDefault();
                 $event.stopPropagation();
 
-                $scope.datepicker_fecha_inicial = false;
-                $scope.datepicker_fecha_final = true;
+                $scope.datos_view.datepicker_fecha_inicial = false;
+                $scope.datos_view.datepicker_fecha_final = true;
 
             };
 
             $scope.lista_planillas_despachos = {
-                data: 'datos_planilla',
+                data: 'Empresa.get_planillas()',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
-                    {field: 'numero_guia', displayName: '# Guía', width: "10%"},
-                    {field: 'transportador', displayName: 'Transportador', width: "25%"},
-                    {field: 'ciudad', displayName: 'Ciudad Despacho', width: "15%"},
-                    {field: 'cajas', displayName: 'Cant. Cajas', width: "10%"},
-                    {field: 'neveras', displayName: 'Cant. Neveras', width: "10%"},
-                    {field: 'estado', displayName: "Estado", width: "15%"},
-                    {field: 'fecha', displayName: "Fecha Salida", width: "9%"},
+                    {field: 'get_numero_guia()', displayName: '# Guía', width: "5%"},
+                    {field: 'get_transportadora().get_descripcion()', displayName: 'Transportador', width: "15%"},
+                    {field: 'get_ciudad().get_nombre_ciudad()', displayName: 'Ciudad Despacho', width: "15%"},
+                    {field: 'get_cantidad_cajas()', displayName: 'Cant. Cajas', width: "10%"},
+                    {field: 'get_cantidad_neveras()', displayName: 'Cant. Neveras', width: "10%"},
+                    {field: 'get_descripcion_estado()', displayName: "Estado", width: "15%"},
+                    {field: 'get_fecha_registro()', displayName: "F. Registro", width: "9%"},
+                    {field: 'get_fecha_despacho()', displayName: "F. Despacho", width: "9%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li><a href="javascript:void(0);" ng-click="modificar_planilla_despacho(row.entity,0)" >Modificar</a></li>\
+                                                <li><a href="javascript:void(0);" ng-click="gestionar_planilla_despacho(row.entity,true)" >Modificar</a></li>\
                                                 <li><a href="javascript:void(0);" ng-click="generar_reporte(row.entity,0)" >Ver PDF</a></li>\
                                                 <li><a href="javascript:void(0);" ng-disabled="true" ng-click="enviar_email(row.entity,0)" >Enviar por Email</a></li>\
                                             </ul>\
@@ -111,12 +133,17 @@ define(["angular", "js/controllers",
                 ]
             };
 
-            $scope.modificar_planilla_despacho = function(orden_compra) {
-                console.log('=================================');
-                console.log('== modificar_planilla_despacho ==');
-                console.log('=================================');
-                
-                $state.go('ModificarPlanilla');
+            $scope.gestionar_planilla_despacho = function(planilla_despacho, opcion) {
+
+                localStorageService.add("numero_guia", 0);
+
+                if (opcion) {
+                    // Modificar Planilla
+                    localStorageService.add("numero_guia", planilla_despacho.get_numero_guia());
+                }
+
+                $state.go('CrearPlanilla');
+
             };
 
             $scope.generar_reporte = function(orden_compra) {

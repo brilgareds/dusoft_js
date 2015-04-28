@@ -861,7 +861,7 @@ PedidosFarmaciasModel.prototype.calcular_cantidad_total_pendiente_producto = fun
 PedidosFarmaciasModel.prototype.calcular_cantidad_reservada_temporales_farmacias = function(codigo_producto, callback) {
     
     var sql = " select codigo_producto, SUM(cantidad_solic) as total_reservado from solicitud_pro_a_bod_prpal_tmp where codigo_producto = $1\
-                group by codigo_producto";
+                group by codigo_producto"; 
     
     G.db.query(sql, [codigo_producto], function(err, rows, result) {
         callback(err, rows);

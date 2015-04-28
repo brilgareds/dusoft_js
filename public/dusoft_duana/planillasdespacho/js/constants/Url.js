@@ -13,6 +13,7 @@ define(["angular"], function(angular) {
                 'DOCUMENTOS_PLANILLA': BASE_URL + '/PlanillasDespachos/consultarDocumentosPlanillaDespacho',
                 'GENERAR_PLANILLA': BASE_URL + '/PlanillasDespachos/generarPlanillaDespacho',
                 'INGRESAR_DOCUMENTOS': BASE_URL + '/PlanillasDespachos/ingresarDocumentosPlanilla',
+                'ELIMINAR_DOCUMENTO': BASE_URL + '/PlanillasDespachos/eliminarDocumentoPlanilla',
                 'DESPACHAR_PLANILLA': BASE_URL + '/PlanillasDespachos/despacharPlanilla'
             },
             'CIUDADES': {

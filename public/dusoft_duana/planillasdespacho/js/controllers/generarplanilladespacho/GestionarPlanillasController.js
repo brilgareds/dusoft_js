@@ -221,6 +221,71 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             };
 
+            $scope.confirmar_eliminar_documento_planilla = function(documento) {
+
+                $scope.planilla.set_documento(documento);
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                        <button type="button" class="close" ng-click="close()">&times;</button>\
+                                        <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                    </div>\
+                                    <div class="modal-body">\
+                                        <h4 ng-if="planilla.get_documentos().length === 1" ><b>¡Operacion Invalida!</b> La planilla no puede quedar sin documentos.</h4>\
+                                        <h4 ng-if="planilla.get_documentos().length > 1">¿Eliminar documento <b>{{ planilla.get_documento().get_prefijo_numero() }}</b>?</h4>\
+                                    </div>\
+                                    <div class="modal-footer">\
+                                        <button class="btn btn-warning" ng-click="cancelar_eliminacion_documento()">Cancelar</button>\
+                                        <button class="btn btn-primary" ng-disabled="planilla.get_documentos().length === 1" ng-click="aceptar_eliminacion_documento()">Aceptar</button>\
+                                    </div>',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.aceptar_eliminacion_documento = function() {
+                            $scope.eliminar_documento_planilla_despacho();
+                            $modalInstance.close();
+                        };
+
+                        $scope.cancelar_eliminacion_documento = function() {
+                            $modalInstance.close();
+                        };
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+
+            };
+
+            $scope.eliminar_documento_planilla_despacho = function() {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        planillas_despachos: {
+                            planilla_id: $scope.planilla.get_numero_guia(),
+                            empresa_id: $scope.planilla.get_documento().get_empresa_id(),
+                            prefijo: $scope.planilla.get_documento().get_prefijo(),
+                            numero: $scope.planilla.get_documento().get_numero(),
+                            tipo: $scope.planilla.get_documento().get_tipo()
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PLANILLAS.ELIMINAR_DOCUMENTO, "POST", obj, function(data) {
+
+                    AlertService.mostrarMensaje("warning", data.msj);
+
+                    if (data.status === 200) {
+                        $scope.planilla.set_documento('');
+                        $scope.consultar_documentos_planilla_despacho();                                                
+                    }
+                });
+
+            };
+
             $scope.cerrar_gestion_documentos_bodega = function() {
 
                 $scope.$emit('cerrar_gestion_documentos_bodega', {animado: true});
@@ -313,7 +378,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     {field: 'get_temperatura_neveras()', displayName: 'Temp. Neveras', width: "10%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="eliminar_producto_orden_compra(row)" ng-disabled="vista_previa" ><span class="glyphicon glyphicon-remove"></span></button>\
+                                            <button class="btn btn-default btn-xs" ng-click="confirmar_eliminar_documento_planilla(row.entity)" ng-disabled="planilla.get_estado()==\'2\'" ><span class="glyphicon glyphicon-remove"></span></button>\
                                         </div>'
                     }
                 ]

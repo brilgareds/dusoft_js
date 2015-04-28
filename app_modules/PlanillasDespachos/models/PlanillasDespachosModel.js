@@ -179,6 +179,15 @@ PlanillasDespachosModel.prototype.ingresar_documentos_planilla = function(tabla,
     });
 };
 
+PlanillasDespachosModel.prototype.eliminar_documento_planilla = function(tabla, planilla_id, empresa_id, prefijo, numero, callback) {
+
+    var sql = " delete from " + tabla + " where inv_planillas_despacho_id = $1 and empresa_id = $2 and  prefijo = $3 and  numero =$4"; 
+    
+    G.db.query(sql, [planilla_id, empresa_id, prefijo, numero], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
 PlanillasDespachosModel.prototype.modificar_estado_planilla_despacho = function(planilla_id, estado, callback) {
 
     var sql = " update inv_planillas_despacho set estado = $2 , fecha_despacho = NOW() where id = $1 ; "; 

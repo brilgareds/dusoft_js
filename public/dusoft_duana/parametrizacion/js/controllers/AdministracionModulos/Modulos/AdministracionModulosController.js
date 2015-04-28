@@ -107,7 +107,7 @@ define([
                     controller: function($scope, $modalInstance, variable) {
                         $scope.variable = variable;
                         $scope.confirmar = function() {
-                             //self.eliminarOpcion(opcion);
+                            self.eliminarVariable(variable);
                             $modalInstance.close();
                         };
 
@@ -123,6 +123,30 @@ define([
                     }
                 };
                 var modalInstance = $modal.open($scope.opts);
+            };
+            
+            
+            self.eliminarVariable = function(variable){
+                var obj = {
+                    session: $scope.rootModulos.session,
+                    data: {
+                        parametrizacion_modulos: {
+                            variable_id : variable.getId()
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.MODULOS.ELIMINAR_VARIABLE, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        
+                        $scope.rootModulos.moduloAGuardar.eliminarVariable(variable);
+                        AlertService.mostrarMensaje("success", "Variable eliminada correctamente");
+                    }  else {
+                         AlertService.mostrarMensaje("warning", data.msj);
+                    }
+
+                });
+
             };
 
 

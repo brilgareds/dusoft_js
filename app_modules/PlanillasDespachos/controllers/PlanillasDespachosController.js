@@ -204,7 +204,60 @@ PlanillasDespachos.prototype.ingresarDocumentosPlanillaDespacho = function(req, 
             res.send(G.utils.r(req.url, 'Error Interno', 500, {planillas_despachos: []}));
             return;
         } else {
-            res.send(G.utils.r(req.url, 'documento regitrado correctamente', 200, {planillas_despachos: {}}));
+            res.send(G.utils.r(req.url, 'Documento regitrado correctamente', 200, {planillas_despachos: {}}));
+            return;
+        }
+    });
+};
+
+PlanillasDespachos.prototype.eliminarDocumentoPlanilla = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.planillas_despachos === undefined || args.planillas_despachos.planilla_id === undefined || args.planillas_despachos.empresa_id === undefined || args.planillas_despachos.prefijo === undefined || args.planillas_despachos.numero === undefined) {
+        res.send(G.utils.r(req.url, 'planilla_id, empresa_id, prefijo o numero no esta definido', 404, {}));
+        return;
+    }
+    
+    if (args.planillas_despachos.tipo === undefined) {
+        res.send(G.utils.r(req.url, 'tipo no esta definido', 404, {}));
+        return;
+    }
+    
+    if (args.planillas_despachos.planilla_id === '' || args.planillas_despachos.empresa_id === '' || args.planillas_despachos.prefijo === '' || args.planillas_despachos.numero === '') {
+        res.send(G.utils.r(req.url, 'planilla_id, empresa_id, prefijo o numero estan vacios', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.tipo === '') {
+        res.send(G.utils.r(req.url, 'tipo esta vacio', 404, {}));
+        return;
+    }
+
+    var tipo = args.planillas_despachos.tipo; // 0= farmacias 1 = clientes 2 = Otras empresas    
+    var tabla = ["inv_planillas_detalle_farmacias", "inv_planillas_detalle_clientes", "inv_planillas_detalle_empresas"];
+
+    tabla = tabla[tipo];
+
+    if (tabla === undefined) {
+        res.send(G.utils.r(req.url, 'el tipo no es valido', 404, {}));
+        return;
+    }
+
+    var planilla_id = args.planillas_despachos.planilla_id;
+    var empresa_id = args.planillas_despachos.empresa_id;
+    var prefijo = args.planillas_despachos.prefijo;
+    var numero = args.planillas_despachos.numero;    
+
+    that.m_planillas_despachos.eliminar_documento_planilla(tabla, planilla_id, empresa_id, prefijo, numero, function(err, rows, result) {
+
+        if (err || result.rowCount === 0) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {planillas_despachos: []}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Documento eliminado correctamente', 200, {planillas_despachos: {}}));
             return;
         }
     });

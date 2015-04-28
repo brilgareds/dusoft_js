@@ -91,7 +91,7 @@
                                 <div class="">
                                     <div class="col-md-3">
                                         <p class="input-group">
-                                            <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-click="gestionar_documentos_bodega()" ng-disabled="planilla.get_ciudad()== null || planilla.get_transportadora()== null || planilla.get_nombre_conductor() == '' ||  planilla.get_observacion() == ''" > 
+                                            <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-click="gestionar_documentos_bodega()" ng-disabled="planilla.get_ciudad()== null || planilla.get_transportadora()== null || planilla.get_nombre_conductor() == '' ||  planilla.get_observacion() == '' || planilla.get_estado()=='2' " > 
                                                 <span class="glyphicon glyphicon-plus"></span> Buscar Remisiones
                                             </button>
                                         </p>
@@ -123,7 +123,7 @@
                                 <button class="btn btn-default" ng-click="cancelar_planilla_despacho()">
                                     <span class="glyphicon glyphicon-remove" ></span> Cancelar
                                 </button>
-                                <button class="btn btn-default" ng-click="confirmar_despacho_planilla()">
+                                <button class="btn btn-default" ng-disabled="planilla.get_estado()=='2' || planilla.get_documentos().length === 0" ng-click="confirmar_despacho_planilla()">
                                     <span class="glyphicon glyphicon-ok" ></span> Despachar
                                 </button>
                             </div>                            

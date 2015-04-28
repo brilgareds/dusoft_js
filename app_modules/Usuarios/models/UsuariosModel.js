@@ -342,7 +342,7 @@ UsuariosModel.prototype.obtenerParametrizacionUsuario = function(usuario_id, emp
         console.log("usuario obtenido ", rol);
 
         //el usuario no tiene un rol asignado como predeterminado
-        if (!rol.id) {
+        if (!rol || !rol.id) {
             callback(err, parametrizacion);
             return;
         }

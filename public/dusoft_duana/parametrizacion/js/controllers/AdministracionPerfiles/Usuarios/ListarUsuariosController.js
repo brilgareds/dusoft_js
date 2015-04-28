@@ -13,11 +13,12 @@ define(["angular", "js/controllers", "js/models",
                 Rol, Usuario,localStorageService, $state) {
 
             var self = this;
+            var moduloActual = Usuario.getUsuarioActual().getModuloActual(); 
             
-            $scope.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
+            $scope.opciones = (moduloActual)? moduloActual.opciones : {};
+            $scope.variables = (moduloActual)? moduloActual.variables : {}; 
             $scope.foo = "Duana";
             
-            console.log("opciones >>>>>>>>> ", Usuario.getUsuarioActual().getModuloActual().variables)
             console.log($scope.opciones.sw_crear_usuario && !$scope.foo === 'Duanas');
             
 

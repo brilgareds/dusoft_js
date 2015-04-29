@@ -1,7 +1,7 @@
 define(["angular", "js/controllers"], function(angular, controllers) {
 
-    controllers.controller('Logincontroller', ['$scope', 'User', "Request", "localStorageService",
-        function($scope, User, Request, localStorageService) {
+    controllers.controller('Logincontroller', ['$scope', "Request", "localStorageService","$state",
+        function($scope, Request, localStorageService, $state) {
 
             console.log("init login controller");
             $scope.usuario = "";
@@ -23,14 +23,18 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         login: {
                             usuario: $scope.usuario,
                             contrasenia: $scope.clave,
-                            device:"web"
+                            device:"web",
+                            admin:true
                         }
                     }
                 };
                 Request.realizarRequest("/login", "POST", obj, function(datos) {
                     if (datos.status === 200) {
+                        console.log("datos >>>>>>>>>>>>>>> ", datos);
                         localStorageService.add("session", JSON.stringify(datos.obj.sesion));
-                        window.location = "../kardex/";
+                        $state.go("ControlPanel");
+                        //window.location = "../kardex/";
+                        
                     } else {
                         $scope.mostrarmensaje = true;
                         $scope.msgerror = datos.msj || "Ha ocurrido un error...";

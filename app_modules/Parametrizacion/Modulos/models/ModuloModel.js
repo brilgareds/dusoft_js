@@ -23,6 +23,14 @@ ModuloModel.prototype.listar_modulos = function(termino, callback) {
     });
 };
 
+ModuloModel.prototype.obtenerCantidadModulos = function(callback) {
+    
+    var sql = "SELECT COUNT(*) AS total FROM modulos WHERE id = '1'";
+
+    G.db.query(sql, [], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
 
 ModuloModel.prototype.obtenerModulosPorId = function(ids, callback) {
 

@@ -59,6 +59,8 @@ Autenticacion.prototype.loginUsuario = function(req, res) {
     var that = this;
 
     var args = req.body.data;
+    
+    var admin = args.login.admin || false;
 
     if (args.login === undefined || args.login.usuario === undefined || args.login.contrasenia === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
@@ -77,7 +79,7 @@ Autenticacion.prototype.loginUsuario = function(req, res) {
     var socket = args.login.socket;
 
 
-    G.auth.login(nombre_usuario, contrasenia, function(err, usuario) {
+    G.auth.login(nombre_usuario, contrasenia, admin, function(err, usuario) {
         if (err)
             res.send(G.utils.r(req.url, 'Error Interno', 500, {}));
         else {
@@ -88,11 +90,13 @@ Autenticacion.prototype.loginUsuario = function(req, res) {
                 usuario = usuario[0];
                 usuario.socket = socket;
                 usuario.device = device;
+                
 
                 G.auth.set(usuario, function(err, sesion_usuario) {
                     if (err) {
                         res.send(G.utils.r(req.url, 'No se ha podido Autenticar el Usuario', 500, {sesion: {}}));
                     } else {
+                        sesion_usuario.admin = usuario.sw_admin;
                         res.send(G.utils.r(req.url, 'Usuario Autenticado Correctamente', 200, {sesion: sesion_usuario}));
                     }
                 });

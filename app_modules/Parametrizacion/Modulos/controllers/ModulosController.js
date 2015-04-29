@@ -26,6 +26,24 @@ Modulos.prototype.listar_modulos = function(req, res) {
     });
 };
 
+Modulos.prototype.obtenerCantidadModulos = function(req, res) {
+
+    var that = this;
+
+
+    var args = req.body.data;
+    
+
+    that.m_modulo.obtenerCantidadModulos( function(err, rows) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error listando Modulos', 500, {parametrizacion_modulos: {}}));
+        } else {
+            res.send(G.utils.r(req.url, 'Cantidad de Modulos del sistema', 200, {parametrizacion_modulos: {total: rows[0].total}}));
+        }
+    });
+};
+
 Modulos.prototype.obtenerModulosPorId = function(req, res) {
 
     var that = this;

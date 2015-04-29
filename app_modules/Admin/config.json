@@ -1,0 +1,36 @@
+{
+    "module": "Admin",
+    "dependency": {
+        "controllers": [{
+                "admin_controller": {
+                    "module": "Admin",
+                    "controller": "AdminController",
+                    "alias": "c_admin"
+                }
+            }],
+        "models": [{
+                "pedidos_model": {
+                    "module": "Pedidos",
+                    "model": "PedidosModel",
+                    "alias": "m_pedidos"
+                },
+                "productos_model": {
+                    "module": "Productos",
+                    "model": "ProductosModel",
+                    "alias": "m_productos"
+                },
+                "pedidos_cliente_model": {
+                    "module": "PedidosClientes",
+                    "model": "PedidosClienteModel",
+                    "alias": "m_pedidos_clientes"
+                },
+                "pedidos_farmacia_model": {
+                    "module": "PedidosFarmacias",
+                    "model": "PedidosFarmaciasModel",
+                    "alias": "m_pedidos_farmacias"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

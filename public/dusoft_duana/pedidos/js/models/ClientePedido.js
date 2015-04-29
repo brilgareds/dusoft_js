@@ -11,6 +11,7 @@ define(["angular", "js/models", "includes/classes/Cliente"], function(angular, m
             this.contrato_id = 0;
             this.estado_contrato;
             this.email;
+            this.contrato_vigente;
         }
 
         this.get = function(nombre, direccion, tipo_id, id, telefono) {
@@ -23,7 +24,7 @@ define(["angular", "js/models", "includes/classes/Cliente"], function(angular, m
             this.identificacion = this.tipo_id_tercero+"-"+this.id;
         };
         
-        ClientePedido.prototype.getIdentificacion = function() {
+        ClientePedido.prototype.getIdentificacion = function() { 
             return this.identificacion;
         };
         
@@ -57,6 +58,15 @@ define(["angular", "js/models", "includes/classes/Cliente"], function(angular, m
         
         ClientePedido.prototype.getEmail = function() {
             return this.email;
+        };
+        
+        //this.contrato_vigente
+        ClientePedido.prototype.setContratoVigente = function(contrato_vigente) {
+            this.contrato_vigente = contrato_vigente;
+        };
+        
+        ClientePedido.prototype.getContratoVigente = function() {
+            return this.contrato_vigente;
         };
         
         return this;

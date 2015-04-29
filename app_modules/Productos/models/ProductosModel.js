@@ -487,6 +487,19 @@ ProductosModel.prototype.obtenerDescripcionProducto = function(codigo , callback
     });
 };
 
+//Consultar precio de producto en contrato con un cliente
+ProductosModel.prototype.consultar_precio_producto_contrato = function(codigo_producto, contrato_id, callback) {
+    
+    var sql = " select	a.contrato_cliente_id, a.codigo_producto, a.precio_pactado, a.descripcion\n\
+                    from vnts_contratos_clientes a\
+                        join vnts_contratos_clientes_productos b on a.contrato_cliente_id = b.contrato_cliente_id\
+                    where a.tercero_id = '88244370'";
+    
+    G.db.query(sql, [codigo_producto, contrato_id], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
 
 
 module.exports = ProductosModel;

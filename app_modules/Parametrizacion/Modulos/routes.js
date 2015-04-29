@@ -7,6 +7,10 @@ module.exports = function(app, di_container) {
         c_modulos.listar_modulos(req, res);
     });
 
+    app.post('/api/Modulos/obtenerCantidadModulos', function(req, res) {
+        c_modulos.obtenerCantidadModulos(req, res);
+    });
+    
     app.post('/api/Modulos/guardarModulo', function(req, res) {
         c_modulos.guardarModulo(req, res);
     });

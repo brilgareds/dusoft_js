@@ -62,7 +62,11 @@ ClientesModel.prototype.listar_clientes = function(empresa_id, termino_busqueda,
                     g.pais,\
                     f.departamento,\
                     e.municipio,\
-                    d.estado as estado_contrato\
+                    d.estado as estado_contrato,\
+                    case when fecha_final >= CURRENT_TIMESTAMP\
+                        THEN true\
+                        ELSE false\
+                    END as contrato_vigente\
 		FROM\
                     terceros as a\
                     JOIN terceros_clientes as b ON (a.tipo_id_tercero = b.tipo_id_tercero)\

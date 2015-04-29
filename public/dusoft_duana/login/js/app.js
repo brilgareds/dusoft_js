@@ -19,7 +19,7 @@
 
           // For any unmatched url, send to /route1
 
-          $urlRouterProvider.otherwise("/autenticar")
+          $urlRouterProvider.otherwise("/autenticar");
           
           $stateProvider
             .state('autenticar', {
@@ -32,7 +32,7 @@
                 url: "/recuperarContrasenia",
                 templateUrl: "views/recuperar_contrasenia.html",
                 controller:"Logincontroller"
-            })
+            });
 
     }]);
 

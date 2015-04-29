@@ -270,7 +270,7 @@ PlanillasDespachos.prototype.ingresarDocumentosPlanillaDespacho = function(req, 
     var cantidad_neveras = (args.planillas_despachos.cantidad_neveras === '') ? 0 : args.planillas_despachos.cantidad_neveras;
     var temperatura_neveras = (args.planillas_despachos.temperatura_neveras === '') ? null : args.planillas_despachos.temperatura_neveras;
     var observacion = args.planillas_despachos.observacion;
-    var estado_pedido = ''; // 3 => En zona despacho, 9 => en zona con pdtes
+    var estado_pedido = '3'; // 3 => En zona despacho, 9 => en zona con pdtes
     var responsable = null;
     var usuario_id = req.session.user.usuario_id;
 

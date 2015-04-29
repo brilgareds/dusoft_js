@@ -54,6 +54,8 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function(fecha_in
 // Consultar los documentos de despachos de una farmacia
 PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = function(empresa_id, farmacia_id, centro_utilidad_id, termino_busqueda, callback){
     
+    // Nota : Solo se consultan docuementos o pedido que hayan sido auditados
+    
     var sql = " select \
                 '0' as tipo,\
                 'FARMACIAS' as descripcion_tipo,\
@@ -75,7 +77,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = 
                 inner join bodegas c on b.farmacia_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad and b.bodega = c.bodega\
                 inner join centros_utilidad d on c.empresa_id = d.empresa_id and c.centro_utilidad = d.centro_utilidad\
                 inner join empresas e on d.empresa_id = e.empresa_id\
-                where a.empresa_id = $1 and b.farmacia_id = $2 and b.centro_utilidad = $3 and b.estado in ('2') and\
+                where a.empresa_id = $1 and b.farmacia_id = $2 and b.centro_utilidad = $3 and b.estado in ('2','8') and\
                 (\
                     a.prefijo || ' ' || a.numero ilike $4 or\
                     a.numero ilike $4 or\
@@ -91,6 +93,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = 
 // Consultar los documentos de despacho de un cliente 
 PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_cliente = function(empresa_id, tipo_id, tercero_id, termino_busqueda, callback){
     
+    // Nota : Solo se consultan docuementos o pedido que hayan sido auditados
+    
     var sql = " select \
                 '1' as tipo,\
                 'CLIENTES' as descripcion_tipo,\
@@ -100,7 +104,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_cliente = f
                 a.pedido_cliente_id as numero_pedido,\
                 a.fecha_registro\
                 from inv_bodegas_movimiento_despachos_clientes a\
-                where a.empresa_id= $1 and a.tipo_id_tercero = $2 and a.tercero_id = $3 and \
+                inner join ventas_ordenes_pedidos b on a.pedido_cliente_id = b.pedido_cliente_id \
+                where a.empresa_id= $1 and a.tipo_id_tercero = $2 and a.tercero_id = $3 and b.estado_pedido in ('2','8') and \
                 ( \
                     a.prefijo || ' ' || a.numero ilike $4 or \
                     a.numero ilike $4 or \
@@ -115,7 +120,6 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_cliente = f
 };
 
 PlanillasDespachosModel.prototype.consultar_planilla_despacho = function(planilla_id, callback) {
-
 
     var sql = " select \
                 a.id, \

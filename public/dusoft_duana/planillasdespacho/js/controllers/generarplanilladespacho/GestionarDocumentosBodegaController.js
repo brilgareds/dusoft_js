@@ -405,6 +405,9 @@ define(["angular", "js/controllers",
                     if (data.status === 200) {
                         $scope.planilla.set_documentos($scope.datos_view.documento_seleccionado);
                         $scope.datos_view.documento_seleccionado = Documento.get();
+                        
+                        $scope.buscar_documentos_bodega($scope.datos_view.tercero_seleccionado);
+                        
                         callback(true);
                     } else {
                         callback(false);

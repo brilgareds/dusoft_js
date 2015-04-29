@@ -77,6 +77,10 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
     // 3 - En Zona Despacho
     // 4 - Despachado
     // 5 - Despachado con Pendientes
+    // 6 - separacion finalizada
+    // 7 - En Auditoria
+    // 8 - Auditado con Pdtes
+    // 9 - En Zona con Pdtes
     /*=========================================================================*/
 
     var sql_aux = " ";
@@ -113,6 +117,14 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
         if (filtro.en_auditoria) {
             sql_aux = " AND a.estado_pedido = '7' ";
         }
+        
+        if (filtro.auditados_pdtes) {
+            sql_aux = " AND a.estado_pedido = '8' ";
+        }
+        
+        if (filtro.en_zona_despacho_pdtes) {
+            sql_aux = " AND a.estado_pedido = '9' ";
+        }
     }
 
     var sql = " select \
@@ -138,7 +150,9 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
                 when a.estado_pedido = 4 then 'Despachado' \
                 when a.estado_pedido = 5 then 'Despachado con Pendientes' \
                 when a.estado_pedido = 6 then 'Separacion Finalizada' \
-                when a.estado_pedido = 7 then 'En Auditoria' end as descripcion_estado_actual_pedido, \
+                when a.estado_pedido = 7 then 'En Auditoria'\
+                when a.estado_pedido = 8 then 'Auditado con pdtes' \
+                when a.estado_pedido = 9 then 'En zona con pdtes' end as descripcion_estado_actual_pedido,\
                 d.estado as estado_separacion, \
                 to_char(a.fecha_registro, 'dd-mm-yyyy') as fecha_registro \
                 from ventas_ordenes_pedidos a \
@@ -233,7 +247,9 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
                      when a.estado_pedido = 4 then 'Despachado' \
                      when a.estado_pedido = 5 then 'Despachado con Pendientes' \
                      when a.estado_pedido = 6 then 'Separacion Finalizada' \
-                     when a.estado_pedido = 7 then 'En Auditoria' end as descripcion_estado_actual_pedido, \
+                     when a.estado_pedido = 7 then 'En Auditoria'\
+                     when a.estado_pedido = 8 then 'Auditado con pdtes' \
+                     when a.estado_pedido = 9 then 'En zona con pdtes' end as descripcion_estado_actual_pedido,\
                 d.estado as estado_separacion, \
                 a.fecha_registro \
                 from ventas_ordenes_pedidos a \
@@ -434,7 +450,9 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
                      when a.estado_pedido = 4 then 'Despachado' \
                      when a.estado_pedido = 5 then 'Despachado con Pendientes' \
                      when a.estado_pedido = 6 then 'Separacion Finalizada' \
-                     when a.estado_pedido = 7 then 'En Auditoria' end as descripcion_estado_actual_pedido, \
+                     when a.estado_pedido = 7 then 'En Auditoria'\
+                     when a.estado_pedido = 8 then 'Auditado con pdtes' \
+                     when a.estado_pedido = 9 then 'En zona con pdtes' end as descripcion_estado_actual_pedido,\
                 f.estado as estado_separacion,     \
                 case when f.estado = '0' then 'Separacion en Proceso' \
                      when f.estado = '1' then 'Separacion Finalizada' end as descripcion_estado_separacion,\
@@ -702,7 +720,9 @@ PedidosClienteModel.prototype.obtener_responsables_del_pedido = function(numero_
                      when a.estado=4 then 'Despachado'\
                      when a.estado=5 then 'Despachado con Pendientes' \
                      when a.estado=6 then 'Separacion Finalizada' \
-                     when a.estado=7 then 'En Auditoria' end as descripcion_estado,\
+                     when a.estado=7 then 'En Auditoria'\
+                     when a.estado=8 then 'Auditado con pdtes' \
+                     when a.estado=9 then 'En zona con pdtes' end as descripcion_estado,\
                 b.operario_id,\
                 b.nombre as nombre_responsable,\
                 b.usuario_id as usuario_id_responsable,\

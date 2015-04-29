@@ -727,6 +727,7 @@ DocuemntoBodegaE008.prototype.consultar_documento_despacho = function(numero, pr
                 a.prefijo,\
                 a.numero,\
                 j.pedido_cliente_id as numero_pedido,\
+                j.estado_pedido,\
                 d.inv_tipo_movimiento as tipo_movimiento , d.descripcion as tipo_clase_documento,\
                 c.descripcion, e.pedido_cliente_id as numero_pedido,\
                 c.tipo_doc_general_id as tipo_doc_bodega_id,\
@@ -755,6 +756,7 @@ DocuemntoBodegaE008.prototype.consultar_documento_despacho = function(numero, pr
                 a.prefijo,\
                 a.numero,\
                 j.solicitud_prod_a_bod_ppal_id as numero_pedido,\
+                j.estado as estado_pedido,\
                 d.inv_tipo_movimiento as tipo_movimiento , d.descripcion as tipo_clase_documento,\
                 c.descripcion, e.solicitud_prod_a_bod_ppal_id as numero_pedido,\
                 c.tipo_doc_general_id as tipo_doc_bodega_id,\

@@ -175,7 +175,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     a.cantidad_cajas,\
                     a.cantidad_neveras,\
                     a.temperatura_neveras,\
-                    a.observacion\
+                    a.observacion,\
+                    a.usuario_id \
                     from inv_planillas_detalle_farmacias a\
                     inner join inv_bodegas_movimiento_despachos_farmacias b on a.empresa_id = b.empresa_id and a.prefijo = b.prefijo and a.numero = b.numero\
                     inner join solicitud_productos_a_bodega_principal c on b.solicitud_prod_a_bod_ppal_id = c.solicitud_prod_a_bod_ppal_id\
@@ -196,7 +197,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     a.cantidad_cajas,\
                     a.cantidad_neveras,\
                     a.temperatura_neveras,\
-                    a.observacion\
+                    a.observacion,\
+                    a.usuario_id\
                     from inv_planillas_detalle_clientes a\
                     inner join inv_bodegas_movimiento_despachos_clientes b on a.empresa_id = b.empresa_id and a.prefijo = b.prefijo and a.numero = b.numero\
                     inner join ventas_ordenes_pedidos c on b.pedido_cliente_id = c.pedido_cliente_id\
@@ -216,7 +218,8 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     a.cantidad_cajas,\
                     a.cantidad_neveras,\
                     a.temperatura_neveras,\
-                    a.observacion\
+                    a.observacion,\
+                    a.usuario_id\
                     from inv_planillas_detalle_empresas a\
                 ) as a where a.planilla_id = $1 and ( a.descripcion_destino ilike $2 );";
     

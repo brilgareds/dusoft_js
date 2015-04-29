@@ -8,6 +8,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             $scope.clave = "";
             $scope.mostrarmensaje = false;
             $scope.ocultar_formulario = true;
+            
+            $(document).on("keyup", function(e) { 
+                console.log(">>>>>>>>>>>>>>>> ", e)
+               if ( e.altKey && ( e.which === 46 ) ) {
+                  console.log( "You pressed CTRL + Del" );
+               }
+            });
 
             $scope.autenticar = function() {
                 if ($scope.loginform.$invalid) {

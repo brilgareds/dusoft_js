@@ -185,11 +185,11 @@ define(["angular", "js/services"], function(angular, services) {
                                     empresaSeleccionada.getCodigo()
                             );
                             
-                            rol.setEstado(roles[i].estado);
+                            //rol.setEstado(roles[i].estado);
                             
                             if(validarEstado){
-                                if(rol.getEstado()){
-                                    empresaSeleccionada.agregarRol(rol);
+                                if(roles[i].estado === '1'){
+                                     empresaSeleccionada.agregarRol(rol);
                                 }
                             } else {  
                                empresaSeleccionada.agregarRol(rol);

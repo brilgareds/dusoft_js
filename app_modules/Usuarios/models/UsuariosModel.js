@@ -498,10 +498,10 @@ UsuariosModel.prototype.obtenerEmpresasUsuario = function(usuario_id, callback) 
 UsuariosModel.prototype.obtenerCentrosUtilidadUsuario = function(empresa_id, login_id, callback) {
     var that = this;
 
-    var sql = "SELECT a.centro_utilidad AS centro_utilidad_id, a.descripcion FROM centros_utilidad a\
-                INNER JOIN login_centros_utilidad_bodega b ON b.centro_utilidad_id = a.centro_utilidad\
-                INNER JOIN login_empresas c ON c.empresa_id = a.empresa_id\
-                WHERE a.empresa_id = $1 AND c.login_id = $2 AND b.estado = '1' GROUP BY 1, 2";
+    var sql =   "SELECT a.centro_utilidad AS centro_utilidad_id, a.descripcion FROM centros_utilidad a\
+                INNER JOIN login_empresas b ON b.empresa_id = a.empresa_id \
+                INNER JOIN login_centros_utilidad_bodega c ON c.centro_utilidad_id = a.centro_utilidad AND c.login_empresa_id = b.id\
+                WHERE a.empresa_id = $1 AND b.login_id = $2 AND c.estado = '1' GROUP BY 1, 2";
 
     G.db.query(sql, [empresa_id, login_id], function(err, rows, result) {
         callback(err, rows, result);
@@ -512,9 +512,9 @@ UsuariosModel.prototype.obtenerBodegasUsuario = function(empresa_id, login_id, c
     var that = this;
 
     var sql = "SELECT a.centro_utilidad AS centro_utilidad_id, a.descripcion, a.bodega AS bodega_id FROM bodegas a\
-               INNER JOIN login_centros_utilidad_bodega b ON b.bodega_id = a.bodega\
-               INNER JOIN login_empresas c ON c.empresa_id = a.empresa_id \
-               WHERE b.empresa_id = $1 AND c.login_id = $2 AND b.centro_utilidad_id = $3 AND b.estado = '1'";
+               INNER JOIN login_empresas b ON b.empresa_id = a.empresa_id \
+               INNER JOIN login_centros_utilidad_bodega c ON c.bodega_id = a.bodega AND  c.login_empresa_id = b.id\
+               WHERE b.empresa_id = $1 AND b.login_id = $2 AND c.centro_utilidad_id = $3 AND c.estado = '1'";
 
     G.db.query(sql, [empresa_id, login_id, centro_utilidad_id], function(err, rows, result) {
         callback(err, rows, result);
@@ -837,9 +837,9 @@ function __guardarCentroUtilidadBodegaUsuario(that, usuario_id, login_empresa_id
     var bodega = bodegas[0];
 
     var sql = "UPDATE login_centros_utilidad_bodega SET usuario_id_modifica = $1, fecha_modificacion = now(), estado = $5 \
-                WHERE empresa_id = $2 AND centro_utilidad_id = $3 AND  bodega_id = $4 ";
+                WHERE empresa_id = $2 AND centro_utilidad_id = $3 AND  bodega_id = $4 AND login_empresa_id = $6 ";
 
-    G.db.query(sql, [usuario_id, empresa_id, centro_utilidad_id, bodega, estado], function(err, rows, result) {
+    G.db.query(sql, [usuario_id, empresa_id, centro_utilidad_id, bodega, estado, login_empresa_id], function(err, rows, result) {
         if (err) {
             callback(err, result);
             return;

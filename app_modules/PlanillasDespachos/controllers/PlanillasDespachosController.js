@@ -496,7 +496,52 @@ PlanillasDespachos.prototype.despacharPlanilla = function(req, res) {
             });
         }
     });
+};
 
+// Generar Reporte Planilla Despacho
+PlanillasDespachos.prototype.reportePlanillaDespacho = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.planillas_despachos === undefined || args.planillas_despachos.planilla_id === undefined) {
+        res.send(G.utils.r(req.url, 'planilla_id no esta definidas', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.planilla_id === '' || args.planillas_despachos.planilla_id === 0 || args.planillas_despachos.planilla_id === '0') {
+        res.send(G.utils.r(req.url, 'Se requiere el planilla_id', 404, {}));
+        return;
+    }
+
+    var planilla_id = args.planillas_despachos.planilla_id;
+
+    that.m_planillas_despachos.consultar_planilla_despacho(planilla_id, function(err, planilla_despacho) {
+
+        if (err || planilla_despacho.length === 0) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {planillas_despachos: []}));
+            return;
+        } else {
+
+            that.m_planillas_despachos.consultar_documentos_planilla_despacho(planilla_id, '', function(err, lista_documentos) {
+
+                if (err) {
+                    res.send(G.utils.r(req.url, 'Error Interno', 500, {planillas_despachos: []}));
+                    return;
+                } else {
+
+                    var planilla_despacho = planilla_despacho[0];
+
+                    _generar_reporte_planilla_despacho({planilla_despacho: planilla_despacho, documentos_planilla: lista_documentos, usuario_imprime: req.session.user.nombre_usuario}, function(nombre_reporte) {
+                        
+                        res.send(G.utils.r(req.url, 'Nombre Reporte', 200, {planillas_despachos: {nombre_reporte: nombre_reporte}}));
+                        return;
+                    });
+                }
+            });
+        }
+    });
 };
 
 function __despachar_documentos_planilla(contexto, i, documentos_planilla, resultado, callback) {
@@ -591,6 +636,33 @@ function __despachar_documentos_planilla(contexto, i, documentos_planilla, resul
 
         callback(resultado);
     }
+}
+
+function _generar_reporte_planilla_despacho(rows, callback) {
+    
+    G.jsreport.reporter.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/PlanillasDespachos/reports/planilla_despacho.html', 'utf8'),
+            helpers: G.fs.readFileSync('app_modules/PlanillasDespachos/reports/javascripts/helpers.js', 'utf8'),
+            recipe: "phantom-pdf",
+            engine: 'jsrender'
+        },
+        data: {
+            style: G.dirname + "/public/stylesheets/bootstrap.min.css",
+            planilla_despacho: rows.orden_compra,
+            documentos_planilla: rows.lista_productos,
+            fecha_actual: new Date().toFormat('DD/MM/YYYY HH24:MI:SS'),
+            usuario_imprime: rows.usuario_imprime
+        }
+    }).then(function(response) {
+
+        var nombre_archivo = response.result.path;
+        var fecha_actual = new Date();
+        var nombre_reporte = G.random.randomKey(2, 5) + "_" + fecha_actual.toFormat('DD-MM-YYYY') + ".pdf";
+        G.fs.copySync(nombre_archivo, G.dirname + "/public/reports/" + nombre_reporte);
+
+        callback(nombre_reporte);
+    });
 }
 
 PlanillasDespachos.$inject = ["m_planillas_despachos", "m_e008", "m_pedidos_farmacias", "e_pedidos_farmacias", "m_pedidos_clientes", "e_pedidos_clientes"];

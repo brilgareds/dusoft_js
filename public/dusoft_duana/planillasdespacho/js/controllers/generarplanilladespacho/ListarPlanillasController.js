@@ -126,7 +126,7 @@ define(["angular", "js/controllers",
                                             <ul class="dropdown-menu dropdown-options">\
                                                 <li><a href="javascript:void(0);" ng-click="gestionar_planilla_despacho(row.entity,true)" >Modificar</a></li>\
                                                 <li><a href="javascript:void(0);" ng-click="generar_reporte(row.entity,0)" >Ver PDF</a></li>\
-                                                <li><a href="javascript:void(0);" ng-disabled="true" ng-click="enviar_email(row.entity,0)" >Enviar por Email</a></li>\
+                                                <li><a href="javascript:void(0);" ng-disabled="true" ng-click="ventana_enviar_email(row.entity,0)" >Enviar por Email</a></li>\
                                             </ul>\
                                        </div>'
                     }
@@ -144,18 +144,6 @@ define(["angular", "js/controllers",
 
                 $state.go('CrearPlanilla');
 
-            };
-
-            $scope.generar_reporte = function(orden_compra) {
-                console.log('=============================');
-                console.log('== generar_reporte ==');
-                console.log('=============================');
-            };
-
-            $scope.enviar_email = function(orden_compra) {
-                console.log('=============================');
-                console.log('== enviar_email ==');
-                console.log('=============================');
             };
 
             $scope.pagina_anterior = function() {

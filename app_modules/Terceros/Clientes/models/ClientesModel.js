@@ -85,7 +85,7 @@ ClientesModel.prototype.listar_clientes = function(empresa_id, termino_busqueda,
                     LEFT JOIN tipo_pais as g ON (f.tipo_pais_id = g.tipo_pais_id)\
                 WHERE a.tipo_bloqueo_id = 1\
                     AND (a.tercero_id ilike $2 OR a.nombre_tercero ilike $2)\
-                ORDER BY /*d.fecha_final desc,*/ CAST(d.estado AS INT) desc";
+                ORDER BY d.fecha_final desc, /*CAST(d.estado AS INT)*/ d.estado desc";
 
     G.db.pagination(sql, [empresa_id,"%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
         callback(err, rows);

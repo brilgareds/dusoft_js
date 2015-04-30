@@ -155,9 +155,16 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     enableColumnResize: true,
                     enableRowSelection: false,
                     enableCellSelection: false,
+                    enableHighlighting: true,
                     multiSelect: false,
                     columnDefs: [
-                        {field: 'identificacion', displayName: 'Identificación', width: "8%"},
+                        {field: 'identificacion', displayName: 'Identificación', width: "10%",
+                                cellTemplate : '<div class="ngCellText" ng-class="col.colIndex()">\
+                                                <span class="label label-success" ng-show="row.entity.contrato_id != 0" >C</span>\
+                                                <span class="label label-warning" ng-show="row.entity.contrato_id == 0">S</span>\
+                                                <span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\
+                                            </div>'
+                        },
                         {field: 'nombre_tercero', displayName: 'Nombre Cliente'},
                         {field: 'ubicacion', displayName: 'Ubicación'},
                         {field: 'direccion', displayName: 'Dirección'},
@@ -165,14 +172,17 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         {field: 'contrato_vigente', displayName: 'Contrato Vigente', width: "11%"},
                         {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "8%",
                         cellTemplate: ' <div class="row">\n\
-                                            <button ng-if="row.entity.estado_contrato == 1 && row.entity.contrato_vigente == true" class="btn btn-default btn-xs" ng-click="onSeleccionarCliente(row)">\n\
+                                            <button ng-if="row.entity.contrato_id != 0 && row.entity.estado_contrato == 1 && row.entity.contrato_vigente == true" class="btn btn-default btn-xs" ng-click="onSeleccionarCliente(row)">\n\
                                                 <span class="glyphicon glyphicon-plus-sign"> Seleccionar</span>\n\
                                             </button>\n\
-                                            <button ng-if="row.entity.estado_contrato == 1 && row.entity.contrato_vigente==false" ng-disabled="true" class="btn btn-default btn-xs" ng-click="">\n\
+                                            <button ng-if="row.entity.contrato_id != 0 && row.entity.estado_contrato == 1 && row.entity.contrato_vigente==false" ng-disabled="true" class="btn btn-default btn-xs" ng-click="">\n\
                                                 <span class="glyphicon glyphicon-plus-sign"> Fin Contrato</span>\n\
                                             </button>\n\
-                                            <button ng-if="row.entity.estado_contrato != 1" ng-disabled="true" class="btn btn-default btn-xs" ng-click="">\n\
+                                            <button ng-if="row.entity.contrato_id != 0 && row.entity.estado_contrato == 0" ng-disabled="true" class="btn btn-default btn-xs" ng-click="">\n\
                                                 <span class="glyphicon glyphicon-lock"> Bloqueado</span>\n\
+                                            </button>\n\
+                                            <button ng-if="row.entity.contrato_id == 0" class="btn btn-default btn-xs" ng-click="onSeleccionarCliente(row)">\n\
+                                                <span class="glyphicon glyphicon-plus-sign"> Seleccionar</span>\n\
                                             </button>\n\
                                         </div>'
                     }

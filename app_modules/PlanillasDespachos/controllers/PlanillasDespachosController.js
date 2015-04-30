@@ -270,7 +270,7 @@ PlanillasDespachos.prototype.ingresarDocumentosPlanillaDespacho = function(req, 
     var cantidad_neveras = (args.planillas_despachos.cantidad_neveras === '') ? 0 : args.planillas_despachos.cantidad_neveras;
     var temperatura_neveras = (args.planillas_despachos.temperatura_neveras === '') ? null : args.planillas_despachos.temperatura_neveras;
     var observacion = args.planillas_despachos.observacion;
-    var estado_pedido = '3'; // 3 => En zona despacho, 9 => en zona con pdtes
+    var estado_pedido = ''; // 3 => En zona despacho, 9 => en zona con pdtes
     var responsable = null;
     var usuario_id = req.session.user.usuario_id;
 
@@ -287,22 +287,22 @@ PlanillasDespachos.prototype.ingresarDocumentosPlanillaDespacho = function(req, 
             that.m_e008.consultar_documento_despacho(numero, prefijo, empresa_id, usuario_id, function(err, documento_bodega) {
 
                 if (err || documento_bodega.length === 0) {
-                    res.send(G.utils.r(req.url, 'Se ha generado un error consultado un documento', 500, {planillas_despachos: []}));
+                    res.send(G.utils.r(req.url, 'Se ha generado un error consultado el documento', 500, {planillas_despachos: []}));
                     return;
                 } else {
                     documento_bodega = documento_bodega[0];
-                    
+
                     var numero_pedido = documento_bodega.numero_pedido;
                     var estado_actual_pedido = documento_bodega.estado_pedido;
-                    
+
                     // si es auditado => pasa a Zona de despacho
-                    if(estado_actual_pedido ==='2')
+                    if (estado_actual_pedido === '2')
                         estado_pedido = '3';
-                    
+
                     // si es auditado con pdtes => pasa a Zona con pdtes
-                    if(estado_actual_pedido ==='8')
+                    if (estado_actual_pedido === '8')
                         estado_pedido = '9';
-                    
+
 
                     if (tipo === '0') {
                         // Farmacias
@@ -311,6 +311,9 @@ PlanillasDespachos.prototype.ingresarDocumentosPlanillaDespacho = function(req, 
                             if (!err) {
                                 // Notificando Pedidos Actualizados en Real Time
                                 that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+
+                                res.send(G.utils.r(req.url, 'Documento regitrado correctamente', 200, {planillas_despachos: {}}));
+                                return;
                             }
                         });
                     }
@@ -322,12 +325,18 @@ PlanillasDespachos.prototype.ingresarDocumentosPlanillaDespacho = function(req, 
                             if (!err) {
                                 // Notificando Pedidos Actualizados en Real Time
                                 that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+
+                                res.send(G.utils.r(req.url, 'Documento regitrado correctamente', 200, {planillas_despachos: {}}));
+                                return;
                             }
                         });
                     }
 
-                    res.send(G.utils.r(req.url, 'Documento regitrado correctamente', 200, {planillas_despachos: {}}));
-                    return;
+                    if (tipo === '2') {
+                        // Otras Empresas
+                        res.send(G.utils.r(req.url, 'Documento regitrado correctamente', 200, {planillas_despachos: {}}));
+                        return;
+                    }
                 }
             });
         }
@@ -374,6 +383,8 @@ PlanillasDespachos.prototype.eliminarDocumentoPlanilla = function(req, res) {
     var empresa_id = args.planillas_despachos.empresa_id;
     var prefijo = args.planillas_despachos.prefijo;
     var numero = args.planillas_despachos.numero;
+    var usuario_id = req.session.user.usuario_id;
+    var estado_pedido = '';
 
     that.m_planillas_despachos.eliminar_documento_planilla(tabla, planilla_id, empresa_id, prefijo, numero, function(err, rows, result) {
 
@@ -381,8 +392,58 @@ PlanillasDespachos.prototype.eliminarDocumentoPlanilla = function(req, res) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {planillas_despachos: []}));
             return;
         } else {
-            res.send(G.utils.r(req.url, 'Documento eliminado correctamente', 200, {planillas_despachos: {}}));
-            return;
+
+            // Registrar los responsables del pedido, y notificar en tiempo real
+            that.m_e008.consultar_documento_despacho(numero, prefijo, empresa_id, usuario_id, function(err, documento_bodega) {
+
+                if (err || documento_bodega.length === 0) {
+                    res.send(G.utils.r(req.url, 'Se ha generado un error consultado el documento', 500, {planillas_despachos: []}));
+                    return;
+                } else {
+                    documento_bodega = documento_bodega[0];
+
+                    var numero_pedido = documento_bodega.numero_pedido;
+                    var estado_actual_pedido = documento_bodega.estado_pedido;
+
+                    // si es Zona de despacho  => pasa a auditado
+                    if (estado_actual_pedido === '3')
+                        estado_pedido = '2';
+
+                    // si es Zona con pdtes => pasa a auditado con pdtes
+                    if (estado_actual_pedido === '9')
+                        estado_pedido = '8';
+
+
+                    if (tipo === '0') {
+                        // Farmacias
+                        that.m_pedidos_farmacias.actualizar_estado_actual_pedido(numero_pedido, estado_pedido, function(err, rows) {
+                            // Notificando Pedidos Actualizados en Real Time
+                            that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+
+                            res.send(G.utils.r(req.url, 'Documento eliminado correctamente', 200, {planillas_despachos: {}}));
+                            return;
+                        });
+                    }
+
+                    if (tipo === '1') {
+                        // Clientes                        
+                        that.m_pedidos_clientes.actualizar_estado_actual_pedido(numero_pedido, estado_pedido, function(err, rows) {
+
+                            // Notificando Pedidos Actualizados en Real Time
+                            that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+
+                            res.send(G.utils.r(req.url, 'Documento eliminado correctamente', 200, {planillas_despachos: {}}));
+                            return;
+                        });
+                    }
+
+                    if (tipo === '2') {
+                        // Otras Empresas
+                        res.send(G.utils.r(req.url, 'Documento eliminado correctamente', 200, {planillas_despachos: {}}));
+                        return;
+                    }
+                }
+            });
         }
     });
 };
@@ -406,17 +467,131 @@ PlanillasDespachos.prototype.despacharPlanilla = function(req, res) {
     var planilla_id = args.planillas_despachos.planilla_id;
     var estado = '2'; // 0 = Anulada, 1 = Activa, 2 = Desachada
 
-    that.m_planillas_despachos.modificar_estado_planilla_despacho(planilla_id, estado, function(err, rows, result) {
+    that.m_planillas_despachos.consultar_documentos_planilla_despacho(planilla_id, '', function(err, documentos_planilla) {
 
-        if (err || result.rowCount === 0) {
-            res.send(G.utils.r(req.url, 'Error Interno', 500, {planillas_despachos: []}));
+        if (err || documentos_planilla.length === 0) {
+            res.send(G.utils.r(req.url, 'Error Interno code 1', 500, {planillas_despachos: []}));
             return;
         } else {
-            res.send(G.utils.r(req.url, 'Planilla despachada correctamente', 200, {planillas_despachos: {}}));
-            return;
+
+
+            __despachar_documentos_planilla(that, 0, documentos_planilla, {continuar: true, msj: ''}, function(resultado) {
+
+                if (!resultado.continuar) {
+                    res.send(G.utils.r(req.url, resultado.msj, 500, {planillas_despachos: []}));
+                    return;
+                } else {
+                    that.m_planillas_despachos.modificar_estado_planilla_despacho(planilla_id, estado, function(err, rows, result) {
+
+                        if (err || result.rowCount === 0) {
+                            res.send(G.utils.r(req.url, 'Error Interno code 4', 500, {planillas_despachos: []}));
+                            return;
+                        } else {
+
+                            res.send(G.utils.r(req.url, 'Planilla despachada correctamente', 200, {planillas_despachos: {}}));
+                            return;
+                        }
+                    });
+                }
+            });
         }
     });
+
 };
+
+function __despachar_documentos_planilla(contexto, i, documentos_planilla, resultado, callback) {
+
+    var that = contexto;
+
+    if (i < documentos_planilla.length) {
+
+        var documento = documentos_planilla[i];
+        var empresa_id = documento.empresa_id;
+        var numero = documento.numero;
+        var prefijo = documento.prefijo;
+        var tipo = documento.tipo;
+        var estado_pedido = '';
+        var usuario_id = documento.usuario_id;
+
+        that.m_e008.consultar_documento_despacho(numero, prefijo, empresa_id, usuario_id, function(err, documento_bodega) {
+
+            if (err || documento_bodega.length === 0) {
+                resultado.continuar = false;
+                resultado.msj += ' Error Interno code 1. ';
+
+                __despachar_documentos_planilla(contexto, ++i, documentos_planilla, resultado, callback);
+
+            } else {
+
+                documento_bodega = documento_bodega[0];
+
+                var numero_pedido = documento_bodega.numero_pedido;
+                var estado_actual_pedido = documento_bodega.estado_pedido;
+
+                // si es Zona de despacho  => pasa a Despachado
+                if (estado_actual_pedido === '3')
+                    estado_pedido = '4';
+
+                // si es Zona con pdtes => pasa a Despachado con pdtes
+                if (estado_actual_pedido === '9')
+                    estado_pedido = '5';
+
+                if (tipo === '0') {
+                    // Farmacias
+                    that.m_pedidos_farmacias.asignar_responsables_pedidos(numero_pedido, estado_pedido, null, usuario_id, function(err, rows, responsable_estado_pedido) {
+
+                        if (err) {
+                            resultado.continuar = false;
+                            resultado.msj += ' Error Interno code 2. ';
+                        }
+                        // Notificando Pedidos Actualizados en Real Time                        
+                        that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+
+                        that.m_pedidos_farmacias.terminar_estado_pedido(numero_pedido, [estado_actual_pedido, estado_pedido], '1', function(err, rows, results) {
+
+                            if (err) {
+                                resultado.continuar = false;
+                                resultado.msj += ' Error Interno code 2.1';
+                            }
+                            __despachar_documentos_planilla(contexto, ++i, documentos_planilla, resultado, callback);
+                        });
+
+                    });
+                }
+
+                if (tipo === '1') {
+                    // Clientes
+                    that.m_pedidos_clientes.asignar_responsables_pedidos(numero_pedido, estado_pedido, null, usuario_id, function(err, rows, responsable_estado_pedido) {
+
+                        if (!err) {
+                            resultado.continuar = false;
+                            resultado.msj += ' Error Interno code 3. ';
+                        }
+                        // Notificando Pedidos Actualizados en Real Time                            
+                        that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+
+                        that.m_pedidos_clientes.terminar_estado_pedido(numero_pedido, [estado_actual_pedido, estado_pedido], '1', function(err, rows, results) {
+
+                            if (err) {
+                                resultado.continuar = false;
+                                resultado.msj += ' Error Interno code 2.1';
+                            }
+                            __despachar_documentos_planilla(contexto, ++i, documentos_planilla, resultado, callback);
+                        });
+                    });
+                }
+
+                if (tipo === '2') {
+                    __despachar_documentos_planilla(contexto, ++i, documentos_planilla, resultado, callback);
+                }
+            }
+        });
+
+    } else {
+
+        callback(resultado);
+    }
+}
 
 PlanillasDespachos.$inject = ["m_planillas_despachos", "m_e008", "m_pedidos_farmacias", "e_pedidos_farmacias", "m_pedidos_clientes", "e_pedidos_clientes"];
 

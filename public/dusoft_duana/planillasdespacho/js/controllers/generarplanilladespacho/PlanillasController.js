@@ -4,12 +4,41 @@ define(["angular", "js/controllers", "controllers/generarplanilladespacho/Listar
         '$scope', '$rootScope', 'Request',
         '$modal', 'API', "socket", "$timeout",
         "AlertService", "localStorageService", "$state", "$filter",
-        function($scope, $rootScope,Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter) {
+        "Usuario",
+        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Sesion) {
 
-            $scope.generar_reporte = function() {
-                console.log('=============================');
-                console.log('== generar_reporte ==');
-                console.log('=============================');
+            // Variables de Sesion
+            $scope.session = {
+                usuario_id: Sesion.getUsuarioActual().getId(),
+                auth_token: Sesion.getUsuarioActual().getToken()
+            };
+
+
+            $scope.generar_reporte = function(planilla, descargar) {
+                
+                console.log(planilla);
+                console.log(descargar);
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        planillas_despachos: {
+                            planilla_id: planilla.get_numero_guia()
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PLANILLAS.REPORTE_PLANILLA_DESPACHO, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        var nombre_reporte = data.obj.planillas_despachos.nombre_reporte;
+
+                        var opcion = (descargar)? "download" :"blank";                     
+
+                        $scope.visualizarReporte("/reports/" + nombre_reporte, "PlanillaGuiaNo-" + planilla.get_numero_guia(), opcion);
+                    }
+                });
+
 
             };
 

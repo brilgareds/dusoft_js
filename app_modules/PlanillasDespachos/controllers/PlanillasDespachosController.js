@@ -519,6 +519,7 @@ PlanillasDespachos.prototype.reportePlanillaDespacho = function(req, res) {
 
     that.m_planillas_despachos.consultar_planilla_despacho(planilla_id, function(err, planilla_despacho) {
 
+
         if (err || planilla_despacho.length === 0) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {planillas_despachos: []}));
             return;
@@ -531,10 +532,10 @@ PlanillasDespachos.prototype.reportePlanillaDespacho = function(req, res) {
                     return;
                 } else {
 
-                    var planilla_despacho = planilla_despacho[0];
+                    planilla_despacho = planilla_despacho[0];                    
 
                     _generar_reporte_planilla_despacho({planilla_despacho: planilla_despacho, documentos_planilla: lista_documentos, usuario_imprime: req.session.user.nombre_usuario}, function(nombre_reporte) {
-                        
+
                         res.send(G.utils.r(req.url, 'Nombre Reporte', 200, {planillas_despachos: {nombre_reporte: nombre_reporte}}));
                         return;
                     });
@@ -640,6 +641,9 @@ function __despachar_documentos_planilla(contexto, i, documentos_planilla, resul
 
 function _generar_reporte_planilla_despacho(rows, callback) {
     
+    console.log('=== rows === ');
+    console.log(rows);
+
     G.jsreport.reporter.render({
         template: {
             content: G.fs.readFileSync('app_modules/PlanillasDespachos/reports/planilla_despacho.html', 'utf8'),
@@ -649,8 +653,8 @@ function _generar_reporte_planilla_despacho(rows, callback) {
         },
         data: {
             style: G.dirname + "/public/stylesheets/bootstrap.min.css",
-            planilla_despacho: rows.orden_compra,
-            documentos_planilla: rows.lista_productos,
+            planilla_despacho: rows.planilla_despacho,
+            documentos_planilla: rows.documentos_planilla,
             fecha_actual: new Date().toFormat('DD/MM/YYYY HH24:MI:SS'),
             usuario_imprime: rows.usuario_imprime
         }

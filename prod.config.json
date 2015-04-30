@@ -35,7 +35,5 @@
   "tasks": {
     "numberOfWorkers": 2,
     "timeout": 10000
-  },
-  "rootDirectory": "c:\\Users\\desarollo\\Documents\\dusoft\\",
-  "port": "3006"
+  }
 }

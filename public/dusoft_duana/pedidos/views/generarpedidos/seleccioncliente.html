@@ -16,7 +16,15 @@
                 
                 <div class="panel-body">
                     
-                    <div class="input-group navbar-form paddingRightZero">
+                    <div class=" col-sm-12 col-md-6 col-lg-5 pull-left">
+                        <br/>
+                        <span class="label label-success" >C</span> Cliente con Contrato
+                        &nbsp;&nbsp;
+                        <span class="label label-warning" >S</span> Cliente sin Contrato
+           
+                    </div>
+                    
+                    <div class="col-sm-12 col-md-6 col-lg-3 input-group navbar-form paddingRightZero">
                         <input type="text" class="form-control pull-right" ng-keypress="onKeySeleccionClientePress($event)" ng-model="rootSeleccionCliente.termino_busqueda" placeholder="Buscar Cliente" name="srch-term" id="srch-term">
                         <div class="input-group-btn" >
                             <button class="btn btn-default pull-right" type="submit" ng-click="onBuscarSeleccionCliente(obtenerParametros(),true)" ng-model="rootSeleccionCliente.termino_busqueda"><i class="glyphicon glyphicon-search"></i></button>

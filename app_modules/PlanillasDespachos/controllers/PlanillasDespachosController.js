@@ -1,5 +1,5 @@
 
-var PlanillasDespachos = function(planillas_despachos, e008, pedidos_farmacias, eventos_pedidos_farmacias, pedidos_clientes, eventos_pedidos_clientes) {
+var PlanillasDespachos = function(planillas_despachos, e008, pedidos_farmacias, eventos_pedidos_farmacias, pedidos_clientes, eventos_pedidos_clientes, emails) {
 
     console.log("Modulo Planillas Despachos Cargado ");
 
@@ -12,6 +12,8 @@ var PlanillasDespachos = function(planillas_despachos, e008, pedidos_farmacias, 
 
     this.m_pedidos_clientes = pedidos_clientes;
     this.e_pedidos_clientes = eventos_pedidos_clientes;
+
+    this.emails = emails;
 };
 
 
@@ -515,9 +517,28 @@ PlanillasDespachos.prototype.reportePlanillaDespacho = function(req, res) {
         return;
     }
 
+    if (args.planillas_despachos.enviar_email !== undefined) {
+
+        if (args.planillas_despachos.emails === undefined || args.planillas_despachos.subject === undefined || args.planillas_despachos.message === undefined) {
+            res.send(G.utils.r(req.url, 'emails, subject o message no esta definidas', 404, {}));
+            return;
+        }
+
+        if (args.planillas_despachos.emails.length === 0 || args.planillas_despachos.subject === '') {
+            res.send(G.utils.r(req.url, 'emails, subject o message estan vacios', 404, {}));
+            return;
+        }
+
+        var emails = args.planillas_despachos.emails;
+        var subject = args.planillas_despachos.subject;
+        var message = args.planillas_despachos.message;
+    }
+
     var planilla_id = args.planillas_despachos.planilla_id;
+    var enviar_email = args.planillas_despachos.enviar_email;
 
     that.m_planillas_despachos.consultar_planilla_despacho(planilla_id, function(err, planilla_despacho) {
+
 
         if (err || planilla_despacho.length === 0) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {planillas_despachos: []}));
@@ -531,12 +552,29 @@ PlanillasDespachos.prototype.reportePlanillaDespacho = function(req, res) {
                     return;
                 } else {
 
-                    var planilla_despacho = planilla_despacho[0];
+                    planilla_despacho = planilla_despacho[0];
 
                     _generar_reporte_planilla_despacho({planilla_despacho: planilla_despacho, documentos_planilla: lista_documentos, usuario_imprime: req.session.user.nombre_usuario}, function(nombre_reporte) {
-                        
-                        res.send(G.utils.r(req.url, 'Nombre Reporte', 200, {planillas_despachos: {nombre_reporte: nombre_reporte}}));
-                        return;
+
+                        if (enviar_email) {
+
+                            var path = G.dirname + "/public/reports/" + nombre_reporte;
+                            var filename = "PlanillaGuiaNo-" + planilla_id+'.pdf';
+
+                            __enviar_correo_electronico(that, emails, path, filename, subject, message, function(enviado) {
+
+                                if (!enviado) {
+                                    res.send(G.utils.r(req.url, 'Se genero un error al enviar el reporte', 500, {planillas_despachos: {nombre_reporte: nombre_reporte}}));
+                                    return;
+                                } else {
+                                    res.send(G.utils.r(req.url, 'Reporte enviado correctamente', 200, {planillas_despachos: {nombre_reporte: nombre_reporte}}));
+                                    return;
+                                }
+                            });
+                        } else {
+                            res.send(G.utils.r(req.url, 'Nombre Reporte', 200, {planillas_despachos: {nombre_reporte: nombre_reporte}}));
+                            return;
+                        }
                     });
                 }
             });
@@ -639,7 +677,7 @@ function __despachar_documentos_planilla(contexto, i, documentos_planilla, resul
 }
 
 function _generar_reporte_planilla_despacho(rows, callback) {
-    
+
     G.jsreport.reporter.render({
         template: {
             content: G.fs.readFileSync('app_modules/PlanillasDespachos/reports/planilla_despacho.html', 'utf8'),
@@ -649,8 +687,8 @@ function _generar_reporte_planilla_despacho(rows, callback) {
         },
         data: {
             style: G.dirname + "/public/stylesheets/bootstrap.min.css",
-            planilla_despacho: rows.orden_compra,
-            documentos_planilla: rows.lista_productos,
+            planilla_despacho: rows.planilla_despacho,
+            documentos_planilla: rows.documentos_planilla,
             fecha_actual: new Date().toFormat('DD/MM/YYYY HH24:MI:SS'),
             usuario_imprime: rows.usuario_imprime
         }
@@ -665,6 +703,35 @@ function _generar_reporte_planilla_despacho(rows, callback) {
     });
 }
 
-PlanillasDespachos.$inject = ["m_planillas_despachos", "m_e008", "m_pedidos_farmacias", "e_pedidos_farmacias", "m_pedidos_clientes", "e_pedidos_clientes"];
+function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, subject, message, callback) {
+
+    var smtpTransport = that.emails.createTransport();
+
+    var settings = {
+        from: G.settings.email_sender,
+        to: to,
+        subject: subject,
+        html: message,
+        attachments: [{'filename': nombre_archivo, 'contents': G.fs.readFileSync(ruta_archivo)}]
+    };
+
+    smtpTransport.sendMail(settings, function(error, response) {
+
+        if (error) {
+            callback(false);
+            return;
+        } else {
+            smtpTransport.close();
+            callback(true);
+            return;
+        }
+    });
+
+
+
+}
+;
+
+PlanillasDespachos.$inject = ["m_planillas_despachos", "m_e008", "m_pedidos_farmacias", "e_pedidos_farmacias", "m_pedidos_clientes", "e_pedidos_clientes", "emails"];
 
 module.exports = PlanillasDespachos;

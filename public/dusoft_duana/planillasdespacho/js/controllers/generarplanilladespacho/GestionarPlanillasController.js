@@ -380,12 +380,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     controller: function($scope, $modalInstance) {
 
                         $scope.descargar_reporte_pdf = function() {
-                            $scope.generar_reporte();
+                            $scope.generar_reporte($scope.planilla, true);
                             $modalInstance.close();
                         };
                         
                         $scope.enviar_reporte_pdf_email = function() {
-                            $scope.ventana_enviar_email();
+                            $scope.ventana_enviar_email($scope.planilla);
                             $modalInstance.close();
                         };
 

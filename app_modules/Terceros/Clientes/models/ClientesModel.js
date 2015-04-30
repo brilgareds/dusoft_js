@@ -63,7 +63,7 @@ ClientesModel.prototype.listar_clientes = function(empresa_id, termino_busqueda,
                     f.departamento,\
                     e.municipio,\
                     d.estado as estado_contrato,\
-                    case when fecha_final >= CURRENT_TIMESTAMP\
+                    case when d.fecha_final >= CURRENT_TIMESTAMP\
                         THEN true\
                         ELSE false\
                     END as contrato_vigente\
@@ -84,7 +84,8 @@ ClientesModel.prototype.listar_clientes = function(empresa_id, termino_busqueda,
                         AND (e.tipo_dpto_id = f.tipo_dpto_id)\
                     LEFT JOIN tipo_pais as g ON (f.tipo_pais_id = g.tipo_pais_id)\
                 WHERE a.tipo_bloqueo_id = 1\
-                    AND (a.tercero_id ilike $2 OR a.nombre_tercero ilike $2)";
+                    AND (a.tercero_id ilike $2 OR a.nombre_tercero ilike $2)\
+                ORDER BY /*d.fecha_final desc,*/ CAST(d.estado AS INT) desc";
 
     G.db.pagination(sql, [empresa_id,"%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
         callback(err, rows);

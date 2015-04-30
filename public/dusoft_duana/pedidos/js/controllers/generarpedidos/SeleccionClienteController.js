@@ -141,6 +141,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 cliente.setContratoVigente(obj.contrato_vigente);
                 
                 console.log(">>>> CLIENTES: Vigencia Contrato -> ", obj.contrato_vigente);
+                console.log(">>>> CLIENTES: Estado Contrato -> ", obj.estado_contrato);
 
                 return cliente;
             };

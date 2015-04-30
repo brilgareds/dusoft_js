@@ -9,25 +9,30 @@
                 }
             }],
         "models": [{
-                "pedidos_model": {
-                    "module": "Pedidos",
-                    "model": "PedidosModel",
-                    "alias": "m_pedidos"
+                "admin_model": {
+                    "module": "Admin",
+                    "model": "AdminModel",
+                    "alias": "m_admin"
                 },
-                "productos_model": {
-                    "module": "Productos",
-                    "model": "ProductosModel",
-                    "alias": "m_productos"
+                "terceros_model": {
+                    "module": "Usuarios",
+                    "model": "UsuariosModel",
+                    "alias": "m_usuarios"
                 },
-                "pedidos_cliente_model": {
-                    "module": "PedidosClientes",
-                    "model": "PedidosClienteModel",
-                    "alias": "m_pedidos_clientes"
+                "rol_model": {
+                    "module": "Parametrizacion/Roles",
+                    "model": "RolModel",
+                    "alias": "m_rol"
                 },
-                "pedidos_farmacia_model": {
-                    "module": "PedidosFarmacias",
-                    "model": "PedidosFarmaciasModel",
-                    "alias": "m_pedidos_farmacias"
+                "modulo_model": {
+                    "module": "Parametrizacion/Modulos",
+                    "model": "ModuloModel",
+                    "alias": "m_modulo"
+                },
+                "empresas_model": {
+                    "module": "Parametrizacion/Empresas",
+                    "model": "EmpresasModel",
+                    "alias": "m_empresas"
                 }
             }],
         "events": [],

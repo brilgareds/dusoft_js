@@ -33,6 +33,21 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             
             $scope.onInicializarAplicacion = function(){
                 
+                var obj = {
+                    session: $scope.root.session,
+                    data: {
+                        termino: ""
+                    }
+                };
+
+                Request.realizarRequest(API.ADMIN.INICIALIZAR_APLICACION, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        
+
+                    }
+
+                });
+                
             };
             
             self.traerModulos(function(){

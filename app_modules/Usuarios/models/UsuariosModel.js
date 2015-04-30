@@ -77,32 +77,42 @@ UsuariosModel.prototype.cambiar_contrasenia = function(usuario, contrasenia, cal
 UsuariosModel.prototype.guardarUsuario = function(usuario, callback) {
     var self = this;
     console.log("usuario >> ", usuario);
+    
+    __validarCreacionUsuario(self, usuario, function(validacion) {
 
-    if (usuario.id && usuario.id !== 0 && usuario.id !== "") {
+        if (!validacion.valido) {
+            var err = {msj:validacion.msj};
+            callback(err, false);
+            return;
+        }
 
-        if (usuario.clave.length > 0) {
-            self.cambiar_contrasenia(usuario.usuario, usuario.clave, function(err, rows) {
+        if (usuario.id && usuario.id !== 0 && usuario.id !== "") {
 
-                if (err) {
-                    callback(err, rows);
-                    return;
-                }
+            if (usuario.clave.length > 0) {
+                self.cambiar_contrasenia(usuario.usuario, usuario.clave, function(err, rows) {
 
+                    if (err) {
+                        callback(err, rows);
+                        return;
+                    }
+
+                    self.modificarUsuario(usuario, function(err, rows) {
+                        callback(err, rows);
+                    });
+                });
+            } else {
                 self.modificarUsuario(usuario, function(err, rows) {
                     callback(err, rows);
                 });
-            });
+            }
+
         } else {
-            self.modificarUsuario(usuario, function(err, rows) {
+            self.insertarUsuario(usuario, function(err, rows) {
                 callback(err, rows);
             });
         }
+    });
 
-    } else {
-        self.insertarUsuario(usuario, function(err, rows) {
-            callback(err, rows);
-        });
-    }
 };
 
 
@@ -141,7 +151,7 @@ UsuariosModel.prototype.modificarUsuario = function(usuario, callback) {
 };
 
 UsuariosModel.prototype.obtenerUsuarioPorNombreOEmail = function(usuario, email, callback) {
-    var sql = "SELECT  nombre, usuario_id, email  FROM system_usuarios WHERE usuario ILIKE $1 OR email = $2";
+    var sql = "SELECT  nombre, usuario_id, email, usuario  FROM system_usuarios WHERE usuario ILIKE $1 OR email = $2";
 
     G.db.query(sql, [usuario + "%", email], function(err, rows, result) {
         callback(err, rows);
@@ -871,6 +881,98 @@ function __guardarCentroUtilidadBodegaUsuario(that, usuario_id, login_empresa_id
         }
     });
 
+}
+
+function esEmailValido(email) {
+    var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+    return re.test(email);
+}
+
+
+
+function __validarCreacionUsuario(that, usuario, callback) {
+    var validacion = {
+        valido: true,
+        msj: ""
+    };
+
+
+    if (usuario.nombre === undefined || usuario.nombre.length === 0) {
+        validacion.valido = false;
+        validacion.msj = "El usuario debe tener un nombre";
+        callback(validacion);
+        return;
+    }
+    
+    if (usuario.usuario === undefined || usuario.usuario.length === 0) {
+        validacion.valido = false;
+        validacion.msj = "El usuario debe tener un nombre de usuario";
+        callback(validacion);
+        return;
+    }
+    
+   /* if (usuario.clave && usuario.clave.length < 5) {
+        validacion.valido = false;
+        validacion.msj = "El usuario debe tener una clave valida de 6 caracteres";
+        callback(validacion);
+        return;
+    }*/
+
+    if (usuario.email === undefined || usuario.email.length === 0) {
+        validacion.valido = false;
+        validacion.msj = "El usuario debe tener un email";
+        callback(validacion);
+        return;
+    }
+    
+    if(!esEmailValido(usuario.email)){
+        validacion.valido = false;
+        validacion.msj = "El email no es valido";
+        callback(validacion);
+        return;
+    }
+
+
+
+    //trae los usuarios que hagan match con las primeras letras del nombre 
+    that.obtenerUsuarioPorNombreOEmail(usuario.usuario.substring(0, 4), usuario.email, function(err, rows) {
+        if (err) {
+            validacion.valido = false;
+            validacion.msj = "Ha ocurrido un error validando el usuario";
+            callback(validacion);
+            return;
+        }
+
+
+        var nombre_usuario = usuario.usuario.toLowerCase().replace(/ /g, "");
+
+        //determina si el nombre de usuario esta en uso, insensible a mayusculas o espacios
+        for (var i in rows) {
+            //console.log("buscando en ",rows[i].usuario , " buscando con ", nombre_usuario);
+            if (usuario.usuario_id !== rows[i].usuario_id) {
+
+                var _nombre_usuario = rows[i].usuario.toLowerCase().replace(/ /g, "");
+
+                if (nombre_usuario === _nombre_usuario) {
+                    console.log("nombre de usuario ", _nombre_usuario, " input ", nombre_usuario);
+                    validacion.valido = false;
+                    validacion.msj = "El nombre de usuario no esta disponible";
+                    callback(validacion);
+                    return;
+                }
+
+                if (rows[i].email === usuario.email) {
+                    validacion.valido = false;
+                    validacion.msj = "El email no esta disponible";
+                    callback(validacion);
+                    return;
+                }
+
+            }
+
+        }
+        callback(validacion);
+    });
 }
 
 UsuariosModel.$inject = ["m_rol", "m_modulo", "m_bodegas"];

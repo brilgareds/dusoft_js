@@ -385,7 +385,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         };
                         
                         $scope.enviar_reporte_pdf_email = function() {
-                            $scope.ventana_enviar_email();
+                            $scope.ventana_enviar_email($scope.planilla);
                             $modalInstance.close();
                         };
 

@@ -323,7 +323,7 @@ ModuloModel.prototype.eliminarVariable = function(id, callback) {
     });
 };
 
-ModuloModel.prototype.habilitarModuloEnEmpresas = function(usuario_id, empresas_modulos, modulo_id, callback) {
+ModuloModel.prototype.habilitarModuloEnEmpresas = function(usuario_id, empresas_modulos, callback) {
 
     var that = this;
     //se deshabilitan todos las empresas del modulos para asignar solo las que se enviaron del cliente

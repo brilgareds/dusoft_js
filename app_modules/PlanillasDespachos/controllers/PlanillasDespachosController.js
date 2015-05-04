@@ -569,11 +569,10 @@ PlanillasDespachos.prototype.reportePlanillaDespacho = function(req, res) {
                     for (var z in datos) {
                         documentos.push({tercero: z, detalle: datos[z]});
                     }
-                    
-                    console.log(documentos);
-                    return
 
-                    _generar_reporte_planilla_despacho({planilla_despacho: planilla_despacho, documentos_planilla: datos, usuario_imprime: req.session.user.nombre_usuario}, function(nombre_reporte) {
+                    console.log(documentos[7]);
+
+                    _generar_reporte_planilla_despacho({planilla_despacho: planilla_despacho, documentos_planilla: documentos, usuario_imprime: req.session.user.nombre_usuario}, function(nombre_reporte) {
 
                         if (enviar_email) {
 
@@ -702,7 +701,13 @@ function _generar_reporte_planilla_despacho(rows, callback) {
             content: G.fs.readFileSync('app_modules/PlanillasDespachos/reports/planilla_despacho.html', 'utf8'),
             helpers: G.fs.readFileSync('app_modules/PlanillasDespachos/reports/javascripts/helpers.js', 'utf8'),
             recipe: "phantom-pdf",
-            engine: 'jsrender'
+            engine: 'jsrender',
+            phantom: {
+                header: '<div style="text-align:right">{#pageNum}/{#numPages}</div>'
+                /*orientation: "portrait",
+                width: "300px"*/
+            }
+
         },
         data: {
             style: G.dirname + "/public/stylesheets/bootstrap.min.css",

@@ -218,7 +218,7 @@ function __habilitarModulosEnRoles(that, usuario_id, rolesModulos, ids, callback
         return;
     }
     
-    console.log("modulo >>>>>>>>>>>>>>>>>>>>>> ", rolesModulos[0])
+    console.log("modulo >>>>>>>>>>>>>>>>>>>>>> ", rolesModulos[0]);
     //este es el id de modulos_empresa
     var modulos_empresas_id = rolesModulos[0].modulo.empresasModulos[0].id;
     var rol_id = rolesModulos[0].rol.id;

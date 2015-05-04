@@ -10,6 +10,7 @@ Admin.prototype.inicializarAplicacion = function(req, res){
     var archivo = G.fs.readFileSync(G.dirname+G.settings.carpeta_admin+"Setup.json", "utf8");
     var json = JSON.parse(archivo);
     var self = this;
+    
     self.m_admin.Setup(json, function(err, rows){
         if(err){
             var msj = "Ha ocurrido un error";

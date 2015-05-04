@@ -22,7 +22,7 @@ AdminModel.prototype.Setup = function(json, callback) {
             callback(err, false);
             return;
         }
-        
+
         rol.usuario_id = rows.usuario_id;
         rol.empresa_id = empresa.empresa_id;
 
@@ -38,14 +38,21 @@ AdminModel.prototype.Setup = function(json, callback) {
                     callback(err, false);
                     return;
                 }
-                
+
                 rol.id = rows[0].id;
-                
-                __guardarModulo(self, modulos, rol.usuario_id, function(err, modulos){
+
+                __guardarModulo(self, modulos, rol, function(err, modulos) {
+                    if (err) {
+                        callback(err, false);
+                        return;
+                    }
                     
+                    //se asigna el rol al usuario creado
+                    self.m_usuarios.asignarRolUsuario(rol.usuario_id, empresa.empresa_id, rol.id, rol.usuario_id, '1', function(){
+                        callback(err);
+                    });
                 });
-                
-                console.log("rol id >>>>>>>>>>>>>>>>>>>>>>>>>", rol);
+
             });
 
 
@@ -58,28 +65,77 @@ AdminModel.prototype.Setup = function(json, callback) {
 
 
 
-function __guardarModulo(self, modulos, usuario_id, index, callback){
+function __guardarModulo(self, modulos, rol, index, callback) {
     var modulo = modulos[index];
-    
-    if(!modulo){
+
+    if (!modulo) {
         callback(false, modulos);
         return;
     }
-    
-    modulo.usuario_id = usuario_id;
-    
-    self.m_modulo.insertarModulo(modulo, function(err, rows){
-        if(err){
+
+    modulo.usuario_id = rol.usuario_id;
+
+    //se guarda el modulo
+    self.m_modulo.insertarModulo(modulo, function(err, rows) {
+        if (err) {
             callback(err, false);
             return;
         }
-        
+
         modulo.id = rows.id;
         index++;
-        
-        __guardarModulo(self, modulos, usuario_id, index, callback);
-        
-        
+
+        var empresaModulo = [
+            {
+                empresa: {
+                    codigo: rol.empresa_id,
+                    estado: true
+                },
+                modulo: {
+                    modulo_id: modulo.id
+                }
+            }
+        ];
+
+        //se habilita el modulo en la empresa del usuario
+        self.m_modulo.habilitarModuloEnEmpresas(modulo.usuario_id, empresaModulo, function(err, rows, ids) {
+
+            if (err) {
+                callback(err, false);
+                return;
+            }
+
+            var rolModulo = [
+                {
+                    modulo: {
+                        empresasModulos: [
+                            {
+                                id: ids[0].modulos_empresas_id
+                            }
+                        ],
+                        modulo_id: modulo.id
+                    },
+                    rol: {
+                        id: rol.id
+                    },
+                    estado: true
+                }
+            ];
+
+
+            //se habilita el modulo para el rol del usuario
+            self.m_rol.habilitarModulosEnRoles(modulo.usuario_id, rolModulo, function(err) {
+                if (err) {
+                    callback(err, false);
+                    return;
+                }
+
+                __guardarModulo(self, modulos, rol.usuario_id, index, callback);
+            });
+        });
+
+
+
     });
 }
 

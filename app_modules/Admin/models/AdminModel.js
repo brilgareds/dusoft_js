@@ -12,6 +12,7 @@ AdminModel.prototype.Setup = function(json, callback) {
     var usuario = json.usuario;
     var empresa = json.empresa;
     var rol = json.rol;
+    var modulos = json.modulos;
 
     console.log("usuario >>>>>>>>", usuario);
 
@@ -40,6 +41,9 @@ AdminModel.prototype.Setup = function(json, callback) {
                 
                 rol.id = rows[0].id;
                 
+                __guardarModulo(self, modulos, rol.usuario_id, function(err, modulos){
+                    
+                });
                 
                 console.log("rol id >>>>>>>>>>>>>>>>>>>>>>>>>", rol);
             });
@@ -51,6 +55,33 @@ AdminModel.prototype.Setup = function(json, callback) {
 
 
 };
+
+
+
+function __guardarModulo(self, modulos, usuario_id, index, callback){
+    var modulo = modulos[index];
+    
+    if(!modulo){
+        callback(false, modulos);
+        return;
+    }
+    
+    modulo.usuario_id = usuario_id;
+    
+    self.m_modulo.insertarModulo(modulo, function(err, rows){
+        if(err){
+            callback(err, false);
+            return;
+        }
+        
+        modulo.id = rows.id;
+        index++;
+        
+        __guardarModulo(self, modulos, usuario_id, index, callback);
+        
+        
+    });
+}
 
 AdminModel.$inject = ["m_usuarios", "m_modulo", "m_rol", "m_empresas"];
 

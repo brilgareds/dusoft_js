@@ -287,7 +287,7 @@ Modulos.prototype.habilitarModuloEnEmpresas = function(req, res) {
 
     
 
-    that.m_modulo.habilitarModuloEnEmpresas(req.session.user.usuario_id, empresas_modulos,modulo_id, function(err, rows, ids) {
+    that.m_modulo.habilitarModuloEnEmpresas(req.session.user.usuario_id, empresas_modulos, function(err, rows, ids) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error habilitando las empresas para el modulo', 500, {parametrizacion_modulo: {}}));
             return;

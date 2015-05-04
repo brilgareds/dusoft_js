@@ -326,7 +326,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
 
             $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 
-                var moduloActual = self.obtenerModuloActual(toState.name);
+               /* var moduloActual = self.obtenerModuloActual(toState.name);
 
                 //se busca en el parent name el modulo actual
                 if (!moduloActual && toState.parent_name) {
@@ -340,7 +340,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                     return;
                 }
 
-                $scope.Usuario.setModuloActual(moduloActual);
+                $scope.Usuario.setModuloActual(moduloActual);*/
 
 
             });

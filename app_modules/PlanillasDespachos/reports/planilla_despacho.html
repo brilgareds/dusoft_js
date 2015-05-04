@@ -8,7 +8,7 @@
         <!--[if IE]>
             <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
             <![endif]-->
-        <title>Orden Compra</title>        
+        <title>Planilla Despacho</title>        
         <link rel="stylesheet" href="{{:style}}" />       
         <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,300' rel='stylesheet' type='text/css' />
         <style>            
@@ -39,7 +39,7 @@
             .client-info {
                 /*font-size:10px;*/
             }
-            
+
             .footer-info {
                 font-size:8px;
             }
@@ -66,22 +66,49 @@
     <body>
         <div class="container">
 
-            <div class="row pad-top-botm ">
-                <!--div class="col-lg-6 col-md-6 col-sm-6 "-->
-                <div class="box">
-                    <img src="http://duanaltda.com/images/logo.png" style="padding-bottom:20px;"  width="200px" height="50px"/> 
-                </div>
-                <div class="col-lg-6 col-md-6 col-sm-6">                   
+            <table class="table" width='100%'>
+                <tr>
+                    <td class='title'>Empresa</td><td>Nombre empresa</td>
+                    <td class='title'>Usuario</td><td>usuario</td>
 
-                    <strong> NIT - 900786223-3  Duana LTDA & CIA. </strong>
-                    <br />
-                    Calle 9A No. 42 - 115 Valle del Cauca, Cali, Colombia. 
+                </tr>
+                <tr>
+
+                    <td class='title'>Bodega</td><td>Bodega</td>
+                    <td class='title'>Documento</td><td>Prefijo - numero</td>
+                </tr>
+                <tr>
+                    <td class='title'>Pedido</td><td>pedido<span class='fecha_pedido'>24/12/20015</span></td>
+                    <td class='title'>Fecha Despacho</td><td>24/15/2015</td>
+                </tr>
+            </table>
+
+            <div class="row pad-top-botm ">
+
+                <div class="col-md-3">
+                    <div class="box">
+                        <img src="http://duanaltda.com/images/logo.png" style="padding-bottom:20px;" width="200px" height="50px"> 
+                            <div>
+                                <strong> NIT - 900786223-3  Duana LTDA &amp; CIA. </strong>
+                                <br>Calle 9A No. 42 - 115 Valle del Cauca, Cali, Colombia. 
+                            </div>
+                    </div>                    
+                </div>    
+                <div class="col-md-9">  
+                    <h3><strong> PLANILLA DE DESPACHOS DE MERCANCÍA </strong></h3>  
                 </div>                
-            </div> 
-            <hr />
-        
-            
-              
+            </div>
+            <div  class="row  pad-top-botm client-info" style="margin-top: 13px;">
+                <hr/>
+                <div class="col-lg-6 col-md-6 col-sm-6">                    
+                    <b>Transpotador (a):</b> VEHICULO PROPIO (VCL-925)                   
+                    <br />            
+                    <b>Fecha Salida :</b> Viernes, 24 Abril de 2015
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 ">            
+                    <b>Guia Nro :</b> M-9678            
+                </div>
+            </div>
         </div>
     </body>
 </html>

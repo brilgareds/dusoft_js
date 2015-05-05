@@ -152,9 +152,9 @@ define([
                                       <button ng-if="rootOpciones.opciones.detalle" class="btn btn-default btn-xs" ng-click="onEditarOpcion(row.entity)">\
                                         <span class="glyphicon glyphicon-zoom-in"></span>\
                                       </button>\
-                                      <button ng-if="rootOpciones.opciones.eliminar" class="btn btn-default btn-xs" ng-click="onBorrarOpcion(row.entity)">\
+                                      <!--button ng-if="rootOpciones.opciones.eliminar" class="btn btn-default btn-xs" ng-click="onBorrarOpcion(row.entity)">\
                                         <span class="glyphicon glyphicon-remove"></span>\
-                                      </button>\
+                                      </button-->\
                                       <input-check ng-if="rootOpciones.opciones.seleccionar" ng-disabled="!row.entity.estado"  ng-model="row.entity.seleccionado"  ng-change="onSeleccionarOpcion(row.entity)">\
                                    </div>'
                     }

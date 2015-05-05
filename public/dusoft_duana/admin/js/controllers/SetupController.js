@@ -48,6 +48,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         });
 
                     } else {
+              
                         $scope.opts = {
                             backdrop: true,
                             backdropClick: true,
@@ -59,15 +60,23 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                     <h4 class="modal-title" style="color:red;">Error ...</h4>\
                                 </div>\
                                 <div class="modal-body">\
-                                    <h5>Se ha generado un error en el proceso, no se han creado los modulos ni roles iniciales, favor revisar el archivo de configuración.</h5>\
+                                    <h5>Se ha generado un error en el proceso, no se han creado los modulos ni roles iniciales, puede ser por una inconsistencia en el archivo de configuración.</h5>\
+                                    <h5>Detalle: </h5>\
+                                    <h6 style="color:red">-- {{msj}}</h6>\
                                 </div>',
                             scope: $scope,
-                            controller: function($scope, $modalInstance) {
-
+                            controller: function($scope, $modalInstance, msj) {
+                                $scope.msj = msj;
+                                
                                 $scope.close = function() {
                                     $modalInstance.close();
                                 };
 
+                            },
+                            resolve: {
+                                msj: function() {
+                                    return data.msj;
+                                }
                             }
                         };
                         var modalInstance = $modal.open($scope.opts);

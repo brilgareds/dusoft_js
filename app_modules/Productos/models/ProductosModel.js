@@ -330,7 +330,16 @@ var sql = " select\n\
                     a.codigo_producto,\n\
                     a.precio_regulado,\n\
                     fc_descripcion_producto(a.codigo_producto) as nombre_producto,\n\
-                    btrim(fc_precio_producto_contrato_cliente($4, a.codigo_producto, $1), '@') as precio_contrato,\n\
+                    CASE\n\
+                        WHEN $4 = 0\n\
+                        THEN btrim(fc_precio_producto_contrato_cliente(2, a.codigo_producto, $1), '@')\n\
+                        ELSE\n\
+                            CASE\n\
+                                WHEN cast(btrim(fc_precio_producto_contrato_cliente($4, a.codigo_producto, $1), '@') as numeric) > 0\n\
+                                THEN btrim(fc_precio_producto_contrato_cliente($4, a.codigo_producto, $1), '@')\n\
+                                ELSE btrim(fc_precio_producto_contrato_cliente(2, a.codigo_producto, $1), '@')\n\
+                            END\n\
+                    END as precio_contrato,\n\
                     a.existencia as existencia_total,\n\
                     a.costo_anterior,\n\
                     a.costo,\n\

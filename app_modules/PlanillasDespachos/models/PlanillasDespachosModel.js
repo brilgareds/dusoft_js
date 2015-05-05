@@ -221,9 +221,9 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     a.observacion,\
                     a.usuario_id\
                     from inv_planillas_detalle_empresas a\
-                ) as a where a.planilla_id = $1 and ( a.descripcion_destino ilike $2 );";
+                ) as a /*where a.planilla_id = $1 and ( a.descripcion_destino ilike $2 )*/;";
     
-    G.db.query(sql, [planilla_id, '%'+termino_busqueda+'%'], function(err, rows, result) {
+    G.db.query(sql, [/*planilla_id, '%'+termino_busqueda+'%'*/], function(err, rows, result) {
         callback(err, rows);
     });
 };

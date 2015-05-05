@@ -13,10 +13,10 @@ Admin.prototype.inicializarAplicacion = function(req, res){
     
     self.m_admin.Setup(json, function(err, rows){
         if(err){
-            var msj = "Ha ocurrido un error";
+            var msj = "Ha ocurrido un error con el proceso de inicializacion, favor revisar el archivo de configuración";
             
-            if(err){
-                msj = err.msj;
+            if(err.msj){
+                msj = "Error en el archivo de inicialización: "+err.msj;
             }
             
             res.send(G.utils.r(req.url, msj, 403, {admin: {}}));

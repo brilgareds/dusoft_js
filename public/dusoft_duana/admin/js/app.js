@@ -2,7 +2,7 @@
  define(["angular", "route", "bootstrap","js/controllers", "js/models", 
   "controllers/Logincontroller", "controllers/ControlPanelController", "includes/classes/Usuario", "bootstrapjs", "js/directive",
   "directive/focus","js/services", "url",
-  "loader","storage", "includes/http/Request"
+  "loader","storage", "includes/http/Request", "includes/alert/Alert"
   
   ], function(angular){
   /* App Module and its dependencies */
@@ -43,14 +43,6 @@
 
     }]).run(["$rootScope", "localStorageService", "Usuario","$state","$location", function($rootScope,localStorageService, Usuario) {
         
-       
-        var session = localStorageService.get("session");
-        if(session){
-            
-            var usuario = Usuario.get(session.usuario_id);
-            usuario.setToken(session.auth_token);
-            Usuario.setUsuarioActual(usuario);
-        }
         
     }]);
 

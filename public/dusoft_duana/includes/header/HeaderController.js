@@ -12,11 +12,21 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 Modulo, Rol, OpcionModulo, AlertService, CentroUtilidad, Bodega, VariableModulo) {
 
             var self = this;
+           
+            
             var obj_session = localStorageService.get("session");
-            if (!obj_session)
+            
+            if (!obj_session){
+                window.location = "../pages/401.html";
                 return;
+            }
 
             // setUsuarioActual(obj_session);
+            
+            self.redireccionarLogin = function(){
+                window.location = "../login";
+            };
+            
 
 
             $scope.mostarLock = false;
@@ -33,7 +43,6 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
             };
 
             $scope.empresas = [];
-
 
             self.setUsuarioActual = function(obj) {
                 var usuario = Usuario.get(obj.usuario_id, obj.usuario, obj.nombre);
@@ -157,7 +166,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                         callback(obj);
                     } else {
                         $scope.cerraSesion(function() {
-                            window.location = "../login";
+                            self.redireccionarLogin();
                         });
                     }
 
@@ -246,9 +255,13 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                     $scope.Usuario.setObjetoModulos(_modulosObjetoValor);
                     //estando los modulos preparados se envian al controlador del menu                      
                     $rootScope.$emit("modulosUsuario");
+                } else {
+                    $scope.cerraSesion(function() {
+                        window.location = "../pages/401.html";
+                    });
                 }
             };
-
+            
 
             $scope.onEmpresaSeleccionada = function(empresa) {
                 $scope.Usuario.setEmpresa(empresa);
@@ -266,15 +279,15 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
             $scope.cerraSesionBtnClick = function($event) {
                 $event.preventDefault();
                 $scope.cerraSesion(function() {
-                    window.location = "../login";
+                    self.redireccionarLogin();
                 });
 
             };
 
             $scope.cerraSesion = function(callback) {
                 $scope.session = {
-                    usuario_id: Usuario.usuario_id,
-                    auth_token: Usuario.token
+                    usuario_id: Usuario.getUsuarioActual().getId(),
+                    auth_token: Usuario.getUsuarioActual().getToken()
                 };
 
 
@@ -289,8 +302,8 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
             $scope.autenticar = function() {
 
                 var session = {
-                    usuario_id: Usuario.usuario_id,
-                    auth_token: Usuario.token
+                    usuario_id: Usuario.getUsuarioActual().getId(),
+                    auth_token: Usuario.getUsuarioActual().getToken()
                 };
 
                 Request.realizarRequest('/api/unLockScreen', "POST", {session: session, data: {login: {contrasenia: $scope.obj_session.clave}}}, function(data) {
@@ -310,8 +323,8 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
             $scope.bloquearPantalla = function() {
 
                 var session = {
-                    usuario_id: Usuario.usuario_id,
-                    auth_token: Usuario.token
+                    usuario_id: Usuario.getUsuarioActual().getId(),
+                    auth_token: Usuario.getUsuarioActual().getToken()
                 };
 
                 Request.realizarRequest('/api/lockScreen', "POST", {session: session, data: {}}, function(data) {
@@ -326,7 +339,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
 
             $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 
-               /* var moduloActual = self.obtenerModuloActual(toState.name);
+                var moduloActual = self.obtenerModuloActual(toState.name);
 
                 //se busca en el parent name el modulo actual
                 if (!moduloActual && toState.parent_name) {
@@ -340,7 +353,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                     return;
                 }
 
-                $scope.Usuario.setModuloActual(moduloActual);*/
+                $scope.Usuario.setModuloActual(moduloActual);
 
 
             });
@@ -365,16 +378,13 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
             socket.on("onConnected", function(datos) {
                 var socketid = datos.socket_id;
                 var obj_session = {
-                    usuario_id: Usuario.usuario_id,
-                    auth_token: Usuario.token,
+                    usuario_id: Usuario.getUsuarioActual().getId(),
+                    auth_token: Usuario.getUsuarioActual().getToken(),
                     socket_id: socketid
                 };
 
                 socket.emit("onActualizarSesion", obj_session);
             });
-
-
-
 
             self.traerUsuarioPorId(obj_session.usuario_id, function() {
                 var empresa_id = obj_session.empresa_id;

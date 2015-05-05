@@ -76,41 +76,40 @@ UsuariosModel.prototype.cambiar_contrasenia = function(usuario, contrasenia, cal
 //gestiona para modificar o insertar el rol
 UsuariosModel.prototype.guardarUsuario = function(usuario, callback) {
     var self = this;
-    console.log("usuario >> ", usuario);
-    
+
     __validarCreacionUsuario(self, usuario, function(validacion) {
 
         if (!validacion.valido) {
-            var err = {msj:validacion.msj};
+            var err = {msj: validacion.msj};
             callback(err, false);
             return;
         }
 
-        if (usuario.id && usuario.id !== 0 && usuario.id !== "") {
+        self.modificarUsuario(usuario, function(err, rows, result) {
+            if (err) {
+                callback(err, rows);
+                return;
+            }
 
-            if (usuario.clave.length > 0) {
+            if (result.rowCount === 0) {
+
+                self.insertarUsuario(usuario, function(err, rows) {
+                    callback(err, rows);
+                });
+
+            } else if (usuario.clave.length > 0) {
                 self.cambiar_contrasenia(usuario.usuario, usuario.clave, function(err, rows) {
-
                     if (err) {
                         callback(err, rows);
                         return;
                     }
 
-                    self.modificarUsuario(usuario, function(err, rows) {
-                        callback(err, rows);
-                    });
-                });
-            } else {
-                self.modificarUsuario(usuario, function(err, rows) {
                     callback(err, rows);
                 });
-            }
-
-        } else {
-            self.insertarUsuario(usuario, function(err, rows) {
+            } else {
                 callback(err, rows);
-            });
-        }
+            }
+        });
     });
 
 };
@@ -146,7 +145,7 @@ UsuariosModel.prototype.modificarUsuario = function(usuario, callback) {
 
     G.db.query(sql, params, function(err, rows, result) {
         var usuario_id = (rows) ? rows[0] : undefined;
-        callback(err, usuario_id);
+        callback(err, usuario_id, result);
     });
 };
 
@@ -204,6 +203,8 @@ UsuariosModel.prototype.obtenerRolUsuarioPorEmpresa = function(empresa_id, usuar
 UsuariosModel.prototype.cambiarPredeterminadoEmpresa = function(empresa_id, usuario_id, rol_id, predeterminado, callback) {
 
     var that = this;
+
+    console.log("cambiar predeterminado predeterminad ", predeterminado, " empresa ", empresa_id, " login id ", usuario_id, " rol id ", rol_id);
 
     __desmarcarPredeterminadoEmpresas(that, empresa_id, usuario_id, function(err, rows, result) {
 
@@ -508,7 +509,7 @@ UsuariosModel.prototype.obtenerEmpresasUsuario = function(usuario_id, callback) 
 UsuariosModel.prototype.obtenerCentrosUtilidadUsuario = function(empresa_id, login_id, callback) {
     var that = this;
 
-    var sql =   "SELECT a.centro_utilidad AS centro_utilidad_id, a.descripcion FROM centros_utilidad a\
+    var sql = "SELECT a.centro_utilidad AS centro_utilidad_id, a.descripcion FROM centros_utilidad a\
                 INNER JOIN login_empresas b ON b.empresa_id = a.empresa_id \
                 INNER JOIN login_centros_utilidad_bodega c ON c.centro_utilidad_id = a.centro_utilidad AND c.login_empresa_id = b.id\
                 WHERE a.empresa_id = $1 AND b.login_id = $2 AND c.estado = '1' GROUP BY 1, 2";
@@ -530,6 +531,51 @@ UsuariosModel.prototype.obtenerBodegasUsuario = function(empresa_id, login_id, c
         callback(err, rows, result);
     });
 };
+
+UsuariosModel.prototype.borrarParametrizacionPorUsuario = function(usuario_id, callback) {
+    var tablas = [
+                    "roles_modulos",
+                    "login_modulos_empresas",
+                    "modulos_empresas",
+                    "modulos",
+                    "login_empresas",
+                    "roles",
+                    "system_usuarios_sesiones",
+                    "system_usuarios"
+               ];
+     
+     __borrarParametrizacionPorUsuario(tablas, usuario_id, function(err){
+         callback(err);
+     });
+     
+};
+
+
+function __borrarParametrizacionPorUsuario(tablas, usuario_id, callback) {
+    var tabla = tablas[0];
+    
+    
+    if(!tabla){
+        callback(false);
+        return;
+    }
+    
+    var sql = "DELETE FROM "+tabla+" WHERE usuario_id = $1";
+    
+    G.db.query(sql, [usuario_id], function(err, rows, result) {
+        
+        if(err){
+            callback(err);
+            return;
+        }
+        
+        tablas.splice(0, 1);
+        
+        setTimeout(function() {
+            __borrarParametrizacionPorUsuario(tablas, usuario_id, callback);
+        },0);
+    });
+}
 
 function __obtenerBodegasCentroUtilidadUsuario(that, index, empresa_id, usuario_id, centros, callback) {
 
@@ -557,6 +603,7 @@ function __obtenerBodegasCentroUtilidadUsuario(that, index, empresa_id, usuario_
 }
 
 function __cambiarPredeterminadoEmpresa(that, empresa_id, usuario_id, rol_id, predeterminado, callback) {
+
     var sql = "UPDATE login_empresas  SET predeterminado = $4 WHERE empresa_id = $1 AND login_id = $2 AND rol_id = $3";
 
     G.db.query(sql, [empresa_id, usuario_id, rol_id, predeterminado], function(err, rows, result) {
@@ -903,20 +950,20 @@ function __validarCreacionUsuario(that, usuario, callback) {
         callback(validacion);
         return;
     }
-    
+
     if (usuario.usuario === undefined || usuario.usuario.length === 0) {
         validacion.valido = false;
         validacion.msj = "El usuario debe tener un nombre de usuario";
         callback(validacion);
         return;
     }
-    
-   /* if (usuario.clave && usuario.clave.length < 5) {
-        validacion.valido = false;
-        validacion.msj = "El usuario debe tener una clave valida de 6 caracteres";
-        callback(validacion);
-        return;
-    }*/
+
+    /* if (usuario.clave && usuario.clave.length < 5) {
+     validacion.valido = false;
+     validacion.msj = "El usuario debe tener una clave valida de 6 caracteres";
+     callback(validacion);
+     return;
+     }*/
 
     if (usuario.email === undefined || usuario.email.length === 0) {
         validacion.valido = false;
@@ -924,8 +971,8 @@ function __validarCreacionUsuario(that, usuario, callback) {
         callback(validacion);
         return;
     }
-    
-    if(!esEmailValido(usuario.email)){
+
+    if (!esEmailValido(usuario.email)) {
         validacion.valido = false;
         validacion.msj = "El email no es valido";
         callback(validacion);

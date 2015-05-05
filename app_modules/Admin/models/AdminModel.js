@@ -14,7 +14,6 @@ AdminModel.prototype.Setup = function(json, callback) {
     var rol = json.rol;
     var modulos = json.modulos;
 
-    console.log("usuario >>>>>>>>", usuario);
 
     self.m_usuarios.guardarUsuario(usuario, function(err, rows) {
 
@@ -25,31 +24,54 @@ AdminModel.prototype.Setup = function(json, callback) {
 
         rol.usuario_id = rows.usuario_id;
         rol.empresa_id = empresa.empresa_id;
+        usuario.usuario_id = rows.usuario_id;
 
         self.m_empresas.guardarEmpresa(empresa, function(err, rows) {
 
             if (err) {
-                callback(err, false);
+                self.m_usuarios.borrarParametrizacionPorUsuario(usuario.usuario_id, function() {
+                    callback(err, false);
+                });
                 return;
             }
 
             self.m_rol.insertarRol(rol, function(err, rows) {
                 if (err) {
-                    callback(err, false);
+                    self.m_usuarios.borrarParametrizacionPorUsuario(usuario.usuario_id, function() {
+                        callback(err, false);
+                    });
                     return;
                 }
 
                 rol.id = rows[0].id;
 
-                __guardarModulo(self, modulos, rol, function(err, modulos) {
+                __guardarModulo(self, modulos, rol, 0, function(err, modulos) {
                     if (err) {
-                        callback(err, false);
+                        self.m_usuarios.borrarParametrizacionPorUsuario(usuario.usuario_id, function() {
+                            callback(err, false);
+                        });
                         return;
                     }
-                    
+
                     //se asigna el rol al usuario creado
-                    self.m_usuarios.asignarRolUsuario(rol.usuario_id, empresa.empresa_id, rol.id, rol.usuario_id, '1', function(){
-                        callback(err);
+                    self.m_usuarios.asignarRolUsuario(rol.usuario_id, empresa.empresa_id, rol.id, rol.usuario_id, '1', function(err) {
+                        if (err) {
+                            self.m_usuarios.borrarParametrizacionPorUsuario(usuario.usuario_id, function() {
+                                callback(err, false);
+                            });
+                            return;
+                        }
+
+                        //marca como predeterminado el login creado
+                        self.m_usuarios.cambiarPredeterminadoEmpresa(empresa.empresa_id, rol.usuario_id, rol.id, '1', function(err) {
+                            if (err) {
+                                self.m_usuarios.borrarParametrizacionPorUsuario(usuario.usuario_id, function() {
+                                    callback(err, false);
+                                });
+                                return;
+                            }
+                            callback(err);
+                        });
                     });
                 });
 
@@ -59,10 +81,7 @@ AdminModel.prototype.Setup = function(json, callback) {
         });
     });
 
-
-
 };
-
 
 
 function __guardarModulo(self, modulos, rol, index, callback) {
@@ -76,13 +95,13 @@ function __guardarModulo(self, modulos, rol, index, callback) {
     modulo.usuario_id = rol.usuario_id;
 
     //se guarda el modulo
-    self.m_modulo.insertarModulo(modulo, function(err, rows) {
+    self.m_modulos.insertarModulo(modulo, function(err, rows) {
         if (err) {
             callback(err, false);
             return;
         }
 
-        modulo.id = rows.id;
+        modulo.id = rows[0].id;
         index++;
 
         var empresaModulo = [
@@ -98,7 +117,7 @@ function __guardarModulo(self, modulos, rol, index, callback) {
         ];
 
         //se habilita el modulo en la empresa del usuario
-        self.m_modulo.habilitarModuloEnEmpresas(modulo.usuario_id, empresaModulo, function(err, rows, ids) {
+        self.m_modulos.habilitarModuloEnEmpresas(modulo.usuario_id, empresaModulo, function(err, rows, ids) {
 
             if (err) {
                 callback(err, false);
@@ -130,7 +149,7 @@ function __guardarModulo(self, modulos, rol, index, callback) {
                     return;
                 }
 
-                __guardarModulo(self, modulos, rol.usuario_id, index, callback);
+                __guardarModulo(self, modulos, rol, index, callback);
             });
         });
 

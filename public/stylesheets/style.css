@@ -41,6 +41,11 @@ body{
     background-color: #428bca!important;
 }
 
+.buscadorMenuPrincipal{
+    position:absolute; 
+    right:2px; top:2px;
+}
+
 div{
     padding-top: 0px;
     padding-bottom: 0px;	
@@ -53,6 +58,12 @@ div{
 
 .contenedormenu .navbar{
     background-color: #e7f2fa;
+}
+
+
+.contenedorArbol{
+    height:600px;
+    overflow-y: auto;
 }
 
 

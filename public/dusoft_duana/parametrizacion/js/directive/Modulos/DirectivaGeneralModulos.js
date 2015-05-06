@@ -42,12 +42,11 @@ define(["angular", "js/directive"], function(angular, directive) {
                 $(this).trigger('input');
             });
 
-            element.on("blur", ".validar_espacios_opciones", function() {
+            element.on("blur", ".validar_opcion", function() {
 
                 //reemplaza los espacios
-                var valor = $(this).val().replace(/^sw/gi, '');
+                var valor = $(this).val().replace(/^sw_/gi, '').replace(/[^a-z0-9\_ ]/gi, '');
                 valor = "sw_"+valor.replace(/[ ]/gi, '_').toLowerCase();
-                
                 
                 $(this).val(
                     valor

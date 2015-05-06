@@ -77,7 +77,7 @@
             }
 
             .footer{
-                margin-top:20px;
+                /*margin-top:20px;*/
                 width:100%;
             }
 
@@ -135,7 +135,7 @@
                         <th>Nro de Neveras</th>
                         <th>Toma Temperatura</th>
                     </tr>                    
-                    {{for detalle}}
+                    {{for detalle}}                    
                     <tr>
                         <td>{{:prefijo}}-{{:numero}}</td>
                         <td align="center">{{:cantidad_cajas}}</td>
@@ -148,7 +148,7 @@
                             <td colspan="2">
                                 <p>
                                     Se despacha a <b>{{:tercero}} ({{:~count(detalle)}} Remisiones de despacho)</b>
-                                    Con un total de <b>7 Caja(s)</b> y <b>1 Nevera(s)</b>    
+                                    Con un total de <b>{{:~total_cajas(detalle)}} Caja(s)</b> y <b>{{:~total_neveras(detalle)}} Nevera(s)</b>    
                                 </p>
                             </td>
                             <td colspan="2">
@@ -192,7 +192,7 @@
                             <p>
                                 Como mecanismo para definir responsabilidades el TRANSPORTISTA INDEPENDIENTE firmará la presente
                                 planilla entre tanto devuelva la misma con las respectivas firmas de recibido de cada sede donde se entregue la
-                                mercancía. Por lo tanto se le hace entrega de <b>180 Caja(s) 11 Nevera (s)</b>
+                                mercancía. Por lo tanto se le hace entrega de <b>{{:planilla_despacho.total_cajas }} Caja(s) {{:planilla_despacho.total_neveras }} Nevera (s)</b>
                             </p>
                         </td>                            
                     </tr>                                          

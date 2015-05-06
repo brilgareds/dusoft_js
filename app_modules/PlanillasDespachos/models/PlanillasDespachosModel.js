@@ -21,6 +21,8 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function(fecha_in
                 c.municipio as nombre_ciudad,\
                 a.nombre_conductor,\
                 a.observacion,\
+                g.total_cajas,\
+                g.total_neveras,\
                 a.usuario_id,\
                 f.nombre as nombre_usuario,\
                 a.estado,\
@@ -35,6 +37,19 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function(fecha_in
                 inner join tipo_dptos d on c.tipo_dpto_id = d.tipo_dpto_id and c.tipo_pais_id = d.tipo_pais_id\
                 inner join tipo_pais e on d.tipo_pais_id = e.tipo_pais_id\
                 inner join system_usuarios f on a.usuario_id = f.usuario_id\
+                left join (\
+                    select a.planilla_id, sum(a.cantidad_cajas) as total_cajas, sum(a.cantidad_neveras) as total_neveras\
+                    from (\
+                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 1\
+                      from inv_planillas_detalle_farmacias a\
+                      union\
+                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 2\
+                      from inv_planillas_detalle_clientes a\
+                      union \
+                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 3\
+                      from inv_planillas_detalle_empresas a \
+                    ) as a group by 1\
+                  ) as g on a.id = g.planilla_id\
                 where a.fecha_registro between $1 and $2 \
                 and (\
                     a.id ilike $3 or\
@@ -136,6 +151,8 @@ PlanillasDespachosModel.prototype.consultar_planilla_despacho = function(planill
                 c.municipio as nombre_ciudad,\
                 a.nombre_conductor,\
                 a.observacion,\
+                g.total_cajas,\
+                g.total_neveras,\
                 a.usuario_id,\
                 f.nombre as nombre_usuario,\
                 a.estado,\
@@ -150,6 +167,19 @@ PlanillasDespachosModel.prototype.consultar_planilla_despacho = function(planill
                 inner join tipo_dptos d on c.tipo_dpto_id = d.tipo_dpto_id and c.tipo_pais_id = d.tipo_pais_id\
                 inner join tipo_pais e on d.tipo_pais_id = e.tipo_pais_id\
                 inner join system_usuarios f on a.usuario_id = f.usuario_id\
+                left join (\
+                    select a.planilla_id, sum(a.cantidad_cajas) as total_cajas, sum(a.cantidad_neveras) as total_neveras\
+                    from (\
+                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 1\
+                      from inv_planillas_detalle_farmacias a\
+                      union\
+                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 2\
+                      from inv_planillas_detalle_clientes a\
+                      union \
+                      select a.inv_planillas_despacho_id as planilla_id, a.cantidad_cajas, a.cantidad_neveras, 3\
+                      from inv_planillas_detalle_empresas a \
+                    ) as a group by 1\
+                  ) as g on a.id = g.planilla_id\
                 where a.id = $1 ; ";
     
     G.db.query(sql, [planilla_id], function(err, rows, result) {

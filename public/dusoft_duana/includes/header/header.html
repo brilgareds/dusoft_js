@@ -14,11 +14,11 @@
         </div>
         
 
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">            
-            <ul class="nav navbar-nav navbar-right">                  
+        <div class="collapse navbar-collapse" style=" margin-left: 18px; float: right;" id="bs-example-navbar-collapse-1">            
+            <ul class="nav navbar-nav navbar-right" >                  
                 <li class="dropdown">                    
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">                        
-                        <span class="username">Usuario</span>
+                        <span class="username">{{::Usuario.usuario}}</span>
                         <b class="caret"></b>
                         <i class="fa fa-angle-down"></i>
                     </a>
@@ -39,12 +39,12 @@
                                     </div>
                                     <div class="col-md-7">
                                         <span>{{::Usuario.usuario}}</span>
-                                        <p class="text-muted small">
-                                            {{::Usuario.email}}</p>
+                                        
                                         <div class="divider">
                                         </div>
-                                        <a href="#" class="btn btn-primary btn-sm active">Perfil</a>
-                                        <a href="#" ng-click="bloquearPantalla()" class="btn btn-primary btn-sm active">Bloquear</a>
+                                        <p class="text-muted small">{{::Usuario.email}}</p>
+                                        <!--a href="#" class="btn btn-primary btn-sm active">Perfil</a-->
+                                        <!--a href="#" ng-click="bloquearPantalla()" class="btn btn-primary btn-sm active">Bloquear</a-->
                                     </div>
                                 </div>
                             </div>
@@ -52,7 +52,7 @@
                                 <div class="navbar-footer-content">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <a href="#" class="btn btn-default btn-sm">Cambiar Contraseña</a>
+                                            <a href="javascript:void(0)" ng-click="onVerPerfilUsuario()" class="btn btn-default btn-sm" disabled>Perfil</a>
                                         </div>
                                         <div class="col-md-6">
                                             <a href="#" class="btn btn-default btn-sm pull-right" ng-click="cerraSesionBtnClick($event)">Cerrar Sesion</a>
@@ -66,7 +66,7 @@
             </ul>
         </div>
         
-        <div class="btn-group" style="position:absolute; top:0px; right: 90px; padding:9px; " ng-if="Usuario.empresa.getNombre() != ''">    
+        <div class="btn-group" style="float:right; padding-top: 9px" ng-if="Usuario.empresa.getNombre() != ''">    
            <!--ui-select ng-model="Usuario.empresa"
               theme="bootstrap"
              ng-change="onEmpresaSeleccionada()"

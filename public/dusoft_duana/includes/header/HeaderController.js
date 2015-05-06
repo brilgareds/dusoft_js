@@ -59,7 +59,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
 
                 usuario.setNombre(obj.nombre);
                 usuario.setNombreUsuario(obj.usuario);
-                usuario.setEmail(obj_session.email);
+                usuario.setEmail(obj.email);
 
                 var empresa_id = obj_session.empresa_id;
 
@@ -71,7 +71,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 usuario.setEmpresa(empresa);
 
 
-                console.log("ruta de avatar ", usuario.getRutaAvatar());
+                console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  usuario ", usuario ,obj);
                 Usuario.setUsuarioActual(usuario);
 
                 $scope.Usuario = usuario;
@@ -262,6 +262,11 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 }
             };
             
+            
+            $scope.onVerPerfilUsuario = function(){
+                 localStorageService.set("usuarioo_id", $scope.Usuario.getId());
+                 window.location = "../parametrizacion/#/AdministracionUsuarios";
+            };
 
             $scope.onEmpresaSeleccionada = function(empresa) {
                 $scope.Usuario.setEmpresa(empresa);
@@ -377,13 +382,14 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
             //evento de coneccion al socket
             socket.on("onConnected", function(datos) {
                 var socketid = datos.socket_id;
-                var obj_session = {
-                    usuario_id: Usuario.getUsuarioActual().getId(),
-                    auth_token: Usuario.getUsuarioActual().getToken(),
-                    socket_id: socketid
+                var socket_session = {
+                   usuario_id: obj_session.usuario_id,
+                   auth_token: obj_session.auth_token,
+                   socket_id: socketid
                 };
+                
 
-                socket.emit("onActualizarSesion", obj_session);
+                socket.emit("onActualizarSesion", socket_session);
             });
 
             self.traerUsuarioPorId(obj_session.usuario_id, function() {

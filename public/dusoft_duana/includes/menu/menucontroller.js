@@ -8,7 +8,7 @@ define(["angular", "js/controllers", "treemenu"], function(angular, controllers)
                 var self = this;
                 var parent = data.parent.replace( /^\D+/g, '');
                 var url = data.url;
-
+                
                 
                 //se valida si tiene una url
                 if (url !== undefined || (url && url.length > 0)) {

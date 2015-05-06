@@ -7,37 +7,54 @@ define(["angular", "js/directive"], function(angular, directive) {
 
         //cuando la etiqueta esta cargada en el dom
         directive.link = function(scope, element, attrs, ngModel) {
-            
-           /* $(document).on("blur", ".validar_caracteres", function() {
-                    alert("")
-                });*/
+
+            /* $(document).on("blur", ".validar_caracteres", function() {
+             alert("")
+             });*/
 
             element.on("blur", ".validar_caracteres", function() {
                 //no permite los caracteres especiales
                 $(this).val(
                         scope.firstToUpperCase($(this).val().replace(/[^a-z0-9 ]/gi, ''))
-                );
+                        );
 
                 //notifica a angular el cambio
                 $(this).trigger('input');
             });
 
-            element.on("blur",".validar_espacios", function() {
+            element.on("blur", ".validar_espacios", function() {
 
                 $(this).val(scope.camelCase($(this).val()));
 
                 //reemplaza los espacios
                 $(this).val(
-                       scope.firstToUpperCase($(this).val().replace(/[ ]/gi, ''))
-                );
+                        scope.firstToUpperCase($(this).val().replace(/[ ]/gi, ''))
+                        );
 
                 //notifica a angular el cambio
                 $(this).trigger('input');
             });
-            
-            element.on("blur",".camelCase",function(){
+
+            element.on("blur", ".camelCase", function() {
                 $(this).val(scope.camelCase($(this).val()));
 
+                //notifica a angular el cambio
+                $(this).trigger('input');
+            });
+
+            element.on("blur", ".validar_espacios_opciones", function() {
+
+                //reemplaza los espacios
+                var valor = $(this).val().replace(/^sw/gi, '');
+                valor = "sw_"+valor.replace(/[ ]/gi, '_').toLowerCase();
+                
+                
+                $(this).val(
+                    valor
+                );
+                
+                
+                
                 //notifica a angular el cambio
                 $(this).trigger('input');
             });

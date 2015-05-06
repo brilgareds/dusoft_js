@@ -10,148 +10,145 @@
             <![endif]-->
         <title>Planilla Despacho</title>        
         <link rel="stylesheet" href="{{:style}}" />  
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
-            <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,300' rel='stylesheet' type='text/css' />
-            <style>            
 
-                body {
-                    font-family: 'Open Sans', sans-serif;
-                    font-size:10px;
-                    line-height:15px;
-                }
-                .pad-top-botm {
-                    padding-bottom:0px;
-                    padding-top:10px;
-                }
-                h4 {
-                    text-transform:uppercase;
-                }
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,300' rel='stylesheet' type='text/css' />
+        <style>            
 
-                .contact-info span {
-                    /*font-size:10px;*/
-                    padding:0px 50px 0px 50px;
-                }
+            body {
+                font-family: 'Open Sans', sans-serif;
+                font-size:10px;
+                line-height:15px;
+            }
+            .pad-top-botm {
+                padding-bottom:0px;
+                padding-top:10px;
+            }
+            h4 {
+                text-transform:uppercase;
+            }
 
-                .contact-info hr {
-                    margin-top: 0px;
-                    margin-bottom: 0px;
-                }
+            .contact-info span {
+                /*font-size:10px;*/
+                padding:0px 50px 0px 50px;
+            }
 
-                .client-info {
-                    /*font-size:10px;*/
-                }
+            .contact-info hr {
+                margin-top: 0px;
+                margin-bottom: 0px;
+            }
 
-                .footer-info {
-                    font-size:8px;
-                }
+            .client-info {
+                /*font-size:10px;*/
+            }
 
-                .ttl-amts {
-                    text-align:right;
-                    padding-right:50px;
-                }
-                .box {
-                    float: left;
-                    width: 300px;
-                    height: 50px;
-                    /*margin: 1em;*/
-                }
-                table, th, td, tr {
-                    /*border: 1px solid black;*/
-                    border: none;
-                    border-collapse: collapse;
-                }
-                td {
-                    /*font-size: 8px;*/
-                }
-                
-                table.table-border{
-                    border: 1px solid black;
-                }
-                
-                .table-border{
-                    border: 1px solid black;
-                }
-                
-                .table-border td{
-                    border: 1px solid black;
-                }
+            .footer-info {
+                font-size:8px;
+            }
 
-                .footer{
-                    margin-top:120px;
-                    width:100%;
-                }
+            .ttl-amts {
+                text-align:right;
+                padding-right:50px;
+            }
+            .box {
+                float: left;
+                width: 300px;
+                height: 50px;
+                /*margin: 1em;*/
+            }
+            table, th, td, tr {
+                /*border: 1px solid black;*/
+                border: none;
+                border-collapse: collapse;
+            }
+            td {
+                /*font-size: 8px;*/
+            }
 
-                .contenedor-despacho{
-                    background: gray;
-                    color: white;
-                    text-align: right;
-                }
-                
-                .color-placeholder{
-                    color: lightgrey;
-                }
-            </style>
+            table.table-border{
+                border: 1px solid black;
+            }
+
+            .table-border{
+                border: 1px solid black;
+            }
+
+            .table-border td{
+                border: 1px solid black;
+            }
+
+            .footer{
+                /*margin-top:20px;*/
+                width:100%;
+            }
+
+            .contenedor-despacho{
+                background: gray;
+                color: white;
+                text-align: right;
+            }
+
+            .color-placeholder{
+                color: lightgrey;
+            }
+        </style>
     </head>
     <body>
         <div class="container">
             <div  class="row  " style="margin-top: 13px;">
                 <table class="table" width='100%'>                        
                     <tr>
-                        <td class='' style="width: 150px">
+                        <td style="width: 150px">
                             <img src="http://duanaltda.com/images/logo.png" style="padding-bottom:20px;" width="120px" height="50px">
                         </td>
-                        <td class='' colspan="2" align="center"><h3><strong> PLANILLA DE DESPACHOS DE MERCANCÍA </strong></h3> </td>                            
+                        <td  colspan="2" align="center"><h3><strong> PLANILLA DE DESPACHOS DE MERCANCÍA </strong></h3> </td>                            
                     </tr>
                     <tr>
-                        <td class='' style="width: 150px"><b>Transpotador (a):</b></td>
-                        <td class=''>VEHICULO PROPIO (VCL-925) </td>
-                        <td class=''> <b>Guia Nro :</b> M-9678</td>                            
+                        <td  style="width: 150px"><b>Transpotador (a):</b></td>
+                        <td>{{:planilla_despacho.nombre_transportadora }} </td>
+                        <td > <b>Guia Nro :</b> M-{{:planilla_despacho.numero_guia}}</td>                            
                     </tr>
                     <tr>
-                        <td class=''><b>Fecha Salida :</b></td>
-                        <td class=''>04/05/2015</td>
-                        <td class=''></td>                            
+                        <td ><b>Fecha Salida :</b></td>
+                        <td >{{:planilla_despacho.fecha_despacho}}</td>
+                        <td ></td>                            
                     </tr>                        
                 </table>  
 
-
+                {{for documentos_planilla}}
                 <table class="table" width='100%'>                        
                     <tr class="contenedor-despacho">
-                        <td colspan="4"><strong>Ciudad de despacho : </strong> CAICEDONIA </td>
+                        <td colspan="4"><strong>Ciudad de despacho : </strong> {{:tercero}} </td>
                     </tr>
                     <tr>
                         <td style="width: 50%" colspan="2">
-                            <h6><strong>CAICEDONIA</strong></h6>CALLE 6N No. 12 - 47</td>
+                            <h6><strong>{{:tercero}}</strong></h6>CALLE 6N No. 12 - 47</td>
                         <td style="width: 50%" colspan="2" class="table-border">
                             <div class="form-group">
                                 <label class="" for="inputBody">Comentarios del despacho</label>                                
                             </div>
                         </td>
                     </tr>
+
                     <tr>
                         <th>Documento Cruce</th>
                         <th>Nro de Cajas</th>
                         <th>Nro de Neveras</th>
                         <th>Toma Temperatura</th>
                     </tr>                    
+                    {{for detalle}}                    
                     <tr>
-                        <td>EFC-123456</td>
-                        <td>1</td>
-                        <td></td>
-                        <td></td>
-                    </tr>                    
-                    <tr>
-                        <td>EFC-123456</td>
-                        <td></td>
-                        <td>2</td>
-                        <td>3.5</td>
-                    </tr> 
+                        <td>{{:prefijo}}-{{:numero}}</td>
+                        <td align="center">{{:cantidad_cajas}}</td>
+                        <td align="center">{{:cantidad_neveras}}</td>
+                        <td align="center">{{:temperatura_neveras}}</td>
+                    </tr>                                        
+                    {{/for}}
                     <tfoot>
                         <tr>
                             <td colspan="2">
                                 <p>
-                                    Se despacha a <b>CAICEDONIA DUANA (12 Remisiones de despacho)</b>
-                                    Con un total de <b>7 Caja(s)</b> y <b>1 Nevera(s)</b>    
+                                    Se despacha a <b>{{:tercero}} ({{:~count(detalle)}} Remisiones de despacho)</b>
+                                    Con un total de <b>{{:~total_cajas(detalle)}} Caja(s)</b> y <b>{{:~total_neveras(detalle)}} Nevera(s)</b>    
                                 </p>
                             </td>
                             <td colspan="2">
@@ -161,7 +158,7 @@
                                             _______________________________
                                         </td>                        
                                         <td>
-                                           Recibe : 
+                                            Recibe : 
                                         </td>
                                     </tr>
                                     <tr align='center'>
@@ -184,8 +181,10 @@
                                 </table>
                             </td>
                         </tr>
-                    </tfoot>
+                    </tfoot>                    
                 </table>
+                {{/for}}
+
 
                 <table class="table" width='100%'>                        
                     <tr>
@@ -193,7 +192,7 @@
                             <p>
                                 Como mecanismo para definir responsabilidades el TRANSPORTISTA INDEPENDIENTE firmará la presente
                                 planilla entre tanto devuelva la misma con las respectivas firmas de recibido de cada sede donde se entregue la
-                                mercancía. Por lo tanto se le hace entrega de <b>180 Caja(s) 11 Nevera (s)</b>
+                                mercancía. Por lo tanto se le hace entrega de <b>{{:planilla_despacho.total_cajas }} Caja(s) {{:planilla_despacho.total_neveras }} Nevera (s)</b>
                             </p>
                         </td>                            
                     </tr>                                          

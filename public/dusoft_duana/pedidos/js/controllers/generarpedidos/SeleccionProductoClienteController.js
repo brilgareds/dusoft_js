@@ -233,6 +233,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 producto.setEsRegulado(obj.sw_regulado);
                 
+                console.log(">>> Tiene Precio Contrato: ",obj.tiene_precio_contrato);
+                console.log(">>> Tipo Dato Precio Contrato: ",typeof obj.tiene_precio_contrato);
+                
+                producto.setTienePrecioContrato(obj.tiene_precio_contrato);
+                
                 producto.setPrecioRegulado(obj.precio_regulado);
                 
                 producto.setPrecioVentaAnterior(obj.precio_venta_anterior);
@@ -257,7 +262,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     showFilter: true,
                     multiSelect: false,
                     columnDefs: [
-                        {field: 'codigo_producto', displayName: 'Cód. Producto', width: "9%",
+                        {field: 'codigo_producto', displayName: 'Cód. Producto', width: "10%",
                             cellTemplate : '<div class="ngCellText" ng-class="col.colIndex()">\
                                                 <span class="label label-success" ng-show="row.entity.tipo_producto_id == 1" >N</span>\
                                                 <span class="label label-danger" ng-show="row.entity.tipo_producto_id == 2">A</span>\
@@ -278,10 +283,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                                 <span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\
                                             </div>'
                         },
-                        {field: 'precio', displayName: 'Precio Venta', width: "9%",
-                            cellTemplate: ' <div class="col-xs-12">\n\
-                                                <input type="text" ng-disabled = "rootSeleccionProductoCliente.bloqueo_contrato" ng-model="row.entity.precio" validacion-numero class="form-control grid-inline-input"'+
-                                                'ng-keyup=""/>\n\
+                        {field: 'precio', displayName: 'Precio Venta', width: "12%",
+                            cellTemplate: ' <div class="col-xs-12">\
+                                                <span class="label label-info" ng-show="row.entity.getTienePrecioContrato() == true">C</span>\
+                                                <input type="text" ng-disabled = "row.entity.getTienePrecioContrato()" /*"rootSeleccionProductoCliente.bloqueo_contrato"*/ ng-model="row.entity.precio" validacion-numero class="form-control grid-inline-input"'+
+                                                'ng-keyup=""/>\
                                             </div>'},
                         {field: 'existencia', displayName: 'Existencia', width: "6%"},
                         {field: 'disponible', displayName: 'Disponible', width: "6%"},

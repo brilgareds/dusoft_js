@@ -29,6 +29,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.total_con_iva = 0;
             this.estado = 0;
             this.es_regulado = 0;
+            this.tiene_precio_contrato = false;
             
             //propiedades pendientes
             this.existencia_lotes = "";
@@ -141,6 +142,14 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             return this.es_regulado;
         };        
         
+        //this.tiene_precio_contrato
+        ProductoPedido.prototype.setTienePrecioContrato = function(valor) {
+            this.tiene_precio_contrato = valor; // 0: No es regulado, 1: Es regulado
+        };
+        
+        ProductoPedido.prototype.getTienePrecioContrato = function() {
+            return this.tiene_precio_contrato;
+        };  
         
         ProductoPedido.prototype.agregarLote = function(lote) {
             this.lotesSeleccionados.push(lote);

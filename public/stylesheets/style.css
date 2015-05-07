@@ -41,9 +41,16 @@ body{
     background-color: #428bca!important;
 }
 
-.buscadorMenuPrincipal{
-    position:absolute; 
-    right:2px; top:2px;
+.buscadorMenuPrincipal input[type='text']{
+   /* position:absolute; 
+    right:2px; top:2px;*/
+   
+}
+
+.buscadorMenuPrincipal .input-group{
+    width:60%;
+    padding:2px 0px 5px 0px;
+    margin-left:2px;
 }
 
 div{
@@ -66,6 +73,11 @@ div{
     overflow-y: auto;
 }
 
+
+.contenedorEmpresaUsuario{
+    float:right; 
+    padding-top: 9px
+}
 
 html body {
     font: 13px "Lucida Grande", Helvetica, Arial, sans-serif;
@@ -345,7 +357,10 @@ div.ngHeaderCell	{
 
 @media screen and ( max-width: 1700px ) and (min-width: 769px) {
     .contenedormenu .botonmenu{
-        display: inline;
+        position:absolute;
+        top:2px;
+        right: 0px;
+        display:inline;
     }
 
     div.contenedormenu {
@@ -383,6 +398,7 @@ div.ngHeaderCell	{
     div.contenidoPrincipal{
         width: 100%;
     }
+    
 }
 
 
@@ -391,6 +407,12 @@ div.ngHeaderCell	{
 @media (max-width: 769px) {
     .btn-accion{
         width: 100%;
+    }
+    
+    div.contenedorEmpresaUsuario{
+        position:absolute; 
+        top:0px;
+        right:90px;
     }
 
 }

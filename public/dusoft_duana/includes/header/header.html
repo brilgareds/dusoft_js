@@ -28,7 +28,7 @@
                         <li><a href="#"><i class="fa fa-lock"></i> Lock Screen</a></li>
                         <li><a href="#"><i class="fa fa-key"></i>Cerrar Sesion</a></li-->
                         <li>
-                            <div class="navbar-content">
+                            <div class="navbar-content" style="background-color: white;">
                                 <div class="row">
                                     <div class="col-md-5">
                                        
@@ -49,14 +49,12 @@
                                 </div>
                             </div>
                             <div class="navbar-footer">
-                                <div class="navbar-footer-content">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <a href="javascript:void(0)" ng-click="onVerPerfilUsuario()" class="btn btn-default btn-sm" disabled>Perfil</a>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <a href="#" class="btn btn-default btn-sm pull-right" ng-click="cerraSesionBtnClick($event)">Cerrar Sesion</a>
-                                        </div>
+                                <div class="navbar-footer-content" style="clear:both; height: 60px;">
+                                    <div class="pull-left">
+                                        <a href="javascript:void(0)" ng-click="onVerPerfilUsuario()" class="btn btn-default btn-sm" disabled>Perfil</a>
+                                    </div>
+                                    <div class="pull-rightl">
+                                        <a href="#" class="btn btn-default btn-sm pull-right" ng-click="cerraSesionBtnClick($event)">Cerrar Sesion</a>
                                     </div>
                                 </div>
                             </div>
@@ -66,7 +64,7 @@
             </ul>
         </div>
         
-        <div class="btn-group" style="float:right; padding-top: 9px" ng-if="Usuario.empresa.getNombre() != ''">    
+        <div class="btn-group contenedorEmpresaUsuario" ng-if="Usuario.empresa.getNombre() != ''">    
            <!--ui-select ng-model="Usuario.empresa"
               theme="bootstrap"
              ng-change="onEmpresaSeleccionada()"

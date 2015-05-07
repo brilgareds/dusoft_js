@@ -124,7 +124,7 @@
                                     <button class="btn btn-default" ng-click="cancelar_planilla_despacho()">
                                         <span class="glyphicon glyphicon-remove" ></span> Cancelar
                                     </button>
-                                    <button class="btn btn-default" ng-click="descargar_enviar_reporte()">
+                                    <button class="btn btn-default" ng-disabled="planilla.get_estado()=='0' || planilla.get_estado()=='1' || planilla.get_documentos().length === 0" ng-click="descargar_enviar_reporte()">
                                         <span class="glyphicon glyphicon-cog" ></span> Generar reporte
                                     </button>
                                     <button class="btn btn-default" ng-disabled="planilla.get_estado()=='2' || planilla.get_documentos().length === 0" ng-click="confirmar_despacho_planilla()">

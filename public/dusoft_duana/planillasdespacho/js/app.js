@@ -35,7 +35,8 @@ define([
     "controllers/generarplanilladespacho/ListarPlanillasController",
     "controllers/generarplanilladespacho/GestionarPlanillasController",
     "controllers/generarplanilladespacho/GestionarDocumentosBodegaController",
-    "includes/helpersdirectives/visualizarReporte"
+    "includes/helpersdirectives/visualizarReporte",
+    "includes/validation/NgValidateEvents"
 ], function(angular) {
 
     /* App Module and its dependencies */

@@ -174,6 +174,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var transportadora = Transportadora.get(datos.transportadora_id, datos.nombre_transportadora, datos.placa_vehiculo, datos.estado_transportadora);
                 var usuario = UsuarioPlanilla.get(datos.usuario_id, datos.nombre_usuario);
                 $scope.planilla = PlanillaDespacho.get(datos.id, transportadora, ciudad, datos.nombre_conductor, datos.observacion, usuario, datos.fecha_registro, datos.fecha_despacho, datos.estado, datos.descripcion_estado);
+                $scope.planilla.set_cantidad_cajas(datos.total_cajas);
+                $scope.planilla.set_cantidad_neveras(datos.total_neveras);
             };
 
             $scope.consultar_documentos_planilla_despacho = function() {
@@ -383,7 +385,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             $scope.generar_reporte($scope.planilla, true);
                             $modalInstance.close();
                         };
-                        
+
                         $scope.enviar_reporte_pdf_email = function() {
                             $scope.ventana_enviar_email($scope.planilla);
                             $modalInstance.close();
@@ -396,8 +398,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 };
                 var modalInstance = $modal.open($scope.opts);
             };
-            
-           
+
+
 
             $scope.cancelar_planilla_despacho = function() {
 
@@ -409,6 +411,23 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 data: 'planilla.get_documentos()',
                 enableColumnResize: true,
                 enableRowSelection: false,
+                showFooter: true,
+                footerTemplate: '<div class="row col-md-12">\
+                                    <div class="col-md-3 pull-right">\
+                                        <table class="table table-clear">\
+                                            <tbody>\
+                                                <tr>\
+                                                    <td class="left"><strong>Total Cajas</strong></td>\
+                                                    <td class="right">{{ planilla.get_cantidad_cajas() }}</td>    \
+                                                </tr>\
+                                                <tr>\
+                                                    <td class="left"><strong>Total Neveras</strong></td>\
+                                                    <td class="right">{{ planilla.get_cantidad_neveras() }}</td>                                        \
+                                                </tr>\
+                                            </tbody>\
+                                        </table>\
+                                    </div>\
+                                 </div>',
                 columnDefs: [
                     {field: 'get_tercero()', displayName: 'Cliente', width: "35%"},
                     {field: 'get_descripcion()', displayName: 'Documento', width: "25%"},

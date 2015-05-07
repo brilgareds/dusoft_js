@@ -73,33 +73,29 @@ Modulos.prototype.guardarModulo = function(req, res) {
 
     var modulo = args.parametrizacion_modulos.modulo;
 
-    __validarCreacionModulo(that, modulo, function(validacion) {
+    modulo.usuario_id = req.session.user.usuario_id;
+    modulo.usuario_id_modifica = req.session.user.usuario_id;
 
-        if (!validacion.valido) {
-            res.send(G.utils.r(req.url, validacion.msj, 403, {parametrizacion_modulos: {}}));
+    that.m_modulo.guardarModulo(modulo, function(err, rows) {
+        if (err) {
+            
+            var msj = "Error guardando el modulo";
+            
+            if(err.msj){
+                msj = err.msj;
+            }
+            
+            console.log("error guardando modulo ", err);
+            res.send(G.utils.r(req.url, msj, 500, {parametrizacion_modulo: {}}));
             return;
         }
 
-        modulo.usuario_id = req.session.user.usuario_id;
-        modulo.usuario_id_modifica = req.session.user.usuario_id;
+        if (rows.length > 0 && rows[0].id) {
+            modulo.id = rows[0].id;
+        }
 
-        console.log("modulo a crear ", modulo);
-
-
-        that.m_modulo.guardarModulo(modulo, function(err, rows) {
-            if (err) {
-                console.log("error guardando modulo ", err);
-                res.send(G.utils.r(req.url, 'Error guardando el modulo', 500, {parametrizacion_modulo: {}}));
-                return;
-            }
-
-            if (rows.length > 0 && rows[0].id) {
-                modulo.id = rows[0].id;
-            }
-
-            console.log("modulo a regresar ", modulo);
-            res.send(G.utils.r(req.url, "Modulo creado con exito", 200, {parametrizacion_modulo: {modulo: modulo}}));
-        });
+        console.log("modulo a regresar ", modulo);
+        res.send(G.utils.r(req.url, "Modulo creado con exito", 200, {parametrizacion_modulo: {modulo: modulo}}));
     });
 };
 
@@ -110,30 +106,29 @@ Modulos.prototype.guardarOpcion = function(req, res) {
 
     var opcion = args.parametrizacion_modulos.opcion;
 
-    __validarCreacionOpcion(that, opcion, function(validacion) {
+    opcion.usuario_id = req.session.user.usuario_id;
+    opcion.usuario_id_modifica = req.session.user.usuario_id;
 
-        if (!validacion.valido) {
-            res.send(G.utils.r(req.url, validacion.msj, 403, {parametrizacion_modulos: {}}));
+    that.m_modulo.guardarOpcion(opcion, function(err, rows) {
+        if (err) {
+            
+            var msj = "Error guardando la opcion";
+            
+            if(err.msj){
+                msj = err.msj;
+            }
+            
+            console.log("error guardando opcion ", err);
+            res.send(G.utils.r(req.url, msj, 500, {parametrizacion_modulo: {}}));
             return;
         }
 
-        opcion.usuario_id = req.session.user.usuario_id;
-        opcion.usuario_id_modifica = req.session.user.usuario_id;
+        if (rows.length > 0 && rows[0].id) {
+            opcion.id = rows[0].id;
+        }
 
-        that.m_modulo.guardarOpcion(opcion, function(err, rows) {
-            if (err) {
-                console.log("error guardando opcion ", err);
-                res.send(G.utils.r(req.url, 'Error guardando la opcion', 500, {parametrizacion_modulo: {}}));
-                return;
-            }
-
-            if (rows.length > 0 && rows[0].id) {
-                opcion.id = rows[0].id;
-            }
-
-            console.log("opcion a regresar ", opcion);
-            res.send(G.utils.r(req.url, "Opcion guardada con exito", 200, {parametrizacion_modulo: {opcion: opcion}}));
-        });
+        console.log("opcion a regresar ", opcion);
+        res.send(G.utils.r(req.url, "Opcion guardada con exito", 200, {parametrizacion_modulo: {opcion: opcion}}));
     });
 };
 
@@ -155,29 +150,29 @@ Modulos.prototype.guardarVariable = function(req, res) {
     
     variable.modulo_id = modulo_id;
 
-    __validarCreacionVariable(that, variable, function(validacion) {
 
-        if (!validacion.valido) {
-            res.send(G.utils.r(req.url, validacion.msj, 403, {parametrizacion_modulos: {}}));
+    variable.usuario_id = req.session.user.usuario_id;
+    variable.usuario_id_modifica = req.session.user.usuario_id;
+
+    that.m_modulo.guardarVariable(variable, function(err, rows) {
+        
+        if (err) {
+            var msj = "Error guardando la variable";
+     
+            if(err.msj){
+                msj = err.msj;
+            }
+            
+            console.log("error guardando variable ", err);
+            res.send(G.utils.r(req.url, msj, 500, {parametrizacion_modulo: {}}));
             return;
         }
 
-        variable.usuario_id = req.session.user.usuario_id;
-        variable.usuario_id_modifica = req.session.user.usuario_id;
+        if (rows.length > 0 && rows[0].id) {
+            variable.id = rows[0].id;
+        }
 
-        that.m_modulo.guardarVariable(variable, function(err, rows) {
-            if (err) {
-                console.log("error guardando opcion ", err);
-                res.send(G.utils.r(req.url, 'Error guardando la variable', 500, {parametrizacion_modulo: {}}));
-                return;
-            }
-
-            if (rows.length > 0 && rows[0].id) {
-                variable.id = rows[0].id;
-            }
-
-            res.send(G.utils.r(req.url, "Variable guardada con exito", 200, {parametrizacion_modulo: {variable: variable}}));
-        });
+        res.send(G.utils.r(req.url, "Variable guardada con exito", 200, {parametrizacion_modulo: {variable: variable}}));
     });
 };
 
@@ -351,153 +346,6 @@ Modulos.prototype.listarRolesPorModulo = function(req, res) {
     });
 };
 
-
-function __validarCreacionModulo(that, modulo, callback) {
-    var validacion = {
-        valido: true,
-        msj: ""
-    };
-
-    if (modulo.parent && modulo.parent.length === '') {
-        validacion.valido = false;
-        validacion.msj = "El modulo debe tener un modulo padre valido";
-        callback(validacion);
-        return;
-    }
-
-    if (modulo.nombre === undefined || modulo.nombre.length === 0) {
-        validacion.valido = false;
-        validacion.msj = "El modulo debe tener un nombre";
-        callback(validacion);
-        return;
-    }
-
-    if (modulo.state === undefined) {
-        validacion.valido = false;
-        validacion.msj = "El modulo debe tener un estado";
-        callback(validacion);
-        return;
-    }
-
-    if (modulo.observacion === undefined || modulo.observacion.length === 0) {
-        validacion.valido = false;
-        validacion.msj = "El modulo debe tener una descripcion";
-        callback(validacion);
-        return;
-    }
-
-    //trae los modulos que hagan match con las primeras letras del nombre o la url
-    that.m_modulo.obtenerModuloPorNombreOUrl(modulo.nombre.substring(0, 4), modulo.state.substring(0, 4), function(err, rows) {
-        if (err) {
-            validacion.valido = false;
-            validacion.msj = "Ha ocurrido un error validando el modulo";
-            callback(validacion);
-            return;
-        }
-
-
-        var nombre_modulo = modulo.nombre.toLowerCase().replace(/ /g, "");
-        var nombre_url = modulo.state.toLowerCase().replace(/ /g, "");
-
-        //determina si el nombre del modulo ya esta en uso, insensible a mayusculas o espacios
-        for (var i in rows) {
-
-            if (modulo.modulo_id !== rows[i].id) {
-
-                var _nombre_modulo = rows[i].nombre.toLowerCase().replace(/ /g, "");
-                var _nombre_url = rows[i].state.toLowerCase().replace(/ /g, "");
-
-                if (nombre_modulo === _nombre_modulo) {
-                    validacion.valido = false;
-                    validacion.msj = "El nombre del modulo no esta disponible";
-                    callback(validacion);
-                    return;
-                }
-
-                /*if (nombre_url === _nombre_url) {
-                    validacion.valido = false;
-                    validacion.msj = "El url del modulo no esta disponible";
-                    callback(validacion);
-                    return;
-                }*/
-            }
-
-        }
-
-        callback(validacion);
-
-
-    });
-
-}
-;
-
-
-function __validarCreacionVariable(that, variable, callback) {
-    var validacion = {
-        valido: true,
-        msj: ""
-    };
-
-
-    if (variable.nombre === undefined || variable.nombre.length === 0) {
-        validacion.valido = false;
-        validacion.msj = "La variable debe tener un nombre";
-        callback(validacion);
-        return;
-    }
-
-    if (variable.valor === undefined) {
-        validacion.valido = false;
-        validacion.msj = "La variable debe tener un valor";
-        callback(validacion);
-        return;
-    }
-    
-    if (variable.observacion === undefined) {
-        validacion.valido = false;
-        validacion.msj = "La variable debe tener una observacion";
-        callback(validacion);
-        return;
-    }
-
-    //trae las variable que hagan match con las primeras letras del nombre
-    that.m_modulo.obtenerVariablePorNombre(variable.nombre.substring(0, 4), function(err, rows) {
-        if (err) {
-            validacion.valido = false;
-            validacion.msj = "Ha ocurrido un error validando la variable";
-            callback(validacion);
-            return;
-        }
-
-
-        var nombre_variable = variable.nombre.toLowerCase().replace(/ /g, "");
-        // var alias = variable.alias.toLowerCase().replace(/ /g, "");
-
-        //determina si el nombre de la variable ya esta en uso, insensible a mayusculas o espacios
-        for (var i in rows) {
-
-            if (variable.id !== rows[i].id) {
-
-                var _nombre_variable = rows[i].nombre.toLowerCase().replace(/ /g, "");
-
-                if (nombre_variable === _nombre_variable) {
-                    validacion.valido = false;
-                    validacion.msj = "El nombre de la variable no esta disponible";
-                    callback(validacion);
-                    return;
-                }
-            }
-
-        }
-
-        callback(validacion);
-
-
-    });
-
-}
-;
 
 Modulos.$inject = ["m_modulo"];
 

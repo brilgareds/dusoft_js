@@ -123,3 +123,8 @@
 .navbar-custom .navbar-link:hover {
   color: #c0c0c0;
 }
+
+.panelContainer{
+    margin:48px 30px 30px 30px;
+    height: 100%
+}

@@ -15,13 +15,13 @@
     "fs-extra": "~0.12.0",
     "intravenous": "latest",
     "jade": "*",
-    "jsreport": "^0.2.1",
     "node-xlsx": "~0.5.1",
     "nodemailer": "0.6.1",
     "pg": "2.x",
     "pg-query": "0.x",
     "socket.io": "~0.9.16",
     "socket.io-client": "~0.9.16",
-    "accounting": "~0.4.1"
+    "accounting": "~0.4.1",
+    "jsreport": "0.2.1"
   }
 }

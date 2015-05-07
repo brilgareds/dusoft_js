@@ -4,19 +4,19 @@ var ModuloModel = function() {
 
 
 ModuloModel.prototype.listar_modulos = function(termino, callback) {
-    
+
     var parametros = [];
     var sql_aux = "";
-    
-    
-    if(termino.length > 0){
-        parametros = ["%"+termino+"%"];
+
+
+    if (termino.length > 0) {
+        parametros = ["%" + termino + "%"];
         sql_aux = " WHERE nombre ILIKE $1 ";
     }
-    
-    console.log("buscando termino "+sql_aux, parametros, termino);
 
-    var sql = "SELECT * FROM modulos "+sql_aux+" ORDER BY id ASC ";
+    console.log("buscando termino " + sql_aux, parametros, termino);
+
+    var sql = "SELECT * FROM modulos " + sql_aux + " ORDER BY id ASC ";
 
     G.db.query(sql, parametros, function(err, rows, result) {
         callback(err, rows);
@@ -24,8 +24,8 @@ ModuloModel.prototype.listar_modulos = function(termino, callback) {
 };
 
 ModuloModel.prototype.obtenerCantidadModulos = function(callback) {
-    
-    var sql = "SELECT COUNT(*) AS total FROM modulos WHERE id = '1'";
+
+    var sql = "SELECT COUNT(*) AS total FROM modulos";
 
     G.db.query(sql, [], function(err, rows, result) {
         callback(err, rows);
@@ -46,22 +46,38 @@ ModuloModel.prototype.obtenerModulosPorId = function(ids, callback) {
 ModuloModel.prototype.guardarModulo = function(modulo, callback) {
     var self = this;
 
-    if (modulo.modulo_id && modulo.modulo_id !== 0) {
-        self.modificarModulo(modulo, function(err, rows) {
-            callback(err, rows);
-        });
-    } else {
-        self.insertarModulo(modulo, function(err, rows) {
-            callback(err, rows);
-        });
-    }
+    __validarCreacionModulo(self, modulo, function(validacion) {
+        if (!validacion.valido) {
+            var err = {msj: validacion.msj};
+            callback(err);
+            return;
+        }
+
+        if (modulo.modulo_id && modulo.modulo_id !== 0) {
+            self.modificarModulo(modulo, function(err, rows) {
+                callback(err, rows);
+            });
+        } else {
+            self.insertarModulo(modulo, function(err, rows) {
+                callback(err, rows);
+            });
+        }
+    });
+
 };
 
 
 ModuloModel.prototype.insertarModulo = function(modulo, callback) {
 
-    var sql = "INSERT INTO modulos (parent, nombre, url, parent_name, icon, state, observacion, usuario_id,\
-               fecha_creacion, estado, carpeta_raiz) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id";
+    //ajuste necesario debido al archivo de setup utilizado por el super admin
+    var modulo_id = "nextval('modulos_id_seq'::regclass)";
+
+    if (modulo.modulo_id) {
+        modulo_id = modulo.modulo_id;
+    }
+
+    var sql = "INSERT INTO modulos (id, parent, nombre, url, parent_name, icon, state, observacion, usuario_id,\
+               fecha_creacion, estado, carpeta_raiz) VALUES (" + modulo_id + ", $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id";
 
 
     var params = [
@@ -150,15 +166,25 @@ ModuloModel.prototype.obtenerModuloPorNombreOUrl = function(nombre, url, callbac
 ModuloModel.prototype.guardarOpcion = function(opcion, callback) {
     var self = this;
 
-    if (opcion.id && opcion.id !== 0) {
-        self.modificarOpcion(opcion, function(err, rows) {
-            callback(err, rows);
-        });
-    } else {
-        self.insertarOpcion(opcion, function(err, rows) {
-            callback(err, rows);
-        });
-    }
+
+    __validarCreacionOpcion(self, opcion, function(validacion) {
+        if (!validacion.valido) {
+            var err = {msj: validacion.msj};
+            callback(err);
+            return;
+        }
+
+        if (opcion.id && opcion.id !== 0) {
+            self.modificarOpcion(opcion, function(err, rows) {
+                callback(err, rows);
+            });
+        } else {
+            self.insertarOpcion(opcion, function(err, rows) {
+                callback(err, rows);
+            });
+        }
+    });
+
 };
 
 
@@ -208,8 +234,27 @@ ModuloModel.prototype.obtenerOpcionPorNombre = function(nombre, callback) {
 ModuloModel.prototype.guardarVariable = function(variable, callback) {
     var self = this;
 
-    self.modificarVariable(variable, function(err, rows) {
-        callback(err, rows);
+    __validarCreacionVariable(self, variable, function(validacion) {
+        if (!validacion.valido) {
+            var err = {msj: validacion.msj};
+            callback(err);
+            return;
+        }
+
+        self.modificarVariable(variable, function(err, rows, result) {
+            if (err) {
+                callback(err, rows);
+                return;
+            }
+
+            if (result.rowCount === 0) {
+                self.insertarVariable(variable, function(err, rows) {
+                    callback(err, rows);
+                });
+            } else {
+                callback(err, rows);
+            }
+        });
     });
 
 };
@@ -244,21 +289,7 @@ ModuloModel.prototype.modificarVariable = function(variable, callback) {
     ];
 
     G.db.query(sql, params, function(err, rows, result) {
-        
-        if(err){
-            callback(err, rows);
-            return;
-        }
-        
-        if(result.rowCount === 0){
-            self.insertarVariable(variable, function(err, rows) {
-                callback(err, rows);
-            });
-        } else {
-            callback(err, rows);
-        }
-        
-        
+        callback(err, rows, result);
     });
 };
 
@@ -382,7 +413,7 @@ ModuloModel.prototype.obtenerModulosHijos = function(modulo_id, callback) {
 };
 
 
-ModuloModel.prototype.listarRolesPorModulo = function(modulo_id, empresa_id, callback){
+ModuloModel.prototype.listarRolesPorModulo = function(modulo_id, empresa_id, callback) {
     var sql = " SELECT a. *, b.id_rol_modulo, b.estado_rol_modulo FROM roles a\
                 INNER JOIN (\
                     SELECT bb.rol_id, bb.id as id_rol_modulo, bb.estado as estado_rol_modulo, aa.empresa_id FROM modulos_empresas aa\
@@ -390,11 +421,232 @@ ModuloModel.prototype.listarRolesPorModulo = function(modulo_id, empresa_id, cal
                     WHERE  aa.modulo_id = $1 AND aa.empresa_id = $2\
                 ) AS b ON  b.rol_id = a.id\
                 WHERE a.empresa_id = $2 AND a.estado = '1'";
-    
+
     G.db.query(sql, [modulo_id, empresa_id], function(err, rows, result) {
         callback(err, rows);
     });
 };
+
+
+function __validarCreacionModulo(that, modulo, callback) {
+    var validacion = {
+        valido: true,
+        msj: ""
+    };
+
+    if (modulo.parent && modulo.parent.length === '') {
+        validacion.valido = false;
+        validacion.msj = "El modulo debe tener un modulo padre valido";
+        callback(validacion);
+        return;
+    }
+
+    if (modulo.nombre === undefined || modulo.nombre.length === 0) {
+        validacion.valido = false;
+        validacion.msj = "El modulo debe tener un nombre";
+        callback(validacion);
+        return;
+    }
+
+    if (modulo.state === undefined) {
+        validacion.valido = false;
+        validacion.msj = "El modulo debe tener un estado";
+        callback(validacion);
+        return;
+    }
+
+    if (modulo.observacion === undefined || modulo.observacion.length === 0) {
+        validacion.valido = false;
+        validacion.msj = "El modulo debe tener una descripcion";
+        callback(validacion);
+        return;
+    }
+
+    //trae los modulos que hagan match con las primeras letras del nombre o la url
+    that.obtenerModuloPorNombreOUrl(modulo.nombre.substring(0, 4), modulo.state.substring(0, 4), function(err, rows) {
+        if (err) {
+            validacion.valido = false;
+            validacion.msj = "Ha ocurrido un error validando el modulo";
+            callback(validacion);
+            return;
+        }
+
+
+        var nombre_modulo = modulo.nombre.toLowerCase().replace(/ /g, "");
+        var nombre_url = modulo.state.toLowerCase().replace(/ /g, "");
+
+        //determina si el nombre del modulo ya esta en uso, insensible a mayusculas o espacios
+        for (var i in rows) {
+
+            if (modulo.modulo_id !== rows[i].id) {
+
+                var _nombre_modulo = rows[i].nombre.toLowerCase().replace(/ /g, "");
+                var _nombre_url = rows[i].state.toLowerCase().replace(/ /g, "");
+
+                if (nombre_modulo === _nombre_modulo) {
+                    validacion.valido = false;
+                    validacion.msj = "El nombre del modulo no esta disponible";
+                    callback(validacion);
+                    return;
+                }
+
+                /*if (nombre_url === _nombre_url) {
+                 validacion.valido = false;
+                 validacion.msj = "El url del modulo no esta disponible";
+                 callback(validacion);
+                 return;
+                 }*/
+            }
+
+        }
+
+        callback(validacion);
+
+
+    });
+
+}
+;
+
+
+function __validarCreacionOpcion(that, opcion, callback) {
+    var validacion = {
+        valido: true,
+        msj: ""
+    };
+
+    if (opcion.rol_id && opcion.rol_id.length === '') {
+        validacion.valido = false;
+        validacion.msj = "La opcion debe tener un rol asignado";
+        callback(validacion);
+        return;
+    }
+
+    if (opcion.nombre === undefined || opcion.nombre.length === 0) {
+        validacion.valido = false;
+        validacion.msj = "La opcion debe tener un nombre";
+        callback(validacion);
+        return;
+    }
+
+    if (opcion.alias === undefined) {
+        validacion.valido = false;
+        validacion.msj = "La opcion debe tener un alias";
+        callback(validacion);
+        return;
+    }
+
+    //trae las opcion que hagan match con las primeras letras del nombre o el alias
+    that.obtenerOpcionPorNombre(opcion.nombre.substring(0, 4), function(err, rows) {
+        if (err) {
+            validacion.valido = false;
+            validacion.msj = "Ha ocurrido un error validando la opcion";
+            callback(validacion);
+            return;
+        }
+
+
+        var nombre_opcion = opcion.nombre.toLowerCase().replace(/ /g, "");
+        // var alias = opcion.alias.toLowerCase().replace(/ /g, "");
+
+        //determina si el nombre de la opcion ya esta en uso, insensible a mayusculas o espacios
+        for (var i in rows) {
+
+            if (opcion.id !== rows[i].id) {
+
+                var _nombre_opcion = rows[i].nombre.toLowerCase().replace(/ /g, "");
+                var _alias = rows[i].alias.toLowerCase().replace(/ /g, "");
+
+                if (nombre_opcion === _nombre_opcion) {
+                    validacion.valido = false;
+                    validacion.msj = "El nombre de la opcion no esta disponible";
+                    callback(validacion);
+                    return;
+                }
+
+                /* if (alias === _alias) {
+                 validacion.valido = false;
+                 validacion.msj = "El alias de la opcion no esta disponible";
+                 callback(validacion);
+                 return;
+                 }*/
+            }
+
+        }
+
+        callback(validacion);
+
+
+    });
+
+}
+;
+
+function __validarCreacionVariable(that, variable, callback) {
+    var validacion = {
+        valido: true,
+        msj: ""
+    };
+
+
+    if (variable.nombre === undefined || variable.nombre.length === 0) {
+        validacion.valido = false;
+        validacion.msj = "La variable debe tener un nombre";
+        callback(validacion);
+        return;
+    }
+
+    if (variable.valor === undefined) {
+        validacion.valido = false;
+        validacion.msj = "La variable debe tener un valor";
+        callback(validacion);
+        return;
+    }
+
+    if (variable.observacion === undefined) {
+        validacion.valido = false;
+        validacion.msj = "La variable debe tener una observacion";
+        callback(validacion);
+        return;
+    }
+
+    //trae las variable que hagan match con las primeras letras del nombre
+    that.obtenerVariablePorNombre(variable.nombre.substring(0, 4), function(err, rows) {
+        if (err) {
+            validacion.valido = false;
+            validacion.msj = "Ha ocurrido un error validando la variable";
+            callback(validacion);
+            return;
+        }
+
+
+        var nombre_variable = variable.nombre.toLowerCase().replace(/ /g, "");
+        // var alias = variable.alias.toLowerCase().replace(/ /g, "");
+
+        //determina si el nombre de la variable ya esta en uso, insensible a mayusculas o espacios
+        for (var i in rows) {
+
+            if (variable.id !== rows[i].id) {
+
+                var _nombre_variable = rows[i].nombre.toLowerCase().replace(/ /g, "");
+
+                if (nombre_variable === _nombre_variable) {
+                    validacion.valido = false;
+                    validacion.msj = "El nombre de la variable no esta disponible";
+                    callback(validacion);
+                    return;
+                }
+            }
+
+        }
+
+        callback(validacion);
+
+
+    });
+
+}
+;
 
 //funcion recursiva para actualizar listado de empresas_modulos
 function __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, ids, callback) {
@@ -431,7 +683,7 @@ function __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, ids, ca
 
                         //se agrega el id del rol_modulo creado
                         if (rows.length > 0 && rows[0].id) {
-                            ids.push({modulos_empresas_id: rows[0].id, modulo_id: modulo_id, empresa_id:empresa_id});
+                            ids.push({modulos_empresas_id: rows[0].id, modulo_id: modulo_id, empresa_id: empresa_id});
                         }
 
                         __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, ids, callback);
@@ -442,7 +694,7 @@ function __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, ids, ca
                 empresas_modulos.splice(0, 1);
 
                 if (rows.length > 0 && rows[0].id) {
-                    ids.push({modulos_empresas_id: rows[0].id, modulo_id: modulo_id, empresa_id:empresa_id});
+                    ids.push({modulos_empresas_id: rows[0].id, modulo_id: modulo_id, empresa_id: empresa_id});
                 }
                 __habilitarModuloEnEmpresas(that, usuario_id, empresas_modulos, ids, callback);
             }

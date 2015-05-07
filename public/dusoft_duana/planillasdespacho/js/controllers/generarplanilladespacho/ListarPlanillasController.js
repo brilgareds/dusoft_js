@@ -83,6 +83,8 @@ define(["angular", "js/controllers",
                     var transportadora = Transportadora.get(data.transportadora_id, data.nombre_transportadora, data.placa_vehiculo, data.estado_transportadora);
                     var usuario = UsuarioPlanilla.get(data.usuario_id, data.nombre_usuario);
                     var planilla = PlanillaDespacho.get(data.id, transportadora, ciudad, data.nombre_conductor, data.observacion, usuario, data.fecha_registro, data.fecha_despacho, data.estado, data.descripcion_estado);
+                    planilla.set_cantidad_cajas(data.total_cajas);
+                    planilla.set_cantidad_neveras(data.total_neveras);
                     $scope.Empresa.set_planillas(planilla);
                 });
             };

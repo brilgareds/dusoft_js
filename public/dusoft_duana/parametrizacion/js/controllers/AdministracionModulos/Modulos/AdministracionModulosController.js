@@ -56,9 +56,9 @@ define([
                                       <button  class="btn btn-default btn-xs" ng-click="onEditarVariable(row.entity)">\
                                         <span class="glyphicon glyphicon-zoom-in"></span>\
                                       </button>\
-                                      <button  class="btn btn-default btn-xs" ng-click="onBorrarVariable(row.entity)">\
+                                      <!--button  class="btn btn-default btn-xs" ng-click="onBorrarVariable(row.entity)">\
                                         <span class="glyphicon glyphicon-remove"></span>\
-                                      </button>\
+                                      </button-->\
                                       <input-check ng-if="rootOpciones.opciones.seleccionar" ng-disabled="!row.entity.estado"  ng-model="row.entity.seleccionado"  ng-change="onSeleccionarOpcion(row.entity)">\
                                    </div>'
                     }

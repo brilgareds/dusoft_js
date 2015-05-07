@@ -2,7 +2,7 @@ define(["angular", "js/controllers", "treemenu"], function(angular, controllers)
 
     controllers.controller('menucontroller', ['$scope', '$rootScope', "$state", "Request","Usuario",
         function($scope, $rootScope, $state,Request, Usuario) {
-
+            
             $scope.$on("nodeSelected", function(e, data) {
                 
                 var self = this;
@@ -53,7 +53,8 @@ define(["angular", "js/controllers", "treemenu"], function(angular, controllers)
             
             $rootScope.$on("modulosUsuario", function(e){
                 console.log("modulos del sistema >>>>>>>>>>>>>",Usuario.getUsuarioActual().getModulos());
-                $scope.treedata = Usuario.getUsuarioActual().getModulos();
+                $scope.Usuario = Usuario.getUsuarioActual();
+                $scope.treedata = $scope.Usuario.getModulos();
                 $rootScope.$emit("inicializarDatosArbol");
             });
             

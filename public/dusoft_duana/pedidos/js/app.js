@@ -103,12 +103,12 @@
               .state('AuditarPedidos', {
                   url: "/AuditarPedidos",
                   text:"Auditar Pedidos",
-                  templateUrl: "views/auditoriapedidos/AuditoriaPedidos.html",
+                  templateUrl: "views/auditoriapedidos/AuditoriaPedidos.html"
                 })
               .state('PedidosClientes', {
                   url: "/PedidosClientes",
                   text:"Pedidos Clientes",
-                  templateUrl: "views/generarpedidos/pedidosclientes.html",
+                  templateUrl: "views/generarpedidos/pedidosclientes.html"
                 })
               .state('CotizacionCliente', {
                   url: "/CotizacionCliente",

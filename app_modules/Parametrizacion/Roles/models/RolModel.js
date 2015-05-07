@@ -66,15 +66,31 @@ RolModel.prototype.obtenerModulosPorRolYEmpresa = function(rol_id, empresa_id, c
 RolModel.prototype.guardarRol = function(rol, callback) {
     var self = this;
 
-    if (rol.id && rol.id !== 0) {
-        self.modificarRol(rol, function(err, rows) {
-            callback(err, rows);
+    __validarCreacionRol(self, rol, function(validacion) {
+        if (!validacion.valido) {
+            var err = {msj : validacion.msj};
+            callback(err);
+            return;
+        }
+
+        self.modificarRol(rol, function(err, rows, result) {
+            
+            if(err){
+                callback(err);
+                return;
+            }
+        
+            if(result.rowCount === 0){
+                self.insertarRol(rol, function(err, rows) {
+                    callback(err, rows);
+                });
+            } else {
+                callback(err, rows);
+            }
         });
-    } else {
-        self.insertarRol(rol, function(err, rows) {
-            callback(err, rows);
-        });
-    }
+
+    });
+
 };
 
 
@@ -106,7 +122,7 @@ RolModel.prototype.modificarRol = function(rol, callback) {
     ];
 
     G.db.query(sql, params, function(err, rows, result) {
-        callback(err, rows);
+        callback(err, rows, result);
     });
 };
 
@@ -207,9 +223,63 @@ RolModel.prototype.listarRolesModulosOpciones = function(modulo_id, rol_id, rol_
 };
 
 
+function __validarCreacionRol(that, rol, callback) {
+    var validacion = {
+        valido: true,
+        msj: ""
+    };
+
+
+    if (rol.nombre === undefined || rol.nombre.length === 0) {
+        validacion.valido = false;
+        validacion.msj = "El rol debe tener un nombre";
+        callback(validacion);
+        return;
+    }
+
+    if (rol.observacion === undefined || rol.observacion.length === 0) {
+        validacion.valido = false;
+        validacion.msj = "El rol debe tener una descripcion";
+        callback(validacion);
+        return;
+    }
+
+    //trae los rols que hagan match con las primeras letras del nombre o la url
+    that.obtenerRolPorNombre(rol.nombre.substring(0, 4), function(err, rows) {
+        if (err) {
+            validacion.valido = false;
+            validacion.msj = "Ha ocurrido un error validando el rol";
+            callback(validacion);
+            return;
+        }
+
+
+        var nombre_rol = rol.nombre.toLowerCase().replace(/ /g, "");
+
+        //determina si el nombre del rol ya esta en uso, insensible a mayusculas o espacios
+        for (var i in rows) {
+
+            if (rol.id !== rows[i].id) {
+
+                var _nombre_rol = rows[i].nombre.toLowerCase().replace(/ /g, "");
+
+                if (nombre_rol === _nombre_rol && rol.empresa_id === rows[i].empresa_id) {
+                    validacion.valido = false;
+                    validacion.msj = "El nombre del rol no esta disponible para la empresa seleccionada";
+                    callback(validacion);
+                    return;
+                }
+
+            }
+
+        }
+        callback(validacion);
+    });
+};
+
 
 //funcion recursiva para actualizar listado de roles_modulos
-function __habilitarModulosEnRoles(that, usuario_id, rolesModulos, ids, callback) {   
+function __habilitarModulosEnRoles(that, usuario_id, rolesModulos, ids, callback) {
 
     //si el array esta vacio se termina la funcion recursiva
 
@@ -217,7 +287,7 @@ function __habilitarModulosEnRoles(that, usuario_id, rolesModulos, ids, callback
         callback(false, true, ids);
         return;
     }
-    
+
     console.log("modulo >>>>>>>>>>>>>>>>>>>>>> ", rolesModulos[0]);
     //este es el id de modulos_empresa
     var modulos_empresas_id = rolesModulos[0].modulo.empresasModulos[0].id;
@@ -225,7 +295,7 @@ function __habilitarModulosEnRoles(that, usuario_id, rolesModulos, ids, callback
     var estado = Number(rolesModulos[0].estado);
     var modulo_id = rolesModulos[0].modulo.modulo_id;
 
-    
+
 
     var sql = "UPDATE roles_modulos SET estado = $3, usuario_id_modifica = $1, fecha_modificacion = now()  \
                 WHERE modulos_empresas_id = $2 AND rol_id = $4 RETURNING id";

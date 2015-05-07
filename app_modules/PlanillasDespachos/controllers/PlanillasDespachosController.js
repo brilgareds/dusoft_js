@@ -554,12 +554,28 @@ PlanillasDespachos.prototype.reportePlanillaDespacho = function(req, res) {
 
                     planilla_despacho = planilla_despacho[0];
 
-                    _generar_reporte_planilla_despacho({planilla_despacho: planilla_despacho, documentos_planilla: lista_documentos, usuario_imprime: req.session.user.nombre_usuario}, function(nombre_reporte) {
+                    // Lista Documentos
+                    var datos = [];
+                    lista_documentos.forEach(function(documento) {
+
+                        if (datos[documento.descripcion_destino]) {
+                            datos[documento.descripcion_destino].push(documento);
+                        } else {
+                            datos[documento.descripcion_destino] = [documento];
+                        }
+                    });
+
+                    var documentos = [];
+                    for (var z in datos) {
+                        documentos.push({tercero: z, detalle: datos[z]});
+                    }
+
+                    _generar_reporte_planilla_despacho({planilla_despacho: planilla_despacho, documentos_planilla: documentos, usuario_imprime: req.session.user.nombre_usuario}, function(nombre_reporte) {
 
                         if (enviar_email) {
 
                             var path = G.dirname + "/public/reports/" + nombre_reporte;
-                            var filename = "PlanillaGuiaNo-" + planilla_id+'.pdf';
+                            var filename = "PlanillaGuiaNo-" + planilla_id + '.pdf';
 
                             __enviar_correo_electronico(that, emails, path, filename, subject, message, function(enviado) {
 
@@ -678,12 +694,22 @@ function __despachar_documentos_planilla(contexto, i, documentos_planilla, resul
 
 function _generar_reporte_planilla_despacho(rows, callback) {
 
+
     G.jsreport.reporter.render({
         template: {
             content: G.fs.readFileSync('app_modules/PlanillasDespachos/reports/planilla_despacho.html', 'utf8'),
             helpers: G.fs.readFileSync('app_modules/PlanillasDespachos/reports/javascripts/helpers.js', 'utf8'),
             recipe: "phantom-pdf",
-            engine: 'jsrender'
+            engine: 'jsrender',
+            /*phantom: {*/
+                /*header: G.fs.readFileSync('app_modules/PlanillasDespachos/reports/encabezado_planilla_despacho.html', 'utf8')*/
+                        /*header: '<div style="text-align:right">{#pageNum}/{#numPages}</div>',*/
+                        /*orientation: "portrait",
+                         width: "300px"*/
+            /*}*/
+        },
+        childTemplate: {
+            hola: '<div>Hola Child Template</div>'
         },
         data: {
             style: G.dirname + "/public/stylesheets/bootstrap.min.css",
@@ -693,7 +719,8 @@ function _generar_reporte_planilla_despacho(rows, callback) {
             usuario_imprime: rows.usuario_imprime
         }
     }).then(function(response) {
-
+        console.log('=== response ====');
+        console.log(response);
         var nombre_archivo = response.result.path;
         var fecha_actual = new Date();
         var nombre_reporte = G.random.randomKey(2, 5) + "_" + fecha_actual.toFormat('DD-MM-YYYY') + ".pdf";

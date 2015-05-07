@@ -1432,7 +1432,7 @@ function _generarDocumentoCotizacion(that, obj, callback) {
         },
         data: obj
     }).then(function(response) {
-
+        //console.log(">>>> RESPONSE: ", response);
         var name = response.result.path;
         var fecha = new Date();
         var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";

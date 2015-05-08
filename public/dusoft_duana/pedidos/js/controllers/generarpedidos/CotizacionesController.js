@@ -45,7 +45,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     session: $scope.rootCotizaciones.session,
                     data: {
                         cotizaciones_cliente: {
-                            empresa_id: '03',                            
+                            empresa_id: Usuario.getUsuarioActual().empresa.codigo,//'03',                            
                             termino_busqueda: $scope.rootCotizaciones.termino_busqueda,
                             pagina_actual: $scope.rootCotizaciones.paginaactual,
                             filtro: {}

@@ -130,45 +130,15 @@ ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro
         sql_filter = " fc_descripcion_producto(a.codigo_producto) ilike $5 ";
     }
     
-    
-    /*
-     CASE\n\
-                        WHEN cast($4 as integer) > 0\n\
-                        THEN btrim(fc_precio_producto_contrato_cliente(2, a.codigo_producto, $1), '@')\n\
-                        ELSE\n\
-                            CASE\n\
-                                WHEN cast(btrim(fc_precio_producto_contrato_cliente($4, a.codigo_producto, $1), '@') as numeric) > 0\n\
-                                THEN btrim(fc_precio_producto_contrato_cliente($4, a.codigo_producto, $1), '@')\n\
-                                ELSE btrim(fc_precio_producto_contrato_cliente(2, a.codigo_producto, $1), '@')\n\
-                            END\n\
-                    END as precio_contrato,\n\
-     */
-    
     var sql = " select\n\
                     a.codigo_producto,\n\
                     a.precio_regulado,\n\
                     fc_descripcion_producto(a.codigo_producto) as nombre_producto,\n\
                     CASE\n\
                         WHEN cast($4 as integer) = 0\n\
-                        THEN btrim(fc_precio_producto_contrato_cliente(2, a.codigo_producto, $1), '@')\n\
-                        ELSE\n\
-                            CASE\n\
-                                WHEN cast(btrim(fc_precio_producto_contrato_cliente($4, a.codigo_producto, $1), '@') as numeric) > 0\n\
-                                THEN btrim(fc_precio_producto_contrato_cliente($4, a.codigo_producto, $1), '@')\n\
-                                ELSE btrim(fc_precio_producto_contrato_cliente(2, a.codigo_producto, $1), '@')\n\
-                            END\n\
+                        THEN fc_precio_producto_contrato_cliente(2, a.codigo_producto, $1)\n\
+                        ELSE fc_precio_producto_contrato_cliente($4, a.codigo_producto, $1)\n\
                     END as precio_contrato,\n\
-                    /*btrim(fc_precio_producto_contrato_cliente($4, a.codigo_producto, $1), '@') as precio_contrato,*/\n\
-                    CASE\n\
-                        WHEN cast($4 as integer) = 0\n\
-                        THEN false\n\
-                        ELSE\n\
-                            CASE\n\
-                                WHEN cast(btrim(fc_precio_producto_contrato_cliente($4, a.codigo_producto, $1), '@') as numeric) > 0\n\
-                                THEN true\n\
-                                ELSE false\n\
-                            END\n\
-                    END as tiene_precio_contrato,\n\
                     a.existencia as existencia_total,\n\
                     a.costo_anterior,\n\
                     a.costo,\n\
@@ -210,8 +180,7 @@ ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro
                          and b.clase_id = h.clase_id \n\
                      inner join existencias_bodegas i on a.codigo_producto = i.codigo_producto \n\
                 where \n\
-                     b.estado = '1'\n\
-                     and i.empresa_id = $1 \n\
+                     i.empresa_id = $1 \n\
                      and i.centro_utilidad = $2 \n\
                      and i.bodega = $3 \n\
                      and ( " + sql_filter + " ) " +

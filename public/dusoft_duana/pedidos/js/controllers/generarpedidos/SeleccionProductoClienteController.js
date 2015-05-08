@@ -113,6 +113,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         seleccion.buscar_por_descripcion = true;
                     }
                 }
+                
+                console.log(">>>>> Usuario Datos: ", Usuario.getUsuarioActual().empresa.codigo);
 
                 var obj = {
                     session: $scope.rootSeleccionProductoCliente.session,
@@ -120,7 +122,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         productos: {
                             termino_busqueda: $scope.rootSeleccionProductoCliente.termino_busqueda,
                             pagina_actual: $scope.rootSeleccionProductoCliente.paginaactual,
-                            empresa_id: '03',//$scope.rootSeleccionProductoCliente.de_empresa_id,
+                            empresa_id: Usuario.getUsuarioActual().empresa.codigo,//$scope.rootSeleccionProductoCliente.de_empresa_id,
                             centro_utilidad_id: '1 ',//$scope.rootSeleccionProductoCliente.de_centro_utilidad_id,
                             bodega_id: '03',//$scope.rootSeleccionProductoCliente.de_bodega_id,
                             tipo_producto: $scope.rootSeleccionProductoCliente.tipoProducto,
@@ -204,11 +206,23 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
             that.crearProducto = function(obj) {
                 
+                var array_precio = obj.precio_contrato.split('@');
+                var tiene_precio_contrato = false;
+                var precio_contrato = parseFloat(array_precio[0]);
+                
+                console.log(">>>> ANTES DE READONLY: ");
+                console.log(">>>> Objeto Precio: ", obj.precio_contrato);
+                console.log(">>>> PRECIO ARRAY: ", array_precio);
+                if(array_precio[1] === 'readonly'){
+                    tiene_precio_contrato = true;
+                    console.log(">>>> READONLY: ",array_precio[1]);
+                }
+                
                 var producto = ProductoPedido.get(
                                     obj.codigo_producto,        //codigo_producto
                                     obj.nombre_producto,        //descripcion
                                     obj.existencia,             //existencia
-                                    obj.precio_contrato,        //precio
+                                    precio_contrato,            //precio
                                     0,                          //cantidad_solicitada
                                     0,                          //cantidad_separada
                                     '',                         //observacion_cambio
@@ -233,10 +247,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 producto.setEsRegulado(obj.sw_regulado);
                 
-                console.log(">>> Tiene Precio Contrato: ",obj.tiene_precio_contrato);
-                console.log(">>> Tipo Dato Precio Contrato: ",typeof obj.tiene_precio_contrato);
-                
-                producto.setTienePrecioContrato(obj.tiene_precio_contrato);
+                producto.setTienePrecioContrato(tiene_precio_contrato);
                 
                 producto.setPrecioRegulado(obj.precio_regulado);
                 
@@ -285,8 +296,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         },
                         {field: 'precio', displayName: 'Precio Venta', width: "12%",
                             cellTemplate: ' <div class="col-xs-12">\
-                                                <span class="label label-info" ng-show="row.entity.getTienePrecioContrato() == true">C</span>\
-                                                <input type="text" ng-disabled = "row.entity.getTienePrecioContrato()" /*"rootSeleccionProductoCliente.bloqueo_contrato"*/ ng-model="row.entity.precio" validacion-numero class="form-control grid-inline-input"'+
+                                                <!--<span class="label label-info" ng-show="row.entity.getTienePrecioContrato() == true">C</span>-->\
+                                                <input type="text" ng-disabled = "row.entity.getTienePrecioContrato()" ng-model="row.entity.precio" validacion-numero class="form-control grid-inline-input "'+
                                                 'ng-keyup=""/>\
                                             </div>'},
                         {field: 'existencia', displayName: 'Existencia', width: "6%"},

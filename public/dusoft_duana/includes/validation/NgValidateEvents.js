@@ -18,7 +18,7 @@ define(["angular","js/directive", "includes/slide/transition"], function(angular
                      
                      element.removeAttr("ng-"+i);
                      element.bind(i, function (e) {
-                         AlertService.mostrarMensaje("warning", "El usuario no tiene permisos para realizar esta accion!");
+                         AlertService.mostrarMensaje("warning", "El usuario no puede realizar esta accion!");
                          e.stopImmediatePropagation();
                          return false;
 

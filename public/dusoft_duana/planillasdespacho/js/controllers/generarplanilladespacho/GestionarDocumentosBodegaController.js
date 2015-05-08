@@ -228,36 +228,31 @@ define(["angular", "js/controllers",
 
             $scope.validar_ingreso_documento = function(documento) {
 
+                var disabled = false;
+
                 // Validar que el prefijo y el numero del documento esten presentes
-                if (documento.get_prefijo() === '' || documento.get_numero() === '' || documento.get_numero() === 0) {
+                if (documento.get_prefijo() === undefined || documento.get_numero() === undefined) {
                     return true;
                 }
 
-                // Validar que las cantidad de cajas no sean 0 o vacias
-                if (documento.get_cantidad_cajas() == '' || documento.get_cantidad_cajas() == 0) {
+                if (documento.get_prefijo() == '' || documento.get_numero() == '' || documento.get_numero() === 0) {
                     return true;
                 }
 
-
-                // Si las neveras estan vacias la temperatura tambien
-                if (documento.get_cantidad_neveras() == '') {
-                    documento.set_temperatura_neveras('');
-                    return false;
-                }
-
-                // Si ingresan neveras tienen q ser mayor a cero
-                if (documento.get_cantidad_neveras() != '') {
-                    if (documento.get_cantidad_neveras() == '0') {
-                        return true;
-                    }
+                // Validar que las cantidad de cajas no sean 0 o vacias                                
+                if (documento.get_cantidad_cajas() === '' || documento.get_cantidad_cajas() === 0) {
+                    disabled = true;
                 }
 
                 // Validar que si ingresar neveras, obligatoriamente ingresen la temperatura de la nevera
-                if (documento.get_cantidad_neveras() != '' && documento.get_cantidad_neveras() != 0) {
-                    if (documento.get_temperatura_neveras() == '') {
-                        return true;
+                if (documento.get_cantidad_neveras() !== '' && documento.get_cantidad_neveras() !== 0) {
+                    disabled = false;
+                    if (documento.get_temperatura_neveras() === '') {
+                        disabled = true;
                     }
                 }
+
+                return disabled;
             };
 
             $scope.seleccionar_documento_planilla = function(documento) {
@@ -361,7 +356,8 @@ define(["angular", "js/controllers",
                             ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
                             transportador_id: $scope.planilla.get_transportadora().get_id(),
                             nombre_conductor: $scope.planilla.get_nombre_conductor(),
-                            observacion: $scope.planilla.get_observacion()
+                            observacion: $scope.planilla.get_observacion(),
+                            numero_guia_externo: $scope.planilla.get_numero_guia_externo()
                         }
                     }
                 };
@@ -405,9 +401,9 @@ define(["angular", "js/controllers",
                     if (data.status === 200) {
                         $scope.planilla.set_documentos($scope.datos_view.documento_seleccionado);
                         $scope.datos_view.documento_seleccionado = Documento.get();
-                        
+
                         $scope.buscar_documentos_bodega($scope.datos_view.tercero_seleccionado);
-                        
+
                         callback(true);
                     } else {
                         callback(false);

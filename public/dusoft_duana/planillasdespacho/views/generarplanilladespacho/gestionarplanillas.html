@@ -27,15 +27,29 @@
                                 </fieldset>
                             </div>                        
                             <div class="col-md-4">
-                                <fieldset>
-                                    <legend>Tranportador</legend> 
-                                    <ui-select ng-model="planilla.transportadora" ng-disabled="planilla.get_numero_guia() > 0" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_transportadora()">
-                                        <ui-select-match  placeholder="Seleccionar transportadora">{{ $select.selected.get_descripcion() }}</ui-select-match>
-                                        <ui-select-choices repeat="transportadora in Empresa.get_transportadoras() | filter:$select.search">
-                                            {{ transportadora.get_descripcion() }}
-                                        </ui-select-choices>
-                                    </ui-select>
-                                </fieldset>
+                                <div class="col-md-6">
+                                    <fieldset>
+                                        <legend>Tranportador</legend> 
+                                        <ui-select ng-model="planilla.transportadora" ng-disabled="planilla.get_numero_guia() > 0" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_transportadora()">
+                                            <ui-select-match  placeholder="Seleccionar transportadora">{{ $select.selected.get_descripcion() }}</ui-select-match>
+                                            <ui-select-choices repeat="transportadora in Empresa.get_transportadoras() | filter:$select.search">
+                                                {{ transportadora.get_descripcion() }}
+                                            </ui-select-choices>
+                                        </ui-select>
+                                    </fieldset>
+                                </div>
+                                <div class="col-md-6">
+                                    <fieldset>
+                                        <legend>Numero Guia</legend>                                 
+                                        <div class="row">  
+                                            <div class="col-md-12">                                          
+                                                <input type="text" ng-model="planilla.numero_guia_externo" ng-disabled="planilla.get_numero_guia() > 0 || planilla.get_transportadora() == undefined || planilla.get_transportadora().get_solicitar_guia() == '' || planilla.get_transportadora().get_solicitar_guia() == '0'" class="form-control"  placeholder="Ingrese Numero Guía" name="" id="" />
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </div>
+
+
                             </div>
                             <div class="col-md-4">
                                 <fieldset>
@@ -92,7 +106,7 @@
                                     <div class="">
                                         <div class="col-md-3">
                                             <p class="input-group">
-                                                <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-click="gestionar_documentos_bodega()" ng-disabled="planilla.get_ciudad()== null || planilla.get_transportadora()== null || planilla.get_nombre_conductor() == '' ||  planilla.get_observacion() == '' || planilla.get_estado()=='2' " > 
+                                                <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-click="gestionar_documentos_bodega()" ng-disabled="validar_btn_ingreso_documentos(planilla)" > 
                                                     <span class="glyphicon glyphicon-plus"></span> Buscar Remisiones
                                                 </button>
                                             </p>

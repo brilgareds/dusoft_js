@@ -9,6 +9,7 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function(fecha_in
     var sql = " select \
                 a.id, \
                 a.id as numero_guia,\
+                a.numero_guia_externo,\
                 b.transportadora_id,\
                 b.descripcion as nombre_transportadora,\
                 b.placa_vehiculo,\
@@ -92,7 +93,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = 
                 inner join bodegas c on b.farmacia_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad and b.bodega = c.bodega\
                 inner join centros_utilidad d on c.empresa_id = d.empresa_id and c.centro_utilidad = d.centro_utilidad\
                 inner join empresas e on d.empresa_id = e.empresa_id\
-                where a.empresa_id = $1 and b.farmacia_id = $2 and b.centro_utilidad = $3 and b.estado in ('2','8') and\
+                where a.empresa_id = $1 and b.farmacia_id = $2 and b.centro_utilidad = $3 /*and b.estado in ('2','8')*/ and\
                 (\
                     a.prefijo || ' ' || a.numero ilike $4 or\
                     a.numero ilike $4 or\
@@ -120,7 +121,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_cliente = f
                 a.fecha_registro\
                 from inv_bodegas_movimiento_despachos_clientes a\
                 inner join ventas_ordenes_pedidos b on a.pedido_cliente_id = b.pedido_cliente_id \
-                where a.empresa_id= $1 and a.tipo_id_tercero = $2 and a.tercero_id = $3 and b.estado_pedido in ('2','8') and \
+                where a.empresa_id= $1 and a.tipo_id_tercero = $2 and a.tercero_id = $3 /*and b.estado_pedido in ('2','8')*/ and \
                 ( \
                     a.prefijo || ' ' || a.numero ilike $4 or \
                     a.numero ilike $4 or \
@@ -139,6 +140,7 @@ PlanillasDespachosModel.prototype.consultar_planilla_despacho = function(planill
     var sql = " select \
                 a.id, \
                 a.id as numero_guia,\
+                a.numero_guia_externo,\
                 b.transportadora_id,\
                 b.descripcion as nombre_transportadora,\
                 b.placa_vehiculo,\
@@ -259,12 +261,12 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
 };
 
 
-PlanillasDespachosModel.prototype.ingresar_planilla_despacho = function(pais_id, departamento_id, ciudad_id, inv_transportador_id, nombre_conductor, observacion, usuario_id, callback) {
+PlanillasDespachosModel.prototype.ingresar_planilla_despacho = function(pais_id, departamento_id, ciudad_id, inv_transportador_id, nombre_conductor, observacion, numero_guia_externo, usuario_id, callback) {
 
-    var sql = " insert into  inv_planillas_despacho (pais_id, departamento_id, ciudad_id, inv_transportador_id, nombre_conductor, observacion, usuario_id ) \
-                values ($1, $2, $3, $4, $5, $6, $7) RETURNING id;";
+    var sql = " insert into  inv_planillas_despacho (pais_id, departamento_id, ciudad_id, inv_transportador_id, nombre_conductor, observacion, numero_guia_externo, usuario_id ) \
+                values ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id;";
      
-    G.db.query(sql, [pais_id, departamento_id, ciudad_id, inv_transportador_id, nombre_conductor, observacion, usuario_id], function(err, rows, result) {
+    G.db.query(sql, [pais_id, departamento_id, ciudad_id, inv_transportador_id, nombre_conductor, observacion, numero_guia_externo, usuario_id], function(err, rows, result) {
         callback(err, rows, result);
     });
 };

@@ -308,3 +308,9 @@ fieldset[disabled] .btn-enauditoria.active {
 .app-modal-window-pdf .modal-dialog{
   width: 350px;
 }
+
+.background_bloqueo_precio {
+
+  background-color : #64FCAB;
+
+}

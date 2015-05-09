@@ -760,11 +760,7 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
             return;
         }
     });
-
-
-
-}
-;
+};
 
 PlanillasDespachos.$inject = ["m_planillas_despachos", "m_e008", "m_pedidos_farmacias", "e_pedidos_farmacias", "m_pedidos_clientes", "e_pedidos_clientes", "emails"];
 

@@ -57,6 +57,13 @@ define(["angular", "js/controllers",
             $scope.ultima_busqueda = "";
             $scope.pagina_actual = 1;
 
+            $scope.datos_view = {
+                email_to: '',
+                email_subject: '',
+                email_message: '',
+                email_attachment_name: '',
+                orden_compra_seleccionada: OrdenCompra.get()
+            };
 
 
 
@@ -180,7 +187,7 @@ define(["angular", "js/controllers",
                                                 <li><a href="javascript:void(0);" ng-click="vista_previa(row.entity);" >Vista Previa</a></li>\
                                                 <li><a href="javascript:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,0)" >Modificar</a></li>\
                                                 <li><a href="javascript:void(0);" ng-click="generar_reporte(row.entity,0)" >Ver PDF</a></li>\
-                                                <li><a href="javascript:void(0);" ng-disabled="true" ng-click="enviar_email(row.entity,0)" >Enviar por Email</a></li>\
+                                                <li><a href="javascript:void(0);" ng-disabled="true" ng-click="ventana_enviar_email(row.entity,0)" >Enviar por Email</a></li>\
                                                 <li class="divider"></li>\
                                                 <li><a href="javascript:void(0);" ng-click="gestionar_acciones_orden_compra(row.entity,1)" >Novedades</a></li>\
                                                 <li class="divider"></li>\
@@ -317,30 +324,55 @@ define(["angular", "js/controllers",
                 });
             };
 
-            $scope.enviar_email = function(orden_compra) {
+            $scope.ventana_enviar_email = function(orden_compra) {
 
                 $scope.orden_compra_seleccionada = orden_compra;
 
                 if (orden_compra.get_sw_estado_digitacion() === '1') {
+
+                    $scope.datos_view.orden_compra_seleccionada = orden_compra;
+                    $scope.datos_view.email_subject = 'Orden de Compra No-' + $scope.datos_view.orden_compra_seleccionada.get_numero_orden();
+                    $scope.datos_view.email_message = 'Orden de Compra No-' + $scope.datos_view.orden_compra_seleccionada.get_numero_orden() + '.\nPara el Proveedor ' + $scope.datos_view.orden_compra_seleccionada.get_proveedor().get_nombre();
+                    $scope.datos_view.email_attachment_name = "OrdenCompraNo-" + $scope.datos_view.orden_compra_seleccionada.get_numero_orden() + '.pdf';
+
                     $scope.opts = {
                         backdrop: true,
                         backdropClick: true,
                         dialogFade: false,
                         keyboard: true,
-                        template: ' <div class="modal-header">\
-                                    <button type="button" class="close" ng-click="close()">&times;</button>\
-                                    <h4 class="modal-title">Mensaje del Sistema</h4>\
-                                </div>\
-                                <div class="modal-body">\
-                                    <h4> Enviar Orden de Compra por Email </h4>\
-                                </div>\
-                                <div class="modal-footer">\
-                                    <button class="btn btn-primary" ng-click="close()">Aceptar</button>\
-                                </div>',
+                        templateUrl: 'views/genererarordenes/redactaremail.html',
                         scope: $scope,
                         controller: function($scope, $modalInstance) {
 
-                            $scope.close = function() {
+                            $scope.validar_envio_email = function() {
+
+                                var expresion = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+                                var emails = $scope.datos_view.email_to.split(',');
+                                var continuar = true;
+
+                                emails.forEach(function(email) {
+                                    if (!expresion.test(email.trim())) {
+                                        continuar = false;
+                                    }
+                                });
+
+                                if (continuar) {
+                                    $scope.enviar_email(function(continuar) {
+                                        if (continuar) {
+                                            $scope.datos_view.orden_compra_seleccionada = OrdenCompra.get();
+                                            $scope.datos_view.email_to = '';
+                                            $scope.datos_view.email_subject = '';
+                                            $scope.datos_view.email_message = '';
+                                            $scope.datos_view.email_attachment_name = '';
+                                            $modalInstance.close();
+                                        }
+                                    });
+                                } else {
+                                    AlertService.mostrarMensaje("warning", 'Direcciones de correo electrónico inválidas!.');
+                                }
+                            };
+
+                            $scope.cancelar_enviar_email = function() {
                                 $modalInstance.close();
                             };
                         }
@@ -350,6 +382,34 @@ define(["angular", "js/controllers",
                     AlertService.mostrarMensaje("warning", "La ordend de compra No. " + orden_compra.get_numero_orden() + " no ha sido finalizada!!.");
                     return;
                 }
+            };
+
+            $scope.enviar_email = function(callback) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        ordenes_compras: {
+                            numero_orden: $scope.datos_view.orden_compra_seleccionada.get_numero_orden(),
+                            enviar_email: true,
+                            emails: $scope.datos_view.email_to,
+                            subject: $scope.datos_view.email_subject,
+                            message: $scope.datos_view.email_message
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.ORDENES_COMPRA.REPORTE_ORDEN_COMPRA, "POST", obj, function(data) {
+
+                    AlertService.mostrarMensaje("warning", data.msj);
+
+                    if (data.status === 200) {
+                        callback(true);
+                    } else {
+                        callback(false);
+                    }
+
+                });
             };
 
             $scope.anular_orden_compra_seleccionada = function(orden_compra) {

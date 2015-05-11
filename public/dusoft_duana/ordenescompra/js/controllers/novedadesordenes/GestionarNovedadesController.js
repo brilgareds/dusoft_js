@@ -24,13 +24,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             // Variables de Sesion
             $scope.session = {
-                usuario_id: Sesion.usuario_id,
-                auth_token: Sesion.token
+                usuario_id: Sesion.getUsuarioActual().getId(),
+                auth_token: Sesion.getUsuarioActual().getToken()
             };
 
             // Variables
             $scope.numero_orden = parseInt(localStorageService.get("numero_orden")) || 0;
-            
+
             $scope.codigo_proveedor_id = '';
             $scope.unidad_negocio_id = '';
             $scope.observacion = '';
@@ -71,7 +71,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     $scope.buscar_orden_compra(function(continuar) {
 
                         if (continuar) {
-                            $scope.buscar_detalle_orden_compra();                            
+                            $scope.buscar_detalle_orden_compra();
                         }
                     });
                 }
@@ -131,7 +131,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     $scope.ultima_busqueda = $scope.termino_busqueda;
 
                     if (data.status === 200) {
-                        
+
                         var lista_productos = data.obj.lista_productos;
 
                         $scope.cantidad_items = lista_productos.length;
@@ -153,13 +153,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         lista_productos.forEach(function(data) {
                             var producto = Producto.get(data.codigo_producto, data.descripcion_producto, '', parseFloat(data.porc_iva).toFixed(2), data.valor);
                             producto.set_cantidad_seleccionada(data.cantidad_solicitada);
-                            
+
                             var novedad = Novedad.get(data.novedad_id, data.descripcion_novedad, Observacion.get(data.id_observacion, data.codigo_observacion, data.descripcion_observacion), data.cantidad_archivos);
-                                                        
+
                             // Set Novedad Producto
                             producto.set_id(data.item_id);
                             producto.set_novedad(novedad);
-                            
+
                             $scope.orden_compra.set_productos(producto);
 
                             // Totales                        
@@ -168,7 +168,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             $scope.valor_total += data.total;
 
                         });
-                        
+
                         $scope.cantidad_productos_orden_compra = $scope.orden_compra.get_productos().length;
                     }
                 });
@@ -248,7 +248,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     $scope.Empresa.set_unidades_negocios(unidad_negocio);
                 });
             };
-     
+
             $scope.cancelar_orden_compra = function() {
 
                 $state.go('ListarOrdenes');
@@ -282,9 +282,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                         </div>\
                                     </div>',
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Codigo Producto',width: "10%"},
+                    {field: 'codigo_producto', displayName: 'Codigo Producto', width: "10%"},
                     {field: 'descripcion', displayName: 'Descripcion', width: "40%"},
-                    {field: 'novedad.get_observacion().get_descripcion()', displayName: "Novedad",width: "15%"},
+                    {field: 'novedad.get_observacion().get_descripcion()', displayName: "Novedad", width: "15%"},
                     {field: 'novedad.get_descripcion()', displayName: 'Observacion', width: "21%"},
                     {field: 'novedad.get_cantidad_archivos()', displayName: 'Archivos', width: "5%"},
                     {displayName: "Opcion", cellClass: "txt-center", width: "7%",
@@ -293,9 +293,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                         </div>'}
                 ]
             };
-            
-            
-             $scope.novedades_producto_orden_compra = function(row) {
+
+
+            $scope.novedades_producto_orden_compra = function(row) {
 
                 var producto = row.entity;
                 var index = row.rowIndex;
@@ -311,7 +311,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     templateUrl: 'views/novedadesordenes/gestionarnovedadproducto.html',
                     controller: "GestionarNovedadProductoController",
                     scope: $scope,
-                    resolve: {                        
+                    resolve: {
                         index: function() {
                             return index;
                         }

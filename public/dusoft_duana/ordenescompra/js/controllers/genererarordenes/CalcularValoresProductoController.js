@@ -3,7 +3,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
     controllers.controller('CalcularValoresProductoController', [
         '$scope', '$rootScope', 'API',
         '$modalInstance', 'index',
-        function($scope, $rootScope, API, $modalInstance,  index) {
+        function($scope, $rootScope, API, $modalInstance, index) {
 
             console.log('====== Producto Selec=======');
             console.log($scope.producto_seleccionado);
@@ -19,17 +19,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             $scope.unidades = '';
             $scope.precio_compra = '';
 
-
-
-
-            $modalInstance.result.then(function() {
-
-            }, function() {
-
-            });
-
-
-
+            /*$modalInstance.result.then(function() {
+             
+             }, function() {
+             
+             });*/
+            
             $scope.calcular_precio_compra = function() {
 
                 $scope.unidades = ($scope.presentacion * $scope.cantidad);

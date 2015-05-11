@@ -127,4 +127,9 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.listarProductosClientes(req, res);
     });
     
+    //Cambiar el Estado de Aprobacion de la Cotizacion
+    app.post('/api/PedidosClientes/cambiarEstadoAprobacionCotizacion', function(req, res) {
+        c_pedidos_clientes.cambiarEstadoAprobacionCotizacion(req, res);
+    });
+    
 };

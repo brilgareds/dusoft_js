@@ -1,369 +1,120 @@
 
 define(["angular", "js/controllers", "js/models"], function(angular, controllers) {
 
-    controllers.controller('MailPdfController', ['$scope', '$rootScope', 'Request', '$modal', 'API',
-        "socket", "$timeout", "$modalInstance", "Empresa", "AlertService", "Usuario", 'STATIC', 'tipo_documento',
-        function($scope, $rootScope, Request, $modal, API, socket, $timeout, $modalInstance, Empresa, AlertService, Usuario, STATIC, tipo_documento) {
+    controllers.controller('AprobarCotizacionController', ['$scope', '$rootScope', 'Request', '$modal', 'API',
+        "socket", "$timeout", "$modalInstance", "Empresa", "AlertService", "Usuario", 'STATIC',
+        function($scope, $rootScope, Request, $modal, API, socket, $timeout, $modalInstance, Empresa, AlertService, Usuario, STATIC) {
             
             var that = this;
 
-            $scope.rootMailPdf = {};
+            $scope.rootAprobarCotizacion = {};
             
-            $scope.rootMailPdf.session = {
+            $scope.rootAprobarCotizacion.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
             
-            $scope.rootMailPdf.modalInstance = $modalInstance;
+            $scope.rootAprobarCotizacion.modalInstance = $modalInstance;
             
-            $scope.rootMailPdf.Empresa = Empresa;
-            $scope.rootMailPdf.tipo_documento = tipo_documento;
+            $scope.rootAprobarCotizacion.Empresa = Empresa;
+//            $scope.rootAprobarCotizacion.tipo_documento = tipo_documento;
             
-            $scope.rootMailPdf.icono_mail = STATIC.BASE_IMG + "/mail-icon1.png";
-            $scope.rootMailPdf.icono_pdf = STATIC.BASE_IMG + "/pdf-icon.png";
+//            $scope.rootAprobarCotizacion.icono_mail = STATIC.BASE_IMG + "/mail-icon1.png";
+//            $scope.rootAprobarCotizacion.icono_pdf = STATIC.BASE_IMG + "/pdf-icon.png";
             
-            $scope.rootMailPdf.titulo = "Envío de Email";
+            console.log(">>> Empresa - Aprobación: ", $scope.rootAprobarCotizacion.Empresa);
             
-            $scope.rootMailPdf.destinatarios = '';
-            $scope.rootMailPdf.asunto = '';
-            $scope.rootMailPdf.contenido = '';
+            $scope.rootAprobarCotizacion.titulo = "Aprobación Cartera - Cotización N° "+$scope.rootAprobarCotizacion.Empresa.getPedidoSeleccionado().getNumeroCotizacion();
             
-            $scope.rootMailPdf.label_btn = "Enviar";
+//            $scope.rootAprobarCotizacion.destinatarios = '';
+//            $scope.rootAprobarCotizacion.asunto = '';
+
+            $scope.rootAprobarCotizacion.observacion = '';
+            
+            $scope.rootAprobarCotizacion.label_btn = "Aprobar";
             
             //$modalInstance.opened.then(function() {
-            $scope.rootMailPdf.modalInstance.opened.then(function() {
+            $scope.rootAprobarCotizacion.modalInstance.opened.then(function() {
                 $timeout(function(){
                     
-                    if($scope.rootMailPdf.Empresa.getPedidoSeleccionado().getCliente().getEmail() !== undefined && $scope.rootMailPdf.Empresa.getPedidoSeleccionado().getCliente().getEmail() !== '') {
-                        $scope.rootMailPdf.destinatarios = $scope.rootMailPdf.Empresa.getPedidoSeleccionado().getCliente().getEmail();
-                    }
-                    
-                    if($scope.rootMailPdf.tipo_documento === 'c') {
-                        var numero_cotizacion = $scope.rootMailPdf.Empresa.getPedidoSeleccionado().getNumeroCotizacion();
-                        $scope.rootMailPdf.asunto = "Cotización N° "+numero_cotizacion+" - DUANA y Cia Ltda.";;
-                    }
-
-                    if($scope.rootMailPdf.tipo_documento === 'p') {
-                        var numero_pedido = $scope.rootMailPdf.Empresa.getPedidoSeleccionado().get_numero_pedido();
-                        $scope.rootMailPdf.asunto = "Pedido N° "+numero_pedido+" - DUANA y Cia Ltda.";;
-                    }
+//                    if($scope.rootAprobarCotizacion.Empresa.getPedidoSeleccionado().getCliente().getEmail() !== undefined && $scope.rootAprobarCotizacion.Empresa.getPedidoSeleccionado().getCliente().getEmail() !== '') {
+//                        $scope.rootAprobarCotizacion.destinatarios = $scope.rootAprobarCotizacion.Empresa.getPedidoSeleccionado().getCliente().getEmail();
+//                    }
+//                    
+//                    if($scope.rootAprobarCotizacion.tipo_documento === 'c') {
+//                        var numero_cotizacion = $scope.rootAprobarCotizacion.Empresa.getPedidoSeleccionado().getNumeroCotizacion();
+//                        $scope.rootAprobarCotizacion.asunto = "Cotización N° "+numero_cotizacion+" - DUANA y Cia Ltda.";;
+//                    }
+//
+//                    if($scope.rootAprobarCotizacion.tipo_documento === 'p') {
+//                        var numero_pedido = $scope.rootAprobarCotizacion.Empresa.getPedidoSeleccionado().get_numero_pedido();
+//                        $scope.rootAprobarCotizacion.asunto = "Pedido N° "+numero_pedido+" - DUANA y Cia Ltda.";;
+//                    }
                     
                 }, 400);
                 
-           });
+           });       
 
-            that.validarEmail = function (dir_email) {
+            $scope.aprobarCotizacion = function(callback) {
                 
-                //var mail_valido = false;
-                var conteo_validos = 0;
+                var url = API.PEDIDOS.CAMBIAR_ESTADO_APROBACION_COTIZACION;
                 
-                var emails_destino = dir_email.split(',');
+                var numero_cotizacion = $scope.rootAprobarCotizacion.Empresa.getPedidoSeleccionado().getNumeroCotizacion();
+                var observacion = $scope.rootAprobarCotizacion.Empresa.getPedidoSeleccionado().getObservacion() + "||obs_cartera||" + $scope.rootAprobarCotizacion.observacion;
                 
-                if(emails_destino !== undefined && emails_destino.length > 0) {
-                    
-                    emails_destino.forEach(function(mail){
+                console.log("->>>>>>-- Observación: ", observacion);
+                
+                var nuevo_estado = '2';
+                
+                var obj = {
+                    session: $scope.rootAprobarCotizacion.session,
+                    data: {
+                        estado_cotizacion: {
+                            numero_cotizacion: numero_cotizacion,
+                            nuevo_estado: nuevo_estado,
+                            observacion: observacion
+                        }
+                    }
+                };
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        console.log("Cambio de Estado Exitoso: ", data.msj);
                         
-                        if(mail !== '') {
-                            
-                            var arroba_mail = mail.split('@');
-
-                            if(arroba_mail !== undefined && arroba_mail.length > 1) {
-
-                                 if(arroba_mail[0] !== '' && arroba_mail[1] !== '') {
-
-                                     var punto_mail = arroba_mail[1].split('.');
-
-                                    if(punto_mail !== undefined && punto_mail.length > 1) {
-
-                                        if(punto_mail[0] !== '' && punto_mail[1] !== '') {
-                                            conteo_validos++;
-                                        }
-                                    }
-                                 }
-                            }                            
+                        $scope.rootAprobarCotizacion.Empresa.getPedidoSeleccionado().estado = nuevo_estado;
+                        $scope.rootAprobarCotizacion.Empresa.getPedidoSeleccionado().setObservacionCartera($scope.rootAprobarCotizacion.observacion);
+                        
+                        if (callback !== undefined && callback !== "" && callback !== 0) {
+                            callback(true);
                         }
-                    });    
-                } 
-                
-                if(conteo_validos === emails_destino.length && emails_destino.length > 0) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-                
-            };            
-
-            that.generarPdfCotizacionCliente = function(){
-                
-                var codigo_empresa_origen = $scope.rootMailPdf.Empresa.getCodigo();
-                var nombre_empresa_origen = $scope.rootMailPdf.Empresa.getNombre();
-                
-                var numero_cotizacion = $scope.rootMailPdf.Empresa.getPedidoSeleccionado().getNumeroCotizacion();
-                
-                var id_cliente = $scope.rootMailPdf.Empresa.getPedidoSeleccionado().getCliente().getId();
-                var nombre_cliente = $scope.rootMailPdf.Empresa.getPedidoSeleccionado().getCliente().getNombre();
-                var ciudad_cliente = $scope.rootMailPdf.Empresa.getPedidoSeleccionado().getCliente().getMunicipio();
-                var direccion_cliente = $scope.rootMailPdf.Empresa.getPedidoSeleccionado().getCliente().getDireccion();
-
-                var fecha_registro = $scope.rootMailPdf.Empresa.getPedidoSeleccionado().getFechaRegistro();
-                var observacion = $scope.rootMailPdf.Empresa.getPedidoSeleccionado().getObservacion();
-                
-                var valor_total_sin_iva = $scope.rootMailPdf.Empresa.getPedidoSeleccionado().valor_total_sin_iva;
-                var valor_total_con_iva = $scope.rootMailPdf.Empresa.getPedidoSeleccionado().valor_total_con_iva;
-                
-                //validar email
-                var mail_valido = that.validarEmail($scope.rootMailPdf.destinatarios);
-
-                if(mail_valido){
-                    
-                    var obj_pdf = {
-                        session: $scope.rootMailPdf.session,
-                        data: {
-                            encabezado_pedido_cliente: {
-                                numero_cotizacion: numero_cotizacion,        
-                                codigo_origen_id: codigo_empresa_origen,
-                                empresa_origen: nombre_empresa_origen,
-
-                                id_cliente: id_cliente,
-                                nombre_cliente: nombre_cliente,
-                                ciudad_cliente: ciudad_cliente,
-                                direccion_cliente: direccion_cliente,
-
-                                fecha_registro: fecha_registro,
-                                observacion: observacion,
-
-                                valor_total_sin_iva: valor_total_sin_iva,
-                                valor_total_con_iva: valor_total_con_iva,
-
-                                email: true,
-
-                                destinatarios: $scope.rootMailPdf.destinatarios,
-                                asunto: $scope.rootMailPdf.asunto,
-                                contenido: $scope.rootMailPdf.contenido
-                            },
-                            detalle_pedido_cliente: $scope.rootMailPdf.Empresa.getPedidoSeleccionado().obtenerProductos()
-                        }
-                    };
-
-                    var url_imprimir_cotizacion_pdf = API.PEDIDOS.IMPRIMIR_COTIZACION_CLIENTE;
-
-                    Request.realizarRequest(url_imprimir_cotizacion_pdf, "POST", obj_pdf, function(data) {
-
-                        if (data.status === 200) {
-                            console.log("Éxito: ", data.msj);
-                            that.msgMailExitoso(function(){
-                                $scope.rootMailPdf.modalInstance.close();
-                            });
-                        }
-                        else{
-                            console.log("Error: ", data.msj);
-                            that.msgMailFallido(function(){
-                                $scope.rootMailPdf.modalInstance.close();
-                            });
-                        }
-                    });                    
-                    
-                }
-                else {
-                    that.msgMailInvalido();
-                }
-
-            };
-            
-            that.generarPdfPedidoCliente = function(){
-                
-                var codigo_empresa_origen = $scope.rootMailPdf.Empresa.getCodigo();
-                var nombre_empresa_origen = $scope.rootMailPdf.Empresa.getNombre();
-                
-                var numero_pedido = $scope.rootMailPdf.Empresa.getPedidoSeleccionado().get_numero_pedido();
-                
-                var id_cliente = $scope.rootMailPdf.Empresa.getPedidoSeleccionado().getCliente().getId();
-                var nombre_cliente = $scope.rootMailPdf.Empresa.getPedidoSeleccionado().getCliente().getNombre();
-                var ciudad_cliente = $scope.rootMailPdf.Empresa.getPedidoSeleccionado().getCliente().getMunicipio();
-                var direccion_cliente = $scope.rootMailPdf.Empresa.getPedidoSeleccionado().getCliente().getDireccion();
-
-                var fecha_registro = $scope.rootMailPdf.Empresa.getPedidoSeleccionado().getFechaRegistro();
-                var observacion = $scope.rootMailPdf.Empresa.getPedidoSeleccionado().getObservacion();
-                
-                var valor_total_sin_iva = $scope.rootMailPdf.Empresa.getPedidoSeleccionado().valor_total_sin_iva;
-                var valor_total_con_iva = $scope.rootMailPdf.Empresa.getPedidoSeleccionado().valor_total_con_iva;
-                
-                //validar email
-                var mail_valido = that.validarEmail($scope.rootMailPdf.destinatarios);
-
-                if(mail_valido){
-                    
-                    var obj_pdf = {
-                        session: $scope.rootMailPdf.session,
-                        data: {
-                            encabezado_pedido_cliente: {
-                                numero_pedido: numero_pedido,        
-                                codigo_origen_id: codigo_empresa_origen,
-                                empresa_origen: nombre_empresa_origen,
-
-                                id_cliente: id_cliente,
-                                nombre_cliente: nombre_cliente,
-                                ciudad_cliente: ciudad_cliente,
-                                direccion_cliente: direccion_cliente,
-
-                                fecha_registro: fecha_registro,
-                                observacion: observacion,
-
-                                valor_total_sin_iva: valor_total_sin_iva,
-                                valor_total_con_iva: valor_total_con_iva,
-
-                                email: true,
-
-                                destinatarios: $scope.rootMailPdf.destinatarios,
-                                asunto: $scope.rootMailPdf.asunto,
-                                contenido: $scope.rootMailPdf.contenido
-                            },
-                            detalle_pedido_cliente: $scope.rootMailPdf.Empresa.getPedidoSeleccionado().obtenerProductos()
-                        }
-                    };
-
-                    var url_imprimir_pedido_pdf = API.PEDIDOS.IMPRIMIR_PEDIDO_CLIENTE;
-
-                    Request.realizarRequest(url_imprimir_pedido_pdf, "POST", obj_pdf, function(data) {
-
-                        if (data.status === 200) {
-                            
-                            console.log("Éxito: ", data.msj);
-                            that.msgMailExitoso(function(){
-                                $scope.rootMailPdf.modalInstance.close();
-                            });
-                        }
-                        else{
-                            console.log("Error: ", data.msj);
-                            that.msgMailFallido(function(){
-                                $scope.rootMailPdf.modalInstance.close();
-                            });
-                        }
-                    });                    
-                    
-                }
-                else {
-                    
-                    that.msgMailInvalido();
-                    
-                }
-
-            };
-            
-            that.msgMailInvalido = function() {
-                
-                $scope.opts = {
-                    backdrop: true,
-                    backdropClick: true,
-                    dialogFade: false,
-                    keyboard: true,
-                    template: ' <div class="modal-header">\
-                                    <button type="button" class="close" ng-click="close()">&times;</button>\
-                                    <h4 class="modal-title">Aviso: </h4>\
-                                </div>\
-                                <div class="modal-body row">\
-                                    <div class="col-md-12">\
-                                        <h4 >Verifique los email. Hay uno o más mal escritos.</h4>\
-                                    </div>\
-                                </div>\
-                                <div class="modal-footer">\
-                                    <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
-                                </div>',
-                    scope: $scope,
-                    controller: function($scope, $modalInstance) {
-                        $scope.close = function() {
-                            $modalInstance.close();
-                        };
                     }
-                };
-
-                var modalInstance = $modal.open($scope.opts);                    
-                
-            };
-            
-            that.msgMailExitoso = function(callback) {
-                
-                $scope.opts = {
-                    backdrop: true,
-                    backdropClick: true,
-                    dialogFade: false,
-                    keyboard: true,
-                    template: ' <div class="modal-header">\
-                                    <button type="button" class="close" ng-click="close()">&times;</button>\
-                                    <h4 class="modal-title">Aviso: </h4>\
-                                </div>\
-                                <div class="modal-body row">\
-                                    <div class="col-md-12">\
-                                        <h4 >El email fue enviado satisfactoriamente.</h4>\
-                                    </div>\
-                                </div>\
-                                <div class="modal-footer">\
-                                    <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
-                                </div>',
-                    scope: $scope,
-                    controller: function($scope, $modalInstance) {
-                        $scope.close = function() {
-                            $modalInstance.close();
-                            if(callback !== undefined && callback !== '') {
-                                callback();
-                            }
-                        };
+                    else {
+                        console.log("Error en Cambio de Estado: ", data.msj);
+                        if (callback !== undefined && callback !== "" && callback !== 0) {
+                            callback(false);
+                        }
                     }
-                };
-
-                var modalInstance = $modal.open($scope.opts);                    
+                });
                 
-            };
-            
-            that.msgMailFallido = function(callback) {
-                
-                $scope.opts = {
-                    backdrop: true,
-                    backdropClick: true,
-                    dialogFade: false,
-                    keyboard: true,
-                    template: ' <div class="modal-header">\
-                                    <button type="button" class="close" ng-click="close()">&times;</button>\
-                                    <h4 class="modal-title">Aviso: </h4>\
-                                </div>\
-                                <div class="modal-body row">\
-                                    <div class="col-md-12">\
-                                        <h4 >Hubo problemas al intentar enviar el email.</h4>\
-                                    </div>\
-                                </div>\
-                                <div class="modal-footer">\
-                                    <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
-                                </div>',
-                    scope: $scope,
-                    controller: function($scope, $modalInstance) {
-                        $scope.close = function() {
-                            $modalInstance.close();
-                            if(callback !== undefined && callback !== '') {
-                                callback();
-                            }
-                        };
-                    }
-                };
-
-                var modalInstance = $modal.open($scope.opts);                    
+                $scope.close();
                 
             };
 
-            $scope.enviarMail = function() {
-                
-                if($scope.rootMailPdf.tipo_documento === 'c') {
-                    that.generarPdfCotizacionCliente();
-                }
-                
-                if($scope.rootMailPdf.tipo_documento === 'p') {
-                    that.generarPdfPedidoCliente();
-                }
-
-            };
+//            $scope.enviarMail = function() {
+//                
+//                if($scope.rootAprobarCotizacion.tipo_documento === 'c') {
+//                    that.generarPdfCotizacionCliente();
+//                }
+//                
+//                if($scope.rootAprobarCotizacion.tipo_documento === 'p') {
+//                    that.generarPdfPedidoCliente();
+//                }
+//
+//            };
 
             $scope.close = function() {
-                $scope.rootMailPdf.modalInstance.close();
+                $scope.rootAprobarCotizacion.modalInstance.close();
             };
 
             $scope.closeAlert = function() {

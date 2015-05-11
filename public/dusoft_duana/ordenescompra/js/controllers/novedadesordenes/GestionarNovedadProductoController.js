@@ -7,12 +7,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
             var that = this;
 
-            // variables
-            $scope.novedad_id = $scope.producto_seleccionado.get_novedad().get_id() || 0;
-            $scope.item_id = $scope.producto_seleccionado.get_id();
-            $scope.observacion_id = $scope.producto_seleccionado.get_novedad().get_observacion().get_id();
-            $scope.descripcion_novedad = $scope.producto_seleccionado.get_novedad().get_descripcion();
-
             // Inicializacion Upload
             $scope.flow = new Flow();
             $scope.flow.target = API.ORDENES_COMPRA.SUBIR_ARCHIVO_NOVEDAD;
@@ -40,14 +34,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 var obj = {session: $scope.session,
                     data: {
                         ordenes_compras: {
-                            novedad_id: $scope.novedad_id
+                            novedad_id: $scope.producto_seleccionado.get_novedad().get_id()
                         }
                     }
                 };
 
-                Request.realizarRequest(API.ORDENES_COMPRA.CONSULTAR_ARCHIVOS_NOVEDAD, "POST", obj, function(data) {
-                    console.log('============== RESPUESTA SERVER ====================');
-                    console.log(data);
+                Request.realizarRequest(API.ORDENES_COMPRA.CONSULTAR_ARCHIVOS_NOVEDAD, "POST", obj, function(data) {                    
 
                     if (data.status === 200) {
                         that.render_archivos_novedad(data.obj.lista_archivos);
@@ -60,11 +52,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                 var obj = {session: $scope.session,
                     data: {
-                        ordenes_compras: {
-                            novedad_id: $scope.novedad_id,
-                            item_id: $scope.item_id,
-                            observacion_id: $scope.observacion_id,
-                            descripcion: $scope.descripcion_novedad
+                        ordenes_compras: {                            
+                            novedad_id: $scope.producto_seleccionado.get_novedad().get_id() || 0,
+                            item_id: $scope.producto_seleccionado.get_id(),
+                            observacion_id: $scope.producto_seleccionado.get_novedad().get_observacion().get_id(),
+                            descripcion: $scope.producto_seleccionado.get_novedad().get_descripcion()
                         }
                     }
                 };
@@ -76,12 +68,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                     if (data.status === 200) {
 
-                        var observacion = $scope.Empresa.get_observacion($scope.observacion_id);
-
-                        var novedad_id = (data.obj.ordenes_compras.length === 0) ? $scope.novedad_id : data.obj.ordenes_compras[0].novedad_id;
-                        var novedad = Novedad.get(novedad_id, $scope.descripcion_novedad, observacion);
-                        $scope.novedad_id = novedad_id;
-                        $scope.producto_seleccionado.set_novedad(novedad);
+                        var novedad_id = (data.obj.ordenes_compras.length === 0) ? $scope.producto_seleccionado.get_novedad().get_id() : data.obj.ordenes_compras[0].novedad_id;
+                        $scope.producto_seleccionado.get_novedad().set_id(novedad_id);
+                        $scope.producto_seleccionado.set_novedad($scope.producto_seleccionado.get_novedad());
 
                         //Subir Archivo
                         if ($scope.flow.files.length > 0) {
@@ -99,7 +88,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                 $scope.flow.opts.query.data = JSON.stringify({
                     ordenes_compras: {
-                        novedad_id: $scope.novedad_id
+                        novedad_id: $scope.producto_seleccionado.get_novedad().get_id()
                     }
                 });
 
@@ -130,7 +119,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                     var observacion = Observacion.get(data.id, data.codigo, data.descripcion);
                     $scope.Empresa.set_observaciones(observacion);
-                });
+                });                
             };
 
             that.render_archivos_novedad = function(archivos) {
@@ -142,9 +131,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     var archivo = Archivo.get(data.id, data.descripcion_archivo);
                     $scope.producto_seleccionado.get_novedad().set_archivos(archivo);
                 });
-                
-                console.log('========= NOVEDADD =========');
-                console.log($scope.producto_seleccionado.get_novedad());
             };
 
 
@@ -154,11 +140,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 
             };
 
-            $modalInstance.result.then(function() {
-
-            }, function() {
-
-            });
 
             $scope.aceptar = function() {
                 that.gestionar_novedades();

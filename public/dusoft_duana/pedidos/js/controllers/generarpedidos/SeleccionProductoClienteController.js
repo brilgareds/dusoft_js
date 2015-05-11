@@ -43,7 +43,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 $scope.rootSeleccionProductoCliente.paginas = 0;
                 $scope.rootSeleccionProductoCliente.items = 0;
+                
+                $scope.rootSeleccionProductoCliente.laboratorio = "";
+                $scope.rootSeleccionProductoCliente.concentracion = "";
                 $scope.rootSeleccionProductoCliente.termino_busqueda = "";
+
                 $scope.rootSeleccionProductoCliente.ultima_busqueda = {};
                 $scope.rootSeleccionProductoCliente.paginaactual = 1;
                 
@@ -120,6 +124,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     session: $scope.rootSeleccionProductoCliente.session,
                     data: {
                         productos: {
+                            laboratorio: $scope.rootSeleccionProductoCliente.laboratorio,
+                            concentracion: $scope.rootSeleccionProductoCliente.concentracion,
                             termino_busqueda: $scope.rootSeleccionProductoCliente.termino_busqueda,
                             pagina_actual: $scope.rootSeleccionProductoCliente.paginaactual,
                             empresa_id: Usuario.getUsuarioActual().empresa.codigo,//$scope.rootSeleccionProductoCliente.de_empresa_id,

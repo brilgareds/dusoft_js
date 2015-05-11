@@ -95,7 +95,7 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
 // Descripcion : Lista productos Clientes
 // Calls       : Productos -> ProductosController -> listarProductosClientes();
 // 
-ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pedido_cliente_id_tmp, tipo_producto, pagina, filtro, callback) {
+ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pedido_cliente_id_tmp, tipo_producto, laboratorio, concentracion, pagina, filtro, callback) {
     
     var sql_aux = "";
     var sql_filter = "";
@@ -105,12 +105,12 @@ ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro
 
     if(tipo_producto !== '0') {
 
-        sql_aux = " and b.tipo_producto_id = $6 ";
+        sql_aux = " and b.tipo_producto_id = $8 ";
          
-        array_parametros = [empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, "%" + termino_busqueda + "%", tipo_producto];
+        array_parametros = [empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, "%" + termino_busqueda + "%", "%" + concentracion + "%", "%" + laboratorio + "%", tipo_producto];
     }
-    else {
-        array_parametros = [empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, "%" + termino_busqueda + "%"];
+    else {        
+        array_parametros = [empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, "%" + termino_busqueda + "%", "%" + concentracion + "%", "%" + laboratorio + "%"];
     }
     
     //Armar String para filtar termino_busqueda por código de producto, molécula o descripción
@@ -179,11 +179,14 @@ ProductosModel.prototype.listar_productos_clientes = function(empresa_id, centro
                      inner join inv_clases_inventarios h on b.grupo_id = h.grupo_id \n\
                          and b.clase_id = h.clase_id \n\
                      inner join existencias_bodegas i on a.codigo_producto = i.codigo_producto \n\
+                     inner join inv_fabricantes j ON j.fabricante_id = b.fabricante_id\n\
                 where \n\
                      i.empresa_id = $1 \n\
                      and i.centro_utilidad = $2 \n\
                      and i.bodega = $3 \n\
-                     and ( " + sql_filter + " ) " +
+                     and ( " + sql_filter + " ) " + "\n\
+                     and b.contenido_unidad_venta ilike $6 \n\
+                     and j.descripcion ilike $7 " +
                      sql_aux + 
                 "group by a.codigo_producto, a.precio_regulado, a.existencia, a.costo_anterior, a.costo, a.costo_penultima_compra, \n\
                     a.costo_ultima_compra, a.precio_venta_anterior, a.precio_venta, a.precio_minimo, a.precio_maximo, a.sw_vende, \n\

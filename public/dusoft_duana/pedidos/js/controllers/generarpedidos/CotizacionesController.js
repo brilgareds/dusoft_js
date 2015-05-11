@@ -212,6 +212,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                                 <li ng-if="row.entity.estado == 1"></li>\
                                                 <li ng-if="row.entity.estado == 1"><a href="javascript:void(0);" ng-click="onCambiarEstado(row.entity)">Inactivar</a></li>\
                                                 <li ng-if="row.entity.estado == 1"></li>\
+                                                <li ng-if="row.entity.estado == 1"><a href="javascript:void(0);" ng-click="onAprobarCotizacion(row.entity)">Aprobar</a></li>\
+                                                <li ng-if="row.entity.estado == 1"></li>\
                                             </ul>\n\
                                         </div>'
                     }
@@ -221,6 +223,88 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
             
             /*NUEVO*/
+            
+            /**/
+            $scope.onAprobarCotizacion = function() {
+                
+//                var tipo_documento = '';
+//                
+//                if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== undefined) {
+//                    //Tipo Documento Cotización
+//                    tipo_documento = 'c';
+//                    
+//                }
+//                else if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido() !== undefined) {
+//                    //Tipo Documento Pedido
+//                    tipo_documento = 'p';
+//                    
+//                }
+                
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    templateUrl: 'views/generarpedidos/aprobarcotizacion.html',
+                    controller: "AprobarCotizacionController",
+                    resolve :{
+                        Empresa : function(){
+                           return $scope.rootCreaCotizaciones.Empresa;
+                        }//,
+//                        tipo_documento: function(){
+//                           return tipo_documento;
+//                        }
+                    }
+                };
+
+                var modalInstance = $modal.open($scope.opts);
+                
+            }
+            /**/
+            
+            $scope.onAprobarCotizacion = function(obj){
+
+                var template = ' <div class="modal-header">\
+                                        <button type="button" class="close" ng-click="close()">&times;</button>\
+                                        <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                    </div>\
+                                    <div class="modal-body">\
+                                        <h4>Seguro desea Inactivar la cotización '+obj.numero_cotizacion+' ? </h4> \
+                                    </div>\
+                                    <div class="modal-footer">\
+                                        <button class="btn btn-warning" ng-click="close()">No</button>\
+                                        <button class="btn btn-primary" ng-click="aceptaInactivar()" ng-disabled="" >Si</button>\
+                                    </div>';
+
+                controller = function($scope, $modalInstance) {
+
+                    $scope.aceptaInactivar = function() {
+                        
+                        //Se acepta eliminar y se procede
+                        that.cambiarEstado(obj);
+
+                        $modalInstance.close();
+                    };
+
+                    $scope.close = function() {
+                        $modalInstance.close();
+                    };
+                };
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: template,
+                    scope: $scope,
+                    controller: controller
+                };
+
+                var modalInstance = $modal.open($scope.opts);
+                
+            };
+            
             $scope.onCambiarEstado = function(obj){
                 
                                 var template = ' <div class="modal-header">\

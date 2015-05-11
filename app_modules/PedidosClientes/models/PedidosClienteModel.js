@@ -1206,6 +1206,15 @@ PedidosClienteModel.prototype.cambiar_estado_cotizacion = function(numero_cotiza
     });
 };
 
+PedidosClienteModel.prototype.cambiar_estado_aprobacion_cotizacion = function(numero_cotizacion, nuevo_estado, observacion, callback)
+{
+    var sql = "UPDATE ventas_ordenes_pedidos_tmp SET estado = $2, observaciones = $3 WHERE pedido_cliente_id_tmp = $1";
+    
+    G.db.query(sql, [numero_cotizacion, nuevo_estado, observacion], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
 function __cambiar_estado_cotizacion(numero_cotizacion, nuevo_estado, callback)
 {
     

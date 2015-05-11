@@ -1029,6 +1029,40 @@ PedidosCliente.prototype.cambiarEstadoCotizacion = function(req, res) {
  
 };
 
+PedidosCliente.prototype.cambiarEstadoAprobacionCotizacion = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.estado_cotizacion === undefined || args.estado_cotizacion.numero_cotizacion === undefined || args.estado_cotizacion.nuevo_estado === undefined) {
+        res.send(G.utils.r(req.url, 'numero_cotizacion o nuevo_estado no están definidos', 404, {}));
+        return;
+    }
+    
+    if (args.estado_cotizacion.numero_cotizacion === '' || args.estado_cotizacion.nuevo_estado === '') {
+        res.send(G.utils.r(req.url, 'numero_cotizacion o nuevo_estado están vacios', 404, {}));
+        return;
+    }
+
+    //Parámetros para actualización
+    var numero_cotizacion = args.estado_cotizacion.numero_cotizacion;
+    var nuevo_estado = args.estado_cotizacion.nuevo_estado;
+    var observacion = args.estado_cotizacion.observacion;
+
+    that.m_pedidos_clientes.cambiar_estado_aprobacion_cotizacion(numero_cotizacion, nuevo_estado, observacion, function(err, rows) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error al modificar el estado', 500, {}));
+            return;
+        }
+
+        res.send(G.utils.r(req.url, 'Modificación de estado Exitosa', 200, {}));
+
+    });
+ 
+};
+
 PedidosCliente.prototype.pedidoClienteArchivoPlano = function(req, res) {
 
     var that = this;

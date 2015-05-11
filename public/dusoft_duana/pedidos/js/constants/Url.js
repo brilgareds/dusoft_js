@@ -71,10 +71,7 @@ define(["angular"], function(angular) {
                 'ACTUALIZAR_ESTADO_PEDIDO_FARMACIA':BASE_URL+'/PedidosFarmacias/actualizarEstadoActualPedido',
                 'LISTADO_PEDIDOS_TEMPORALES_FARMACIAS':BASE_URL+'/PedidosFarmacias/listarPedidosTemporalesFarmacias',
                 'ACTUALIZAR_ENCABEZADO_TEMPORAL_PEDIDO_FARMACIA':BASE_URL+'/PedidosFarmacias/actualizarRegistroEncabezadoTemporal',
-                
-                //'LISTAR_PRODUCTOS_CLIENTES' :BASE_URL+'/Productos/listarProductosClientes',
-                'LISTAR_PRODUCTOS_CLIENTES' :BASE_URL+'/PedidosClientes/listarProductosClientes',
-                
+                'LISTAR_PRODUCTOS_CLIENTES' :BASE_URL+'/PedidosClientes/listarProductosClientes',                
                 'BUSCAR_USUARIO_BLOQUEO' :BASE_URL+'/PedidosFarmacias/buscarUsuarioBloqueo',
                 'CREAR_COTIZACION' :BASE_URL+'/PedidosClientes/insertarCotizacion',
                 'INSERTAR_DETALLE_COTIZACION' :BASE_URL+'/PedidosClientes/insertarDetalleCotizacion',
@@ -83,6 +80,7 @@ define(["angular"], function(angular) {
                 'LISTAR_DETALLE_COTIZACION' :BASE_URL+'/PedidosClientes/listarDetalleCotizacion',
                 'ELIMINAR_REGISTRO_DETALLE_COTIZACION' :BASE_URL+'/PedidosClientes/eliminarRegistroDetalleCotizacion',
                 'CAMBIAR_ESTADO_COTIZACION' :BASE_URL+'/PedidosClientes/cambiarEstadoCotizacion',
+                'CAMBIAR_ESTADO_APROBACION_COTIZACION' :BASE_URL+'/PedidosClientes/cambiarEstadoAprobacionCotizacion',
                 'ARCHIVO_PLANO_PEDIDO_CLIENTE' :BASE_URL+'/PedidosClientes/pedidoClienteArchivoPlano',
                 'IMPRIMIR_COTIZACION_CLIENTE' :BASE_URL+'/PedidosClientes/imprimirCotizacionCliente',
                 'LISTADO_PEDIDOS_CLIENTES' :BASE_URL+'/PedidosClientes/listadoPedidosClientes',

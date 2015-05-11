@@ -93,7 +93,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = 
                 inner join bodegas c on b.farmacia_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad and b.bodega = c.bodega\
                 inner join centros_utilidad d on c.empresa_id = d.empresa_id and c.centro_utilidad = d.centro_utilidad\
                 inner join empresas e on d.empresa_id = e.empresa_id\
-                where a.empresa_id = $1 and b.farmacia_id = $2 and b.centro_utilidad = $3 /*and b.estado in ('2','8')*/ and\
+                where a.empresa_id = $1 and b.farmacia_id = $2 and b.centro_utilidad = $3 and b.estado in ('2','8') and\
                 (\
                     a.prefijo || ' ' || a.numero ilike $4 or\
                     a.numero ilike $4 or\
@@ -121,7 +121,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_cliente = f
                 a.fecha_registro\
                 from inv_bodegas_movimiento_despachos_clientes a\
                 inner join ventas_ordenes_pedidos b on a.pedido_cliente_id = b.pedido_cliente_id \
-                where a.empresa_id= $1 and a.tipo_id_tercero = $2 and a.tercero_id = $3 /*and b.estado_pedido in ('2','8')*/ and \
+                where a.empresa_id= $1 and a.tipo_id_tercero = $2 and a.tercero_id = $3 and b.estado_pedido in ('2','8') and \
                 ( \
                     a.prefijo || ' ' || a.numero ilike $4 or \
                     a.numero ilike $4 or \
@@ -214,7 +214,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     inner join solicitud_productos_a_bodega_principal c on b.solicitud_prod_a_bod_ppal_id = c.solicitud_prod_a_bod_ppal_id\
                     inner join bodegas d on c.farmacia_id = d.empresa_id and c.centro_utilidad = d.centro_utilidad and c.bodega = d.bodega\
                     inner join centros_utilidad e on d.empresa_id = e.empresa_id and d.centro_utilidad = e.centro_utilidad\
-                    UNION\
+                    UNION \
                     select \
                     '1' as tipo,\
                     'CLIENTES' as descripcion_tipo,\
@@ -253,9 +253,9 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     a.observacion,\
                     a.usuario_id\
                     from inv_planillas_detalle_empresas a\
-                ) as a /*where a.planilla_id = $1 and ( a.descripcion_destino ilike $2 )*/;";
+                ) as a where a.planilla_id = $1 and ( a.descripcion_destino ilike $2 );";
     
-    G.db.query(sql, [/*planilla_id, '%'+termino_busqueda+'%'*/], function(err, rows, result) {
+    G.db.query(sql, [planilla_id, '%'+termino_busqueda+'%'], function(err, rows, result) {
         callback(err, rows);
     });
 };

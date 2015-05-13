@@ -57,6 +57,10 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.listaPedidosOperariosBodega(req, res);
     });
     
+    app.post('/api/PedidosFarmacias/obtenerDetallePedido', function(req, res) {
+        c_pedidos_farmacias.obtenerDetallePedido(req, res);
+    });
+    
     // Listar productos
     app.post('/api/PedidosFarmacias/listarProductos', function(req, res) {
         c_pedidos_farmacias.listar_productos(req, res);

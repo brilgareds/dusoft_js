@@ -649,7 +649,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     //Consultar primero estado de la cotización
                     that.consultarEstadoCotizacion(numero_cotizacion, function(estado_cotizacion){
                     
-                        if (estado_cotizacion === '1') {
+                        if (estado_cotizacion === '1' || estado_cotizacion === '2') {
                             that.modificarCotizacion(row);
                         }
                         else{
@@ -935,8 +935,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 
                         //Consultar primero estado de la cotización
                         that.consultarEstadoCotizacion(numero_cotizacion, function(estado_cotizacion){
-
-                            if (estado_cotizacion === '1') {
+                            
+                            if (estado_cotizacion === '1' || estado_cotizacion === '2') {
                                 that.eliminarDetalleCotizacion(row);
                             }
                             else{
@@ -1582,7 +1582,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 //Consultar primero estado de lacotización
                 that.consultarEstadoCotizacion(numero_cotizacion, function(estado_cotizacion){
                     
-                    if (estado_cotizacion === '1') {
+                    if (estado_cotizacion === '2') {
 
                         var obj_encabezado = {
                             session: $scope.rootCreaCotizaciones.session,
@@ -1648,6 +1648,37 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                 console.log("Falló la Inserción de Pedido Cliente", data.msj);
                             }
                         });
+                    }
+                    else if (estado_cotizacion === '1'){
+                        
+                        //Avisa que no puede generar pedido porque la cotización no ha sido aprobada por cartera
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: ' <div class="modal-header">\
+                                            <button type="button" class="close" ng-click="close()">&times;</button>\
+                                            <h4 class="modal-title">Aviso: </h4>\
+                                        </div>\
+                                        <div class="modal-body row">\
+                                            <div class="col-md-12">\
+                                                <h4 >La Cotización ' + numero_cotizacion + ' no está aprobada por Cartera.<br>No puede generar el Pedido.</h4>\
+                                            </div>\
+                                        </div>\
+                                        <div class="modal-footer">\
+                                            <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                        </div>',
+                            scope: $scope,
+                            controller: function($scope, $modalInstance) {
+                                $scope.close = function() {
+                                    $modalInstance.close();
+                                };
+                            }
+                        };
+
+                        var modalInstance = $modal.open($scope.opts);
+                        
                     }
                     else {
                         //Avisar la no posibilidad de modiificar porque se ha convertido en Pedido

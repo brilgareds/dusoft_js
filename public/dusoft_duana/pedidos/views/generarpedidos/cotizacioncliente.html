@@ -201,7 +201,7 @@
 
         <div class="col-sm-12 btn-toolbar">
 
-            <button type="submit" class="btn btn-default pull-right" ng-if="rootCreaCotizaciones.es_cotizacion" ng-disabled="!rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEditable()
+            <button type="submit" class="btn btn-default pull-right" ng-if="rootCreaCotizaciones.es_cotizacion && rootCreaCotizaciones.Empresa.getPedidoSeleccionado().estado == 2" ng-disabled="!rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEditable()
                     || !rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEncabezadoBloqueado()" ng-click="generarPedidoCliente()"><span class="glyphicon glyphicon-cog"></span> Generar Pedido</button>
                     
             <button type="submit" class="btn btn-default pull-right" ng-if="rootCreaCotizaciones.es_cotizacion" ng-disabled="!rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEncabezadoBloqueado()" ng-click="opcionesPDF()"><span class="glyphicon glyphicon-file"></span> Generar PDF</button>

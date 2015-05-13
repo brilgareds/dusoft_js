@@ -883,13 +883,50 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(empresa_id, tipo_id
  */
 PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto, callback) {
     
+//    var sql = "INSERT INTO ventas_ordenes_pedidos_d_tmp(pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, fecha_registro, usuario_id, tipo_producto) \
+//                VALUES($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, $6, $7)";
+//
+//    G.db.query(sql, [pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto], function(err, rows, result) {
+//        callback(err, rows, result);
+//    });
+
+    var numero_cotizacion = pedido_cliente_id_tmp;
+
+    G.db.begin(function() {
+           
+           __cambiar_estado_cotizacion(numero_cotizacion, '1', function(err, rows, result){
+               if(err){
+                    callback(err);
+                    return;
+                }
+                
+                __insertar_detalle_cotizacion(pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto, function(err, rows, result) {
+
+                    if(err){
+                        callback(err);
+                        return;
+                    }
+
+                    // Finalizar Transacción.
+                    G.db.commit(function(){
+                        callback(err, rows, result);
+                    });
+                });
+                
+           });
+           
+    });
+};
+
+
+function __insertar_detalle_cotizacion(pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto, callback){
+    
     var sql = "INSERT INTO ventas_ordenes_pedidos_d_tmp(pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, fecha_registro, usuario_id, tipo_producto) \
                 VALUES($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, $6, $7)";
-
-    G.db.query(sql, [pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto], function(err, rows, result) {
+    
+    G.db.transaction(sql, [pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto], function(err, rows, result){
         callback(err, rows, result);
     });
-
 };
 
 /**
@@ -1410,16 +1447,23 @@ PedidosClienteModel.prototype.modificar_cantidades_cotizacion = function(numero_
                     callback(err);
                     return;
                 }
-            
-            __modificar_cantidades_cotizacion(numero_cotizacion, codigo_producto, cantidad, function(err, rows, result){
-               
-                if(err){
+                
+            __cambiar_estado_cotizacion(numero_cotizacion, '1', function(err, rows, result){
+               if(err){
                     callback(err);
                     return;
                 }
-                
-                G.db.commit(function(){
-                    callback(err, rows);
+            
+                __modificar_cantidades_cotizacion(numero_cotizacion, codigo_producto, cantidad, function(err, rows, result){
+
+                    if(err){
+                        callback(err);
+                        return;
+                    }
+
+                    G.db.commit(function(){
+                        callback(err, rows);
+                    });
                 });
             });
         });

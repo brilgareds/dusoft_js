@@ -730,6 +730,27 @@ PedidosFarmacias.prototype.listaPedidosOperariosBodega = function(req, res) {
 
 };
 
+
+PedidosFarmacias.prototype.obtenerDetallePedido = function(req, res) {
+    var self = this;
+
+    var args = req.body.data;
+    var numero_pedido = args.pedidos_farmacias.numero_pedido;
+    
+    if (args.pedidos_farmacias === undefined || numero_pedido === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+    
+    self.m_pedidos_farmacias.consultar_detalle_pedido(numero_pedido, function(err, detalle_pedido) {
+        detalle_pedido = self.m_pedidos.unificarLotesDetalle(detalle_pedido);
+
+        res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {lista_productos: detalle_pedido}));
+
+    });
+
+};
+
 PedidosFarmacias.prototype.listar_productos = function(req, res) {
 
     var that = this;

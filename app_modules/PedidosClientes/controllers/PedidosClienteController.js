@@ -489,6 +489,30 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
 
 };
 
+
+PedidosCliente.prototype.obtenerDetallePedido = function(req, res) {
+    var self = this;
+
+    var args = req.body.data;
+    var numero_pedido = args.pedidos_clientes.numero_pedido;
+    
+    if (args.pedidos_clientes === undefined || numero_pedido === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+    
+    self.m_pedidos_clientes.consultar_detalle_pedido(numero_pedido, function(err, detalle_pedido) {
+        detalle_pedido = self.m_pedidos.unificarLotesDetalle(detalle_pedido);
+
+        res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {lista_productos: detalle_pedido}));
+
+    });
+
+};
+
+
+
+
 /**
  * @api {post} /api/PedidosClientes/insertarCotizacion Insertar Cotización
  * @apiName Insertar Cotización.
@@ -546,7 +570,7 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'empresa_id, tipo_tercero_id o tercero_id No Están Definidos', 404, {}));
         return;
     }
-    
+
     if (args.cotizacion_encabezado.tipo_id_vendedor === undefined || args.cotizacion_encabezado.vendedor_id === undefined || args.cotizacion_encabezado.estado === undefined) {
         res.send(G.utils.r(req.url, 'tipo_id_vendedor, vendedor_id o estado No Están Definidos', 404, {}));
         return;
@@ -556,7 +580,7 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'empresa_id, tipo_id_tercero o tercero_id Están Vacios', 404, {}));
         return;
     }
-    
+
     if (args.cotizacion_encabezado.tipo_id_vendedor === '' || args.cotizacion_encabezado.vendedor_id === '' || args.cotizacion_encabezado.estado === '') {
         res.send(G.utils.r(req.url, 'tipo_id_vendedor, vendedor_id o estado Están Vacios', 404, {}));
         return;
@@ -582,7 +606,7 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'Inserción del Encabezado Cotización Exitosa', 200, {resultado_consulta: row}));
 
     });
- 
+
 };
 
 /**
@@ -642,7 +666,7 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'pedido_cliente_id_tmp, codigo_producto o porc_iva No Están Definidos', 404, {}));
         return;
     }
-    
+
     if (args.cotizacion_detalle.numero_unidades === undefined || args.cotizacion_detalle.valor_unitario === undefined || args.cotizacion_detalle.tipo_producto === undefined) {
         res.send(G.utils.r(req.url, 'numero_unidades, valor_unitario o tipo_producto No Están Definidos', 404, {}));
         return;
@@ -652,7 +676,7 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'pedido_cliente_id_tmp, codigo_producto o porc_iva Están Vacios', 404, {}));
         return;
     }
-    
+
     if (args.cotizacion_detalle.numero_unidades === '' || args.cotizacion_detalle.valor_unitario === '' || args.cotizacion_detalle.tipo_producto === '') {
         res.send(G.utils.r(req.url, 'numero_unidades, valor_unitario o tipo_producto Están Vacios', 404, {}));
         return;
@@ -677,7 +701,7 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'Inserción del Detalle Cotización Exitosa', 200, {}));
 
     });
- 
+
 };
 
 //INSERTAR PEDIDO CLIENTES
@@ -691,7 +715,7 @@ PedidosCliente.prototype.insertarPedidoCliente = function(req, res) {
         res.send(G.utils.r(req.url, 'número_cotizacion No Está Definido', 404, {}));
         return;
     }
-    
+
     if (args.pedido_cliente.numero_cotizacion === '') {
         res.send(G.utils.r(req.url, 'número_cotizacion Está Vacio', 404, {}));
         return;
@@ -707,14 +731,14 @@ PedidosCliente.prototype.insertarPedidoCliente = function(req, res) {
             res.send(G.utils.r(req.url, 'Error en la inserción del Pedido', 500, {}));
             return;
         }
-        
+
         var numero_pedido = rows.rows[0].pedido_cliente_id;
         var fecha_registro = fecha_registro_encabezado;
-        
+
         console.log(">>>> RESULTADO GENERAR PEDIDO: ", rows);
         console.log(">>>>> FECHA REGISTRO ENCABEZADO: ", fecha_registro);
         //res.send(G.utils.r(req.url, 'Inserción Exitosa del Pedido', 200, {numero_pedido: rows.rows[0].pedido_cliente_id}));
-        
+
         /*Inicio - Modificación para estados*/
 
         //that.m_terceros.seleccionar_operario_por_usuario_id(usuario_id, function(err, operario_array) {
@@ -723,39 +747,39 @@ PedidosCliente.prototype.insertarPedidoCliente = function(req, res) {
 //                res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Selección del Operario', 500, {}));
 //                return;
 //            }
-            //else {
+        //else {
 
-                var responsable = null;//operario_array[0].operario_id;
+        var responsable = null;//operario_array[0].operario_id;
 
-                that.m_pedidos_clientes.asignar_responsables_pedidos(numero_pedido, '0', responsable, usuario_id, function(err, rows, responsable_estado_pedido) {
+        that.m_pedidos_clientes.asignar_responsables_pedidos(numero_pedido, '0', responsable, usuario_id, function(err, rows, responsable_estado_pedido) {
 
-                    if (err) {
-                        res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Asignacion de Resposables', 500, {}));
-                        return;
-                    }
+            if (err) {
+                res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Asignacion de Resposables', 500, {}));
+                return;
+            }
 
-                    /*Inicio - Actualización sw_terminado*/
-                    that.m_pedidos_clientes.terminar_estado_pedido(numero_pedido, ['0'], '1', function(err, rows, results) {
+            /*Inicio - Actualización sw_terminado*/
+            that.m_pedidos_clientes.terminar_estado_pedido(numero_pedido, ['0'], '1', function(err, rows, results) {
 
-                        if (err) {
-                            res.send(G.utils.r(req.url, 'Error Finalizando el Documento Temporal Farmacias', 500, {documento_temporal: {}}));
-                            return;
-                        }
+                if (err) {
+                    res.send(G.utils.r(req.url, 'Error Finalizando el Documento Temporal Farmacias', 500, {documento_temporal: {}}));
+                    return;
+                }
 
-                        res.send(G.utils.r(req.url, 'Encabezado del pedido almacenado exitosamente', 200, {numero_pedido: numero_pedido, fecha_registro: fecha_registro}));
-                        return;
+                res.send(G.utils.r(req.url, 'Encabezado del pedido almacenado exitosamente', 200, {numero_pedido: numero_pedido, fecha_registro: fecha_registro}));
+                return;
 
-                    });
-                    /*Fin - Actualización sw_terminado*/
+            });
+            /*Fin - Actualización sw_terminado*/
 
-                });
+        });
 
-            //} // fin else
+        //} // fin else
         //});
         /*Fin - Modificación para estados*/
 
     });
- 
+
 };
 
 //LISTAR COTIZACIONES CLIENTES
@@ -769,7 +793,7 @@ PedidosCliente.prototype.listarCotizaciones = function(req, res) {
         res.send(G.utils.r(req.url, 'empresa_id No Está Definido', 404, {}));
         return;
     }
-    
+
     if (args.cotizaciones_cliente.empresa_id === '') {
         res.send(G.utils.r(req.url, 'empresa_id Está Vacio', 404, {}));
         return;
@@ -790,7 +814,7 @@ PedidosCliente.prototype.listarCotizaciones = function(req, res) {
         res.send(G.utils.r(req.url, 'Consulta de Cotización Exitosa', 200, {resultado_consulta: listado_cotizaciones}));
 
     });
- 
+
 };
 
 //LISTAR PEDIDOS
@@ -799,12 +823,12 @@ PedidosCliente.prototype.listadoPedidosClientes = function(req, res) {
     var that = this;
 
     var args = req.body.data;
-    
+
     if (args.pedidos_cliente === undefined || args.pedidos_cliente.empresa_id === undefined) {
         res.send(G.utils.r(req.url, 'empresa_id No Está Definido', 404, {}));
         return;
     }
-    
+
     if (args.pedidos_cliente.empresa_id === '') {
         res.send(G.utils.r(req.url, 'empresa_id Está Vacio', 404, {}));
         return;
@@ -816,9 +840,9 @@ PedidosCliente.prototype.listadoPedidosClientes = function(req, res) {
     var pagina = args.pedidos_cliente.pagina_actual;
 
     that.m_pedidos_clientes.listado_pedidos_clientes(empresa_id, termino_busqueda, pagina, function(err, listado_pedidos) {
-        
+
         //console.log(">>>>>>>>>>>>> LISTADO PEDIDOS ............", listado_pedidos);
-        
+
         if (err) {
             res.send(G.utils.r(req.url, 'Error en consulta de Pedidos', 500, {}));
             return;
@@ -827,7 +851,7 @@ PedidosCliente.prototype.listadoPedidosClientes = function(req, res) {
         res.send(G.utils.r(req.url, 'Consulta de Pedidos Exitosa', 200, {resultado_consulta: listado_pedidos}));
 
     });
- 
+
 };
 
 //ESTADO COTIZACIÓN DEL CLIENTE
@@ -841,7 +865,7 @@ PedidosCliente.prototype.estadoCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'numero_cotizacion No Está Definido', 404, {}));
         return;
     }
-    
+
     if (args.estado_cotizacion.numero_cotizacion === '') {
         res.send(G.utils.r(req.url, 'numero_cotizacion Está Vacio', 404, {}));
         return;
@@ -860,7 +884,7 @@ PedidosCliente.prototype.estadoCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'Consulta Estado Cotización Exitosa', 200, {resultado_consulta: array_estado_cotizacion}));
 
     });
- 
+
 };
 
 //ESTADO PEDIDO DEL CLIENTE
@@ -875,7 +899,7 @@ PedidosCliente.prototype.estadoPedido = function(req, res) {
         res.send(G.utils.r(req.url, 'numero_pedido No Está Definido', 404, {}));
         return;
     }
-    
+
     if (args.estado_pedido.numero_pedido === '') {
         res.send(G.utils.r(req.url, 'numero_pedido Está Vacio', 404, {}));
         return;
@@ -894,7 +918,7 @@ PedidosCliente.prototype.estadoPedido = function(req, res) {
         res.send(G.utils.r(req.url, 'Consulta Estado Pedido Exitosa', 200, {resultado_consulta: array_estado_pedido}));
 
     });
- 
+
 };
 
 PedidosCliente.prototype.listarDetalleCotizacion = function(req, res) {
@@ -907,7 +931,7 @@ PedidosCliente.prototype.listarDetalleCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'numero_cotizacion No Está Definido', 404, {}));
         return;
     }
-    
+
     if (args.detalle_cotizacion.numero_cotizacion === '') {
         res.send(G.utils.r(req.url, 'numero_cotizacion Está Vacio', 404, {}));
         return;
@@ -925,7 +949,7 @@ PedidosCliente.prototype.listarDetalleCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'Consulta Detalle Cotización Exitosa', 200, {resultado_consulta: detalle_cotizacion}));
 
     });
- 
+
 };
 
 //listarDetallePedido
@@ -939,7 +963,7 @@ PedidosCliente.prototype.listarDetallePedido = function(req, res) {
         res.send(G.utils.r(req.url, 'numero_pedido No Está Definido', 404, {}));
         return;
     }
-    
+
     if (args.detalle_pedido.numero_pedido === '') {
         res.send(G.utils.r(req.url, 'numero_pedido Está Vacio', 404, {}));
         return;
@@ -957,7 +981,7 @@ PedidosCliente.prototype.listarDetallePedido = function(req, res) {
         res.send(G.utils.r(req.url, 'Consulta Detalle Pedido Exitosa', 200, {resultado_consulta: detalle_pedido}));
 
     });
- 
+
 };
 
 //eliminar_registro_detalle_cotizacion
@@ -971,7 +995,7 @@ PedidosCliente.prototype.eliminarRegistroDetalleCotizacion = function(req, res) 
         res.send(G.utils.r(req.url, 'numero_cotizacion o codigo_producto no están definidos', 404, {}));
         return;
     }
-    
+
     if (args.eliminar_detalle_cotizacion.numero_cotizacion === '' || args.eliminar_detalle_cotizacion.codigo_producto === '') {
         res.send(G.utils.r(req.url, 'numero_cotizacion o codigo_producto están vacios', 404, {}));
         return;
@@ -992,7 +1016,7 @@ PedidosCliente.prototype.eliminarRegistroDetalleCotizacion = function(req, res) 
         res.send(G.utils.r(req.url, 'Eliminación Registro Detalle Cotización Exitoso', 200, {}));
 
     });
- 
+
 };
 
 //cotizacionEsPedido
@@ -1006,7 +1030,7 @@ PedidosCliente.prototype.cambiarEstadoCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'numero_cotizacion o nuevo_estado no están definidos', 404, {}));
         return;
     }
-    
+
     if (args.estado_cotizacion.numero_cotizacion === '' || args.estado_cotizacion.nuevo_estado === '') {
         res.send(G.utils.r(req.url, 'numero_cotizacion o nuevo_estado están vacios', 404, {}));
         return;
@@ -1026,7 +1050,7 @@ PedidosCliente.prototype.cambiarEstadoCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'Modificación de estado Exitosa', 200, {}));
 
     });
- 
+
 };
 
 PedidosCliente.prototype.cambiarEstadoAprobacionCotizacion = function(req, res) {
@@ -1069,7 +1093,7 @@ PedidosCliente.prototype.pedidoClienteArchivoPlano = function(req, res) {
 
     var args = req.body.data;
     var session = req.body.session;
-    
+
     //VERIFICACION DATOS PARA CONSULTA PRODUCTOS
 
     if (args.pedido_cliente === undefined || args.pedido_cliente.empresa_id === undefined || args.pedido_cliente.centro_utilidad_id === undefined || args.pedido_cliente.bodega_id === undefined) {
@@ -1081,7 +1105,7 @@ PedidosCliente.prototype.pedidoClienteArchivoPlano = function(req, res) {
         res.send(G.utils.r(req.url, 'contrato_cliente_id, pedido_cliente_id_tmp o tipo_producto no estan definidos', 404, {}));
         return;
     }
-    
+
     if (args.pedido_cliente.empresa_id === '' || args.pedido_cliente.centro_utilidad_id === '' || args.pedido_cliente.bodega_id === '') {
         res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id están vacios', 404, {}));
         return;
@@ -1091,7 +1115,7 @@ PedidosCliente.prototype.pedidoClienteArchivoPlano = function(req, res) {
         res.send(G.utils.r(req.url, 'contrato_cliente_id, pedido_cliente_id_tmp o tipo_producto están vacios', 404, {}));
         return;
     }
-    
+
     //VERIFICACION DE DATOS PARA ENCABEZADO. empresa_id se verifica arriba
 
     if (args.pedido_cliente === undefined || args.pedido_cliente.tipo_id_tercero === undefined || args.pedido_cliente.tercero_id === undefined) {
@@ -1103,17 +1127,17 @@ PedidosCliente.prototype.pedidoClienteArchivoPlano = function(req, res) {
         res.send(G.utils.r(req.url, 'tipo_id_vendedor, vendedor_id o estado no estan definidos', 404, {}));
         return;
     }
-    
+
     if (args.pedido_cliente.tipo_id_tercero === '' || args.pedido_cliente.tercero_id === '') {
         res.send(G.utils.r(req.url, 'tipo_id_tercero o tercero_id están vacios', 404, {}));
         return;
     }
 
-    if (args.pedido_cliente.tipo_id_vendedor=== '' || args.pedido_cliente.vendedor_id === '' || args.pedido_cliente.estado === '') {
+    if (args.pedido_cliente.tipo_id_vendedor === '' || args.pedido_cliente.vendedor_id === '' || args.pedido_cliente.estado === '') {
         res.send(G.utils.r(req.url, 'tipo_id_vendedor, vendedor_id o estado están vacios', 404, {}));
         return;
     }
-    
+
     //VERIFICACION DEL FILE
 
     if (req.files === undefined) {
@@ -1126,17 +1150,17 @@ PedidosCliente.prototype.pedidoClienteArchivoPlano = function(req, res) {
         if (continuar) {
 
             var lista_productos = contenido[0].data;
-            
+
             //console.log(">>>>>>> Cantidad de Columnas Es: ", lista_productos[0].length)
-            if(lista_productos[0].length < 2){ // Para archivo de 2 columnas
-                
+            if (lista_productos[0].length < 2) { // Para archivo de 2 columnas
+
                 //console.log(">>>>>>> La Cantidad de Columnas no es correcta. Debe tener al menos 3:")    
                 //console.log(">>>>>>> Cantidad de Columnas Es: ", lista_productos[0].length)  
-                
+
                 res.send(G.utils.r(req.url, 'La Cantidad de Columnas no es correcta. Debe tener al menos 2 Columnas', 404, {}));
                 return;
             }
-            else{
+            else {
                 //console.log("El Número de columnas es CORRECTO!");
 
                 __validar_productos_archivo_plano(that, lista_productos, function(productos_validos, productos_invalidos) {
@@ -1157,7 +1181,7 @@ PedidosCliente.prototype.pedidoClienteArchivoPlano = function(req, res) {
                     var estado = args.pedido_cliente.estado;
                     var observaciones = args.pedido_cliente.observaciones;
 
-                    if(j>0){
+                    if (j > 0) {
                         //INSERTAR ENCABEZADO
                         that.m_pedidos_clientes.insertar_cotizacion(empresa_id, tipo_id_tercero, tercero_id, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones, function(err, array_pedido_cliente_id_tmp) {
 
@@ -1202,12 +1226,12 @@ PedidosCliente.prototype.pedidoClienteArchivoPlano = function(req, res) {
                                         var numero_unidades = parseInt(producto_valido.cantidad_solicitada);
                                         //var valor_unitario = parseFloat(producto_valido.precio_unitario);
                                         var valor_unitario = 0;
-                                        
-                                        if(parseFloat(producto.precio_contrato) > 0)
+
+                                        if (parseFloat(producto.precio_contrato) > 0)
                                             valor_unitario = parseFloat(producto.precio_contrato);
                                         else
                                             valor_unitario = parseFloat(producto.precio_venta_anterior);
-                                        
+
                                         var tipo_producto_id = producto.tipo_producto_id;
 
                                         //INSERTAR DETALLE
@@ -1228,7 +1252,7 @@ PedidosCliente.prototype.pedidoClienteArchivoPlano = function(req, res) {
                         });
                     }
 
-                    else{
+                    else {
                         res.send(G.utils.r(req.url, 'Lista de Productos', 200, {pedido_cliente_detalle: {numero_cotizacion: pedido_cliente_id_tmp, productos_validos: productos_validos, productos_invalidos: productos_invalidos}}));
                         return;
                     }
@@ -1278,7 +1302,8 @@ function __subir_archivo_plano(files, callback) {
     } else {
         callback(false);
     }
-};
+}
+;
 
 function __validar_productos_archivo_plano(contexto, contenido_archivo_plano, callback) {
 
@@ -1295,10 +1320,10 @@ function __validar_productos_archivo_plano(contexto, contenido_archivo_plano, ca
 
 
     var i = filas.length;
-    
+
     //Programar aquí la validación de la cantidad de columnas
     //var cantidad_columnas = filas[0].length;
-    
+
     //console.log(">>>>>>>>>>>>>> La Cantidad de Columnas es: ", cantidad_columnas);
 
     filas.forEach(function(row) {
@@ -1322,7 +1347,8 @@ function __validar_productos_archivo_plano(contexto, contenido_archivo_plano, ca
             }
         });
     });
-};
+}
+;
 
 PedidosCliente.prototype.imprimirCotizacionCliente = function(req, res) {
 
@@ -1342,19 +1368,19 @@ PedidosCliente.prototype.imprimirCotizacionCliente = function(req, res) {
         return;
     }
 
-   if (args.encabezado_pedido_cliente.id_cliente === undefined || args.encabezado_pedido_cliente.nombre_cliente === undefined
+    if (args.encabezado_pedido_cliente.id_cliente === undefined || args.encabezado_pedido_cliente.nombre_cliente === undefined
             || args.encabezado_pedido_cliente.ciudad_cliente === undefined || args.encabezado_pedido_cliente.direccion_cliente === undefined) {
 
         res.send(G.utils.r(req.url, 'id_cliente, nombre_cliente, ciudad_cliente o direccion_cliente no están definidos', 404, {}));
         return;
     }
-    
+
     if (args.encabezado_pedido_cliente.valor_total_sin_iva === undefined || args.encabezado_pedido_cliente.valor_total_con_iva === undefined) {
 
         res.send(G.utils.r(req.url, 'valor_total_sin_iva o valor_total_con_iva no están definidos', 404, {}));
         return;
     }
-    
+
 
     if (args.encabezado_pedido_cliente.numero_cotizacion === '') {
         res.send(G.utils.r(req.url, 'numero_cotizacion está vacio', 404, {}));
@@ -1367,21 +1393,21 @@ PedidosCliente.prototype.imprimirCotizacionCliente = function(req, res) {
         res.send(G.utils.r(req.url, 'codigo_origen_id, empresa_origen o fecha_registro están vacios', 404, {}));
         return;
     }
-    
+
     if (args.encabezado_pedido_cliente.id_cliente === '' || args.encabezado_pedido_cliente.nombre_cliente === ''
             || args.encabezado_pedido_cliente.ciudad_cliente === '' || args.encabezado_pedido_cliente.direccion_cliente === '') {
 
         res.send(G.utils.r(req.url, 'id_cliente, nombre_cliente, ciudad_cliente o direccion_cliente están vacios', 404, {}));
         return;
     }
-    
+
     if (args.encabezado_pedido_cliente.valor_total_sin_iva === '' || args.encabezado_pedido_cliente.valor_total_con_iva === '') {
 
         res.send(G.utils.r(req.url, 'valor_total_sin_iva o valor_total_con_iva están vacios', 404, {}));
         return;
     }
 
-    
+
     if (args.detalle_pedido_cliente === undefined) {
         res.send(G.utils.r(req.url, 'El detalle no está definido', 404, {}));
         return;
@@ -1398,13 +1424,13 @@ PedidosCliente.prototype.imprimirCotizacionCliente = function(req, res) {
                 res.send(G.utils.r(req.url, 'cantidad_solicitada o iva no están definidos', 404, {}));
                 return;
             }
-            
+
             if (detalle.precio === undefined || detalle.total_sin_iva === undefined || detalle.total_con_iva === undefined) {
                 res.send(G.utils.r(req.url, 'precio, total_sin_iva o total_con_iva no están definidos', 404, {}));
                 return;
             }
 
-            
+
             if (detalle.codigo_producto === '' || detalle.descripcion === '') {
                 res.send(G.utils.r(req.url, 'codigo_producto o descripcion están vacios', 404, {}));
                 return;
@@ -1414,7 +1440,7 @@ PedidosCliente.prototype.imprimirCotizacionCliente = function(req, res) {
                 res.send(G.utils.r(req.url, 'cantidad_solicitada o iva están vacios', 404, {}));
                 return;
             }
-            
+
             if (detalle.precio === '' || detalle.total_sin_iva === '' || detalle.total_con_iva === '') {
                 res.send(G.utils.r(req.url, 'precio, total_sin_iva o total_con_iva están vacios', 404, {}));
                 return;
@@ -1423,23 +1449,23 @@ PedidosCliente.prototype.imprimirCotizacionCliente = function(req, res) {
         });
     }
 
-    _generarDocumentoCotizacion(that, args, function(nombreTmp, estado_mail){
-        
-        if(estado_mail !== undefined) {
-            if(estado_mail === true) {
+    _generarDocumentoCotizacion(that, args, function(nombreTmp, estado_mail) {
+
+        if (estado_mail !== undefined) {
+            if (estado_mail === true) {
                 res.send(G.utils.r(req.url, 'Email enviado exitosamente', 200, {}));
                 return;
             }
-            
+
             res.send(G.utils.r(req.url, 'Error al enviar el email', 500, {}));
             return;
-            
+
         }
         else {
             res.send(G.utils.r(req.url, 'Url reporte pedido', 200, {reporte_pedido: {nombre_reporte: nombreTmp}}));
             return;
-        }        
-        
+        }
+
 //        if(error === {} && response === {}) {
 //            res.send(G.utils.r(req.url, 'Url reporte pedido', 200, {reporte_pedido: {nombre_reporte: nombreTmp}}));
 //            return;
@@ -1452,7 +1478,7 @@ PedidosCliente.prototype.imprimirCotizacionCliente = function(req, res) {
 //            res.send(G.utils.r(req.url, 'Email enviado exitosamente', 200, {}));
 //            return;
 //        }
-     });
+    });
 
 };
 
@@ -1471,29 +1497,30 @@ function _generarDocumentoCotizacion(that, obj, callback) {
         var fecha = new Date();
         var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
         G.fs.copySync(name, G.dirname + "/public/reports/" + nombreTmp);
-        
-        if(obj.encabezado_pedido_cliente.email === true) {
-            
-            var nombre_archivo = "Cotizacion No" + obj.encabezado_pedido_cliente.numero_cotizacion+".pdf";
+
+        if (obj.encabezado_pedido_cliente.email === true) {
+
+            var nombre_archivo = "Cotizacion No" + obj.encabezado_pedido_cliente.numero_cotizacion + ".pdf";
             var destinatario = obj.encabezado_pedido_cliente.destinatarios;
             //var subject = "Dusoft :: Cotización DUANA y Cia Ltda.";
             var asunto = obj.encabezado_pedido_cliente.asunto;
             var contenido = obj.encabezado_pedido_cliente.contenido;
 
-            __emailDocumento(that, destinatario, name, nombre_archivo, asunto, contenido, function(mail_exitoso){
+            __emailDocumento(that, destinatario, name, nombre_archivo, asunto, contenido, function(mail_exitoso) {
 
                 callback(nombreTmp, mail_exitoso);
                 return;
             });
-            
+
         }
         else {
             callback(nombreTmp);
-            return; 
+            return;
         }
 
     });
-};
+}
+;
 
 PedidosCliente.prototype.imprimirPedidoCliente = function(req, res) {
 
@@ -1513,19 +1540,19 @@ PedidosCliente.prototype.imprimirPedidoCliente = function(req, res) {
         return;
     }
 
-   if (args.encabezado_pedido_cliente.id_cliente === undefined || args.encabezado_pedido_cliente.nombre_cliente === undefined
+    if (args.encabezado_pedido_cliente.id_cliente === undefined || args.encabezado_pedido_cliente.nombre_cliente === undefined
             || args.encabezado_pedido_cliente.ciudad_cliente === undefined || args.encabezado_pedido_cliente.direccion_cliente === undefined) {
 
         res.send(G.utils.r(req.url, 'id_cliente, nombre_cliente, ciudad_cliente o direccion_cliente no están definidos', 404, {}));
         return;
     }
-    
+
     if (args.encabezado_pedido_cliente.valor_total_sin_iva === undefined || args.encabezado_pedido_cliente.valor_total_con_iva === undefined) {
 
         res.send(G.utils.r(req.url, 'valor_total_sin_iva o valor_total_con_iva no están definidos', 404, {}));
         return;
     }
-    
+
 
     if (args.encabezado_pedido_cliente.numero_pedido === '') {
         res.send(G.utils.r(req.url, 'numero_pedido está vacio', 404, {}));
@@ -1538,21 +1565,21 @@ PedidosCliente.prototype.imprimirPedidoCliente = function(req, res) {
         res.send(G.utils.r(req.url, 'codigo_origen_id, empresa_origen o fecha_registro están vacios', 404, {}));
         return;
     }
-    
+
     if (args.encabezado_pedido_cliente.id_cliente === '' || args.encabezado_pedido_cliente.nombre_cliente === ''
             || args.encabezado_pedido_cliente.ciudad_cliente === '' || args.encabezado_pedido_cliente.direccion_cliente === '') {
 
         res.send(G.utils.r(req.url, 'id_cliente, nombre_cliente, ciudad_cliente o direccion_cliente están vacios', 404, {}));
         return;
     }
-    
+
     if (args.encabezado_pedido_cliente.valor_total_sin_iva === '' || args.encabezado_pedido_cliente.valor_total_con_iva === '') {
 
         res.send(G.utils.r(req.url, 'valor_total_sin_iva o valor_total_con_iva están vacios', 404, {}));
         return;
     }
 
-    
+
     if (args.detalle_pedido_cliente === undefined) {
         res.send(G.utils.r(req.url, 'El detalle no está definido', 404, {}));
         return;
@@ -1569,13 +1596,13 @@ PedidosCliente.prototype.imprimirPedidoCliente = function(req, res) {
                 res.send(G.utils.r(req.url, 'cantidad_solicitada o iva no están definidos', 404, {}));
                 return;
             }
-            
+
             if (detalle.precio === undefined || detalle.total_sin_iva === undefined || detalle.total_con_iva === undefined) {
                 res.send(G.utils.r(req.url, 'precio, total_sin_iva o total_con_iva no están definidos', 404, {}));
                 return;
             }
 
-            
+
             if (detalle.codigo_producto === '' || detalle.descripcion === '') {
                 res.send(G.utils.r(req.url, 'codigo_producto o descripcion están vacios', 404, {}));
                 return;
@@ -1585,7 +1612,7 @@ PedidosCliente.prototype.imprimirPedidoCliente = function(req, res) {
                 res.send(G.utils.r(req.url, 'cantidad_solicitada o iva están vacios', 404, {}));
                 return;
             }
-            
+
             if (detalle.precio === '' || detalle.total_sin_iva === '' || detalle.total_con_iva === '') {
                 res.send(G.utils.r(req.url, 'precio, total_sin_iva o total_con_iva están vacios', 404, {}));
                 return;
@@ -1594,23 +1621,23 @@ PedidosCliente.prototype.imprimirPedidoCliente = function(req, res) {
         });
     }
 
-    _generarDocumentoPedido(that, args, function(nombreTmp, estado_mail){
-        
-        if(estado_mail !== undefined) {
-            if(estado_mail === true) {
+    _generarDocumentoPedido(that, args, function(nombreTmp, estado_mail) {
+
+        if (estado_mail !== undefined) {
+            if (estado_mail === true) {
                 res.send(G.utils.r(req.url, 'Email enviado exitosamente', 200, {}));
                 return;
             }
-            
+
             res.send(G.utils.r(req.url, 'Error al enviar el email', 500, {}));
             return;
-            
+
         }
         else {
             res.send(G.utils.r(req.url, 'Url reporte pedido', 200, {reporte_pedido: {nombre_reporte: nombreTmp}}));
             return;
         }
-        
+
 //        if(error && response) {
 //            res.send(G.utils.r(req.url, 'Url reporte pedido', 200, {reporte_pedido: {nombre_reporte: nombreTmp}}));
 //            return;
@@ -1632,8 +1659,8 @@ PedidosCliente.prototype.imprimirPedidoCliente = function(req, res) {
 //            res.send(G.utils.r(req.url, 'Email enviado exitosamente', 200, {}));
 //            return;
 //        }
-        
-     });
+
+    });
 
 };
 
@@ -1652,31 +1679,32 @@ function _generarDocumentoPedido(that, obj, callback) {
         var fecha = new Date();
         var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
         G.fs.copySync(name, G.dirname + "/public/reports/" + nombreTmp);
-        
-        if(obj.encabezado_pedido_cliente.email === true) {
-            var nombre_archivo = "Pedido No" + obj.encabezado_pedido_cliente.numero_pedido+".pdf";
+
+        if (obj.encabezado_pedido_cliente.email === true) {
+            var nombre_archivo = "Pedido No" + obj.encabezado_pedido_cliente.numero_pedido + ".pdf";
             var destinatario = obj.encabezado_pedido_cliente.destinatarios;
             //var subject = "Dusoft :: Pedido DUANA y Cia Ltda.";
             var asunto = obj.encabezado_pedido_cliente.asunto;
             var contenido = obj.encabezado_pedido_cliente.contenido;
 
-            __emailDocumento(that, destinatario, name, nombre_archivo, asunto, contenido, function(mail_exitoso){
+            __emailDocumento(that, destinatario, name, nombre_archivo, asunto, contenido, function(mail_exitoso) {
 
-                    callback(nombreTmp, mail_exitoso);
-                    return;
+                callback(nombreTmp, mail_exitoso);
+                return;
             });
         }
         else {
             callback(nombreTmp);
-            return; 
+            return;
         }
 
         //callback(nombreTmp);
     });
-};
+}
+;
 
 //Envío de Email
-function __emailDocumento(that, destinatario, ruta_archivo, nombre_archivo, subject, contenido, callback ) {
+function __emailDocumento(that, destinatario, ruta_archivo, nombre_archivo, subject, contenido, callback) {
 
 //    var smtpTransport = that.emails.createTransport("SMTP", {
 //        service: "Gmail",
@@ -1688,21 +1716,21 @@ function __emailDocumento(that, destinatario, ruta_archivo, nombre_archivo, subj
 
     var smtpTransport = that.emails.createTransport();
 
-    G.fs.readFile(ruta_archivo, function(err, data){
-        
-        if(err) {
-            
+    G.fs.readFile(ruta_archivo, function(err, data) {
+
+        if (err) {
+
             callback(err, null);
             return;
         }
-        
+
         var configuracion_email = {};
         configuracion_email.from = G.settings.email_sender;
         configuracion_email.to = destinatario;
         configuracion_email.subject = subject;
         configuracion_email.text = contenido;
         configuracion_email.html = contenido;
-        configuracion_email.attachments = [{'filename': nombre_archivo,'contents':data}]        
+        configuracion_email.attachments = [{'filename': nombre_archivo, 'contents': data}]
 
         smtpTransport.sendMail(configuracion_email, function(error, response) {
 
@@ -1716,22 +1744,23 @@ function __emailDocumento(that, destinatario, ruta_archivo, nombre_archivo, subj
                 return;
             }
         });
-        
+
     });
-};
+}
+;
 
 //Insertar Detalle Pedido
-PedidosCliente.prototype.insertarDetallePedido = function(req, res){
-  
+PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
+
     var that = this;
-    
+
     var args = req.body.data;
-    
+
     if (args.detalle_pedido === undefined || args.detalle_pedido.numero_pedido === undefined || args.detalle_pedido.codigo_producto === undefined || args.detalle_pedido.porc_iva === undefined) {
         res.send(G.utils.r(req.url, 'numero_pedido, codigo_producto o porc_iva No Están Definidos', 404, {}));
         return;
     }
-    
+
     if (args.detalle_pedido.numero_unidades === undefined || args.detalle_pedido.valor_unitario === undefined || args.detalle_pedido.tipo_producto === undefined) {
         res.send(G.utils.r(req.url, 'numero_unidades, valor_unitario o tipo_producto No Están Definidos', 404, {}));
         return;
@@ -1741,7 +1770,7 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res){
         res.send(G.utils.r(req.url, 'numero_pedido, codigo_producto o porc_iva Están Vacios', 404, {}));
         return;
     }
-    
+
     if (args.detalle_pedido.numero_unidades === '' || args.detalle_pedido.valor_unitario === '' || args.detalle_pedido.tipo_producto === '') {
         res.send(G.utils.r(req.url, 'numero_unidades, valor_unitario o tipo_producto Están Vacios', 404, {}));
         return;
@@ -1755,7 +1784,7 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res){
     var valor_unitario = args.detalle_pedido.valor_unitario;
     var tipo_producto = args.detalle_pedido.tipo_producto;
     var usuario_id = req.session.user.usuario_id;
-    
+
     //insertar_detalle_pedido = function(numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, callback)
 
     that.m_pedidos_clientes.insertar_detalle_pedido(numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto, function(err, row) {
@@ -1781,7 +1810,7 @@ PedidosCliente.prototype.eliminarRegistroDetallePedido = function(req, res) {
         res.send(G.utils.r(req.url, 'numero_pedido o codigo_producto no están definidos', 404, {}));
         return;
     }
-    
+
     if (args.eliminar_detalle_pedido.numero_pedido === '' || args.eliminar_detalle_pedido.codigo_producto === '') {
         res.send(G.utils.r(req.url, 'numero_pedido o codigo_producto están vacios', 404, {}));
         return;
@@ -1802,7 +1831,7 @@ PedidosCliente.prototype.eliminarRegistroDetallePedido = function(req, res) {
         res.send(G.utils.r(req.url, 'Eliminación Registro Detalle Pedido Exitoso', 200, {}));
 
     });
- 
+
 };
 
 //Modificar Cantidades Cotización
@@ -1812,21 +1841,21 @@ PedidosCliente.prototype.modificarCantidadesCotizacion = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.obj_pedido === undefined || args.obj_pedido.numero_cotizacion === undefined || args.obj_pedido.codigo_producto === undefined ) {
+    if (args.obj_pedido === undefined || args.obj_pedido.numero_cotizacion === undefined || args.obj_pedido.codigo_producto === undefined) {
         res.send(G.utils.r(req.url, 'numero_cotizacion o codigo_producto no están definidos', 404, {}));
         return;
     }
-    
+
     if (args.obj_pedido.cantidad === undefined) {
         res.send(G.utils.r(req.url, 'cantidad no está definida', 404, {}));
         return;
     }
-    
+
     if (args.obj_pedido.numero_cotizacion === '' || args.obj_pedido.codigo_producto === '') {
         res.send(G.utils.r(req.url, 'numero_cotizacion o codigo_producto están vacios', 404, {}));
         return;
     }
-    
+
     if (args.obj_pedido.cantidad === '') {
         res.send(G.utils.r(req.url, 'cantidad está vacia', 404, {}));
         return;
@@ -1837,7 +1866,7 @@ PedidosCliente.prototype.modificarCantidadesCotizacion = function(req, res) {
     var codigo_producto = args.obj_pedido.codigo_producto;
     var usuario_solicitud = req.session.user.usuario_id;
     var cantidad = args.obj_pedido.cantidad;
-    
+
     that.m_pedidos_clientes.modificar_cantidades_cotizacion(numero_cotizacion, codigo_producto, usuario_solicitud, cantidad, function(err, rows) {
 
         if (err) {
@@ -1856,22 +1885,22 @@ PedidosCliente.prototype.modificarCantidadesPedido = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.obj_pedido === undefined || args.obj_pedido.numero_pedido === undefined || args.obj_pedido.codigo_producto === undefined ) {
+    if (args.obj_pedido === undefined || args.obj_pedido.numero_pedido === undefined || args.obj_pedido.codigo_producto === undefined) {
         res.send(G.utils.r(req.url, 'numero_pedido o codigo_producto no están definidos', 404, {}));
         return;
     }
-    
+
     if (args.obj_pedido.cantidad === undefined) {
         res.send(G.utils.r(req.url, 'cantidad no está definida', 404, {}));
         return;
     }
-    
+
     if (args.obj_pedido.numero_pedido === '' || args.obj_pedido.codigo_producto === '') {
         res.send(G.utils.r(req.url, 'numero_pedido o codigo_producto están vacios', 404, {}));
         return;
     }
-    
-    if (args.obj_pedido.cantidad === '' ) {
+
+    if (args.obj_pedido.cantidad === '') {
         res.send(G.utils.r(req.url, 'cantidad está vacia', 404, {}));
         return;
     }
@@ -1881,7 +1910,7 @@ PedidosCliente.prototype.modificarCantidadesPedido = function(req, res) {
     var codigo_producto = args.obj_pedido.codigo_producto;
     var usuario_solicitud = req.session.user.usuario_id;
     var cantidad = args.obj_pedido.cantidad;
-    
+
     that.m_pedidos_clientes.modificar_cantidades_pedido(numero_pedido, codigo_producto, usuario_solicitud, cantidad, function(err, rows) {
 
         if (err) {
@@ -1892,11 +1921,11 @@ PedidosCliente.prototype.modificarCantidadesPedido = function(req, res) {
         res.send(G.utils.r(req.url, 'Modificación Cantidad Exitosa', 200, {}));
 
     });
- 
+
 };
 
 PedidosCliente.prototype.listarProductosClientes = function(req, res) {
-    
+
     var that = this;
 
     var args = req.body.data;
@@ -1910,7 +1939,7 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
         res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacíos', 404, {}));
         return;
     }
-    
+
     if (args.productos.pagina_actual === '') {
         res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
         return;
@@ -1930,10 +1959,11 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
     /* Inicio - Modificación para Tipo Producto */
     var tipo_producto = '0';
 
-    if(args.productos.tipo_producto !== undefined){
+    if (args.productos.tipo_producto !== undefined) {
         tipo_producto = args.productos.tipo_producto;
     }
     /* Fin - Modificación para Tipo Producto */
+
 
     this.m_productos.listar_productos_clientes(empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pedido_cliente_id_tmp, tipo_producto, laboratorio, concentracion, pagina_actual, filtro, function(err, lista_productos) {
         
@@ -1943,28 +1973,28 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
             res.send(G.utils.r(req.url, 'Lista de productos vacía', 200, {lista_productos: []}));
             return;
         }
-        
+
         lista_productos.forEach(function(producto) {
-            
+
             //producto.existencia
             that.m_pedidos_farmacias.calcular_cantidad_total_pendiente_producto(empresa_id, producto.codigo_producto, function(err, total_pendiente_farmacias) {
-                
+
                 var cantidad_total_pendiente_farmacias = (total_pendiente_farmacias.length > 0) ? total_pendiente_farmacias[0].cantidad_total_pendiente : 0;
-                
+
                 that.m_pedidos_clientes.calcular_cantidad_total_pendiente_producto(empresa_id, producto.codigo_producto, function(err, total_pendiente_clientes) {
-                    
+
                     var cantidad_total_pendiente_clientes = (total_pendiente_clientes.length > 0) ? total_pendiente_clientes[0].cantidad_total_pendiente : 0;
-                    
-                    that.m_pedidos_farmacias.calcular_cantidad_reservada_temporales_farmacias(producto.codigo_producto, function(err, total_reservado_temporales){
+
+                    that.m_pedidos_farmacias.calcular_cantidad_reservada_temporales_farmacias(producto.codigo_producto, function(err, total_reservado_temporales) {
 
                         var cantidad_reservada_temporales = (total_reservado_temporales.length > 0) ? total_reservado_temporales[0].total_reservado : 0;
-                        
-                        that.m_pedidos_clientes.calcular_cantidad_reservada_cotizaciones_clientes(producto.codigo_producto, function(err, total_reservado_cotizaciones){
+
+                        that.m_pedidos_clientes.calcular_cantidad_reservada_cotizaciones_clientes(producto.codigo_producto, function(err, total_reservado_cotizaciones) {
 
                             var cantidad_reservada_cotizaciones = (total_reservado_cotizaciones.length > 0) ? total_reservado_cotizaciones[0].total_reservado : 0;
 
                             var disponibilidad_bodega = producto.existencia - cantidad_total_pendiente_farmacias - cantidad_total_pendiente_clientes
-                                                        - cantidad_reservada_temporales - cantidad_reservada_cotizaciones;
+                                    - cantidad_reservada_temporales - cantidad_reservada_cotizaciones;
 
                             producto.disponible = (disponibilidad_bodega < 0) ? 0 : disponibilidad_bodega;
 

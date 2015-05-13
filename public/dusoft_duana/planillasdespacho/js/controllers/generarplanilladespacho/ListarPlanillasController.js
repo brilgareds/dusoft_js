@@ -128,12 +128,17 @@ define(["angular", "js/controllers",
                                             <ul class="dropdown-menu dropdown-options">\
                                                 <li><a href="javascript:void(0);" ng-click="gestionar_planilla_despacho(row.entity,true)" >Modificar</a></li>\
                                                 <li><a href="javascript:void(0);" ng-click="generar_reporte(row.entity,false)" >Ver PDF</a></li>\
-                                                <li><a href="javascript:void(0);" ng-disabled="true" ng-click="ventana_enviar_email(row.entity)" >Enviar por Email</a></li>\
+                                                <li><a href="javascript:void(0);" ng-validate-events="{{ validar_envio_email(row.entity) }}" ng-click="ventana_enviar_email(row.entity)" >Enviar por Email</a></li>\
                                             </ul>\
                                        </div>'
                     }
                 ]
             };
+ 
+            $scope.validar_envio_email = function(planilla){
+                return {'click': planilla.get_estado() == '2'};
+            };
+
 
             $scope.gestionar_planilla_despacho = function(planilla_despacho, opcion) {
 

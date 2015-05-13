@@ -755,6 +755,18 @@ ALTER TABLE "public"."inv_transportadoras"
 COMMENT ON COLUMN "public"."inv_transportadoras"."placa_vehiculo"
 IS 'Placa del vehiculo';
 
+/* Crear campo en tabla transportadoras */
+ALTER TABLE "public"."inv_transportadoras"
+  ADD COLUMN "sw_solicitar_guia" CHAR(1);
+
+ALTER TABLE "public"."inv_transportadoras"
+  ALTER COLUMN "sw_solicitar_guia" SET DEFAULT '0';
+
+COMMENT ON COLUMN "public"."inv_transportadoras"."sw_solicitar_guia"
+IS 'Solicita el numero de guia para transportadoras externas.
+0=> No solicita el numero de guia
+1=> Solcita el numero de guia';
+
 /* Crear  tabla inv_planillas_despacho */
 CREATE TABLE "public"."inv_planillas_despacho" (
   "id" SERIAL, 
@@ -768,6 +780,7 @@ CREATE TABLE "public"."inv_planillas_despacho" (
   "fecha_despacho" TIMESTAMP(0) WITHOUT TIME ZONE, 
   "pais_id" VARCHAR(4), 
   "departamento_id" VARCHAR(4), 
+  "numero_guia_externo" VARCHAR(45), 
   CONSTRAINT "inv_planillas_despacho_pkey" PRIMARY KEY("id"), 
   CONSTRAINT "inv_planillas_despacho_fk" FOREIGN KEY ("inv_transportador_id")
     REFERENCES "public"."inv_transportadoras"("transportadora_id")
@@ -814,6 +827,9 @@ IS 'Fecha en que se crea la planilla';
 
 COMMENT ON COLUMN "public"."inv_planillas_despacho"."fecha_despacho"
 IS 'Fecha en que se despacha los pedidos de la planilla';
+
+COMMENT ON COLUMN "public"."inv_planillas_despacho"."numero_guia_externo"
+IS 'Numero guia cuando son transportadoras externas a la empresa';
 
 
 /* Crear  tabla inv_planillas_detalle_farmacias */

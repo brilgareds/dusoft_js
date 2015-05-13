@@ -7,12 +7,17 @@ define(["angular", "js/models"], function(angular, models) {
                 this.descripcion = descripcion;
                 this.placa = placa || '';
                 this.estado = estado;
+                this.solicitar_guia = '';
             }
 
             this.get = function(id, descripcion, placa, estado) {
                 return new Transportadora(id, descripcion, placa, estado);
             };
 
+            Transportadora.prototype.set_solicitar_guia = function(solicitar_guia) {
+                this.solicitar_guia = solicitar_guia;
+            };
+            
             Transportadora.prototype.get_id = function() {
                 return this.id;
             };
@@ -30,6 +35,10 @@ define(["angular", "js/models"], function(angular, models) {
 
             Transportadora.prototype.get_estado = function() {
                 return this.estado;
+            };
+            
+            Transportadora.prototype.get_solicitar_guia = function() {
+                return this.solicitar_guia;
             };
 
             return this;

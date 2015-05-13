@@ -183,6 +183,11 @@ PlanillasDespachos.prototype.generarPlanillaDespacho = function(req, res) {
         return;
     }
 
+    if (args.planillas_despachos.numero_guia_externo === undefined) {
+        res.send(G.utils.r(req.url, 'numero_guia_externo no esta definido', 404, {}));
+        return;
+    }
+
     if (args.planillas_despachos.pais_id === '' || args.planillas_despachos.departamento_id === '' || args.planillas_despachos.ciudad_id === '') {
         res.send(G.utils.r(req.url, 'pais_id, departamento_id o ciudad_id  estan vacias', 404, {}));
         return;
@@ -193,15 +198,17 @@ PlanillasDespachos.prototype.generarPlanillaDespacho = function(req, res) {
         return;
     }
 
+
     var pais_id = args.planillas_despachos.pais_id;
     var departamento_id = args.planillas_despachos.departamento_id;
     var ciudad_id = args.planillas_despachos.ciudad_id;
     var transportador_id = args.planillas_despachos.transportador_id;
     var nombre_conductor = args.planillas_despachos.nombre_conductor;
     var observacion = args.planillas_despachos.observacion;
+    var numero_guia_externo = args.planillas_despachos.numero_guia_externo;
     var usuario_id = req.session.user.usuario_id;
 
-    that.m_planillas_despachos.ingresar_planilla_despacho(pais_id, departamento_id, ciudad_id, transportador_id, nombre_conductor, observacion, usuario_id, function(err, rows, result) {
+    that.m_planillas_despachos.ingresar_planilla_despacho(pais_id, departamento_id, ciudad_id, transportador_id, nombre_conductor, observacion, numero_guia_externo, usuario_id, function(err, rows, result) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {planillas_despachos: []}));
@@ -285,6 +292,12 @@ PlanillasDespachos.prototype.ingresarDocumentosPlanillaDespacho = function(req, 
             return;
         } else {
 
+            if (tipo === '2') {
+                // Otras Empresas
+                res.send(G.utils.r(req.url, 'Documento regitrado correctamente', 200, {planillas_despachos: {}}));
+                return;
+            }
+
             // Registrar los responsables del pedido, y notificar en tiempo real
             that.m_e008.consultar_documento_despacho(numero, prefijo, empresa_id, usuario_id, function(err, documento_bodega) {
 
@@ -332,13 +345,7 @@ PlanillasDespachos.prototype.ingresarDocumentosPlanillaDespacho = function(req, 
                                 return;
                             }
                         });
-                    }
-
-                    if (tipo === '2') {
-                        // Otras Empresas
-                        res.send(G.utils.r(req.url, 'Documento regitrado correctamente', 200, {planillas_despachos: {}}));
-                        return;
-                    }
+                    }                    
                 }
             });
         }
@@ -702,10 +709,10 @@ function _generar_reporte_planilla_despacho(rows, callback) {
             recipe: "phantom-pdf",
             engine: 'jsrender',
             /*phantom: {*/
-                /*header: G.fs.readFileSync('app_modules/PlanillasDespachos/reports/encabezado_planilla_despacho.html', 'utf8')*/
-                        /*header: '<div style="text-align:right">{#pageNum}/{#numPages}</div>',*/
-                        /*orientation: "portrait",
-                         width: "300px"*/
+            /*header: G.fs.readFileSync('app_modules/PlanillasDespachos/reports/encabezado_planilla_despacho.html', 'utf8')*/
+            /*header: '<div style="text-align:right">{#pageNum}/{#numPages}</div>',*/
+            /*orientation: "portrait",
+             width: "300px"*/
             /*}*/
         },
         childTemplate: {
@@ -753,11 +760,7 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
             return;
         }
     });
-
-
-
-}
-;
+};
 
 PlanillasDespachos.$inject = ["m_planillas_despachos", "m_e008", "m_pedidos_farmacias", "e_pedidos_farmacias", "m_pedidos_clientes", "e_pedidos_clientes", "emails"];
 

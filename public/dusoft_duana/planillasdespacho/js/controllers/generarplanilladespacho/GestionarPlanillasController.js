@@ -131,6 +131,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 transportadoras.forEach(function(data) {
 
                     var transportadora = Transportadora.get(data.id, data.descripcion, data.placa, data.estado);
+                    transportadora.set_solicitar_guia(data.sw_solicitar_guia);
+
                     $scope.Empresa.set_transportadoras(transportadora);
                 });
             };
@@ -140,8 +142,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
             $scope.buscador_documentos_planillas = function(ev) {
-                if (ev.which == 13) {
-                    $scope.consultar_documentos_planilla_despacho()
+                if (ev.which === 13) {
+                    $scope.consultar_documentos_planilla_despacho();
                 }
             };
 
@@ -176,6 +178,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.planilla = PlanillaDespacho.get(datos.id, transportadora, ciudad, datos.nombre_conductor, datos.observacion, usuario, datos.fecha_registro, datos.fecha_despacho, datos.estado, datos.descripcion_estado);
                 $scope.planilla.set_cantidad_cajas(datos.total_cajas);
                 $scope.planilla.set_cantidad_neveras(datos.total_neveras);
+                $scope.planilla.set_numero_guia_externo(datos.numero_guia_externo);
             };
 
             $scope.consultar_documentos_planilla_despacho = function() {
@@ -214,6 +217,22 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             };
 
+
+            $scope.validar_btn_ingreso_documentos = function() {                              
+                
+                var disabled = false;
+                
+                // Validar que todos los campos esten diligenciados
+                if ($scope.planilla.get_ciudad() === null || $scope.planilla.get_transportadora() === undefined || $scope.planilla.get_nombre_conductor() === '' || $scope.planilla.get_observacion() === '' || $scope.planilla.get_estado() === '2')
+                    disabled = true;
+
+                // Si la transportadora es externa solicita obligatoriamente el numero de guia    
+                if ($scope.planilla.get_transportadora() !== undefined && $scope.planilla.get_transportadora().get_solicitar_guia() === '1') {
+                    if ($scope.planilla.get_numero_guia_externo() === '')
+                        disabled = true;
+                }
+                return disabled;
+            };
 
             $scope.gestionar_documentos_bodega = function() {
 

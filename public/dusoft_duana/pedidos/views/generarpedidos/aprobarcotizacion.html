@@ -1,0 +1,46 @@
+<div class="modal-header">
+    <button type="button" class="close" ng-click="close()">&times;</button>
+    <h4 class="modal-title">{{rootAprobarCotizacion.titulo}}</h4>
+</div>
+<div class="modal-body">
+
+    <form name="form_pdf">
+        <div class="row col-sm-12 col-md-12 col-lg-12">
+
+            <div class="form-group col-sm-10 col-md-10 col-lg-10">
+
+                <label>Observación Aprobación (Opcional)</label>
+                <br/>
+                <textarea rows="4" cols="50" name='observacion' class="form-control" placeholder="Observación" ng-model='rootAprobarCotizacion.observacion' ng-value="rootAprobarCotizacion.observacion" required>
+                </textarea>
+
+            </div>
+            
+<!--            <div class="row col-sm-2 col-md-2 col-lg-2">
+                
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                    <br/>
+                </div>
+                
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                    <img ng-src="{{rootMailPdf.icono_mail}}" style="height:  80px;"/>
+                </div>
+                
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                    <br/><br/><br/>
+                </div>
+
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                    <img ng-src="{{rootMailPdf.icono_pdf}}" style="height:  80px;"/>
+                </div>
+            </div>-->
+    
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn btn-primary" ng-click="aprobarCotizacion()" >{{ rootAprobarCotizacion.label_btn }}</button>
+            <button class="btn btn-warning" ng-click="close()">Cancelar</button>
+
+        </div>
+    </form>
+</div>

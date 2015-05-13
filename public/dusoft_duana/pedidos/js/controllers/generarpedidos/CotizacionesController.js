@@ -29,7 +29,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
 
-            that.estados = [ "btn btn-warning btn-xs", "btn btn-success btn-xs" ];
+            that.estados = [ "btn btn-warning btn-xs", "btn btn-success btn-xs", "btn btn-info btn-xs" ];
             
             /* INICIO - Operaciones nuevas */
             
@@ -45,7 +45,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     session: $scope.rootCotizaciones.session,
                     data: {
                         cotizaciones_cliente: {
-                            empresa_id: '03',                            
+                            empresa_id: Usuario.getUsuarioActual().empresa.codigo,//'03',                            
                             termino_busqueda: $scope.rootCotizaciones.termino_busqueda,
                             pagina_actual: $scope.rootCotizaciones.paginaactual,
                             filtro: {}
@@ -126,6 +126,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             that.crearCotizacion = function(obj) {
 
                 var cotizacion = PedidoVenta.get();
+                var observacion = obj.observaciones.split("||obs_cartera||");
+                
+                //console.log(">>>> Longitud OBSERVACIONES: ", observacion.length);
 
                 var datos_cotizacion = {
                     numero_pedido: '',
@@ -141,8 +144,15 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
                 cotizacion.setValorCotizacion(obj.valor_cotizacion);
 
-                cotizacion.setObservacion(obj.observaciones);
+                cotizacion.setObservacion(observacion[0]);
                 
+                if(observacion.length > 1) {
+                    cotizacion.setObservacionCartera(observacion[1]);
+                }
+                else {
+                    cotizacion.setObservacionCartera("");
+                }
+
                 var vendedor = VendedorPedido.get(
                         obj.nombre_vendedor,    //nombre_tercero
                         obj.tipo_id_vendedor,   //tipo_id_tercero
@@ -200,6 +210,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                         </button>\
                                         <button ng-if='row.entity.estado==1' ng-class='agregarClase(row.entity.estado)'>\
                                             Activo\
+                                        </button>\n\
+                                        <button ng-if='row.entity.estado==2' ng-class='agregarClase(row.entity.estado)'>\
+                                            Cartera Ok\
                                         </button>"},
                     
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center dropdown-button", width: "7%",
@@ -208,10 +221,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                             <ul class="dropdown-menu dropdown-options">\
                                                 <li><a href="javascript:void(0);" ng-click="onVerCotizacion(row.entity)" >Ver</a></li>\
                                                 <li></li>\
-                                                <li ng-if="row.entity.estado == 1"><a href="javascript:void(0);" ng-click="onEditarCotizacion(row.entity)">Modificar</a></li>\
+                                                <li ng-if="row.entity.estado == 1 || row.entity.estado == 2"><a href="javascript:void(0);" ng-click="onEditarCotizacion(row.entity)">Modificar</a></li>\
+                                                <li ng-if="row.entity.estado == 1 || row.entity.estado == 2"></li>\
+                                                <li ng-if="row.entity.estado == 1 || row.entity.estado == 2"><a href="javascript:void(0);" ng-click="onCambiarEstado(row.entity)">Inactivar</a></li>\
+                                                <li ng-if="row.entity.estado == 1 || row.entity.estado == 2"></li>\
+                                                <li ng-if="row.entity.estado == 1"><a href="javascript:void(0);" ng-click="onAprobarCotizacion(row.entity)">Aprobar</a></li>\
                                                 <li ng-if="row.entity.estado == 1"></li>\
-                                                <li ng-if="row.entity.estado == 1"><a href="javascript:void(0);" ng-click="onCambiarEstado(row.entity)">Inactivar</a></li>\
-                                                <li ng-if="row.entity.estado == 1"></li>\
+                                                <li ng-if="row.entity.estado == 2"><a href="javascript:void(0);" ng-click="onVerObservacionCartera(row.entity)">Ver Obs Cartera</a></li>\
+                                                <li ng-if="row.entity.estado == 2"></li>\
                                             </ul>\n\
                                         </div>'
                     }
@@ -221,6 +238,81 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
             
             /*NUEVO*/
+            
+            /**/
+            $scope.onAprobarCotizacion = function(obj) {
+                
+//                var tipo_documento = '';
+//                
+//                if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== undefined) {
+//                    //Tipo Documento Cotización
+//                    tipo_documento = 'c';
+//                    
+//                }
+//                else if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido() !== undefined) {
+//                    //Tipo Documento Pedido
+//                    tipo_documento = 'p';
+//                    
+//                }
+
+                $scope.rootCotizaciones.Empresa.setPedidoSeleccionado(obj);
+                
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    templateUrl: 'views/generarpedidos/aprobarcotizacion.html',
+                    controller: "AprobarCotizacionController",
+                    resolve :{
+                        Empresa : function(){
+                           return $scope.rootCotizaciones.Empresa;
+                        }//,
+//                        tipo_documento: function(){
+//                           return tipo_documento;
+//                        }
+                    }
+                };
+
+                var modalInstance = $modal.open($scope.opts);
+                
+            }
+            /**/
+            
+            $scope.onVerObservacionCartera = function(obj){
+
+                var template = ' <div class="modal-header">\
+                                        <button type="button" class="close" ng-click="close()">&times;</button>\
+                                        <h4 class="modal-title">Observación Cartera</h4>\
+                                    </div>\
+                                    <div class="modal-body">\
+                                        <h4> '+obj.getObservacionCartera()+' </h4> \
+                                    </div>\
+                                    <div class="modal-footer">\
+                                        <button class="btn btn-warning" ng-click="close()">Cerrar</button>\
+                                    </div>';
+
+                controller = function($scope, $modalInstance) {
+
+                    $scope.close = function() {
+                        $modalInstance.close();
+                    };
+                };
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: template,
+                    scope: $scope,
+                    controller: controller
+                };
+
+                var modalInstance = $modal.open($scope.opts);
+                
+            };
+            
             $scope.onCambiarEstado = function(obj){
                 
                                 var template = ' <div class="modal-header">\
@@ -444,7 +536,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                     $scope.rootCotizaciones.Empresa.setPedidoSeleccionado(data);
 
-                    if (estado === '1') {
+                    if (estado === '1' || estado === '2') {
                         
                         that.consultarContratoCliente(data, function(contrato_cliente_id){
                             

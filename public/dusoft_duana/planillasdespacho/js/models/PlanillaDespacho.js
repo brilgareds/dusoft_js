@@ -15,6 +15,7 @@ define(["angular", "js/models"], function(angular, models) {
                 this.descripcion_estado = descripcion_estado || 'Activa'; // 0 Anulada - 1 Activa - 2 Despachada                
                 this.cantidad_cajas = '';
                 this.cantidad_neveras = '';
+                this.numero_guia_externo = '';
                 this.documento = '';
                 this.documentos = [];
             }
@@ -55,8 +56,13 @@ define(["angular", "js/models"], function(angular, models) {
             PlanillaDespacho.prototype.set_cantidad_cajas = function(cantidad_cajas) {
                 this.cantidad_cajas = cantidad_cajas;
             };
+
             PlanillaDespacho.prototype.set_cantidad_neveras = function(cantidad_neveras) {
                 this.cantidad_neveras = cantidad_neveras;
+            };
+
+            PlanillaDespacho.prototype.set_numero_guia_externo = function(numero_guia_externo) {
+                this.numero_guia_externo = numero_guia_externo || '';
             };
 
             PlanillaDespacho.prototype.get_numero_guia = function() {
@@ -113,9 +119,13 @@ define(["angular", "js/models"], function(angular, models) {
             PlanillaDespacho.prototype.get_cantidad_cajas = function() {
                 return this.cantidad_cajas;
             };
-            
+
             PlanillaDespacho.prototype.get_cantidad_neveras = function() {
                 return this.cantidad_neveras;
+            };
+
+            PlanillaDespacho.prototype.get_numero_guia_externo = function() {
+                return this.numero_guia_externo;
             };
 
             return this;

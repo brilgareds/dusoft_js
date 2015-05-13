@@ -116,7 +116,7 @@
 
                 {{for documentos_planilla}}
                 <table class="table" width='100%'>                        
-                    <tr class="contenedor-despacho">
+                    <tr class="contenedor-despacho" style="background-color:#F61818">
                         <td colspan="4"><strong>Ciudad de despacho : </strong> {{:tercero}} </td>
                     </tr>
                     <tr>
@@ -128,7 +128,6 @@
                             </div>
                         </td>
                     </tr>
-
                     <tr>
                         <th>Documento Cruce</th>
                         <th>Nro de Cajas</th>
@@ -143,49 +142,45 @@
                         <td align="center">{{:temperatura_neveras}}</td>
                     </tr>                                        
                     {{/for}}
-                    <tfoot>
-                        <tr>
-                            <td colspan="2">
-                                <p>
-                                    Se despacha a <b>{{:tercero}} ({{:~count(detalle)}} Remisiones de despacho)</b>
-                                    Con un total de <b>{{:~total_cajas(detalle)}} Caja(s)</b> y <b>{{:~total_neveras(detalle)}} Nevera(s)</b>    
-                                </p>
-                            </td>
-                            <td colspan="2">
-                                <table width='100%'>
-                                    <tr align='center'>
-                                        <td>
-                                            _______________________________
-                                        </td>                        
-                                        <td>
-                                            Recibe : 
-                                        </td>
-                                    </tr>
-                                    <tr align='center'>
-                                        <td>
-                                            NOMBRE COMPLETO Y CEDULA
-                                        </td>                        
-                                        <td>
-                                            <table width='100%' class="table-border color-placeholder">
-                                                <tr align='center'>
-                                                    <td>AA</td>
-                                                    <td>MM</td>
-                                                    <td>DD</td>
-                                                </tr>
-                                                <tr align='center'>
-                                                    <td colspan="3">hh:mm am/pm</td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </tfoot>                    
+                    <tr>
+                        <td colspan="2">
+                            <p>
+                                Se despacha a <b>{{:tercero}} ({{:~count(detalle)}} Remisiones de despacho)</b>
+                                Con un total de <b>{{:~total_cajas(detalle)}} Caja(s)</b> y <b>{{:~total_neveras(detalle)}} Nevera(s)</b>    
+                            </p>
+                        </td>
+                        <td colspan="2">
+                            <table width='100%'>
+                                <tr align='center'>
+                                    <td>
+                                        _______________________________
+                                    </td>                        
+                                    <td>
+                                        Recibe : 
+                                    </td>
+                                </tr>
+                                <tr align='center'>
+                                    <td>
+                                        NOMBRE COMPLETO Y CEDULA
+                                    </td>                        
+                                    <td>
+                                        <table width='100%' class="table-border color-placeholder">
+                                            <tr align='center'>
+                                                <td>AA</td>
+                                                <td>MM</td>
+                                                <td>DD</td>
+                                            </tr>
+                                            <tr align='center'>
+                                                <td colspan="3">hh:mm am/pm</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>                   
                 </table>
                 {{/for}}
-
-
                 <table class="table" width='100%'>                        
                     <tr>
                         <td class='title'>

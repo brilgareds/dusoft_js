@@ -18,9 +18,8 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.observacion = "";
             this.editable = true;
             this.encabezado_bloqueado = false;
-//            this.tipo_id_vendedor = "";
-//            this.vendedor_id = "";
             this.vendedor = {};
+            this.observacion_cartera = "";
             this.valor_total_sin_iva = 0;
             this.valor_total_con_iva = 0;
         };
@@ -109,22 +108,6 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         PedidoVenta.prototype.getEncabezadoBloqueado = function() {
             return this.encabezado_bloqueado;
         };
-        
-//        PedidoVenta.prototype.setTipoIdVendedor = function(tipo_id_vendedor) {
-//            this.tipo_id_vendedor = tipo_id_vendedor;
-//        };
-//        
-//        PedidoVenta.prototype.getTipoIdVendedor = function() {
-//            return this.tipo_id_vendedor;
-//        };        
-//        
-//        PedidoVenta.prototype.setVendedorId = function(vendedor_id) {
-//            this.vendedor_id = vendedor_id;
-//        };
-//        
-//        PedidoVenta.prototype.getVendedorId = function() {
-//            return this.vendedor_id;
-//        };      
 
         PedidoVenta.prototype.setVendedor = function(vendedor) {
             this.vendedor = vendedor;
@@ -132,6 +115,15 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         
         PedidoVenta.prototype.getVendedor = function() {
             return this.vendedor;
+        };
+        
+        //this.observacion_cartera
+        PedidoVenta.prototype.setObservacionCartera = function(observacion_cartera) {
+            this.observacion_cartera = observacion_cartera;
+        };
+        
+        PedidoVenta.prototype.getObservacionCartera = function() {
+            return this.observacion_cartera;
         };
 
         this.get = function() {

@@ -1053,6 +1053,40 @@ PedidosCliente.prototype.cambiarEstadoCotizacion = function(req, res) {
 
 };
 
+PedidosCliente.prototype.cambiarEstadoAprobacionCotizacion = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.estado_cotizacion === undefined || args.estado_cotizacion.numero_cotizacion === undefined || args.estado_cotizacion.nuevo_estado === undefined) {
+        res.send(G.utils.r(req.url, 'numero_cotizacion o nuevo_estado no están definidos', 404, {}));
+        return;
+    }
+    
+    if (args.estado_cotizacion.numero_cotizacion === '' || args.estado_cotizacion.nuevo_estado === '') {
+        res.send(G.utils.r(req.url, 'numero_cotizacion o nuevo_estado están vacios', 404, {}));
+        return;
+    }
+
+    //Parámetros para actualización
+    var numero_cotizacion = args.estado_cotizacion.numero_cotizacion;
+    var nuevo_estado = args.estado_cotizacion.nuevo_estado;
+    var observacion = args.estado_cotizacion.observacion;
+
+    that.m_pedidos_clientes.cambiar_estado_aprobacion_cotizacion(numero_cotizacion, nuevo_estado, observacion, function(err, rows) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error al modificar el estado', 500, {}));
+            return;
+        }
+
+        res.send(G.utils.r(req.url, 'Modificación de estado Exitosa', 200, {}));
+
+    });
+ 
+};
+
 PedidosCliente.prototype.pedidoClienteArchivoPlano = function(req, res) {
 
     var that = this;
@@ -1896,8 +1930,8 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.productos === undefined || args.productos.termino_busqueda === undefined || args.productos.empresa_id === undefined || args.productos.centro_utilidad_id === undefined || args.productos.bodega_id === undefined || args.productos.termino_busqueda === undefined || args.productos.pagina_actual === undefined) {
-        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id, bodega_id, termino_busqueda o  pagina_actual no estan definidos', 404, {}));
+    if (args.productos === undefined || args.productos.termino_busqueda === undefined || args.productos.empresa_id === undefined || args.productos.centro_utilidad_id === undefined || args.productos.bodega_id === undefined) {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id no estan definidos', 404, {}));
         return;
     }
 
@@ -1916,6 +1950,8 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
     var bodega_id = args.productos.bodega_id;
     var contrato_cliente_id = args.productos.contrato_cliente_id;
     var termino_busqueda = args.productos.termino_busqueda;
+    var laboratorio = args.productos.laboratorio;
+    var concentracion = args.productos.concentracion;
     var pagina_actual = args.productos.pagina_actual;
     var pedido_cliente_id_tmp = args.productos.pedido_cliente_id_tmp;
     var filtro = args.productos.filtro;
@@ -1928,8 +1964,9 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
     }
     /* Fin - Modificación para Tipo Producto */
 
-    this.m_productos.listar_productos_clientes(empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pedido_cliente_id_tmp, tipo_producto, pagina_actual, filtro, function(err, lista_productos) {
 
+    this.m_productos.listar_productos_clientes(empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pedido_cliente_id_tmp, tipo_producto, laboratorio, concentracion, pagina_actual, filtro, function(err, lista_productos) {
+        
         var i = lista_productos.length;
 
         if (i === 0) {

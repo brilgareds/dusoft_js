@@ -15,6 +15,10 @@ define(["angular", "js/models"], function(angular, models) {
             };
             
             // Id
+            NovedadOrdenCompra.prototype.set_id = function(id) {
+                this.id  = id;
+            };
+            
             NovedadOrdenCompra.prototype.get_id = function() {
                 return this.id;
             };

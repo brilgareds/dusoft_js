@@ -9,6 +9,7 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function(fecha_in
     var sql = " select \
                 a.id, \
                 a.id as numero_guia,\
+                a.numero_guia_externo,\
                 b.transportadora_id,\
                 b.descripcion as nombre_transportadora,\
                 b.placa_vehiculo,\
@@ -139,6 +140,7 @@ PlanillasDespachosModel.prototype.consultar_planilla_despacho = function(planill
     var sql = " select \
                 a.id, \
                 a.id as numero_guia,\
+                a.numero_guia_externo,\
                 b.transportadora_id,\
                 b.descripcion as nombre_transportadora,\
                 b.placa_vehiculo,\
@@ -212,7 +214,7 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     inner join solicitud_productos_a_bodega_principal c on b.solicitud_prod_a_bod_ppal_id = c.solicitud_prod_a_bod_ppal_id\
                     inner join bodegas d on c.farmacia_id = d.empresa_id and c.centro_utilidad = d.centro_utilidad and c.bodega = d.bodega\
                     inner join centros_utilidad e on d.empresa_id = e.empresa_id and d.centro_utilidad = e.centro_utilidad\
-                    UNION\
+                    UNION \
                     select \
                     '1' as tipo,\
                     'CLIENTES' as descripcion_tipo,\
@@ -251,20 +253,20 @@ PlanillasDespachosModel.prototype.consultar_documentos_planilla_despacho = funct
                     a.observacion,\
                     a.usuario_id\
                     from inv_planillas_detalle_empresas a\
-                ) as a /*where a.planilla_id = $1 and ( a.descripcion_destino ilike $2 )*/;";
+                ) as a where a.planilla_id = $1 and ( a.descripcion_destino ilike $2 );";
     
-    G.db.query(sql, [/*planilla_id, '%'+termino_busqueda+'%'*/], function(err, rows, result) {
+    G.db.query(sql, [planilla_id, '%'+termino_busqueda+'%'], function(err, rows, result) {
         callback(err, rows);
     });
 };
 
 
-PlanillasDespachosModel.prototype.ingresar_planilla_despacho = function(pais_id, departamento_id, ciudad_id, inv_transportador_id, nombre_conductor, observacion, usuario_id, callback) {
+PlanillasDespachosModel.prototype.ingresar_planilla_despacho = function(pais_id, departamento_id, ciudad_id, inv_transportador_id, nombre_conductor, observacion, numero_guia_externo, usuario_id, callback) {
 
-    var sql = " insert into  inv_planillas_despacho (pais_id, departamento_id, ciudad_id, inv_transportador_id, nombre_conductor, observacion, usuario_id ) \
-                values ($1, $2, $3, $4, $5, $6, $7) RETURNING id;";
+    var sql = " insert into  inv_planillas_despacho (pais_id, departamento_id, ciudad_id, inv_transportador_id, nombre_conductor, observacion, numero_guia_externo, usuario_id ) \
+                values ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id;";
      
-    G.db.query(sql, [pais_id, departamento_id, ciudad_id, inv_transportador_id, nombre_conductor, observacion, usuario_id], function(err, rows, result) {
+    G.db.query(sql, [pais_id, departamento_id, ciudad_id, inv_transportador_id, nombre_conductor, observacion, numero_guia_externo, usuario_id], function(err, rows, result) {
         callback(err, rows, result);
     });
 };

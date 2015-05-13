@@ -1,10 +1,12 @@
 
-var OrdenesCompra = function(ordenes_compras, productos) {
+var OrdenesCompra = function(ordenes_compras, productos, emails) {
 
     console.log("Modulo Ordenes Compra  Cargado ");
 
     this.m_ordenes_compra = ordenes_compras;
     this.m_productos = productos;
+
+    this.emails = emails;
 };
 
 
@@ -726,7 +728,7 @@ OrdenesCompra.prototype.subirArchivoNovedades = function(req, res) {
                 return;
             } else {
 
-                __subir_archivo_novedad(req.body, req.files, function(continuar, nombre_archivo) { 
+                __subir_archivo_novedad(req.body, req.files, function(continuar, nombre_archivo) {
 
                     if (continuar) {
 
@@ -803,8 +805,26 @@ OrdenesCompra.prototype.reporteOrdenCompra = function(req, res) {
         return;
     }
 
-    var numero_orden = args.ordenes_compras.numero_orden;
+    if (args.ordenes_compras.enviar_email !== undefined) {
 
+        if (args.ordenes_compras.emails === undefined || args.ordenes_compras.subject === undefined || args.ordenes_compras.message === undefined) {
+            res.send(G.utils.r(req.url, 'emails, subject o message no esta definidas', 404, {}));
+            return;
+        }
+
+        if (args.ordenes_compras.emails.length === 0 || args.ordenes_compras.subject === '') {
+            res.send(G.utils.r(req.url, 'emails, subject o message estan vacios', 404, {}));
+            return;
+        }
+
+        var emails = args.ordenes_compras.emails;
+        var subject = args.ordenes_compras.subject;
+        var message = args.ordenes_compras.message;
+    }
+
+    var numero_orden = args.ordenes_compras.numero_orden;
+    var enviar_email = args.ordenes_compras.enviar_email;
+    
     that.m_ordenes_compra.consultar_orden_compra(numero_orden, function(err, orden_compra) {
 
         if (err || orden_compra.length === 0) {
@@ -823,9 +843,26 @@ OrdenesCompra.prototype.reporteOrdenCompra = function(req, res) {
 
                     _generar_reporte_orden_compra({orden_compra: orden, lista_productos: lista_productos, usuario_imprime: req.session.user.nombre_usuario}, function(nombre_reporte) {
 
-                        //res.send(G.utils.r(req.url, 'Orden de Compra', 200, {orden_compra: orden_compra[0], lista_productos: lista_productos}));
-                        res.send(G.utils.r(req.url, 'Nombre Reporte', 200, {ordenes_compras: {nombre_reporte: nombre_reporte}}));
-                        return;
+                        if (enviar_email) {
+
+                            var path = G.dirname + "/public/reports/" + nombre_reporte;
+                            var filename = "OrdenCompraNo-" + numero_orden + '.pdf';
+
+                            __enviar_correo_electronico(that, emails, path, filename, subject, message, function(enviado) {
+
+                                if (!enviado) {
+                                    res.send(G.utils.r(req.url, 'Se genero un error al enviar el reporte', 500, {ordenes_compras: {nombre_reporte: nombre_reporte}}));
+                                    return;
+                                } else {
+                                    res.send(G.utils.r(req.url, 'Reporte enviado correctamente', 200, {ordenes_compras: {nombre_reporte: nombre_reporte}}));
+                                    return;
+                                }
+                            });
+                        } else {
+                            //res.send(G.utils.r(req.url, 'Orden de Compra', 200, {orden_compra: orden_compra[0], lista_productos: lista_productos}));
+                            res.send(G.utils.r(req.url, 'Nombre Reporte', 200, {ordenes_compras: {nombre_reporte: nombre_reporte}}));
+                            return;
+                        }
                     });
                 }
             });
@@ -1076,6 +1113,32 @@ function _generar_reporte_orden_compra(rows, callback) {
     });
 }
 
-OrdenesCompra.$inject = ["m_ordenes_compra", "m_productos"];
+function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, subject, message, callback) {
+
+    var smtpTransport = that.emails.createTransport();
+
+    var settings = {
+        from: G.settings.email_sender,
+        to: to,
+        subject: subject,
+        html: message,
+        attachments: [{'filename': nombre_archivo, 'contents': G.fs.readFileSync(ruta_archivo)}]
+    };
+
+    smtpTransport.sendMail(settings, function(error, response) {
+
+        if (error) {
+            callback(false);
+            return;
+        } else {
+            smtpTransport.close();
+            callback(true);
+            return;
+        }
+    });
+}
+;
+
+OrdenesCompra.$inject = ["m_ordenes_compra", "m_productos", "emails"];
 
 module.exports = OrdenesCompra;

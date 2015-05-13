@@ -22,13 +22,15 @@
         <div class="col-md-6">
             <fieldset>
                 <legend>Novedad</legend> 
-                <div class="row">
+                <div class="row">                                       
                     <div class="col-md-12">  
-                        <select ui-select2=""  class="form-control selectgeneral pull-left" ng-model="observacion_id"  ng-disabled="" placeholder="Seleccionar observacion" >
-                            <option></option>    
-                            <option ng-repeat="observacion in  Empresa.get_observaciones()"  value="{{observacion.get_id()}}">{{ observacion.get_descripcion() }}</option>
-                        </select>
-                    </div>
+                        <ui-select ng-model="producto_seleccionado.novedad.observacion"  theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_observacion()">
+                            <ui-select-match  placeholder="Seleccionar observacion">{{ $select.selected.get_descripcion() }}</ui-select-match>
+                            <ui-select-choices repeat="observacion in Empresa.get_observaciones() | filter:$select.search">
+                                {{ observacion.get_descripcion() }}
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>                    
                 </div>
             </fieldset>
         </div>
@@ -37,7 +39,7 @@
                 <legend>Observación Novedad</legend>                                 
                 <div class="row">  
                     <div class="col-md-12">  
-                        <textarea  class="col-lg-12 col-md-12 col-sm-12" rows="4" ng-model='descripcion_novedad' ng-disabled="" name="" placeholder="Ingresar Observación"></textarea>
+                        <textarea  class="col-lg-12 col-md-12 col-sm-12" rows="4" ng-model='producto_seleccionado.novedad.descripcion' ng-disabled="" name="" placeholder="Ingresar Observación"></textarea>
                     </div>
                 </div>
             </fieldset>            
@@ -102,7 +104,7 @@
 
     <div class="modal-footer">
         <button class="btn btn-warning" ng-click="close()">Cancelar</button>
-        <button class="btn btn-primary" ng-click="aceptar()" ng-disabled="observacion_id == '' || descripcion_novedad==''" >Aceptar</button>
+        <button class="btn btn-primary" ng-click="aceptar()" ng-disabled="producto_seleccionado.novedad.observacion.id == '' || producto_seleccionado.novedad.descripcion==''" >Aceptar</button>
     </div>
 
 </div>

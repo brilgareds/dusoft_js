@@ -244,8 +244,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
                                                 <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)"><a href="javascript:void(0);" ng-click="onEditarPedidoFarmacia(row.entity)" ng-validate-events="{{rootVerPedidosFarmacias.opcionesModulo.btnModificarPedido}}" >Modificar</a></li>\
-                                                <li class="divider" ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)"></li>\
+                                                <!--<li class="divider" ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)"></li>-->\
                                                 <li><a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity)" >Ver</a></li>\
+                                                <!--<li class="divider" ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)"></li>-->\
+                                                <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)"><a href="javascript:void(0);" ng-click="onEdicionEspecialPedidoFarmacia(row.entity)" ng-validate-events="{{rootVerPedidosFarmacias.opcionesModulo.btnModificarPedido}}" >Modificación Especial</a></li>\
                                             </ul>\n\
                                         </div>'
                     }
@@ -265,7 +267,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             // Agregar Restriccion de acuerdo al estado de asigancion del pedido
             $scope.agregarRestriccion = function(estado_separacion) {
-
+                
                 var clase = "";
                 if (estado_separacion)
                     clase = "glyphicon glyphicon-lock";
@@ -315,7 +317,105 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 $state.go('CreaPedidosFarmacias');
             };
+            
+            //Edición Especial de Pedido Farmacia - Solo Jefe de Farmacia
+            $scope.onEdicionEspecialPedidoFarmacia = function(data) {
+                
+                var pedido = PedidoVenta.get();
 
+                var datos_pedido = {
+                    numero_pedido: data.numero_pedido,
+                    fecha_registro: data.fecha_registro,
+                    descripcion_estado_actual_pedido: data.descripcion_estado_actual_pedido,
+                    estado_actual_pedido: data.estado_actual_pedido,
+                    estado_separacion: data.estado_separacion
+                };
+
+                pedido.setDatos(datos_pedido);
+                pedido.setTipo(2);
+                pedido.setObservacion(data.observacion);
+                pedido.setEditable(true);
+                pedido.setModificacionEspecial(true);
+
+                //Set en_uso -- Hacer consulta antes para confirmar estado en BD -- Recibir información del evento (socket)
+
+                //Objeto para consulta de encabezado pedido
+                var obj = {
+                    session: $scope.rootVerPedidosFarmacias.session,
+                    data: {
+                        pedidos_farmacias: {
+                            termino_busqueda: data.numero_pedido,
+                            empresa_id: $scope.rootVerPedidosFarmacias.seleccion,
+                            pagina_actual: $scope.rootVerPedidosFarmacias.paginaactual,
+                            filtro: {}
+                        }
+                    }
+                };
+
+                that.consultarEncabezadosPedidos(obj, function(data_encabezado) {
+
+                    //pedido.setEnUso(data_encabezado.obj.pedidos_farmacias[0].en_uso);
+
+                    var farmacia = FarmaciaVenta.get(
+                            data.farmacia.farmacia_id,
+                            data.farmacia.bodega_id,
+                            data.farmacia.nombre_farmacia,
+                            data.farmacia.nombre_bodega,
+                            data.farmacia.centro_utilidad_id,
+                            data.farmacia.nombre_centro_utilidad
+                            );
+
+                    pedido.setFarmacia(farmacia);
+                    //Insertar aquí el pedido seleccionado para el singleton Empresa
+                    $scope.rootVerPedidosFarmacias.Empresa.setPedidoSeleccionado(pedido);
+
+                    PedidoVenta.pedidoseleccionado = data.numero_pedido;
+                    
+                    console.log(">>>>>>>>>>>>>>>>>>>> ESTADO ACTUAL PEDIDO: ", $scope.rootVerPedidosFarmacias.Empresa.getPedidoSeleccionado().estado_actual_pedido);
+
+                    //if ($scope.rootVerPedidosFarmacias.Empresa.getPedidoSeleccionado().getEnUso() === 0) {
+                    if ($scope.rootVerPedidosFarmacias.Empresa.getPedidoSeleccionado().estado_actual_pedido === '0') {
+                        //$scope.$emit('bloqueoModificarPedido', false);
+                        $state.go('CreaPedidosFarmacias');
+                        //$scope.$emit('bloqueoModificarPedido', false);
+
+                    }
+                    else {
+
+                        //Avisar la no posibilidad de modiificar porque el pedido está abierto en una tablet
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: ' <div class="modal-header">\
+                                            <button type="button" class="close" ng-click="close()">&times;</button>\
+                                            <h4 class="modal-title">Aviso: </h4>\
+                                        </div>\
+                                        <div class="modal-body row">\
+                                            <div class="col-md-12">\
+                                                <h4 >El Pedido ' + $scope.rootVerPedidosFarmacias.Empresa.getPedidoSeleccionado().numero_pedido + ' ha sido asignado. No puede modificarse!</h4>\
+                                            </div>\
+                                        </div>\
+                                        <div class="modal-footer">\
+                                            <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                        </div>',
+                            scope: $scope,
+                            controller: function($scope, $modalInstance) {
+                                $scope.close = function() {
+                                    $modalInstance.close();
+                                };
+                            }
+                        };
+
+                        var modalInstance = $modal.open($scope.opts);
+                    }
+
+                });                
+                
+            };
+            
+            //Edición Normal de Pedido Farmacia
             $scope.onEditarPedidoFarmacia = function(data) {
 
                 var pedido = PedidoVenta.get();

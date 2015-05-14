@@ -533,7 +533,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         
                         that.consultarEstadoCotizacion(numero_cotizacion, function(estado_cotizacion){
                             
-                            if (estado_cotizacion === '1') {
+                            if (estado_cotizacion === '1' || estado_cotizacion === '2') {
                             
                                 $scope.rootSeleccionProductoCliente.bloquear_eliminar = false;
                                 that.insertarDetalleCotizacion(row);
@@ -1399,7 +1399,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         
                         that.consultarEstadoCotizacion(numero_cotizacion, function(estado_cotizacion){
                             
-                            if (estado_cotizacion === '1') {
+                            if (estado_cotizacion === '1' || estado_cotizacion === '2') {
                                 that.eliminarDetalleCotizacion(row);
                             }
                             else {

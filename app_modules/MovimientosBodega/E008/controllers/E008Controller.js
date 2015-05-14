@@ -1711,7 +1711,7 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                                         var cantidad_pendiente = 0;
 
                                         //temporalmente el pedido queda con estados despachado o despachado con pendientes al terminar de auditar
-                                        var estado = "4";
+                                        var estado = "2";
 
                                         detalle_pedido.forEach(function(producto_pedido) {
 
@@ -1720,7 +1720,7 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                                         });
 
                                         if (cantidad_pendiente > 0) {
-                                            estado = "5";
+                                            estado = "8"; 
                                         }
 
 

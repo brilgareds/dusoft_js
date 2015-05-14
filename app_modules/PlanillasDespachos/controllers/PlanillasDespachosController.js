@@ -345,7 +345,7 @@ PlanillasDespachos.prototype.ingresarDocumentosPlanillaDespacho = function(req, 
                                 return;
                             }
                         });
-                    }                    
+                    }
                 }
             });
         }
@@ -666,10 +666,11 @@ function __despachar_documentos_planilla(contexto, i, documentos_planilla, resul
                 }
 
                 if (tipo === '1') {
+
                     // Clientes
                     that.m_pedidos_clientes.asignar_responsables_pedidos(numero_pedido, estado_pedido, null, usuario_id, function(err, rows, responsable_estado_pedido) {
 
-                        if (!err) {
+                        if (err) {
                             resultado.continuar = false;
                             resultado.msj += ' Error Interno code 3. ';
                         }
@@ -677,7 +678,7 @@ function __despachar_documentos_planilla(contexto, i, documentos_planilla, resul
                         that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
 
                         that.m_pedidos_clientes.terminar_estado_pedido(numero_pedido, [estado_actual_pedido, estado_pedido], '1', function(err, rows, results) {
-
+                            
                             if (err) {
                                 resultado.continuar = false;
                                 resultado.msj += ' Error Interno code 2.1';
@@ -760,7 +761,8 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
             return;
         }
     });
-};
+}
+;
 
 PlanillasDespachos.$inject = ["m_planillas_despachos", "m_e008", "m_pedidos_farmacias", "e_pedidos_farmacias", "m_pedidos_clientes", "e_pedidos_clientes", "emails"];
 

@@ -18,6 +18,8 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.observacion = "";
             this.editable = true;
             this.encabezado_bloqueado = false;
+            //Variable para permitir adicionar o cambiar Productos y modificar farmacia destino depués de generado el pedido
+            this.modificacion_especial = false;
             this.vendedor = {};
             this.observacion_cartera = "";
             this.valor_total_sin_iva = 0;
@@ -107,6 +109,14 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         
         PedidoVenta.prototype.getEncabezadoBloqueado = function() {
             return this.encabezado_bloqueado;
+        };
+        
+        PedidoVenta.prototype.setModificacionEspecial = function(valor_booleano) {
+            this.modificacion_especial = valor_booleano;
+        };
+        
+        PedidoVenta.prototype.getModificacionEspecial = function() {
+            return this.modificacion_especial;
         };
 
         PedidoVenta.prototype.setVendedor = function(vendedor) {

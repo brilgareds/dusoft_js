@@ -42,6 +42,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.rootCreaPedidoFarmacia.bloqueo_bodega_de = true;
             $scope.rootCreaPedidoFarmacia.bloqueo_centro_utilidad_para = true;
             $scope.rootCreaPedidoFarmacia.bloqueo_bodega_para = true;
+            
+            //Variable para control de Modificación Especial
+            //$scope.rootCreaPedidoFarmacia.modificacion_especial = true;
 
             $scope.rootCreaPedidoFarmacia.grid_pedido_generado_visible = false;
 
@@ -829,6 +832,70 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     }
                 ]
             };
+            
+            //rootCreaPedidoFarmacia.detalle_pedido_modificable
+            $scope.rootCreaPedidoFarmacia.detalle_pedido_modificable = {
+                data: 'rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().lista_productos',
+                enableColumnResize: true,
+                enableRowSelection: false,
+                enableCellSelection: false,
+                multiSelect: false,
+                columnDefs: [
+                    {field: 'codigo_producto', displayName: 'Código', width: "9%",
+                        cellTemplate : '<div class="ngCellText" ng-class="col.colIndex()">\
+                                            <span class="label label-success" ng-show="row.entity.tipo_producto_id == 1" >N</span>\
+                                            <span class="label label-danger" ng-show="row.entity.tipo_producto_id == 2">A</span>\
+                                            <span class="label label-warning" ng-show="row.entity.tipo_producto_id == 3">C</span>\
+                                            <span class="label label-primary" ng-show="row.entity.tipo_producto_id == 4">I</span>\
+                                            <span class="label label-info" ng-show="row.entity.tipo_producto_id == 5">Ne</span>\
+                                            <span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\
+                                        </div>'
+                    },
+                    {field: 'descripcion', displayName: 'Descripción', width: "37%"},
+                    {field: 'cantidad_solicitada', displayName: 'Solicitado'},
+                    {field: 'cantidad_pendiente', displayName: 'Pendiente'},
+                    {field: 'nueva_cantidad', displayName: 'Modificar Cantidad', width: "10%",
+                                cellTemplate: ' <div class="col-xs-12">\n\
+                                                    <input type="text" ng-model="row.entity.nueva_cantidad" validacion-numero-entero class="form-control grid-inline-input"'+
+                                                    'ng-keyup="onTeclaModificarCantidad($event, row)" ng-model="row.entity.cantidad_ingresada" ng-disabled="!rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEditable()" />\n\
+                                                </div>'
+                    },
+                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "13%",
+                        cellTemplate: ' <div class="row">\n\
+                                            <button class="btn btn-default btn-xs" ng-click="onModificarCantidad(row)" ng-disabled="row.entity.nueva_cantidad<=0 || row.entity.nueva_cantidad==null || !expreg.test(row.entity.nueva_cantidad) || rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido !=0 || !rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEditable()">\n\
+                                                <span class="glyphicon glyphicon-pencil">Modificar</span>\n\
+                                            </button>\n\
+                                            <button class="btn btn-default btn-xs" ng-click="onEliminarProducto(row)" ng-disabled="rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido !=0 || !rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getEditable()">\n\
+                                                <span class="glyphicon glyphicon-remove">Eliminar</span>\n\
+                                            </button>\n\
+                                        </div>'
+                    }
+                ]
+            };
+            /*GRID EJEMPLO - INICIO*/
+            //Grid Pedidos Farmacias
+            $scope.rootCreaPedidoFarmacia.lista_productos = {
+                data: 'rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().lista_productos',
+                enableColumnResize: true,
+                enableRowSelection: false,
+                multiSelect: false,
+                columnDefs: [
+                    {field: 'codigo_producto', displayName: 'Código', width: "9%",
+                        cellTemplate : '<div class="ngCellText" ng-class="col.colIndex()">\
+                                            <span class="label label-success" ng-show="row.entity.tipo_producto_id == 1" >N</span>\
+                                            <span class="label label-danger" ng-show="row.entity.tipo_producto_id == 2">A</span>\
+                                            <span class="label label-warning" ng-show="row.entity.tipo_producto_id == 3">C</span>\
+                                            <span class="label label-primary" ng-show="row.entity.tipo_producto_id == 4">I</span>\
+                                            <span class="label label-info" ng-show="row.entity.tipo_producto_id == 5">Ne</span>\
+                                            <span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\
+                                        </div>'
+                    },
+                    {field: 'descripcion', displayName: 'Descripción', width: "37%"},
+                    {field: 'cantidad_solicitada', displayName: 'Solicitado'},
+                    {field: 'cantidad_pendiente', displayName: 'Pendiente'}
+                ]
+            };
+            /*GRID EJEMPLO - FIN*/
             
             $scope.onTeclaModificarCantidad = function(ev, row) {
 //                console.log("Key Evento: ", ev.which);

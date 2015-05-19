@@ -402,6 +402,12 @@ PlanillasDespachos.prototype.eliminarDocumentoPlanilla = function(req, res) {
             return;
         } else {
 
+            if (tipo === '2') {
+                // Otras Empresas
+                res.send(G.utils.r(req.url, 'Documento eliminado correctamente', 200, {planillas_despachos: {}}));
+                return;
+            }
+
             // Registrar los responsables del pedido, y notificar en tiempo real
             that.m_e008.consultar_documento_despacho(numero, prefijo, empresa_id, usuario_id, function(err, documento_bodega) {
 
@@ -444,12 +450,6 @@ PlanillasDespachos.prototype.eliminarDocumentoPlanilla = function(req, res) {
                             res.send(G.utils.r(req.url, 'Documento eliminado correctamente', 200, {planillas_despachos: {}}));
                             return;
                         });
-                    }
-
-                    if (tipo === '2') {
-                        // Otras Empresas
-                        res.send(G.utils.r(req.url, 'Documento eliminado correctamente', 200, {planillas_despachos: {}}));
-                        return;
                     }
                 }
             });
@@ -678,7 +678,7 @@ function __despachar_documentos_planilla(contexto, i, documentos_planilla, resul
                         that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
 
                         that.m_pedidos_clientes.terminar_estado_pedido(numero_pedido, [estado_actual_pedido, estado_pedido], '1', function(err, rows, results) {
-                            
+
                             if (err) {
                                 resultado.continuar = false;
                                 resultado.msj += ' Error Interno code 2.1';

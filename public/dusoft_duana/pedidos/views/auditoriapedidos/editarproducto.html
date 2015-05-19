@@ -55,34 +55,36 @@
 
     <div class="panel panel-info">
         <div class="panel-heading">
-            <h3 class="panel-title">Información Caja/Nevera</h3>
+            <h3 class="panel-title">Información Caja / Nevera</h3>
         </div>
         <div class="panel-body">
             <div class="row">
 
-                <div class="contenedorCaja">
-                    <label class="lbl_editar_producto lbl_caja" for="numerocaja">Numero: </label>
-                    <div class="input-group validar_caja_contenedor">
-                        <input type="text" id="numerocaja" ng-model="rootEditarProducto.caja.numero" class="form-control" ng-change="onValidarCaja()"  validacion-numero  />
-                        <span class="input-group-btn">
-                            <button class="btn btn-default btn-xs" type="button" ng-click="onSeleccionarCaja()"><span class="glyphicon glyphicon-ok"></span></button>
-                        </span>
-                    </div>
-                </div>
-                <div class="contenedorCaja">
-                    <label class="lbl_editar_producto lbl_caja" for="numerocaja">De: </label>
-                    <div class="input-group validar_caja_contenedor">
-                        <input type="text" id="numerocaja" ng-model="rootEditarProducto.caja.numero" class="form-control" ng-change="onValidarCaja()"  validacion-numero  />
-                        <span class="input-group-btn">
-                        </span>
-                    </div>
-                </div>
-                <div class="contenedorCaja">
-                    <label class="lbl_editar_producto lbl_caja" for="cerrarcaja">Cerrar</label>
-                    <input-check ng-model="cerrar" id="cerrarcaja" ng-click="onCerrarCaja()" ng-disabled="rootEditarProducto.caja.valida" />
-                </div>
-                <div style="padding-left:10px;">
-                   
+                
+                <div class="col-lg-4">
+                    <div class="input-group input-group-sm">
+
+                        <input type="text" role="group" class="form-control" placeholder="Número" name="caja_" aria-label="...">
+                        <div class="input-group-btn" role="group">
+                            <button type="button" class="btn btn-default dropdown-toggle btnTipo" data-toggle="dropdown" aria-expanded="false">Tipo <span class="caret"></span></button>
+                            <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                <li><a href="javascript:void(0)">Caja</a></li>
+                                <li><a href="javascript:void(0)">Nevera</a></li>
+                            </ul>
+                        </div><!-- /btn-group -->
+                        <div class="input-group-btn" >
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Acción <span class="caret"></span></button>
+                            <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                <li><a href="javascript:void(0)">Seleccionar</a></li>
+                                <li><a href="javascript:void(0)">Cerrar</a></li>
+                                <li><a href="javascript:void(0)">Generar</a></li>
+                            </ul>
+                        </div><!-- /btn-group -->
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+
+
+                <!--div class="contenedorTipo">
                     <span>
                         <span class="dropdown" id="dropdownMenu1" name="dropdownMenu1">
                             <button class="btn btn-default dropdown-toggle btn-sm" type="button"  data-toggle="dropdown" aria-expanded="true">
@@ -95,9 +97,23 @@
                             </ul>
                         </span>
                     </span>
-                    
-                     <button class="btn btn-default ng-binding btn-accion btn-sm" ng-disabled="cerrar" ng-click="onImprimirRotulo()">Generar</button>
                 </div>
+                <div class="contenedorCaja">
+                    <label class="lbl_editar_producto lbl_caja" for="numerocaja">Numero: </label>
+                    <div class="input-group validar_caja_contenedor">
+                        <input type="text" id="numerocaja" ng-model="rootEditarProducto.caja.numero" class="form-control" ng-change="onValidarCaja()"  validacion-numero  />
+                        <span class="input-group-btn">
+                            <button class="btn btn-default btn-xs" type="button" ng-click="onSeleccionarCaja()"><span class="glyphicon glyphicon-ok"></span></button>
+                        </span>
+                    </div>
+                </div>
+                <div class="contenedorCaja">
+                    <label class="lbl_editar_producto lbl_caja" for="cerrarcaja">Cerrar</label>
+                    <input-check ng-model="cerrar" id="cerrarcaja" ng-click="onCerrarCaja()" ng-disabled="rootEditarProducto.caja.valida" />
+                </div>
+                <div style="padding-left:10px;">
+                    <button class="btn btn-default ng-binding btn-accion btn-sm" ng-disabled="!cerrar" ng-click="onImprimirRotulo()">Generar</button>
+                </div -->
             </div>
         </div>
     </div>

@@ -1950,7 +1950,8 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined || args.documento_temporal.numero_caja === undefined) {
+    if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined ||
+        args.documento_temporal.numero_caja === undefined || args.documento_temporal.cantidad === undefined) {
         res.send(G.utils.r(req.url, 'documento_temporal_id  o numero_caja no estan definidos', 404, {}));
         return;
     }
@@ -1960,7 +1961,9 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
         return;
     }
 
-    if (args.documento_temporal.documento_temporal_id === '' || args.documento_temporal.numero_caja === '' || args.documento_temporal.numero_caja === '0') {
+    if (args.documento_temporal.documento_temporal_id === '' || args.documento_temporal.numero_caja === '' || args.documento_temporal.numero_caja === '0'
+        || args.documento_temporal.cantidad === '' || args.documento_temporal.cantidad === '0') {
+    
         res.send(G.utils.r(req.url, 'documento_temporal_id o numero_caja estan vacios', 404, {}));
         return;
     }
@@ -1979,6 +1982,7 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
     var ruta = "";
     var contenido = "";
     var usuario_id = req.session.user.usuario_id;
+    var cantidad = args.documento_temporal.cantidad;
 
     that.m_e008.consultar_rotulo_caja(documento_temporal_id, numero_caja, numero_pedido, function(err, rotulos_cajas) {
         if (err) {

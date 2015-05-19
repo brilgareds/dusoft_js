@@ -320,7 +320,11 @@ fieldset[disabled] .btn-enauditoria.active {
     height:30px;
 }
 
-.contenedorTipo{
-    padding-left: 10px;
-    margin-bottom: 15px;
+button.btnTipo{
+    border-left: none;
+    border-radius:0px!important;
+}
+
+#numerocaja{
+    width:123px;
 }

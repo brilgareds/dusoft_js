@@ -36,7 +36,8 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
             $scope.rootEditarProducto.caja  = {
                 numero:0,
-                valida:false
+                valida:false,
+                cantidad:0
             };
 
             $scope.rootEditarProducto.validacionlote = {valido:true};
@@ -610,10 +611,11 @@ define(["angular", "js/controllers",'models/ClientePedido',
                     return;
                 }
                 
-                if(isNaN($scope.rootEditarProducto.caja.numero) || $scope.rootEditarProducto.caja.numero === 0){
+                if(isNaN($scope.rootEditarProducto.caja.numero) || $scope.rootEditarProducto.caja.numero === 0 ||
+                         isNaN($scope.rootEditarProducto.caja.cantidad) || $scope.rootEditarProducto.caja.cantidad === 0){
                     $scope.rootEditarProducto.validacionproducto.valido = false;
                     $scope.rootEditarProducto.caja.valida = false;
-                    $scope.rootEditarProducto.validacionproducto.mensaje = "Número de caja no es válido";
+                    $scope.rootEditarProducto.validacionproducto.mensaje = "El número o la cantidad no son validos";
 
                     return;
                 }
@@ -630,7 +632,8 @@ define(["angular", "js/controllers",'models/ClientePedido',
                             numero_caja: $scope.rootEditarProducto.caja.numero,
                             numero_pedido: $scope.rootEditarProducto.pedido.numero_pedido,
                             direccion_cliente: cliente.direccion || cliente.nombre_farmacia,
-                            nombre_cliente:cliente.nombre_tercero || cliente.nombre_farmacia
+                            nombre_cliente:cliente.nombre_tercero || cliente.nombre_farmacia,
+                            cantidad:$scope.rootEditarProducto.caja.cantidad
                         }
                     }
                 };

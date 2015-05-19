@@ -14,7 +14,7 @@ define(["angular", "js/models"], function(angular, models) {
         
         this.getClass = function(){
             return Lote;
-        }
+        };
 
         //just return the factory wrapper
         return this;

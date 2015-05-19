@@ -176,6 +176,12 @@ COMMENT ON COLUMN "public"."inv_rotulo_caja"."imprimio_rotulo"
 IS ' Determina si se imprimió rotulo 0= FALSE 1= TRUE ';
 
 
+-- tipo caja
+ALTER TABLE inv_rotulo_caja ADD tipo char(1) DEFAULT '0';
+
+COMMENT ON COLUMN "public"."inv_rotulo_caja"."tipo"
+IS '0 = caja, 1 = nevera';
+
 ---- ==================================================================================== ----
 ---- Agregar columnas a tabla inv_bodegas_movimiento_tmp_d 
 

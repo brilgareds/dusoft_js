@@ -178,6 +178,12 @@ input.readonlyinput[readonly]{
     height: 250px;
 }
 
+
+.lbl_caja{
+    width:100px;
+    padding-left: 10px;
+}
+
 .loaderimg{
     margin-right: 2px;
 }

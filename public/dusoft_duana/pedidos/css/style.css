@@ -314,3 +314,13 @@ fieldset[disabled] .btn-enauditoria.active {
   background-color : #64FCAB;
 
 }
+
+.contenedorCaja{
+    width:100%;
+    height:30px;
+}
+
+.contenedorTipo{
+    padding-left: 10px;
+    margin-bottom: 15px;
+}

@@ -180,8 +180,9 @@ input.readonlyinput[readonly]{
 
 
 .lbl_caja{
-    width:100px;
-    padding-left: 10px;
+    width:80px;
+    padding-left: 5px;
+    padding-top: 5px;
 }
 
 .loaderimg{

@@ -1,6 +1,7 @@
 define(["angular", "js/controllers", 'includes/slide/slideContent',
     'models/ClientePedido', 'models/PedidoAuditoria', 'models/Separador', 'models/Auditor',
-    'models/DocumentoTemporal', "controllers/auditoriapedidos/AuditoriaPedidosClientesController", "controllers/auditoriapedidos/AuditoriaPedidosFarmaciasController",
+    'models/DocumentoTemporal', "controllers/auditoriapedidos/AuditoriaPedidosClientesController", 
+    "controllers/auditoriapedidos/AuditoriaPedidosFarmaciasController", 'models/Caja',
     "controllers/auditoriapedidos/EditarProductoController"], function(angular, controllers) {
 
     var fo = controllers.controller('AuditoriaPedidosController', [

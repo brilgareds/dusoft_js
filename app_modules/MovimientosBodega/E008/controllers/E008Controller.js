@@ -1951,8 +1951,8 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
     var args = req.body.data;
 
     if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined ||
-        args.documento_temporal.numero_caja === undefined || args.documento_temporal.cantidad === undefined) {
-        res.send(G.utils.r(req.url, 'documento_temporal_id  o numero_caja no estan definidos', 404, {}));
+        args.documento_temporal.numero_caja === undefined || args.documento_temporal.tipo === undefined) {
+        res.send(G.utils.r(req.url, 'documento_temporal_id, numero_caja o tipo no estan definidos', 404, {}));
         return;
     }
 
@@ -1961,8 +1961,7 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
         return;
     }
 
-    if (args.documento_temporal.documento_temporal_id === '' || args.documento_temporal.numero_caja === '' || args.documento_temporal.numero_caja === '0'
-        || args.documento_temporal.cantidad === '' || args.documento_temporal.cantidad === '0') {
+    if (args.documento_temporal.documento_temporal_id === '' || args.documento_temporal.numero_caja === '' || args.documento_temporal.numero_caja === '0') {
     
         res.send(G.utils.r(req.url, 'documento_temporal_id o numero_caja estan vacios', 404, {}));
         return;
@@ -1982,20 +1981,33 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
     var ruta = "";
     var contenido = "";
     var usuario_id = req.session.user.usuario_id;
-    var cantidad = args.documento_temporal.cantidad;
+    var tipo = args.documento_temporal.tipo;
 
     that.m_e008.consultar_rotulo_caja(documento_temporal_id, numero_caja, numero_pedido, function(err, rotulos_cajas) {
         if (err) {
             res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
             return;
         } else {
-            if (rotulos_cajas.length > 0) {
-                var rotulo_caja = rotulos_cajas[0];
+            var rotulo_caja;
+            
+            //obtener la caja por el tipo 0 = caja, 1= nevera
+            for(var i in rotulos_cajas){
+                var _rotulo = rotulos_cajas[i];
+                
+               // console.log("buscando en caja ", _rotulo.numero_caja, " tipo ", _rotulo.tipo, " con tipo ", tipo );
+                if(parseInt(_rotulo.tipo) === tipo){
+                    rotulo_caja = _rotulo;
+                    break;
+                }
+            }
+            
+            if (rotulo_caja) {
+                
                 res.send(G.utils.r(req.url, 'Validacion caja producto', 200, {movimientos_bodegas: {caja_valida: (rotulo_caja.caja_cerrada === '0') ? true : false}}));
                 return;
             } else {
                 // Crear
-                that.m_e008.generar_rotulo_caja(documento_temporal_id, numero_pedido, nombre_cliente, direccion_cliente, cantidad, ruta, contenido, numero_caja, usuario_id, function(err, rotulo_caja) {
+                that.m_e008.generar_rotulo_caja(documento_temporal_id, numero_pedido, nombre_cliente, direccion_cliente, cantidad, ruta, contenido, numero_caja, usuario_id,tipo, function(err, rotulo_caja) {
                     if (err) {
                         res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
                         return;

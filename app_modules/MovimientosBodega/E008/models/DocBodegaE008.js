@@ -540,7 +540,7 @@ DocuemntoBodegaE008.prototype.actualizar_estado_documento_temporal_farmacias = f
 
 // Consultar el rotulo de una caja 
 DocuemntoBodegaE008.prototype.consultar_rotulo_caja = function(documento_id, numero_caja, numero_pedido, callback) {
-
+    console.log("documento ", documento_id , " numero pedido ", numero_pedido , " numero caja ", numero_caja);
     var sql = " select * from inv_rotulo_caja a where a.documento_id = $1 and numero_caja = $2 and solicitud_prod_a_bod_ppal_id = $3 and (sw_despachado = '0' or sw_despachado is null); ";
 
     G.db.query(sql, [documento_id, numero_caja, numero_pedido], function(err, rows, result) {
@@ -550,13 +550,13 @@ DocuemntoBodegaE008.prototype.consultar_rotulo_caja = function(documento_id, num
 };
 
 // Inserta el rotulo de una caja
-DocuemntoBodegaE008.prototype.generar_rotulo_caja = function(documento_id, numero_pedido, cliente, direccion, cantidad, ruta, contenido, numero_caja, usuario_id, callback) {
+DocuemntoBodegaE008.prototype.generar_rotulo_caja = function(documento_id, numero_pedido, cliente, direccion, cantidad, ruta, contenido, numero_caja, usuario_id, tipo, callback) {
 
-    var sql = " INSERT INTO inv_rotulo_caja (documento_id, solicitud_prod_a_bod_ppal_id, cliente, direccion, cantidad, ruta, contenido, usuario_registro, fecha_registro, numero_caja) \
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), $9 ) ;";
+    var sql = " INSERT INTO inv_rotulo_caja (documento_id, solicitud_prod_a_bod_ppal_id, cliente, direccion, cantidad, ruta, contenido, usuario_registro, fecha_registro, numero_caja, tipo) \
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), $9, $10 ) ;";
 
 
-    G.db.query(sql, [documento_id, numero_pedido, cliente, direccion, cantidad, ruta, contenido, usuario_id, numero_caja], function(err, rows, result) {
+    G.db.query(sql, [documento_id, numero_pedido, cliente, direccion, cantidad, ruta, contenido, usuario_id, numero_caja, tipo], function(err, rows, result) {
 
         callback(err, rows, result);
     });

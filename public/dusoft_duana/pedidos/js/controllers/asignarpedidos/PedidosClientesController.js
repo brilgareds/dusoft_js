@@ -24,7 +24,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
             var that = this;
 
             //var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
-            var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs"];
+            var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs" ];
 
             that.buscarPedidosCliente = function(termino, paginando) {
                 //valida si cambio el termino de busqueda
@@ -127,9 +127,9 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                 columnDefs: [
                     {field: '', cellClass: "checkseleccion", width: "60",
                         cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)'" +
-                                " ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1  && row.entity.estado_actual_pedido != 5 || " +
+                                " ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1  && row.entity.estado_actual_pedido != 5 && row.entity.estado_actual_pedido != 8 || " +
                                 " row.entity.estado == 2 || " +
-                                "row.entity.estado_separacion'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
+                                " row.entity.estado_separacion'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
                     {field: 'descripcion_estado_actual_pedido', displayName: "Estado Actual", cellClass: "txt-center",
                         //cellTemplate: '<div ng-class="agregarClase(row.entity.estado_actual_pedido)" >{{row.entity.descripcion_estado_actual_pedido}}</div>'},
                         cellTemplate: "<button type='button' ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
@@ -289,7 +289,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
 
             $scope.abrirModalAsignar = function() {
                 console.log($scope.pedidosSeleccionados, " pedidos seleccionados ", $scope.pedidosSeleccionados.length);
-
+                
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,

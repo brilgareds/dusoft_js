@@ -16,7 +16,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 {estado:"separacion_finalizada", nombre:"Separacion Finalizada"},
                 {estado:"en_auditoria", nombre:"En Auditoría"},
                 {estado:"auditados", nombre:"Auditado"},
+                {estado:"auditados_pdtes", nombre:"Auditado con pendientes"},
                 {estado:"en_zona_despacho", nombre:"En zona de despacho"},
+                {estado:"en_zona_despacho_pdtes", nombre:"En zona de despacho con pendientes"},
                 {estado:"despachado", nombre:"Despachado"},
                 {estado:"despachado_pendientes", nombre:"Despachado con pendientes"}
             ];

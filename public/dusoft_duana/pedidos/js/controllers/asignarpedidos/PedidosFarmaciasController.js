@@ -10,13 +10,13 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
 
             $scope.Empresa = Empresa;
             //var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
-            var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs"];
+            var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs"];
             $scope.pedidosSeleccionados = [];
             $scope.empresas = [];
             $scope.seleccion = "FD";
             $scope.session = {
-                 usuario_id: Usuario.getUsuarioActual().getId(),
-                 auth_token: Usuario.getUsuarioActual().getToken()
+                usuario_id: Usuario.getUsuarioActual().getId(),
+                auth_token: Usuario.getUsuarioActual().getToken()
             };
 
             $scope.paginas = 0;
@@ -166,8 +166,9 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                 }
 
                 $scope.pedidosSeleccionados.push(pedido);
-            },
-                    $scope.buscarSeleccion = function(row) {
+            };
+            
+            $scope.buscarSeleccion = function(row) {
                 var pedido = row.entity;
                 for (var i in $scope.pedidosSeleccionados) {
                     var _pedido = $scope.pedidosSeleccionados[i];

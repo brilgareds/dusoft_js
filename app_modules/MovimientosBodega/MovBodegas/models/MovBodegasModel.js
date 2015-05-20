@@ -613,7 +613,9 @@ function __ingresar_detalle_movimiento_bodega(documento_temporal_id, usuario_id,
                     observacion_cambio, \
                     total_costo_pedido, \
                     valor_unitario, \
-                    cantidad_sistema \
+                    cantidad_sistema,\
+                    numero_caja,\
+                    tipo_caja \
                 )\
                     SELECT  \
                     $3 AS empresa_id, \
@@ -630,7 +632,9 @@ function __ingresar_detalle_movimiento_bodega(documento_temporal_id, usuario_id,
                     a.observacion_cambio,\
                     a.total_costo_pedido, \
                     (a.total_costo/a.cantidad) as valor_unitario, \
-                    COALESCE(a.cantidad_sistema,0) AS cantidad_sistema \
+                    COALESCE(a.cantidad_sistema,0) AS cantidad_sistema, \
+                    a.numero_caja,\
+                    a.tipo_caja \
                     FROM inv_bodegas_movimiento_tmp_d a\
                     inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
                     inner join unidades c on b.unidad_id = c.unidad_id \

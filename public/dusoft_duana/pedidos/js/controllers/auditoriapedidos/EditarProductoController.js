@@ -339,7 +339,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                 $scope.rootEditarProducto.mostrarJustificacion = that.esJustificacionNecesaria();
                 
                 
-              //  console.log(">>>>>>>>>>>>>>>>>>>>>>> ",documento_despacho);
+                console.log(">>>>>>>>>>>>>>>>>>>>>>> documento de despacho ",documento_despacho);
                  var obj = {
                     session:$scope.session,
                     data:{
@@ -665,7 +665,8 @@ define(["angular", "js/controllers",'models/ClientePedido',
                                   data:{
                                       documento_temporal: {
                                           temporales: items,
-                                          numero_caja: $scope.rootEditarProducto.caja.getNumero()
+                                          numero_caja: $scope.rootEditarProducto.caja.getNumero(),
+                                          tipo:$scope.rootEditarProducto.caja.getTipo()
                                       }
                                   }
                               };

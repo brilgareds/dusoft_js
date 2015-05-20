@@ -185,6 +185,12 @@ define(["angular", "js/controllers", 'models/Farmacia',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
+                    {field: 'tipo', displayName: "Tipo", width: 200, cellClass: "txt-center",
+                        cellTemplate: '<div ng-switch="row.entity.tipo">\
+                            <div ng-switch-when="0">Caja</div>\
+                            <div ng-switch-when="1">Nevera</div>\
+                        </div>'
+                    },
                     {field: 'numero_caja', displayName: 'Número de caja', width: 150},
                     {field: 'cliente', displayName: 'Cliente'},
                     {field: 'direccion', displayName: 'Direccion'},

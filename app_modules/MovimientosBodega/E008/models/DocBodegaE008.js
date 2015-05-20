@@ -540,7 +540,6 @@ DocuemntoBodegaE008.prototype.actualizar_estado_documento_temporal_farmacias = f
 
 // Consultar el rotulo de una caja 
 DocuemntoBodegaE008.prototype.consultar_rotulo_caja = function(documento_id, numero_caja, numero_pedido, callback) {
-    console.log("documento ", documento_id , " numero pedido ", numero_pedido , " numero caja ", numero_caja);
     var sql = " select * from inv_rotulo_caja a where a.documento_id = $1 and numero_caja = $2 and solicitud_prod_a_bod_ppal_id = $3 and (sw_despachado = '0' or sw_despachado is null); ";
 
     G.db.query(sql, [documento_id, numero_caja, numero_pedido], function(err, rows, result) {
@@ -584,11 +583,11 @@ DocuemntoBodegaE008.prototype.cerrar_caja = function(documento_id, numero_caja, 
 
 };
 
-DocuemntoBodegaE008.prototype.actualizarCajaDeTemporal = function(item_id, numero_caja, callback) {
-    var sql = " UPDATE inv_bodegas_movimiento_tmp_d SET numero_caja=$2 WHERE item_id = $1 ";
+DocuemntoBodegaE008.prototype.actualizarCajaDeTemporal = function(item_id, numero_caja, tipo, callback) {
+    var sql = " UPDATE inv_bodegas_movimiento_tmp_d SET numero_caja=$2, tipo_caja = $3 WHERE item_id = $1 ";
 
 
-    G.db.query(sql, [item_id, numero_caja], function(err, rows, result) {
+    G.db.query(sql, [item_id, numero_caja, tipo], function(err, rows, result) {
 
         callback(err, rows, result);
     });

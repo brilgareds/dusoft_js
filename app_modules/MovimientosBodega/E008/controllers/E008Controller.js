@@ -1524,13 +1524,18 @@ E008Controller.prototype.imprimirRotuloClientes = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined || args.documento_temporal.numero_caja === undefined) {
-        res.send(G.utils.r(req.url, 'Documento temporal o numero_pedido  No Estan Definidos', 404, {}));
+    if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined 
+        || args.documento_temporal.numero_caja === undefined ||  args.documento_temporal.tipo === undefined) {
+        res.send(G.utils.r(req.url, 'Documento temporal, numero_pedido, numero caja o tipo  No Estan Definidos', 404, {}));
         return;
     }
+    
+    var pedido = args.documento_temporal.numero_pedido;
+    var numero = args.documento_temporal.numero_caja;
+    var tipo   = args.documento_temporal.tipo;
 
 
-    that.m_pedidos_clientes.obtenerDetalleRotulo(args.documento_temporal.numero_pedido, args.documento_temporal.numero_caja, function(e, rows) {
+    that.m_pedidos_clientes.obtenerDetalleRotulo(pedido, numero, tipo, function(e, rows) {
 
 
 
@@ -1561,13 +1566,18 @@ E008Controller.prototype.imprimirRotuloFarmacias = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined || args.documento_temporal.numero_caja === undefined) {
-        res.send(G.utils.r(req.url, 'Documento temporal o numero_pedido  No Estan Definidos', 404, {}));
+    if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined 
+        || args.documento_temporal.numero_caja === undefined ||  args.documento_temporal.tipo === undefined) {
+        res.send(G.utils.r(req.url, 'Documento temporal, numero_pedido, numero caja o tipo  No Estan Definidos', 404, {}));
         return;
     }
+    
+    var pedido = args.documento_temporal.numero_pedido;
+    var numero = args.documento_temporal.numero_caja;
+    var tipo   = args.documento_temporal.tipo;
 
 
-    that.m_pedidos_farmacias.obtenerDetalleRotulo(args.documento_temporal.numero_pedido, args.documento_temporal.numero_caja, function(e, rows) {
+    that.m_pedidos_farmacias.obtenerDetalleRotulo(pedido, numero, tipo, function(e, rows) {
 
 
 
@@ -2028,8 +2038,9 @@ E008Controller.prototype.generarRotuloCaja = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined || args.documento_temporal.numero_caja === undefined) {
-        res.send(G.utils.r(req.url, 'documento_temporal_id  o numero_caja no estan definidos', 404, {}));
+    if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined 
+        || args.documento_temporal.numero_caja === undefined || args.documento_temporal.tipo === undefined) {
+        res.send(G.utils.r(req.url, 'documento_temporal_id, numero_caja o tipo no estan definidos', 404, {}));
         return;
     }
 
@@ -2043,8 +2054,10 @@ E008Controller.prototype.generarRotuloCaja = function(req, res) {
 
     var documento_temporal_id = args.documento_temporal.documento_temporal_id;
     var numero_caja = args.documento_temporal.numero_caja;
+    var tipo = args.documento_temporal.tipo;
+    
 
-    that.m_e008.cerrar_caja(documento_temporal_id, numero_caja, function(err, rows, result) {
+    that.m_e008.cerrar_caja(documento_temporal_id, numero_caja, tipo, function(err, rows, result) {
         if (err || result.rowCount === 0) {
             res.send(G.utils.r(req.url, 'Error cerrando la caja', 500, {documento_temporal: {}}));
             return;
@@ -2338,7 +2351,7 @@ function __validar_rotulos_cajas(that, documento_temporal_id, usuario_id, numero
                                 for (var i in cajas_no_cerradas) {
                                     var caja_no_cerrada = cajas_no_cerradas[i];
 
-                                    if (caja.numero_caja === caja_no_cerrada.numero_caja) {
+                                    if (caja.numero_caja === caja_no_cerrada.numero_caja && caja.tipo === caja_no_cerrada.tipo) {
                                         agregada = true;
                                         break;
                                     }

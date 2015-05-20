@@ -737,7 +737,9 @@ define(["angular", "js/controllers",'models/ClientePedido',
                 $scope.cerrar = false;     
                 $rootScope.$emit("onGenerarPdfRotulo", $scope.rootEditarProducto.documento.pedido.tipo,
                                                        $scope.rootEditarProducto.documento.pedido.numero_pedido,
-                                                       $scope.rootEditarProducto.caja.getNumero());
+                                                       $scope.rootEditarProducto.caja.getNumero(),
+                                                       $scope.rootEditarProducto.caja.getTipo()
+                                 );
                 
             };
 

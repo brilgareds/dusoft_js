@@ -218,7 +218,7 @@ define(["angular", "js/controllers", 'models/ClientePedido',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
-                    {field: 'tipo', displayName: "Tipo", width: 200, cellClass: "txt-center",
+                    {field: 'tipo', displayName: "Tipo", width: 70, cellClass: "ngCellText",
                         cellTemplate: '<div ng-switch="row.entity.tipo">\
                             <div ng-switch-when="0">Caja</div>\
                             <div ng-switch-when="1">Nevera</div>\
@@ -230,7 +230,7 @@ define(["angular", "js/controllers", 'models/ClientePedido',
                     {field: 'movimiento', displayName: "Opciones", width: 200, cellClass: "txt-center",
                         cellTemplate: '<div ng-switch="row.entity.caja_cerrada">\
                             <button ng-switch-when="0"  class="btn btn-default btn-xs" ng-click="onCerrarCaja(row.entity)"><span class="glyphicon glyphicon-ok"></span> Cerrar</button>\
-                            <button ng-switch-when="1" class="btn btn-default btn-xs" ng-click="onImprimirRotulo(1,DocumentoTemporal.pedido.numero_pedido,row.entity.numero_caja)"><span class="glyphicon glyphicon-print"></span> Imprimir</button>\
+                            <button ng-switch-when="1" class="btn btn-default btn-xs" ng-click="onImprimirRotulo(1,DocumentoTemporal.pedido.numero_pedido,row.entity.numero_caja, row.entity.tipo)"><span class="glyphicon glyphicon-print"></span> Imprimir</button>\
                         </div>'
                     }
 

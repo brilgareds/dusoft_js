@@ -176,6 +176,12 @@ COMMENT ON COLUMN "public"."inv_rotulo_caja"."imprimio_rotulo"
 IS ' Determina si se imprimió rotulo 0= FALSE 1= TRUE ';
 
 
+-- tipo caja
+ALTER TABLE inv_rotulo_caja ADD tipo char(1) DEFAULT '0';
+
+COMMENT ON COLUMN "public"."inv_rotulo_caja"."tipo"
+IS '0 = caja, 1 = nevera';
+
 ---- ==================================================================================== ----
 ---- Agregar columnas a tabla inv_bodegas_movimiento_tmp_d 
 
@@ -185,7 +191,39 @@ ALTER TABLE inv_bodegas_movimiento_tmp_d ADD numero_caja integer DEFAULT null;
 COMMENT ON COLUMN "public"."inv_bodegas_movimiento_tmp_d"."numero_caja"
 IS ' Hace referencia al numero de la caja en donde va el producto';
 
+ALTER TABLE "public"."inv_bodegas_movimiento_tmp_d"
+  ADD COLUMN "tipo_caja" CHAR(1);
+
+ALTER TABLE "public"."inv_bodegas_movimiento_tmp_d"
+  ALTER COLUMN "tipo_caja" SET DEFAULT 0;
+
+COMMENT ON COLUMN "public"."inv_bodegas_movimiento_tmp_d"."tipo_caja"
+IS '0 = caja, 1 = nevera';
+
 ---- ==================================================================================== ----
+
+--- Agregar columnas a la tabla inv_bodegas_movimiento_d
+
+ALTER TABLE "public"."inv_bodegas_movimiento_d"
+  ADD COLUMN "numero_caja" INTEGER;
+
+COMMENT ON COLUMN "public"."inv_bodegas_movimiento_d"."numero_caja"
+IS 'Hace referencia al numero de la caja en donde va el producto';
+
+ALTER TABLE "public"."inv_bodegas_movimiento_d"
+  ADD COLUMN "tipo_caja" CHAR(1);
+
+ALTER TABLE "public"."inv_bodegas_movimiento_d"
+  ALTER COLUMN "tipo_caja" SET DEFAULT 0;
+
+COMMENT ON COLUMN "public"."inv_bodegas_movimiento_d"."tipo_caja"
+IS '0 = caja, 1 = nevera';
+
+
+--==============================================================================================
+
+
+
 ---- Agregar columnas a tabla inv_bodegas_movimiento_tmp_justificaciones_pendientes 
 
 -- justificacion_auditor

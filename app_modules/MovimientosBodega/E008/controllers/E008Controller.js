@@ -1711,7 +1711,7 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                                         var cantidad_pendiente = 0;
 
                                         //temporalmente el pedido queda con estados despachado o despachado con pendientes al terminar de auditar
-                                        var estado = "4";
+                                        var estado = "2";
 
                                         detalle_pedido.forEach(function(producto_pedido) {
 
@@ -1720,7 +1720,7 @@ E008Controller.prototype.generarDocumentoDespachoClientes = function(req, res) {
                                         });
 
                                         if (cantidad_pendiente > 0) {
-                                            estado = "5";
+                                            estado = "8"; 
                                         }
 
 
@@ -1950,8 +1950,9 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined || args.documento_temporal.numero_caja === undefined) {
-        res.send(G.utils.r(req.url, 'documento_temporal_id  o numero_caja no estan definidos', 404, {}));
+    if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined ||
+        args.documento_temporal.numero_caja === undefined || args.documento_temporal.tipo === undefined) {
+        res.send(G.utils.r(req.url, 'documento_temporal_id, numero_caja o tipo no estan definidos', 404, {}));
         return;
     }
 
@@ -1961,6 +1962,7 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
     }
 
     if (args.documento_temporal.documento_temporal_id === '' || args.documento_temporal.numero_caja === '' || args.documento_temporal.numero_caja === '0') {
+    
         res.send(G.utils.r(req.url, 'documento_temporal_id o numero_caja estan vacios', 404, {}));
         return;
     }
@@ -1979,19 +1981,33 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
     var ruta = "";
     var contenido = "";
     var usuario_id = req.session.user.usuario_id;
+    var tipo = args.documento_temporal.tipo;
 
     that.m_e008.consultar_rotulo_caja(documento_temporal_id, numero_caja, numero_pedido, function(err, rotulos_cajas) {
         if (err) {
             res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
             return;
         } else {
-            if (rotulos_cajas.length > 0) {
-                var rotulo_caja = rotulos_cajas[0];
+            var rotulo_caja;
+            
+            //obtener la caja por el tipo 0 = caja, 1= nevera
+            for(var i in rotulos_cajas){
+                var _rotulo = rotulos_cajas[i];
+                
+               // console.log("buscando en caja ", _rotulo.numero_caja, " tipo ", _rotulo.tipo, " con tipo ", tipo );
+                if(parseInt(_rotulo.tipo) === tipo){
+                    rotulo_caja = _rotulo;
+                    break;
+                }
+            }
+            
+            if (rotulo_caja) {
+                
                 res.send(G.utils.r(req.url, 'Validacion caja producto', 200, {movimientos_bodegas: {caja_valida: (rotulo_caja.caja_cerrada === '0') ? true : false}}));
                 return;
             } else {
                 // Crear
-                that.m_e008.generar_rotulo_caja(documento_temporal_id, numero_pedido, nombre_cliente, direccion_cliente, cantidad, ruta, contenido, numero_caja, usuario_id, function(err, rotulo_caja) {
+                that.m_e008.generar_rotulo_caja(documento_temporal_id, numero_pedido, nombre_cliente, direccion_cliente, cantidad, ruta, contenido, numero_caja, usuario_id,tipo, function(err, rotulo_caja) {
                     if (err) {
                         res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
                         return;
@@ -2048,18 +2064,20 @@ E008Controller.prototype.actualizarCajaDeTemporales = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.documento_temporal === undefined || args.documento_temporal.temporales === undefined || args.documento_temporal.numero_caja === undefined) {
-        res.send(G.utils.r(req.url, 'documento_temporal, temporales  o numero_caja no estan definidos', 404, {}));
+    if (args.documento_temporal === undefined || args.documento_temporal.temporales === undefined 
+            || args.documento_temporal.numero_caja === undefined || args.documento_temporal.tipo === undefined) {
+        res.send(G.utils.r(req.url, 'documento_temporal, temporales, numero_caja o tipo no estan definidos', 404, {}));
         return;
     }
 
     var temporales = args.documento_temporal.temporales;
     var numero_caja = args.documento_temporal.numero_caja;
+    var tipo = args.documento_temporal.tipo;
     var i = temporales.length;
 
     temporales.forEach(function(temporal) {
 
-        that.m_e008.actualizarCajaDeTemporal(temporal, numero_caja, function(err, rows, result) {
+        that.m_e008.actualizarCajaDeTemporal(temporal, numero_caja, tipo, function(err, rows, result) {
 
             if (err || result.rowCount === 0) {
                 res.send(G.utils.r(req.url, 'Error actualizand  la caja', 500, {documento_temporal: {}}));

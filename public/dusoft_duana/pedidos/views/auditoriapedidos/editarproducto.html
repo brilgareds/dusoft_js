@@ -20,18 +20,18 @@
                 <div class ="col-md-3"><div class="lbl_editar_producto">Disponible</div>{{rootEditarProducto.producto.disponible}}</div>
 
             </div>
-            
+
             <div class="row">
                 <div class ="col-md-3"><div class="lbl_editar_producto">Ingresado / Pendiente</div> {{rootEditarProducto.producto.obtenerCantidadSeleccionada()}} / {{rootEditarProducto.producto.cantidad_pendiente}}</div>
                 <div class ="col-md-3"><div class="lbl_editar_producto">Justificación  Separador</div><div>{{rootEditarProducto.producto.lote.justificacion_separador}}</div></div>
             </div>
-         </div>
+        </div>
     </div>
 
 
     <div class="panel panel-info">
         <div class="panel-heading">
-             <h5 class="panel-title">Lotes Del Producto</h5>
+            <h5 class="panel-title">Lotes Del Producto</h5>
         </div>
         <div class="panel-body">
             <div class="auditarGrid" ng-grid="lotes_producto" validar-evento-fila></div>
@@ -49,42 +49,77 @@
                 <div class="span6">
                     <textarea placeholder="Justificación por pendientes" ng-model="rootEditarProducto.producto.lote.justificacion_auditor" class="col-xs-12 textareajustificacion"></textarea>
                 </div>
-             </div>
+            </div>
         </div>
     </div>
 
-    <div class="panel panel-info">
+    <div class="panel panel-info panelCaja">
         <div class="panel-heading">
-            <h3 class="panel-title">Información Caja</h3>
+            <h3 class="panel-title">Información Caja / Nevera</h3>
         </div>
         <div class="panel-body">
             <div class="row">
-                <div class ="col-md-6">
-                    
-                    <!-- div class="input-group" style="100px">
-                        <input type="text" id="numerocaja" ng-model="rootEditarProducto.caja.numero" class="input-mini input-sm form-control  grid-inline-input" validacion-numero ng-change="onValidarCaja()"  >
+
+                
+                <div class="col-lg-5">
+                    <label class="lbl_editar_producto lbl_caja" for="numerocaja">Numero: </label>
+                    <div class="input-group input-group-sm">
+                        
+                        <input type="text" role="group" ng-model="rootEditarProducto.caja.numero" class="form-control"  validacion-numero />
+                        <div class="input-group-btn" role="group">
+                            <button type="button" class="btn btn-default dropdown-toggle btnTipo" data-toggle="dropdown" aria-expanded="false"> {{ rootEditarProducto.caja.getTipo(true) || "Tipo" }} <span class="caret"></span></button>
+                            <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                <li><a href="javascript:void(0)" ng-click="rootEditarProducto.caja.tipo = 0">Caja</a></li>
+                                <li><a href="javascript:void(0)" ng-click="rootEditarProducto.caja.tipo = 1">Nevera</a></li>
+                            </ul>
+                        </div><!-- /btn-group -->
+                        <div class="input-group-btn" >
+                            <button type="button" ng-disabled="rootEditarProducto.caja.tipo == undefined" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Acción <span class="caret"></span></button>
+                            <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                <li><a href="javascript:void(0)" ng-click="onSeleccionarCaja()">Seleccionar</a></li>
+                                <li><a href="javascript:void(0)" ng-click="onCerrarCaja()">Cerrar</a></li>
+                                <li>
+                                    <a ng-if="cerrar" href="javascript:void(0)" ng-click="onImprimirRotulo()">Generar</a>
+                                    <a ng-if="cerrar" href="javascript:void(0)">Generar</a>
+                                </li>
+                            </ul>
+                        </div><!-- /btn-group -->
+                    </div><!-- /input-group -->
+                </div><!-- /.col-lg-6 -->
+
+
+                <!--div class="contenedorTipo">
+                    <span>
+                        <span class="dropdown" id="dropdownMenu1" name="dropdownMenu1">
+                            <button class="btn btn-default dropdown-toggle btn-sm" type="button"  data-toggle="dropdown" aria-expanded="true">
+                                Tipo
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Caja</a></li>
+                                <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Nevera</a></li>
+                            </ul>
+                        </span>
+                    </span>
+                </div>
+                <div class="contenedorCaja">
+                    <label class="lbl_editar_producto lbl_caja" for="numerocaja">Numero: </label>
+                    <div class="input-group validar_caja_contenedor">
+                        <input type="text" id="numerocaja" ng-model="rootEditarProducto.caja.numero" class="form-control" ng-change="onValidarCaja()"  validacion-numero  />
                         <span class="input-group-btn">
-                            <button class="btn btn-default btn-xs" type="button" ng-click="onSeleccionarCaja()"><span class="glyphicon glyphicon-ok"></span></button>                               </span>
-                    </div -->
-                    <div>
-                        <label class="lbl_editar_producto" for="numerocaja">Numero Caja: </label>
-                        <div class="input-group validar_caja_contenedor">
-                            <input type="text" id="numerocaja" ng-model="rootEditarProducto.caja.numero" class="form-control" ng-change="onValidarCaja()"  validacion-numero  />
-                             <span class="input-group-btn">
-                              <button class="btn btn-default btn-xs" type="button" ng-click="onSeleccionarCaja()"><span class="glyphicon glyphicon-ok"></span></button>
-                            </span>
-                        </div>
+                            <button class="btn btn-default btn-xs" type="button" ng-click="onSeleccionarCaja()"><span class="glyphicon glyphicon-ok"></span></button>
+                        </span>
                     </div>
                 </div>
-                <div class ="col-md-3" ng-switch on="rootEditarProducto.caja.valida">
-                    <label class="lbl_editar_producto" ng-switch-when="true" for="cerrarcaja">Cerrar Caja</label>
-                    <input-check ng-model="cerrar" id="cerrarcaja" ng-switch-when="true" ng-click="onCerrarCaja()" />
+                <div class="contenedorCaja">
+                    <label class="lbl_editar_producto lbl_caja" for="cerrarcaja">Cerrar</label>
+                    <input-check ng-model="cerrar" id="cerrarcaja" ng-click="onCerrarCaja()" ng-disabled="rootEditarProducto.caja.valida" />
                 </div>
-                <div class ="col-md-2 text-center" ng-switch on="cerrar">
-                        <button class="btn btn-primary ng-binding btn-accion" ng-switch-when="true" ng-click="onImprimirRotulo()">Generar</button>
-                </div>
+                <div style="padding-left:10px;">
+                    <button class="btn btn-default ng-binding btn-accion btn-sm" ng-disabled="!cerrar" ng-click="onImprimirRotulo()">Generar</button>
+                </div -->
             </div>
-         </div>
+        </div>
     </div>
 
 
@@ -132,7 +167,7 @@
         </div>
         
     </div-->
-   
+
     <button class="btn btn-primary ng-binding pull-right" ng-click="auditarPedido()">Auditar</button>
     <button class="btn btn-warning pull-right" style="margin-right:20px;" ng-click="cerrarModal()">Cancelar</button>
 

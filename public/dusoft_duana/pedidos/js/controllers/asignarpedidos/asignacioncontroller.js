@@ -16,6 +16,10 @@ define(["angular", "js/controllers", 'models/Separador'], function(angular, cont
             $scope.msg = "";
             $scope.operario_id = false;
             var that = this;
+            
+            console.log('=== Pedidos seleccionados ======');
+            console.log($scope.pedidosSeleccionados);
+            //return
 
             $scope.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
@@ -89,7 +93,7 @@ define(["angular", "js/controllers", 'models/Separador'], function(angular, cont
 
                 for (var i  in pedidosSeleccionados) {
                     var pedido = pedidosSeleccionados[i];
-                    if ((pedido.estado_actual_pedido !== '0' && pedido.estado_actual_pedido !== '1' && pedido.estado_actual_pedido !== '5')
+                    if ((pedido.estado_actual_pedido !== '0' && pedido.estado_actual_pedido !== '1' && pedido.estado_actual_pedido !== '5' && pedido.estado_actual_pedido !== '8' )
                             || pedido.estado === '2' || pedido.estado_separacion) {
                         pedidosSeleccionados.splice(i, 1);
                         $scope.validarEstado(pedidosSeleccionados);

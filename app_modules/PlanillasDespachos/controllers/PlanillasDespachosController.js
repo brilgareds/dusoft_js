@@ -345,7 +345,7 @@ PlanillasDespachos.prototype.ingresarDocumentosPlanillaDespacho = function(req, 
                                 return;
                             }
                         });
-                    }                    
+                    }
                 }
             });
         }
@@ -402,6 +402,12 @@ PlanillasDespachos.prototype.eliminarDocumentoPlanilla = function(req, res) {
             return;
         } else {
 
+            if (tipo === '2') {
+                // Otras Empresas
+                res.send(G.utils.r(req.url, 'Documento eliminado correctamente', 200, {planillas_despachos: {}}));
+                return;
+            }
+
             // Registrar los responsables del pedido, y notificar en tiempo real
             that.m_e008.consultar_documento_despacho(numero, prefijo, empresa_id, usuario_id, function(err, documento_bodega) {
 
@@ -444,12 +450,6 @@ PlanillasDespachos.prototype.eliminarDocumentoPlanilla = function(req, res) {
                             res.send(G.utils.r(req.url, 'Documento eliminado correctamente', 200, {planillas_despachos: {}}));
                             return;
                         });
-                    }
-
-                    if (tipo === '2') {
-                        // Otras Empresas
-                        res.send(G.utils.r(req.url, 'Documento eliminado correctamente', 200, {planillas_despachos: {}}));
-                        return;
                     }
                 }
             });
@@ -666,10 +666,11 @@ function __despachar_documentos_planilla(contexto, i, documentos_planilla, resul
                 }
 
                 if (tipo === '1') {
+
                     // Clientes
                     that.m_pedidos_clientes.asignar_responsables_pedidos(numero_pedido, estado_pedido, null, usuario_id, function(err, rows, responsable_estado_pedido) {
 
-                        if (!err) {
+                        if (err) {
                             resultado.continuar = false;
                             resultado.msj += ' Error Interno code 3. ';
                         }
@@ -760,7 +761,8 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
             return;
         }
     });
-};
+}
+;
 
 PlanillasDespachos.$inject = ["m_planillas_despachos", "m_e008", "m_pedidos_farmacias", "e_pedidos_farmacias", "m_pedidos_clientes", "e_pedidos_clientes", "emails"];
 

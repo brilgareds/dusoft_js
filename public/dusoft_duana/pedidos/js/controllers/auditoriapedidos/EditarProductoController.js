@@ -7,13 +7,13 @@ define(["angular", "js/controllers",'models/ClientePedido',
         '$modalInstance', 'EmpresaPedido','Cliente',
          'PedidoAuditoria', 'API',"socket", "AlertService",
          "producto", "Usuario", "documento","LoteProductoPedido","productos",
-         "documento_despacho",
+         "documento_despacho","Caja",
 
         function(   $scope, $rootScope, Request,
                     $modalInstance, Empresa, Cliente,
                     PedidoAuditoria, API, socket, AlertService, 
                     producto, Usuario, documento, LoteProductoPedido, productos,
-                    documento_despacho) {
+                    documento_despacho, Caja) {
             
            $scope.rootEditarProducto = {}; 
            //$scope.rootEditarProducto.producto = angular.copy(producto);
@@ -33,11 +33,8 @@ define(["angular", "js/controllers",'models/ClientePedido',
                  usuario_id: Usuario.getUsuarioActual().getId(),
                  auth_token: Usuario.getUsuarioActual().getToken()
             };
-
-            $scope.rootEditarProducto.caja  = {
-                numero:0,
-                valida:false
-            };
+            
+            $scope.rootEditarProducto.caja = Caja.get();
 
             $scope.rootEditarProducto.validacionlote = {valido:true};
             $scope.rootEditarProducto.validacionproducto = {
@@ -195,7 +192,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                    
                 ],
                 beforeSelectionChange:function(row, event){
-                    console.log(row, "before selection ", event, row instanceof  Array);
+                   // console.log(row, "before selection ", event, row instanceof  Array);
                     if(!row.entity || row.entity.numero_caja > 0) return false;
                     
                    // console.log($scope.lotes_producto.selectedItems);
@@ -228,7 +225,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
             
             $scope.duplicarLote = function(lote, row){
                 
-                console.log("lote a duplicar ", lote, " index ",row);
+               // console.log("lote a duplicar ", lote, " index ",row);
                 var _lote = angular.copy(lote);
                 _lote.item_id = 0;
                 _lote.numero_caja = 0;
@@ -240,7 +237,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
             $scope.onCantidadFocus = function(row){
                 var cantidad_ingresada = row.entity.cantidad_ingresada;
                //
-                console.log("cantidad_ingresada ",cantidad_ingresada, row.entity );
+               // console.log("cantidad_ingresada ",cantidad_ingresada, row.entity );
 
 
                 if(cantidad_ingresada > 0){
@@ -342,7 +339,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                 $scope.rootEditarProducto.mostrarJustificacion = that.esJustificacionNecesaria();
                 
                 
-                console.log(">>>>>>>>>>>>>>>>>>>>>>> ",documento_despacho);
+                console.log(">>>>>>>>>>>>>>>>>>>>>>> documento de despacho ",documento_despacho);
                  var obj = {
                     session:$scope.session,
                     data:{
@@ -605,15 +602,20 @@ define(["angular", "js/controllers",'models/ClientePedido',
                 $scope.cerrar = false;
                 if($scope.lotes_producto.selectedItems.length === 0){
                     $scope.rootEditarProducto.validacionproducto.valido = false;
-                    $scope.rootEditarProducto.caja.valida = false;
+                    $scope.rootEditarProducto.caja.setValida(false);
                     $scope.rootEditarProducto.validacionproducto.mensaje = "No se han seleccionado lotes para la caja";
                     return;
                 }
                 
-                if(isNaN($scope.rootEditarProducto.caja.numero) || $scope.rootEditarProducto.caja.numero === 0){
+                if(isNaN($scope.rootEditarProducto.caja.getNumero()) || $scope.rootEditarProducto.caja.getNumero() === 0 ||
+                         isNaN($scope.rootEditarProducto.caja.getTipo())){
+                     
+                     console.log("numero de caja ", isNaN($scope.rootEditarProducto.caja.getNumero()), $scope.rootEditarProducto.caja.getNumero());
+                     console.log("tipo de caja ", isNaN($scope.rootEditarProducto.caja.getTipo()),  $scope.rootEditarProducto.caja.getTipo());
+                     
                     $scope.rootEditarProducto.validacionproducto.valido = false;
-                    $scope.rootEditarProducto.caja.valida = false;
-                    $scope.rootEditarProducto.validacionproducto.mensaje = "Número de caja no es válido";
+                    $scope.rootEditarProducto.caja.setValida(false);
+                    $scope.rootEditarProducto.validacionproducto.mensaje = "El número o el tipo no son validos";
 
                     return;
                 }
@@ -627,10 +629,11 @@ define(["angular", "js/controllers",'models/ClientePedido',
                     data:{
                         documento_temporal: {
                             documento_temporal_id: $scope.rootEditarProducto.documento.documento_temporal_id,
-                            numero_caja: $scope.rootEditarProducto.caja.numero,
+                            numero_caja: $scope.rootEditarProducto.caja.getNumero(),
                             numero_pedido: $scope.rootEditarProducto.pedido.numero_pedido,
                             direccion_cliente: cliente.direccion || cliente.nombre_farmacia,
-                            nombre_cliente:cliente.nombre_tercero || cliente.nombre_farmacia
+                            nombre_cliente:cliente.nombre_tercero || cliente.nombre_farmacia,
+                            tipo:$scope.rootEditarProducto.caja.getTipo()
                         }
                     }
                 };
@@ -645,11 +648,10 @@ define(["angular", "js/controllers",'models/ClientePedido',
                         if(!obj.caja_valida){
                             $scope.rootEditarProducto.validacionproducto.valido = false;
                             $scope.rootEditarProducto.validacionproducto.mensaje = "La caja se encuentra cerrada";
-                            $scope.rootEditarProducto.caja.valida = false;
+                            $scope.rootEditarProducto.caja.setValida(false);
                         } else {
                             $scope.rootEditarProducto.validacionproducto.valido = true;
                             
-                            console.log($scope.lotes_producto.selectedItems, " caja valida ",$scope.rootEditarProducto.caja.valida );
               
                             var items = [];
                             
@@ -663,7 +665,8 @@ define(["angular", "js/controllers",'models/ClientePedido',
                                   data:{
                                       documento_temporal: {
                                           temporales: items,
-                                          numero_caja: $scope.rootEditarProducto.caja.numero
+                                          numero_caja: $scope.rootEditarProducto.caja.getNumero(),
+                                          tipo:$scope.rootEditarProducto.caja.getTipo()
                                       }
                                   }
                               };
@@ -677,7 +680,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                                          for(var i in items){
                                               for(var ii in lotes){
                                                   if(lotes[ii].item_id === items[i]){
-                                                      lotes[ii].numero_caja = $scope.rootEditarProducto.caja.numero;
+                                                      lotes[ii].numero_caja = $scope.rootEditarProducto.caja.getNumero();
                                                       break;
                                                   }
                                               }
@@ -689,7 +692,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                                          }
 
 
-                                         $scope.rootEditarProducto.caja.valida = true;
+                                         $scope.rootEditarProducto.caja.setValida(true);
 
                                   } else {
                                         $scope.rootEditarProducto.validacionproducto.valido = false;
@@ -713,7 +716,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                     data:{
                         documento_temporal: {
                             documento_temporal_id: $scope.rootEditarProducto.documento.documento_temporal_id,
-                            numero_caja: $scope.rootEditarProducto.caja.numero
+                            numero_caja: $scope.rootEditarProducto.caja.getNumero()
                         }
                     }
                 };
@@ -734,7 +737,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                 $scope.cerrar = false;     
                 $rootScope.$emit("onGenerarPdfRotulo", $scope.rootEditarProducto.documento.pedido.tipo,
                                                        $scope.rootEditarProducto.documento.pedido.numero_pedido,
-                                                       $scope.rootEditarProducto.caja.numero);
+                                                       $scope.rootEditarProducto.caja.getNumero());
                 
             };
 

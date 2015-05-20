@@ -159,7 +159,28 @@ module.exports = function(app, di_container) {
     //Buscar Usuario Bloqueo
     app.post('/api/PedidosFarmacias/buscarUsuarioBloqueo', function(req, res) {
         c_pedidos_farmacias.buscarUsuarioBloqueo(req, res);
-    });    
+    });
+    
+    //consultarProductoEnFarmacia
+    app.post('/api/PedidosFarmacias/consultarProductoEnFarmacia', function(req, res) {
+        c_pedidos_farmacias.consultarProductoEnFarmacia(req, res);
+    });
+    
+    //actualizarEncabezadoPedidoDefinitivo
+    app.post('/api/PedidosFarmacias/actualizarEncabezadoPedidoDefinitivo', function(req, res) {
+        c_pedidos_farmacias.actualizarEncabezadoPedidoDefinitivo(req, res);
+    });
+    
+    //existeRegistroDetallePedido
+    app.post('/api/PedidosFarmacias/existeRegistroDetallePedido', function(req, res) {
+        c_pedidos_farmacias.existeRegistroDetallePedido(req, res);
+    });
+    
+    //insertarProductoDetallePedidoFarmacia
+    app.post('/api/PedidosFarmacias/insertarProductoDetallePedidoFarmacia', function(req, res) {
+        c_pedidos_farmacias.insertarProductoDetallePedidoFarmacia(req, res);
+    });
+    
     
     // Listar productos
 //    app.get('/listarProductos', function(req, res) {

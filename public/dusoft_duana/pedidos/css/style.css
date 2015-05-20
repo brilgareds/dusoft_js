@@ -314,3 +314,15 @@ fieldset[disabled] .btn-enauditoria.active {
   background-color : #64FCAB;
 
 }
+
+.texto-alerta {
+    color: #CB0505;
+}
+
+/*.ngHeaderCell {
+    background-color: #CB0505;;
+    bottom: 0;
+    color: #248407;
+    position: absolute;
+    top: 0;
+}*/

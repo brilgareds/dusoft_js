@@ -22,6 +22,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             $rootScope.$on("mostrarseleccionproducto", function(e, tipo_cliente, datos_de, datos_para, observacion, pedido) {
 
+
+                console.log("tipo_cliente: ", tipo_cliente);
+                console.log("datos_de: ", datos_de);
+                console.log("datos_para: ", datos_para);
+                console.log("observacion: ", observacion);
+                console.log("pedido: ", pedido);
+                
                 $scope.rootSeleccionProductoFarmacia = {};
                 
                 //Variable Tipo Producto
@@ -88,6 +95,88 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 $scope.onBuscarSeleccionProducto($scope.obtenerParametros(), "");
             });
+            
+            /* Nuevo Slide - Inicio */
+            $rootScope.$on("mostrarseleccionproductoEspecial", function(e, tipo_cliente, datos_de, Empresa) {
+
+                $scope.rootSeleccionProductoFarmacia = {};
+                
+                //Variable Tipo Producto
+                $scope.rootSeleccionProductoFarmacia.tipoProducto = '0';
+
+                //$scope.rootSeleccionProductoFarmacia.Empresa = EmpresaPedido;
+                $scope.rootSeleccionProductoFarmacia.Empresa = Empresa;
+                
+                console.log(">>> Empresa Slide: ", $scope.rootSeleccionProductoFarmacia.Empresa);
+
+                $scope.rootSeleccionProductoFarmacia.session = {
+                    usuario_id: Usuario.getUsuarioActual().getId(),
+                    auth_token: Usuario.getUsuarioActual().getToken()
+                };
+
+                $scope.rootSeleccionProductoFarmacia.no_incluir_producto = false;
+
+                $scope.rootSeleccionProductoFarmacia.tipo_cliente = tipo_cliente;
+
+                $scope.rootSeleccionProductoFarmacia.items = 0;
+                $scope.rootSeleccionProductoFarmacia.termino_busqueda = "";
+                //$scope.rootSeleccionProductoFarmacia.ultima_busqueda = "";
+                $scope.rootSeleccionProductoFarmacia.paginaactual = 1;
+
+                $scope.rootSeleccionProductoFarmacia.ultima_busqueda = {};
+                $scope.rootSeleccionProductoFarmacia.ultima_busqueda.termino_busqueda = "";
+
+//                $scope.rootSeleccionProductoFarmacia.de_empresa_id = datos_de.empresa_id;
+//                $scope.rootSeleccionProductoFarmacia.de_centro_utilidad_id = datos_de.centro_utilidad_id;
+//                $scope.rootSeleccionProductoFarmacia.de_bodega_id = datos_de.bodega_id;
+//
+//                $scope.rootSeleccionProductoFarmacia.para_empresa_id = datos_para.empresa_id;
+//                $scope.rootSeleccionProductoFarmacia.para_centro_utilidad_id = datos_para.centro_utilidad_id;
+//                $scope.rootSeleccionProductoFarmacia.para_bodega_id = datos_para.bodega_id;
+
+                $scope.rootSeleccionProductoFarmacia.de_empresa_id = datos_de.empresa_id;
+                $scope.rootSeleccionProductoFarmacia.de_centro_utilidad_id = datos_de.centro_utilidad_id;
+                $scope.rootSeleccionProductoFarmacia.de_bodega_id = datos_de.bodega_id;
+
+                $scope.rootSeleccionProductoFarmacia.para_empresa_id = Empresa.getPedidoSeleccionado().farmacia.get_farmacia_id();
+                $scope.rootSeleccionProductoFarmacia.para_centro_utilidad_id = Empresa.getPedidoSeleccionado().farmacia.centro_utilidad_id; //centro_utilidad_id
+                $scope.rootSeleccionProductoFarmacia.para_bodega_id = Empresa.getPedidoSeleccionado().farmacia.bodega_id;        //bodega_id           
+
+                /* Inicio - Consulta Tipo Producto */
+
+                var obj_tipo_producto = {
+                    session: $scope.rootSeleccionProductoFarmacia.session,
+                    data: {
+                        tipo_producto: {}
+                    }
+                }
+
+                var url_tipo_producto = API.PEDIDOS.LISTADO_TIPO_PRODUCTOS;
+
+                Request.realizarRequest(url_tipo_producto, "POST", obj_tipo_producto, function(data) {
+
+                    if (data.status === 200) {
+                        $scope.rootSeleccionProductoFarmacia.lista_tipo_productos = data.obj.lista_tipo_productos;
+                    }
+                    else {
+                        console.log("Error al consultar Tipo Productos", data.msj);
+                    }
+                });
+
+                /* Fin - Consulta Tipo Producto */
+
+                $scope.rootSeleccionProductoFarmacia.listado_productos = [];
+                //$scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados = [];//Eliminar
+                //$scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().lista_productos
+
+                //--$scope.rootSeleccionProductoFarmacia.observacion_encabezado = observacion;
+                //--$scope.rootSeleccionProductoFarmacia.pedido = pedido;
+                
+                //--that.actualizarEncabezadoPedidoTemporal();
+
+                $scope.onBuscarSeleccionProducto($scope.obtenerParametros(), "");
+            });
+            /* Nuevo Slide - Fin */
 
             $scope.obtenerParametros = function() {
 
@@ -199,25 +288,65 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                                 <span class="label label-warning" ng-show="row.entity.tipo_producto_id == 3">C</span>\
                                                 <span class="label label-primary" ng-show="row.entity.tipo_producto_id == 4">I</span>\
                                                 <span class="label label-info" ng-show="row.entity.tipo_producto_id == 5">Ne</span>\
-                                                <span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\
+                                                <span ng-if="row.entity.en_farmacia_seleccionada" ng-cell-text >{{COL_FIELD}}</span>\
+                                                <span ng-if="!row.entity.en_farmacia_seleccionada" ng-cell-text class="texto-alerta" >{{COL_FIELD}}</span>\
                                             </div>'
                         },
-                        {field: 'nombre_producto', displayName: 'Descripción', width: "37%"},
+                        {field: 'nombre_producto', displayName: 'Descripción', width: "37%",
+                            cellTemplate : '<div class="ngCellText" ng-class="col.colIndex()">\
+                                                <span ng-if="row.entity.en_farmacia_seleccionada" ng-cell-text >{{COL_FIELD}}</span>\
+                                                <span ng-if="!row.entity.en_farmacia_seleccionada" ng-cell-text class="texto-alerta" >{{COL_FIELD}}</span>\
+                                            </div>'
+                        },
                         //{field: 'descripcion_molecula', displayName: 'Molécula'},
-                        {field: 'existencias_farmacia', displayName: 'Exist. Farmacia', width: "8%"},
-                        {field: 'total_existencias_farmacias', displayName: 'Total Exist. Farmacia', width: "11%"},
-                        {field: 'existencia', displayName: 'Exist. Bodega', width: "8%"},
-                        {field: 'disponibilidad_bodega', displayName: 'Disponible'/*, width: "6%"*/},
+                        {field: 'existencias_farmacia', displayName: 'Exist. Farmacia', width: "8%",
+                            cellTemplate : '<div class="ngCellText" ng-class="col.colIndex()">\
+                                            <span ng-if="row.entity.en_farmacia_seleccionada" ng-cell-text >{{COL_FIELD}}</span>\
+                                            <span ng-if="!row.entity.en_farmacia_seleccionada" ng-cell-text class="texto-alerta" >{{COL_FIELD}}</span>\
+                                        </div>'
+                        },
+                        {field: 'total_existencias_farmacias', displayName: 'Total Exist. Farmacia', width: "11%",
+                            cellTemplate : '<div class="ngCellText" ng-class="col.colIndex()">\
+                                            <span ng-if="row.entity.en_farmacia_seleccionada" ng-cell-text >{{COL_FIELD}}</span>\
+                                            <span ng-if="!row.entity.en_farmacia_seleccionada" ng-cell-text class="texto-alerta" >{{COL_FIELD}}</span>\
+                                        </div>'
+                        },
+                        {field: 'existencia', displayName: 'Exist. Bodega', width: "8%",
+                            cellTemplate : '<div class="ngCellText" ng-class="col.colIndex()">\
+                                            <span ng-if="row.entity.en_farmacia_seleccionada" ng-cell-text >{{COL_FIELD}}</span>\
+                                            <span ng-if="!row.entity.en_farmacia_seleccionada" ng-cell-text class="texto-alerta" >{{COL_FIELD}}</span>\
+                                        </div>'
+                        },
+                        {field: 'disponibilidad_bodega', displayName: 'Disponible', /*width: "6%"*/
+                            cellTemplate : '<div class="ngCellText" ng-class="col.colIndex()">\
+                                            <span ng-if="row.entity.en_farmacia_seleccionada" ng-cell-text >{{COL_FIELD}}</span>\
+                                            <span ng-if="!row.entity.en_farmacia_seleccionada" ng-cell-text class="texto-alerta" >{{COL_FIELD}}</span>\
+                                        </div>'
+                        },
                         {field: 'cantidad_solicitada', displayName: 'Solicitado', enableCellEdit: false, width: "10%",
                             cellTemplate: ' <div class="col-xs-12">\n\
-                                                <input type="text" ng-model="row.entity.cantidad_solicitada" validacion-numero-entero class="form-control grid-inline-input"'+
+                                                <input ng-if="!rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" type="text" ng-model="row.entity.cantidad_solicitada" validacion-numero-entero class="form-control grid-inline-input"'+
                                                 'ng-keyup="onTeclaIngresaProducto($event, row)"/>\n\
+                                                <input ng-if="rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" type="text" ng-model="row.entity.cantidad_solicitada" validacion-numero-entero class="form-control grid-inline-input"'+
+                                                'ng-keyup="onTeclaIngresaProductoEspecial($event, row)"/>\n\
                                             </div>'
                         },
                         {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "6%",
                             cellTemplate: ' <div class="row">\n\
-                                                <button class="btn btn-default btn-xs" ng-click="onIncluirProducto(row)" '+
+                                                <button ng-if="!rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial() && row.entity.en_farmacia_seleccionada" class="btn btn-default btn-xs" ng-click="onIncluirProducto(row)" '+
                                                 ' ng-disabled="row.entity.cantidad_solicitada<=0 || row.entity.cantidad_solicitada==null || !expreg.test(row.entity.cantidad_solicitada)">\n\
+                                                    <span class="glyphicon glyphicon-plus-sign"> Incluir</span>\n\
+                                                </button>\n\
+                                                <button ng-if="!rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial() && !row.entity.en_farmacia_seleccionada" class="btn btn-default btn-xs" ng-click="" '+
+                                                ' ng-disabled="true">\n\
+                                                    <span class="glyphicon glyphicon-plus-sign"> Incluir</span>\n\
+                                                </button>\n\
+                                                <button ng-if="rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial() && row.entity.en_farmacia_seleccionada" class="btn btn-default btn-xs" ng-click="onIncluirProductoEspecial(row)" '+
+                                                ' ng-disabled="row.entity.cantidad_solicitada<=0 || row.entity.cantidad_solicitada==null || !expreg.test(row.entity.cantidad_solicitada)">\n\
+                                                    <span class="glyphicon glyphicon-plus-sign"> Incluir</span>\n\
+                                                </button>\n\
+                                                <button ng-if="rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial() && !row.entity.en_farmacia_seleccionada" class="btn btn-default btn-xs" ng-click="" '+
+                                                ' ng-disabled="true">\n\
                                                     <span class="glyphicon glyphicon-plus-sign"> Incluir</span>\n\
                                                 </button>\n\
                                             </div>'
@@ -247,7 +376,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         {field: 'cantidad_pendiente', displayName: 'Pendiente'},
                         {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
                             cellTemplate: ' <div class="row">\n\
-                                                <button class="btn btn-default btn-xs" ng-click="onEliminarSeleccionado(row)">\n\
+                                                <button ng-if="!rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" class="btn btn-default btn-xs" ng-click="onEliminarSeleccionado(row)">\n\
+                                                    <span class="glyphicon glyphicon-remove"> Eliminar</span>\n\
+                                                </button>\n\
+                                                <button ng-if="rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" class="btn btn-default btn-xs" ng-click="onEliminarSeleccionadoEspecial(row)">\n\
                                                     <span class="glyphicon glyphicon-remove"> Eliminar</span>\n\
                                                 </button>\n\
                                             </div>'
@@ -260,6 +392,59 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.onIncluirProducto = function(row) {
                 that.insertarProducto(row);
             };
+            
+            //Nuevo para modificación Especial
+            $scope.onIncluirProductoEspecial = function(row) {
+                
+                var numero_pedido = $scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().get_numero_pedido();
+                
+                that.consultarEncabezadoPedidoFinal(numero_pedido, function(data){
+
+                    //$scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().setEnUso(data.obj.encabezado_pedido[0].en_uso);
+                    
+                    $scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido = data.obj.encabezado_pedido[0].estado;
+                    
+                    //console.log(">>>>>> Eliminar - Estado del Pedido: ", data.obj.encabezado_pedido[0].estado);
+
+                    if($scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido === '0'){ 
+                                
+                        that.insertarProductoEspecial(row);
+
+                    }
+                    else{
+                        //Avisar la no posibilidad de modiificar porque el pedido está abierto en una tablet
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: ' <div class="modal-header">\
+                                            <button type="button" class="close" ng-click="close()">&times;</button>\
+                                            <h4 class="modal-title">Aviso: </h4>\
+                                        </div>\
+                                        <div class="modal-body row">\
+                                            <div class="col-md-12">\
+                                                <h4 >El Pedido '+numero_pedido+' ha sido asignado. No puede modificarse!</h4>\
+                                            </div>\
+                                        </div>\
+                                        <div class="modal-footer">\
+                                            <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                        </div>',
+                            scope: $scope,
+                            controller: function($scope, $modalInstance) {
+                                $scope.close = function() {
+                                    $modalInstance.close();
+                                };
+                            }
+                        };
+
+                        var modalInstance = $modal.open($scope.opts); 
+                    }
+                });
+                 
+                //--
+                //that.insertarProductoEspecial(row);
+            }
 
             //Inserta producto presionando ENTER
             $scope.onTeclaIngresaProducto = function(ev, row) {
@@ -267,6 +452,60 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 if (ev.which === 13) {
                     if (parseInt(row.entity.cantidad_solicitada) > 0) {
                         that.insertarProducto(row);
+                    }
+                }
+            };
+            
+            //Nuevo para modificación Especial
+            $scope.onTeclaIngresaProductoEspecial = function(ev, row) {
+
+                if (ev.which === 13) {
+                    if (parseInt(row.entity.cantidad_solicitada) > 0) {
+                        
+                        var numero_pedido = $scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().get_numero_pedido();
+                
+                        that.consultarEncabezadoPedidoFinal(numero_pedido, function(data){
+
+                            $scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido = data.obj.encabezado_pedido[0].estado;
+
+                            if($scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido === '0'){ 
+
+                                that.insertarProductoEspecial(row);
+
+                            }
+                            else{
+                                //Avisar la no posibilidad de modiificar porque el pedido está abierto en una tablet
+                                $scope.opts = {
+                                    backdrop: true,
+                                    backdropClick: true,
+                                    dialogFade: false,
+                                    keyboard: true,
+                                    template: ' <div class="modal-header">\
+                                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                                    <h4 class="modal-title">Aviso: </h4>\
+                                                </div>\
+                                                <div class="modal-body row">\
+                                                    <div class="col-md-12">\
+                                                        <h4 >El Pedido '+numero_pedido+' ha sido asignado. No puede modificarse!</h4>\
+                                                    </div>\
+                                                </div>\
+                                                <div class="modal-footer">\
+                                                    <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                                </div>',
+                                    scope: $scope,
+                                    controller: function($scope, $modalInstance) {
+                                        $scope.close = function() {
+                                            $modalInstance.close();
+                                        };
+                                    }
+                                };
+
+                                var modalInstance = $modal.open($scope.opts); 
+                            }
+                        });
+                        
+                        
+                        //--that.insertarProductoEspecial(row);
                     }
                 }
             };
@@ -394,6 +633,284 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     }
                 });
             };
+            
+            //NUEVO ************************************ NUEVO *******************
+            that.insertarDetallePedidoDefinitivo = function(row) {
+                
+                //Cálculo de cantidad pendiente
+                var cantidad_pendiente = row.entity.cantidad_solicitada - row.entity.disponibilidad_bodega;
+
+                /* Inicio - Objeto para Inserción Detalle */
+                var obj_detalle = {
+                    session: $scope.rootSeleccionProductoFarmacia.session,
+                    data: {
+                        detalle_pedidos_farmacias: {
+                            numero_pedido: $scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().get_numero_pedido(),
+                            empresa_id: $scope.rootSeleccionProductoFarmacia.para_empresa_id,
+                            centro_utilidad_id: $scope.rootSeleccionProductoFarmacia.para_centro_utilidad_id,
+                            bodega_id: $scope.rootSeleccionProductoFarmacia.para_bodega_id,
+                            codigo_producto: row.entity.codigo_producto,
+                            cantidad_solic: parseInt(row.entity.cantidad_solicitada),
+                            tipo_producto_id: row.entity.tipo_producto_id,
+                            cantidad_pendiente: parseInt(row.entity.cantidad_solicitada)//(cantidad_pendiente < 0) ? '0' : cantidad_pendiente
+                        }
+                    }
+                };
+                /* Fin - Objeto para Inserción Detalle */
+
+                /* Inicio - Validar existencia de producto en Detalle Pedido */
+
+                var url_registros_detalle = API.PEDIDOS.EXISTE_REGISTRO_DETALLE_PEDIDO;
+
+                Request.realizarRequest(url_registros_detalle, "POST", obj_detalle, function(data) {
+
+                    if (data.status === 200) {
+//                        console.log("DETALLE: data.obj.numero_registros[0].count = ", data.obj.numero_registros[0].count)
+                        if (data.obj.resultado_consulta[0].cantidad_registros > 0) {
+
+                            console.log("Ya existe éste producto en el detalle");
+                        }
+                        else {
+
+//                            console.log("Ingresando el detalle");
+
+                            /* Inicio - Inserción de objeto en grid de seleccionados */
+
+                            var producto = ProductoPedido.get(
+                                                row.entity.codigo_producto,        //codigo_producto
+                                                row.entity.nombre_producto,            //descripcion
+                                                0,                               //existencia **hasta aquí heredado
+                                                0,                               //precio
+                                                row.entity.cantidad_solicitada,    //cantidad_solicitada
+                                                0,                               //cantidad_separada
+                                                "",                              //observacion
+                                                "",                              //disponible
+                                                "",                              //molecula
+                                                "",                              //existencia_farmacia
+                                                row.entity.tipo_producto_id,          //tipo_producto_id
+                                                "",                              //total_existencias_farmacia
+                                                "",                              //existencia_disponible
+                                                (cantidad_pendiente < 0) ? '0' : cantidad_pendiente      //cantidad_pendiente
+                                            );
+
+                            $scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().agregarProducto(producto);
+
+                            var longitud_seleccionados = $scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().lista_productos.length;
+
+                            var test_index = 0;
+
+                            if (longitud_seleccionados > 1) {
+                                test_index = 1;
+                            }
+                            else {
+                                test_index = 0;
+                            }
+
+                            /*Inicio: Evitar Inserción por tipo Producto */
+                            if ($scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().lista_productos[test_index].tipo_producto_id !== row.entity.tipo_producto_id) {
+
+                                var descripcion_tipo_anterior = "";
+                                var descripcion_tipo_actual = "";
+
+                                $scope.rootSeleccionProductoFarmacia.lista_tipo_productos.forEach(function(tipo_producto) {
+
+                                    if (tipo_producto.tipo_producto_id === $scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().lista_productos[test_index].tipo_producto_id) {
+                                        descripcion_tipo_anterior = tipo_producto.descripcion;
+                                    }
+                                    if (tipo_producto.tipo_producto_id === row.entity.tipo_producto_id) {
+                                        descripcion_tipo_actual = tipo_producto.descripcion;
+                                    }
+                                });
+
+                                var template = ' <div class="modal-header">\
+                                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                                    <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                                </div>\
+                                                <div class="modal-body">\
+                                                    <h4>No se puede incluir un producto de ' + descripcion_tipo_actual + ' en un pedido de ' + descripcion_tipo_anterior + ' </h4> \
+                                                </div>\
+                                                <div class="modal-footer">\
+                                                    <button class="btn btn-warning" ng-click="close()">Aceptar</button>\
+                                                </div>';
+
+                                controller = function($scope, $modalInstance) {
+
+                                    $scope.close = function() {
+                                        $modalInstance.close();
+                                    };
+                                };
+
+                                $scope.opts = {
+                                    backdrop: true,
+                                    backdropClick: true,
+                                    dialogFade: false,
+                                    keyboard: true,
+                                    template: template,
+                                    scope: $scope,
+                                    controller: controller
+                                };
+
+                                var modalInstance = $modal.open($scope.opts);
+
+                                $scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().lista_productos.splice(0, 1);
+
+                            } /*Fin: Evitar Inserción por tipo Producto */
+                            else { /*Inicio - Continuar con Inserción en Detalle*/
+
+                                //if ($scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.length === 25) {
+                                if ($scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().lista_productos.length === 25) {
+
+                                    var template = ' <div class="modal-header">\
+                                                        <button type="button" class="close" ng-click="close()">&times;</button>\
+                                                        <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                                    </div>\
+                                                    <div class="modal-body">\
+                                                        <h4>Usted ha llegado a los 25 productos para éste Pedido ! </h4> \
+                                                    </div>\
+                                                    <div class="modal-footer">\
+                                                        <button class="btn btn-warning" ng-click="close()">Aceptar</button>\
+                                                    </div>';
+
+                                    controller = function($scope, $modalInstance) {
+
+                                        $scope.close = function() {
+                                            $modalInstance.close();
+                                        };
+                                    };
+
+                                    $scope.opts = {
+                                        backdrop: true,
+                                        backdropClick: true,
+                                        dialogFade: false,
+                                        keyboard: true,
+                                        template: template,
+                                        scope: $scope,
+                                        controller: controller
+                                    };
+
+                                    var modalInstance = $modal.open($scope.opts);
+
+                                }
+
+                                /* Fin - Inserción de objeto en grid de seleccionados */
+
+                                $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados = $scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().lista_productos;
+                                $scope.$emit('cargarGridPrincipal', 1);
+
+                                /* Inicio - Inserción del Detalle */
+
+                                var url_detalle = API.PEDIDOS.INSERTAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA;
+
+                                Request.realizarRequest(url_detalle, "POST", obj_detalle, function(data) {
+
+                                    if (data.status === 200) {
+                                        console.log("Registro Insertado Exitosamente en Detalle: ", data.msj);
+                                    }
+                                    else {
+                                        console.log("No se pudo Incluir éste produto: ",data.msj);
+                                        
+                                        $scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().lista_productos.splice(0, 1);
+
+                                        var obj_bloqueo = {
+                                            session: $scope.rootSeleccionProductoFarmacia.session,
+                                            data: {
+                                                usuario_bloqueo: {
+                                                    farmacia_id: $scope.rootSeleccionProductoFarmacia.para_empresa_id.trim(),
+                                                    centro_utilidad_id: $scope.rootSeleccionProductoFarmacia.para_centro_utilidad_id.trim(),
+                                                    codigo_producto: row.entity.codigo_producto.trim()
+                                                }
+                                            }
+                                        };
+                                        
+                                        var url_bloqueo = API.PEDIDOS.BUSCAR_USUARIO_BLOQUEO;
+                                        
+                                        Request.realizarRequest(url_bloqueo, "POST", obj_bloqueo, function(data) {
+
+                                            if (data.status === 200) {
+
+                                                console.log("Consulta de usuario bloqueante exitosa: ", data.msj);
+
+                                                var template = ' <div class="modal-header">\
+                                                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                                                    <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                                                </div>\
+                                                                <div class="modal-body">\
+                                                                    <h4>El producto con código '+row.entity.codigo_producto+' está bloqueado por el usuario '+
+                                                                    '('+data.obj.datos_usuario[0].usuario_id+') '+data.obj.datos_usuario[0].nombre+' </h4> \
+                                                                </div>\
+                                                                <div class="modal-footer">\
+                                                                    <button class="btn btn-warning" ng-click="close()">Aceptar</button>\
+                                                                </div>';
+
+                                                controller = function($scope, $modalInstance) {
+
+                                                    $scope.close = function() {
+                                                        $modalInstance.close();
+                                                    };
+                                                };
+
+                                                $scope.opts = {
+                                                    backdrop: true,
+                                                    backdropClick: true,
+                                                    dialogFade: false,
+                                                    keyboard: true,
+                                                    template: template,
+                                                    scope: $scope,
+                                                    controller: controller
+                                                };
+
+                                                var modalInstance = $modal.open($scope.opts);
+
+                                            }
+                                            else {
+                                                console.log("Consulta de usuario bloqueante fallida: ", data.msj);
+                                                
+                                                var template = ' <div class="modal-header">\
+                                                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                                                    <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                                                </div>\
+                                                                <div class="modal-body">\
+                                                                    <h4>El producto con código '+row.entity.codigo_producto+' está bloqueado por otro usuario </h4> \
+                                                                </div>\
+                                                                <div class="modal-footer">\
+                                                                    <button class="btn btn-warning" ng-click="close()">Aceptar</button>\
+                                                                </div>';
+
+                                                controller = function($scope, $modalInstance) {
+
+                                                    $scope.close = function() {
+                                                        $modalInstance.close();
+                                                    };
+                                                };
+
+                                                $scope.opts = {
+                                                    backdrop: true,
+                                                    backdropClick: true,
+                                                    dialogFade: false,
+                                                    keyboard: true,
+                                                    template: template,
+                                                    scope: $scope,
+                                                    controller: controller
+                                                };
+
+                                                var modalInstance = $modal.open($scope.opts);
+                                            }
+                                        });
+
+                                    }
+
+                                });
+                                /* Fin - Inserción del Detalle */
+                            } /* Fin - Continuar con Inserción en Detalle*/
+                        }
+                    }
+                    else {
+                        console.log(data.msj);
+                    }
+                });
+                /* Fin - Validar existencia de producto en Detalle Pedido */                
+            };
+            //****************************** NUEVO - FIN *********************** NUEVO - FIN **********************
             
             that.insertarDetallePedidoTemporal = function(row) {
                 //Cálculo de cantidad pendiente
@@ -692,6 +1209,23 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     });
                 }
             };
+            
+            that.insertarProductoEspecial = function(row) {
+                
+                $scope.rootSeleccionProductoFarmacia.no_incluir_producto = false;
+
+                $scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().lista_productos.forEach(function(valor) {
+                    if (valor.codigo_producto === row.entity.codigo_producto) {
+                        $scope.rootSeleccionProductoFarmacia.no_incluir_producto = true;
+                        return;
+                    }
+                });
+                
+                if ($scope.rootSeleccionProductoFarmacia.no_incluir_producto === false)
+                {    
+                    that.insertarDetallePedidoDefinitivo(row);
+                }
+            };
 
             $scope.onEliminarSeleccionado = function(row) {
 
@@ -769,6 +1303,264 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 });
 
             };
+            
+            //onEliminarSeleccionadoEspecial
+            //******************** NUEVO ******************** NUEVO **********************
+            $scope.onEliminarSeleccionadoEspecial = function(row) {
+                
+                var numero_pedido = $scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().get_numero_pedido();
+                
+                that.consultarEncabezadoPedidoFinal(numero_pedido, function(data){
+
+                    //$scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().setEnUso(data.obj.encabezado_pedido[0].en_uso);
+                    
+                    $scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido = data.obj.encabezado_pedido[0].estado;
+                    
+                    //console.log(">>>>>> Eliminar - Estado del Pedido: ", data.obj.encabezado_pedido[0].estado);
+
+                    if($scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido === '0'){ 
+                
+                        var template = '<div class="modal-header">\
+                                            <button type="button" class="close" ng-click="close()">&times;</button>\
+                                            <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                        </div>\
+                                        <div class="modal-body">\
+                                            <h4>Seguro desea eliminar el producto '+row.entity.codigo_producto+' ? </h4> \
+                                        </div>\
+                                        <div class="modal-footer">\
+                                            <button class="btn btn-warning" ng-click="close()">No</button>\
+                                            <button class="btn btn-primary" ng-click="eliminarProducto()" ng-disabled="" >Si</button>\
+                                        </div>';
+
+                        controller = function($scope, $modalInstance) {
+
+                            $scope.eliminarProducto = function() {
+                                //that.verificarEstadoPedido(function(){
+                                    that.eliminarProductoPedido(
+                                        numero_pedido,
+                                        row.entity,
+                                        row.rowIndex
+                                    );
+                                //});
+
+                                $modalInstance.close();
+                            };
+
+                            $scope.close = function() {
+                                $modalInstance.close();
+                            };
+                        };
+
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: template,
+                            scope: $scope,
+                            controller: controller
+                        };
+
+                        var modalInstance = $modal.open($scope.opts);
+                    }
+                    else{
+                        //Avisar la no posibilidad de modiificar porque el pedido está abierto en una tablet
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: ' <div class="modal-header">\
+                                            <button type="button" class="close" ng-click="close()">&times;</button>\
+                                            <h4 class="modal-title">Aviso: </h4>\
+                                        </div>\
+                                        <div class="modal-body row">\
+                                            <div class="col-md-12">\
+                                                <h4 >El Pedido '+numero_pedido+' ha sido asignado. No puede modificarse!</h4>\
+                                            </div>\
+                                        </div>\
+                                        <div class="modal-footer">\
+                                            <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                        </div>',
+                            scope: $scope,
+                            controller: function($scope, $modalInstance) {
+                                $scope.close = function() {
+                                    $modalInstance.close();
+                                };
+                            }
+                        };
+
+                        var modalInstance = $modal.open($scope.opts); 
+                    }
+                });
+            };
+            
+            that.eliminarProductoPedido = function(numero_pedido, data, index){
+                
+                if ($scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().obtenerProductos().length === 1) {
+
+                    //--$scope.rootSeleccionProductoFarmacia.bloquear_eliminar = true;
+                    //Mensaje: Solo queda un producto. La cotización debe tener al menos un producto. No puede eliminar éste.
+                    var template = ' <div class="modal-header">\
+                                        <button type="button" class="close" ng-click="close()">&times;</button>\
+                                        <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                    </div>\
+                                    <div class="modal-body">\
+                                        <h4>Solo queda un producto en el detalle y debe haber al menos uno. <br>No puede eliminar más productos. </h4> \
+                                    </div>\
+                                    <div class="modal-footer">\
+                                        <button class="btn btn-warning" ng-click="close()">Aceptar</button>\
+                                    </div>';
+
+                    controller = function($scope, $modalInstance) {
+
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+                    };
+
+                    $scope.opts = {
+                        backdrop: true,
+                        backdropClick: true,
+                        dialogFade: false,
+                        keyboard: true,
+                        template: template,
+                        scope: $scope,
+                        controller: controller
+                    };
+
+                    var modalInstance = $modal.open($scope.opts);                            
+                }
+                else {
+                    /* Inicio - Borrado producto en BD */
+                    obj_eliminar = {
+                        session:$scope.rootSeleccionProductoFarmacia.session,
+                        data:{
+                            pedidos_farmacias:{
+                                numero_pedido: parseInt(numero_pedido),
+                                codigo_producto: data.codigo_producto
+                            }
+                        }
+                    };
+
+                    var url = API.PEDIDOS.ELIMINAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA;
+
+                    Request.realizarRequest(url, "POST", obj_eliminar, function(data) {
+
+                        if(data.status === 200) {
+                            console.log("Eliminación Exitosa: ", data.msj);
+
+                            $scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().eliminarProducto(index);
+                        }
+                        else {
+                            console.log("Eliminación Falló: ", data.msj);
+                        }
+                    });
+
+                    /* Fin - Borrado producto en BD */
+                }
+            };
+            
+            that.consultarEncabezadoPedidoFinal = function(numero_pedido, callback){
+                
+                var obj = {
+                    session: $scope.rootSeleccionProductoFarmacia.session,
+                    data: {
+                        pedidos_farmacias: {
+                            numero_pedido: numero_pedido,
+                        }
+                    }
+                };
+                
+                var url = API.PEDIDOS.CONSULTAR_ENCABEZADO_PEDIDO_FARMACIA;
+                
+                Request.realizarRequest(url, "POST", obj, function(data) {
+
+                    if(data.status === 200) {
+                        
+                        console.log("Consulta exitosa: ", data.msj);
+                        
+                        if(callback !== undefined && callback !== "" && callback !== 0){
+                            callback(data);
+                        }
+                    }
+                    else{
+                        console.log("Error en la consulta: ", data.msj);
+                    }
+                });
+            };
+            
+//            that.verificarEstadoPedido = function(callback){
+//                
+//                /* Inicio: Verificación estado del pedido */
+//                obj_verificar = {
+//                    session:$scope.rootCreaPedidoFarmacia.session,
+//                    data:{
+//                        pedidos_farmacias:{
+//                            termino_busqueda: $scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().get_numero_pedido(),
+//                            empresa_id: $scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().farmacia.farmacia_id,
+//                            pagina_actual: $scope.rootSeleccionProductoFarmacia.paginaactual,
+//                            filtro:{}
+//                        }
+//                    }
+//                };
+//                
+//                var url = API.PEDIDOS.LISTAR_PEDIDOS_FARMACIAS;
+//
+//                Request.realizarRequest(url, "POST", obj_verificar, function(data) {
+//
+//                    if(data.status === 200) {
+//
+//                       if((data.obj.pedidos_farmacias[0].estado_actual_pedido !== '0' && data.obj.pedidos_farmacias[0].estado_actual_pedido !== '1')|| data.obj.pedidos_farmacias[0].estado_separacion !== null){
+//                           //No se debe hacer Modificación
+//                           
+//                            var template = '<div class="modal-header">\
+//                                                <button type="button" class="close" ng-click="close()">&times;</button>\
+//                                                <h4 class="modal-title">Mensaje del Sistema</h4>\
+//                                            </div>\
+//                                            <div class="modal-body">\
+//                                                <h4>El pedido se encuentra en estado de separación y ya no puede modificarse !!</h4> \
+//                                            </div>\
+//                                            <div class="modal-footer">\
+//                                                <button class="btn btn-warning" ng-click="close()">Aceptar</button>\
+//                                            </div>';
+//
+//                            controller = function($scope, $modalInstance) {
+//
+//                                $scope.close = function() {
+//                                    $modalInstance.close();
+//                                };
+//                            };
+//
+//                            $scope.opts = {
+//                                backdrop: true,
+//                                backdropClick: true,
+//                                dialogFade: false,
+//                                keyboard: true,
+//                                template: template,
+//                                scope: $scope,
+//                                controller: controller
+//                            };
+//
+//                            var modalInstance = $modal.open($scope.opts);
+//
+//                       }
+//                       else{
+//                           // Se puede hacer modificación o eliminación
+//                           if(callback !== undefined && callback !== ""){
+//                               callback();
+//                           }
+//                       }
+//                    }
+//                    else{
+//                        console.log("No se pudo realizar la consulta", data.msj);
+//                    }
+//
+//                });
+//
+//                /* Fin: Verificación estado del pedido */                                
+//            };
+            //******************** NUEVO FIN ****************** NUEVO FIN ****************
 
             //Método para liberar Memoria de todo lo construido en ésta clase
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {

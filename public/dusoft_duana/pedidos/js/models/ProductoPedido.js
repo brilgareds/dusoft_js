@@ -30,6 +30,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.estado = 0;
             this.es_regulado = 0;
             this.tiene_precio_contrato = false;
+            this.en_farmacia_seleccionada = true;
             
             //propiedades pendientes
             this.existencia_lotes = "";
@@ -142,13 +143,20 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             return this.es_regulado;
         };        
         
-        //this.tiene_precio_contrato
         ProductoPedido.prototype.setTienePrecioContrato = function(valor) {
-            this.tiene_precio_contrato = valor; // 0: No es regulado, 1: Es regulado
+            this.tiene_precio_contrato = valor;
         };
         
         ProductoPedido.prototype.getTienePrecioContrato = function() {
             return this.tiene_precio_contrato;
+        };  
+        
+        ProductoPedido.prototype.setEnFarmaciaSeleccionada = function(valor) {
+            this.en_farmacia_seleccionada = valor;
+        };
+        
+        ProductoPedido.prototype.getEnFarmaciaSeleccionada = function() {
+            return this.en_farmacia_seleccionada;
         };  
         
         ProductoPedido.prototype.agregarLote = function(lote) {

@@ -54,6 +54,7 @@ define(["angular"], function(angular) {
                 'CREAR_DETALLE_PEDIDO_TEMPORAL':BASE_URL+'/PedidosFarmacias/ingresarDetallePedidoTemporal',
                 'EXISTE_REGISTRO_PEDIDO_TEMPORAL':BASE_URL+'/PedidosFarmacias/existeRegistroEncabezadoTemporal',
                 'EXISTE_REGISTRO_DETALLE_PEDIDO_TEMPORAL':BASE_URL+'/PedidosFarmacias/existeRegistroDetalleTemporal',
+                'EXISTE_REGISTRO_DETALLE_PEDIDO': BASE_URL+'/PedidosFarmacias/existeRegistroDetallePedido',
                 'CONSULTAR_ENCABEZADO_PEDIDO_TEMPORAL':BASE_URL+'/PedidosFarmacias/consultarPedidoFarmaciaTemporal',
                 'LISTAR_DETALLE_PEDIDO_TEMPORAL':BASE_URL+'/PedidosFarmacias/listarProductosDetalleTemporal',
                 'ELIMINAR_REGISTRO_PEDIDO_TEMPORAL':BASE_URL+'/PedidosFarmacias/eliminarRegistroEncabezadoTemporal',
@@ -61,6 +62,7 @@ define(["angular"], function(angular) {
                 'ELIMINAR_DETALLE_PEDIDO_FARMACIA_TEMPORAL_COMPLETO':BASE_URL+'/PedidosFarmacias/eliminarDetalleTemporalCompleto',
                 'INSERTAR_PEDIDO_FARMACIA_DEFINITIVO':BASE_URL+'/PedidosFarmacias/insertarPedidoFarmaciaDefinitivo',
                 'INSERTAR_DETALLE_PEDIDO_FARMACIA_DEFINITIVO':BASE_URL+'/PedidosFarmacias/insertarDetallePedidoFarmaciaDefinitivo',
+                'INSERTAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA':BASE_URL+'/PedidosFarmacias/insertarProductoDetallePedidoFarmacia',
                 'CONSULTAR_ENCABEZADO_PEDIDO_FARMACIA':BASE_URL+'/PedidosFarmacias/consultarEncabezadoPedidoFinal',
                 'CONSULTAR_DETALLE_PEDIDO_FARMACIA':BASE_URL+'/PedidosFarmacias/consultarDetallePedidoFinal',
                 'ACTUALIZAR_CANTIDADES_DETALLE_PEDIDO_FARMACIA':BASE_URL+'/PedidosFarmacias/actualizarCantidadesDetallePedidoFinal',
@@ -91,7 +93,9 @@ define(["angular"], function(angular) {
                 'ELIMINAR_REGISTRO_DETALLE_PEDIDO' :BASE_URL+'/PedidosClientes/eliminarRegistroDetallePedido',
                 'IMPRIMIR_PEDIDO_CLIENTE' :BASE_URL+'/PedidosClientes/imprimirPedidoCliente',
                 'MODIFICAR_CANTIDADES_COTIZACION' :BASE_URL+'/PedidosClientes/modificarCantidadesCotizacion',
-                'MODIFICAR_CANTIDADES_PEDIDO' :BASE_URL+'/PedidosClientes/modificarCantidadesPedido'
+                'MODIFICAR_CANTIDADES_PEDIDO' :BASE_URL+'/PedidosClientes/modificarCantidadesPedido',
+                'CONSULTAR_PRODUCTO_EN_FARMACIA' :BASE_URL+'/PedidosFarmacias/consultarProductoEnFarmacia',
+                'ACTUALIZAR_ENCABEZADO_PEDIDO_DEFINITIVO' :BASE_URL+'/PedidosFarmacias/actualizarEncabezadoPedidoDefinitivo'
             },
             'TERCEROS':{
                 'LISTAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/listar",

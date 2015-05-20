@@ -755,13 +755,13 @@ PedidosClienteModel.prototype.terminar_estado_pedido = function(numero_pedido, e
 };
 
 // obtiene informacion del rotulo para imprimir
-PedidosClienteModel.prototype.obtenerDetalleRotulo = function(numero_pedido, numero_caja, callback) {
+PedidosClienteModel.prototype.obtenerDetalleRotulo = function(numero_pedido, numero_caja, tipo, callback) {
 
 
-    var sql = "SELECT a.direccion, a.cliente, '' AS departamento, a.numero_caja FROM inv_rotulo_caja a\
-               WHERE a.solicitud_prod_a_bod_ppal_id = $1 AND a.numero_caja = $2;";
+    var sql = "SELECT a.direccion, a.cliente, '' AS departamento, a.numero_caja, a.tipo, FROM inv_rotulo_caja a\
+               WHERE a.solicitud_prod_a_bod_ppal_id = $1 AND a.numero_caja = $2 AND a.tipo = $3; ";
 
-    G.db.query(sql, [numero_pedido, numero_caja], function(err, rows, result) {
+    G.db.query(sql, [numero_pedido, numero_caja, tipo], function(err, rows, result) {
         callback(err, rows);
     });
 };

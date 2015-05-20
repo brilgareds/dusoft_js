@@ -571,12 +571,12 @@ DocuemntoBodegaE008.prototype.marcar_cajas_como_despachadas = function(documento
 };
 
 // Cierra la caja
-DocuemntoBodegaE008.prototype.cerrar_caja = function(documento_id, numero_caja, callback) {
+DocuemntoBodegaE008.prototype.cerrar_caja = function(documento_id, numero_caja, tipo, callback) {
 
-    var sql = " UPDATE inv_rotulo_caja SET caja_cerrada='1' WHERE documento_id = $1 and numero_caja = $2; ";
+    var sql = " UPDATE inv_rotulo_caja SET caja_cerrada='1' WHERE documento_id = $1 and numero_caja = $2 and tipo = $3; ";
 
 
-    G.db.query(sql, [documento_id, numero_caja], function(err, rows, result) {
+    G.db.query(sql, [documento_id, numero_caja, tipo], function(err, rows, result) {
 
         callback(err, rows, result);
     });

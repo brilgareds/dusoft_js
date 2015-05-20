@@ -440,7 +440,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     data: {
                         documento_temporal: {
                             documento_temporal_id: caja.documento_id,
-                            numero_caja: caja.numero_caja
+                            numero_caja: caja.numero_caja,
+                            tipo:caja.tipo
                         }
                     }
                 };
@@ -604,7 +605,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             });
 
 
-            $scope.onImprimirRotulo = function(tipo, numero_pedido, numero_caja) {
+            $scope.onImprimirRotulo = function(tipo, numero_pedido, numero_caja, tipo) {
 
                 var url = API.DOCUMENTOS_TEMPORALES.IMPRIMIR_ROTULO_CLIENTES;
 
@@ -618,7 +619,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     data: {
                         documento_temporal: {
                             numero_pedido: numero_pedido,
-                            numero_caja: numero_caja
+                            numero_caja: numero_caja,
+                            tipo:tipo
                         }
                     }
                 };

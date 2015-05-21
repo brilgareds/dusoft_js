@@ -1,3 +1,4 @@
+//Este controlador sirve como parent para los controladores DetallepedidoSeparadoCliente y DetallepedidoSeparadoFarmacia, encapsula logica en comun por estos dos ultimos
 define(["angular", "js/controllers", 'includes/slide/slideContent',
     'models/ClientePedido', 'models/PedidoAuditoria', 'models/Separador', 'models/Auditor',
     'models/DocumentoTemporal', "controllers/auditoriapedidos/AuditoriaPedidosClientesController", 
@@ -90,7 +91,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             obj.tipo_id_cliente,
                             obj.identificacion_cliente,
                             obj.telefono_cliente
-                            );
+                    );
 
                     pedido.setCliente(cliente);
 
@@ -100,7 +101,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             obj.bodega_id,
                             obj.nombre_farmacia,
                             obj.nombre_bodega
-                            );
+                    );
 
                     pedido.setFarmacia(farmacia);
                 }
@@ -201,7 +202,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                     var producto_pedido_separado = this.crearProductoPedidoDocumentoTemporal(obj, tipo);
 
-                    documento.getPedido().agregarProducto(producto_pedido_separado, true);
+                    documento.getPedido().agregarProducto(producto_pedido_separado, true); 
 
                 }
 
@@ -289,7 +290,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
-                    console.log("documento actualizado ", data)
                     if (data.status === 200) {
                         AlertService.mostrarMensaje("success", data.msj);
                     } else {
@@ -306,10 +306,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
 
-            $scope.onEditarRow = function(documento, documento_despacho, row) {
+            $scope.onAbrirVentanaLotes = function(documento, documento_despacho, row) {
 
-                console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> documento_despacho ");
+               /* console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> documento_despacho code 1 ");
                 console.log(documento_despacho);
+                console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");*/
                 //almacenar lotes del mismo producto
                 var productos = [];
                 var producto = row.entity;

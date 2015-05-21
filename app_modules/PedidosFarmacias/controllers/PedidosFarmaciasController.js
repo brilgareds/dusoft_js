@@ -564,6 +564,10 @@ PedidosFarmacias.prototype.eliminarResponsablesPedido = function(req, res) {
                                 res.send(G.utils.r(req.url, 'Se ha generado un error interno code 1', 500, {}));
                                 return;
                             } else {
+                                
+                                // El estado del pedido es el inmediatamnte el anterior
+                                estado_pedido = responsables_pedido[1].estado;
+                                
                                 that.m_pedidos_farmacias.actualizar_estado_actual_pedido(numero_pedido, estado_pedido, function(err, rows, resultado) {
 
                                     if (err) {

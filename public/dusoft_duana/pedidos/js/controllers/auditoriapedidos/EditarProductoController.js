@@ -25,6 +25,10 @@ define(["angular", "js/controllers",'models/ClientePedido',
            $scope.rootEditarProducto.producto.lote.cantidad_ingresada = $scope.rootEditarProducto.producto.cantidad_separada;
            $scope.rootEditarProducto.lotes    = [];
            $scope.rootEditarProducto.seleccionados = [];
+           
+           console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> documento_despacho code 2 ");
+           console.log(documento_despacho);
+           console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
 
            var that = this;
            

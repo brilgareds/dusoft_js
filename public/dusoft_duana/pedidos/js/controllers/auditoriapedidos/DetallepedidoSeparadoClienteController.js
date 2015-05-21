@@ -276,11 +276,13 @@ define(["angular", "js/controllers", 'models/ClientePedido',
             };
 
             $scope.valorSeleccionado = function(manual) {
-                console.log("valor seleccionado  manual ", manual, " seleccion ", $scope.seleccion);
-                that.seleccionarDocumentoDespacho($scope.seleccion);
+                
+                that.seleccionarDocumentoDespacho($scope.seleccion.bodegas_doc_id);
                 if (!manual) {
                     return;
                 }
+                
+                //console.log("valor seleccionado  manual >>>>>>>>>>>>>>>", manual, " seleccion ", $scope.seleccion);
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -310,6 +312,8 @@ define(["angular", "js/controllers", 'models/ClientePedido',
                 bodega_doc_id = parseInt(bodega_doc_id);
                 for (var i in $scope.documentos_usuarios) {
                     var doc = $scope.documentos_usuarios[i];
+                   // console.log("seleccionando documento para el usuario con doc id",bodega_doc_id, " en  ", doc.bodegas_doc_id);
+                    
                     if (bodega_doc_id === doc.bodegas_doc_id) {
                         $scope.documento_despacho = doc;
                         break;

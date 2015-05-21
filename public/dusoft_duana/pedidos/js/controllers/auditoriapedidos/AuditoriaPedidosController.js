@@ -308,8 +308,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             $scope.onEditarRow = function(documento, documento_despacho, row) {
 
-                console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> documento_despacho ");
+                console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> documento_despacho code 1 ");
                 console.log(documento_despacho);
+                console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
                 //almacenar lotes del mismo producto
                 var productos = [];
                 var producto = row.entity;

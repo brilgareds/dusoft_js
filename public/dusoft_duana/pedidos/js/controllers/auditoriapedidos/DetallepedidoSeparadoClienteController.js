@@ -149,15 +149,15 @@ define(["angular", "js/controllers", 'models/ClientePedido',
                 enableHighlighting: true,
                 enableRowSelection: false,
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Código', width: 100},
-                    {field: 'descripcion', displayName: 'Nombre Producto', width: 500},
+                    {field: 'codigo_producto', displayName: 'Código', width: 150},
+                    {field: 'descripcion', displayName: 'Nombre Producto', width: 650},
                     {field: 'cantidad_pendiente', displayName: 'Pendiente'},
                     {field: 'cantidad_separada', displayName: "Ingresado"},
                     {field: 'cantidad_solicitada_real', displayName: "Solicitado"},
-                    {field: 'observacion', displayName: "Observación", width: 350},
+                    //{field: 'observacion', displayName: "Observación", width: 350},
                     {field: 'opciones', displayName: "", cellClass: "txt-center", width: 40,
                         cellTemplate: ' <div class="row">\n\
-                                            <button class="btn btn-default btn-xs" ng-click="onEditarRow(DocumentoTemporal,documento_despacho, row)">\n\
+                                            <button class="btn btn-default btn-xs" ng-click="onAbrirVentanaLotes(DocumentoTemporal,documento_despacho, row)">\n\
                                                 <span class="glyphicon glyphicon-zoom-in"></span>\n\
                                             </button>\n\
                                         </div>'

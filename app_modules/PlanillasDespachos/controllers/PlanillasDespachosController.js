@@ -310,13 +310,15 @@ PlanillasDespachos.prototype.ingresarDocumentosPlanillaDespacho = function(req, 
                     var numero_pedido = documento_bodega.numero_pedido;
                     var estado_actual_pedido = documento_bodega.estado_pedido;
 
-                    // si es auditado => pasa a Zona de despacho
-                    if (estado_actual_pedido === '2')
+                    if (estado_actual_pedido === '2') {
+                        // si es auditado => pasa a Zona de despacho
                         estado_pedido = '3';
-
-                    // si es auditado con pdtes => pasa a Zona con pdtes
-                    if (estado_actual_pedido === '8')
+                    } else if (estado_actual_pedido === '8') {
+                        // si es auditado con pdtes => pasa a Zona con pdtes
                         estado_pedido = '9';
+                    } else {
+                        estado_pedido = estado_actual_pedido;
+                    }
 
 
                     if (tipo === '0') {
@@ -420,13 +422,15 @@ PlanillasDespachos.prototype.eliminarDocumentoPlanilla = function(req, res) {
                     var numero_pedido = documento_bodega.numero_pedido;
                     var estado_actual_pedido = documento_bodega.estado_pedido;
 
-                    // si es Zona de despacho  => pasa a auditado
-                    if (estado_actual_pedido === '3')
+                    if (estado_actual_pedido === '3') {
+                        // si es Zona de despacho  => pasa a auditado                        
                         estado_pedido = '2';
-
-                    // si es Zona con pdtes => pasa a auditado con pdtes
-                    if (estado_actual_pedido === '9')
+                    } else if (estado_actual_pedido === '9') {
+                        // si es Zona con pdtes => pasa a auditado con pdtes
                         estado_pedido = '8';
+                    } else {
+                        estado_pedido = estado_actual_pedido;
+                    }
 
 
                     if (tipo === '0') {

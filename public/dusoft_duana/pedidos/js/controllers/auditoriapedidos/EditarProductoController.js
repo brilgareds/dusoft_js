@@ -103,6 +103,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                             lote.cantidad_ingresada = lotes[i].cantidad_ingresada;
                             lote.seleccionado = true;
                             lote.numero_caja = lotes[i].numero_caja;
+                            lote.setTipoCaja(lotes[i].tipo_caja);
                            // $scope.rootEditarProducto.seleccionados.push(lote);
                             $scope.rootEditarProducto.producto.agregarLote(lote);
                             
@@ -176,8 +177,18 @@ define(["angular", "js/controllers",'models/ClientePedido',
                     {field: 'codigo_lote', displayName: 'Código Lote'},
                     {field: 'fecha_vencimiento', displayName: 'Fecha Vencimiento'},
                     {field: 'existencia_actual', displayName: 'Existencia'},
-                   // {field: 'disponible', displayName: 'Disponible'},
-                    {field: 'numero_caja', displayName: 'Caja'},
+                    {field: 'numero_caja', displayName: 'Caja / Nevera', cellClass: "ngCellText",
+                        cellTemplate: '<div ng-switch="row.entity.tipoCaja">\
+                            <div ng-switch-when="0"><span ng-if="row.entity.numero_caja > 0">Caja - {{row.entity.numero_caja}}</span></div>\
+                            <div ng-switch-when="1"><span ng-if="row.entity.numero_caja > 0">Nevera - {{row.entity.numero_caja}}</span></div>\
+                        </div>'
+                    },
+                   /* {field: 'tipoCaja', displayName: 'Tipo', cellClass: "ngCellText",
+                        cellTemplate: '<div ng-switch="row.entity.tipoCaja">\
+                            <div ng-switch-when="0">Caja</div>\
+                            <div ng-switch-when="1">Nevera</div>\
+                        </div>'
+                    },*/
                     {field:'cantidad_ingresada', displayName:'Cantidad', cellTemplate:'<div class="col-xs-12"><input type="text"  ng-focus="onCantidadFocus(row)" ng-model="row.entity.cantidad_ingresada" validacion-numero class="form-control grid-inline-input" ng-disabled="row.entity.seleccionado"  ng-change="onCantidadIngresadaChange(row)"'+
                              'ng-model="row.entity.cantidad_ingresada" ng-disabled="row.entity.numero_caja > 0" /></div>'},
                     {field: 'opciones', displayName: "Cambiar", cellClass: "txt-center", width: "10%",
@@ -681,6 +692,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                                               for(var ii in lotes){
                                                   if(lotes[ii].item_id === items[i]){
                                                       lotes[ii].numero_caja = $scope.rootEditarProducto.caja.getNumero();
+                                                      lotes[ii].setTipoCaja($scope.rootEditarProducto.caja.getTipo());
                                                       break;
                                                   }
                                               }

@@ -758,7 +758,7 @@ PedidosClienteModel.prototype.terminar_estado_pedido = function(numero_pedido, e
 PedidosClienteModel.prototype.obtenerDetalleRotulo = function(numero_pedido, numero_caja, tipo, callback) {
 
 
-    var sql = "SELECT a.direccion, a.cliente, '' AS departamento, a.numero_caja, a.tipo, FROM inv_rotulo_caja a\
+    var sql = "SELECT a.direccion, a.cliente, '' AS departamento, a.numero_caja, a.tipo FROM inv_rotulo_caja a\
                WHERE a.solicitud_prod_a_bod_ppal_id = $1 AND a.numero_caja = $2 AND a.tipo = $3; ";
 
     G.db.query(sql, [numero_pedido, numero_caja, tipo], function(err, rows, result) {

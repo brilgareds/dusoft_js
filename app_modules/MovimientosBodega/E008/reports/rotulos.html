@@ -39,7 +39,12 @@
         <h2>{{:direccion}}</h2>
         <div class="documentos">DOCUMENTOS:</div>
         <br/>
-        <span class="numero_caja_span">NUMERO: </span><strong>{{:numero_caja}} DE ____</strong>
+        <!--span class="numero_caja_span">NUMERO </span-->
+        <strong> 
+            {{if tipo == 0}} CAJA {{else}} NEVERA  {{/if}}
+            
+            {{:numero_caja}} DE ______
+        </strong>
         <h1>((((( DELICADO ))))</h1>
         
         <hr class="separador"/>
@@ -51,7 +56,11 @@
         <h2>{{:direccion}}</h2>
         <div class="documentos">DOCUMENTOS:</div>
         <br/>
-        <span class="numero_caja_span">NUMERO: </span><strong>{{:tipo}} {{:numero_caja}} DE ____</strong>
+        <strong> 
+            {{if tipo == 0}} CAJA {{else}} NEVERA  {{/if}}
+            
+            {{:numero_caja}} DE ______
+        </strong>
         <h1>((((( DELICADO ))))</h1>
     </body>
 </html>

@@ -310,13 +310,15 @@ PlanillasDespachos.prototype.ingresarDocumentosPlanillaDespacho = function(req, 
                     var numero_pedido = documento_bodega.numero_pedido;
                     var estado_actual_pedido = documento_bodega.estado_pedido;
 
-                    // si es auditado => pasa a Zona de despacho
-                    if (estado_actual_pedido === '2')
+                    if (estado_actual_pedido === '2') {
+                        // si es auditado => pasa a Zona de despacho
                         estado_pedido = '3';
-
-                    // si es auditado con pdtes => pasa a Zona con pdtes
-                    if (estado_actual_pedido === '8')
+                    } else if (estado_actual_pedido === '8') {
+                        // si es auditado con pdtes => pasa a Zona con pdtes
                         estado_pedido = '9';
+                    } else {
+                        estado_pedido = estado_actual_pedido;
+                    }
 
 
                     if (tipo === '0') {
@@ -415,40 +417,58 @@ PlanillasDespachos.prototype.eliminarDocumentoPlanilla = function(req, res) {
                     res.send(G.utils.r(req.url, 'Se ha generado un error consultado el documento', 500, {planillas_despachos: []}));
                     return;
                 } else {
+
                     documento_bodega = documento_bodega[0];
 
                     var numero_pedido = documento_bodega.numero_pedido;
                     var estado_actual_pedido = documento_bodega.estado_pedido;
 
-                    // si es Zona de despacho  => pasa a auditado
-                    if (estado_actual_pedido === '3')
+                    if (estado_actual_pedido === '3') {
+                        // si es Zona de despacho  => pasa a auditado                        
                         estado_pedido = '2';
-
-                    // si es Zona con pdtes => pasa a auditado con pdtes
-                    if (estado_actual_pedido === '9')
+                    } else if (estado_actual_pedido === '9') {
+                        // si es Zona con pdtes => pasa a auditado con pdtes
                         estado_pedido = '8';
+                    } else {
+                        estado_pedido = estado_actual_pedido;
+                    }
 
 
                     if (tipo === '0') {
                         // Farmacias
-                        that.m_pedidos_farmacias.actualizar_estado_actual_pedido(numero_pedido, estado_pedido, function(err, rows) {
-                            // Notificando Pedidos Actualizados en Real Time
-                            that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+                        that.m_pedidos_farmacias.eliminar_responsables_pedidos(numero_pedido, function(err, rows, resultado) {
 
-                            res.send(G.utils.r(req.url, 'Documento eliminado correctamente', 200, {planillas_despachos: {}}));
-                            return;
+                            if (err) {
+                                res.send(G.utils.r(req.url, 'Se ha generado un error interno code 0', 500, {}));
+                                return;
+                            } else {
+                                that.m_pedidos_farmacias.actualizar_estado_actual_pedido(numero_pedido, estado_pedido, function(err, rows) {
+                                    // Notificando Pedidos Actualizados en Real Time
+                                    that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+
+                                    res.send(G.utils.r(req.url, 'Documento eliminado correctamente', 200, {planillas_despachos: {}}));
+                                    return;
+                                });
+                            }
                         });
                     }
 
                     if (tipo === '1') {
-                        // Clientes                        
-                        that.m_pedidos_clientes.actualizar_estado_actual_pedido(numero_pedido, estado_pedido, function(err, rows) {
+                        // Clientes   
+                        that.m_pedidos_clientes.eliminar_responsables_pedidos(numero_pedido, function(err, rows, resultado) {
+                            if (err) {
+                                res.send(G.utils.r(req.url, 'Se ha generado un error interno code 1', 500, {}));
+                                return;
+                            } else {
+                                that.m_pedidos_clientes.actualizar_estado_actual_pedido(numero_pedido, estado_pedido, function(err, rows) {
 
-                            // Notificando Pedidos Actualizados en Real Time
-                            that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+                                    // Notificando Pedidos Actualizados en Real Time
+                                    that.e_pedidos_clientes.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
 
-                            res.send(G.utils.r(req.url, 'Documento eliminado correctamente', 200, {planillas_despachos: {}}));
-                            return;
+                                    res.send(G.utils.r(req.url, 'Documento eliminado correctamente', 200, {planillas_despachos: {}}));
+                                    return;
+                                });
+                            }
                         });
                     }
                 }
@@ -634,13 +654,15 @@ function __despachar_documentos_planilla(contexto, i, documentos_planilla, resul
                 var numero_pedido = documento_bodega.numero_pedido;
                 var estado_actual_pedido = documento_bodega.estado_pedido;
 
-                // si es Zona de despacho  => pasa a Despachado
-                if (estado_actual_pedido === '3')
+                if (estado_actual_pedido === '3') {
+                    // si es Zona de despacho  => pasa a Despachado
                     estado_pedido = '4';
-
-                // si es Zona con pdtes => pasa a Despachado con pdtes
-                if (estado_actual_pedido === '9')
+                } else if (estado_actual_pedido === '9') {
+                    // si es Zona con pdtes => pasa a Despachado con pdtes                    
                     estado_pedido = '5';
+                }else{
+                    estado_pedido = estado_actual_pedido;
+                }
 
                 if (tipo === '0') {
                     // Farmacias
@@ -681,7 +703,7 @@ function __despachar_documentos_planilla(contexto, i, documentos_planilla, resul
 
                             if (err) {
                                 resultado.continuar = false;
-                                resultado.msj += ' Error Interno code 2.1';
+                                resultado.msj += ' Error Interno code 3.1';
                             }
                             __despachar_documentos_planilla(contexto, ++i, documentos_planilla, resultado, callback);
                         });

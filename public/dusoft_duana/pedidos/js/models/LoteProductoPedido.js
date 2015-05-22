@@ -17,9 +17,18 @@ define(["angular", "js/models", "includes/classes/Lote"], function(angular, mode
             this.seleccionado = false;
             this.numero_caja = 0;
             this.auditado = "0";
+            this.tipoCaja;
         }
 
         LoteProductoPedido.prototype = Object.create(Lote.getClass().prototype);
+        
+        LoteProductoPedido.prototype.setTipoCaja = function(tipoCaja){
+            this.tipoCaja = tipoCaja;
+        };
+        
+        LoteProductoPedido.prototype.getTipoCaja = function(){
+            return this.tipoCaja;
+        };
 
         //we return new instance of usermodel class  because factory is a singleton and we dont need like that
         this.get = function(codigo_lote, fecha_vencimiento) {

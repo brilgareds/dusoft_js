@@ -13,8 +13,8 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
 
             $scope.pedidosSeleccionados = [];
             $scope.session = {
-                 usuario_id: Usuario.getUsuarioActual().getId(),
-                 auth_token: Usuario.getUsuarioActual().getToken()
+                usuario_id: Usuario.getUsuarioActual().getId(),
+                auth_token: Usuario.getUsuarioActual().getToken()
             };
             $scope.paginas = 0;
             $scope.items = 0;
@@ -24,7 +24,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
             var that = this;
 
             //var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
-            var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs" ];
+            var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs"];
 
             that.buscarPedidosCliente = function(termino, paginando) {
                 //valida si cambio el termino de busqueda
@@ -127,22 +127,17 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                 columnDefs: [
                     {field: '', cellClass: "checkseleccion", width: "60",
                         cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)'" +
-                                " ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1  && row.entity.estado_actual_pedido != 5 && row.entity.estado_actual_pedido != 8 || " +
-                                " row.entity.estado == 2 || " +
-                                " row.entity.estado_separacion'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
+                                " ng-disabled='habilitar_asignacion_pedidos(row.entity)'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
                     {field: 'descripcion_estado_actual_pedido', displayName: "Estado Actual", cellClass: "txt-center",
-                        //cellTemplate: '<div ng-class="agregarClase(row.entity.estado_actual_pedido)" >{{row.entity.descripcion_estado_actual_pedido}}</div>'},
                         cellTemplate: "<button type='button' ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
                     {field: 'numero_pedido', displayName: 'Pedido'},
                     {field: 'cliente.nombre_tercero', displayName: 'Cliente'},
-                    // {field: 'cliente.direccion_cliente', displayName: 'Ubicacion'},
-                    //{field: 'cliente.telefono_cliente', displayName: 'Telefono'},
                     {field: 'nombre_vendedor', displayName: 'Vendedor'},
                     {field: 'descripcion_estado', displayName: "Estado"},
                     {field: 'fecha_registro', displayName: "Fecha Registro", width: "110"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
-                                            <button ng-disabled="row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 && row.entity.estado_actual_pedido != 5 || row.entity.estado == 2 || row.entity.estado_separacion " class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
+                                            <button ng-disabled="habilitar_opciones(row.entity)" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
                                                 <li><a href="javascript:void(0);" ng-click="modificar_estado_pedido_cliente(row.entity);" >Cambiar Estado</a></li>\
                                             </ul>\
@@ -150,6 +145,56 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                     }
                 ]
 
+            };
+
+            $scope.habilitar_asignacion_pedidos = function(pedido) {
+
+                var disabled = true;
+
+                if (pedido.estado_actual_pedido === '0') {
+                    disabled = false;
+                }
+
+                if (pedido.estado_actual_pedido === '1') {
+                    disabled = false;
+                }
+
+                if (pedido.estado_actual_pedido === '5') {
+                    disabled = false;
+                }
+
+                if (pedido.estado_actual_pedido === '8') {
+                    disabled = false;
+                }
+
+                if (pedido.estado_separacion) {
+                    disabled = true;
+                }
+
+                if (pedido.estado === '0' || pedido.estado === '2') {
+                    disabled = true;
+                }
+
+                return disabled;
+            };
+
+            $scope.habilitar_opciones = function(pedido) {
+
+                var disabled = true;
+
+                if (pedido.estado_actual_pedido === '1') {
+                    disabled = false;
+                }
+
+                if (pedido.estado_separacion) {
+                    disabled = true;
+                }
+
+                if (pedido.estado === '2') {
+                    disabled = true;
+                }
+
+                return disabled;
             };
 
             // Agregar Clase de acuerdo al estado del pedido
@@ -289,7 +334,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
 
             $scope.abrirModalAsignar = function() {
                 console.log($scope.pedidosSeleccionados, " pedidos seleccionados ", $scope.pedidosSeleccionados.length);
-                
+
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,

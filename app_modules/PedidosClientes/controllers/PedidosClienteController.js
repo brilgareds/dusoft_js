@@ -283,7 +283,7 @@ PedidosCliente.prototype.eliminarResponsablesPedido = function(req, res) {
     }
 
     var numero_pedido = args.pedidos_clientes.numero_pedido;
-    var estado_pedido = '0'; // 0 = No asignado
+    var estado_pedido = ''; // 0 = No asignado
 
     that.m_pedidos_clientes.consultar_pedido(numero_pedido, function(err, pedido_cliente) {
 
@@ -291,8 +291,7 @@ PedidosCliente.prototype.eliminarResponsablesPedido = function(req, res) {
 
         } else {
             var pedido = pedido_cliente[0];
-
-
+            
             if ((pedido.estado_actual_pedido === '0' || pedido.estado_actual_pedido === '1') && pedido.estado_separacion === null) {
 
                 that.m_pedidos_clientes.obtener_responsables_del_pedido(numero_pedido, function(err, responsables_pedido) {
@@ -308,6 +307,9 @@ PedidosCliente.prototype.eliminarResponsablesPedido = function(req, res) {
                                 res.send(G.utils.r(req.url, 'Se ha generado un error interno code 1', 500, {}));
                                 return;
                             } else {
+                                // El estado del pedido es el inmediatamnte el anterior
+                                estado_pedido = responsables_pedido[1].estado;
+                                
                                 that.m_pedidos_clientes.actualizar_estado_actual_pedido(numero_pedido, estado_pedido, function(err, rows, resultado) {
 
                                     if (err) {
@@ -326,7 +328,7 @@ PedidosCliente.prototype.eliminarResponsablesPedido = function(req, res) {
                                             that.e_pedidos_clientes.onNotificacionOperarioPedidosReasignados({numero_pedidos: [numero_pedido], responsable: responsable_estado_pedido.responsable_id});
                                         }
 
-                                        res.send(G.utils.r(req.url, 'El Pedido cambio de estado correctamente', 200, {}));
+                                        res.send(G.utils.r(req.url, 'El Pedido cambió de estado correctamente', 200, {}));
                                     }
                                 });
                             }

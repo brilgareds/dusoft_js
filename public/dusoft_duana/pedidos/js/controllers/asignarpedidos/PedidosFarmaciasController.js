@@ -87,9 +87,8 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                 enablehightlight: true,
                 columnDefs: [
                     {field: '', cellClass: "checkseleccion", width: "60",
-                        cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)' ng-disabled='row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 && row.entity.estado_actual_pedido != 5 || row.entity.estado_separacion'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
+                        cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)' ng-disabled='habilitar_asignacion_pedidos(row.entity)'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
                     {field: 'descripcion_estado_actual_pedido', displayName: "Estado Actual", cellClass: "txt-center",
-                        //cellTemplate: '<div  ng-class="agregarClase(row.entity.estado_actual_pedido)">{{row.entity.descripcion_estado_actual_pedido}}</div>'},
                         cellTemplate: "<button  ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
                     {field: 'numero_pedido', displayName: 'Pedido', width: "60"},
                     {field: 'farmacia.nombre_farmacia', displayName: 'Zona'},
@@ -98,7 +97,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                     {field: 'fecha_registro', displayName: "Fecha Registro"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
-                                            <button ng-disabled="row.entity.estado_actual_pedido != 0 && row.entity.estado_actual_pedido != 1 && row.entity.estado_actual_pedido != 5 || row.entity.estado_separacion" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
+                                            <button ng-disabled="habilitar_opciones(row.entity)" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
                                                 <li><a href="javascript:void(0);" ng-click="modificar_estado_pedido_farmacia(row.entity);" >Cambiar Estado</a></li>\
                                             </ul>\
@@ -106,6 +105,56 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                     }
                 ]
 
+            };
+
+            $scope.habilitar_asignacion_pedidos = function(pedido) {
+
+                var disabled = true;
+
+                if (pedido.estado_actual_pedido === '0') {
+                    disabled = false;
+                }
+
+                if (pedido.estado_actual_pedido === '1') {
+                    disabled = false;
+                }
+
+                if (pedido.estado_actual_pedido === '5') {
+                    disabled = false;
+                }
+
+                if (pedido.estado_actual_pedido === '8') {
+                    disabled = false;
+                }
+
+                if (pedido.estado_separacion) {
+                    disabled = true;
+                }
+
+                if (pedido.estado === '2') {
+                    disabled = true;
+                }
+
+                return disabled;
+            };
+
+            $scope.habilitar_opciones = function(pedido) {
+
+                var disabled = true;
+
+                if (pedido.estado_actual_pedido === '1') {
+                    disabled = false;
+                }
+
+                if (pedido.estado_separacion) {
+                    disabled = true;
+                }
+
+                if (pedido.estado === '2') {
+                    disabled = true;
+                }
+
+                return disabled;
             };
 
             $scope.agregarClase = function(estado) {
@@ -167,7 +216,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
 
                 $scope.pedidosSeleccionados.push(pedido);
             };
-            
+
             $scope.buscarSeleccion = function(row) {
                 var pedido = row.entity;
                 for (var i in $scope.pedidosSeleccionados) {

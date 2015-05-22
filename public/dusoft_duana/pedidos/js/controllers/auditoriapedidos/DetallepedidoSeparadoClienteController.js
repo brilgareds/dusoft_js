@@ -149,15 +149,15 @@ define(["angular", "js/controllers", 'models/ClientePedido',
                 enableHighlighting: true,
                 enableRowSelection: false,
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Código', width: 100},
-                    {field: 'descripcion', displayName: 'Nombre Producto', width: 500},
+                    {field: 'codigo_producto', displayName: 'Código', width: 150},
+                    {field: 'descripcion', displayName: 'Nombre Producto', width: 650},
                     {field: 'cantidad_pendiente', displayName: 'Pendiente'},
                     {field: 'cantidad_separada', displayName: "Ingresado"},
                     {field: 'cantidad_solicitada_real', displayName: "Solicitado"},
-                    {field: 'observacion', displayName: "Observación", width: 350},
+                    //{field: 'observacion', displayName: "Observación", width: 350},
                     {field: 'opciones', displayName: "", cellClass: "txt-center", width: 40,
                         cellTemplate: ' <div class="row">\n\
-                                            <button class="btn btn-default btn-xs" ng-click="onEditarRow(DocumentoTemporal,documento_despacho, row)">\n\
+                                            <button class="btn btn-default btn-xs" ng-click="onAbrirVentanaLotes(DocumentoTemporal,documento_despacho, row)">\n\
                                                 <span class="glyphicon glyphicon-zoom-in"></span>\n\
                                             </button>\n\
                                         </div>'
@@ -276,11 +276,13 @@ define(["angular", "js/controllers", 'models/ClientePedido',
             };
 
             $scope.valorSeleccionado = function(manual) {
-                console.log("valor seleccionado  manual ", manual, " seleccion ", $scope.seleccion);
-                that.seleccionarDocumentoDespacho($scope.seleccion);
+                
+                that.seleccionarDocumentoDespacho($scope.seleccion.bodegas_doc_id);
                 if (!manual) {
                     return;
                 }
+                
+                //console.log("valor seleccionado  manual >>>>>>>>>>>>>>>", manual, " seleccion ", $scope.seleccion);
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -310,6 +312,8 @@ define(["angular", "js/controllers", 'models/ClientePedido',
                 bodega_doc_id = parseInt(bodega_doc_id);
                 for (var i in $scope.documentos_usuarios) {
                     var doc = $scope.documentos_usuarios[i];
+                   // console.log("seleccionando documento para el usuario con doc id",bodega_doc_id, " en  ", doc.bodegas_doc_id);
+                    
                     if (bodega_doc_id === doc.bodegas_doc_id) {
                         $scope.documento_despacho = doc;
                         break;

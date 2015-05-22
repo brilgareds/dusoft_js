@@ -1871,69 +1871,69 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
 
 
                             that.m_e008.generar_documento_despacho_farmacias(documento_temporal_id, numero_pedido, usuario_id, auditor_id,
-                                    function(err, empresa_id, prefijo_documento, numero_documento) {
+                             function(err, empresa_id, prefijo_documento, numero_documento) {
 
-                                        if (err) {
-                                            console.log("error cambiando estado del pedido ", err);
-                                            res.send(G.utils.r(req.url, err.toString(), 500, {movimientos_bodegas: {}}));
-                                            return;
-                                        }
-                                        that.m_pedidos_farmacias.consultar_detalle_pedido(numero_pedido, function(err, detalle_pedido) {
+                                if (err) {
+                                    console.log("error cambiando estado del pedido ", err);
+                                    res.send(G.utils.r(req.url, err.toString(), 500, {movimientos_bodegas: {}}));
+                                    return;
+                                }
+                                that.m_pedidos_farmacias.consultar_detalle_pedido(numero_pedido, function(err, detalle_pedido) {
 
-                                            if (err) {
-                                                res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
-                                                return;
-                                            }
+                                    if (err) {
+                                        res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
+                                        return;
+                                    }
 
-                                            var cantidad_pendiente = 0;
+                                    var cantidad_pendiente = 0;
 
-                                            //temporalmente el pedido queda con estados despachado o despachado con pendientes al terminar de auditar
-                                            var estado = "2";
+                                    //temporalmente el pedido queda con estados despachado o despachado con pendientes al terminar de auditar
+                                    var estado = "2";
 
-                                            detalle_pedido.forEach(function(producto_pedido) {
+                                    detalle_pedido.forEach(function(producto_pedido) {
 
-                                                cantidad_pendiente += producto_pedido.cantidad_pendiente_real;
+                                        cantidad_pendiente += producto_pedido.cantidad_pendiente_real;
 
+                                    });
+
+                                    if (cantidad_pendiente > 0) {
+                                        estado = "8";
+                                    }
+
+
+                                    if (err) {
+                                        res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
+                                        return;
+                                    }
+
+
+                                    that.m_pedidos_farmacias.asignar_responsables_pedidos(numero_pedido, estado, auditor_id,
+                                            req.session.user.usuario_id, function(err, rows) {
+
+                                        that.m_pedidos_farmacias.terminar_estado_pedido(numero_pedido, [estado, '7'], '1', function(err, rows) {
+                                            that.m_e008.marcar_cajas_como_despachadas(documento_temporal_id, numero_pedido, function(err, rows) {
+                                                if (err) {
+                                                    console.log("========================================== generar documento despacho clientes error generado ============================");
+                                                    console.log(err);
+                                                    res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
+                                                    return;
+                                                } else {
+                                                    console.log("========================================== generar documento despacho clientes satisfactorio ============================");
+                                                    that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
+                                                    res.send(G.utils.r(req.url, 'Se ha generado el documento', 200, {movimientos_bodegas: {prefijo_documento: prefijo_documento, numero_documento: numero_documento, empresa_id: empresa_id}}));
+                                                }
                                             });
 
-                                            if (cantidad_pendiente > 0) {
-                                                estado = "8";
-                                            }
-
-
-                                            if (err) {
-                                                res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
-                                                return;
-                                            }
-
-
-                                            that.m_pedidos_farmacias.asignar_responsables_pedidos(numero_pedido, estado, auditor_id,
-                                                    req.session.user.usuario_id, function(err, rows) {
-
-                                                that.m_pedidos_farmacias.terminar_estado_pedido(numero_pedido, [estado, '7'], '1', function(err, rows) {
-                                                    that.m_e008.marcar_cajas_como_despachadas(documento_temporal_id, numero_pedido, function(err, rows) {
-                                                        if (err) {
-                                                            console.log("========================================== generar documento despacho clientes error generado ============================");
-                                                            console.log(err);
-                                                            res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
-                                                            return;
-                                                        } else {
-                                                            console.log("========================================== generar documento despacho clientes satisfactorio ============================");
-                                                            that.e_pedidos_farmacias.onNotificarPedidosActualizados({numero_pedido: numero_pedido});
-                                                            res.send(G.utils.r(req.url, 'Se ha generado el documento', 200, {movimientos_bodegas: {prefijo_documento: prefijo_documento, numero_documento: numero_documento, empresa_id: empresa_id}}));
-                                                        }
-                                                    });
-
-
-                                                });
-
-
-                                            });
 
                                         });
 
 
                                     });
+
+                                });
+
+
+                            });
                         }
                     });
                 });

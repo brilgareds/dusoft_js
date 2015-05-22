@@ -29,7 +29,8 @@ define(["angular", "js/controllers", "js/models"], function(angular, controllers
 //            $scope.rootAprobarCotizacion.destinatarios = '';
 //            $scope.rootAprobarCotizacion.asunto = '';
 
-            $scope.rootAprobarCotizacion.observacion = '';
+            //$scope.rootAprobarCotizacion.observacion = '';
+            $scope.rootAprobarCotizacion.observacion = $scope.rootAprobarCotizacion.Empresa.getPedidoSeleccionado().getObservacionCartera();
             
             $scope.rootAprobarCotizacion.label_btn = "Aprobar";
             

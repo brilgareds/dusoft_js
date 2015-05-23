@@ -8,6 +8,10 @@ a {
     color: #00B7FF;
 }
 
+.contenedorArbol {
+    /*font-size: 14px;*/
+}
+
 .alertcontenido{
     /*max-width: 500px;*/
     width: auto;

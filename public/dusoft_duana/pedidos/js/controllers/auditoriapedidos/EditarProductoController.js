@@ -7,13 +7,13 @@ define(["angular", "js/controllers",'models/ClientePedido',
         '$modalInstance', 'EmpresaPedido','Cliente',
          'PedidoAuditoria', 'API',"socket", "AlertService",
          "producto", "Usuario", "documento","LoteProductoPedido","productos",
-         "documento_despacho","Caja",
+         "documento_despacho","Caja","$modal",
 
         function(   $scope, $rootScope, Request,
                     $modalInstance, Empresa, Cliente,
                     PedidoAuditoria, API, socket, AlertService, 
                     producto, Usuario, documento, LoteProductoPedido, productos,
-                    documento_despacho, Caja) {
+                    documento_despacho, Caja, $modal) {
 
         $scope.rootEditarProducto = {}; 
         //$scope.rootEditarProducto.producto = angular.copy(producto);
@@ -726,13 +726,60 @@ define(["angular", "js/controllers",'models/ClientePedido',
          };
 
          $scope.onCerrarCaja = function(){
+             var caja = $scope.rootEditarProducto.caja;
+              $scope.opts = {
+                backdrop: true,
+                backdropClick: true,
+                dialogFade: false,
+              //  size: 'sm',
+                keyboard: true,
+                template: ' <div class="modal-header">\
+                                <button type="button" class="close" ng-click="close()">&times;</button>\
+                                <h4 class="modal-title">Desea cerrar la <span ng-if="caja.tipo == 0">caja</span><span ng-if="caja.tipo == 1">nevera</span>?</h4>\
+                            </div>\
+                            <div class="modal-body">\
+                                <h4>Una vez cerrada no se podra abrir nuevamente.</h4>\
+                                <h4>Numero: {{ caja.getNumero() }}</h4>\
+                            </div>\
+                            <div class="modal-footer">\
+                                <button class="btn btn-primary" ng-click="close()">No</button>\
+                                <button class="btn btn-warning" ng-click="confirmar()" ng-disabled="" >Si</button>\
+                            </div>',
+                scope: $scope,
+                controller: function($scope, $modalInstance, caja) {
+            
+                    $scope.caja = caja;
+                    $scope.confirmar = function() {
+                        that.cerrarCaja();
+                        $modalInstance.close();
+                    };
+
+                    $scope.close = function() {
+                        $modalInstance.close();
+                    };
+
+                },
+                resolve: {
+                    caja: function() {
+                        return caja;
+                    }
+                }
+            };
+            var modalInstance = $modal.open($scope.opts);
+           
+         };
+         
+         that.cerrarCaja = function(){
+                          
+             
              var url = API.DOCUMENTOS_TEMPORALES.GENERAR_ROTULO;
              var obj = {
                  session:$scope.session,
                  data:{
                      documento_temporal: {
                          documento_temporal_id: $scope.rootEditarProducto.documento.documento_temporal_id,
-                         numero_caja: $scope.rootEditarProducto.caja.getNumero()
+                         numero_caja: $scope.rootEditarProducto.caja.getNumero(),
+                         tipo:$scope.rootEditarProducto.caja.getTipo()
                      }
                  }
              };

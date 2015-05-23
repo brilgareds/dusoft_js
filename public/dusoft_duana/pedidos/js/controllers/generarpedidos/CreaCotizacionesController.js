@@ -613,7 +613,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 controller = function($scope, $modalInstance) {
 
                     $scope.aceptaModificar = function() {
-                        
+
                         //Se acepta modificar y se procede
                         that.modificarCantidad(row);
 

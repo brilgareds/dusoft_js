@@ -386,7 +386,45 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             
             //Inserta producto presionando Botón
             $scope.onIncluirProducto = function(row) {
-                that.insertarProducto(row);
+                
+                if(parseInt(row.entity.precio) === 0){
+                    
+                    /*Ventana Modal - Inicio*/
+                    var template = '<div class="modal-header">\
+                                        <button type="button" class="close" ng-click="close()">&times;</button>\
+                                        <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                    </div>\
+                                    <div class="modal-body">\
+                                        <h4>El producto con código '+row.entity.codigo_producto+' tiene precio Cero (0).\
+                                    </div>\
+                                    <div class="modal-footer">\
+                                        <button class="btn btn-warning" ng-click="close()">Aceptar</button>\
+                                    </div>';
+
+                    controller = function($scope, $modalInstance) {
+
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+                    };
+
+                    $scope.opts = {
+                        backdrop: true,
+                        backdropClick: true,
+                        dialogFade: false,
+                        keyboard: true,
+                        template: template,
+                        scope: $scope,
+                        controller: controller
+                    };
+
+                    var modalInstance = $modal.open($scope.opts);
+                    /*Ventana Modal - Fin*/
+                        
+                }
+                else {
+                    that.insertarProducto(row);
+                }
             };
             
             //Ejecuta operaciones conjuntas de Inserción del producto en pedido temporal

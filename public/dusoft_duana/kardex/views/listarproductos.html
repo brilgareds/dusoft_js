@@ -1,9 +1,9 @@
 <div>
 
     <!--route 1 {{welcomemsg}} got to child  <a ui-sref="route1.item">Route item</a>-->
-    <div class="col-md-2">
+    <div class="col-md-12 col-lg-2">
         <p class="input-group contenedorfiltrocombobox">
-            <select ui-select2="" ng-model='filtro.empresa_seleccion' style='width:210px'  class="form-control selectgeneral"   placeholder="Seleccionar Empresa" ng-change='onEmpresaSeleccionada()' >
+            <select ui-select2="" ng-model='filtro.empresa_seleccion' style='min-width:180px'  class="form-control selectgeneral"   placeholder="Seleccionar Empresa" ng-change='onEmpresaSeleccionada()' >
                 <option></option>
                 <option ng-repeat="empresa in  listaEmpresas"  value="{{empresa.codigo}}"   >
                     {{empresa.nombre}}</option>
@@ -11,9 +11,9 @@
         </p>
     </div>
 
-    <div class="col-md-2">
+    <div class="col-md-12 col-lg-2">
         <p class="input-group contenedorfiltrocombobox">
-            <select ui-select2 ng-model='filtro.centro_seleccion' style='width:210px'  class="form-control selectgeneral"   placeholder="Seleccionar Centro Utilidad" ng-change='onCentroSeleccionado()' >
+            <select ui-select2 ng-model='filtro.centro_seleccion' style='min-width:180px'  class="form-control selectgeneral"   placeholder="Seleccionar Centro Utilidad" ng-change='onCentroSeleccionado()' >
                 <option></option>
                 <option ng-repeat="centro in  listaCentroUtilidad"  value="{{centro.codigo}}" >
                     {{centro.nombre}}</option>
@@ -21,9 +21,9 @@
         </p>
     </div>
 
-    <div class="col-md-2">
+    <div class="col-md-12 col-lg-2">
         <p class="input-group contenedorfiltrocombobox">
-            <select ui-select2 ng-model='filtro.bodega_seleccion' style='width:210px'  class="form-control selectgeneral"   placeholder="Seleccionar Bodega" >
+            <select ui-select2 ng-model='filtro.bodega_seleccion' style='min-width:180px'  class="form-control selectgeneral"   placeholder="Seleccionar Bodega" >
                 <option></option>
                 <option ng-repeat="bodega in  listaBodegas"  value="{{bodega.codigo}}" >
                     {{bodega.nombre}}</option>
@@ -32,7 +32,7 @@
     </div>
 
     <div class="row">
-        <div class="col-md-2">
+        <div class="col-lg-2">
             <p class="input-group">
 
                 <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="fechainicial" is-open="abrirfechainicial" min="minDate"   readonly  close-text="Cerrar" ng-change="fechainicialselected()" clear-text="Borrar" current-text="Hoy" placeholder="Fecha inicio" show-weeks="false" toggle-weeks-text="#"  />
@@ -44,7 +44,7 @@
             </p>
         </div>
 
-        <div class="col-md-2">
+        <div class="col-lg-2">
             <p class="input-group">
 
                 <input type="text" class="form-control readonlyinput" name="fechain" datepicker-popup="{{format}}" ng-model="fechafinal" is-open="abrirfechafinal" min="fechainicial"  readonly  close-text="Cerrar"
@@ -58,7 +58,7 @@
 
 
 
-        <div class="col-md-2 pull-right">
+        <div class="col-lg-2 pull-right">
             <p class="input-group">
 
                 <input type="text" class="form-control" ng-keypress="onKeyPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term" />

@@ -182,7 +182,7 @@ define(["angular", "js/controllers", 'models/ClientePedido',
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
                         cellTemplate: ' <div class="row">\n\
                                             <button class="btn btn-default btn-xs" ng-click="onEliminarProductoAuditado(DocumentoTemporal, row)">\n\
-                                                <span class="glyphicon glyphicon-zoom-in">Eliminar</span>\n\
+                                                <span class="glyphicon glyphicon-zoom-in"></span> Eliminar\n\
                                             </button>\n\
                                         </div>'
                     }

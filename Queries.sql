@@ -461,8 +461,47 @@ CREATE TABLE "public"."modulos" (
   "usuario_id_modifica" INTEGER, 
   "fecha_modificacion" TIMESTAMP(0) WITHOUT TIME ZONE, 
   "estado" CHAR(1), 
+  "carpeta_raiz" VARCHAR(255), 
   CONSTRAINT "modulos_pkey" PRIMARY KEY("id")
 ) WITH OIDS;
+
+COMMENT ON COLUMN "public"."modulos"."carpeta_raiz"
+IS 'Nombre de la carpeta raiz del modulo';
+
+
+CREATE TABLE "public"."modulos_empresas" (
+  "id" SERIAL, 
+  "empresa_id" CHAR(2), 
+  "modulo_id" INTEGER, 
+  "usuario_id" INTEGER, 
+  "fecha_creacion" TIMESTAMP(0) WITHOUT TIME ZONE, 
+  "usuario_id_modifica" INTEGER, 
+  "fecha_modificacion" TIMESTAMP(0) WITHOUT TIME ZONE, 
+  "estado" CHAR(1), 
+  CONSTRAINT "modulos_empresas_idx" UNIQUE("modulo_id", "empresa_id"), 
+  CONSTRAINT "modulos_empresas_pkey" PRIMARY KEY("id"), 
+  CONSTRAINT "modulos_empresas_fk" FOREIGN KEY ("empresa_id")
+    REFERENCES "public"."empresas"("empresa_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "modulos_empresas_fk1" FOREIGN KEY ("modulo_id")
+    REFERENCES "public"."modulos"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "modulos_empresas_fk2" FOREIGN KEY ("usuario_id")
+    REFERENCES "public"."system_usuarios"("usuario_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "modulos_empresas_fk3" FOREIGN KEY ("usuario_id_modifica")
+    REFERENCES "public"."system_usuarios"("usuario_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE
+) WITH OIDS;
+
 
 
 --ALMACENA LAS OPCIONES POR CADA MODULO
@@ -484,7 +523,59 @@ CREATE TABLE "public"."modulos_opciones" (
     ON UPDATE NO ACTION
     NOT DEFERRABLE
 ) WITH OIDS;
-	
+
+
+CREATE TABLE "public"."modulos_variables" (
+  "id" SERIAL, 
+  "nombre" VARCHAR(255), 
+  "valor" VARCHAR(255), 
+  "observacion" TEXT, 
+  "modulo_id" INTEGER, 
+  "estado" CHAR(1), 
+  "fecha_creacion" TIMESTAMP(0) WITHOUT TIME ZONE, 
+  "fecha_modificacion" TIMESTAMP(0) WITHOUT TIME ZONE, 
+  "usuario_id_modifica" INTEGER, 
+  CONSTRAINT "modulos_variables_fk" FOREIGN KEY ("modulo_id")
+    REFERENCES "public"."modulos"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "modulos_variables_fk1" FOREIGN KEY ("usuario_id_modifica")
+    REFERENCES "public"."system_usuarios"("usuario_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE
+) WITH OIDS;
+
+
+CREATE TABLE "public"."roles" (
+  "id" SERIAL, 
+  "empresa_id" CHAR(2), 
+  "nombre" VARCHAR(50), 
+  "observacion" TEXT, 
+  "usuario_id" INTEGER, 
+  "fecha_creacion" TIMESTAMP(0) WITHOUT TIME ZONE, 
+  "usuario_id_modifica" INTEGER, 
+  "fecha_modificacion" TIMESTAMP(0) WITHOUT TIME ZONE, 
+  "estado" CHAR(1), 
+  CONSTRAINT "roles_pkey" PRIMARY KEY("id"), 
+  CONSTRAINT "roles_fk" FOREIGN KEY ("empresa_id")
+    REFERENCES "public"."empresas"("empresa_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "roles_fk1" FOREIGN KEY ("usuario_id")
+    REFERENCES "public"."system_usuarios"("usuario_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "roles_fk2" FOREIGN KEY ("usuario_id_modifica")
+    REFERENCES "public"."system_usuarios"("usuario_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE
+) WITH OIDS;
+
 	
 	
 CREATE TABLE "public"."login_empresas" (
@@ -528,9 +619,8 @@ CREATE TABLE "public"."login_empresas" (
 
 ALTER TABLE "public"."login_empresas"
   ALTER COLUMN "login_id" SET STATISTICS 0;
-  
-  
-  
+
+
 CREATE TABLE "public"."login_modulos_empresas" (
   "id" SERIAL, 
   "login_empresas_id" INTEGER, 
@@ -543,10 +633,10 @@ CREATE TABLE "public"."login_modulos_empresas" (
   CONSTRAINT "login_modulos_empresas_pkey" PRIMARY KEY("id"), 
   CONSTRAINT "login_modulos_empresas_fk" FOREIGN KEY ("login_empresas_id")
     REFERENCES "public"."login_empresas"("id")
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION
     NOT DEFERRABLE, 
-  CONSTRAINT "login_modulos_empresas_fk1" FOREIGN KEY ("modulos_id")
+  CONSTRAINT "login_modulos_empresas_fk1" FOREIGN KEY ("modulo_id")
     REFERENCES "public"."modulos"("id")
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
@@ -565,6 +655,7 @@ CREATE TABLE "public"."login_modulos_empresas" (
 
 
 
+
 CREATE TABLE "public"."login_modulos_opciones" (
   "id" SERIAL, 
   "login_modulos_empresa_id" INTEGER, 
@@ -577,7 +668,7 @@ CREATE TABLE "public"."login_modulos_opciones" (
   CONSTRAINT "login_modulos_opciones_id_key" UNIQUE("id"), 
   CONSTRAINT "login_modulos_opciones_fk" FOREIGN KEY ("login_modulos_empresa_id")
     REFERENCES "public"."login_modulos_empresas"("id")
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION
     NOT DEFERRABLE, 
   CONSTRAINT "login_modulos_opciones_fk1" FOREIGN KEY ("modulos_opcion_id")
@@ -605,10 +696,10 @@ CREATE TABLE "public"."login_centros_utilidad_bodega" (
   "centro_utilidad_id" CHAR(2), 
   "bodega_id" CHAR(2), 
   "predeterminado" CHAR(1), 
-  "usuario_id" INTEGER, 
   "fecha_creacion" TIMESTAMP(0) WITHOUT TIME ZONE, 
   "usuario_id_modifica" INTEGER, 
   "fecha_modificacion" TIMESTAMP(0) WITHOUT TIME ZONE, 
+  "estado" CHAR(1), 
   CONSTRAINT "login_centros_utilidad_bodega_pkey" PRIMARY KEY("id"), 
   CONSTRAINT "login_centros_utilidad_bodega_fk" FOREIGN KEY ("login_empresa_id")
     REFERENCES "public"."login_empresas"("id")
@@ -620,11 +711,6 @@ CREATE TABLE "public"."login_centros_utilidad_bodega" (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION
     NOT DEFERRABLE, 
-  CONSTRAINT "login_centros_utilidad_bodega_fk2" FOREIGN KEY ("usuario_id")
-    REFERENCES "public"."system_usuarios"("usuario_id")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
-    NOT DEFERRABLE, 
   CONSTRAINT "login_centros_utilidad_bodega_fk3" FOREIGN KEY ("usuario_id_modifica")
     REFERENCES "public"."system_usuarios"("usuario_id")
     ON DELETE NO ACTION
@@ -633,35 +719,6 @@ CREATE TABLE "public"."login_centros_utilidad_bodega" (
 ) WITH OIDS;
 
 
-
-
-CREATE TABLE "public"."roles" (
-  "id" SERIAL, 
-  "empresa_id" CHAR(2), 
-  "nombre" VARCHAR(50), 
-  "observacion" TEXT, 
-  "usuario_id" INTEGER, 
-  "fecha_creacion" TIMESTAMP(0) WITHOUT TIME ZONE, 
-  "usuario_id_modifica" INTEGER, 
-  "fecha_modificacion" TIMESTAMP(0) WITHOUT TIME ZONE, 
-  "estado" CHAR(1), 
-  CONSTRAINT "roles_pkey" PRIMARY KEY("id"), 
-  CONSTRAINT "roles_fk" FOREIGN KEY ("empresa_id")
-    REFERENCES "public"."empresas"("empresa_id")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
-    NOT DEFERRABLE, 
-  CONSTRAINT "roles_fk1" FOREIGN KEY ("usuario_id")
-    REFERENCES "public"."system_usuarios"("usuario_id")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
-    NOT DEFERRABLE, 
-  CONSTRAINT "roles_fk2" FOREIGN KEY ("usuario_id_modifica")
-    REFERENCES "public"."system_usuarios"("usuario_id")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
-    NOT DEFERRABLE
-) WITH OIDS;
 
 
 CREATE TABLE "public"."roles_modulos" (
@@ -695,7 +752,6 @@ CREATE TABLE "public"."roles_modulos" (
     ON UPDATE NO ACTION
     NOT DEFERRABLE
 ) WITH OIDS;
-
 
 
 CREATE TABLE "public"."roles_modulos_opciones" (
@@ -732,38 +788,6 @@ CREATE TABLE "public"."roles_modulos_opciones" (
 
 
 
-CREATE TABLE "public"."modulos_empresas" (
-  "id" SERIAL, 
-  "empresa_id" CHAR(2), 
-  "modulo_id" INTEGER, 
-  "usuario_id" INTEGER, 
-  "fecha_creacion" TIMESTAMP(0) WITHOUT TIME ZONE, 
-  "usuario_id_modifica" INTEGER, 
-  "fecha_modificacion" TIMESTAMP(0) WITHOUT TIME ZONE, 
-  "estado" CHAR(1), 
-  CONSTRAINT "modulos_empresas_idx" UNIQUE("modulo_id", "empresa_id"), 
-  CONSTRAINT "modulos_empresas_pkey" PRIMARY KEY("id"), 
-  CONSTRAINT "modulos_empresas_fk" FOREIGN KEY ("empresa_id")
-    REFERENCES "public"."empresas"("empresa_id")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
-    NOT DEFERRABLE, 
-  CONSTRAINT "modulos_empresas_fk1" FOREIGN KEY ("modulo_id")
-    REFERENCES "public"."modulos"("id")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
-    NOT DEFERRABLE, 
-  CONSTRAINT "modulos_empresas_fk2" FOREIGN KEY ("usuario_id")
-    REFERENCES "public"."system_usuarios"("usuario_id")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
-    NOT DEFERRABLE, 
-  CONSTRAINT "modulos_empresas_fk3" FOREIGN KEY ("usuario_id_modifica")
-    REFERENCES "public"."system_usuarios"("usuario_id")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
-    NOT DEFERRABLE
-) WITH OIDS;
 
 
 CREATE TABLE "public"."system_usuarios_configuraciones" (

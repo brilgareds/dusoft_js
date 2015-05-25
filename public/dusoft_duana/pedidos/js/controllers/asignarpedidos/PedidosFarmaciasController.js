@@ -89,13 +89,13 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                     {field: '', cellClass: "checkseleccion", width: "60",
                         cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)' ng-disabled='habilitar_asignacion_pedidos(row.entity)'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
                     {field: 'descripcion_estado_actual_pedido', displayName: "Estado Actual", cellClass: "txt-center",
-                        cellTemplate: "<button  ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
-                    {field: 'numero_pedido', displayName: 'Pedido', width: "60"},
-                    {field: 'farmacia.nombre_farmacia', displayName: 'Zona'},
-                    {field: 'farmacia.nombre_farmacia', displayName: 'Farmacia'},
-                    {field: 'farmacia.nombre_bodega', displayName: 'Bodega'},
+                        cellTemplate: "<button  ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>", width: "220"},
+                    {field: 'numero_pedido', displayName: 'Pedido'},
+                    {field: 'farmacia.nombre_farmacia', displayName: 'Zona', width: "220"},
+                    {field: 'farmacia.nombre_farmacia', displayName: 'Farmacia', width: "220"},
+                    {field: 'farmacia.nombre_bodega', displayName: 'Bodega', width: "220"},
                     {field: 'fecha_registro', displayName: "Fecha Registro"},
-                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",
+                    {displayName: "Opciones", cellClass: "txt-center dropdown-button", width: "110",
                         cellTemplate: '<div class="btn-group">\
                                             <button ng-disabled="habilitar_opciones(row.entity)" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\

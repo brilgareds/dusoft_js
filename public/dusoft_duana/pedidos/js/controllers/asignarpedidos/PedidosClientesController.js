@@ -129,13 +129,13 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                         cellTemplate: "<input type='checkbox' class='checkpedido' ng-checked='buscarSeleccion(row)'" +
                                 " ng-disabled='habilitar_asignacion_pedidos(row.entity)'  ng-click='onPedidoSeleccionado($event.currentTarget.checked,row)' ng-model='row.seleccionado' />"},
                     {field: 'descripcion_estado_actual_pedido', displayName: "Estado Actual", cellClass: "txt-center",
-                        cellTemplate: "<button type='button' ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
+                        cellTemplate: "<button type='button' ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>", width: "220"},
                     {field: 'numero_pedido', displayName: 'Pedido'},
-                    {field: 'cliente.nombre_tercero', displayName: 'Cliente'},
-                    {field: 'nombre_vendedor', displayName: 'Vendedor'},
+                    {field: 'cliente.nombre_tercero', displayName: 'Cliente', width: "310"},
+                    {field: 'nombre_vendedor', displayName: 'Vendedor', width: "310"},
                     {field: 'descripcion_estado', displayName: "Estado"},
                     {field: 'fecha_registro', displayName: "Fecha Registro", width: "110"},
-                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",
+                    {displayName: "Opciones", cellClass: "txt-center dropdown-button", width: "110",
                         cellTemplate: '<div class="btn-group">\
                                             <button ng-disabled="habilitar_opciones(row.entity)" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\

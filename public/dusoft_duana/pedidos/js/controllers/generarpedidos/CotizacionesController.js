@@ -225,7 +225,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                                 <li ng-if="row.entity.estado == 1 || row.entity.estado == 2"></li>\
                                                 <li ng-if="row.entity.estado == 1 || row.entity.estado == 2"><a href="javascript:void(0);" ng-click="onCambiarEstado(row.entity)">Inactivar</a></li>\
                                                 <li ng-if="row.entity.estado == 1 || row.entity.estado == 2"></li>\
-                                                <li ng-if="row.entity.estado == 1"><a href="javascript:void(0);" ng-click="onAprobarCotizacion(row.entity)">Aprobar</a></li>\
+                                                <li ng-if="row.entity.estado == 1"><a href="javascript:void(0);" ng-click="onAprobarCotizacion(row.entity)">Aprobar Cartera</a></li>\
                                                 <li ng-if="row.entity.estado == 1"></li>\
                                                 <li ng-if="row.entity.estado == 2"><a href="javascript:void(0);" ng-click="onVerObservacionCartera(row.entity)">Ver Obs Cartera</a></li>\
                                                 <li ng-if="row.entity.estado == 2"></li>\

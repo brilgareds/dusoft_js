@@ -1,0 +1,28 @@
+<div class="modal-header">
+    <button type="button" class="close" ng-click="close()">&times;</button>
+    <h4 class="modal-title">{{rootAprobarPedido.titulo}}</h4>
+</div>
+<div class="modal-body">
+
+    <form name="form_pdf">
+        <div class="row col-sm-12 col-md-12 col-lg-12">
+
+            <div class="form-group col-sm-10 col-md-10 col-lg-10">
+
+                <label>Observación Aprobación (Opcional)</label>
+                <br/>
+                <textarea rows="4" cols="50" name='observacion' class="form-control" placeholder="Observación" ng-model='rootAprobarPedido.observacion' ng-value="rootAprobarPedido.observacion" required>
+                </textarea>
+
+            </div>
+    
+        </div>
+    </form>
+    
+    <div class="modal-footer">
+        <button class="btn btn-primary" ng-click="aprobarCotizacion()" >{{ rootAprobarPedido.label_btn }}</button>
+        <button class="btn btn-warning" ng-click="close()">Cancelar</button>
+
+    </div>
+    
+</div>

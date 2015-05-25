@@ -127,6 +127,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             that.crearPedido = function(obj) {
 
                 var pedido = PedidoVenta.get();
+                var observacion = obj.observacion.split("||obs_cartera||");
 
                 var datos_pedido = {
                     numero_pedido: obj.numero_pedido,
@@ -144,7 +145,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
                 pedido.setValorPedido(obj.valor_pedido);
 
-                pedido.setObservacion(obj.observaciones);
+                pedido.setObservacion(obj.observacion[0]);
+                
+                if(observacion.length > 1) {
+                    pedido.setObservacionCartera(observacion[1]);
+                }
+                else {
+                    pedido.setObservacionCartera("");
+                }
                 
                 var vendedor = VendedorPedido.get(
                         obj.nombre_vendedor,    //nombre_tercero
@@ -194,10 +202,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     {field: 'fecha_registro', displayName: 'Fecha', width: "10%"},
                     {field: 'valor_pedido', displayName: '$ Valor', cellFilter: "currency:'$ '", width: "10%"},
                     {field: 'estado', displayName: 'Estado Pedido', cellClass: "txt-center", width: "9%",
-                        cellTemplate:   "   <button ng-if='row.entity.estado==0'>Inactivo</button>\
-                                            <button ng-if='row.entity.estado==1'>Activo</button>\
-                                            <button ng-if='row.entity.estado==2'>Anulado</button>\
-                                            <button ng-if='row.entity.estado==3'>Entregado</button>\
+                        cellTemplate:   "   <label ng-if='row.entity.estado==0'>Inactivo</label><!--Inactivo-->\
+                                            <label ng-if='row.entity.estado==1'>Activo</label>\
+                                            <label ng-if='row.entity.estado==2'>Anulado</label>\
+                                            <label ng-if='row.entity.estado==3'>Entregado</label>\
                                         "},
                     
                     {field: 'estado_pedido', displayName: 'Estado Proceso', cellClass: "txt-center", width: "9%",
@@ -233,9 +241,13 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                             <ul class="dropdown-menu dropdown-options">\
                                                 <li><a href="javascript:void(0);" ng-click="onVerPedido(row.entity)" >Ver</a></li>\
                                                 <li></li>\
-                                                <li ng-if="(row.entity.estado_actual_pedido == 0 || row.entity.estado_actual_pedido == 1) && !row.entity.estado_separacion"><a href="javascript:void(0);" ng-click="onEditarPedido(row.entity)">Modificar</a></li>\
-                                                <li ng-if="(row.entity.estado_actual_pedido == 0 || row.entity.estado_actual_pedido == 1) && !row.entity.estado_separacion"></li>\
-                                            </ul>\n\
+                                                <li ng-if="(row.entity.estado_actual_pedido == 0) && !row.entity.estado_separacion"><a href="javascript:void(0);" ng-click="onEditarPedido(row.entity)">Modificar</a></li>\
+                                                <li ng-if="(row.entity.estado_actual_pedido == 0) && !row.entity.estado_separacion"></li>\
+                                                <li ng-if="(row.entity.estado_actual_pedido == 0) && !row.entity.estado_separacion && row.entity.estado==0"><a href="javascript:void(0);" ng-click="onAprobarCartera(row.entity)">Aprobar Cartera</a></li>\
+                                                <li ng-if="(row.entity.estado_actual_pedido == 0) && !row.entity.estado_separacion && row.entity.estado==0"></li>\
+                                                <li ng-if="(row.entity.estado_actual_pedido == 0) && !row.entity.estado_separacion && row.entity.estado!=0 && (row.entity.observacion[1]==\'\')"><a href="javascript:void(0);" ng-click="">Ver Obs Cartera</a></li>\
+                                                <li ng-if="(row.entity.estado_actual_pedido == 0) && !row.entity.estado_separacion && row.entity.estado!=0 && (row.entity.observacion[1]==\'\')"></li>\
+                                            </ul>\
                                         </div>'
                     }
 
@@ -243,80 +255,69 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
             };
             
-            /*NUEVO*/
-            
-            /*$scope.onCambiarEstado = function(obj){
-                if(obj.estado === '1') {
-                    
-                    //obj.estado = '0';
-                    that.cambiarEstadoCotizacion(obj.numero_cotizacion, '0', function(cambio_exitoso){
-                        if(cambio_exitoso)
-                            obj.estado = '0';
-                        else {
-                            $scope.opts = {
-                                backdrop: true,
-                                backdropClick: true,
-                                dialogFade: false,
-                                keyboard: true,
-                                template: ' <div class="modal-header">\
-                                                <button type="button" class="close" ng-click="close()">&times;</button>\
-                                                <h4 class="modal-title">Aviso: </h4>\
-                                            </div>\
-                                            <div class="modal-body row">\
-                                                <div class="col-md-12">\
-                                                    <h4 >No se pudo modificar el estado. No se puede registrar la modificación en la Base de Datos.</h4>\
-                                                </div>\
-                                            </div>\
-                                            <div class="modal-footer">\
-                                                <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
-                                            </div>',
-                                scope: $scope,
-                                controller: function($scope, $modalInstance) {
-                                    $scope.close = function() {
-                                        $modalInstance.close();
-                                    };
-                                }
-                            };
+/* NUEVO */
 
-                            var modalInstance = $modal.open($scope.opts);
-                        }
-                    });
-                }
-            };*/
-            
-            /*that.cambiarEstadoCotizacion = function(numero_cotizacion, nuevo_estado, callback){
+            $scope.onAprobarCartera = function(obj) {
+
+                $scope.rootPedidosClientes.Empresa.setPedidoSeleccionado(obj);
                 
-                var obj = {
-                    session: $scope.rootPedidosClientes.session,
-                    data: {
-                        estado_cotizacion: {
-                            numero_cotizacion: numero_cotizacion,
-                            nuevo_estado: nuevo_estado
-                        }
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    templateUrl: 'views/generarpedidos/aprobarpedido.html',
+                    controller: "AprobarPedidoController",
+                    resolve :{
+                        Empresa : function(){
+                           return $scope.rootPedidosClientes.Empresa;
+                        }//,
+//                        tipo_documento: function(){
+//                           return tipo_documento;
+//                        }
                     }
                 };
-                
-                var url = API.PEDIDOS.CAMBIAR_ESTADO_COTIZACION;
 
-                Request.realizarRequest(url, "POST", obj, function(data) {
-
-                    if (data.status === 200) {
-                        console.log("Consulta exitosa: ", data.msj);
-
-                        if (callback !== undefined && callback !== "" && callback !== 0) {
-                            callback(true);
-                        }
-                    }
-                    else {
-                        console.log("Error en la consulta: ", data.msj);
-                        if (callback !== undefined && callback !== "" && callback !== 0) {
-                            callback(false);
-                        }
-                    }
-                });
+                var modalInstance = $modal.open($scope.opts);
                 
+            }
+            /**/
+            
+            $scope.onVerObservacionCartera = function(obj){
+
+                var template = ' <div class="modal-header">\
+                                        <button type="button" class="close" ng-click="close()">&times;</button>\
+                                        <h4 class="modal-title">Observación Cartera</h4>\
+                                    </div>\
+                                    <div class="modal-body">\
+                                        <h4> '+obj.getObservacionCartera()+' </h4> \
+                                    </div>\
+                                    <div class="modal-footer">\
+                                        <button class="btn btn-warning" ng-click="close()">Cerrar</button>\
+                                    </div>';
+
+                controller = function($scope, $modalInstance) {
+
+                    $scope.close = function() {
+                        $modalInstance.close();
+                    };
+                };
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: template,
+                    scope: $scope,
+                    controller: controller
+                };
+
+                var modalInstance = $modal.open($scope.opts);
                 
-            };*/
+            };
+
+/* NUEVO - FIN*/
             
             //Clase para color de estado en proceso
             $scope.agregarClase = function(estado) {

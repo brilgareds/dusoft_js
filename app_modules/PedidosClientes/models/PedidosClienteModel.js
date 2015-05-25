@@ -1252,6 +1252,15 @@ PedidosClienteModel.prototype.cambiar_estado_aprobacion_cotizacion = function(nu
     });
 };
 
+PedidosClienteModel.prototype.cambiar_estado_aprobacion_pedido = function(numero_pedido, nuevo_estado, observacion, callback)
+{
+    var sql = "UPDATE ventas_ordenes_pedidos SET estado = $2, observacion = $3 WHERE pedido_cliente_id = $1";
+    
+    G.db.query(sql, [numero_pedido, nuevo_estado, observacion], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
 function __cambiar_estado_cotizacion(numero_cotizacion, nuevo_estado, callback)
 {
     
@@ -1355,10 +1364,57 @@ function __insertar_detalle_pedido_cliente(numero_pedido, numero_cotizacion, cal
 
 PedidosClienteModel.prototype.insertar_detalle_pedido = function(numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto, callback) {
     
+    
+    G.db.begin(function() {
+        
+        //función por implementar - conveniente hacerlo pero se debe validar primero con Mauricio - Se debe crear tabla para ello
+        
+//        __log_insertar_producto_detalle_pedido(numero_pedido, codigo_producto, usuario_id, function(err, rows, result){
+//            
+//            if(err){
+//                    callback(err);
+//                    return;
+//                }
+                
+            __cambiar_estado_pedido(numero_pedido, function(err, rows, result){
+                
+                if(err){
+                        callback(err);
+                        return;
+                    }
+            
+                __insertar_detalle_pedido(numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto, function(err, rows, result){
+
+                    if(err){
+                        callback(err);
+                        return;
+                    }
+
+                    G.db.commit(function(){
+                        callback(err, rows);
+                    });
+                });
+            
+            });
+//        });
+    });
+    
+    
+    
+//    var sql = "INSERT INTO ventas_ordenes_pedidos_d(pedido_cliente_id, codigo_producto, porc_iva, numero_unidades, valor_unitario, fecha_registro, usuario_id, tipo_producto)\n\
+//                    VALUES($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, $6, $7)";
+//    
+//    G.db.query(sql, [numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto], function(err, rows, result) {
+//        callback(err, rows, result);
+//    });
+};
+
+function __insertar_detalle_pedido(numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto, callback) {
+    
     var sql = "INSERT INTO ventas_ordenes_pedidos_d(pedido_cliente_id, codigo_producto, porc_iva, numero_unidades, valor_unitario, fecha_registro, usuario_id, tipo_producto)\n\
                     VALUES($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, $6, $7)";
     
-    G.db.query(sql, [numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto], function(err, rows, result) {
+    G.db.transaction(sql, [numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto], function(err, rows, result) {
         callback(err, rows, result);
     });
 };
@@ -1483,17 +1539,26 @@ PedidosClienteModel.prototype.modificar_cantidades_pedido = function(numero_pedi
                     callback(err);
                     return;
                 }
-            
-            __modificar_cantidades_pedido(numero_pedido, codigo_producto, cantidad, function(err, rows, result){
-               
-                if(err){
-                    callback(err);
-                    return;
-                }
                 
-                G.db.commit(function(){
-                    callback(err, rows);
+            __cambiar_estado_pedido(numero_pedido, function(err, rows, result){
+                
+                if(err){
+                        callback(err);
+                        return;
+                    }
+            
+                __modificar_cantidades_pedido(numero_pedido, codigo_producto, cantidad, function(err, rows, result){
+
+                    if(err){
+                        callback(err);
+                        return;
+                    }
+
+                    G.db.commit(function(){
+                        callback(err, rows);
+                    });
                 });
+            
             });
         });
     });
@@ -1521,6 +1586,17 @@ function __modificar_cantidades_pedido(numero_pedido, codigo_producto, cantidad,
                 AND codigo_producto = $2";
 
     G.db.transaction(sql, [numero_pedido, codigo_producto, cantidad], function(err, rows, result){
+        callback(err, rows, result);
+    });
+};
+
+function __cambiar_estado_pedido(numero_pedido, callback)
+{
+    
+    var sql = " UPDATE ventas_ordenes_pedidos SET estado = '0'\
+                WHERE pedido_cliente_id = $1";
+
+    G.db.transaction(sql, [numero_pedido], function(err, rows, result){
         callback(err, rows, result);
     });
 };

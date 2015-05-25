@@ -9,7 +9,7 @@
   "controllers/generarpedidos/SeleccionProductoClienteController", "controllers/generarpedidos/SeleccionProductoFarmaciaController", "controllers/generarpedidos/CreaPedidoFarmaciaController",
   "controllers/generarpedidos/VerPedidosFarmaciasController", "controllers/generarpedidos/VerPedidosTempFarmaciasController","controllers/generarpedidos/PedidosClientesVentasController",
   "controllers/generarpedidos/MailPdfController","controllers/generarpedidos/ContenedorPedidosFarmaciasController", "controllers/generarpedidos/AprobarCotizacionController",
-  "loader",  "models/EmpresaPedido",
+  "controllers/generarpedidos/AprobarPedidoController", "loader", "models/EmpresaPedido",
   "includes/menu/menucontroller", "url", "includes/alert/Alert",
   "includes/header/HeaderController", 'storage', "httpinterceptor",
   "includes/classes/Usuario", "includes/http/Request", "dragndropfile",

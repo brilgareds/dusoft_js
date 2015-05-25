@@ -147,8 +147,12 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 pedido.setObservacion(obj.observacion[0]);
                 
+                //pedido.tiene_obs_cartera - propiedad solo existente en ésta instancia
+                pedido.tiene_obs_cartera = false;
+                
                 if(observacion.length > 1) {
                     pedido.setObservacionCartera(observacion[1]);
+                    pedido.tiene_obs_cartera = true;
                 }
                 else {
                     pedido.setObservacionCartera("");
@@ -245,8 +249,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                                 <li ng-if="(row.entity.estado_actual_pedido == 0) && !row.entity.estado_separacion"></li>\
                                                 <li ng-if="(row.entity.estado_actual_pedido == 0) && !row.entity.estado_separacion && row.entity.estado==0"><a href="javascript:void(0);" ng-click="onAprobarCartera(row.entity)">Aprobar Cartera</a></li>\
                                                 <li ng-if="(row.entity.estado_actual_pedido == 0) && !row.entity.estado_separacion && row.entity.estado==0"></li>\
-                                                <li ng-if="(row.entity.estado_actual_pedido == 0) && !row.entity.estado_separacion && row.entity.estado!=0 && (row.entity.observacion[1]==\'\')"><a href="javascript:void(0);" ng-click="">Ver Obs Cartera</a></li>\
-                                                <li ng-if="(row.entity.estado_actual_pedido == 0) && !row.entity.estado_separacion && row.entity.estado!=0 && (row.entity.observacion[1]==\'\')"></li>\
+                                                <li ng-if="(row.entity.estado_actual_pedido == 0) && !row.entity.estado_separacion && row.entity.estado!=0 && row.entity.tiene_obs_cartera"><a href="javascript:void(0);" ng-click="onVerObservacionCartera(row.entity)">Ver Obs Cartera</a></li>\
+                                                <li ng-if="(row.entity.estado_actual_pedido == 0) && !row.entity.estado_separacion && row.entity.estado!=0 && row.entity.tiene_obs_cartera"></li>\
                                             </ul>\
                                         </div>'
                     }
@@ -284,6 +288,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             /**/
             
             $scope.onVerObservacionCartera = function(obj){
+
+                console.log(">>> Observación Cartera - Button: ", obj.getObservacionCartera());
 
                 var template = ' <div class="modal-header">\
                                         <button type="button" class="close" ng-click="close()">&times;</button>\

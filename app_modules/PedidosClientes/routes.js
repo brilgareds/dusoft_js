@@ -136,4 +136,9 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.cambiarEstadoAprobacionCotizacion(req, res);
     });
     
+    //cambiarEstadoAprobacionPedido
+    app.post('/api/PedidosClientes/cambiarEstadoAprobacionPedido', function(req, res) {
+        c_pedidos_clientes.cambiarEstadoAprobacionPedido(req, res);
+    });
+    
 };

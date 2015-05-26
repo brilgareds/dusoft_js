@@ -1,0 +1,180 @@
+<div ng-controller="GestionarRecepcionesController">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                    <!--                <h4 class="panel-title pull-left" style="padding-top: 7.5px;">Imagen</h4>-->
+                    <div class="pull-left">                        
+
+                    </div>
+                    <div class="pull-right">
+                        <h3 class="text-center"><strong>Recepción #000</strong></h3>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <p class="input-group">
+                                <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="datos_view.disabled_agregar_eliminar_registro" ng-click="agregar_eliminar_registro()">
+                                    <span class="glyphicon glyphicon-{{datos_view.btn_agregar_eliminar_registro ? 'plus' : 'minus'}}"></span> {{datos_view.btn_agregar_eliminar_registro ? 'Agregar Registro' : 'Remover Registro'}}
+                                </button>
+                            </p>
+                        </div>
+                    </div>                    
+                    <div class="row margin-top" ng-repeat="recepcion in datos_view.recepciones">
+                        <div class="col-md-1">
+                            <fieldset>
+                                <legend class="medium-letter">Transportadora</legend> 
+                                <div class="row">
+                                    <div class="col-md-12">  
+                                        <select ui-select2="{minimumInputLength: 3}"  ng-disabled="numero_orden > 0" class="form-control selectgeneral pull-left" ng-model="codigo_proveedor_id"  placeholder="Seleccionar proveedor" ng-change="seleccionar_proveedor()">
+                                            <option></option> 
+                                            <option ng-repeat="proveedor in  Empresa.get_proveedores()"  value="{{proveedor.codigo_proveedor_id}}">{{ proveedor.get_nombre() }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-1">
+                            <fieldset>
+                                <legend class="medium-letter">No. Guía</legend> 
+                                <div class="row">
+                                    <div class="col-md-12">  
+                                        <input class="form-control" type="text">
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-1">
+                            <fieldset>
+                                <legend class="medium-letter">Hora</legend> 
+                                <div class="row">
+                                    <div class="col-md-12">  
+                                        <input class="form-control" type="text">
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-1">
+                            <fieldset>
+                                <legend class="medium-letter">Proveedor</legend> 
+                                <div class="row">
+                                    <div class="col-md-12">  
+                                        <select ui-select2="{minimumInputLength: 3}"  ng-disabled="numero_orden > 0" class="form-control selectgeneral pull-left" ng-model="codigo_proveedor_id"  placeholder="Seleccionar proveedor" ng-change="seleccionar_proveedor()">
+                                            <option></option> 
+                                            <option ng-repeat="proveedor in  Empresa.get_proveedores()"  value="{{proveedor.codigo_proveedor_id}}">{{ proveedor.get_nombre() }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-1">
+                            <fieldset>
+                                <legend class="medium-letter">No. Orden</legend> 
+                                <div class="row">
+                                    <div class="col-md-12">  
+                                        <select ui-select2="{minimumInputLength: 3}"  ng-disabled="numero_orden > 0" class="form-control selectgeneral pull-left" ng-model="codigo_proveedor_id"  placeholder="Seleccionar proveedor" ng-change="seleccionar_proveedor()">
+                                            <option></option> 
+                                            <option ng-repeat="proveedor in  Empresa.get_proveedores()"  value="{{proveedor.codigo_proveedor_id}}">{{ proveedor.get_nombre() }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-1">
+                            <fieldset>
+                                <legend class="medium-letter">No. Factura</legend> 
+                                <div class="row">
+                                    <div class="col-md-12">  
+                                        <input class="form-control" type="text">
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-1">
+                            <fieldset>
+                                <legend class="medium-letter">Cant recibida</legend> 
+                                <div class="row">
+                                    <div class="col-md-12">  
+                                        <input class="form-control" type="text">
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-1">
+                            <fieldset>
+                                <legend class="medium-letter">Contiene</legend> 
+                                <div class="row">
+                                    <div class="col-md-12">  
+                                        <input class="form-control" type="text">
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-1">
+                            <fieldset>
+                                <legend class="medium-letter">Temperatura</legend> 
+                                <div class="row">
+                                    <div class="col-md-12">  
+                                        <input class="form-control" type="text">
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-1">
+                            <fieldset>
+                                <legend class="medium-letter">Novedad</legend> 
+                                <div class="row">
+                                    <div class="col-md-12">  
+                                        <select ui-select2="{minimumInputLength: 3}"  ng-disabled="numero_orden > 0" class="form-control selectgeneral pull-left" ng-model="codigo_proveedor_id"  placeholder="Seleccionar proveedor" ng-change="seleccionar_proveedor()">
+                                            <option></option> 
+                                            <option ng-repeat="proveedor in  Empresa.get_proveedores()"  value="{{proveedor.codigo_proveedor_id}}">{{ proveedor.get_nombre() }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-1">
+                            <fieldset>
+                                <legend class="medium-letter">F. Ingreso</legend> 
+                                <div class="row">
+                                    <div class="col-md-12">  
+                                        <input class="form-control" type="text">
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>                        
+                        <div class="col-md-1">
+                            <fieldset>
+                                <legend class="medium-letter">Opciones</legend> 
+                                <div class="row">
+                                    <div class="col-md-12">  
+                                        <button type="button" class="btn btn-default btn-medium ng-scope" ng-disabled="recepcion.disabled_btn" ng-click="recepcion.fn_btn_add(recepcion)">
+                                            <span class="{{recepcion.class_btn_add}}"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-medium ng-scope" ng-disabled="recepcion.disabled_btn" ng-click="crear_recepcion(recepcion)">
+                                            <span class="glyphicon glyphicon-ok"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>                        
+                    </div>                                                                                         
+                    <div class="modal-footer col-md-12">
+                        <button class="btn btn-default" ng-click="cancelar_recepcion()">
+                            <span class="glyphicon glyphicon-remove" ></span> Cancelar</button>
+                        <button class="btn btn-default" ng-click="finalizar_recepcion()" ng-disabled="" >
+                            <span class="glyphicon glyphicon-ok" ></span> Aceptar
+                        </button>
+                    </div> 
+                </div>                   
+            </div>       
+        </div>
+    </div>
+
+    <div  class="slide" slide-content open-callback="gestionar_productos" close-callback="cerrar_gestion_productos"   >
+        <div ng-include src="slideurl"  ng-controller="GestionarProductosController"></div>
+    </div>
+</div>
+
+

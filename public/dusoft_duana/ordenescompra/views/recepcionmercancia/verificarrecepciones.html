@@ -1,0 +1,173 @@
+<div ng-controller="VerificarRecepcionesController">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                    <!--                <h4 class="panel-title pull-left" style="padding-top: 7.5px;">Imagen</h4>-->
+                    <div class="pull-left">
+                        <h3 class="text-center"><strong>Logo</strong></h3>
+                    </div>
+                    <div class="pull-right">
+                        <h3 class="text-center"><strong>OC # {{ numero_orden }}</strong></h3>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-6">
+
+                            <fieldset>
+                                <legend>Unidad de Negocio</legend>      
+
+                                <div class="row">
+                                    <div class="col-md-7">  
+                                        <select ui-select2=""  class="form-control selectgeneral pull-left" ng-model="unidad_negocio_id"  ng-disabled="vista_previa" placeholder="Seleccionar unidad de negocio" ng-change="seleccionar_unidad_negocio()">
+                                            <option></option>    
+                                            <option ng-repeat="unidad_negocio in  Empresa.get_unidades_negocios()"  value="{{unidad_negocio.codigo}}">{{ unidad_negocio.get_nombre() }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-6">
+                            <fieldset>
+                                <legend>Proveedor</legend> 
+                                <div class="row">
+                                    <div class="col-md-7">  
+                                        <select ui-select2="{minimumInputLength: 3}"  ng-disabled="numero_orden > 0" class="form-control selectgeneral pull-left" ng-model="codigo_proveedor_id"  placeholder="Seleccionar proveedor" ng-change="seleccionar_proveedor()">
+                                            <option></option> 
+                                            <option ng-repeat="proveedor in  Empresa.get_proveedores()"  value="{{proveedor.codigo_proveedor_id}}">{{ proveedor.get_nombre() }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">  
+                        <div class="col-md-6">
+
+                            <fieldset>
+                                <legend>Observación</legend>                                 
+                                <div class="row">  
+                                    <div class="col-md-12">  
+                                        <p style="padding-left: 18px;">{{ observacion_contrato }}</p>
+                                        <textarea  class="col-lg-12 col-md-12 col-sm-12" rows="4" ng-model='observacion' ng-blur="modificar_observacion();" ng-disabled="vista_previa" name="" placeholder="Ingresar Observación"></textarea>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-6">
+                            <fieldset>
+                                <legend>Estado</legend> 
+                                <div class="row">
+                                    <div class="col-md-7">  
+                                        <h3><strong>{{ descripcion_estado }}</strong></h3>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>   
+                    <br>
+                    <br>
+                    <div class="row">  
+                        <div class="col-md-12">
+
+                            <tabset>
+                                <tab heading="Incluir Productos Manual" active="activar_tab.tab_productos">
+
+                                    <br>
+                                    <div class="row">  
+                                        <div class="">
+                                            <div class="col-md-3">
+                                                <p class="input-group">
+                                                    <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '' " ng-click="buscar_productos()">
+                                                        <span class="glyphicon glyphicon-plus"></span> Buscar Productos
+                                                    </button>
+                                                </p>
+
+                                            </div>
+
+                                            <div class="col-md-3 pull-right">
+                                                <p class="input-group">
+
+                                                    <input type="text" class="form-control" ng-keypress="buscador_productos_orden_compra($event, termino_busqueda);" ng-model="termino_busqueda" placeholder="Buscar" name="" id="" />
+                                                    <span class="input-group-btn">
+                                                        <button class="btn btn-default" type="submit" ng-click="buscar_detalle_orden_compra(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                                                    </span>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="" style="height: 240px" ng-grid="lista_productos" > </div>
+
+                                    <div class="row text-center col-md-12">
+                                        <button type="button" class="btn btn-default btn-medium" ng-disabled="pagina_actual == 1" ng-click="pagina_anterior()">
+                                            <span class="glyphicon glyphicon-chevron-left" ></span>
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-medium" ng-disabled="cantidad_items == 0" ng-click="pagina_siguiente()">
+                                            <span class="glyphicon glyphicon-chevron-right" ></span>
+                                        </button>
+                                    </div>  
+                                </tab>                        
+                                <tab active="activar_tab.tab_cargar_archivo">
+                                    <tab-heading>
+                                        <i class="glyphicon glyphicon-cloud-upload"></i> Cargar Archivo Plano
+                                    </tab-heading>
+
+                                    <div class="row col-md-8 col-md-offset-2" style="margin-top: 25px">    
+
+                                        <div flow-init="opciones_archivo"  flow-file-success="respuesta_archivo_plano($file, $message);" flow-file-added="!!{xls:1,xlsx:1}[$file.getExtension()]" flow-files-submitted="cargar_archivo_plano($flow)" class="ng-scope" flow-prevent-drop=""  flow-drag-enter="dropClass='drag-over'" flow-drag-leave="dropClass=''" >
+                                            <div class="drop txt-center" flow-drop="" flow-drop-enabled="!(vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '')" ng-class="dropClass" >
+
+                                                <div class="col-md-12">
+                                                    <img  ng-hide="$flow.files.length" src="../../../images/Cloud-Upload-Blue.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
+                                                    <img ng-show="$flow.files.length" src="../../../images/xls.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
+                                                </div>
+                                                <div ng-hide="$flow.files.length">
+                                                    <b>OR</b> Arrastrar y Soltar el archivo AQUI!!..                                                    
+                                                </div>
+                                                <div class="" ng-repeat="file in $flow.files" ng-show="$flow.files.length">
+                                                    Nombre Archivo : <label>{{file.name}}</label>                                                                                                                                                       
+                                                </div>
+                                            </div>
+
+                                            <br>
+
+                                            <div class="well txt-center">
+                                                <span class="btn btn-default" flow-btn="" ng-hide="$flow.files.length" ng-disabled="vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '' ">
+                                                    <span class="glyphicon glyphicon-folder-open" style="margin-right: 5px;"></span> Seleccionar Archivo
+                                                    <input type="file" style="visibility: hidden; position: absolute;">
+                                                </span>                                                
+                                                <button class="btn btn-default" ng-click="$flow.cancel()" ng-disabled="" ng-show="$flow.files.length">
+                                                    <span class="glyphicon glyphicon-minus" ></span> Remover
+                                                </button>
+                                                <button class="btn btn-default" ng-click="subir_archivo_plano()" ng-disabled="vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '' " ng-show="$flow.files.length">
+                                                    <span class="glyphicon glyphicon-cloud-upload" ></span> Subir
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </tab>                                
+                            </tabset>
+
+                            <div class="modal-footer col-md-12">
+                                <button class="btn btn-default" ng-click="cancelar_orden_compra()">
+                                    <span class="glyphicon glyphicon-remove" ></span> Cancelar</button>
+                                <button class="btn btn-default" ng-click="finalizar_orden_compra(true)" ng-disabled="vista_previa || numero_orden==0 || cantidad_productos_orden_compra==0" >
+                                    <span class="glyphicon glyphicon-ok" ></span> Aceptar
+                                </button>
+                            </div>                            
+                        </div>
+                    </div>   
+                </div>
+            </div>       
+        </div>
+    </div>
+
+    <div  class="slide" slide-content open-callback="gestionar_productos" close-callback="cerrar_gestion_productos"   >
+        <div ng-include src="slideurl"  ng-controller="GestionarProductosController"></div>
+    </div>
+</div>
+
+

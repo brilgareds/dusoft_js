@@ -419,7 +419,6 @@ UsuariosModel.prototype.obtenerParametrizacionUsuario = function(usuario_id, emp
 
 UsuariosModel.prototype.borrarRolAsignadoUsuario = function(rol_id, empresa_id, usuario_id, callback) {
     var sql = "DELETE FROM login_empresas WHERE  empresa_id = $1 AND login_id = " + usuario_id;
-    console.log(" empresa_id ", empresa_id, " login_id ", usuario_id)
     var params = [
         empresa_id
     ];

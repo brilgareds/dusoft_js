@@ -540,6 +540,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                                 if($scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()) {
                                     $scope.rootCreaPedidoFarmacia.para_seleccion_empresa_aux = para_farmacia_id+","+nombre_farmacia;
+                                    $scope.rootCreaPedidoFarmacia.para_seleccion_empresa = para_farmacia_id+","+nombre_farmacia;
                                 }
                                 else {
                                     $scope.rootCreaPedidoFarmacia.para_seleccion_empresa = para_farmacia_id+","+nombre_farmacia;
@@ -549,6 +550,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                     
                                     if($scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()) {
                                         $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad_aux = para_centro_utilidad+","+nombre_centro_utilidad;
+                                        $scope.rootCreaPedidoFarmacia.bloqueo_centro_utilidad_para = false;
+                                        $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad = para_centro_utilidad+","+nombre_centro_utilidad;
                                     }
                                     else {
                                         $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad = para_centro_utilidad+","+nombre_centro_utilidad;
@@ -558,6 +561,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                         
                                         if($scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()) {
                                             $scope.rootCreaPedidoFarmacia.para_seleccion_bodega_aux = para_bodega+","+nombre_bodega;
+                                            $scope.rootCreaPedidoFarmacia.bloqueo_bodega_para = false;
+                                            $scope.rootCreaPedidoFarmacia.para_seleccion_bodega = para_bodega+","+nombre_bodega;
                                         }
                                         else {
                                             $scope.rootCreaPedidoFarmacia.para_seleccion_bodega = para_bodega+","+nombre_bodega;
@@ -1150,13 +1155,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     }
                 };
                 
+                console.log("Número Pedido:", $scope.rootCreaPedidoFarmacia.pedido.numero_pedido);
+                console.log("Empresa ID:", $scope.rootCreaPedidoFarmacia.para_seleccion_empresa);
+                console.log("Página Actual:", $scope.rootCreaPedidoFarmacia.paginaactual);
+                
                 var url = API.PEDIDOS.LISTAR_PEDIDOS_FARMACIAS;
 
                 Request.realizarRequest(url, "POST", obj_verificar, function(data) {
 
                     if(data.status === 200) {
 
-                       if((data.obj.pedidos_farmacias[0].estado_actual_pedido !== '0' && data.obj.pedidos_farmacias[0].estado_actual_pedido !== '1')|| data.obj.pedidos_farmacias[0].estado_separacion !== null){
+                       if((data.obj.pedidos_farmacias[0].estado_actual_pedido !== '0' /*&& data.obj.pedidos_farmacias[0].estado_actual_pedido !== '1'*/)|| data.obj.pedidos_farmacias[0].estado_separacion !== null){
                            //No se debe hacer Modificación
                            
                             var template = '<div class="modal-header">\
@@ -1164,7 +1173,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                                 <h4 class="modal-title">Mensaje del Sistema</h4>\
                                             </div>\
                                             <div class="modal-body">\
-                                                <h4>El pedido se encuentra en estado de separación y ya no puede modificarse !!</h4> \
+                                                <!--<h4>El pedido se encuentra en estado de separación y ya no puede modificarse !!</h4>--> \
+                                                <h4>El pedido ha sido asignado y/o está siendo separado. Ya no puede modificarse !!</h4>\
                                             </div>\
                                             <div class="modal-footer">\
                                                 <button class="btn btn-warning" ng-click="close()">Aceptar</button>\
@@ -1818,6 +1828,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 var para_seleccion_centro_utilidad = ['0'];
                 var para_seleccion_bodega = ['0'];
                 
+                //$scope.rootCreaPedidoFarmacia.bloqueo_centro_utilidad_para = false;
+                //$scope.rootCreaPedidoFarmacia.bloqueo_bodega_para = false;
+                
                 console.log("para_seleccion_empresa_aux: ",$scope.rootCreaPedidoFarmacia.para_seleccion_empresa_aux);
                 console.log("para_seleccion_centro_utilidad_aux: ",$scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad_aux);
                 console.log("para_seleccion_bodega_aux: ",$scope.rootCreaPedidoFarmacia.para_seleccion_bodega_aux);
@@ -1827,8 +1840,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 {
                     $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad_aux = '0,';
                     $scope.rootCreaPedidoFarmacia.para_seleccion_bodega_aux = '0,';
-                    $scope.rootCreaPedidoFarmacia.invalidos_mod_especial = 0;
-                    $scope.rootCreaPedidoFarmacia.total_mod_especial = 0;
+                    
+                    //New Change
+                    //$scope.rootCreaPedidoFarmacia.invalidos_mod_especial = 0;
+                    //$scope.rootCreaPedidoFarmacia.total_mod_especial = 0;
                     $scope.rootCreaPedidoFarmacia.incluir_mod_especial = false;
                 }
 
@@ -1836,6 +1851,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 if ($scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad_aux && valor === 5)
                 {
                     $scope.rootCreaPedidoFarmacia.para_seleccion_bodega_aux = '0,';
+                    //New Change
+                    $scope.rootCreaPedidoFarmacia.incluir_mod_especial = false;
                 }
                 
                 //Arreglos de dos valores: Valor y Descripción. Si ingresa en alguno de los If anteriores los valores se modifican a Cero
@@ -1849,7 +1866,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 if (para_seleccion_empresa[0] !== '0')
                 {
                     that.consultarCentrosUtilidadPara();
-                    $scope.rootCreaPedidoFarmacia.bloqueo_centro_utilidad_para = false;                    
+                    $scope.rootCreaPedidoFarmacia.bloqueo_centro_utilidad_para = false;
                 }
 
                 if (para_seleccion_centro_utilidad[0] !== '0')
@@ -1868,6 +1885,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     //Recorrer Listado Productos y asignar el valor de "EnFarmacia"
                     var listado_productos = $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().obtenerProductos();
                     var total_productos = listado_productos.length;
+                    
+                    //New Change
+                    $scope.rootCreaPedidoFarmacia.invalidos_mod_especial = 0;
+                    $scope.rootCreaPedidoFarmacia.total_mod_especial = 0;
                     
                     console.log(">>> farmacia_id: ", para_seleccion_empresa[0]);
                     console.log(">>> centro_utilidad: ", para_seleccion_centro_utilidad[0]);
@@ -1976,109 +1997,115 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 
                 console.log("Actualizar Pedido");
                 
-                var url = API.PEDIDOS.ACTUALIZAR_ENCABEZADO_PEDIDO_DEFINITIVO;
-
-                var obj_detalle = {
-                    session: $scope.rootCreaPedidoFarmacia.session,
-                    data: {
-                        farmacia_destino: {
-                            numero_pedido: numero_pedido,
-                            farmacia_id: farmacia_id,
-                            centro_utilidad: centro_utilidad,
-                            bodega: bodega
-                        }
-                    }
-                };
+                //NOTA: Validar que el pedido no esté asignado antes de hacer la modificación
                 
-                Request.realizarRequest(url, "POST", obj_detalle, function(data) {
+                that.verificarEstadoPedido(function(){
+                
+                    var url = API.PEDIDOS.ACTUALIZAR_ENCABEZADO_PEDIDO_DEFINITIVO;
 
-                    if (data.status === 200) {
-                        //Si la transacción es Correcta, Actualizar los valores de PARA en el objeto Empresa y en las variables globales respectivas
-                        $scope.rootCreaPedidoFarmacia.para_seleccion_empresa = $scope.rootCreaPedidoFarmacia.para_seleccion_empresa_aux;
-                        $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad = $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad_aux;
-                        $scope.rootCreaPedidoFarmacia.para_seleccion_bodega = $scope.rootCreaPedidoFarmacia.para_seleccion_bodega_aux;
-                        
-                        var para_seleccion_empresa = $scope.rootCreaPedidoFarmacia.para_seleccion_empresa_aux.split(',');
-                        var para_seleccion_centro_utilidad = $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad_aux.split(',');
-                        var para_seleccion_bodega = $scope.rootCreaPedidoFarmacia.para_seleccion_bodega_aux.split(',');
-                        
-//                        console.log("Actualiza Objeto Empresa:");
-//                        console.log(para_seleccion_empresa);
-//                        console.log(para_seleccion_centro_utilidad);
-//                        console.log(para_seleccion_bodega);
-                        
-                        $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.farmacia_id = para_seleccion_empresa[0];
-                        $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.nombre_farmacia = para_seleccion_empresa[1];
-                        $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.centro_utilidad_id = para_seleccion_centro_utilidad[0];
-                        $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.nombre_centro_utilidad = para_seleccion_centro_utilidad[1];
-                        $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.bodega_id = para_seleccion_bodega[0];
-                        $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.nombre_bodega = para_seleccion_bodega[1];
-
-                        console.log("Actualización Exitosa!", data.msj);
-                        
-                        $scope.opts = {
-                            backdrop: true,
-                            backdropClick: true,
-                            dialogFade: false,
-                            keyboard: true,
-                            template: ' <div class="modal-header">\
-                                            <button type="button" class="close" ng-click="close()">&times;</button>\
-                                            <h4 class="modal-title">Aviso: </h4>\
-                                        </div>\
-                                        <div class="modal-body row">\
-                                            <div class="col-md-12">\
-                                                <h4 >El Pedido # '+numero_pedido+' Se Exitosamente!</h4>\
-                                            </div>\
-                                        </div>\
-                                        <div class="modal-footer">\
-                                            <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
-                                        </div>',
-                            scope: $scope,
-                            controller: function($scope, $modalInstance) {
-                                $scope.close = function() {
-                                    $modalInstance.close();
-                                };
+                    var obj_detalle = {
+                        session: $scope.rootCreaPedidoFarmacia.session,
+                        data: {
+                            farmacia_destino: {
+                                numero_pedido: numero_pedido,
+                                farmacia_id: farmacia_id,
+                                centro_utilidad: centro_utilidad,
+                                bodega: bodega
                             }
-                        };
+                        }
+                    };
 
-                        var modalInstance = $modal.open($scope.opts); 
-                        
-                        return;
-                    }
-                    else {
-                        
-                        console.log("Error en Actualización!", data.msj);
-                        
-                        $scope.opts = {
-                            backdrop: true,
-                            backdropClick: true,
-                            dialogFade: false,
-                            keyboard: true,
-                            template: ' <div class="modal-header">\
-                                            <button type="button" class="close" ng-click="close()">&times;</button>\
-                                            <h4 class="modal-title">Aviso: </h4>\
-                                        </div>\
-                                        <div class="modal-body row">\
-                                            <div class="col-md-12">\
-                                                <h4 >No pudo actualizarse el Pedido # '+numero_pedido+'</h4>\
+                    Request.realizarRequest(url, "POST", obj_detalle, function(data) {
+
+                        if (data.status === 200) {
+                            //Si la transacción es Correcta, Actualizar los valores de PARA en el objeto Empresa y en las variables globales respectivas
+                            $scope.rootCreaPedidoFarmacia.para_seleccion_empresa = $scope.rootCreaPedidoFarmacia.para_seleccion_empresa_aux;
+                            $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad = $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad_aux;
+                            $scope.rootCreaPedidoFarmacia.para_seleccion_bodega = $scope.rootCreaPedidoFarmacia.para_seleccion_bodega_aux;
+
+                            var para_seleccion_empresa = $scope.rootCreaPedidoFarmacia.para_seleccion_empresa_aux.split(',');
+                            var para_seleccion_centro_utilidad = $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad_aux.split(',');
+                            var para_seleccion_bodega = $scope.rootCreaPedidoFarmacia.para_seleccion_bodega_aux.split(',');
+
+    //                        console.log("Actualiza Objeto Empresa:");
+    //                        console.log(para_seleccion_empresa);
+    //                        console.log(para_seleccion_centro_utilidad);
+    //                        console.log(para_seleccion_bodega);
+
+                            $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.farmacia_id = para_seleccion_empresa[0];
+                            $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.nombre_farmacia = para_seleccion_empresa[1];
+                            $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.centro_utilidad_id = para_seleccion_centro_utilidad[0];
+                            $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.nombre_centro_utilidad = para_seleccion_centro_utilidad[1];
+                            $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.bodega_id = para_seleccion_bodega[0];
+                            $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().farmacia.nombre_bodega = para_seleccion_bodega[1];
+
+                            console.log("Actualización Exitosa!", data.msj);
+
+                            $scope.opts = {
+                                backdrop: true,
+                                backdropClick: true,
+                                dialogFade: false,
+                                keyboard: true,
+                                template: ' <div class="modal-header">\
+                                                <button type="button" class="close" ng-click="close()">&times;</button>\
+                                                <h4 class="modal-title">Aviso: </h4>\
                                             </div>\
-                                        </div>\
-                                        <div class="modal-footer">\
-                                            <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
-                                        </div>',
-                            scope: $scope,
-                            controller: function($scope, $modalInstance) {
-                                $scope.close = function() {
-                                    $modalInstance.close();
-                                };
-                            }
-                        };
+                                            <div class="modal-body row">\
+                                                <div class="col-md-12">\
+                                                    <h4 >Encabezado del Pedido # '+numero_pedido+' ha sido Modificado!</h4>\
+                                                </div>\
+                                            </div>\
+                                            <div class="modal-footer">\
+                                                <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                            </div>',
+                                scope: $scope,
+                                controller: function($scope, $modalInstance) {
+                                    $scope.close = function() {
+                                        $modalInstance.close();
+                                    };
+                                }
+                            };
 
-                        var modalInstance = $modal.open($scope.opts); 
-                        
-                        return;
-                    }
-                });
+                            var modalInstance = $modal.open($scope.opts); 
+
+                            return;
+                        }
+                        else {
+
+                            console.log("Error en Actualización!", data.msj);
+
+                            $scope.opts = {
+                                backdrop: true,
+                                backdropClick: true,
+                                dialogFade: false,
+                                keyboard: true,
+                                template: ' <div class="modal-header">\
+                                                <button type="button" class="close" ng-click="close()">&times;</button>\
+                                                <h4 class="modal-title">Aviso: </h4>\
+                                            </div>\
+                                            <div class="modal-body row">\
+                                                <div class="col-md-12">\
+                                                    <h4 >No pudo actualizarse el Pedido # '+numero_pedido+'</h4>\
+                                                </div>\
+                                            </div>\
+                                            <div class="modal-footer">\
+                                                <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                            </div>',
+                                scope: $scope,
+                                controller: function($scope, $modalInstance) {
+                                    $scope.close = function() {
+                                        $modalInstance.close();
+                                    };
+                                }
+                            };
+
+                            var modalInstance = $modal.open($scope.opts); 
+
+                            return;
+                        }
+                    });
+                
+                }); //FIN VERIFICAR ESTADO PEDIDO
             };
             /**/
 

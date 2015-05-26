@@ -125,6 +125,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                 multiSelect: false,
                 enableHighlighting: true,
                 showFilter: true,
+                enableRowSelection: false,
                 /*afterSelectionChange:function(row){
                  if(row.selected){
                  $scope.onRowClick(row)

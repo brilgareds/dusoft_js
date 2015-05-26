@@ -996,7 +996,7 @@ function __validarCreacionUsuario(that, usuario, callback) {
         //determina si el nombre de usuario esta en uso, insensible a mayusculas o espacios
         for (var i in rows) {
             //console.log("buscando en ",rows[i].usuario , " buscando con ", nombre_usuario);
-            if (usuario.usuario_id !== rows[i].usuario_id) {
+            if (usuario.id !== rows[i].usuario_id) {
 
                 var _nombre_usuario = rows[i].usuario.toLowerCase().replace(/ /g, "");
 

@@ -65,3 +65,10 @@ legend.medium-letter{
 .row.margin-top{
     margin-top: 15px;
 }
+
+.btn span.glyphicon {    			
+	opacity: 0;				
+}
+.btn.active span.glyphicon {				
+	opacity: 1;				
+}

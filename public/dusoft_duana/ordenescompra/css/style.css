@@ -57,3 +57,18 @@
     overflow: hidden;
     display: block;
 }
+
+legend.medium-letter{
+    font-size: 15px;
+}
+
+.row.margin-top{
+    margin-top: 15px;
+}
+
+.btn span.glyphicon {    			
+	opacity: 0;				
+}
+.btn.active span.glyphicon {				
+	opacity: 1;				
+}

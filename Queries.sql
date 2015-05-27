@@ -1085,44 +1085,6 @@ CREATE TABLE "public"."recepcion_mercancia" (
     NOT DEFERRABLE
 ) WITH OIDS;
 
-ALTER TABLE "public"."recepcion_mercancia"
-  ALTER COLUMN "id" SET STATISTICS 0;
-
-ALTER TABLE "public"."recepcion_mercancia"
-  ALTER COLUMN "empresa_id" SET STATISTICS 0;
-
-ALTER TABLE "public"."recepcion_mercancia"
-  ALTER COLUMN "codigo_proveedor_id" SET STATISTICS 0;
-
-ALTER TABLE "public"."recepcion_mercancia"
-  ALTER COLUMN "orden_pedido_id" SET STATISTICS 0;
-
-ALTER TABLE "public"."recepcion_mercancia"
-  ALTER COLUMN "inv_transportador_id" SET STATISTICS 0;
-
-ALTER TABLE "public"."recepcion_mercancia"
-  ALTER COLUMN "novedades_recepcion_id" SET STATISTICS 0;
-
-ALTER TABLE "public"."recepcion_mercancia"
-  ALTER COLUMN "numero_guia" SET STATISTICS 0;
-
-ALTER TABLE "public"."recepcion_mercancia"
-  ALTER COLUMN "canitdad_cajas" SET STATISTICS 0;
-
-ALTER TABLE "public"."recepcion_mercancia"
-  ALTER COLUMN "cantidad_neveras" SET STATISTICS 0;
-
-ALTER TABLE "public"."recepcion_mercancia"
-  ALTER COLUMN "temperatura_neveras" SET STATISTICS 0;
-
-ALTER TABLE "public"."recepcion_mercancia"
-  ALTER COLUMN "contiene_medicamentos" SET STATISTICS 0;
-
-ALTER TABLE "public"."recepcion_mercancia"
-  ALTER COLUMN "contiene_dispositivos" SET STATISTICS 0;
-
-ALTER TABLE "public"."recepcion_mercancia"
-  ALTER COLUMN "fecha_recepcion" SET STATISTICS 0;
 
 COMMENT ON TABLE "public"."recepcion_mercancia"
 IS 'Tabla para guardaar las recepciones de mercancias por ordenes de compras';

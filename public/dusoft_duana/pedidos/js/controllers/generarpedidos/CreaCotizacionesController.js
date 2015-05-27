@@ -7,8 +7,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         '$scope', '$rootScope', 'Request',
         'EmpresaPedido', 'ClientePedido', 'PedidoVenta',
         'API', "socket", "AlertService",
-        '$state','VendedorPedido', 'Usuario', 'ProductoPedido', "$modal", 'STATIC',
-        function($scope, $rootScope, Request, EmpresaPedido, ClientePedido, PedidoVenta, API, socket, AlertService, $state, VendedorPedido, Usuario, ProductoPedido, $modal, STATIC) {
+        '$state','VendedorPedido', 'Usuario', 'ProductoPedido', "$modal", 'STATIC', "localStorageService",
+        function($scope, $rootScope, Request, EmpresaPedido, ClientePedido, PedidoVenta, API, socket, AlertService, $state, VendedorPedido, Usuario, ProductoPedido, $modal, STATIC, localStorageService) {
 
             var that = this;
             
@@ -196,6 +196,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setEncabezadoBloqueado(false);
                     $scope.rootCreaCotizaciones.bloquear_incluir_producto = true;
                     $scope.rootCreaCotizaciones.bloquear_upload = true;
+                    
+                    localStorageService.set("cotizacionseleccionada", "");
+                    localStorageService.set("pedidoseleccionado", "");
                 }
                 //Si hay Pedido/Cotizacion Seleccionado recibe el objeto Pedido/Cotización Correspondiente
                 //debe haber numero_cotizacion o numero_pedido. Según sea, carga iterfaz para manipular Cotización o Pedido. Validar según sea el caso.
@@ -238,6 +241,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                     $scope.rootCreaCotizaciones.bloquear_incluir_producto = false;
                                     //Por seguridad pero no influye mucho
                                     $scope.rootCreaCotizaciones.bloquear_upload = true;
+                                    
+                                    localStorageService.set("cotizacionseleccionada", $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion());
 
                                     that.consultarDetalleCotizacion(function(data){
 
@@ -246,7 +251,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                                     });
                                 }                       
-                                else {
+                                else if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido() !== undefined){
 
                                     $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setEncabezadoBloqueado(true);
                                     $scope.rootCreaCotizaciones.bloquear_incluir_producto = false;
@@ -254,6 +259,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                     $scope.rootCreaCotizaciones.bloquear_upload = true;
 
                                     $scope.rootCreaCotizaciones.es_cotizacion = false;
+                                    
+                                    localStorageService.set("pedidoseleccionado", $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido());
 
                                     //Crear las siguientes Operaciones
                                     that.consultarDetallePedido(function(data){
@@ -263,6 +270,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                                     });
                                 }
+                                else {
+                                    
+                                    if (localStorageService.get("cotizacionseleccionada").length > 0) {
+                                        $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setNumeroCotizacion(localStorageService.get("cotizacionseleccionada"));
+                                    }
+                                    
+                                    if (localStorageService.get("pedidoseleccionado").length > 0) {
+                                        $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().set_numero_pedido(localStorageService.get("pedidoseleccionado"));
+                                    }
+                                    
+                                }
                             });
                         });
                     });
@@ -271,6 +289,141 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 }
 
             };
+            
+            /*NUEVO 26-05-2015*/
+            that.consultarEncabezadosCotizaciones = function(callback) {
+                
+                //valida si cambio el termino de busqueda
+                if ($scope.rootCreaCotizaciones.ultima_busqueda.termino_busqueda !== $scope.rootCreaCotizaciones.termino_busqueda)
+                {
+                    $scope.rootCreaCotizaciones.paginaactual = 1;
+                }
+
+                var obj = {
+                    session: $scope.rootCreaCotizaciones.session,
+                    data: {
+                        cotizaciones_cliente: {
+                            empresa_id: Usuario.getUsuarioActual().empresa.codigo,//'03',                            
+                            termino_busqueda: $scope.rootCreaCotizaciones.termino_busqueda,
+                            pagina_actual: $scope.rootCreaCotizaciones.paginaactual,
+                            filtro: {}
+                        }
+                    }
+                };
+
+                var url = API.PEDIDOS.LISTAR_COTIZACIONES;
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        console.log("Consulta exitosa: ", data.msj);
+
+                        if (callback !== undefined && callback !== "" && callback !== 0) {
+                            callback(data);
+                        }
+                    }
+                    else {
+                        console.log("Error en la consulta: ", data.msj);
+                    }
+                });
+            }; 
+            
+            that.renderCotizaciones = function(data, paginando) {
+
+                $scope.rootCotizaciones.items = data.resultado_consulta.length;
+
+                //se valida que hayan registros en una siguiente pagina
+                if (paginando && $scope.rootCotizaciones.items === 0) {
+                    if ($scope.rootCotizaciones.paginaactual > 1) {
+                        $scope.rootCotizaciones.paginaactual--;
+                    }
+                    AlertService.mostrarMensaje("warning", "No se encontraron más registros");
+                    return;
+                }
+
+                $scope.rootCotizaciones.Empresa.vaciarPedidosTemporales();
+
+                if (data.resultado_consulta.length > 0)
+                {
+                    $scope.rootCotizaciones.Empresa.setCodigo(data.resultado_consulta[0].empresa_id);
+                }
+
+                for (var i in data.resultado_consulta) {
+
+                    var obj = data.resultado_consulta[i];
+
+                    var cotizacion = that.crearCotizacion(obj);
+
+                    $scope.rootCotizaciones.Empresa.agregarPedidoTemporal(cotizacion);
+
+                }
+
+            };
+
+            that.crearCotizacion = function(obj) {
+
+                var cotizacion = PedidoVenta.get();
+                var observacion = obj.observaciones.split("||obs_cartera||");
+                
+                //console.log(">>>> Longitud OBSERVACIONES: ", observacion.length);
+
+                var datos_cotizacion = {
+                    numero_pedido: '',
+                    fecha_registro: obj.fecha_registro,
+                    estado: obj.estado
+                };
+
+                cotizacion.setDatos(datos_cotizacion);
+                
+                cotizacion.setTipo(PedidoVenta.TIPO_CLIENTE);
+
+                cotizacion.setNumeroCotizacion(obj.numero_cotizacion);
+                
+                cotizacion.setValorCotizacion(obj.valor_cotizacion);
+
+                cotizacion.setObservacion(observacion[0]);
+                
+                if(observacion.length > 1) {
+                    cotizacion.setObservacionCartera(observacion[1]);
+                }
+                else {
+                    cotizacion.setObservacionCartera("");
+                }
+
+                var vendedor = VendedorPedido.get(
+                        obj.nombre_vendedor,    //nombre_tercero
+                        obj.tipo_id_vendedor,   //tipo_id_tercero
+                        obj.vendedor_id,        //id
+                        '',                     //direccion
+                        obj.telefono_vendedor   //telefono
+                    );
+                
+                cotizacion.setVendedor(vendedor);
+
+                var cliente = ClientePedido.get(
+                        obj.nombre_cliente,    //nombre_tercero
+                        obj.direccion_cliente, //direccion
+                        obj.tipo_id_cliente,   //tipo_id_tercero
+                        obj.cliente_id,        //id
+                        obj.telefono_cliente   //telefono
+                        );
+                            
+//                cliente.setPais(obj.pais);//pais
+//                cliente.setDepartamento(obj.departamento);//departamento
+//                cliente.setMunicipio(obj.municipio);//municipio
+//                cliente.setUbicacion(); //ubicacion
+
+                cliente.setTipoPaisId(obj.tipo_pais_cliente);//pais
+                cliente.setTipoDepartamentoId(obj.tipo_departamento_cliente);//departamento
+                cliente.setTipoMunicipioId(obj.tipo_municipio_cliente);//municipio
+                cliente.setEmail(obj.email); //email
+
+                cotizacion.setCliente(cliente);
+
+                return cotizacion;
+            };    
+            
+            /*NUEVO 26-05-2015*/
             
             that.nombrePais = function(tipo_pais_id, callback){
                 
@@ -693,7 +846,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         
                     that.consultarEstadoPedido(numero_pedido, function(estado_pedido, estado_separacion){
 
-                        if ((estado_pedido === '0' || estado_pedido === '1') && !estado_separacion) {
+                        if ((estado_pedido === '0' /*|| estado_pedido === '1'*/) && !estado_separacion) {
                             //Ejecuta la modificación
                             that.modificarPedido(row);
                         } //Fin IF estado_pedido
@@ -710,7 +863,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                             </div>\
                                             <div class="modal-body row">\
                                                 <div class="col-md-12">\
-                                                    <h4 >El Pedido ' + numero_pedido + ' ya está siendo separado o en proceso de <br>despacho. No puede modificarse!</h4>\
+                                                    <h4 >El Pedido ' + numero_pedido + ' ya fue asignado para ser procesado.<br>No puede modificarse!</h4>\
                                                 </div>\
                                             </div>\
                                             <div class="modal-footer">\
@@ -980,7 +1133,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         
                         that.consultarEstadoPedido(numero_pedido, function(estado_pedido, estado_separacion){
 
-                            if ((estado_pedido === '0' || estado_pedido === '1') && !estado_separacion) {
+                            if ((estado_pedido === '0'/* || estado_pedido === '1'*/) && !estado_separacion) {
                                 //Ejecuta la eliminación
                                 that.eliminarDetallePedido(row);
                             } //Fin IF estado_pedido
@@ -997,7 +1150,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                                 </div>\
                                                 <div class="modal-body row">\
                                                     <div class="col-md-12">\
-                                                        <h4 >El Pedido ' + numero_pedido + ' ya está siendo separado o en proceso de <br>despacho. No puede modificarse!</h4>\
+                                                        <h4 >El Pedido ' + numero_pedido + ' ya fue asignado para ser procesado.<br>No puede modificarse!</h4>\
                                                     </div>\
                                                 </div>\
                                                 <div class="modal-footer">\

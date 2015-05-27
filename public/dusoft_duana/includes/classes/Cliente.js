@@ -16,7 +16,7 @@ define(["angular", "js/models","includes/classes/Tercero"], function(angular, mo
         };
 
 
-        Cliente.prototype = Object.create(Tercero.getClass().prototype)
+        Cliente.prototype = Object.create(Tercero.getClass().prototype);
 
         this.getClass = function(){
             return Cliente;

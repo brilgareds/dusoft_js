@@ -25,10 +25,6 @@ define(["angular", "js/models"], function(angular, models) {
             Rol.prototype.getNombre = function() {
                 return  this.nombre;
             };
-            
-            Rol.prototype.getNombre = function(){
-                return this.nombre;
-            };
 
             Rol.prototype.setObservacion = function(observacion) {
                 this.observacion = observacion;

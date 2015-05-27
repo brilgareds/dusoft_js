@@ -96,7 +96,9 @@ define(["angular"], function(angular) {
                 'MODIFICAR_CANTIDADES_PEDIDO' :BASE_URL+'/PedidosClientes/modificarCantidadesPedido',
                 'CONSULTAR_PRODUCTO_EN_FARMACIA' :BASE_URL+'/PedidosFarmacias/consultarProductoEnFarmacia',
                 'ACTUALIZAR_ENCABEZADO_PEDIDO_DEFINITIVO' :BASE_URL+'/PedidosFarmacias/actualizarEncabezadoPedidoDefinitivo',
-                'CAMBIAR_ESTADO_APROBACION_PEDIDO' : BASE_URL+'/PedidosClientes/cambiarEstadoAprobacionPedido'
+                'CAMBIAR_ESTADO_APROBACION_PEDIDO' : BASE_URL+'/PedidosClientes/cambiarEstadoAprobacionPedido',
+                'CONSULTAR_ENCABEZADO_COTIZACION_CLIENTE' : BASE_URL+'/PedidosClientes/consultarEncabezadoCotizacion',
+                'CONSULTAR_ENCABEZADO_PEDIDO_CLIENTE' : BASE_URL+'/PedidosClientes/consultarEncabezadoPedido'
             },
             'TERCEROS':{
                 'LISTAR_OPERARIOS':BASE_URL+"/Terceros/operariosBodega/listar",

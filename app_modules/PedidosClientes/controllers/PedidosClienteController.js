@@ -856,6 +856,68 @@ PedidosCliente.prototype.listadoPedidosClientes = function(req, res) {
 
 };
 
+//consultarEncabezadoCotizacion
+PedidosCliente.prototype.consultarEncabezadoCotizacion = function(req, res) {
+    
+    var that = this;
+    
+    var args = req.body.data;
+    
+    if(args.cotizacion_cliente === undefined || args.cotizacion_cliente.numero_cotizacion === undefined) {
+        res.send(G.utils.r(req.url, 'numero_cotizacion No está definido', 404, {}));
+        return;
+    }
+    
+    if(args.cotizacion_cliente.numero_cotizacion === "") {
+        res.send(G.utils.r(req.url, 'numero_cotizacion está vacio', 404, {}));
+        return;
+    }
+    
+    //Parámetro para el modelo
+    var numero_cotizacion = args.cotizacion_cliente.numero_cotizacion;
+    
+    that.m_pedidos_clientes.consultar_encabezado_cotizacion(numero_cotizacion, function(err, encabezado_cotizacion) {
+        
+        if(err) {
+            res.send(G.utils.r(req.url, 'Error en consulta de Encabezado Cotización', 404, {}));
+            return;
+        }
+        
+        res.send(G.utils.r(req.url, 'Consulta Encabezado Cotización Exitosa', 200, {resultado_consulta: encabezado_cotizacion}));
+    });
+    
+};
+//consultarEncabezadoPedido
+PedidosCliente.prototype.consultarEncabezadoPedido = function(req, res) {
+    
+    var that = this;
+    
+    var args = req.body.data;
+    
+    if(args.pedido_cliente === undefined || args.pedido_cliente.numero_pedido === undefined) {
+        res.send(G.utils.r(req.url, 'numero_pedido No está definido', 404, {}));
+        return;
+    }
+    
+    if(args.pedido_cliente.numero_pedido === "") {
+        res.send(G.utils.r(req.url, 'numero_depido está vacio', 404, {}));
+        return;
+    }
+    
+    //Parámetro para el modelo
+    var numero_pedido = args.pedido_cliente.numero_pedido;
+    
+    that.m_pedidos_clientes.consultar_encabezado_pedido(numero_pedido, function(err, encabezado_pedido) {
+        
+        if(err) {
+            res.send(G.utils.r(req.url, 'Error en consulta de Encabezado Pedido', 404, {}));
+            return;
+        }
+        
+        res.send(G.utils.r(req.url, 'Consulta Encabezado Pedido Exitosa', 200, {resultado_consulta: encabezado_cotizacion}));
+    });
+};
+
 //ESTADO COTIZACIÓN DEL CLIENTE
 PedidosCliente.prototype.estadoCotizacion = function(req, res) {
 
@@ -873,7 +935,7 @@ PedidosCliente.prototype.estadoCotizacion = function(req, res) {
         return;
     }
 
-    //Parámetro a insertar
+    //Parámetro para modelo
     var numero_cotizacion = args.estado_cotizacion.numero_cotizacion;
 
     that.m_pedidos_clientes.estado_cotizacion(numero_cotizacion, function(err, array_estado_cotizacion) {
@@ -907,7 +969,7 @@ PedidosCliente.prototype.estadoPedido = function(req, res) {
         return;
     }
 
-    //Parámetro a insertar
+    //Parámetro para modelo
     var numero_pedido = args.estado_pedido.numero_pedido;
 
     that.m_pedidos_clientes.estado_pedido(numero_pedido, function(err, array_estado_pedido) {

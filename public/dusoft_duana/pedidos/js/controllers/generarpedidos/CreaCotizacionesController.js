@@ -197,8 +197,27 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     $scope.rootCreaCotizaciones.bloquear_incluir_producto = true;
                     $scope.rootCreaCotizaciones.bloquear_upload = true;
                     
+                    if(localStorageService.get("cotizacionseleccionada") !== "" || localStorageService.get("cotizacionseleccionada") !== undefined) {
+                        
+                        that.consultarDetalleCotizacion(function(data){
+
+                            var detalle = data.obj.resultado_consulta;
+                            that.renderDetalleCotizacion(detalle);
+
+                        });
+                        
+                    }
+                                    //localStorageService.set("pedidoseleccionado", "");
                     localStorageService.set("cotizacionseleccionada", "");
+                    
                     localStorageService.set("pedidoseleccionado", "");
+                    
+                    that.consultarDetallePedido(function(data){
+
+                        var detalle = data.obj.resultado_consulta;
+                        that.renderDetalleCotizacion(detalle);
+
+                    });
                 }
                 //Si hay Pedido/Cotizacion Seleccionado recibe el objeto Pedido/Cotización Correspondiente
                 //debe haber numero_cotizacion o numero_pedido. Según sea, carga iterfaz para manipular Cotización o Pedido. Validar según sea el caso.
@@ -243,6 +262,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                     $scope.rootCreaCotizaciones.bloquear_upload = true;
                                     
                                     localStorageService.set("cotizacionseleccionada", $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion());
+                                    localStorageService.set("pedidoseleccionado", "");
 
                                     that.consultarDetalleCotizacion(function(data){
 
@@ -261,8 +281,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                     $scope.rootCreaCotizaciones.es_cotizacion = false;
                                     
                                     localStorageService.set("pedidoseleccionado", $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido());
+                                    localStorageService.set("cotizacionseleccionada", "");
 
-                                    //Crear las siguientes Operaciones
                                     that.consultarDetallePedido(function(data){
 
                                         var detalle = data.obj.resultado_consulta;
@@ -274,10 +294,26 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                     
                                     if (localStorageService.get("cotizacionseleccionada").length > 0) {
                                         $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setNumeroCotizacion(localStorageService.get("cotizacionseleccionada"));
+                                        
+                                        that.consultarEncabezadoCotizacion(function(data){
+                                            
+                                            var cotizacion = that.crearCotizacion(data);
+                                            
+                                            $scope.rootCreaCotizaciones.Empresa.setPedidoSeleccionado(cotizacion);
+                                            
+                                        });
                                     }
                                     
                                     if (localStorageService.get("pedidoseleccionado").length > 0) {
                                         $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().set_numero_pedido(localStorageService.get("pedidoseleccionado"));
+                                        
+                                        that.consultarEncabezadoPedido(function(data){
+                                            
+                                            var pedido = that.crearPedido(data);
+                                            
+                                            $scope.rootCreaCotizaciones.Empresa.setPedidoSeleccionado(pedido);
+                                            
+                                        });
                                     }
                                     
                                 }
@@ -291,27 +327,46 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
             
             /*NUEVO 26-05-2015*/
-            that.consultarEncabezadosCotizaciones = function(callback) {
-                
-                //valida si cambio el termino de busqueda
-                if ($scope.rootCreaCotizaciones.ultima_busqueda.termino_busqueda !== $scope.rootCreaCotizaciones.termino_busqueda)
-                {
-                    $scope.rootCreaCotizaciones.paginaactual = 1;
-                }
+            that.consultarEncabezadoCotizacion = function(callback) {
 
                 var obj = {
                     session: $scope.rootCreaCotizaciones.session,
                     data: {
-                        cotizaciones_cliente: {
-                            empresa_id: Usuario.getUsuarioActual().empresa.codigo,//'03',                            
-                            termino_busqueda: $scope.rootCreaCotizaciones.termino_busqueda,
-                            pagina_actual: $scope.rootCreaCotizaciones.paginaactual,
-                            filtro: {}
+                        cotizacion_cliente: {
+                            numero_cotizacion: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion()
                         }
                     }
                 };
 
-                var url = API.PEDIDOS.LISTAR_COTIZACIONES;
+                var url = API.PEDIDOS.CONSULTAR_ENCABEZADO_COTIZACION_CLIENTE;
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        console.log("Consulta exitosa: ", data.msj);
+
+                        if (callback !== undefined && callback !== "" && callback !== 0) {
+                            callback(data);
+                        }
+                    }
+                    else {
+                        console.log("Error en la consulta: ", data.msj);
+                    }
+                });
+            };
+            
+            that.consultarEncabezadoPedido = function(callback) {
+
+                var obj = {
+                    session: $scope.rootCreaCotizaciones.session,
+                    data: {
+                        pedido_cliente: {
+                            numero_pedido: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido()
+                        }
+                    }
+                };
+
+                var url = API.PEDIDOS.CONSULTAR_ENCABEZADO_PEDIDO_CLIENTE;
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
@@ -327,40 +382,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     }
                 });
             }; 
-            
-            that.renderCotizaciones = function(data, paginando) {
 
-                $scope.rootCotizaciones.items = data.resultado_consulta.length;
-
-                //se valida que hayan registros en una siguiente pagina
-                if (paginando && $scope.rootCotizaciones.items === 0) {
-                    if ($scope.rootCotizaciones.paginaactual > 1) {
-                        $scope.rootCotizaciones.paginaactual--;
-                    }
-                    AlertService.mostrarMensaje("warning", "No se encontraron más registros");
-                    return;
-                }
-
-                $scope.rootCotizaciones.Empresa.vaciarPedidosTemporales();
-
-                if (data.resultado_consulta.length > 0)
-                {
-                    $scope.rootCotizaciones.Empresa.setCodigo(data.resultado_consulta[0].empresa_id);
-                }
-
-                for (var i in data.resultado_consulta) {
-
-                    var obj = data.resultado_consulta[i];
-
-                    var cotizacion = that.crearCotizacion(obj);
-
-                    $scope.rootCotizaciones.Empresa.agregarPedidoTemporal(cotizacion);
-
-                }
-
-            };
-
-            that.crearCotizacion = function(obj) {
+            that.crearCotizacion = function(data) {
+                
+                var obj = data.resultado_consulta[0];
 
                 var cotizacion = PedidoVenta.get();
                 var observacion = obj.observaciones.split("||obs_cartera||");
@@ -408,10 +433,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         obj.telefono_cliente   //telefono
                         );
                             
-//                cliente.setPais(obj.pais);//pais
-//                cliente.setDepartamento(obj.departamento);//departamento
-//                cliente.setMunicipio(obj.municipio);//municipio
-//                cliente.setUbicacion(); //ubicacion
+                cliente.setPais(obj.pais);//pais
+                cliente.setDepartamento(obj.departamento);//departamento
+                cliente.setMunicipio(obj.municipio);//municipio
+                cliente.setUbicacion(); //ubicacion
 
                 cliente.setTipoPaisId(obj.tipo_pais_cliente);//pais
                 cliente.setTipoDepartamentoId(obj.tipo_departamento_cliente);//departamento
@@ -421,7 +446,70 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 cotizacion.setCliente(cliente);
 
                 return cotizacion;
-            };    
+            };
+            
+            that.crearPedido = function(data) {
+                
+                var obj = data.resultado_consulta[0];
+
+                var pedido = PedidoVenta.get();
+                var observacion = obj.observacion.split("||obs_cartera||");
+
+                var datos_pedido = {
+                    numero_pedido: obj.numero_pedido,
+                    fecha_registro: obj.fecha_registro,
+                    estado: obj.estado,
+                    estado_actual_pedido: obj.estado_pedido,
+                    estado_separacion: obj.estado_separacion
+                };
+
+                pedido.setDatos(datos_pedido);
+                
+                pedido.setTipo(PedidoVenta.TIPO_CLIENTE);
+
+                pedido.setNumeroCotizacion('');
+                
+                pedido.setValorPedido(obj.valor_pedido);
+
+                pedido.setObservacion(obj.observacion[0]);
+                
+                //pedido.tiene_obs_cartera - propiedad solo existente en ésta instancia
+                pedido.tiene_obs_cartera = false;
+                
+                if(observacion.length > 1) {
+                    pedido.setObservacionCartera(observacion[1]);
+                    pedido.tiene_obs_cartera = true;
+                }
+                else {
+                    pedido.setObservacionCartera("");
+                }
+                
+                var vendedor = VendedorPedido.get(
+                        obj.nombre_vendedor,    //nombre_tercero
+                        obj.tipo_id_vendedor,   //tipo_id_tercero
+                        obj.vendedor_id,        //id
+                        '',                     //direccion
+                        obj.telefono_vendedor   //telefono
+                    );
+                
+                pedido.setVendedor(vendedor);
+
+                var cliente = ClientePedido.get(
+                        obj.nombre_cliente,    //nombre_tercero
+                        obj.direccion_cliente, //direccion
+                        obj.tipo_id_cliente,   //tipo_id_tercero
+                        obj.cliente_id,        //id
+                        obj.telefono_cliente   //telefono
+                        );
+                           
+                cliente.setTipoPaisId(obj.tipo_pais_cliente);//pais
+                cliente.setTipoDepartamentoId(obj.tipo_departamento_cliente);//departamento
+                cliente.setTipoMunicipioId(obj.tipo_municipio_cliente);//municipio
+
+                pedido.setCliente(cliente);
+
+                return pedido;
+            };  
             
             /*NUEVO 26-05-2015*/
             

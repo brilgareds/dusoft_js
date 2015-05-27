@@ -1024,23 +1024,6 @@ CREATE TABLE "public"."novedades_recepcion_mercancia" (
     NOT DEFERRABLE
 ) WITH OIDS;
 
-ALTER TABLE "public"."novedades_recepcion_mercancia"
-  ALTER COLUMN "id" SET STATISTICS 0;
-
-ALTER TABLE "public"."novedades_recepcion_mercancia"
-  ALTER COLUMN "codigo" SET STATISTICS 0;
-
-ALTER TABLE "public"."novedades_recepcion_mercancia"
-  ALTER COLUMN "descripcion" SET STATISTICS 0;
-
-ALTER TABLE "public"."novedades_recepcion_mercancia"
-  ALTER COLUMN "estado" SET STATISTICS 0;
-
-ALTER TABLE "public"."novedades_recepcion_mercancia"
-  ALTER COLUMN "fecha_registro" SET STATISTICS 0;
-
-ALTER TABLE "public"."novedades_recepcion_mercancia"
-  ALTER COLUMN "usuario_id" SET STATISTICS 0;
 
 COMMENT ON COLUMN "public"."novedades_recepcion_mercancia"."codigo"
 IS 'Codigo o identificador de la novedad';
@@ -1056,3 +1039,128 @@ IS 'Fecha en que registró la novedad';
 
 COMMENT ON COLUMN "public"."novedades_recepcion_mercancia"."usuario_id"
 IS 'Usuario que ingresa el registro';
+
+
+/* =================== Tabla para ingresar las recepciones de mercancia ============*/
+CREATE TABLE "public"."recepcion_mercancia" (
+  "id" SERIAL, 
+  "empresa_id" VARCHAR(2) NOT NULL, 
+  "codigo_proveedor_id" INTEGER NOT NULL, 
+  "orden_pedido_id" INTEGER, 
+  "inv_transportador_id" INTEGER, 
+  "novedades_recepcion_id" INTEGER, 
+  "numero_guia" VARCHAR(20) NOT NULL, 
+  "canitdad_cajas" INTEGER DEFAULT 0, 
+  "cantidad_neveras" INTEGER DEFAULT 0, 
+  "temperatura_neveras" REAL, 
+  "contiene_medicamentos" CHAR(1) DEFAULT 0, 
+  "contiene_dispositivos" CHAR(1) DEFAULT 0, 
+  "fecha_recepcion" TIMESTAMP WITHOUT TIME ZONE DEFAULT now(), 
+  "fecha_registro" TIMESTAMP WITHOUT TIME ZONE DEFAULT now(), 
+  CONSTRAINT "recepcion_mercancia_pkey" PRIMARY KEY("id"), 
+  CONSTRAINT "recepcion_mercancia_fk" FOREIGN KEY ("empresa_id")
+    REFERENCES "public"."empresas"("empresa_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "recepcion_mercancia_fk1" FOREIGN KEY ("codigo_proveedor_id")
+    REFERENCES "public"."terceros_proveedores"("codigo_proveedor_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "recepcion_mercancia_fk2" FOREIGN KEY ("orden_pedido_id")
+    REFERENCES "public"."compras_ordenes_pedidos"("orden_pedido_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "recepcion_mercancia_fk3" FOREIGN KEY ("inv_transportador_id")
+    REFERENCES "public"."inv_transportadoras"("transportadora_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "recepcion_mercancia_fk4" FOREIGN KEY ("novedades_recepcion_id")
+    REFERENCES "public"."novedades_recepcion_mercancia"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE
+) WITH OIDS;
+
+ALTER TABLE "public"."recepcion_mercancia"
+  ALTER COLUMN "id" SET STATISTICS 0;
+
+ALTER TABLE "public"."recepcion_mercancia"
+  ALTER COLUMN "empresa_id" SET STATISTICS 0;
+
+ALTER TABLE "public"."recepcion_mercancia"
+  ALTER COLUMN "codigo_proveedor_id" SET STATISTICS 0;
+
+ALTER TABLE "public"."recepcion_mercancia"
+  ALTER COLUMN "orden_pedido_id" SET STATISTICS 0;
+
+ALTER TABLE "public"."recepcion_mercancia"
+  ALTER COLUMN "inv_transportador_id" SET STATISTICS 0;
+
+ALTER TABLE "public"."recepcion_mercancia"
+  ALTER COLUMN "novedades_recepcion_id" SET STATISTICS 0;
+
+ALTER TABLE "public"."recepcion_mercancia"
+  ALTER COLUMN "numero_guia" SET STATISTICS 0;
+
+ALTER TABLE "public"."recepcion_mercancia"
+  ALTER COLUMN "canitdad_cajas" SET STATISTICS 0;
+
+ALTER TABLE "public"."recepcion_mercancia"
+  ALTER COLUMN "cantidad_neveras" SET STATISTICS 0;
+
+ALTER TABLE "public"."recepcion_mercancia"
+  ALTER COLUMN "temperatura_neveras" SET STATISTICS 0;
+
+ALTER TABLE "public"."recepcion_mercancia"
+  ALTER COLUMN "contiene_medicamentos" SET STATISTICS 0;
+
+ALTER TABLE "public"."recepcion_mercancia"
+  ALTER COLUMN "contiene_dispositivos" SET STATISTICS 0;
+
+ALTER TABLE "public"."recepcion_mercancia"
+  ALTER COLUMN "fecha_recepcion" SET STATISTICS 0;
+
+COMMENT ON TABLE "public"."recepcion_mercancia"
+IS 'Tabla para guardaar las recepciones de mercancias por ordenes de compras';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."empresa_id"
+IS 'Identificador de la empresa';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."codigo_proveedor_id"
+IS 'Codigo del proveedor';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."orden_pedido_id"
+IS 'Numero de la orden de compra';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."novedades_recepcion_id"
+IS 'Identificador de la novedad';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."numero_guia"
+IS 'Numero de la guia de la transportadora';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."canitdad_cajas"
+IS 'Cantidad de cajas enviadas';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."cantidad_neveras"
+IS 'Cantidad neveras enviadas';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."temperatura_neveras"
+IS 'Temperatura de las neveras';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."contiene_medicamentos"
+IS 'Si el envio contiene medicamentos';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."contiene_dispositivos"
+IS 'Si el envio contiene dispositivos medicos';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."fecha_recepcion"
+IS 'Fecha en que se recepciona la mercancia';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."fecha_registro"
+IS 'Fecha en que se realiza el registro';
+
+

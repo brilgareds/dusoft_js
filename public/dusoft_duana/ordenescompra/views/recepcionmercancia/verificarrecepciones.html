@@ -69,7 +69,16 @@
                                 <legend>Contiene</legend> 
                                 <div class="row">
                                     <div class="col-md-12">  
-                                        <input class="form-control" type="text">
+                                        <div class="btn-group" data-toggle="buttons">                        
+                                            <label class="btn btn-success">
+                                                <input type="radio" name="options" id="option2" autocomplete="off" chacked>
+                                                <span class="glyphicon glyphicon-ok radio-btn"></span> Mdtos.
+                                            </label>
+                                            <label class="btn btn-info">
+                                                <input type="radio" name="options" id="option2" autocomplete="off">
+                                                <span class="glyphicon glyphicon-ok radio-btn"></span> D. Medicos
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
                             </fieldset>
@@ -148,48 +157,30 @@
                                 </div>
                             </fieldset>
                         </div>  
-                    </div>                       
-                    <div class="btn-group" data-toggle="buttons">
-
-                        <label class="btn btn-success active">
-                            <input type="radio" name="options" id="option2" autocomplete="off" chacked>
-                            <span class="glyphicon glyphicon-ok"></span>
-                        </label>
-
-                        <label class="btn btn-primary">
-                            <input type="radio" name="options" id="option1" autocomplete="off">
-                            <span class="glyphicon glyphicon-ok"></span>
-                        </label>
-
-                        <label class="btn btn-info">
-                            <input type="radio" name="options" id="option2" autocomplete="off">
-                            <span class="glyphicon glyphicon-ok"></span>
-                        </label>
-
-                        <label class="btn btn-default">
-                            <input type="radio" name="options" id="option2" autocomplete="off">
-                            <span class="glyphicon glyphicon-ok"></span>
-                        </label>
-
-                        <label class="btn btn-warning">
-                            <input type="radio" name="options" id="option2" autocomplete="off">
-                            <span class="glyphicon glyphicon-ok"></span>
-                        </label>
-
-                        <label class="btn btn-danger">
-                            <input type="radio" name="options" id="option2" autocomplete="off">
-                            <span class="glyphicon glyphicon-ok"></span>
-                        </label>
-
                     </div> 
+                    <br>
+                    <div class="" style="height: 350px" ng-grid="lista_productos" > </div>
 
+                    </br>
+
+                    <div class="row text-center">
+                        <button type="button" class="btn btn-default btn-medium" ng-disabled="pagina_actual == 1" ng-click="pagina_anterior()" >
+                            <span class="glyphicon glyphicon-chevron-left" ></span>
+                        </button>
+                        <button type="button" class="btn btn-default btn-medium" ng-disabled="cantidad_items == 0" ng-click="pagina_siguiente()">
+                            <span class="glyphicon glyphicon-chevron-right" ></span>
+                        </button>
+                    </div>    
                 </div>
+                <div class="modal-footer col-md-12">
+                    <button class="btn btn-default" ng-click="cancelar_orden_compra()">
+                        <span class="glyphicon glyphicon-remove" ></span> Cancelar</button>
+                    <button class="btn btn-default" ng-click="finalizar_orden_compra(true)" ng-disabled="vista_previa || numero_orden==0 || cantidad_productos_orden_compra==0" >
+                        <span class="glyphicon glyphicon-ok" ></span> Aceptar
+                    </button>
+                </div>  
             </div>       
         </div>
-    </div>
-
-    <div  class="slide" slide-content open-callback="gestionar_productos" close-callback="cerrar_gestion_productos"   >
-        <div ng-include src="slideurl"  ng-controller="GestionarProductosController"></div>
     </div>
 </div>
 

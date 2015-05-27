@@ -1078,14 +1078,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             controller = function($scope, $modalInstance) {
 
                                 $scope.modificarCantidad = function() {
-                                    that.verificarEstadoPedido(function(){
+                                    //that.verificarEstadoPedido(function(){
 
                                         that.modificarValoresCantidad(
                                             $scope.rootCreaPedidoFarmacia.pedido.numero_pedido,
                                             row.entity
                                         );
-                                    }    
-                                    );
+                                    //}    
+                                    //);
 
                                     $modalInstance.close();
                                 };
@@ -1299,15 +1299,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         controller = function($scope, $modalInstance) {
 
                             $scope.eliminarProducto = function() {
-                                that.verificarEstadoPedido(function(){
+                                //that.verificarEstadoPedido(function(){
 
                                     that.eliminarProductoPedido(
                                         $scope.rootCreaPedidoFarmacia.pedido.numero_pedido,
                                         row.entity,
                                         row.rowIndex
                                     );
-                                }    
-                                );
+                                //}    
+                                //);
 
                                 $modalInstance.close();
                             };

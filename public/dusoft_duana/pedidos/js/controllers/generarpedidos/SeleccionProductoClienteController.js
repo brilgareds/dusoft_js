@@ -617,7 +617,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         
                         that.consultarEstadoPedido(numero_pedido, function(estado_pedido, estado_separacion){
 
-                            if ((estado_pedido === '0' || estado_pedido === '1') && !estado_separacion) {
+                            if ((estado_pedido === '0'/* || estado_pedido === '1'*/) && !estado_separacion) {
                                 //Ejecuta la Inclusión del Producto
                                 $scope.rootSeleccionProductoCliente.bloquear_eliminar = false;
                                 that.insertarDetallePedido(row);
@@ -635,7 +635,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                                 </div>\
                                                 <div class="modal-body row">\
                                                     <div class="col-md-12">\
-                                                        <h4 >El Pedido ' + numero_pedido + ' ya está siendo separado o en proceso de <br>despacho. No puede modificarse!</h4>\
+                                                        <h4 >El Pedido ' + numero_pedido + ' ya fue asignado para ser procesado.<br>No puede modificarse!</h4>\
                                                     </div>\
                                                 </div>\
                                                 <div class="modal-footer">\
@@ -1480,7 +1480,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         
                         that.consultarEstadoPedido(numero_pedido, function(estado_pedido, estado_separacion){
 
-                            if ((estado_pedido === '0' || estado_pedido === '1') && !estado_separacion) {
+                            if ((estado_pedido === '0' /*|| estado_pedido === '1'*/) && !estado_separacion) {
                                 //Ejecuta la eliminación
                                 that.eliminarDetallePedido(row);
                             } //Fin IF estado_pedido
@@ -1497,7 +1497,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                                 </div>\
                                                 <div class="modal-body row">\
                                                     <div class="col-md-12">\
-                                                        <h4 >El Pedido ' + numero_pedido + ' ya está siendo separado o en proceso de <br>despacho. No puede modificarse!</h4>\
+                                                        <h4 >El Pedido ' + numero_pedido + ' ya fue asignado para ser procesado.<br>No puede modificarse!</h4>\
                                                     </div>\
                                                 </div>\
                                                 <div class="modal-footer">\

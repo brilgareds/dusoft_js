@@ -77,11 +77,11 @@ PedidosFarmacias.prototype.listarFarmaciasUsuarios = function(req, res) {
     var usuario_id = req.session.user.usuario_id;
     var permisos_kardex = false;
     var args = req.body.data;
-    
-    if(args.pedidos_farmacias && args.pedidos_farmacias.permisos_kardex){
+
+    if (args.pedidos_farmacias && args.pedidos_farmacias.permisos_kardex) {
         permisos_kardex = true;
     }
-        
+
     that.m_pedidos_farmacias.listar_farmacias_usuario('1', usuario_id, null, null, permisos_kardex, function(err, lista_farmacias) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error listado las farmacias', 500, {lista_farmacias: {}}));
@@ -109,13 +109,13 @@ PedidosFarmacias.prototype.listarCentrosUtilidadUsuarios = function(req, res) {
 
     var usuario_id = req.session.user.usuario_id;
     var empresa_id = args.pedidos_farmacias.empresa_id;
-    
+
     var permisos_kardex = false;
-    
-    if(args.pedidos_farmacias.permisos_kardex){
+
+    if (args.pedidos_farmacias.permisos_kardex) {
         permisos_kardex = true;
     }
-        
+
 
     that.m_pedidos_farmacias.listar_farmacias_usuario('2', usuario_id, empresa_id, null, permisos_kardex, function(err, lista_centros_utilidad) {
         if (err) {
@@ -145,15 +145,15 @@ PedidosFarmacias.prototype.listarBodegasUsuarios = function(req, res) {
     var usuario = req.session.user.usuario_id;
     var empresa_id = args.pedidos_farmacias.empresa_id;
     var centro_utilidad_id = args.pedidos_farmacias.centro_utilidad_id;
-    
+
     var permisos_kardex = false;
-    
-    if(args.pedidos_farmacias.permisos_kardex){
+
+    if (args.pedidos_farmacias.permisos_kardex) {
         permisos_kardex = true;
     }
-        
 
-    that.m_pedidos_farmacias.listar_farmacias_usuario('3', usuario, empresa_id, centro_utilidad_id,permisos_kardex, function(err, lista_bodegas) {
+
+    that.m_pedidos_farmacias.listar_farmacias_usuario('3', usuario, empresa_id, centro_utilidad_id, permisos_kardex, function(err, lista_bodegas) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error listado las farmacias', 500, {lista_bodegas: {}}));
         } else {
@@ -558,16 +558,21 @@ PedidosFarmacias.prototype.eliminarResponsablesPedido = function(req, res) {
                         return;
                     } else {
 
+                        if (responsables_pedido === undefined || responsables_pedido.length < 2) {
+                            res.send(G.utils.r(req.url, 'El Pedido no ha registrado responsables', 500, {}));
+                            return;
+                        }
+                        
                         that.m_pedidos_farmacias.eliminar_responsables_pedidos(numero_pedido, function(err, rows, resultado) {
 
                             if (err) {
                                 res.send(G.utils.r(req.url, 'Se ha generado un error interno code 1', 500, {}));
                                 return;
                             } else {
-                                
+
                                 // El estado del pedido es el inmediatamnte el anterior
                                 estado_pedido = responsables_pedido[1].estado;
-                                
+
                                 that.m_pedidos_farmacias.actualizar_estado_actual_pedido(numero_pedido, estado_pedido, function(err, rows, resultado) {
 
                                     if (err) {
@@ -740,12 +745,12 @@ PedidosFarmacias.prototype.obtenerDetallePedido = function(req, res) {
 
     var args = req.body.data;
     var numero_pedido = args.pedidos_farmacias.numero_pedido;
-    
+
     if (args.pedidos_farmacias === undefined || numero_pedido === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
     }
-    
+
     self.m_pedidos_farmacias.consultar_detalle_pedido(numero_pedido, function(err, detalle_pedido) {
         detalle_pedido = self.m_pedidos.unificarLotesDetalle(detalle_pedido);
 
@@ -832,17 +837,17 @@ PedidosFarmacias.prototype.listar_productos = function(req, res) {
                         that.m_pedidos_clientes.calcular_cantidad_total_pendiente_producto(empresa_id, producto.codigo_producto, function(err, total_pendiente_clientes) {
 
                             var cantidad_total_pendiente_clientes = (total_pendiente_clientes.length > 0) ? total_pendiente_clientes[0].cantidad_total_pendiente : 0;
-                            
-                            that.m_pedidos_farmacias.calcular_cantidad_reservada_temporales_farmacias(producto.codigo_producto, function(err, total_reservado_temporales){
-                                
+
+                            that.m_pedidos_farmacias.calcular_cantidad_reservada_temporales_farmacias(producto.codigo_producto, function(err, total_reservado_temporales) {
+
                                 var cantidad_reservada_temporales = (total_reservado_temporales.length > 0) ? total_reservado_temporales[0].total_reservado : 0;
-                                
-                                that.m_pedidos_clientes.calcular_cantidad_reservada_cotizaciones_clientes(producto.codigo_producto, function(err, total_reservado_cotizaciones){
+
+                                that.m_pedidos_clientes.calcular_cantidad_reservada_cotizaciones_clientes(producto.codigo_producto, function(err, total_reservado_cotizaciones) {
 
                                     var cantidad_reservada_cotizaciones = (total_reservado_cotizaciones.length > 0) ? total_reservado_cotizaciones[0].total_reservado : 0;
-                                    
+
                                     var disponibilidad_bodega = producto.existencia - cantidad_total_pendiente_farmacias - cantidad_total_pendiente_clientes
-                                                                - cantidad_reservada_temporales - cantidad_reservada_cotizaciones;
+                                            - cantidad_reservada_temporales - cantidad_reservada_cotizaciones;
 
                                     producto.disponibilidad_bodega = (disponibilidad_bodega < 0) ? 0 : disponibilidad_bodega;
 
@@ -859,9 +864,9 @@ PedidosFarmacias.prototype.listar_productos = function(req, res) {
                                             return;
                                         }
                                     }
-                                
+
                                 });
-                            
+
                             });
 
                         });
@@ -1200,11 +1205,11 @@ PedidosFarmacias.prototype.buscarUsuarioBloqueo = function(req, res) {
     var args = req.body.data;
 
     if (args.usuario_bloqueo === undefined || args.usuario_bloqueo.farmacia_id === undefined || args.usuario_bloqueo.centro_utilidad_id === undefined
-        || args.usuario_bloqueo.codigo_producto === undefined) {
+            || args.usuario_bloqueo.codigo_producto === undefined) {
         res.send(G.utils.r(req.url, 'farmacia_id, centro_utilidad_id o codigo_producto no están definidos', 404, {}));
         return;
     }
-    
+
     if (args.usuario_bloqueo.farmacia_id === '' || args.usuario_bloqueo.centro_utilidad_id === '' || args.usuario_bloqueo.codigo_producto === '') {
         res.send(G.utils.r(req.url, 'farmacia_id, centro_utilidad_id o codigo_producto están vacios', 404, {}));
         return;
@@ -1214,9 +1219,9 @@ PedidosFarmacias.prototype.buscarUsuarioBloqueo = function(req, res) {
     var centro_utilidad_id = args.usuario_bloqueo.centro_utilidad_id;
     var codigo_producto = args.usuario_bloqueo.codigo_producto;
     var codigo_temporal = farmacia_id + centro_utilidad_id + codigo_producto;
-    
+
     that.m_pedidos_farmacias.buscar_usuario_bloqueo(codigo_temporal, function(err, rows, result) {
-        
+
         if (err) {
             res.send(G.utils.r(req.url, 'Se ha Generado un Error en la consulta del usuario', 500, {error: err}));
             return;
@@ -1226,7 +1231,7 @@ PedidosFarmacias.prototype.buscarUsuarioBloqueo = function(req, res) {
             res.send(G.utils.r(req.url, 'Consulta del usuario exitosa!', 200, {datos_usuario: rows}));
             return;
         }
-    });    
+    });
 
 };
 
@@ -1439,34 +1444,34 @@ PedidosFarmacias.prototype.insertarPedidoFarmaciaDefinitivo = function(req, res)
 //                    res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Selección del Operario', 500, {}));
 //                    return;
 //                }
-                //else {
+            //else {
 
-                    var responsable = null;//operario_array[0].operario_id;
+            var responsable = null;//operario_array[0].operario_id;
 
-                    that.m_pedidos_farmacias.asignar_responsables_pedidos(numero_pedido, '0', responsable, usuario_id, function(err, rows, responsable_estado_pedido) {
+            that.m_pedidos_farmacias.asignar_responsables_pedidos(numero_pedido, '0', responsable, usuario_id, function(err, rows, responsable_estado_pedido) {
 
-                        if (err) {
-                            res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Asignacion de Resposables', 500, {}));
-                            return;
-                        }
+                if (err) {
+                    res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Asignacion de Resposables', 500, {}));
+                    return;
+                }
 
-                        /*Inicio - Actualización sw_terminado*/
-                        that.m_pedidos_farmacias.terminar_estado_pedido(numero_pedido, ['0'], '1', function(err, rows, results) {
+                /*Inicio - Actualización sw_terminado*/
+                that.m_pedidos_farmacias.terminar_estado_pedido(numero_pedido, ['0'], '1', function(err, rows, results) {
 
-                            if (err) {
-                                res.send(G.utils.r(req.url, 'Error Finalizando el Documento Temporal Farmacias', 500, {documento_temporal: {}}));
-                                return;
-                            }
+                    if (err) {
+                        res.send(G.utils.r(req.url, 'Error Finalizando el Documento Temporal Farmacias', 500, {documento_temporal: {}}));
+                        return;
+                    }
 
-                            res.send(G.utils.r(req.url, 'Encabezado del pedido almacenado exitosamente', 200, {numero_pedido: id_pedido}));
-                            return;
+                    res.send(G.utils.r(req.url, 'Encabezado del pedido almacenado exitosamente', 200, {numero_pedido: id_pedido}));
+                    return;
 
-                        });
-                        /*Fin - Actualización sw_terminado*/
+                });
+                /*Fin - Actualización sw_terminado*/
 
-                    });
+            });
 
-                //}
+            //}
             //});
             /*Fin - Modificación para estados*/
         }
@@ -1529,9 +1534,9 @@ PedidosFarmacias.prototype.insertarDetallePedidoFarmaciaDefinitivo = function(re
 //insertarProductoDetallePedidoFarmacia
 
 PedidosFarmacias.prototype.insertarProductoDetallePedidoFarmacia = function(req, res) {
-    
+
     var that = this;
-    
+
     var args = req.body.data;
 
     if (args.detalle_pedidos_farmacias === undefined || args.detalle_pedidos_farmacias.numero_pedido === undefined || args.detalle_pedidos_farmacias.empresa_id === undefined
@@ -1544,7 +1549,7 @@ PedidosFarmacias.prototype.insertarProductoDetallePedidoFarmacia = function(req,
         res.send(G.utils.r(req.url, 'bodega_id, codigo_producto o cantidad_solic no están definidos', 404, {}));
         return;
     }
-    
+
     if (args.detalle_pedidos_farmacias.tipo_producto_id === undefined || args.detalle_pedidos_farmacias.cantidad_pendiente === undefined) {
         res.send(G.utils.r(req.url, 'tipo_producto_id o cantidad_pendiente no están definidos', 404, {}));
         return;
@@ -1562,14 +1567,14 @@ PedidosFarmacias.prototype.insertarProductoDetallePedidoFarmacia = function(req,
         res.send(G.utils.r(req.url, 'bodega_id, codigo_producto o cantidad_solic están vacios', 404, {}));
         return;
     }
-    
+
     if (args.detalle_pedidos_farmacias.tipo_producto_id === '' || args.detalle_pedidos_farmacias.cantidad_pendiente === '') {
         res.send(G.utils.r(req.url, 'tipo_producto_id o cantidad_pendiente están vacios', 404, {}));
         return;
     }
 
     /*--*/
-    
+
     var numero_pedido = args.detalle_pedidos_farmacias.numero_pedido;
     var empresa_id = args.detalle_pedidos_farmacias.empresa_id;
     var centro_utilidad_id = args.detalle_pedidos_farmacias.centro_utilidad_id;
@@ -2049,7 +2054,8 @@ function _generarDocumentoPedido(obj, callback) {
 
         callback(nombreTmp);
     });
-};
+}
+;
 
 PedidosFarmacias.prototype.listarDetallePedidoPDF = function(req, res) {
 
@@ -2177,22 +2183,22 @@ PedidosFarmacias.prototype.consultarProductoEnFarmacia = function(req, res) {
     var args = req.body.data;
 
     if (args.productos_farmacias === undefined || args.productos_farmacias.empresa_id === undefined || args.productos_farmacias.centro_utilidad === undefined
-        || args.productos_farmacias.bodega === undefined) {
+            || args.productos_farmacias.bodega === undefined) {
         res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad o bodega no están definidos', 404, {}));
         return;
     }
-    
+
     if (args.productos_farmacias.codigo_producto === undefined) {
         res.send(G.utils.r(req.url, 'codigo_producto no está definido', 404, {}));
         return;
     }
-    
+
     if (args.productos_farmacias.empresa_id === "" || args.productos_farmacias.centro_utilidad === ""
-        || args.productos_farmacias.bodega === "") {
+            || args.productos_farmacias.bodega === "") {
         res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad o bodega están vacios', 404, {}));
         return;
     }
-    
+
     if (args.productos_farmacias.codigo_producto === "") {
         res.send(G.utils.r(req.url, 'codigo_producto está vacio', 404, {}));
         return;
@@ -2202,9 +2208,9 @@ PedidosFarmacias.prototype.consultarProductoEnFarmacia = function(req, res) {
     var centro_utilidad = args.productos_farmacias.centro_utilidad;
     var bodega = args.productos_farmacias.bodega;
     var codigo_producto = args.productos_farmacias.codigo_producto;
-    
-    that.m_pedidos_farmacias.consultar_producto_en_farmacia(empresa_id,centro_utilidad, bodega, codigo_producto, function(err, rows) {
-        
+
+    that.m_pedidos_farmacias.consultar_producto_en_farmacia(empresa_id, centro_utilidad, bodega, codigo_producto, function(err, rows) {
+
         if (err) {
             res.send(G.utils.r(req.url, 'Se ha Generado un Error en la consulta', 500, {error: err}));
             return;
@@ -2214,7 +2220,7 @@ PedidosFarmacias.prototype.consultarProductoEnFarmacia = function(req, res) {
             res.send(G.utils.r(req.url, 'Consulta exitosa!', 200, {resultado_consulta: rows}));
             return;
         }
-    });    
+    });
 
 };
 
@@ -2224,7 +2230,7 @@ PedidosFarmacias.prototype.actualizarEncabezadoPedidoDefinitivo = function(req, 
     var that = this;
 
     var args = req.body.data;
-    
+
     console.log("Argumentos: ");
     console.log(args);
 
@@ -2232,22 +2238,22 @@ PedidosFarmacias.prototype.actualizarEncabezadoPedidoDefinitivo = function(req, 
         res.send(G.utils.r(req.url, 'numero_pedido no está definido', 404, {}));
         return;
     }
-    
+
     if (args.farmacia_destino.farmacia_id === undefined || args.farmacia_destino.centro_utilidad === undefined
-        || args.farmacia_destino.bodega === undefined) {
-    
+            || args.farmacia_destino.bodega === undefined) {
+
         res.send(G.utils.r(req.url, 'farmacia_id, centro_utilidad o bodega no están definidos', 404, {}));
         return;
     }
-    
+
     if (args.farmacia_destino.numero_pedido === "") {
         res.send(G.utils.r(req.url, 'numero_pedido está vacio', 404, {}));
         return;
     }
-    
+
     if (args.farmacia_destino.farmacia_id === "" || args.farmacia_destino.centro_utilidad === ""
-        || args.farmacia_destino.bodega === "") {
-    
+            || args.farmacia_destino.bodega === "") {
+
         res.send(G.utils.r(req.url, 'farmacia_id, centro_utilidad o bodega están vacios', 404, {}));
         return;
     }
@@ -2256,9 +2262,9 @@ PedidosFarmacias.prototype.actualizarEncabezadoPedidoDefinitivo = function(req, 
     var farmacia_id = args.farmacia_destino.farmacia_id;
     var centro_utilidad = args.farmacia_destino.centro_utilidad;
     var bodega = args.farmacia_destino.bodega;
-    
+
     that.m_pedidos_farmacias.actualizar_encabezado_pedido_definitivo(numero_pedido, farmacia_id, centro_utilidad, bodega, function(err, rows) {
-        
+
         if (err) {
             res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Actualización', 500, {error: err}));
             return;
@@ -2268,7 +2274,7 @@ PedidosFarmacias.prototype.actualizarEncabezadoPedidoDefinitivo = function(req, 
             res.send(G.utils.r(req.url, 'Actualización exitosa!', 200, {resultado_consulta: rows}));
             return;
         }
-    });    
+    });
 
 };
 

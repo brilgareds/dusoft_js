@@ -1003,3 +1003,56 @@ IS 'Identificador de la planilla';
 ALTER TABLE inv_planillas_detalle_farmacias ADD CONSTRAINT inv_planillas_detalle_farmacias_unique UNIQUE (empresa_id, prefijo, numero);
 ALTER TABLE inv_planillas_detalle_clientes ADD CONSTRAINT inv_planillas_detalle_clientes_unique UNIQUE (empresa_id, prefijo, numero);
 ALTER TABLE inv_planillas_detalle_empresas ADD CONSTRAINT inv_planillas_detalle_empresas_unique UNIQUE (empresa_id, prefijo, numero);
+
+
+/*==================== Recepciones Ordenes de Compra ===============================*/
+
+/*==== Crear tabla de novedades =========*/
+
+CREATE TABLE "public"."novedades_recepcion_mercancia" (
+  "id" SERIAL, 
+  "codigo" VARCHAR(3) NOT NULL, 
+  "descripcion" VARCHAR NOT NULL, 
+  "estado" CHAR(1) DEFAULT '1'::bpchar, 
+  "fecha_registro" TIMESTAMP(6) WITHOUT TIME ZONE DEFAULT now(), 
+  "usuario_id" INTEGER, 
+  CONSTRAINT "novedades_recepcion_mercancia_pkey" PRIMARY KEY("id"), 
+  CONSTRAINT "novedades_recepcion_mercancia_fk" FOREIGN KEY ("usuario_id")
+    REFERENCES "public"."system_usuarios"("usuario_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE
+) WITH OIDS;
+
+ALTER TABLE "public"."novedades_recepcion_mercancia"
+  ALTER COLUMN "id" SET STATISTICS 0;
+
+ALTER TABLE "public"."novedades_recepcion_mercancia"
+  ALTER COLUMN "codigo" SET STATISTICS 0;
+
+ALTER TABLE "public"."novedades_recepcion_mercancia"
+  ALTER COLUMN "descripcion" SET STATISTICS 0;
+
+ALTER TABLE "public"."novedades_recepcion_mercancia"
+  ALTER COLUMN "estado" SET STATISTICS 0;
+
+ALTER TABLE "public"."novedades_recepcion_mercancia"
+  ALTER COLUMN "fecha_registro" SET STATISTICS 0;
+
+ALTER TABLE "public"."novedades_recepcion_mercancia"
+  ALTER COLUMN "usuario_id" SET STATISTICS 0;
+
+COMMENT ON COLUMN "public"."novedades_recepcion_mercancia"."codigo"
+IS 'Codigo o identificador de la novedad';
+
+COMMENT ON COLUMN "public"."novedades_recepcion_mercancia"."descripcion"
+IS 'Descripcion de la novedad';
+
+COMMENT ON COLUMN "public"."novedades_recepcion_mercancia"."estado"
+IS 'Indica si esta 0=> Inactivo 1=> Activo';
+
+COMMENT ON COLUMN "public"."novedades_recepcion_mercancia"."fecha_registro"
+IS 'Fecha en que registró la novedad';
+
+COMMENT ON COLUMN "public"."novedades_recepcion_mercancia"."usuario_id"
+IS 'Usuario que ingresa el registro';

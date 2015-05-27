@@ -1069,6 +1069,102 @@ PedidosClienteModel.prototype.listado_pedidos_clientes = function(empresa_id, te
     });*/
 };
 
+//************ NUEVO *******************
+PedidosClienteModel.prototype.consultar_encabezado_cotizacion = function(numero_cotizacion, callback) {
+    
+    var sql = " select\
+                    a.pedido_cliente_id_tmp as numero_cotizacion,\
+                    a.empresa_id,\
+                    a.tipo_id_tercero as tipo_id_cliente,\
+                    a.tercero_id as cliente_id,\
+                    to_char(a.fecha_registro, 'dd-mm-yyyy hh:mm:ss') as fecha_registro,\
+                    a.usuario_id,\
+                    to_char(a.fecha_envio, 'dd-mm-yyyy hh:mm:ss') as fecha_envio,\
+                    a.tipo_id_vendedor,\
+                    a.vendedor_id,\
+                    a.estado,\
+                    a.observaciones,\
+                    c.tipo_pais_id as tipo_pais_cliente,\
+                    c.tipo_dpto_id as tipo_departamento_cliente,\
+                    c.tipo_mpio_id as tipo_municipio_cliente,\
+                    c.direccion as direccion_cliente,\
+                    c.telefono as telefono_cliente,\
+                    c.nombre_tercero as nombre_cliente,\
+                    d.nombre as nombre_vendedor,\
+                    d.telefono as telefono_vendedor,\
+                    e.pais,\
+                    f.departamento,\
+                    g.municipio\
+                from ventas_ordenes_pedidos_tmp a\
+                    join terceros c on c.tipo_id_tercero = a.tipo_id_tercero\
+                        and c.tercero_id = a.tercero_id\
+                    join vnts_vendedores d on d.tipo_id_vendedor = a.tipo_id_vendedor\
+                        and d.vendedor_id = a.vendedor_id\
+                    left join tipo_pais as e on e.tipo_pais_id = c.tipo_pais_id\
+                    left join tipo_dptos as f on f.tipo_dpto_id = c.tipo_dpto_id\
+                        and f.tipo_pais_id = e.tipo_pais_id \
+                    left join tipo_mpios as g on g.tipo_mpio_id = c.tipo_mpio_id\
+                        and g.tipo_dpto_id = f.tipo_dpto_id\
+                        and g.tipo_pais_id = e.tipo_pais_id\
+                where a.pedido_cliente_id_tmp = $1";
+    
+    G.db.query(sql, [numero_cotizacion], function(err, rows, result) {
+        callback(err, rows, result);
+    }); 
+
+};
+
+PedidosClienteModel.prototype.consultar_encabezado_pedido = function(numero_pedido, callback) {
+    
+    var sql = " select\
+                    a.pedido_cliente_id as numero_pedido,\
+                    a.empresa_id,\
+                    a.tipo_id_tercero as tipo_id_cliente,\
+                    a.tercero_id as cliente_id,\
+                    to_char(a.fecha_registro, 'dd-mm-yyyy hh:mm:ss') as fecha_registro,\
+                    a.usuario_id,\
+                    to_char(a.fecha_envio, 'dd-mm-yyyy hh:mm:ss') as fecha_envio,\
+                    a.tipo_id_vendedor,\
+                    a.vendedor_id,\
+                    a.estado,\
+                    a.estado_pedido,\
+                    a.fecha_registro_anulacion,\
+                    a.usuario_anulador,\
+                    a.observacion_anulacion,\
+                    a.observacion,\
+                    c.tipo_pais_id as tipo_pais_cliente,\
+                    c.tipo_dpto_id as tipo_departamento_cliente,\
+                    c.tipo_mpio_id as tipo_municipio_cliente,\
+                    c.direccion as direccion_cliente,\
+                    c.telefono as telefono_cliente,\
+                    c.nombre_tercero as nombre_cliente,\
+                    d.nombre as nombre_vendedor,\
+                    d.telefono as telefono_vendedor,\
+                    e.pais,\
+                    f.departamento,\
+                    g.municipio,\
+                    h.estado as estado_separacion\
+                from ventas_ordenes_pedidos a\
+                    join terceros c on c.tipo_id_tercero = a.tipo_id_tercero\
+                        and c.tercero_id = a.tercero_id\
+                    join vnts_vendedores d on d.tipo_id_vendedor = a.tipo_id_vendedor\
+                        and d.vendedor_id = a.vendedor_id\
+                    left join tipo_pais as e on e.tipo_pais_id = c.tipo_pais_id\
+                    left join tipo_dptos as f on f.tipo_dpto_id = c.tipo_dpto_id\
+                        and f.tipo_pais_id = e.tipo_pais_id \
+                    left join tipo_mpios as g on g.tipo_mpio_id = c.tipo_mpio_id\
+                        and g.tipo_dpto_id = f.tipo_dpto_id\
+                        and g.tipo_pais_id = e.tipo_pais_id\
+                    left join inv_bodegas_movimiento_tmp_despachos_clientes h on a.pedido_cliente_id = h.pedido_cliente_id  \
+                where a.pedido_cliente_id = $1";
+    
+    G.db.query(sql, [numero_pedido], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
+//************ NUEVO END ******************
+
 
 /**
  * @api {sql} estado_cotizacion Pedidos clientes model

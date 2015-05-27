@@ -2,7 +2,7 @@
 define(["angular", "js/controllers"
 ], function(angular, controllers) {
 
-    controllers.controller('GestionarRecepcionesController', [
+    controllers.controller('VerificarRecepcionesController', [
         '$scope', '$rootScope', 'Request',
         '$modal', 'API', "socket", "$timeout",
         "AlertService", "localStorageService", "$state", "$filter",
@@ -11,76 +11,41 @@ define(["angular", "js/controllers"
             var that = this;
 
             $scope.datos_view = {
-                btn_agregar_eliminar_registro: true,
-                disabled_agregar_eliminar_registro: true,
-                recepciones: []
+                lista_productos: []
             };
 
+            that.buscar_productos_orden_compra = function() {
 
-            $scope.agregar_eliminar_registro = function() {
-
-                if ($scope.datos_view.btn_agregar_eliminar_registro) {
-                    $scope.agregar_registro();
-                    $scope.datos_view.btn_agregar_eliminar_registro = false;
-                } else {
-                    $scope.eliminar_registro();
-                    $scope.datos_view.btn_agregar_eliminar_registro = true;
+                for (var i = 0; i < 25; i++) {
+                    $scope.datos_view.lista_productos.push({codigo_producto: '0CDRE4512-' + i});
                 }
             };
 
-            $scope.agregar_registro = function() {
-
-                $scope.datos_view.recepciones.push({
-                    disabled_btn: false,
-                    class_btn_add: 'glyphicon glyphicon-plus',
-                    fn_btn_add: $scope.agregar_anexo
-                });
+            $scope.lista_productos = {
+                data: 'datos_view.lista_productos',
+                enableColumnResize: true,
+                enableRowSelection: false,
+                columnDefs: [
+                    {field: 'codigo_producto', displayName: 'Codigo Producto', width: "10%"},
+                    {field: 'get_transportadora().get_descripcion()', displayName: 'Transportador', width: "15%"},
+                    {field: 'get_ciudad().get_nombre_ciudad()', displayName: 'Proveedor', width: "25%"},
+                    {field: 'get_fecha_despacho()', displayName: "Orden Compra", width: "9%"},
+                    {field: 'get_cantidad_cajas()', displayName: 'Cajas', width: "5%"},
+                    {field: 'get_cantidad_neveras()', displayName: 'Neveras', width: "5%"},
+                    {field: 'get_descripcion_estado()', displayName: "Novedad", width: "15%"},
+                    {field: 'get_fecha_registro()', displayName: "F. Registro", width: "9%"},
+                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",
+                        cellTemplate: '<div class="btn-group">\
+                                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
+                                            <ul class="dropdown-menu dropdown-options">\
+                                                <li><a href="javascript:void(0);" ng-click="verificar_recepcion(row.entity)" >Verifcar</a></li>\
+                                            </ul>\
+                                       </div>'
+                    }
+                ]
             };
 
-            $scope.eliminar_registro = function() {
-
-                $scope.datos_view.recepciones.pop();
-            };
-
-            $scope.agregar_anexo = function(row) {
-
-                row.disabled_btn = true;
-
-                $scope.datos_view.disabled_agregar_eliminar_registro = true;
-
-                $scope.datos_view.recepciones.push({
-                    disabled_btn: false,
-                    class_btn_add: 'glyphicon glyphicon-minus',
-                    fn_btn_add: $scope.eliminar_anexo
-                });
-            };
-
-            $scope.eliminar_anexo = function() {
-                $scope.datos_view.recepciones.pop();
-
-                var row = $scope.datos_view.recepciones[$scope.datos_view.recepciones.length - 1];
-                row.disabled_btn = false;
-
-                $scope.datos_view.disabled_agregar_eliminar_registro = true;
-            };
-
-            $scope.crear_recepcion = function(row) {
-
-                $scope.datos_view.disabled_agregar_eliminar_registro = false;
-                $scope.datos_view.btn_agregar_eliminar_registro = true;
-
-                row.disabled_btn = true;
-            };
-
-            $scope.cancelar_recepcion = function() {
-                $state.go('ListarRecepciones');
-            };
-
-            $scope.finalizar_recepcion = function() {
-                $state.go('ListarRecepciones');
-            };
-
-            $scope.agregar_registro();
+            that.buscar_productos_orden_compra();
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;

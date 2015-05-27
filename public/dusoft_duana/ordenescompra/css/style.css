@@ -66,9 +66,9 @@ legend.medium-letter{
     margin-top: 15px;
 }
 
-.btn span.glyphicon {    			
+.btn span.glyphicon.radio-btn {    			
 	opacity: 0;				
 }
-.btn.active span.glyphicon {				
+.btn.active span.glyphicon.radio-btn {				
 	opacity: 1;				
 }

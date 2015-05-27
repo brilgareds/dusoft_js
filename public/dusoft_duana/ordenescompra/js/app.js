@@ -25,6 +25,9 @@ define([
     "controllers/genererarordenes/ListarOrdenesController",
     "controllers/genererarordenes/GestionarOrdenesController",
     "controllers/novedadesordenes/GestionarNovedadesController",
+    "controllers/recepcionmercancia/ListarRecepcionesController",
+    "controllers/recepcionmercancia/GestionarRecepcionesController",
+    "controllers/recepcionmercancia/VerificarRecepcionesController",
     "includes/helpersdirectives/visualizarReporte"
 ], function(angular) {
     /* App Module and its dependencies */
@@ -69,12 +72,26 @@ define([
                     url: "/OrdenCompra",
                     text: "Administración Ordenes de Compra",
                     templateUrl: "views/genererarordenes/gestionarordenes.html",
-                    parent_name:"ListarOrdenes"
+                    parent_name: "ListarOrdenes"
                 }).state('Novedades', {
                     url: "/Novedades",
                     text: "Administración Novedades Ordenes de Compra",
                     templateUrl: "views/novedadesordenes/gestionarnovedades.html",
-                    parent_name:"ListarOrdenes"
+                    parent_name: "ListarOrdenes"
+                }).state('ListarRecepciones', {
+                    url: "/ListarRecepciones",
+                    text: "Recepciones de Mercancía",
+                    templateUrl: "views/recepcionmercancia/listarrecepciones.html"
+                }).state('RecepcionMercancia', {
+                    url: "/RecepcionMercancia",
+                    text: "Recepción de Mercancía",
+                    templateUrl: "views/recepcionmercancia/gestionarrecepciones.html",
+                    parent_name: "ListarRecepciones"
+                }).state('VerificarMercancia', {
+                    url: "/VerificarMercancia",
+                    text: "Verificación de Mercancía",
+                    templateUrl: "views/recepcionmercancia/verificarrecepciones.html",
+                    parent_name: "ListarRecepciones"
                 });
 
                 if ($location.path() === "")

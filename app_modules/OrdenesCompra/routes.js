@@ -84,5 +84,7 @@ module.exports = function(app, di_container) {
     app.post('/api/OrdenesCompra/reporteOrdenCompra', function(req, res) {
         c_ordenes_compra.reporteOrdenCompra(req, res);
     });
+    
+    
 
 };

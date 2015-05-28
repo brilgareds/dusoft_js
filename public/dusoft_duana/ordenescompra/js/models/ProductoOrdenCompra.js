@@ -11,6 +11,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.tiene_valor_pactado = tiene_valor_pactado || "";
                 this.presentacion = presentacion || "";
                 this.cantidad_presentacion = cantidad_presentacion || "";
+                this.cantidad_recibida = 0;
 
             }
 
@@ -95,6 +96,16 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
 
             ProductoOrdenCompra.prototype.get_politicas = function() {
                 return this.politicas;
+            };
+            
+            //Cantidad Recibida            
+            ProductoOrdenCompra.prototype.set_cantidad_recibida = function(cantidad_recibida) {
+                this.cantidad_recibida = cantidad_recibida;
+            };
+
+            ProductoOrdenCompra.prototype.get_cantidad_recibida = function() {
+
+                return this.cantidad_recibida;
             };
 
             return this;

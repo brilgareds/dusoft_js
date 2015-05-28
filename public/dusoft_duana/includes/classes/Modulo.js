@@ -116,17 +116,6 @@ define(["angular", "js/models"], function(angular, models) {
 
             };
 
-            Modulo.prototype.eliminarVariable = function(variable) {
-
-                for (var i in this.variables) {
-                    if (this.variables[i].id === variable.id) {
-                        this.variables.splice(i, 1);
-                        break;
-                    }
-                }
-
-            };
-
             Modulo.prototype.agregarVariable = function(variable) {
 
                 for (var i in this.variables) {

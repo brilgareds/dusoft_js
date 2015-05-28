@@ -1003,3 +1003,126 @@ IS 'Identificador de la planilla';
 ALTER TABLE inv_planillas_detalle_farmacias ADD CONSTRAINT inv_planillas_detalle_farmacias_unique UNIQUE (empresa_id, prefijo, numero);
 ALTER TABLE inv_planillas_detalle_clientes ADD CONSTRAINT inv_planillas_detalle_clientes_unique UNIQUE (empresa_id, prefijo, numero);
 ALTER TABLE inv_planillas_detalle_empresas ADD CONSTRAINT inv_planillas_detalle_empresas_unique UNIQUE (empresa_id, prefijo, numero);
+
+
+/*==================== Recepciones Ordenes de Compra ===============================*/
+
+/*==== Crear tabla de novedades =========*/
+
+CREATE TABLE "public"."novedades_recepcion_mercancia" (
+  "id" SERIAL, 
+  "codigo" VARCHAR(3) NOT NULL, 
+  "descripcion" VARCHAR NOT NULL, 
+  "estado" CHAR(1) DEFAULT '1'::bpchar, 
+  "fecha_registro" TIMESTAMP(6) WITHOUT TIME ZONE DEFAULT now(), 
+  "usuario_id" INTEGER, 
+  CONSTRAINT "novedades_recepcion_mercancia_pkey" PRIMARY KEY("id"), 
+  CONSTRAINT "novedades_recepcion_mercancia_fk" FOREIGN KEY ("usuario_id")
+    REFERENCES "public"."system_usuarios"("usuario_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE
+) WITH OIDS;
+
+
+COMMENT ON COLUMN "public"."novedades_recepcion_mercancia"."codigo"
+IS 'Codigo o identificador de la novedad';
+
+COMMENT ON COLUMN "public"."novedades_recepcion_mercancia"."descripcion"
+IS 'Descripcion de la novedad';
+
+COMMENT ON COLUMN "public"."novedades_recepcion_mercancia"."estado"
+IS 'Indica si esta 0=> Inactivo 1=> Activo';
+
+COMMENT ON COLUMN "public"."novedades_recepcion_mercancia"."fecha_registro"
+IS 'Fecha en que registró la novedad';
+
+COMMENT ON COLUMN "public"."novedades_recepcion_mercancia"."usuario_id"
+IS 'Usuario que ingresa el registro';
+
+
+/* =================== Tabla para ingresar las recepciones de mercancia ============*/
+CREATE TABLE "public"."recepcion_mercancia" (
+  "id" SERIAL, 
+  "empresa_id" VARCHAR(2) NOT NULL, 
+  "codigo_proveedor_id" INTEGER NOT NULL, 
+  "orden_pedido_id" INTEGER, 
+  "inv_transportador_id" INTEGER, 
+  "novedades_recepcion_id" INTEGER, 
+  "numero_guia" VARCHAR(20) NOT NULL, 
+  "canitdad_cajas" INTEGER DEFAULT 0, 
+  "cantidad_neveras" INTEGER DEFAULT 0, 
+  "temperatura_neveras" REAL, 
+  "contiene_medicamentos" CHAR(1) DEFAULT 0, 
+  "contiene_dispositivos" CHAR(1) DEFAULT 0, 
+  "fecha_recepcion" TIMESTAMP WITHOUT TIME ZONE DEFAULT now(), 
+  "fecha_registro" TIMESTAMP WITHOUT TIME ZONE DEFAULT now(), 
+  CONSTRAINT "recepcion_mercancia_pkey" PRIMARY KEY("id"), 
+  CONSTRAINT "recepcion_mercancia_fk" FOREIGN KEY ("empresa_id")
+    REFERENCES "public"."empresas"("empresa_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "recepcion_mercancia_fk1" FOREIGN KEY ("codigo_proveedor_id")
+    REFERENCES "public"."terceros_proveedores"("codigo_proveedor_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "recepcion_mercancia_fk2" FOREIGN KEY ("orden_pedido_id")
+    REFERENCES "public"."compras_ordenes_pedidos"("orden_pedido_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "recepcion_mercancia_fk3" FOREIGN KEY ("inv_transportador_id")
+    REFERENCES "public"."inv_transportadoras"("transportadora_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "recepcion_mercancia_fk4" FOREIGN KEY ("novedades_recepcion_id")
+    REFERENCES "public"."novedades_recepcion_mercancia"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE
+) WITH OIDS;
+
+
+COMMENT ON TABLE "public"."recepcion_mercancia"
+IS 'Tabla para guardaar las recepciones de mercancias por ordenes de compras';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."empresa_id"
+IS 'Identificador de la empresa';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."codigo_proveedor_id"
+IS 'Codigo del proveedor';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."orden_pedido_id"
+IS 'Numero de la orden de compra';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."novedades_recepcion_id"
+IS 'Identificador de la novedad';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."numero_guia"
+IS 'Numero de la guia de la transportadora';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."canitdad_cajas"
+IS 'Cantidad de cajas enviadas';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."cantidad_neveras"
+IS 'Cantidad neveras enviadas';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."temperatura_neveras"
+IS 'Temperatura de las neveras';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."contiene_medicamentos"
+IS 'Si el envio contiene medicamentos';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."contiene_dispositivos"
+IS 'Si el envio contiene dispositivos medicos';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."fecha_recepcion"
+IS 'Fecha en que se recepciona la mercancia';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."fecha_registro"
+IS 'Fecha en que se realiza el registro';
+
+

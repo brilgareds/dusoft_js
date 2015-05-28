@@ -47,7 +47,7 @@ define(["angular", "js/models"], function(angular, models) {
 
         this.getClass = function(){
             return Pedido;
-        }
+        };
 
         //we return new instance of usermodel class  because factory is a singleton and we dont need like that
         this.get = function() {

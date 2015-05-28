@@ -188,6 +188,37 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     $scope.rootCreaCotizaciones.paginaactual = 1;
                 }
                 
+                //Inicializa encabezado cotización para recarga
+                if(localStorageService.get("cotizacionseleccionada") !== undefined && localStorageService.get("cotizacionseleccionada") !== "" && localStorageService.get("cotizacionseleccionada") !== null) {
+                    
+                    console.log(">>> El LocalStorage: ",localStorageService.get("cotizacionseleccionada"));
+                    
+                    if(localStorageService.get("cotizacionseleccionada").length > 0) {
+
+                        var numero_cotizacion = localStorageService.get("cotizacionseleccionada");
+
+                        that.consultarEncabezadoCotizacion(numero_cotizacion, function(data){
+                            var cotizacion = that.crearCotizacion(data);
+                            $scope.rootCreaCotizaciones.Empresa.setPedidoSeleccionado(cotizacion);
+                        });
+
+                    }
+                }
+
+                //Inicializa encabezado pedido para recarga
+                if(localStorageService.get("pedidoseleccionado") !== undefined && localStorageService.get("pedidoseleccionado") !== "" && localStorageService.get("pedidoseleccionado") !== null) {
+                    if(localStorageService.get("pedidoseleccionado").length > 0) {
+
+                        var numero_pedido = localStorageService.get("pedidoseleccionado");
+
+                        that.consultarEncabezadoPedido(numero_pedido, function(data){
+                            var pedido = that.crearPedido(data);
+                            $scope.rootCreaCotizaciones.Empresa.setPedidoSeleccionado(pedido);
+                        });
+
+                    }
+                }
+                
                 //Si no hay Pedido/Cotizacion Seleccionado, se crea una Cotización Vacia. Para Pedidos el llegar a éste punto implica un Pedido Seleccionado
                 if(that.empty($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado())){
                     
@@ -197,27 +228,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     $scope.rootCreaCotizaciones.bloquear_incluir_producto = true;
                     $scope.rootCreaCotizaciones.bloquear_upload = true;
                     
-                    if(localStorageService.get("cotizacionseleccionada") !== "" || localStorageService.get("cotizacionseleccionada") !== undefined) {
-                        
-                        that.consultarDetalleCotizacion(function(data){
-
-                            var detalle = data.obj.resultado_consulta;
-                            that.renderDetalleCotizacion(detalle);
-
-                        });
-                        
-                    }
-                                    //localStorageService.set("pedidoseleccionado", "");
                     localStorageService.set("cotizacionseleccionada", "");
-                    
                     localStorageService.set("pedidoseleccionado", "");
-                    
-                    that.consultarDetallePedido(function(data){
 
-                        var detalle = data.obj.resultado_consulta;
-                        that.renderDetalleCotizacion(detalle);
-
-                    });
                 }
                 //Si hay Pedido/Cotizacion Seleccionado recibe el objeto Pedido/Cotización Correspondiente
                 //debe haber numero_cotizacion o numero_pedido. Según sea, carga iterfaz para manipular Cotización o Pedido. Validar según sea el caso.
@@ -290,33 +303,33 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                                     });
                                 }
-                                else {
-                                    
-                                    if (localStorageService.get("cotizacionseleccionada").length > 0) {
-                                        $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setNumeroCotizacion(localStorageService.get("cotizacionseleccionada"));
-                                        
-                                        that.consultarEncabezadoCotizacion(function(data){
-                                            
-                                            var cotizacion = that.crearCotizacion(data);
-                                            
-                                            $scope.rootCreaCotizaciones.Empresa.setPedidoSeleccionado(cotizacion);
-                                            
-                                        });
-                                    }
-                                    
-                                    if (localStorageService.get("pedidoseleccionado").length > 0) {
-                                        $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().set_numero_pedido(localStorageService.get("pedidoseleccionado"));
-                                        
-                                        that.consultarEncabezadoPedido(function(data){
-                                            
-                                            var pedido = that.crearPedido(data);
-                                            
-                                            $scope.rootCreaCotizaciones.Empresa.setPedidoSeleccionado(pedido);
-                                            
-                                        });
-                                    }
-                                    
-                                }
+//                                else {
+//                                    
+//                                    if (localStorageService.get("cotizacionseleccionada").length > 0) {
+//                                        $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setNumeroCotizacion(localStorageService.get("cotizacionseleccionada"));
+//                                        
+//                                        that.consultarEncabezadoCotizacion(function(data){
+//                                            
+//                                            var cotizacion = that.crearCotizacion(data);
+//                                            
+//                                            $scope.rootCreaCotizaciones.Empresa.setPedidoSeleccionado(cotizacion);
+//                                            
+//                                        });
+//                                    }
+//                                    
+//                                    if (localStorageService.get("pedidoseleccionado").length > 0) {
+//                                        $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().set_numero_pedido(localStorageService.get("pedidoseleccionado"));
+//                                        
+//                                        that.consultarEncabezadoPedido(function(data){
+//                                            
+//                                            var pedido = that.crearPedido(data);
+//                                            
+//                                            $scope.rootCreaCotizaciones.Empresa.setPedidoSeleccionado(pedido);
+//                                            
+//                                        });
+//                                    }
+//                                    
+//                                }
                             });
                         });
                     });
@@ -327,13 +340,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
             
             /*NUEVO 26-05-2015*/
-            that.consultarEncabezadoCotizacion = function(callback) {
+            that.consultarEncabezadoCotizacion = function(numero_cotizacion, callback) {
 
                 var obj = {
                     session: $scope.rootCreaCotizaciones.session,
                     data: {
                         cotizacion_cliente: {
-                            numero_cotizacion: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion()
+                            numero_cotizacion: numero_cotizacion
                         }
                     }
                 };
@@ -355,13 +368,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 });
             };
             
-            that.consultarEncabezadoPedido = function(callback) {
+            that.consultarEncabezadoPedido = function(numero_pedido, callback) {
 
                 var obj = {
                     session: $scope.rootCreaCotizaciones.session,
                     data: {
                         pedido_cliente: {
-                            numero_pedido: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido()
+                            numero_pedido: numero_pedido
                         }
                     }
                 };
@@ -385,7 +398,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             that.crearCotizacion = function(data) {
                 
-                var obj = data.resultado_consulta[0];
+                console.log(">>>> Data: ", data);
+                
+                var obj = data.obj.resultado_consulta[0];
+//                var obj = {};
+//                
+//                return obj;
 
                 var cotizacion = PedidoVenta.get();
                 var observacion = obj.observaciones.split("||obs_cartera||");
@@ -450,7 +468,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             that.crearPedido = function(data) {
                 
-                var obj = data.resultado_consulta[0];
+                var obj = data.obj.resultado_consulta[0];
 
                 var pedido = PedidoVenta.get();
                 var observacion = obj.observacion.split("||obs_cartera||");

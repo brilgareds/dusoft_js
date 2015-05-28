@@ -141,4 +141,14 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.cambiarEstadoAprobacionPedido(req, res);
     });
     
+    //consultarEncabezadoCotizacion
+    app.post('/api/PedidosClientes/consultarEncabezadoCotizacion', function(req, res) {
+        c_pedidos_clientes.consultarEncabezadoCotizacion(req, res);
+    });
+    
+    //consultarEncabezadoPedido
+    app.post('/api/PedidosClientes/consultarEncabezadoPedido', function(req, res) {
+        c_pedidos_clientes.consultarEncabezadoPedido(req, res);
+    });
+    
 };

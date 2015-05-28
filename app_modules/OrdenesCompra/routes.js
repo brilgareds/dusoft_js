@@ -80,10 +80,17 @@ module.exports = function(app, di_container) {
     });
 
 
-    //Generar Reporte Orden Compra
+    // Generar Reporte Orden Compra
     app.post('/api/OrdenesCompra/reporteOrdenCompra', function(req, res) {
         c_ordenes_compra.reporteOrdenCompra(req, res);
     });
+    
+    
+    // Insertar recepcion mercancia
+    app.post('/api/OrdenesCompra/listarRecepcionesMercancia', function(req, res) {
+        c_ordenes_compra.listarRecepcionesMercancia(req, res);
+    });
+    
     
     
 

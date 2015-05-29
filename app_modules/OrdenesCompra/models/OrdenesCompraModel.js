@@ -425,7 +425,7 @@ OrdenesCompraModel.prototype.listar_recepciones_mercancia = function(fecha_inici
 
 
 // Consultar recepcion de mercancia.
-OrdenesCompraModel.prototype.listar_recepciones_mercancia = function(recepcion_mercancia_id, callback) {
+OrdenesCompraModel.prototype.consultar_recepcion_mercancia = function(recepcion_mercancia_id, callback) {
 
     var sql = " select \
                 a.id,\

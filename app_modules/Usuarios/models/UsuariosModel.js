@@ -242,6 +242,13 @@ UsuariosModel.prototype.asignarRolUsuario = function(login_id, empresa_id, rol_i
 
     G.db.begin(function() {
         that.guardarRolUsuario(login_id, empresa_id, rol_id, usuario_id, function(err, result) {
+            
+            if(err){
+                callback(err);
+                return;
+            }
+            
+            
             var rows = result.rows;
             var login_empresa_id = (rows.length > 0) ? rows[0].id : undefined;
             //callback(err, id);

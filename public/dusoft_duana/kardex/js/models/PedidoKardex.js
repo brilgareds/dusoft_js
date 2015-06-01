@@ -17,7 +17,7 @@ define(["angular","js/models","includes/classes/Pedido"], function(angular, mode
 
 		this.get = function(datos){
 			return new PedidoKardex(datos);
-		}
+		};
 
 		return this;
 	}]);

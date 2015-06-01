@@ -688,7 +688,6 @@ CREATE TABLE "public"."login_modulos_opciones" (
     NOT DEFERRABLE
 ) WITH OIDS;
 
-
 CREATE TABLE "public"."login_centros_utilidad_bodega" (
   "id" SERIAL, 
   "login_empresa_id" INTEGER, 
@@ -703,8 +702,8 @@ CREATE TABLE "public"."login_centros_utilidad_bodega" (
   CONSTRAINT "login_centros_utilidad_bodega_pkey" PRIMARY KEY("id"), 
   CONSTRAINT "login_centros_utilidad_bodega_fk" FOREIGN KEY ("login_empresa_id")
     REFERENCES "public"."login_empresas"("id")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
     NOT DEFERRABLE, 
   CONSTRAINT "login_centros_utilidad_bodega_fk1" FOREIGN KEY ("empresa_id")
     REFERENCES "public"."empresas"("empresa_id")

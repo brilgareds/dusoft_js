@@ -147,7 +147,7 @@ define(["angular", "js/controllers", 'models/Farmacia',
                     {field: 'cantidad_separada', displayName: "Ingresado"},
                     {field: 'cantidad_solicitada_real', displayName: "Solicitado"},
                     //{field: 'cantidad_solicitada', displayName: "Solicitado"},
-                    {field: 'justificacion_separador', displayName: "Justificación", width: 350},
+                    //{field: 'justificacion_separador', displayName: "Justificación", width: 350},
                     {field: 'opciones', displayName: "", cellClass: "txt-center", width: 40,
                         cellTemplate: ' <div class="row">\n\
                                             <button class="btn btn-default btn-xs" ng-click="onAbrirVentanaLotes(DocumentoTemporal,documento_despacho, row)">\n\
@@ -197,7 +197,7 @@ define(["angular", "js/controllers", 'models/Farmacia',
                     {field: 'movimiento', displayName: "Opciones", width: 200, cellClass: "txt-center",
                         cellTemplate: '<div ng-switch="row.entity.caja_cerrada">\
                             <button ng-switch-when="0"  class="btn btn-default btn-xs" ng-click="onCerrarCaja(row.entity)"><span class="glyphicon glyphicon-ok"></span> Cerrar</button>\
-                            <button ng-switch-when="1" class="btn btn-default btn-xs" ng-click="onImprimirRotulo(2,DocumentoTemporal.pedido.numero_pedido,row.entity.numero_caja)"><span class="glyphicon glyphicon-print"></span> Imprimir</button>\
+                            <button ng-switch-when="1" class="btn btn-default btn-xs" ng-click="onImprimirRotulo(2,DocumentoTemporal.pedido.numero_pedido,row.entity.numero_caja, row.entity.tipo)"><span class="glyphicon glyphicon-print"></span> Imprimir</button>\
                         </div>'
                     }
 

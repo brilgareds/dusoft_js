@@ -9,13 +9,13 @@ define(["angular","js/models","includes/classes/Farmacia"], function(angular, mo
 		}
 
 		//herencia
-		FarmaciaKardex.prototype = Object.create(Farmacia.getClass().prototype)
+		FarmaciaKardex.prototype = Object.create(Farmacia.getClass().prototype);
 
 
 
 		this.get = function(farmacia_id, bodega_id, nombre_farmacia, nombre_bodega){
 			return new FarmaciaKardex(farmacia_id, bodega_id, nombre_farmacia, nombre_bodega);
-		}
+		};
 
 		return this;
 	}]);

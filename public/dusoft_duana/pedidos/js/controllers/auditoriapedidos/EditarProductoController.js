@@ -770,8 +770,6 @@ define(["angular", "js/controllers",'models/ClientePedido',
          };
          
          that.cerrarCaja = function(){
-                          
-             
              var url = API.DOCUMENTOS_TEMPORALES.GENERAR_ROTULO;
              var obj = {
                  session:$scope.session,

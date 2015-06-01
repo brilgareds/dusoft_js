@@ -79,10 +79,42 @@ module.exports = function(app, di_container) {
         c_ordenes_compra.subirArchivoNovedades(req, res);
     });
 
-
-    //Generar Reporte Orden Compra
+    // Generar Reporte Orden Compra
     app.post('/api/OrdenesCompra/reporteOrdenCompra', function(req, res) {
         c_ordenes_compra.reporteOrdenCompra(req, res);
+    });    
+    
+    // Listar recepciones mercancia
+    app.post('/api/OrdenesCompra/listarRecepcionesMercancia', function(req, res) {
+        c_ordenes_compra.listarRecepcionesMercancia(req, res);
     });
+    
+    // consultar recepcion mercancia
+    app.post('/api/OrdenesCompra/consultarRecepcionMercancia', function(req, res) {
+        c_ordenes_compra.consultarRecepcionMercancia(req, res);
+    });
+    
+    // insertar recepcion mercancia
+    app.post('/api/OrdenesCompra/insertarRecepcionMercancia', function(req, res) {
+        c_ordenes_compra.insertarRecepcionMercancia(req, res);
+    });
+    
+    // modificar recepcion mercancia
+    app.post('/api/OrdenesCompra/modificarRecepcionMercancia', function(req, res) {
+        c_ordenes_compra.modificarRecepcionMercancia(req, res);
+    });
+    
+    // insertar productos recepcion mercancia
+    app.post('/api/OrdenesCompra/insertarProductosRecepcionMercancia', function(req, res) {
+        c_ordenes_compra.insertarProductosRecepcionMercancia(req, res);
+    });
+    
+    // modificar productos recepcion mercancia
+    app.post('/api/OrdenesCompra/modificarProductosRecepcionMercancia', function(req, res) {
+        c_ordenes_compra.modificarProductosRecepcionMercancia(req, res);
+    });
+    
+    
+    
 
 };

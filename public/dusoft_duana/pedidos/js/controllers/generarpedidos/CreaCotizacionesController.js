@@ -188,8 +188,68 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     $scope.rootCreaCotizaciones.paginaactual = 1;
                 }
                 
+                //Inicializa encabezado cotización para recarga
+                if(localStorageService.get("cotizacionseleccionada") !== undefined && localStorageService.get("cotizacionseleccionada") !== "" && localStorageService.get("cotizacionseleccionada") !== null) {
+                    
+                    console.log(">>> El LocalStorage: ",localStorageService.get("cotizacionseleccionada"));
+                    console.log(">>>> CASO COTIZACION");
+                    
+                    if(localStorageService.get("cotizacionseleccionada").length > 0) {
+
+                        var numero_cotizacion = localStorageService.get("cotizacionseleccionada");
+
+                        that.consultarEncabezadoCotizacion(numero_cotizacion, function(data){
+                            var cotizacion = that.crearCotizacion(data);
+                            $scope.rootCreaCotizaciones.Empresa.setPedidoSeleccionado(cotizacion);
+                            
+                            console.log(">>>> EDITABLE Cotización - tipo: ",typeof JSON.parse(localStorageService.get("editable")));
+                            console.log(">>>> EDITABLE Cotización: ",JSON.parse(localStorageService.get("editable")));
+                            
+                            $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setEditable(JSON.parse(localStorageService.get("editable")));
+                            
+                            //console.log(">>>> EDITABLE Cotización: ",$scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEditable());
+                            
+                            console.log(">>> INFO Pedido Seleccionado Cotización: ",$scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado());
+                            
+                            //Ejecutar aquí mismo toda la recarga de datos debido que a la asincronía. Solo así se puede garantizar la ejecución
+                            that.completarEncabezadoAndGenerarDetalle();
+                        });
+
+                    }
+                    
+                }
+
+                //Inicializa encabezado pedido para recarga
+                else if(localStorageService.get("pedidoseleccionado") !== undefined && localStorageService.get("pedidoseleccionado") !== "" && localStorageService.get("pedidoseleccionado") !== null) {
+                    
+                    console.log(">>>> CASO PEDIDO");
+                    
+                    if(localStorageService.get("pedidoseleccionado").length > 0) {
+
+                        var numero_pedido = localStorageService.get("pedidoseleccionado");
+
+                        that.consultarEncabezadoPedido(numero_pedido, function(data){
+                            var pedido = that.crearPedido(data);
+                            $scope.rootCreaCotizaciones.Empresa.setPedidoSeleccionado(pedido);
+                            
+                            console.log(">>>> EDITABLE Pedido: ",localStorageService.get("editable"));
+                            
+                            $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setEditable(JSON.parse(localStorageService.get("editable")));
+                            
+                            console.log(">>> INFO Pedido Seleccionado Pedido: ",$scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado());
+                            
+                            //Ejecutar aquí mismo toda la recarga de datos debido que a la asincronía. Solo así se puede garantizar la ejecución
+                            that.completarEncabezadoAndGenerarDetalle();
+                        });
+
+                    }
+
+                }
+                
                 //Si no hay Pedido/Cotizacion Seleccionado, se crea una Cotización Vacia. Para Pedidos el llegar a éste punto implica un Pedido Seleccionado
-                if(that.empty($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado())){
+                else if(that.empty($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado())){
+                    
+                    console.log(">>>> CASO VACIO");
                     
                     that.crearPedidoSeleccionadoEmpresa(that.crearPedidoVacio());
 
@@ -197,143 +257,176 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     $scope.rootCreaCotizaciones.bloquear_incluir_producto = true;
                     $scope.rootCreaCotizaciones.bloquear_upload = true;
                     
-                    if(localStorageService.get("cotizacionseleccionada") !== "" || localStorageService.get("cotizacionseleccionada") !== undefined) {
-                        
-                        that.consultarDetalleCotizacion(function(data){
+//                    localStorageService.set("cotizacionseleccionada", "");
+//                    localStorageService.set("pedidoseleccionado", "");
 
-                            var detalle = data.obj.resultado_consulta;
-                            that.renderDetalleCotizacion(detalle);
-
-                        });
-                        
-                    }
-                                    //localStorageService.set("pedidoseleccionado", "");
-                    localStorageService.set("cotizacionseleccionada", "");
-                    
-                    localStorageService.set("pedidoseleccionado", "");
-                    
-                    that.consultarDetallePedido(function(data){
-
-                        var detalle = data.obj.resultado_consulta;
-                        that.renderDetalleCotizacion(detalle);
-
-                    });
                 }
                 //Si hay Pedido/Cotizacion Seleccionado recibe el objeto Pedido/Cotización Correspondiente
                 //debe haber numero_cotizacion o numero_pedido. Según sea, carga iterfaz para manipular Cotización o Pedido. Validar según sea el caso.
                 else{
-                    $scope.rootCreaCotizaciones.seleccion_vendedor = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getVendedor().getId();
-                    
-                    $scope.rootCreaCotizaciones.observacion = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getObservacion();
-                    
-                    //Hacer aquí consultas para traer nombres de pais, departamento y ciudad. Luego armar Ubicación con setUbicación
-                    
-                    var tipo_pais_id = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getTipoPaisId();
-                    var tipo_dpto_id = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getTipoDepartamentoId();
-                    var tipo_mpio_id = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getTipoMunicipioId();
-                    
-                    var nombre_pais = '';
-                    var nombre_departamento = '';
-                    var nombre_municipio = '';
-                    
-                    that.nombrePais(tipo_pais_id, function(result_nombre_pais){
-                        
-                        nombre_pais = result_nombre_pais;
-                        
-                        that.nombreDepartamento(tipo_pais_id, tipo_dpto_id, function(result_nombre_departamento){
-                            
-                            nombre_departamento = result_nombre_departamento;
-                            
-                            that.nombreMunicipio(tipo_pais_id, tipo_dpto_id, tipo_mpio_id, function(result_nombre_municipio){
-                                
-                                nombre_municipio = result_nombre_municipio;
-                                
-                                $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setPais(nombre_pais);
-                                $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setDepartamento(nombre_departamento);
-                                $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setMunicipio(nombre_municipio);
-
-                                $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setUbicacion();
-                                
-                                if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== undefined)
-                                {
-                                    $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setEncabezadoBloqueado(true);
-                                    $scope.rootCreaCotizaciones.bloquear_incluir_producto = false;
-                                    //Por seguridad pero no influye mucho
-                                    $scope.rootCreaCotizaciones.bloquear_upload = true;
-                                    
-                                    localStorageService.set("cotizacionseleccionada", $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion());
-                                    localStorageService.set("pedidoseleccionado", "");
-
-                                    that.consultarDetalleCotizacion(function(data){
-
-                                        var detalle = data.obj.resultado_consulta;
-                                        that.renderDetalleCotizacion(detalle);
-
-                                    });
-                                }                       
-                                else if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido() !== undefined){
-
-                                    $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setEncabezadoBloqueado(true);
-                                    $scope.rootCreaCotizaciones.bloquear_incluir_producto = false;
-                                    //Por seguridad pero no influye mucho
-                                    $scope.rootCreaCotizaciones.bloquear_upload = true;
-
-                                    $scope.rootCreaCotizaciones.es_cotizacion = false;
-                                    
-                                    localStorageService.set("pedidoseleccionado", $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido());
-                                    localStorageService.set("cotizacionseleccionada", "");
-
-                                    that.consultarDetallePedido(function(data){
-
-                                        var detalle = data.obj.resultado_consulta;
-                                        that.renderDetalleCotizacion(detalle);
-
-                                    });
-                                }
-                                else {
-                                    
-                                    if (localStorageService.get("cotizacionseleccionada").length > 0) {
-                                        $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setNumeroCotizacion(localStorageService.get("cotizacionseleccionada"));
-                                        
-                                        that.consultarEncabezadoCotizacion(function(data){
-                                            
-                                            var cotizacion = that.crearCotizacion(data);
-                                            
-                                            $scope.rootCreaCotizaciones.Empresa.setPedidoSeleccionado(cotizacion);
-                                            
-                                        });
-                                    }
-                                    
-                                    if (localStorageService.get("pedidoseleccionado").length > 0) {
-                                        $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().set_numero_pedido(localStorageService.get("pedidoseleccionado"));
-                                        
-                                        that.consultarEncabezadoPedido(function(data){
-                                            
-                                            var pedido = that.crearPedido(data);
-                                            
-                                            $scope.rootCreaCotizaciones.Empresa.setPedidoSeleccionado(pedido);
-                                            
-                                        });
-                                    }
-                                    
-                                }
-                            });
-                        });
-                    });
-                    
-                                                
+                    console.log(">>>> CASO CAMBIO VISTA");
+                    that.completarEncabezadoAndGenerarDetalle();
+//                    $scope.rootCreaCotizaciones.seleccion_vendedor = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getVendedor().getId();
+//                    
+//                    $scope.rootCreaCotizaciones.observacion = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getObservacion();
+//                    
+//                    //Hacer aquí consultas para traer nombres de pais, departamento y ciudad. Luego armar Ubicación con setUbicación
+//                    
+//                    var tipo_pais_id = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getTipoPaisId();
+//                    var tipo_dpto_id = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getTipoDepartamentoId();
+//                    var tipo_mpio_id = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getTipoMunicipioId();
+//                    
+//                    var nombre_pais = '';
+//                    var nombre_departamento = '';
+//                    var nombre_municipio = '';
+//                    
+//                    that.nombrePais(tipo_pais_id, function(result_nombre_pais){
+//                        
+//                        nombre_pais = result_nombre_pais;
+//                        
+//                        that.nombreDepartamento(tipo_pais_id, tipo_dpto_id, function(result_nombre_departamento){
+//                            
+//                            nombre_departamento = result_nombre_departamento;
+//                            
+//                            that.nombreMunicipio(tipo_pais_id, tipo_dpto_id, tipo_mpio_id, function(result_nombre_municipio){
+//                                
+//                                nombre_municipio = result_nombre_municipio;
+//                                
+//                                $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setPais(nombre_pais);
+//                                $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setDepartamento(nombre_departamento);
+//                                $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setMunicipio(nombre_municipio);
+//
+//                                $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setUbicacion();
+//                                
+//                                if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== undefined)
+//                                {
+//                                    $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setEncabezadoBloqueado(true);
+//                                    $scope.rootCreaCotizaciones.bloquear_incluir_producto = false;
+//                                    //Por seguridad pero no influye mucho
+//                                    $scope.rootCreaCotizaciones.bloquear_upload = true;
+//                                    
+//                                    localStorageService.set("cotizacionseleccionada", $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion());
+//                                    localStorageService.set("pedidoseleccionado", "");
+//
+//                                    that.consultarDetalleCotizacion(function(data){
+//
+//                                        var detalle = data.obj.resultado_consulta;
+//                                        that.renderDetalleCotizacion(detalle);
+//
+//                                    });
+//                                }                       
+//                                else if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido() !== undefined){
+//
+//                                    $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setEncabezadoBloqueado(true);
+//                                    $scope.rootCreaCotizaciones.bloquear_incluir_producto = false;
+//                                    //Por seguridad pero no influye mucho
+//                                    $scope.rootCreaCotizaciones.bloquear_upload = true;
+//
+//                                    $scope.rootCreaCotizaciones.es_cotizacion = false;
+//                                    
+//                                    localStorageService.set("pedidoseleccionado", $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido());
+//                                    localStorageService.set("cotizacionseleccionada", "");
+//
+//                                    that.consultarDetallePedido(function(data){
+//
+//                                        var detalle = data.obj.resultado_consulta;
+//                                        that.renderDetalleCotizacion(detalle);
+//
+//                                    });
+//                                }
+//                            });
+//                        });
+//                    });                           
                 }
-
             };
             
             /*NUEVO 26-05-2015*/
-            that.consultarEncabezadoCotizacion = function(callback) {
+            
+            that.completarEncabezadoAndGenerarDetalle = function() {
+                
+                $scope.rootCreaCotizaciones.seleccion_vendedor = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getVendedor().getId();
+
+                $scope.rootCreaCotizaciones.observacion = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getObservacion();
+
+                //Hacer aquí consultas para traer nombres de pais, departamento y ciudad. Luego armar Ubicación con setUbicación
+
+                var tipo_pais_id = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getTipoPaisId();
+                var tipo_dpto_id = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getTipoDepartamentoId();
+                var tipo_mpio_id = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getTipoMunicipioId();
+
+                var nombre_pais = '';
+                var nombre_departamento = '';
+                var nombre_municipio = '';
+
+                that.nombrePais(tipo_pais_id, function(result_nombre_pais){
+
+                    nombre_pais = result_nombre_pais;
+
+                    that.nombreDepartamento(tipo_pais_id, tipo_dpto_id, function(result_nombre_departamento){
+
+                        nombre_departamento = result_nombre_departamento;
+
+                        that.nombreMunicipio(tipo_pais_id, tipo_dpto_id, tipo_mpio_id, function(result_nombre_municipio){
+
+                            nombre_municipio = result_nombre_municipio;
+
+                            $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setPais(nombre_pais);
+                            $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setDepartamento(nombre_departamento);
+                            $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setMunicipio(nombre_municipio);
+
+                            $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setUbicacion();
+                            
+                            var editable = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getEditable();
+                            localStorageService.set("editable", editable);
+
+                            if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== undefined)
+                            {
+                                $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setEncabezadoBloqueado(true);
+                                $scope.rootCreaCotizaciones.bloquear_incluir_producto = false;
+                                //Por seguridad pero no influye mucho
+                                $scope.rootCreaCotizaciones.bloquear_upload = true;
+
+                                localStorageService.set("cotizacionseleccionada", $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion());
+                                localStorageService.set("pedidoseleccionado", "");
+
+                                that.consultarDetalleCotizacion(function(data){
+
+                                    var detalle = data.obj.resultado_consulta;
+                                    that.renderDetalleCotizacion(detalle);
+
+                                });
+                            }                       
+                            else if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido() !== undefined){
+
+                                $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setEncabezadoBloqueado(true);
+                                $scope.rootCreaCotizaciones.bloquear_incluir_producto = false;
+                                //Por seguridad pero no influye mucho
+                                $scope.rootCreaCotizaciones.bloquear_upload = true;
+
+                                $scope.rootCreaCotizaciones.es_cotizacion = false;
+
+                                localStorageService.set("pedidoseleccionado", $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido());
+                                localStorageService.set("cotizacionseleccionada", "");
+
+                                that.consultarDetallePedido(function(data){
+
+                                    var detalle = data.obj.resultado_consulta;
+                                    that.renderDetalleCotizacion(detalle);
+
+                                });
+                            }
+                        });
+                    });
+                });   
+            };
+            
+            that.consultarEncabezadoCotizacion = function(numero_cotizacion, callback) {
 
                 var obj = {
                     session: $scope.rootCreaCotizaciones.session,
                     data: {
                         cotizacion_cliente: {
-                            numero_cotizacion: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion()
+                            numero_cotizacion: numero_cotizacion
                         }
                     }
                 };
@@ -355,13 +448,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 });
             };
             
-            that.consultarEncabezadoPedido = function(callback) {
+            that.consultarEncabezadoPedido = function(numero_pedido, callback) {
 
                 var obj = {
                     session: $scope.rootCreaCotizaciones.session,
                     data: {
                         pedido_cliente: {
-                            numero_pedido: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido()
+                            numero_pedido: numero_pedido
                         }
                     }
                 };
@@ -385,7 +478,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             that.crearCotizacion = function(data) {
                 
-                var obj = data.resultado_consulta[0];
+                console.log(">>>> Data: ", data);
+                
+                var obj = data.obj.resultado_consulta[0];
 
                 var cotizacion = PedidoVenta.get();
                 var observacion = obj.observaciones.split("||obs_cartera||");
@@ -450,7 +545,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             that.crearPedido = function(data) {
                 
-                var obj = data.resultado_consulta[0];
+                var obj = data.obj.resultado_consulta[0];
 
                 var pedido = PedidoVenta.get();
                 var observacion = obj.observacion.split("||obs_cartera||");
@@ -1335,7 +1430,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     session: $scope.rootCreaCotizaciones.session,
                     data: {
                         estado_pedido: {
-                            numero_pedido: numero_pedido,
+                            numero_pedido: numero_pedido
                         }
                     }
                 };
@@ -1439,6 +1534,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 
                 $scope.rootCreaCotizaciones = {};
+                
+                localStorageService.set("cotizacionseleccionada", "");
+                localStorageService.set("pedidoseleccionado", "");
+                localStorageService.set("editable","");
 
             });
             

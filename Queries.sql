@@ -1049,7 +1049,8 @@ CREATE TABLE "public"."recepcion_mercancia" (
   "inv_transportador_id" INTEGER, 
   "novedades_recepcion_id" INTEGER, 
   "numero_guia" VARCHAR(20) NOT NULL, 
-  "canitdad_cajas" INTEGER DEFAULT 0, 
+  "numero_factura" VARCHAR(20) NOT NULL, 
+  "cantidad_cajas" INTEGER DEFAULT 0, 
   "cantidad_neveras" INTEGER DEFAULT 0, 
   "temperatura_neveras" REAL, 
   "contiene_medicamentos" CHAR(1) DEFAULT 0, 
@@ -1103,7 +1104,10 @@ IS 'Identificador de la novedad';
 COMMENT ON COLUMN "public"."recepcion_mercancia"."numero_guia"
 IS 'Numero de la guia de la transportadora';
 
-COMMENT ON COLUMN "public"."recepcion_mercancia"."canitdad_cajas"
+COMMENT ON COLUMN "public"."recepcion_mercancia"."numero_factura"
+IS 'Numero de la factura enviada por el proveedor';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."cantidad_cajas"
 IS 'Cantidad de cajas enviadas';
 
 COMMENT ON COLUMN "public"."recepcion_mercancia"."cantidad_neveras"
@@ -1125,3 +1129,48 @@ COMMENT ON COLUMN "public"."recepcion_mercancia"."fecha_registro"
 IS 'Fecha en que se realiza el registro';
 
 
+/* =================== Tabla para ingresar el detalle de las recepciones de mercancia ============*/
+
+CREATE TABLE "public"."recepcion_mercancia_detalle" (
+  "id" SERIAL, 
+  "recepcion_mercancia_id" INTEGER NOT NULL, 
+  "novedades_recepcion_id" INTEGER, 
+  "codigo_producto" VARCHAR(50) NOT NULL, 
+  "cantidad_recibida" INTEGER DEFAULT 0 NOT NULL, 
+  "fecha_registro" TIMESTAMP(6) WITHOUT TIME ZONE DEFAULT now() NOT NULL, 
+  "usuario_id" INTEGER NOT NULL, 
+  CONSTRAINT "recepcion_mercancia_detalle_pkey" PRIMARY KEY("id"), 
+  CONSTRAINT "recepcion_mercancia_detalle_fk" FOREIGN KEY ("recepcion_mercancia_id")
+    REFERENCES "public"."recepcion_mercancia"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "recepcion_mercancia_detalle_fk1" FOREIGN KEY ("novedades_recepcion_id")
+    REFERENCES "public"."novedades_recepcion_mercancia"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "recepcion_mercancia_detalle_fk2" FOREIGN KEY ("usuario_id")
+    REFERENCES "public"."system_usuarios"("usuario_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE
+) WITH OIDS;
+
+COMMENT ON COLUMN "public"."recepcion_mercancia_detalle"."recepcion_mercancia_id"
+IS 'Identificador de la recepcion de mercancia';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia_detalle"."novedades_recepcion_id"
+IS 'Novedad de la recepcion';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia_detalle"."codigo_producto"
+IS 'Codigo del producto de la orden de compra';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia_detalle"."cantidad_recibida"
+IS 'Cantidad recibida en la recepcion de la mercancia';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia_detalle"."fecha_registro"
+IS 'Fecha en que se registra el producto';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia_detalle"."usuario_id"
+IS 'Usuario que ingresa el registro';

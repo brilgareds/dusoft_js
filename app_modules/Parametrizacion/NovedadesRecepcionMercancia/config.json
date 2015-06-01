@@ -1,0 +1,21 @@
+{
+    "module": "NovedadesRecepcionMercancia",
+    "dependency": {
+        "controllers": [{
+                "novedades_mercancia_controller": {
+                    "module": "Parametrizacion/NovedadesRecepcionMercancia",
+                    "controller": "NovedadesRecepcionMercanciaController",
+                    "alias": "c_novedades_mercancia"
+                }
+            }],
+        "models": [{
+                "novedades_mercancia_model": {
+                    "module": "Parametrizacion/NovedadesRecepcionMercancia",
+                    "model": "NovedadesRecepcionMercanciaModel",
+                    "alias": "m_novedades_mercancia"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

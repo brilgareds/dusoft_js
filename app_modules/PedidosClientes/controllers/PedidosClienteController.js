@@ -919,7 +919,7 @@ PedidosCliente.prototype.consultarEncabezadoPedido = function(req, res) {
             return;
         }
 
-        res.send(G.utils.r(req.url, 'Consulta Encabezado Pedido Exitosa', 200, {resultado_consulta: encabezado_cotizacion}));
+        res.send(G.utils.r(req.url, 'Consulta Encabezado Pedido Exitosa', 200, {resultado_consulta: encabezado_pedido}));
     });
 };
 

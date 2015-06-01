@@ -363,11 +363,320 @@ OrdenesCompraModel.prototype.insertar_archivo_novedad_producto = function(noveda
 OrdenesCompraModel.prototype.consultar_archivo_novedad_producto = function(novedad_id, callback) {
 
     var sql = "  SELECT  * FROM archivos_novedades_ordenes_compras a WHERE a.novedad_orden_compra_id = $1 ; ";
-    
+
     G.db.query(sql, [novedad_id], function(err, rows, result) {
         callback(err, rows, result);
     });
 };
 
+
+// Listado de recepciones de mercancia.
+OrdenesCompraModel.prototype.listar_recepciones_mercancia = function(fecha_inicial, fecha_final, termino_busqueda, pagina, callback) {
+
+    var sql = " select \
+                a.id,\
+                a.empresa_id,\
+                b.tipo_id_tercero as tipo_id_empresa,\
+                b.id as nit_empresa,\
+                b.razon_social as nombre_empresa,\
+                a.codigo_proveedor_id,\
+                d.tipo_id_tercero as tipo_id_proveedor,\
+                d.tercero_id as nit_proveedor,\
+                d.nombre_tercero as nombre_proveedor,\
+                d.direccion as direccion_proveedor,\
+                d.telefono as telefono_proveedor,\
+                a.orden_pedido_id as numero_orden,\
+                a.inv_transportador_id,\
+                e.descripcion as nombre_transportadora\
+                e.estado as estado_transportadora,\
+                a.novedades_recepcion_id,\
+                f.codigo as codigo_novedad,\
+                f.descripcion as descripcion_novedad,\
+                f.estado as estado_novedad,\
+                a.numero_guia,\
+                a.numero_factura,\
+                a.cantidad_cajas,\
+                a.cantidad_neveras,\
+                a.temperatura_neveras,\
+                a.contiene_medicamentos,\
+                a.contiene_dispositivos,\
+                a.fecha_recepcion,\
+                a.fecha_registro\
+                from recepcion_mercancia a\
+                inner join empresas b on a.empresa_id = b.empresa_id\
+                inner join terceros_proveedores c on a.codigo_proveedor_id = c.codigo_proveedor_id\
+                inner join terceros d on c.tipo_id_tercero = d.tipo_id_tercero and c.tercero_id=d.tercero_id\
+                inner join inv_transportadoras e on a.inv_transportador_id = e.transportadora_id \
+                left join novedades_recepcion_mercancia f on a.novedades_recepcion_id = f.id\
+                where a.fecha_registro between $1 and $2 and\
+                (\
+                    d.tercero_id ilike $3 or\
+                    d.nombre_tercero ilike $3 or\
+                    a.orden_pedido_id ilike $3 or \
+                    e.descripcion ilike $3 or\
+                    a.numero_guia ilike $3 or\
+                    a.numero_factura ilike $3 \
+                )";
+
+    G.db.pagination(sql, [fecha_inicial, fecha_final, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
+        callback(err, rows);
+    });
+};
+
+
+// Consultar recepcion de mercancia.
+OrdenesCompraModel.prototype.consultar_recepcion_mercancia = function(recepcion_mercancia_id, callback) {
+
+    var sql = " select \
+                a.id,\
+                a.empresa_id,\
+                b.tipo_id_tercero as tipo_id_empresa,\
+                b.id as nit_empresa,\
+                b.razon_social as nombre_empresa,\
+                a.codigo_proveedor_id,\
+                d.tipo_id_tercero as tipo_id_proveedor,\
+                d.tercero_id as nit_proveedor,\
+                d.nombre_tercero as nombre_proveedor,\
+                d.direccion as direccion_proveedor,\
+                d.telefono as telefono_proveedor,\
+                a.orden_pedido_id as numero_orden,\
+                a.inv_transportador_id,\
+                e.descripcion as nombre_transportadora\
+                e.estado as estado_transportadora,\
+                a.novedades_recepcion_id,\
+                f.codigo as codigo_novedad,\
+                f.descripcion as descripcion_novedad,\
+                f.estado as estado_novedad,\
+                a.numero_guia,\
+                a.numero_factura,\
+                a.cantidad_cajas,\
+                a.cantidad_neveras,\
+                a.temperatura_neveras,\
+                a.contiene_medicamentos,\
+                a.contiene_dispositivos,\
+                a.fecha_recepcion,\
+                a.fecha_registro\
+                from recepcion_mercancia a\
+                inner join empresas b on a.empresa_id = b.empresa_id\
+                inner join terceros_proveedores c on a.codigo_proveedor_id = c.codigo_proveedor_id\
+                inner join terceros d on c.tipo_id_tercero = d.tipo_id_tercero and c.tercero_id=d.tercero_id\
+                inner join inv_transportadoras e on a.inv_transportador_id = e.transportadora_id \
+                left join novedades_recepcion_mercancia f on a.novedades_recepcion_id = f.id\
+                where a.id = $1 ";
+
+    G.db.query(sql, [recepcion_mercancia_id], function(err, rows, result, total_records) {
+        callback(err, rows);
+    });
+};
+
+
+// Insertar Recepcion mercancia
+OrdenesCompraModel.prototype.insertar_recepcion_mercancia = function(recepcion_mercancia, callback) {
+
+    var validacion = __validar_campos_ingreso_recepcion(recepcion_mercancia);
+
+    if (!validacion.continuar) {
+        callback(validacion, null);
+        return;
+    }
+
+    var sql = " insert into recepcion_mercancia (\
+                    empresa_id,\
+                    codigo_proveedor_id,\
+                    orden_pedido_id,\
+                    inv_transportador_id,\
+                    novedades_recepcion_id,\
+                    numero_guia,\
+                    numero_factura,\
+                    cantidad_cajas,\
+                    cantidad_neveras,\
+                    temperatura_neveras,\
+                    contiene_medicamentos,\
+                    contiene_dispositivos,\
+                    fecha_registro\
+                ) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12); ";
+
+    var parametros = [
+        recepcion_mercancia.empresa_id,
+        recepcion_mercancia.codigo_proveedor_id,
+        recepcion_mercancia.orden_pedido_id,
+        recepcion_mercancia.inv_transportador_id,
+        recepcion_mercancia.novedades_recepcion_id,
+        recepcion_mercancia.numero_guia,
+        recepcion_mercancia.numero_factura,
+        recepcion_mercancia.cantidad_cajas,
+        recepcion_mercancia.cantidad_neveras,
+        recepcion_mercancia.temperatura_neveras,
+        recepcion_mercancia.contiene_medicamentos,
+        recepcion_mercancia.contiene_dispositivos
+    ];
+
+    G.db.query(sql, [parametros], function(err, rows, result, total_records) {
+        callback(err, rows);
+    });
+};
+
+
+// Insertar Recepcion mercancia
+OrdenesCompraModel.prototype.modificar_recepcion_mercancia = function(recepcion_mercancia, callback) {
+
+    var validacion = __validar_campos_ingreso_recepcion(recepcion_mercancia);
+
+    if (!validacion.continuar) {
+        callback(validacion, null);
+        return;
+    }
+
+    var sql = " update recepcion_mercancia set \
+                empresa_id = $2,\
+                codigo_proveedor_id = $3,\
+                orden_pedido_id = $4,\
+                inv_transportador_id = $5,\
+                novedades_recepcion_id = $6,\
+                numero_guia = $7,\
+                numero_factura = $8,\
+                cantidad_cajas = $9,\
+                cantidad_neveras = $10,\
+                temperatura_neveras = $11,\
+                contiene_medicamentos = $12,\
+                contiene_dispositivos = $13,\
+                where id = $1 ; ";
+
+    var parametros = [
+        recepcion_mercancia.id,
+        recepcion_mercancia.empresa_id,
+        recepcion_mercancia.codigo_proveedor_id,
+        recepcion_mercancia.orden_pedido_id,
+        recepcion_mercancia.inv_transportador_id,
+        recepcion_mercancia.novedades_recepcion_id,
+        recepcion_mercancia.numero_guia,
+        recepcion_mercancia.numero_factura,
+        recepcion_mercancia.cantidad_cajas,
+        recepcion_mercancia.cantidad_neveras,
+        recepcion_mercancia.temperatura_neveras,
+        recepcion_mercancia.contiene_medicamentos,
+        recepcion_mercancia.contiene_dispositivos
+    ];
+
+    G.db.query(sql, [parametros], function(err, rows, result, total_records) {
+        callback(err, rows);
+    });
+};
+
+
+// listar productos Recepcion mercancia
+OrdenesCompraModel.prototype.listar_productos_recepcion_mercancia = function(producto_mercancia, callback) {
+   
+    var sql = " ";
+    
+    G.db.query(sql, [], function(err, rows, result, total_records) {
+        callback(err, rows);
+    });
+};
+
+// Insertar productos Recepcion mercancia
+OrdenesCompraModel.prototype.insertar_productos_recepcion_mercancia = function(producto_mercancia, callback) {
+
+   
+    var sql = " insert into recepcion_mercancia_detalle  (\
+                    recepcion_mercancia_id, \
+                    novedades_recepcion_id, \
+                    codigo_producto, \
+                    cantidad_recibida, \
+                    usuario_id \
+                ) values ( $1, $2, $3, $4, $5) ; ";
+    
+    var parametros = [
+        producto_mercancia.recepcion_mercancia_id,
+        producto_mercancia.novedades_recepcion_id,
+        producto_mercancia.codigo_producto,
+        producto_mercancia.cantidad_recibida,
+        producto_mercancia.usuario_id
+    ];
+    
+    G.db.query(sql, [parametros], function(err, rows, result, total_records) {
+        callback(err, rows);
+    });
+};
+
+
+// Modificar productos Recepcion mercancia
+OrdenesCompraModel.prototype.modificar_productos_recepcion_mercancia = function(producto_mercancia, callback) {
+
+   
+    var sql = " update recepcion_mercancia_detalle set novedades_recepcion_id = $3 cantidad_recibida = $4 where  id = $1 and codigo_producto = $2 ; ";
+    
+    var parametros = [
+        producto_mercancia.id,
+        producto_mercancia.codigo_producto,
+        producto_mercancia.recepcion_mercancia_id,
+        producto_mercancia.novedades_recepcion_id,
+        producto_mercancia.cantidad_recibida
+    ];
+    
+    G.db.query(sql, [parametros], function(err, rows, result, total_records) {
+        callback(err, rows);
+    });
+};
+
+
+function __validar_campos_ingreso_recepcion(recepcion_mercancia) {
+
+    var continuar = true;
+    var msj = '';
+
+    if (recepcion_mercancia.empresa_id === undefined || recepcion_mercancia.codigo_proveedor_id === undefined || recepcion_mercancia.orden_pedido_id === undefined) {
+        continuar = false;
+        msj = 'empresa_id, codigo_proveedor_id u orden_pedido_id estan vacias';
+    }
+
+    if (recepcion_mercancia.inv_transportador_id === undefined || recepcion_mercancia.novedades_recepcion_id === undefined) {
+        continuar = false;
+        msj = 'inv_transportador_id o novedades_recepcion_id esta vacias';
+    }
+
+    if (recepcion_mercancia.numero_guia === undefined || recepcion_mercancia.numero_factura === undefined) {
+        continuar = false;
+        msj = 'numero_guia o numero_factura esta vacias';
+    }
+
+    if (recepcion_mercancia.cantidad_cajas === undefined || recepcion_mercancia.cantidad_neveras === undefined) {
+        continuar = false;
+        msj = 'cantidad_cajas o cantidad_neveras esta vacias';
+    }
+
+    if (recepcion_mercancia.contiene_medicamentos === undefined || recepcion_mercancia.contiene_dispositivos === undefined) {
+        continuar = false;
+        msj = 'recepcion_mercancia esta vacias';
+    }
+
+    if (recepcion_mercancia.empresa_id === '' || recepcion_mercancia.codigo_proveedor_id === '' || recepcion_mercancia.orden_pedido_id === '') {
+        continuar = false;
+        msj = 'empresa_id, codigo_proveedor_id u orden_pedido_id estan vacias';
+    }
+
+    if (recepcion_mercancia.inv_transportador_id === '' || recepcion_mercancia.novedades_recepcion_id === '') {
+        continuar = false;
+        msj = 'inv_transportador_id o novedades_recepcion_id esta vacias';
+    }
+
+    if (recepcion_mercancia.numero_guia === '' || recepcion_mercancia.numero_factura === '') {
+        continuar = false;
+        msj = 'numero_guia o numero_factura esta vacias';
+    }
+
+    if (recepcion_mercancia.cantidad_cajas === '' || recepcion_mercancia.cantidad_neveras === '') {
+        continuar = false;
+        msj = 'cantidad_cajas o cantidad_neveras esta vacias';
+    }
+
+    if (recepcion_mercancia.contiene_medicamentos === '' || recepcion_mercancia.contiene_dispositivos === '') {
+        continuar = false;
+        msj = 'recepcion_mercancia esta vacias';
+    }
+
+    return {continuar: continuar, msj: msj};
+}
+;
 
 module.exports = OrdenesCompraModel;

@@ -1,6 +1,6 @@
 
-define(["angular", "js/controllers", 'includes/slide/slideContent',
-    "controllers/novedadesordenes/GestionarNovedadProductoController"
+define(["angular", "js/controllers", 'includes/slide/slideContent', 
+    "controllers/novedadesordenes/GestionarNovedadProductoController",
 ], function(angular, controllers) {
 
     controllers.controller('GestionarNovedadesController', [

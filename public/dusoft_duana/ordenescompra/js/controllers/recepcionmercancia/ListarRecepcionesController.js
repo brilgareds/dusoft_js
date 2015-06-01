@@ -1,15 +1,36 @@
 
 define(["angular", "js/controllers",
+    "models/OrdenCompraPedido",
+    "models/EmpresaOrdenCompra",
+    "models/ProveedorOrdenCompra",
+    "models/UnidadNegocio",
+    "models/ProductoOrdenCompra",
+    "models/NovedadRecepcion",
+    "models/Transportadora",
+    "models/RecepcionMercancia",
+    "models/UsuarioOrdenCompra"
 ], function(angular, controllers) {
 
     controllers.controller('ListarRecepcionesController', [
         '$scope', '$rootScope', 'Request',
         '$modal', 'API', "socket", "$timeout",
-        "AlertService", "localStorageService", "$state", "$filter",
-        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter) {
+        "AlertService", "localStorageService", "$state", "$filter", 
+        "EmpresaOrdenCompra", 
+        "Usuario",
+        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter,
+                Empresa, Sesion) {
 
             var that = this;
-
+            
+            $scope.Empresa = Empresa;
+            
+            
+            // Variables de Sesion
+            $scope.session = {
+                usuario_id: Sesion.getUsuarioActual().getId(),
+                auth_token: Sesion.getUsuarioActual().getToken()
+            };
+            
             $scope.datos_view = {
                 lista_recepciones: []
             };
@@ -25,8 +46,8 @@ define(["angular", "js/controllers",
                 }
 
             };
-            
-            $scope.verificar_recepcion = function(){
+
+            $scope.verificar_recepcion = function() {
                 $state.go('VerificarMercancia');
             };
 

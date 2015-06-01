@@ -17,9 +17,14 @@ define(["angular", "js/models"], function(angular, models) {
             Transportadora.prototype.set_solicitar_guia = function(solicitar_guia) {
                 this.solicitar_guia = solicitar_guia;
             };
-            
+
             Transportadora.prototype.get_id = function() {
                 return this.id;
+            };
+
+            Transportadora.prototype.get_nombre = function() {
+
+                return this.descripcion;
             };
 
             Transportadora.prototype.get_descripcion = function() {
@@ -36,7 +41,7 @@ define(["angular", "js/models"], function(angular, models) {
             Transportadora.prototype.get_estado = function() {
                 return this.estado;
             };
-            
+
             Transportadora.prototype.get_solicitar_guia = function() {
                 return this.solicitar_guia;
             };

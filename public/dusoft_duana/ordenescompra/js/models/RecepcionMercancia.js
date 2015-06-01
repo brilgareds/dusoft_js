@@ -27,8 +27,8 @@ define(["angular", "js/models"], function(angular, models) {
                 this.orden_compra = orden_compra;
             };
 
-            RecepcionMercancia.prototype.set_transportadoras = function(transportadoras) {
-                this.transportadoras = transportadoras;
+            RecepcionMercancia.prototype.set_transportadora = function(transportadora) {
+                this.transportadora = transportadora;
             };
 
             RecepcionMercancia.prototype.set_novedad = function(novedad) {
@@ -87,8 +87,8 @@ define(["angular", "js/models"], function(angular, models) {
                 return this.orden_compra;
             };
 
-            RecepcionMercancia.prototype.get_transportadoras = function() {
-                return this.transportadoras;
+            RecepcionMercancia.prototype.get_transportadora = function() {
+                return this.transportadora;
             };
 
             RecepcionMercancia.prototype.get_novedad = function() {

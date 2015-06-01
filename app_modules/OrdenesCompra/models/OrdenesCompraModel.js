@@ -564,6 +564,62 @@ OrdenesCompraModel.prototype.modificar_recepcion_mercancia = function(recepcion_
 };
 
 
+// listar productos Recepcion mercancia
+OrdenesCompraModel.prototype.listar_productos_recepcion_mercancia = function(producto_mercancia, callback) {
+   
+    var sql = " ";
+    
+    G.db.query(sql, [], function(err, rows, result, total_records) {
+        callback(err, rows);
+    });
+};
+
+// Insertar productos Recepcion mercancia
+OrdenesCompraModel.prototype.insertar_productos_recepcion_mercancia = function(producto_mercancia, callback) {
+
+   
+    var sql = " insert into recepcion_mercancia_detalle  (\
+                    recepcion_mercancia_id, \
+                    novedades_recepcion_id, \
+                    codigo_producto, \
+                    cantidad_recibida, \
+                    usuario_id \
+                ) values ( $1, $2, $3, $4, $5) ; ";
+    
+    var parametros = [
+        producto_mercancia.recepcion_mercancia_id,
+        producto_mercancia.novedades_recepcion_id,
+        producto_mercancia.codigo_producto,
+        producto_mercancia.cantidad_recibida,
+        producto_mercancia.usuario_id
+    ];
+    
+    G.db.query(sql, [parametros], function(err, rows, result, total_records) {
+        callback(err, rows);
+    });
+};
+
+
+// Modificar productos Recepcion mercancia
+OrdenesCompraModel.prototype.modificar_productos_recepcion_mercancia = function(producto_mercancia, callback) {
+
+   
+    var sql = " update recepcion_mercancia_detalle set novedades_recepcion_id = $3 cantidad_recibida = $4 where  id = $1 and codigo_producto = $2 ; ";
+    
+    var parametros = [
+        producto_mercancia.id,
+        producto_mercancia.codigo_producto,
+        producto_mercancia.recepcion_mercancia_id,
+        producto_mercancia.novedades_recepcion_id,
+        producto_mercancia.cantidad_recibida
+    ];
+    
+    G.db.query(sql, [parametros], function(err, rows, result, total_records) {
+        callback(err, rows);
+    });
+};
+
+
 function __validar_campos_ingreso_recepcion(recepcion_mercancia) {
 
     var continuar = true;
@@ -572,7 +628,6 @@ function __validar_campos_ingreso_recepcion(recepcion_mercancia) {
     if (recepcion_mercancia.empresa_id === undefined || recepcion_mercancia.codigo_proveedor_id === undefined || recepcion_mercancia.orden_pedido_id === undefined) {
         continuar = false;
         msj = 'empresa_id, codigo_proveedor_id u orden_pedido_id estan vacias';
-
     }
 
     if (recepcion_mercancia.inv_transportador_id === undefined || recepcion_mercancia.novedades_recepcion_id === undefined) {

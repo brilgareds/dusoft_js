@@ -79,7 +79,6 @@ module.exports = function(app, di_container) {
         c_ordenes_compra.subirArchivoNovedades(req, res);
     });
 
-
     // Generar Reporte Orden Compra
     app.post('/api/OrdenesCompra/reporteOrdenCompra', function(req, res) {
         c_ordenes_compra.reporteOrdenCompra(req, res);
@@ -103,6 +102,16 @@ module.exports = function(app, di_container) {
     // modificar recepcion mercancia
     app.post('/api/OrdenesCompra/modificarRecepcionMercancia', function(req, res) {
         c_ordenes_compra.modificarRecepcionMercancia(req, res);
+    });
+    
+    // insertar productos recepcion mercancia
+    app.post('/api/OrdenesCompra/insertarProductosRecepcionMercancia', function(req, res) {
+        c_ordenes_compra.insertarProductosRecepcionMercancia(req, res);
+    });
+    
+    // modificar productos recepcion mercancia
+    app.post('/api/OrdenesCompra/modificarProductosRecepcionMercancia', function(req, res) {
+        c_ordenes_compra.modificarProductosRecepcionMercancia(req, res);
     });
     
     

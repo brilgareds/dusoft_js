@@ -1082,6 +1082,74 @@ OrdenesCompra.prototype.modificarRecepcionMercancia = function(req, res) {
     });
 };
 
+
+// Insertar producto a recepcion de mercancia
+OrdenesCompra.prototype.insertarProductosRecepcionMercancia = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.producto_mercancia === undefined) {
+        res.send(G.utils.r(req.url, 'producto_mercancia no esta definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.producto_mercancia === '') {
+        res.send(G.utils.r(req.url, 'producto_mercancia esta vacias', 404, {}));
+        return;
+    }
+
+    var producto_mercancia = args.ordenes_compras.producto_mercancia;
+
+    that.m_ordenes_compra.insertar_productos_recepcion_mercancia(producto_mercancia, function(err, productos) {
+
+        if (err) {
+            var msj = (err.msj !== undefined) ? err.msj : '';
+            
+            res.send(G.utils.r(req.url, 'Error insertando productos a la recepcion ' + msj, 500, {ordenes_compras: []}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Producto registrado correctamente', 200, {ordenes_compras: productos}));
+            return;
+        }
+    });
+};
+
+
+// Modificar producto a recepcion de mercancia
+OrdenesCompra.prototype.modificarProductosRecepcionMercancia = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.producto_mercancia === undefined) {
+        res.send(G.utils.r(req.url, 'producto_mercancia no esta definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.producto_mercancia === '') {
+        res.send(G.utils.r(req.url, 'producto_mercancia esta vacias', 404, {}));
+        return;
+    }
+
+    var producto_mercancia = args.ordenes_compras.producto_mercancia;
+
+    that.m_ordenes_compra.modificar_productos_recepcion_mercancia(producto_mercancia, function(err, productos) {
+
+        if (err) {
+            var msj = (err.msj !== undefined) ? err.msj : '';
+            
+            res.send(G.utils.r(req.url, 'Error modificando productos a la recepcion ' + msj, 500, {ordenes_compras: []}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {ordenes_compras: productos}));
+            return;
+        }
+    });
+};
+
 function __subir_archivo_plano(files, callback) {
 
     var ruta_tmp = files.file.path;

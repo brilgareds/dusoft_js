@@ -37,8 +37,12 @@ define(["angular", "js/models"], function(angular, models) {
             return this.cliente;
         };
         
-        Pedido.prototype.setFarmacia = function(cliente) {
-            this.farmacia = cliente;
+        Pedido.prototype.setFarmacia = function(farmacia) {
+            this.farmacia = farmacia;
+        };
+        
+        Pedido.prototype.getFarmacia = function() {
+            return this.farmacia;
         };
         
         Pedido.prototype.getFechaRegistro = function() {

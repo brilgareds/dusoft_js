@@ -1051,7 +1051,7 @@ CREATE TABLE "public"."recepcion_mercancia" (
   "novedades_recepcion_id" INTEGER, 
   "numero_guia" VARCHAR(20) NOT NULL, 
   "numero_factura" VARCHAR(20) NOT NULL, 
-  "canitdad_cajas" INTEGER DEFAULT 0, 
+  "cantidad_cajas" INTEGER DEFAULT 0, 
   "cantidad_neveras" INTEGER DEFAULT 0, 
   "temperatura_neveras" REAL, 
   "contiene_medicamentos" CHAR(1) DEFAULT 0, 
@@ -1108,7 +1108,7 @@ IS 'Numero de la guia de la transportadora';
 COMMENT ON COLUMN "public"."recepcion_mercancia"."numero_factura"
 IS 'Numero de la factura enviada por el proveedor';
 
-COMMENT ON COLUMN "public"."recepcion_mercancia"."canitdad_cajas"
+COMMENT ON COLUMN "public"."recepcion_mercancia"."cantidad_cajas"
 IS 'Cantidad de cajas enviadas';
 
 COMMENT ON COLUMN "public"."recepcion_mercancia"."cantidad_neveras"

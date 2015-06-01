@@ -972,13 +972,111 @@ OrdenesCompra.prototype.listarRecepcionesMercancia = function(req, res) {
     var termino_busqueda = args.ordenes_compras.termino_busqueda;
     var pagina_actual = args.ordenes_compras.pagina_actual;
 
-    that.m_ordenes_compra.listar_recepciones_mercancia(fecha_inicial, fecha_final, termino_busqueda, pagina_actual, function(err, lista_ordenes_compras) {
+    that.m_ordenes_compra.listar_recepciones_mercancia(fecha_inicial, fecha_final, termino_busqueda, pagina_actual, function(err, lista_recepciones_mercancia) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
             return;
         } else {
-            res.send(G.utils.r(req.url, 'Lista Recepciones Mercancia', 200, {ordenes_compras: lista_ordenes_compras}));
+            res.send(G.utils.r(req.url, 'Lista Recepciones Mercancia', 200, {ordenes_compras: lista_recepciones_mercancia}));
+            return;
+        }
+    });
+};
+
+
+// Listar las recepciones de mercancia
+OrdenesCompra.prototype.consultarRecepcionMercancia = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.recepcion_id === undefined) {
+        res.send(G.utils.r(req.url, 'recepcion_id no esta definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.recepcion_id === '') {
+        res.send(G.utils.r(req.url, 'recepcion_id estan vacias', 404, {}));
+        return;
+    }
+
+    var recepcion_id = args.ordenes_compras.recepcion_id;
+
+    that.m_ordenes_compra.consultar_recepcion_mercancia(recepcion_id, function(err, recepcion_mercancia) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error consultando la recepcion', 500, {ordenes_compras: []}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Recepcion Mercancia', 200, {ordenes_compras: recepcion_mercancia}));
+            return;
+        }
+    });
+};
+
+// Insertar recepciones de mercancia
+OrdenesCompra.prototype.insertarRecepcionMercancia = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.recepcion_mercancia === undefined) {
+        res.send(G.utils.r(req.url, 'recepcion_mercancia no esta definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.recepcion_mercancia === '') {
+        res.send(G.utils.r(req.url, 'recepcion_mercancia esta vacias', 404, {}));
+        return;
+    }
+
+    var recepcion_mercancia = args.ordenes_compras.recepcion_mercancia;
+
+    that.m_ordenes_compra.insertar_recepcion_mercancia(recepcion_mercancia, function(err, recepcion_mercancia) {
+
+        if (err) {
+            var msj = (err.msj !== undefined) ? err.msj : '';
+            
+            res.send(G.utils.r(req.url, 'Error insertando la recepcion ' + msj, 500, {ordenes_compras: []}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Recepcion mercancia insertada correctamente', 200, {ordenes_compras: recepcion_mercancia}));
+            return;
+        }
+    });
+};
+
+// Insertar recepciones de mercancia
+OrdenesCompra.prototype.modificarRecepcionMercancia = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.recepcion_mercancia === undefined) {
+        res.send(G.utils.r(req.url, 'recepcion_mercancia no esta definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.recepcion_mercancia === '') {
+        res.send(G.utils.r(req.url, 'recepcion_mercancia esta vacias', 404, {}));
+        return;
+    }
+
+    var recepcion_mercancia = args.ordenes_compras.recepcion_mercancia;
+
+    that.m_ordenes_compra.modificar_recepcion_mercancia(recepcion_mercancia, function(err, recepcion_mercancia) {
+
+        if (err) {
+            var msj = (err.msj !== undefined) ? err.msj : '';
+            
+            res.send(G.utils.r(req.url, 'Error modificando la recepcion ' + msj, 500, {ordenes_compras: []}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Recepcion mercancia modificada correctamente', 200, {ordenes_compras: recepcion_mercancia}));
             return;
         }
     });

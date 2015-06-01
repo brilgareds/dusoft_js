@@ -362,7 +362,7 @@ OrdenesCompraModel.prototype.insertar_archivo_novedad_producto = function(noveda
 // Consultar Archivo Novedad Producto Orden de Compra
 OrdenesCompraModel.prototype.consultar_archivo_novedad_producto = function(novedad_id, callback) {
 
-    var sql = "  SELECT  * FROM archivos_novedades_ordenes_compras a WHERE a.novedad_orden_compra_id = $1 ; ";
+    var sql = "  SELECT * FROM archivos_novedades_ordenes_compras a WHERE a.novedad_orden_compra_id = $1 ; ";
 
     G.db.query(sql, [novedad_id], function(err, rows, result) {
         callback(err, rows, result);
@@ -400,6 +400,7 @@ OrdenesCompraModel.prototype.listar_recepciones_mercancia = function(fecha_inici
                 a.temperatura_neveras,\
                 a.contiene_medicamentos,\
                 a.contiene_dispositivos,\
+                a.estado,\
                 a.fecha_recepcion,\
                 a.fecha_registro\
                 from recepcion_mercancia a\
@@ -408,7 +409,7 @@ OrdenesCompraModel.prototype.listar_recepciones_mercancia = function(fecha_inici
                 inner join terceros d on c.tipo_id_tercero = d.tipo_id_tercero and c.tercero_id=d.tercero_id\
                 inner join inv_transportadoras e on a.inv_transportador_id = e.transportadora_id \
                 left join novedades_recepcion_mercancia f on a.novedades_recepcion_id = f.id\
-                where a.fecha_registro between $1 and $2 and\
+                where a.fecha_registro between $1 and $2 and a.estado = '1' and \
                 (\
                     d.tercero_id ilike $3 or\
                     d.nombre_tercero ilike $3 or\
@@ -454,6 +455,7 @@ OrdenesCompraModel.prototype.consultar_recepcion_mercancia = function(recepcion_
                 a.temperatura_neveras,\
                 a.contiene_medicamentos,\
                 a.contiene_dispositivos,\
+                a.estado,\
                 a.fecha_recepcion,\
                 a.fecha_registro\
                 from recepcion_mercancia a\
@@ -462,7 +464,7 @@ OrdenesCompraModel.prototype.consultar_recepcion_mercancia = function(recepcion_
                 inner join terceros d on c.tipo_id_tercero = d.tipo_id_tercero and c.tercero_id=d.tercero_id\
                 inner join inv_transportadoras e on a.inv_transportador_id = e.transportadora_id \
                 left join novedades_recepcion_mercancia f on a.novedades_recepcion_id = f.id\
-                where a.id = $1 ";
+                where a.id = $1 and a.estado = '1' ;";
 
     G.db.query(sql, [recepcion_mercancia_id], function(err, rows, result, total_records) {
         callback(err, rows);
@@ -493,8 +495,9 @@ OrdenesCompraModel.prototype.insertar_recepcion_mercancia = function(recepcion_m
                     temperatura_neveras,\
                     contiene_medicamentos,\
                     contiene_dispositivos,\
+                    usuario_id,\
                     fecha_registro\
-                ) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12); ";
+                ) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) returning id; ";
 
     var parametros = [
         recepcion_mercancia.empresa_id,
@@ -508,7 +511,8 @@ OrdenesCompraModel.prototype.insertar_recepcion_mercancia = function(recepcion_m
         recepcion_mercancia.cantidad_neveras,
         recepcion_mercancia.temperatura_neveras,
         recepcion_mercancia.contiene_medicamentos,
-        recepcion_mercancia.contiene_dispositivos
+        recepcion_mercancia.contiene_dispositivos,
+        recepcion_mercancia.usuario_id
     ];
 
     G.db.query(sql, [parametros], function(err, rows, result, total_records) {
@@ -565,11 +569,30 @@ OrdenesCompraModel.prototype.modificar_recepcion_mercancia = function(recepcion_
 
 
 // listar productos Recepcion mercancia
-OrdenesCompraModel.prototype.listar_productos_recepcion_mercancia = function(producto_mercancia, callback) {
+OrdenesCompraModel.prototype.listar_productos_recepcion_mercancia = function(recepcion_mercancia_id, callback) {
    
-    var sql = " ";
+    var sql = " select \
+                a.id,\
+                a.recepcion_mercancia_id,\
+                b.orden_pedido_id as numero_orden,\
+                a.codigo_producto,\
+                fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
+                d.numero_unidades::integer as cantidad_solicitada,\
+                a.cantidad_recibida,\
+                a.novedades_recepcion_id,\
+                e.descripcion as descripcion_novedad,\
+                a.usuario_id,\
+                f.nombre as nombre_usuario,\
+                a.fecha_registro\
+                from recepcion_mercancia_detalle a\
+                inner join recepcion_mercancia b on a.recepcion_mercancia_id = b.id\
+                inner join compras_ordenes_pedidos c on b.orden_pedido_id = c.orden_pedido_id\
+                inner join compras_ordenes_pedidos_detalle d on c.orden_pedido_id = d.orden_pedido_id and a.codigo_producto = d.codigo_producto\
+                left join novedades_recepcion_mercancia e on a.novedades_recepcion_id = e.id\
+                inner join system_usuarios f on a.usuario_id = f.usuario_id\
+                where a.recepcion_mercancia_id = $1 and b.estado = '1' ;";
     
-    G.db.query(sql, [], function(err, rows, result, total_records) {
+    G.db.query(sql, [recepcion_mercancia_id], function(err, rows, result, total_records) {
         callback(err, rows);
     });
 };
@@ -578,13 +601,8 @@ OrdenesCompraModel.prototype.listar_productos_recepcion_mercancia = function(pro
 OrdenesCompraModel.prototype.insertar_productos_recepcion_mercancia = function(producto_mercancia, callback) {
 
    
-    var sql = " insert into recepcion_mercancia_detalle  (\
-                    recepcion_mercancia_id, \
-                    novedades_recepcion_id, \
-                    codigo_producto, \
-                    cantidad_recibida, \
-                    usuario_id \
-                ) values ( $1, $2, $3, $4, $5) ; ";
+    var sql = " insert into recepcion_mercancia_detalle  ( recepcion_mercancia_id, novedades_recepcion_id, codigo_producto, cantidad_recibida, usuario_id ) \
+                values ( $1, $2, $3, $4, $5) ; ";
     
     var parametros = [
         producto_mercancia.recepcion_mercancia_id,

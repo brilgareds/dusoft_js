@@ -104,6 +104,11 @@ module.exports = function(app, di_container) {
         c_ordenes_compra.modificarRecepcionMercancia(req, res);
     });
     
+    // Listar productos recepcion mercancia
+    app.post('/api/OrdenesCompra/listarProductosRecepcionMercancia', function(req, res) {
+        c_ordenes_compra.listarProductosRecepcionMercancia(req, res);
+    });
+    
     // insertar productos recepcion mercancia
     app.post('/api/OrdenesCompra/insertarProductosRecepcionMercancia', function(req, res) {
         c_ordenes_compra.insertarProductosRecepcionMercancia(req, res);
@@ -113,8 +118,4 @@ module.exports = function(app, di_container) {
     app.post('/api/OrdenesCompra/modificarProductosRecepcionMercancia', function(req, res) {
         c_ordenes_compra.modificarProductosRecepcionMercancia(req, res);
     });
-    
-    
-    
-
 };

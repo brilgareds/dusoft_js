@@ -1130,6 +1130,26 @@ COMMENT ON COLUMN "public"."recepcion_mercancia"."fecha_registro"
 IS 'Fecha en que se realiza el registro';
 
 
+ALTER TABLE "public"."recepcion_mercancia"
+  ADD COLUMN "usuario_id" INTEGER;
+
+ALTER TABLE "public"."recepcion_mercancia"
+  ALTER COLUMN "usuario_id" SET NOT NULL;
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."usuario_id"
+IS 'Usuario que realiza la recepcion de la mercancia';
+
+
+ALTER TABLE "public"."recepcion_mercancia"
+  ADD COLUMN "estado" CHAR(1);
+
+ALTER TABLE "public"."recepcion_mercancia"
+  ALTER COLUMN "estado" SET DEFAULT '1';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."estado"
+IS 'Indica si la recepcion esta 0=> Inactiva 1=> activa';
+
+
 /* =================== Tabla para ingresar el detalle de las recepciones de mercancia ============*/
 
 CREATE TABLE "public"."recepcion_mercancia_detalle" (

@@ -1548,9 +1548,13 @@ E008Controller.prototype.imprimirRotuloClientes = function(req, res) {
             res.send(G.utils.r(req.url, 'No se encontro la caja para el pedido', 404, {}));
             return;
         }
+        
+        var obj = {
+            detalle : rows[0],
+            serverUrl : req.protocol + '://' + req.get('host')+ "/"
+        };
 
-
-        _generarDocumentoRotulo(rows, function(nombreTmp) {
+        _generarDocumentoRotulo(obj, function(nombreTmp) {
             res.send(G.utils.r(req.url, 'Url reporte rotulo', 200, {movimientos_bodegas: {nombre_reporte: nombreTmp}}));
         });
     });
@@ -1590,8 +1594,13 @@ E008Controller.prototype.imprimirRotuloFarmacias = function(req, res) {
             res.send(G.utils.r(req.url, 'No se encontro la caja para el pedido', 404, {}));
             return;
         }
-
-        _generarDocumentoRotulo(rows, function(nombreTmp) {
+        
+        var obj = {
+            detalle : rows[0],
+            serverUrl : req.protocol + '://' + req.get('host')+ "/"
+        };
+        
+        _generarDocumentoRotulo(obj, function(nombreTmp) {
             res.send(G.utils.r(req.url, 'Url reporte rotulo', 200, {movimientos_bodegas: {nombre_reporte: nombreTmp}}));
         });
 
@@ -1599,7 +1608,7 @@ E008Controller.prototype.imprimirRotuloFarmacias = function(req, res) {
 
 };
 
-function _generarDocumentoRotulo(rows, callback) {
+function _generarDocumentoRotulo(obj, callback) {
     G.jsreport.reporter.render({
         template: {
             content: G.fs.readFileSync('app_modules/MovimientosBodega/E008/reports/rotulos.html', 'utf8'),
@@ -1607,7 +1616,7 @@ function _generarDocumentoRotulo(rows, callback) {
             recipe: "phantom-pdf",
             engine: 'jsrender'
         },
-        data: rows[0]
+        data: obj
     }).then(function(response) {
 
         var name = response.result.path;
@@ -2154,6 +2163,7 @@ E008Controller.prototype.imprimirDocumentoDespacho = function(req, res) {
                 }
 
                 datos_documento.adicionales = that.m_movimientos_bodegas.darFormatoTituloAdicionesDocumento(rows[0]);
+                datos_documento.serverUrl = req.protocol + '://' + req.get('host')+ "/";
 
                 __generarPdfDespacho(datos_documento, function(nombre_pdf) {
                     console.log("nombre generado ", nombre_pdf);
@@ -2433,7 +2443,7 @@ function __validar_responsable_pedidos_farmacias(contexto, numero_pedido, respon
     });
 }
 
-function __generarPdfDespacho(datos, callback) {
+function __generarPdfDespacho(datos, callback) {  
     G.jsreport.reporter.render({
         template: {
             content: G.fs.readFileSync('app_modules/MovimientosBodega/E008/reports/despacho.html', 'utf8'),
@@ -2448,7 +2458,8 @@ function __generarPdfDespacho(datos, callback) {
     }).then(function(response) {
 
         var name = response.result.path;
-        var nombreTmp = datos.encabezado.prefijo + "-" + datos.encabezado.numero + ".pdf";
+        var fecha = new Date();
+        var nombreTmp = datos.encabezado.prefijo + "-" + datos.encabezado.numero + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
         G.fs.copySync(name, G.dirname + "/public/reports/" + nombreTmp);
 
         callback(nombreTmp);

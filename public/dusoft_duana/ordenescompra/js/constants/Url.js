@@ -9,6 +9,7 @@ define(["angular"], function(angular) {
             'BASE_URL': BASE_URL,
             'ORDENES_COMPRA': {
                 'LISTAR_ORDENES_COMPRAS': BASE_URL + '/OrdenesCompra/listarOrdenesCompra',
+                'LISTAR_ORDENES_COMPRAS_PROVEEDOR': BASE_URL + '/OrdenesCompra/listarOrdenesCompraProveedor',
                 'LISTAR_PRODUCTOS': BASE_URL + '/OrdenesCompra/listarProductos',
                 'CREAR_ORDEN_COMPRA': BASE_URL + '/OrdenesCompra/insertarOrdenCompra',
                 'CREAR_DETALLE_ORDEN_COMPRA': BASE_URL + '/OrdenesCompra/insertarDetalleOrdenCompra',
@@ -23,7 +24,7 @@ define(["angular"], function(angular) {
                 'GESTIONAR_NOVEDADES': BASE_URL + '/OrdenesCompra/gestionarNovedades',
                 'CONSULTAR_ARCHIVOS_NOVEDAD': BASE_URL + '/OrdenesCompra/consultarArchivosNovedades',
                 'SUBIR_ARCHIVO_NOVEDAD': BASE_URL + '/OrdenesCompra/subirArchivoNovedades',
-                'REPORTE_ORDEN_COMPRA': BASE_URL + '/OrdenesCompra/reporteOrdenCompra'
+                'REPORTE_ORDEN_COMPRA': BASE_URL + '/OrdenesCompra/reporteOrdenCompra'                
             },
             'PROVEEDORES': {
                 'LISTAR_PROVEEDORES': BASE_URL + '/Terceros/Proveedores/listar'
@@ -40,6 +41,10 @@ define(["angular"], function(angular) {
             'TRANSPORTADORAS': {
                 'LISTAR_TRANSPORTADORAS': BASE_URL + '/Transportadoras/listar'
             },
+            'NOVEDADES_MERCANCIA': {
+                'LISTAR_NOVEDADES_MERCANCIA': BASE_URL + '/NovedadesRecepcion/listarNovedades'
+            }
+            
         }
     };
 

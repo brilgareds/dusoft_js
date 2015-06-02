@@ -1,6 +1,7 @@
 var OrdenesCompraModel = function() {
 
 };
+
 // Listar las Ordenes de Compra 
 OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fecha_final, termino_busqueda, pagina, callback) {
 
@@ -48,10 +49,59 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
                     c.tercero_id ilike $3 or \
                     c.nombre_tercero ilike $3 \
                 ) and a.sw_unificada='0' order by 1 DESC ";
+
     G.db.pagination(sql, [fecha_inicial, fecha_final, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
         callback(err, rows);
     });
 };
+
+// Listar las Ordenes de Compra de un Proveedor
+OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(codigo_proveedor_id, callback) {
+
+
+    var sql = " SELECT \
+                a.orden_pedido_id as numero_orden,\
+                a.empresa_id,\
+                d.tipo_id_tercero as tipo_id_empresa,\
+                d.id as nit_empresa,\
+                d.razon_social as nombre_empresa,\
+                a.codigo_proveedor_id,\
+                c.tipo_id_tercero as tipo_id_proveedor,\
+                c.tercero_id as nit_proveedor,\
+                c.nombre_tercero as nombre_proveedor,\
+                c.direccion as direccion_proveedor,\
+                c.telefono as telefono_proveedor,\
+                a.estado,\
+                CASE WHEN a.estado = 0 THEN 'Recibida' \
+                     WHEN a.estado = 1 THEN 'Activa' \
+                     WHEN a.estado = 2 THEN 'Anulado' END as descripcion_estado, \
+                a.sw_orden_compra_finalizada,\
+                CASE WHEN a.sw_orden_compra_finalizada = '0' THEN 'En Proceso ...' \
+                     WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion, \
+                a.observacion,\
+                f.codigo_unidad_negocio,\
+                f.imagen,\
+                f.descripcion as descripcion_unidad_negocio,\
+                a.usuario_id,\
+                e.nombre as nombre_usuario,\
+                To_char(a.fecha_orden,'dd-mm-yyyy') as fecha_registro,\
+                CASE WHEN COALESCE (g.orden_pedido_id,0)=0 then 0 else 1 end as tiene_ingreso_temporal \
+                FROM compras_ordenes_pedidos a\
+                inner join terceros_proveedores b on a.codigo_proveedor_id = b.codigo_proveedor_id\
+                inner join terceros c on  b.tipo_id_tercero = c.tipo_id_tercero and b.tercero_id=c.tercero_id \
+                inner join empresas d on a.empresa_id = d.empresa_id\
+                inner join system_usuarios e on a.usuario_id = e.usuario_id\
+                left join unidades_negocio f on a.codigo_unidad_negocio = f.codigo_unidad_negocio \
+                left join (\
+                    select aa.orden_pedido_id from inv_bodegas_movimiento_tmp_ordenes_compra aa\
+                ) as g on a.orden_pedido_id = g.orden_pedido_id\
+                WHERE a.codigo_proveedor_id = $1 and a.estado = '1' and a.sw_orden_compra_finalizada = '1' order by 1 DESC ";
+
+    G.db.query(sql, [codigo_proveedor_id], function(err, rows, result, total_records) {
+        callback(err, rows);
+    });
+};
+
 // Listar Producto para orden de compra 
 OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_proveedor_id, numero_orden, termino_busqueda, laboratorio_id, pagina, callback) {
 
@@ -570,7 +620,7 @@ OrdenesCompraModel.prototype.modificar_recepcion_mercancia = function(recepcion_
 
 // listar productos Recepcion mercancia
 OrdenesCompraModel.prototype.listar_productos_recepcion_mercancia = function(recepcion_mercancia_id, callback) {
-   
+
     var sql = " select \
                 a.id,\
                 a.recepcion_mercancia_id,\
@@ -591,7 +641,7 @@ OrdenesCompraModel.prototype.listar_productos_recepcion_mercancia = function(rec
                 left join novedades_recepcion_mercancia e on a.novedades_recepcion_id = e.id\
                 inner join system_usuarios f on a.usuario_id = f.usuario_id\
                 where a.recepcion_mercancia_id = $1 and b.estado = '1' ;";
-    
+
     G.db.query(sql, [recepcion_mercancia_id], function(err, rows, result, total_records) {
         callback(err, rows);
     });
@@ -600,10 +650,10 @@ OrdenesCompraModel.prototype.listar_productos_recepcion_mercancia = function(rec
 // Insertar productos Recepcion mercancia
 OrdenesCompraModel.prototype.insertar_productos_recepcion_mercancia = function(producto_mercancia, callback) {
 
-   
+
     var sql = " insert into recepcion_mercancia_detalle  ( recepcion_mercancia_id, novedades_recepcion_id, codigo_producto, cantidad_recibida, usuario_id ) \
                 values ( $1, $2, $3, $4, $5) ; ";
-    
+
     var parametros = [
         producto_mercancia.recepcion_mercancia_id,
         producto_mercancia.novedades_recepcion_id,
@@ -611,7 +661,7 @@ OrdenesCompraModel.prototype.insertar_productos_recepcion_mercancia = function(p
         producto_mercancia.cantidad_recibida,
         producto_mercancia.usuario_id
     ];
-    
+
     G.db.query(sql, [parametros], function(err, rows, result, total_records) {
         callback(err, rows);
     });
@@ -621,9 +671,9 @@ OrdenesCompraModel.prototype.insertar_productos_recepcion_mercancia = function(p
 // Modificar productos Recepcion mercancia
 OrdenesCompraModel.prototype.modificar_productos_recepcion_mercancia = function(producto_mercancia, callback) {
 
-   
+
     var sql = " update recepcion_mercancia_detalle set novedades_recepcion_id = $3 cantidad_recibida = $4 where  id = $1 and codigo_producto = $2 ; ";
-    
+
     var parametros = [
         producto_mercancia.id,
         producto_mercancia.codigo_producto,
@@ -631,7 +681,7 @@ OrdenesCompraModel.prototype.modificar_productos_recepcion_mercancia = function(
         producto_mercancia.novedades_recepcion_id,
         producto_mercancia.cantidad_recibida
     ];
-    
+
     G.db.query(sql, [parametros], function(err, rows, result, total_records) {
         callback(err, rows);
     });

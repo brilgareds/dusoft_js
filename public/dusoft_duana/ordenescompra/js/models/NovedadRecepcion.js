@@ -24,6 +24,10 @@ define(["angular", "js/models"], function(angular, models) {
             NovedadRecepcion.prototype.get_descripcion = function() {               
                     return this.descripcion;
             };
+            
+            NovedadRecepcion.prototype.get_codigo_descripcion = function() {               
+                    return this.codigo + ' - ' + this.descripcion;
+            };
 
             NovedadRecepcion.prototype.get_estado = function() {
                 return this.estado;

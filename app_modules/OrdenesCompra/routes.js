@@ -7,13 +7,18 @@ module.exports = function(app, di_container) {
     app.post('/api/OrdenesCompra/listarOrdenesCompra', function(req, res) {
         c_ordenes_compra.listarOrdenesCompra(req, res);
     });
+    
+    // Listar Ordenes de Compras Proveedor
+    app.post('/api/OrdenesCompra/listarOrdenesCompraProveedor', function(req, res) {
+        c_ordenes_compra.listarOrdenesCompraProveedor(req, res);
+    });
 
-    // Listar Ordenes de Compras
+    // Listar Productos para Ordenes de Compras
     app.post('/api/OrdenesCompra/listarProductos', function(req, res) {
         c_ordenes_compra.listarProductos(req, res);
     });
 
-    // Insertar Ordenes de Compras
+    // Ingresar Ordenes de Compras
     app.post('/api/OrdenesCompra/insertarOrdenCompra', function(req, res) {
         c_ordenes_compra.insertarOrdenCompra(req, res);
     });

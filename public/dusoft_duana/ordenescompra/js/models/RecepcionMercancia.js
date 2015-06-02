@@ -1,10 +1,17 @@
 define(["angular", "js/models"], function(angular, models) {
 
-    models.factory('RecepcionMercancia', [function() {
+    models.factory('RecepcionMercancia', [ "$filter" ,function($filter) {
 
             function RecepcionMercancia(empresa_id, numero_recepcion) {
                 this.empresa_id = empresa_id;
                 this.numero_recepcion = numero_recepcion;
+                this.proveedor = '';
+                this.transportadora = '';
+                this.novedad = '';
+                this.contiene_medicamentos = true;
+                this.contiene_dispositivos = false;
+                this.hora_ingreso = new Date();
+                this.fecha_ingreso = $filter('date')(new Date(), "dd-MM-yyyy");
             }
 
             this.get = function(empresa_id, numero_recepcion) {
@@ -65,6 +72,10 @@ define(["angular", "js/models"], function(angular, models) {
                 this.contiene_medicamentos = false;
             };
 
+            RecepcionMercancia.prototype.set_hora_ingreso = function(hora_ingreso) {
+                this.hora_ingreso = hora_ingreso;
+            };
+
             RecepcionMercancia.prototype.set_fecha_ingreso = function(fecha_ingreso) {
                 this.fecha_ingreso = fecha_ingreso;
             };
@@ -121,6 +132,10 @@ define(["angular", "js/models"], function(angular, models) {
 
             RecepcionMercancia.prototype.get_contiene_dispositivos = function() {
                 return this.contiene_dispositivos;
+            };
+
+            RecepcionMercancia.prototype.get_hora_ingreso = function() {
+                return this.hora_ingreso;
             };
 
             RecepcionMercancia.prototype.get_fecha_ingreso = function() {

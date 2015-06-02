@@ -55,6 +55,38 @@ OrdenesCompra.prototype.listarOrdenesCompra = function(req, res) {
 };
 
 
+// Listar las Ordenes de Compra de un Proveedor
+OrdenesCompra.prototype.listarOrdenesCompraProveedor = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.codigo_proveedor_id === undefined) {
+        res.send(G.utils.r(req.url, 'codigo_proveedor_id no estan definidas', 404, {}));
+        return;
+    }
+   
+    if (args.ordenes_compras.codigo_proveedor_id === '') {
+        res.send(G.utils.r(req.url, 'codigo_proveedor_id estan vacias', 404, {}));
+        return;
+    }
+
+    var codigo_proveedor_id = args.ordenes_compras.codigo_proveedor_id;
+
+    that.m_ordenes_compra.listar_ordenes_compra_proveedor(codigo_proveedor_id, function(err, lista_ordenes_compras) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Lista Ordenes Compras', 200, {ordenes_compras: lista_ordenes_compras}));
+            return;
+        }
+    });
+};
+
+
 // Consultar Orden de Compra por numero de orden
 OrdenesCompra.prototype.consultarOrdenCompra = function(req, res) {
 

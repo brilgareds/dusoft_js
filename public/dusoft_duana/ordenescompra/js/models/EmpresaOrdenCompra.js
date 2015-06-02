@@ -10,6 +10,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             EmpresaOrdenCompra.laboratorios = [];
             EmpresaOrdenCompra.productos = [];
             EmpresaOrdenCompra.observaciones_ordenes_compra = [];
+            EmpresaOrdenCompra.transportadoras = [];
             EmpresaOrdenCompra.recepciones_mercancia = [];
             EmpresaOrdenCompra.novedades_mercancia = [];
 
@@ -112,6 +113,21 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             EmpresaOrdenCompra.limpiar_observaciones = function() {
                 this.observaciones_ordenes_compra = [];
             };
+            
+            
+            // Transportadoras
+            EmpresaOrdenCompra.set_transportadoras = function(transportadora) {
+                this.transportadoras.push(transportadora);
+            };
+
+            EmpresaOrdenCompra.get_transportadoras = function() {
+                return this.transportadoras;
+            };
+
+            EmpresaOrdenCompra.limpiar_transportadoras = function() {
+                this.transportadoras = [];
+            };
+            
             
             // Novedades de mercancia
             EmpresaOrdenCompra.set_novedades_mercancia = function(novedad) {

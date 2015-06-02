@@ -212,7 +212,7 @@
 
                     </tab>
 
-                    <tab disabled="rootCreaPedidoFarmacia.bloqueo_upload" active="rootCreaPedidoFarmacia.tab_estados.tab2">
+                    <tab disabled="rootCreaPedidoFarmacia.bloqueo_upload" active="rootCreaPedidoFarmacia.tab_estados.tab2" ng-if="rootCreaPedidoFarmacia.opciones.sw_cargar_plano" name="cargarPlano">
                         <tab-heading>
                             <b> {{rootCreaPedidoFarmacia.titulo_tab_2}} </b>
                         </tab-heading>
@@ -274,8 +274,14 @@
         </div>
 
         <div class="col-sm-12 btn-toolbar">
-            <button type="submit" ng-disabled="rootCreaPedidoFarmacia.bloqueo_generar_pedido" class="btn btn-default pull-right" ng-click="generarPedidoFarmacia()" ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible == false"><span class="glyphicon glyphicon-cog"></span> Generar Pedido</button>
-            <button type="submit" ng-disabled="rootCreaPedidoFarmacia.bloqueo_generar_pedido" class="btn btn-default pull-right" ng-click="abrirViewVerPedidosFarmacias()" ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible == false"><span class="glyphicon glyphicon-ok"></span> Guardar Temporal</button>
+            <button type="submit" ng-disabled="rootCreaPedidoFarmacia.bloqueo_generar_pedido" class="btn btn-default pull-right" ng-click="generarPedidoFarmacia()"
+                    ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible == false" ng-validate-events="{{rootCreaPedidoFarmacia.opcionesModulo.btnGenerarPedido}}">
+                <span class="glyphicon glyphicon-cog"></span> Generar Pedido
+            </button>
+            <button type="submit" ng-disabled="rootCreaPedidoFarmacia.bloqueo_generar_pedido" class="btn btn-default pull-right" ng-click="abrirViewVerPedidosFarmacias()"
+                    ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible == false" ng-validate-events="{{rootCreaPedidoFarmacia.opcionesModulo.btnGuardarTemporal}}">
+                <span class="glyphicon glyphicon-ok"></span> Guardar Temporal
+            </button>
             <!--<button type="submit" ng-disabled="rootCreaPedidoFarmacia.bloqueo_generar_pedido" class="btn btn-dedault pull-right" ng-click="abrirViewVerPedidosFarmacias()" ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible == false"><span class="glyphicon glyphicon-ok"></span> Guardar Temporal</button>-->
             <button type="submit" class="btn btn-default pull-right" ng-click="abrirViewVerPedidosFarmaciasEliminarTemporal()" ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible === false"><span class="glyphicon glyphicon-remove"></span> Cancelar Pedido</button>
             <button type="submit" class="btn btn-default pull-right" ng-click="abrirViewVerPedidosFarmacias()" ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible === true"><span class="glyphicon glyphicon-off"></span> Finalizar</button>

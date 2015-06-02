@@ -77,6 +77,30 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.rootCreaPedidoFarmacia.titulo_tab_2= "";
             $scope.rootCreaPedidoFarmacia.observacion = "";
             
+            /*
+                sw_generar_pedido: true
+                sw_guardar_temporal: true
+                sw_cargar_plano: true
+                
+                ng-validate-events="{{rootCreaPedidoFarmacia.opcionesModulo.btnGuardarTemporal}}"
+                ng-validate-events="{{rootCreaPedidoFarmacia.opcionesModulo.btnGenerarPedido}}"
+            
+            */
+           
+           $scope.rootCreaPedidoFarmacia.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
+           
+           $scope.rootCreaPedidoFarmacia.opcionesModulo = {
+                btnGuardarTemporal: {
+                    'click': $scope.rootCreaPedidoFarmacia.opciones.sw_generar_pedido
+                },
+                btnGenerarPedido: {
+                    'click': $scope.rootCreaPedidoFarmacia.opciones.sw_generar_pedido
+                },
+                btnCargarPlano: {
+                    'click': $scope.rootCreaPedidoFarmacia.opciones.sw_cargar_plano
+                }        
+            };
+            
             $scope.rootCreaPedidoFarmacia.pedido = {numero_pedido: ""};
             
 

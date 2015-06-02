@@ -16,13 +16,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             $scope.root = {};
             
             $scope.root.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
-            $scope.root.opciones.sw_ver_listado_temporales = true;
+            //$scope.root.opciones.sw_ver_listado_temporales = true;
             
-            console.log(">>>> Opciones: ",$scope.root.opciones);
+            console.log(">>>> Opciones Contenedor: ",$scope.root.opciones);
             
             $scope.root.opcionesModulo = {
-                btnCrearPedidos: {
-                    'click': true//$scope.root.opciones.sw_crear_pedido
+                btnCrearPedido: {
+                    'click': $scope.root.opciones.sw_crear_pedido
                 }
             };
 

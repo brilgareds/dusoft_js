@@ -13,7 +13,7 @@
 
                     <div class="col-sm-1 col-md-1 col-lg-1">
                         <div class="input-group">
-                            <button type="button" class="btn btn-default btn-medium ng-scope" ng-click="abrirViewPedidoFarmacia()" ng-validate-events="{{root.opcionesModulo.btnCrearPedidos}}" name="btnCrearPedidos">
+                            <button type="button" class="btn btn-default btn-medium ng-scope" ng-click="abrirViewPedidoFarmacia()" ng-validate-events="{{root.opcionesModulo.btnCrearPedido}}" name="btnCrearPedido">
                                 <span class="glyphicon glyphicon-plus"></span> Crear Pedido
                             </button>
                         </div>
@@ -57,7 +57,7 @@
                 </br>
             </tab>
 
-            <tab ng-controller="VerPedidosTempFarmaciasController"  ng-if="root.opciones.sw_ver_listado_temporales"  > <!-- ng-controller="VerPedidosTempFarmaciasController" -->
+            <tab ng-controller="VerPedidosTempFarmaciasController" > <!-- ng-controller="VerPedidosTempFarmaciasController" --> <!-- ng-if="root.opciones.sw_ver_listado_temporales" -->
                 <tab-heading >
                     Pedidos Temporales
                 </tab-heading>
@@ -67,7 +67,7 @@
 
                     <div class="col-sm-1 col-md-1 col-lg-1">
                         <div class="input-group">
-                            <button type="button" class="btn btn-default btn-medium ng-scope" ng-click="abrirViewPedidoFarmaciaTemp()">
+                            <button type="button" class="btn btn-default btn-medium ng-scope" ng-click="abrirViewPedidoFarmaciaTemp()" ng-validate-events="{{root.opcionesModulo.btnCrearPedido}}" name="btnCrearPedido">
                                 <span class="glyphicon glyphicon-plus"></span> Crear Pedido
                             </button>
                         </div>

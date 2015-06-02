@@ -601,12 +601,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             });
 
-            $rootScope.$on("onGenerarPdfRotulo", function(e, tipo, numero_pedido, numero_caja) {
-                $scope.onImprimirRotulo(tipo, numero_pedido, numero_caja);
+            $rootScope.$on("onGenerarPdfRotulo", function(e, tipo, numero_pedido, numero_caja, tipoCaja) {
+                $scope.onImprimirRotulo(tipo, numero_pedido, numero_caja, tipoCaja);
             });
 
 
-            $scope.onImprimirRotulo = function(tipo, numero_pedido, numero_caja, tipo) {
+            $scope.onImprimirRotulo = function(tipo, numero_pedido, numero_caja, tipoCaja) {
 
                 var url = API.DOCUMENTOS_TEMPORALES.IMPRIMIR_ROTULO_CLIENTES;
 
@@ -621,7 +621,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         documento_temporal: {
                             numero_pedido: numero_pedido,
                             numero_caja: numero_caja,
-                            tipo:tipo
+                            tipo:tipoCaja
                         }
                     }
                 };

@@ -36,7 +36,10 @@ define(["angular"], function(angular) {
             },
             'OBSERVACIONES_ORDENES_COMPRA': {
                 'LISTAR_OBSERVACIONES': BASE_URL + '/ObservacionesOrdenesCompras/listarObservaciones'
-            }
+            },
+            'TRANSPORTADORAS': {
+                'LISTAR_TRANSPORTADORAS': BASE_URL + '/Transportadoras/listar'
+            },
         }
     };
 

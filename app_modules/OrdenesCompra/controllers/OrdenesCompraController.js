@@ -1034,17 +1034,49 @@ OrdenesCompra.prototype.insertarRecepcionMercancia = function(req, res) {
     }
 
     var recepcion_mercancia = args.ordenes_compras.recepcion_mercancia;
+    var usuario_id = req.session.user.usuario_id;
+    recepcion_mercancia.usuario_id = usuario_id;
 
     that.m_ordenes_compra.insertar_recepcion_mercancia(recepcion_mercancia, function(err, recepcion_mercancia) {
 
-        if (err) {
+        if (err || recepcion_mercancia.length === 0) {
             var msj = (err.msj !== undefined) ? err.msj : '';
-            
+
             res.send(G.utils.r(req.url, 'Error insertando la recepcion ' + msj, 500, {ordenes_compras: []}));
             return;
         } else {
-            res.send(G.utils.r(req.url, 'Recepcion mercancia insertada correctamente', 200, {ordenes_compras: recepcion_mercancia}));
-            return;
+
+            //Insertar productos de la OC a la Recepcion de la Mercancia
+            that.m_ordenes_compra.consultar_detalle_orden_compra(recepcion_mercancia.orden_pedido_id, '', '', function(err, lista_productos) {
+
+                if (err) {
+                    res.send(G.utils.r(req.url, 'Error consultando la orden de compra', 500, {lista_productos: []}));
+                    return;
+                } else {
+
+                    var recepcion_mercancia_id = recepcion_mercancia[0].id;
+                    var i = lista_productos.length;
+
+                    lista_productos.forEach(function(_producto) {
+
+                        var producto = {
+                            recepcion_mercancia_id : recepcion_mercancia_id,
+                            novedades_recepcion_id : 'NULL',
+                            codigo_producto : _producto.codigo_producto,
+                            cantidad_recibida : 0,
+                            usuario_id : usuario_id
+                        };
+                        
+                        that.m_ordenes_compra.insertar_productos_recepcion_mercancia(producto, function(err) {
+
+                            if (--i === 0) {
+                                res.send(G.utils.r(req.url, 'Recepcion mercancia insertada correctamente', 200, {ordenes_compras: recepcion_mercancia}));
+                                return;
+                            }
+                        });
+                    });
+                }
+            });
         }
     });
 };
@@ -1072,11 +1104,110 @@ OrdenesCompra.prototype.modificarRecepcionMercancia = function(req, res) {
 
         if (err) {
             var msj = (err.msj !== undefined) ? err.msj : '';
-            
+
             res.send(G.utils.r(req.url, 'Error modificando la recepcion ' + msj, 500, {ordenes_compras: []}));
             return;
         } else {
             res.send(G.utils.r(req.url, 'Recepcion mercancia modificada correctamente', 200, {ordenes_compras: recepcion_mercancia}));
+            return;
+        }
+    });
+};
+
+
+// Listar productos de la recepcion de mercancia
+OrdenesCompra.prototype.listarProductosRecepcionMercancia = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.recepcion_mercancia_id === undefined) {
+        res.send(G.utils.r(req.url, 'recepcion_mercancia_id no esta definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.recepcion_mercancia_id === '') {
+        res.send(G.utils.r(req.url, 'recepcion_mercancia_id esta vacias', 404, {}));
+        return;
+    }
+
+    var recepcion_mercancia_id = args.ordenes_compras.recepcion_mercancia_id;
+
+    that.m_ordenes_compra.listar_productos_recepcion_mercancia(recepcion_mercancia_id, function(err, productos) {
+
+        if (err) {            
+            res.send(G.utils.r(req.url, 'Error listando productos de la recepcion ', 500, {ordenes_compras: []}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'lista de productos', 200, {ordenes_compras: productos}));
+            return;
+        }
+    });
+};
+
+// Insertar producto a recepcion de mercancia
+OrdenesCompra.prototype.insertarProductosRecepcionMercancia = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.producto_mercancia === undefined) {
+        res.send(G.utils.r(req.url, 'producto_mercancia no esta definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.producto_mercancia === '') {
+        res.send(G.utils.r(req.url, 'producto_mercancia esta vacias', 404, {}));
+        return;
+    }
+
+    var producto_mercancia = args.ordenes_compras.producto_mercancia;
+
+    that.m_ordenes_compra.insertar_productos_recepcion_mercancia(producto_mercancia, function(err, productos) {
+
+        if (err) {
+            var msj = (err.msj !== undefined) ? err.msj : '';
+
+            res.send(G.utils.r(req.url, 'Error insertando productos a la recepcion ' + msj, 500, {ordenes_compras: []}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Producto registrado correctamente', 200, {ordenes_compras: productos}));
+            return;
+        }
+    });
+};
+
+
+// Modificar producto a recepcion de mercancia
+OrdenesCompra.prototype.modificarProductosRecepcionMercancia = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.producto_mercancia === undefined) {
+        res.send(G.utils.r(req.url, 'producto_mercancia no esta definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.producto_mercancia === '') {
+        res.send(G.utils.r(req.url, 'producto_mercancia esta vacias', 404, {}));
+        return;
+    }
+
+    var producto_mercancia = args.ordenes_compras.producto_mercancia;
+
+    that.m_ordenes_compra.modificar_productos_recepcion_mercancia(producto_mercancia, function(err, productos) {
+
+        if (err) {
+            var msj = (err.msj !== undefined) ? err.msj : '';
+
+            res.send(G.utils.r(req.url, 'Error modificando productos a la recepcion ' + msj, 500, {ordenes_compras: []}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {ordenes_compras: productos}));
             return;
         }
     });

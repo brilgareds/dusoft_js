@@ -21,21 +21,23 @@
                             </p>
                         </div>
                     </div>                    
-                    <div class="row margin-top" ng-repeat="recepcion in datos_view.recepciones">
-                        <div class="col-md-1">
+                    <div class="row margin-top" ng-repeat="recepcion in datos_view.recepciones">                        
+                        <div class="col-md-4">
                             <fieldset>
                                 <legend class="medium-letter">Transportadora</legend> 
                                 <div class="row">
-                                    <div class="col-md-12">  
-                                        <select ui-select2="{minimumInputLength: 3}"  ng-disabled="numero_orden > 0" class="form-control selectgeneral pull-left" ng-model="codigo_proveedor_id"  placeholder="Seleccionar proveedor" ng-change="seleccionar_proveedor()">
-                                            <option></option> 
-                                            <option ng-repeat="proveedor in  Empresa.get_proveedores()"  value="{{proveedor.codigo_proveedor_id}}">{{ proveedor.get_nombre() }}</option>
-                                        </select>
+                                    <div class="col-md-12">                                          
+                                        <ui-select ng-model="planilla.ciudad" ng-disabled="planilla.get_numero_guia() > 0" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_ciudad()">
+                                            <ui-select-match  placeholder="Seleccionar ciudad">{{ $select.selected.get_nombre_ciudad() }}</ui-select-match>
+                                            <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="ciudad in Empresa.get_ciudades() | filter:$select.search">
+                                                {{ ciudad.get_nombre_ciudad() }}
+                                            </ui-select-choices>
+                                        </ui-select>
                                     </div>
                                 </div>
                             </fieldset>
                         </div>
-                        <div class="col-md-1">
+                        <div class="col-md-4">
                             <fieldset>
                                 <legend class="medium-letter">No. Guía</legend> 
                                 <div class="row">
@@ -45,7 +47,7 @@
                                 </div>
                             </fieldset>
                         </div>
-                        <div class="col-md-1">
+                        <div class="col-md-4">
                             <fieldset>
                                 <legend class="medium-letter">Hora</legend> 
                                 <div class="row">
@@ -55,20 +57,22 @@
                                 </div>
                             </fieldset>
                         </div>
-                        <div class="col-md-1">
+                        <div class="col-md-4">
                             <fieldset>
                                 <legend class="medium-letter">Proveedor</legend> 
                                 <div class="row">
-                                    <div class="col-md-12">  
-                                        <select ui-select2="{minimumInputLength: 3}"  ng-disabled="numero_orden > 0" class="form-control selectgeneral pull-left" ng-model="codigo_proveedor_id"  placeholder="Seleccionar proveedor" ng-change="seleccionar_proveedor()">
-                                            <option></option> 
-                                            <option ng-repeat="proveedor in  Empresa.get_proveedores()"  value="{{proveedor.codigo_proveedor_id}}">{{ proveedor.get_nombre() }}</option>
-                                        </select>
+                                    <div class="col-md-12"> 
+                                        <ui-select ng-model="recepcion.proveedor" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_proveedor()">
+                                            <ui-select-match  placeholder="Seleccionar proveedor">{{ $select.selected.get_nombre() }}</ui-select-match>
+                                            <ui-select-choices refresh="listar_proveedores($select.search)" refresh-delay="0" repeat="proveedor in Empresa.get_proveedores() | filter:$select.search">
+                                                {{ proveedor.get_nombre() }}
+                                            </ui-select-choices>
+                                        </ui-select>
                                     </div>
                                 </div>
                             </fieldset>
                         </div>
-                        <div class="col-md-1">
+                        <div class="col-md-4">
                             <fieldset>
                                 <legend class="medium-letter">No. Orden</legend> 
                                 <div class="row">
@@ -81,7 +85,7 @@
                                 </div>
                             </fieldset>
                         </div>
-                        <div class="col-md-1">
+                        <div class="col-md-4">
                             <fieldset>
                                 <legend class="medium-letter">No. Factura</legend> 
                                 <div class="row">

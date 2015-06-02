@@ -32,34 +32,34 @@
         
     </head>
     <body>
-        <div class="cabecera"><span class="departamento">{{:departamento}}</span></div>
+        <div class="cabecera"><span class="departamento">{{:detalle.departamento}}</span></div>
         <div>DESTINATARIO:</div>
-        <h1>{{:cliente}}</h1>
+        <h1>{{:detalle.cliente}}</h1>
         <div>DIRECCION:</div>
-        <h2>{{:direccion}}</h2>
+        <h2>{{:detalle.direccion}}</h2>
         <div class="documentos">DOCUMENTOS:</div>
         <br/>
         <!--span class="numero_caja_span">NUMERO </span-->
         <strong> 
-            {{if tipo == 0}} CAJA {{else}} NEVERA  {{/if}}
+            {{if detalle.tipo == 0}} CAJA {{else}} NEVERA  {{/if}}
             
-            {{:numero_caja}} DE ______
+            {{:detalle.numero_caja}} DE ______
         </strong>
         <h1>((((( DELICADO ))))</h1>
         
         <hr class="separador"/>
         
-        <div class="cabecera"><span class="departamento">{{:departamento}}</span></div>
+        <div class="cabecera"><span class="departamento">{{:detalle.departamento}}</span></div>
         <div>DESTINATARIO:</div>
-        <h1>{{:cliente}}</h1>
+        <h1>{{:detalle.cliente}}</h1>
         <div>DIRECCION:</div>
-        <h2>{{:direccion}}</h2>
+        <h2>{{:detalle.direccion}}</h2>
         <div class="documentos">DOCUMENTOS:</div>
         <br/>
         <strong> 
-            {{if tipo == 0}} CAJA {{else}} NEVERA  {{/if}}
+            {{if detalle.tipo == 0}} CAJA {{else}} NEVERA  {{/if}}
             
-            {{:numero_caja}} DE ______
+            {{:detalle.numero_caja}} DE ______
         </strong>
         <h1>((((( DELICADO ))))</h1>
     </body>

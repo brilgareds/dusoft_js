@@ -12,7 +12,6 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.presentacion = presentacion || "";
                 this.cantidad_presentacion = cantidad_presentacion || "";
                 this.cantidad_recibida = 0;
-
             }
 
             ProductoOrdenCompra.prototype = Object.create(Producto.getClass().prototype);
@@ -104,8 +103,16 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             };
 
             ProductoOrdenCompra.prototype.get_cantidad_recibida = function() {
-
                 return this.cantidad_recibida;
+            };
+            
+            //Novedades recepcion
+            ProductoOrdenCompra.prototype.set_novedad_recepcion = function(novedad_recepcion) {
+                this.novedad_recepcion = novedad_recepcion;
+            };
+
+            ProductoOrdenCompra.prototype.get_novedad_recepcion = function() {
+                return this.novedad_recepcion;
             };
 
             return this;

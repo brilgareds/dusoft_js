@@ -688,7 +688,6 @@ CREATE TABLE "public"."login_modulos_opciones" (
     NOT DEFERRABLE
 ) WITH OIDS;
 
-
 CREATE TABLE "public"."login_centros_utilidad_bodega" (
   "id" SERIAL, 
   "login_empresa_id" INTEGER, 
@@ -703,8 +702,8 @@ CREATE TABLE "public"."login_centros_utilidad_bodega" (
   CONSTRAINT "login_centros_utilidad_bodega_pkey" PRIMARY KEY("id"), 
   CONSTRAINT "login_centros_utilidad_bodega_fk" FOREIGN KEY ("login_empresa_id")
     REFERENCES "public"."login_empresas"("id")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
     NOT DEFERRABLE, 
   CONSTRAINT "login_centros_utilidad_bodega_fk1" FOREIGN KEY ("empresa_id")
     REFERENCES "public"."empresas"("empresa_id")
@@ -1128,6 +1127,26 @@ IS 'Fecha en que se recepciona la mercancia';
 
 COMMENT ON COLUMN "public"."recepcion_mercancia"."fecha_registro"
 IS 'Fecha en que se realiza el registro';
+
+
+ALTER TABLE "public"."recepcion_mercancia"
+  ADD COLUMN "usuario_id" INTEGER;
+
+ALTER TABLE "public"."recepcion_mercancia"
+  ALTER COLUMN "usuario_id" SET NOT NULL;
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."usuario_id"
+IS 'Usuario que realiza la recepcion de la mercancia';
+
+
+ALTER TABLE "public"."recepcion_mercancia"
+  ADD COLUMN "estado" CHAR(1);
+
+ALTER TABLE "public"."recepcion_mercancia"
+  ALTER COLUMN "estado" SET DEFAULT '1';
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."estado"
+IS 'Indica si la recepcion esta 0=> Inactiva 1=> activa';
 
 
 /* =================== Tabla para ingresar el detalle de las recepciones de mercancia ============*/

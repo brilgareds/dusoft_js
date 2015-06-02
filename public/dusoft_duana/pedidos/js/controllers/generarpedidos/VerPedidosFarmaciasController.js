@@ -24,14 +24,39 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             //$scope.rootVerPedidosFarmacias.opciones = $scope.$parent.$parent.opciones;
             $scope.rootVerPedidosFarmacias.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
             
-            $scope.rootVerPedidosFarmacias.opciones.sw_ver_columna_estado_pedidos = true;
+            //$scope.rootVerPedidosFarmacias.opciones.sw_ver_columna_estado_pedidos = true;
             //var opciones = $scope.$parent.$parent.opciones;
             //var opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
             
+            console.log(">>>>> Opciones Módulo: ", $scope.rootVerPedidosFarmacias.opciones/*opciones*/);
+            
+            /*
+             Opciones:
+            
+                sw_cargar_plano: true
+                sw_consultar_pedido: true
+                sw_crear_pedido: true
+                sw_generar_pedido: true
+                sw_guardar_temporal: true
+                --sw_modificacion_especial_pedidos: false
+                --sw_modificar_pedido: true
+                --sw_ver_columna_estado_pedidos: true --No van
+                --sw_ver_listado_temporales: true --No van
+            
+            
+                ng-validate-events="{{rootVerPedidosFarmacias.opcionesModulo.btnConsultarPedido}}"
+             */
+            
             $scope.rootVerPedidosFarmacias.opcionesModulo = {
                 btnModificarPedido: {
-                    'click': true//$scope.rootVerPedidosFarmacias.opciones.sw_modificar_pedido
-                }
+                    'click': $scope.rootVerPedidosFarmacias.opciones.sw_modificar_pedido
+                },
+                btnModificarEspecialPedido: {
+                    'click': $scope.rootVerPedidosFarmacias.opciones.sw_modificacion_especial_pedidos
+                },
+                btnConsultarPedido: {
+                    'click': $scope.rootVerPedidosFarmacias.opciones.sw_consultar_pedido
+                }        
             };
             
             console.log(">>>>>> Opciones Eventos: ", $scope.rootVerPedidosFarmacias.opcionesModulo);
@@ -243,11 +268,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)"><a href="javascript:void(0);" ng-click="onEditarPedidoFarmacia(row.entity)" ng-validate-events="{{rootVerPedidosFarmacias.opcionesModulo.btnModificarPedido}}" >Modificar</a></li>\
+                                                <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)" ng-if="rootVerPedidosFarmacias.opciones.sw_modificar_pedido">\n\
+                                                    <a href="javascript:void(0);" ng-click="onEditarPedidoFarmacia(row.entity)" ng-validate-events="{{rootVerPedidosFarmacias.opcionesModulo.btnModificarPedido}}" >Modificar</a>\
+                                                </li>\
                                                 <!--<li class="divider" ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)"></li>-->\
-                                                <li><a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity)" >Ver</a></li>\
+                                                <li><a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity)" ng-validate-events="{{rootVerPedidosFarmacias.opcionesModulo.btnConsultarPedido}}">Ver</a></li>\
                                                 <!--<li class="divider" ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)"></li>-->\
-                                                <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)"><a href="javascript:void(0);" ng-click="onEdicionEspecialPedidoFarmacia(row.entity)" ng-validate-events="{{rootVerPedidosFarmacias.opcionesModulo.btnModificarPedido}}" >Modificación Especial</a></li>\
+                                                <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)" ng-if="rootVerPedidosFarmacias.opciones.sw_modificacion_especial_pedidos">\
+                                                    <a href="javascript:void(0);" ng-click="onEdicionEspecialPedidoFarmacia(row.entity)" ng-validate-events="{{rootVerPedidosFarmacias.opcionesModulo.btnModificarEspecialPedido}}" >Modificación Especial</a>\
+                                                </li>\
                                             </ul>\n\
                                         </div>'
                     }

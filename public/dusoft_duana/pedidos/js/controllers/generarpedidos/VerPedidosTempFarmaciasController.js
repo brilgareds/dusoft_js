@@ -28,7 +28,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.rootVerPedidosTempFarmacias.ultima_busqueda.termino_busqueda = "";
 
             $scope.rootVerPedidosTempFarmacias.seleccion = "FD";
-
+           
             $scope.rootVerPedidosTempFarmacias.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()

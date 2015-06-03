@@ -1148,6 +1148,15 @@ ALTER TABLE "public"."recepcion_mercancia"
 COMMENT ON COLUMN "public"."recepcion_mercancia"."estado"
 IS 'Indica si la recepcion esta 0=> Inactiva 1=> activa';
 
+ALTER TABLE "public"."recepcion_mercancia"
+  ADD COLUMN "hora_recepcion" TIME WITHOUT TIME ZONE;
+
+ALTER TABLE "public"."recepcion_mercancia"
+  ALTER COLUMN "hora_recepcion" SET DEFAULT null;
+
+COMMENT ON COLUMN "public"."recepcion_mercancia"."hora_recepcion"
+IS 'Hora exacta en que se hace la recepcion de la mercancia';
+
 
 /* =================== Tabla para ingresar el detalle de las recepciones de mercancia ============*/
 

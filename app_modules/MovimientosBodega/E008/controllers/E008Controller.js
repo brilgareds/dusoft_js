@@ -1388,7 +1388,8 @@ E008Controller.prototype.auditoriaProductosClientes = function(req, res) {
                         if (producto.length > 0) {
                             producto = producto[0];
                             detalle.cantidad_solicitada = producto.cantidad_solicitada;
-                            detalle.cantidad_pendiente = producto.cantidad_solicitada - detalle.cantidad_ingresada;
+                            detalle.cantidad_pendiente = producto.cantidad_pendiente;
+                            //detalle.cantidad_pendiente = producto.cantidad_solicitada - detalle.cantidad_ingresada;
                             detalle.cantidad_ingresada = producto.cantidad_ingresada;
                             //detalle.justificacion = producto.justificacion;
                             //detalle.justificacion_auditor = producto.justificacion_auditor;
@@ -1412,7 +1413,7 @@ E008Controller.prototype.auditoriaProductosClientes = function(req, res) {
 };
 
 // Buscar productos para auditar de Farmacias 
-E008Controller.prototype.auditoriaProductosFarmacias = function(req, res) {
+E008Controller.prototype.auditoriaProductosFarmacias = function(req, res) {   
 
     var that = this;
 
@@ -1480,6 +1481,9 @@ E008Controller.prototype.auditoriaProductosFarmacias = function(req, res) {
                 var count = detalle_documento_temporal.length;
 
                 productos_pedidos = that.m_pedidos.unificarLotesDetalle(productos_pedidos);
+                
+                //console.log("productos_ pedidos ", productos_pedidos);
+                //return;
 
                 detalle_documento_temporal.forEach(function(detalle) {
 
@@ -1495,7 +1499,8 @@ E008Controller.prototype.auditoriaProductosFarmacias = function(req, res) {
                         if (producto.length > 0) {
                             producto = producto[0];
                             detalle.cantidad_solicitada = producto.cantidad_solicitada;
-                            detalle.cantidad_pendiente = producto.cantidad_solicitada - detalle.cantidad_ingresada;
+                            detalle.cantidad_pendiente = producto.cantidad_pendiente;
+                           // detalle.cantidad_pendiente = producto.cantidad_solicitada - detalle.cantidad_ingresada;
                             detalle.cantidad_ingresada = producto.cantidad_ingresada;
                             //detalle.justificacion = producto.justificacion;
                             //detalle.justificacion_auditor = producto.justificacion_auditor;

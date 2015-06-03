@@ -1,6 +1,7 @@
 var OrdenesCompraModel = function() {
 
 };
+
 // Listar las Ordenes de Compra 
 OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fecha_final, termino_busqueda, pagina, callback) {
 
@@ -48,10 +49,59 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
                     c.tercero_id ilike $3 or \
                     c.nombre_tercero ilike $3 \
                 ) and a.sw_unificada='0' order by 1 DESC ";
+
     G.db.pagination(sql, [fecha_inicial, fecha_final, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
         callback(err, rows);
     });
 };
+
+// Listar las Ordenes de Compra de un Proveedor
+OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(codigo_proveedor_id, callback) {
+
+
+    var sql = " SELECT \
+                a.orden_pedido_id as numero_orden,\
+                a.empresa_id,\
+                d.tipo_id_tercero as tipo_id_empresa,\
+                d.id as nit_empresa,\
+                d.razon_social as nombre_empresa,\
+                a.codigo_proveedor_id,\
+                c.tipo_id_tercero as tipo_id_proveedor,\
+                c.tercero_id as nit_proveedor,\
+                c.nombre_tercero as nombre_proveedor,\
+                c.direccion as direccion_proveedor,\
+                c.telefono as telefono_proveedor,\
+                a.estado,\
+                CASE WHEN a.estado = 0 THEN 'Recibida' \
+                     WHEN a.estado = 1 THEN 'Activa' \
+                     WHEN a.estado = 2 THEN 'Anulado' END as descripcion_estado, \
+                a.sw_orden_compra_finalizada,\
+                CASE WHEN a.sw_orden_compra_finalizada = '0' THEN 'En Proceso ...' \
+                     WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion, \
+                a.observacion,\
+                f.codigo_unidad_negocio,\
+                f.imagen,\
+                f.descripcion as descripcion_unidad_negocio,\
+                a.usuario_id,\
+                e.nombre as nombre_usuario,\
+                To_char(a.fecha_orden,'dd-mm-yyyy') as fecha_registro,\
+                CASE WHEN COALESCE (g.orden_pedido_id,0)=0 then 0 else 1 end as tiene_ingreso_temporal \
+                FROM compras_ordenes_pedidos a\
+                inner join terceros_proveedores b on a.codigo_proveedor_id = b.codigo_proveedor_id\
+                inner join terceros c on  b.tipo_id_tercero = c.tipo_id_tercero and b.tercero_id=c.tercero_id \
+                inner join empresas d on a.empresa_id = d.empresa_id\
+                inner join system_usuarios e on a.usuario_id = e.usuario_id\
+                left join unidades_negocio f on a.codigo_unidad_negocio = f.codigo_unidad_negocio \
+                left join (\
+                    select aa.orden_pedido_id from inv_bodegas_movimiento_tmp_ordenes_compra aa\
+                ) as g on a.orden_pedido_id = g.orden_pedido_id\
+                WHERE a.codigo_proveedor_id = $1 and a.estado = '1' and a.sw_orden_compra_finalizada = '1' order by 1 DESC ";
+
+    G.db.query(sql, [codigo_proveedor_id], function(err, rows, result, total_records) {
+        callback(err, rows);
+    });
+};
+
 // Listar Producto para orden de compra 
 OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_proveedor_id, numero_orden, termino_busqueda, laboratorio_id, pagina, callback) {
 
@@ -482,6 +532,20 @@ OrdenesCompraModel.prototype.insertar_recepcion_mercancia = function(recepcion_m
         return;
     }
 
+    if (recepcion_mercancia.novedad === undefined || recepcion_mercancia.novedad === '') {
+        recepcion_mercancia.novedad = {id: null};
+    }
+
+    if (recepcion_mercancia.temperatura_neveras === '') {
+        recepcion_mercancia.temperatura_neveras = null;
+    }
+
+    recepcion_mercancia.contiene_medicamentos = (recepcion_mercancia.contiene_medicamentos) ? '1' : '0';
+    recepcion_mercancia.contiene_dispositivos = (recepcion_mercancia.contiene_dispositivos) ? '1' : '0';
+
+    var fecha_recepcion = new Date(recepcion_mercancia.hora_ingreso);
+    recepcion_mercancia.hora_ingreso = fecha_recepcion.toFormat('HH24:MI:SS');
+
     var sql = " insert into recepcion_mercancia (\
                     empresa_id,\
                     codigo_proveedor_id,\
@@ -496,15 +560,16 @@ OrdenesCompraModel.prototype.insertar_recepcion_mercancia = function(recepcion_m
                     contiene_medicamentos,\
                     contiene_dispositivos,\
                     usuario_id,\
-                    fecha_registro\
-                ) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) returning id; ";
+                    fecha_recepcion,\
+                    hora_recepcion\
+                ) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) returning id; ";
 
     var parametros = [
         recepcion_mercancia.empresa_id,
-        recepcion_mercancia.codigo_proveedor_id,
-        recepcion_mercancia.orden_pedido_id,
-        recepcion_mercancia.inv_transportador_id,
-        recepcion_mercancia.novedades_recepcion_id,
+        recepcion_mercancia.proveedor.codigo_proveedor_id,
+        recepcion_mercancia.orden_compra.numero_orden_compra,
+        recepcion_mercancia.transportadora.id,
+        recepcion_mercancia.novedad.id,
         recepcion_mercancia.numero_guia,
         recepcion_mercancia.numero_factura,
         recepcion_mercancia.cantidad_cajas,
@@ -512,10 +577,12 @@ OrdenesCompraModel.prototype.insertar_recepcion_mercancia = function(recepcion_m
         recepcion_mercancia.temperatura_neveras,
         recepcion_mercancia.contiene_medicamentos,
         recepcion_mercancia.contiene_dispositivos,
-        recepcion_mercancia.usuario_id
+        recepcion_mercancia.usuario_id,
+        recepcion_mercancia.fecha_ingreso,
+        recepcion_mercancia.hora_ingreso
     ];
 
-    G.db.query(sql, [parametros], function(err, rows, result, total_records) {
+    G.db.query(sql, parametros, function(err, rows, result, total_records) {
         callback(err, rows);
     });
 };
@@ -570,7 +637,7 @@ OrdenesCompraModel.prototype.modificar_recepcion_mercancia = function(recepcion_
 
 // listar productos Recepcion mercancia
 OrdenesCompraModel.prototype.listar_productos_recepcion_mercancia = function(recepcion_mercancia_id, callback) {
-   
+
     var sql = " select \
                 a.id,\
                 a.recepcion_mercancia_id,\
@@ -591,7 +658,7 @@ OrdenesCompraModel.prototype.listar_productos_recepcion_mercancia = function(rec
                 left join novedades_recepcion_mercancia e on a.novedades_recepcion_id = e.id\
                 inner join system_usuarios f on a.usuario_id = f.usuario_id\
                 where a.recepcion_mercancia_id = $1 and b.estado = '1' ;";
-    
+
     G.db.query(sql, [recepcion_mercancia_id], function(err, rows, result, total_records) {
         callback(err, rows);
     });
@@ -600,10 +667,10 @@ OrdenesCompraModel.prototype.listar_productos_recepcion_mercancia = function(rec
 // Insertar productos Recepcion mercancia
 OrdenesCompraModel.prototype.insertar_productos_recepcion_mercancia = function(producto_mercancia, callback) {
 
-   
+
     var sql = " insert into recepcion_mercancia_detalle  ( recepcion_mercancia_id, novedades_recepcion_id, codigo_producto, cantidad_recibida, usuario_id ) \
                 values ( $1, $2, $3, $4, $5) ; ";
-    
+
     var parametros = [
         producto_mercancia.recepcion_mercancia_id,
         producto_mercancia.novedades_recepcion_id,
@@ -611,8 +678,8 @@ OrdenesCompraModel.prototype.insertar_productos_recepcion_mercancia = function(p
         producto_mercancia.cantidad_recibida,
         producto_mercancia.usuario_id
     ];
-    
-    G.db.query(sql, [parametros], function(err, rows, result, total_records) {
+
+    G.db.query(sql, parametros, function(err, rows, result, total_records) {
         callback(err, rows);
     });
 };
@@ -621,9 +688,9 @@ OrdenesCompraModel.prototype.insertar_productos_recepcion_mercancia = function(p
 // Modificar productos Recepcion mercancia
 OrdenesCompraModel.prototype.modificar_productos_recepcion_mercancia = function(producto_mercancia, callback) {
 
-   
+
     var sql = " update recepcion_mercancia_detalle set novedades_recepcion_id = $3 cantidad_recibida = $4 where  id = $1 and codigo_producto = $2 ; ";
-    
+
     var parametros = [
         producto_mercancia.id,
         producto_mercancia.codigo_producto,
@@ -631,7 +698,7 @@ OrdenesCompraModel.prototype.modificar_productos_recepcion_mercancia = function(
         producto_mercancia.novedades_recepcion_id,
         producto_mercancia.cantidad_recibida
     ];
-    
+
     G.db.query(sql, [parametros], function(err, rows, result, total_records) {
         callback(err, rows);
     });
@@ -643,39 +710,49 @@ function __validar_campos_ingreso_recepcion(recepcion_mercancia) {
     var continuar = true;
     var msj = '';
 
-    if (recepcion_mercancia.empresa_id === undefined || recepcion_mercancia.codigo_proveedor_id === undefined || recepcion_mercancia.orden_pedido_id === undefined) {
+    if (recepcion_mercancia.empresa_id === undefined || recepcion_mercancia.proveedor === undefined || recepcion_mercancia.orden_compra === undefined) {
         continuar = false;
-        msj = 'empresa_id, codigo_proveedor_id u orden_pedido_id estan vacias';
+        msj = 'empresa_id, codigo_proveedor_id u orden_pedido_id no estan definidas';
     }
 
-    if (recepcion_mercancia.inv_transportador_id === undefined || recepcion_mercancia.novedades_recepcion_id === undefined) {
+    if (recepcion_mercancia.transportadora === undefined || recepcion_mercancia.novedad === undefined) {
         continuar = false;
-        msj = 'inv_transportador_id o novedades_recepcion_id esta vacias';
+        msj = 'inv_transportador_id o novedades_recepcion_id no estan definidas';
     }
 
     if (recepcion_mercancia.numero_guia === undefined || recepcion_mercancia.numero_factura === undefined) {
         continuar = false;
-        msj = 'numero_guia o numero_factura esta vacias';
+        msj = 'numero_guia o numero_factura no estan definidas';
     }
 
     if (recepcion_mercancia.cantidad_cajas === undefined || recepcion_mercancia.cantidad_neveras === undefined) {
         continuar = false;
-        msj = 'cantidad_cajas o cantidad_neveras esta vacias';
+        msj = 'cantidad_cajas o cantidad_neveras no estan definidas';
+    }
+
+    if (recepcion_mercancia.temperatura_neveras === undefined) {
+        continuar = false;
+        msj = 'temperatura_neverasno estan definidas';
     }
 
     if (recepcion_mercancia.contiene_medicamentos === undefined || recepcion_mercancia.contiene_dispositivos === undefined) {
         continuar = false;
-        msj = 'recepcion_mercancia esta vacias';
+        msj = 'contiene_medicamentos o contiene_dispositivos no estan definidas';
     }
 
-    if (recepcion_mercancia.empresa_id === '' || recepcion_mercancia.codigo_proveedor_id === '' || recepcion_mercancia.orden_pedido_id === '') {
+    if (recepcion_mercancia.fecha_ingreso === undefined || recepcion_mercancia.hora_ingreso === undefined) {
+        continuar = false;
+        msj = 'fecha_ingreso o hora_ingreso no estan definidas';
+    }
+
+    if (recepcion_mercancia.empresa_id === '' || recepcion_mercancia.proveedor === '' || recepcion_mercancia.orden_compra === '') {
         continuar = false;
         msj = 'empresa_id, codigo_proveedor_id u orden_pedido_id estan vacias';
     }
 
-    if (recepcion_mercancia.inv_transportador_id === '' || recepcion_mercancia.novedades_recepcion_id === '') {
+    if (recepcion_mercancia.transportadora === '') {
         continuar = false;
-        msj = 'inv_transportador_id o novedades_recepcion_id esta vacias';
+        msj = 'transportadora esta vacias';
     }
 
     if (recepcion_mercancia.numero_guia === '' || recepcion_mercancia.numero_factura === '') {
@@ -683,14 +760,9 @@ function __validar_campos_ingreso_recepcion(recepcion_mercancia) {
         msj = 'numero_guia o numero_factura esta vacias';
     }
 
-    if (recepcion_mercancia.cantidad_cajas === '' || recepcion_mercancia.cantidad_neveras === '') {
+    if (recepcion_mercancia.fecha_ingreso === undefined || recepcion_mercancia.hora_ingreso === undefined) {
         continuar = false;
-        msj = 'cantidad_cajas o cantidad_neveras esta vacias';
-    }
-
-    if (recepcion_mercancia.contiene_medicamentos === '' || recepcion_mercancia.contiene_dispositivos === '') {
-        continuar = false;
-        msj = 'recepcion_mercancia esta vacias';
+        msj = 'fecha_ingreso o hora_ingreso estan vacios';
     }
 
     return {continuar: continuar, msj: msj};

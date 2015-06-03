@@ -6,7 +6,7 @@ var NovedadesRecepcionMercanciaModel = function() {
 NovedadesRecepcionMercanciaModel.prototype.listar_novedades_mercancia = function(termino_busqueda, callback) {
 
 
-    var sql = " select * from novedades_recepcion_mercancia a where a.estado='1' ; ";
+    var sql = " select a.id, a.codigo, a.descripcion, a.estado, a.fecha_registro from novedades_recepcion_mercancia a where a.estado='1' ; ";
 
     G.db.query(sql, [], function(err, rows, result) {
         callback(err, rows);
@@ -15,7 +15,7 @@ NovedadesRecepcionMercanciaModel.prototype.listar_novedades_mercancia = function
 
 NovedadesRecepcionMercanciaModel.prototype.consultar_novedad_mercancia = function(novedad_id, callback) {
 
-    var sql = " select * from novedades_recepcion_mercancia a where id = $1 and a.estado='1' ; ";
+    var sql = " select a.id, a.codigo, a.descripcion, a.estado, a.fecha_registro from novedades_recepcion_mercancia a where id = $1 and a.estado='1' ; ";
 
     G.db.query(sql, [novedad_id], function(err, rows, result) {
         callback(err, rows);

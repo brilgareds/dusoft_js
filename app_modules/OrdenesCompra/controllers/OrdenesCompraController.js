@@ -55,6 +55,38 @@ OrdenesCompra.prototype.listarOrdenesCompra = function(req, res) {
 };
 
 
+// Listar las Ordenes de Compra de un Proveedor
+OrdenesCompra.prototype.listarOrdenesCompraProveedor = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.codigo_proveedor_id === undefined) {
+        res.send(G.utils.r(req.url, 'codigo_proveedor_id no estan definidas', 404, {}));
+        return;
+    }
+   
+    if (args.ordenes_compras.codigo_proveedor_id === '') {
+        res.send(G.utils.r(req.url, 'codigo_proveedor_id estan vacias', 404, {}));
+        return;
+    }
+
+    var codigo_proveedor_id = args.ordenes_compras.codigo_proveedor_id;
+
+    that.m_ordenes_compra.listar_ordenes_compra_proveedor(codigo_proveedor_id, function(err, lista_ordenes_compras) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Lista Ordenes Compras', 200, {ordenes_compras: lista_ordenes_compras}));
+            return;
+        }
+    });
+};
+
+
 // Consultar Orden de Compra por numero de orden
 OrdenesCompra.prototype.consultarOrdenCompra = function(req, res) {
 
@@ -1036,10 +1068,10 @@ OrdenesCompra.prototype.insertarRecepcionMercancia = function(req, res) {
     var recepcion_mercancia = args.ordenes_compras.recepcion_mercancia;
     var usuario_id = req.session.user.usuario_id;
     recepcion_mercancia.usuario_id = usuario_id;
+    
+    that.m_ordenes_compra.insertar_recepcion_mercancia(recepcion_mercancia, function(err, response) {
 
-    that.m_ordenes_compra.insertar_recepcion_mercancia(recepcion_mercancia, function(err, recepcion_mercancia) {
-
-        if (err || recepcion_mercancia.length === 0) {
+        if (err || response.length === 0) {
             var msj = (err.msj !== undefined) ? err.msj : '';
 
             res.send(G.utils.r(req.url, 'Error insertando la recepcion ' + msj, 500, {ordenes_compras: []}));
@@ -1047,21 +1079,21 @@ OrdenesCompra.prototype.insertarRecepcionMercancia = function(req, res) {
         } else {
 
             //Insertar productos de la OC a la Recepcion de la Mercancia
-            that.m_ordenes_compra.consultar_detalle_orden_compra(recepcion_mercancia.orden_pedido_id, '', '', function(err, lista_productos) {
+            that.m_ordenes_compra.consultar_detalle_orden_compra(recepcion_mercancia.orden_compra.numero_orden_compra, '', '', function(err, lista_productos) {
 
-                if (err) {
+                if (err || lista_productos.length === 0) {
                     res.send(G.utils.r(req.url, 'Error consultando la orden de compra', 500, {lista_productos: []}));
                     return;
                 } else {
 
-                    var recepcion_mercancia_id = recepcion_mercancia[0].id;
+                    var numero_recepcion = response[0].id;
                     var i = lista_productos.length;
 
                     lista_productos.forEach(function(_producto) {
 
                         var producto = {
-                            recepcion_mercancia_id : recepcion_mercancia_id,
-                            novedades_recepcion_id : 'NULL',
+                            recepcion_mercancia_id : numero_recepcion,
+                            novedades_recepcion_id : null,
                             codigo_producto : _producto.codigo_producto,
                             cantidad_recibida : 0,
                             usuario_id : usuario_id
@@ -1070,7 +1102,7 @@ OrdenesCompra.prototype.insertarRecepcionMercancia = function(req, res) {
                         that.m_ordenes_compra.insertar_productos_recepcion_mercancia(producto, function(err) {
 
                             if (--i === 0) {
-                                res.send(G.utils.r(req.url, 'Recepcion mercancia insertada correctamente', 200, {ordenes_compras: recepcion_mercancia}));
+                                res.send(G.utils.r(req.url, 'Recepcion mercancia insertada correctamente', 200, {ordenes_compras: numero_recepcion}));
                                 return;
                             }
                         });

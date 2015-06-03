@@ -27,12 +27,13 @@ define(["angular", "js/controllers"
             };
 
             // Variables
-            
+
             $scope.datos_view = {
                 hstep: 1,
                 mstep: 1,
-                ismeridian: true,
-                datepicker : false,
+                ismeridian: false,
+                datepicker: false,
+                format: 'dd-MM-yyyy',
                 termino_busqueda_proveedores: '',
                 btn_agregar_eliminar_registro: true,
                 disabled_agregar_eliminar_registro: true,
@@ -196,6 +197,34 @@ define(["angular", "js/controllers"
 
             };
 
+            //======== Ingresar Recepcion Mercancia =========
+            that.ingresar_recepcion_mercancia = function(recepcion, callback) {
+
+                recepcion.fecha_ingreso = $filter('date')(recepcion.fecha_ingreso, "dd-MM-yyyy")
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        ordenes_compras: {
+                            recepcion_mercancia: recepcion
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.ORDENES_COMPRA.INGRESAR_RECEPCION_MERCANCIA, "POST", obj, function(data) {
+
+                    AlertService.mostrarMensaje("warning", data.msj);
+
+                    if (data.status === 200) {
+                        recepcion.set_numero_recepcion(data.obj.ordenes_compras.numero_recepcion);
+                        $scope.datos_view.response = data;
+                        callback(true);
+                    } else {
+                        callback(false);
+                    }
+                });
+            };
+
 
             //=========== Funcionalidades View =============
 
@@ -220,7 +249,7 @@ define(["angular", "js/controllers"
 
             $scope.agregar_registro = function() {
 
-                var recepcion = Recepcion.get();
+                var recepcion = Recepcion.get(Sesion.getUsuarioActual().getEmpresa().getCodigo(), 0);
                 recepcion.disabled_btn = false;
                 recepcion.class_btn_add = 'glyphicon glyphicon-plus';
                 recepcion.fn_btn_add = $scope.agregar_anexo;
@@ -239,7 +268,7 @@ define(["angular", "js/controllers"
 
                 $scope.datos_view.disabled_agregar_eliminar_registro = true;
 
-                var recepcion = Recepcion.get();
+                var recepcion = Recepcion.get(Sesion.getUsuarioActual().getEmpresa().getCodigo(), 0);
                 recepcion.disabled_btn = false;
                 recepcion.class_btn_add = 'glyphicon glyphicon-minus';
                 recepcion.fn_btn_add = $scope.eliminar_anexo;
@@ -248,6 +277,7 @@ define(["angular", "js/controllers"
             };
 
             $scope.eliminar_anexo = function() {
+
                 $scope.datos_view.recepciones.pop();
 
                 var row = $scope.datos_view.recepciones[$scope.datos_view.recepciones.length - 1];
@@ -256,15 +286,23 @@ define(["angular", "js/controllers"
                 $scope.datos_view.disabled_agregar_eliminar_registro = true;
             };
 
-            $scope.crear_recepcion = function(row) {
+            $scope.crear_recepcion = function(recepcion) {
 
-                $scope.datos_view.disabled_agregar_eliminar_registro = false;
-                $scope.datos_view.btn_agregar_eliminar_registro = true;
+                var validacion = recepcion.validar_campos_ingreso();
 
-                row.disabled_btn = true;
+                if (validacion.continuar) {
+                    
+                    $scope.datos_view.disabled_agregar_eliminar_registro = false;
+                    $scope.datos_view.btn_agregar_eliminar_registro = true;
 
-                console.log('===== crear_recepcion =======');
-                console.log(row);
+                    that.ingresar_recepcion_mercancia(recepcion, function(continuar) {
+                        if (continuar)
+                            recepcion.disabled_btn = true;
+                    });
+
+                } else {
+                    AlertService.mostrarMensaje("warning", validacion.msj);
+                }
             };
 
             $scope.cancelar_recepcion = function() {

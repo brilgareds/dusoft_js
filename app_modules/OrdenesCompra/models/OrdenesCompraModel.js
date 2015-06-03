@@ -532,6 +532,20 @@ OrdenesCompraModel.prototype.insertar_recepcion_mercancia = function(recepcion_m
         return;
     }
 
+    if (recepcion_mercancia.novedad === undefined || recepcion_mercancia.novedad === '') {
+        recepcion_mercancia.novedad = {id: null};
+    }
+
+    if (recepcion_mercancia.temperatura_neveras === '') {
+        recepcion_mercancia.temperatura_neveras = null;
+    }
+
+    recepcion_mercancia.contiene_medicamentos = (recepcion_mercancia.contiene_medicamentos) ? '1' : '0';
+    recepcion_mercancia.contiene_dispositivos = (recepcion_mercancia.contiene_dispositivos) ? '1' : '0';
+
+    var fecha_recepcion = new Date(recepcion_mercancia.hora_ingreso);
+    recepcion_mercancia.hora_ingreso = fecha_recepcion.toFormat('HH24:MI:SS');
+
     var sql = " insert into recepcion_mercancia (\
                     empresa_id,\
                     codigo_proveedor_id,\
@@ -546,15 +560,16 @@ OrdenesCompraModel.prototype.insertar_recepcion_mercancia = function(recepcion_m
                     contiene_medicamentos,\
                     contiene_dispositivos,\
                     usuario_id,\
-                    fecha_registro\
-                ) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) returning id; ";
+                    fecha_recepcion,\
+                    hora_recepcion\
+                ) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) returning id; ";
 
     var parametros = [
         recepcion_mercancia.empresa_id,
-        recepcion_mercancia.codigo_proveedor_id,
-        recepcion_mercancia.orden_pedido_id,
-        recepcion_mercancia.inv_transportador_id,
-        recepcion_mercancia.novedades_recepcion_id,
+        recepcion_mercancia.proveedor.codigo_proveedor_id,
+        recepcion_mercancia.orden_compra.numero_orden_compra,
+        recepcion_mercancia.transportadora.id,
+        recepcion_mercancia.novedad.id,
         recepcion_mercancia.numero_guia,
         recepcion_mercancia.numero_factura,
         recepcion_mercancia.cantidad_cajas,
@@ -562,10 +577,12 @@ OrdenesCompraModel.prototype.insertar_recepcion_mercancia = function(recepcion_m
         recepcion_mercancia.temperatura_neveras,
         recepcion_mercancia.contiene_medicamentos,
         recepcion_mercancia.contiene_dispositivos,
-        recepcion_mercancia.usuario_id
+        recepcion_mercancia.usuario_id,
+        recepcion_mercancia.fecha_ingreso,
+        recepcion_mercancia.hora_ingreso
     ];
 
-    G.db.query(sql, [parametros], function(err, rows, result, total_records) {
+    G.db.query(sql, parametros, function(err, rows, result, total_records) {
         callback(err, rows);
     });
 };
@@ -662,7 +679,7 @@ OrdenesCompraModel.prototype.insertar_productos_recepcion_mercancia = function(p
         producto_mercancia.usuario_id
     ];
 
-    G.db.query(sql, [parametros], function(err, rows, result, total_records) {
+    G.db.query(sql, parametros, function(err, rows, result, total_records) {
         callback(err, rows);
     });
 };
@@ -693,39 +710,49 @@ function __validar_campos_ingreso_recepcion(recepcion_mercancia) {
     var continuar = true;
     var msj = '';
 
-    if (recepcion_mercancia.empresa_id === undefined || recepcion_mercancia.codigo_proveedor_id === undefined || recepcion_mercancia.orden_pedido_id === undefined) {
+    if (recepcion_mercancia.empresa_id === undefined || recepcion_mercancia.proveedor === undefined || recepcion_mercancia.orden_compra === undefined) {
         continuar = false;
-        msj = 'empresa_id, codigo_proveedor_id u orden_pedido_id estan vacias';
+        msj = 'empresa_id, codigo_proveedor_id u orden_pedido_id no estan definidas';
     }
 
-    if (recepcion_mercancia.inv_transportador_id === undefined || recepcion_mercancia.novedades_recepcion_id === undefined) {
+    if (recepcion_mercancia.transportadora === undefined || recepcion_mercancia.novedad === undefined) {
         continuar = false;
-        msj = 'inv_transportador_id o novedades_recepcion_id esta vacias';
+        msj = 'inv_transportador_id o novedades_recepcion_id no estan definidas';
     }
 
     if (recepcion_mercancia.numero_guia === undefined || recepcion_mercancia.numero_factura === undefined) {
         continuar = false;
-        msj = 'numero_guia o numero_factura esta vacias';
+        msj = 'numero_guia o numero_factura no estan definidas';
     }
 
     if (recepcion_mercancia.cantidad_cajas === undefined || recepcion_mercancia.cantidad_neveras === undefined) {
         continuar = false;
-        msj = 'cantidad_cajas o cantidad_neveras esta vacias';
+        msj = 'cantidad_cajas o cantidad_neveras no estan definidas';
+    }
+
+    if (recepcion_mercancia.temperatura_neveras === undefined) {
+        continuar = false;
+        msj = 'temperatura_neverasno estan definidas';
     }
 
     if (recepcion_mercancia.contiene_medicamentos === undefined || recepcion_mercancia.contiene_dispositivos === undefined) {
         continuar = false;
-        msj = 'recepcion_mercancia esta vacias';
+        msj = 'contiene_medicamentos o contiene_dispositivos no estan definidas';
     }
 
-    if (recepcion_mercancia.empresa_id === '' || recepcion_mercancia.codigo_proveedor_id === '' || recepcion_mercancia.orden_pedido_id === '') {
+    if (recepcion_mercancia.fecha_ingreso === undefined || recepcion_mercancia.hora_ingreso === undefined) {
+        continuar = false;
+        msj = 'fecha_ingreso o hora_ingreso no estan definidas';
+    }
+
+    if (recepcion_mercancia.empresa_id === '' || recepcion_mercancia.proveedor === '' || recepcion_mercancia.orden_compra === '') {
         continuar = false;
         msj = 'empresa_id, codigo_proveedor_id u orden_pedido_id estan vacias';
     }
 
-    if (recepcion_mercancia.inv_transportador_id === '' || recepcion_mercancia.novedades_recepcion_id === '') {
+    if (recepcion_mercancia.transportadora === '') {
         continuar = false;
-        msj = 'inv_transportador_id o novedades_recepcion_id esta vacias';
+        msj = 'transportadora esta vacias';
     }
 
     if (recepcion_mercancia.numero_guia === '' || recepcion_mercancia.numero_factura === '') {
@@ -733,14 +760,9 @@ function __validar_campos_ingreso_recepcion(recepcion_mercancia) {
         msj = 'numero_guia o numero_factura esta vacias';
     }
 
-    if (recepcion_mercancia.cantidad_cajas === '' || recepcion_mercancia.cantidad_neveras === '') {
+    if (recepcion_mercancia.fecha_ingreso === undefined || recepcion_mercancia.hora_ingreso === undefined) {
         continuar = false;
-        msj = 'cantidad_cajas o cantidad_neveras esta vacias';
-    }
-
-    if (recepcion_mercancia.contiene_medicamentos === '' || recepcion_mercancia.contiene_dispositivos === '') {
-        continuar = false;
-        msj = 'recepcion_mercancia esta vacias';
+        msj = 'fecha_ingreso o hora_ingreso estan vacios';
     }
 
     return {continuar: continuar, msj: msj};

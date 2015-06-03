@@ -24,7 +24,8 @@ define(["angular"], function(angular) {
                 'GESTIONAR_NOVEDADES': BASE_URL + '/OrdenesCompra/gestionarNovedades',
                 'CONSULTAR_ARCHIVOS_NOVEDAD': BASE_URL + '/OrdenesCompra/consultarArchivosNovedades',
                 'SUBIR_ARCHIVO_NOVEDAD': BASE_URL + '/OrdenesCompra/subirArchivoNovedades',
-                'REPORTE_ORDEN_COMPRA': BASE_URL + '/OrdenesCompra/reporteOrdenCompra'                
+                'REPORTE_ORDEN_COMPRA': BASE_URL + '/OrdenesCompra/reporteOrdenCompra',
+                'INGRESAR_RECEPCION_MERCANCIA': BASE_URL + '/OrdenesCompra/insertarRecepcionMercancia'                
             },
             'PROVEEDORES': {
                 'LISTAR_PROVEEDORES': BASE_URL + '/Terceros/Proveedores/listar'

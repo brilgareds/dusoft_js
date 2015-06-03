@@ -29,7 +29,7 @@ G.fs = require('fs-extra');
 G.xlsx = require('node-xlsx');
 G.path = path;
 G.accounting = accounting;
-G.thread = require('webworker-threads');
+//G.thread = require('webworker-threads');
 
 /*=========================================
  * Comandos del Servidor
@@ -79,104 +79,122 @@ if (program.prod) {
 /*=========================================
  * Inicializacion del Servidor
  * =========================================*/
-var app = express();
-var server = app.listen(G.settings.server_port);
-var io = require('socket.io').listen(server);
-var container = intravenous.create();
 
 
-/*=========================================
- * Configuracion Sockets.io
- * =========================================*/
-io.configure(function() {
-    io.set("log level", 0);
-});
+var cluster = require('cluster');
+var numCPUs = require('os').cpus().length;
+
+if (cluster.isMaster) {
+
+  for (var i = 0; i < numCPUs; i++) {
+    cluster.fork();
+  }
+
+  cluster.on('exit', function(worker, code, signal) {
+    console.log('worker ' + worker.process.pid + ' died');
+  });
+} else {
 
 
-/*=========================================
- * Registrar dependecias en el contendorDI
- * =========================================*/
-container.register("emails", nodemailer);
-container.register("date_utils", date_utils);
-container.register("socket", io);
+        var app = express();
+        var server = app.listen(G.settings.server_port);
+        var io = require('socket.io').listen(server);
+        var container = intravenous.create();
 
-/*=========================================
- * Inicializacion y Conexion a la Base de Datos
- * =========================================*/
-G.db.setCredentials(G.settings.dbHost, G.settings.dbUsername, G.settings.dbPassword, G.settings.dbName);
 
-/*=========================================
- * Configuracion Express.js
- * =========================================*/
-app.set('port', process.env.PORT || G.settings.server_port);
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-app.use(express.favicon());
-app.use(express.logger('dev'));
-app.use(multipart());
-app.use(express.json());
-app.use(express.urlencoded());
-app.use(express.methodOverride());
-//========================================
-app.use(express.cookieParser('123Dusoft123'));
-app.use(express.session());
-//========================================
-app.use(G.utils.validar_request());
-app.use(G.auth.validate());
-app.use(app.router);
-app.use(express.static(path.join(__dirname, 'public')));
-
-/*=========================================
- * error handlers
- * development error handler
- * will print stacktrace
- * =========================================*/
-if (app.get('env') === 'development') {
-    app.use(function(err, req, res, next) {
-        res.status(err.status || 500);
-        console.log(err);
-        res.send(G.utils.r(req.url, 'Se ha generado un error interno code 1  ', 500, { msj : err}));
-    });
-}
-
-/*=========================================
- * production error handler
- * no stacktraces leaked to user
- * =========================================*/
-app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    console.log(err);
-    res.send(G.utils.r(req.url, 'Se ha generado un error interno code 2', 500, {msj : err}));
-});
-
-/*========================================
-    Carga libreria de reportes
-==========================================*/
-jsreport.bootstrapper({
-             logger: { providerName: "console" }
-        }).start().then(function(bootstrapper) {    
-             G.jsreport =  bootstrapper;
+        /*=========================================
+         * Configuracion Sockets.io
+         * =========================================*/
+        io.configure(function() {
+            io.set("log level", 0);
         });
 
-/*=========================================
- * Ruteo del Servidor
- * =========================================*/
-modulos.cargarRoutes(app, container, io);
 
-app.get('/api/configurarRoutes', function(req, res) {
-    modulos.configurarRoutes(req, res, app, container);
-});
+        /*=========================================
+         * Registrar dependecias en el contendorDI
+         * =========================================*/
+        container.register("emails", nodemailer);
+        container.register("date_utils", date_utils);
+        container.register("socket", io);
 
-app.all('/dusoft_duana', function(req, res) {
-    res.redirect('/dusoft_duana/login');
-});
+        /*=========================================
+         * Inicializacion y Conexion a la Base de Datos
+         * =========================================*/
+        G.db.setCredentials(G.settings.dbHost, G.settings.dbUsername, G.settings.dbPassword, G.settings.dbName);
 
-process.on('SIGINT', function() {
-    console.log("Señal de Interrumpcion Detectada");
-    io.sockets.emit('onDisconnect');
-    //if (i_should_exit)
-    process.exit();
-});
+        /*=========================================
+         * Configuracion Express.js
+         * =========================================*/
+        app.set('port', process.env.PORT || G.settings.server_port);
+        app.set('views', path.join(__dirname, 'views'));
+        app.set('view engine', 'jade');
+        app.use(express.favicon());
+        app.use(express.logger('dev'));
+        app.use(multipart());
+        app.use(express.json());
+        app.use(express.urlencoded());
+        app.use(express.methodOverride());
+        //========================================
+        app.use(express.cookieParser('123Dusoft123'));
+        app.use(express.session());
+        //========================================
+        app.use(G.utils.validar_request());
+        app.use(G.auth.validate());
+        app.use(app.router);
+        app.use(express.static(path.join(__dirname, 'public')));
 
-console.log('Express server listening on port ' + app.get('port') + ' in Dir ' + __dirname);
+        /*=========================================
+         * error handlers
+         * development error handler
+         * will print stacktrace
+         * =========================================*/
+        if (app.get('env') === 'development') {
+            app.use(function(err, req, res, next) {
+                res.status(err.status || 500);
+                console.log(err);
+                res.send(G.utils.r(req.url, 'Se ha generado un error interno code 1  ', 500, { msj : err}));
+            });
+        }
 
+        /*=========================================
+         * production error handler
+         * no stacktraces leaked to user
+         * =========================================*/
+        app.use(function(err, req, res, next) {
+            res.status(err.status || 500);
+            console.log(err);
+            res.send(G.utils.r(req.url, 'Se ha generado un error interno code 2', 500, {msj : err}));
+        });
+
+        /*========================================
+            Carga libreria de reportes
+        ==========================================*/
+        jsreport.bootstrapper({
+                     logger: { providerName: "console" }
+                }).start().then(function(bootstrapper) {    
+                     G.jsreport =  bootstrapper;
+                });
+
+        /*=========================================
+         * Ruteo del Servidor
+         * =========================================*/
+        modulos.cargarRoutes(app, container, io);
+
+        app.get('/api/configurarRoutes', function(req, res) {
+            modulos.configurarRoutes(req, res, app, container);
+        });
+
+        app.all('/dusoft_duana', function(req, res) {
+            res.redirect('/dusoft_duana/login');
+        });
+
+        process.on('SIGINT', function() {
+            console.log("Señal de Interrumpcion Detectada");
+            io.sockets.emit('onDisconnect');
+            //if (i_should_exit)
+            process.exit();
+        });
+
+        console.log('Express server listening on port ' + app.get('port') + ' in Dir ' + __dirname);
+
+}

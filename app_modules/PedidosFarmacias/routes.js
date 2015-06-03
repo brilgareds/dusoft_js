@@ -138,7 +138,27 @@ module.exports = function(app, di_container) {
     
     // Generar PDF del pedido
     app.post('/api/PedidosFarmacias/imprimirPedidoFarmacia', function(req, res) {
-        c_pedidos_farmacias.imprimirPedidoFarmacia(req, res);
+        
+                var Worker = G.thread.Worker
+                
+                var thread = new Worker(function(){
+                   console.log("imprimmir pedido farmacia code 1");
+                   
+                   function foo(){
+                       console.log("fo >>>>>>>>>>");
+                       c_pedidos_farmacias.imprimirPedidoFarmacia(req, res);
+                   }
+                   
+                   foo();
+                   this.onmessage = function (event) {
+                    
+                  }
+                   //self.close();
+
+                });
+                
+                thread.postMessage();
+        
     });
     
     //Actualizar Estado Pedido

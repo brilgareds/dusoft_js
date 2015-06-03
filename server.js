@@ -29,6 +29,7 @@ G.fs = require('fs-extra');
 G.xlsx = require('node-xlsx');
 G.path = path;
 G.accounting = accounting;
+G.thread = require('webworker-threads');
 
 /*=========================================
  * Comandos del Servidor

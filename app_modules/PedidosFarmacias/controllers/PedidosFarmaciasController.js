@@ -1837,7 +1837,7 @@ PedidosFarmacias.prototype.actualizarEstadoActualPedido = function(req, res) {
 
 //Generar documento PDF - copia código Eduar
 PedidosFarmacias.prototype.imprimirPedidoFarmacia = function(req, res) {
-
+    
     var that = this;
 
     var args = req.body.data;

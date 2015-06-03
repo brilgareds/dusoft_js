@@ -431,13 +431,13 @@ OrdenesCompraModel.prototype.listar_recepciones_mercancia = function(fecha_inici
                 b.razon_social as nombre_empresa,\
                 a.codigo_proveedor_id,\
                 d.tipo_id_tercero as tipo_id_proveedor,\
-                d.tercero_id as nit_proveedor,\
+                d.tercero_id as tercero_id,\
                 d.nombre_tercero as nombre_proveedor,\
                 d.direccion as direccion_proveedor,\
                 d.telefono as telefono_proveedor,\
                 a.orden_pedido_id as numero_orden,\
                 a.inv_transportador_id,\
-                e.descripcion as nombre_transportadora\
+                e.descripcion as nombre_transportadora,\
                 e.estado as estado_transportadora,\
                 a.novedades_recepcion_id,\
                 f.codigo as codigo_novedad,\
@@ -451,8 +451,8 @@ OrdenesCompraModel.prototype.listar_recepciones_mercancia = function(fecha_inici
                 a.contiene_medicamentos,\
                 a.contiene_dispositivos,\
                 a.estado,\
-                a.fecha_recepcion,\
-                a.fecha_registro\
+                to_char(a.fecha_recepcion,'dd-mm-yyyy') as fecha_recepcion,\
+                to_char(a.fecha_registro,'dd-mm-yyyy') as fecha_registro\
                 from recepcion_mercancia a\
                 inner join empresas b on a.empresa_id = b.empresa_id\
                 inner join terceros_proveedores c on a.codigo_proveedor_id = c.codigo_proveedor_id\
@@ -467,7 +467,7 @@ OrdenesCompraModel.prototype.listar_recepciones_mercancia = function(fecha_inici
                     e.descripcion ilike $3 or\
                     a.numero_guia ilike $3 or\
                     a.numero_factura ilike $3 \
-                )";
+                ) order by a.fecha_registro DESC";
 
     G.db.pagination(sql, [fecha_inicial, fecha_final, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
         callback(err, rows);
@@ -486,13 +486,13 @@ OrdenesCompraModel.prototype.consultar_recepcion_mercancia = function(recepcion_
                 b.razon_social as nombre_empresa,\
                 a.codigo_proveedor_id,\
                 d.tipo_id_tercero as tipo_id_proveedor,\
-                d.tercero_id as nit_proveedor,\
+                d.tercero_id as tercero_id,\
                 d.nombre_tercero as nombre_proveedor,\
                 d.direccion as direccion_proveedor,\
                 d.telefono as telefono_proveedor,\
                 a.orden_pedido_id as numero_orden,\
                 a.inv_transportador_id,\
-                e.descripcion as nombre_transportadora\
+                e.descripcion as nombre_transportadora,\
                 e.estado as estado_transportadora,\
                 a.novedades_recepcion_id,\
                 f.codigo as codigo_novedad,\
@@ -506,8 +506,8 @@ OrdenesCompraModel.prototype.consultar_recepcion_mercancia = function(recepcion_
                 a.contiene_medicamentos,\
                 a.contiene_dispositivos,\
                 a.estado,\
-                a.fecha_recepcion,\
-                a.fecha_registro\
+                to_char(a.fecha_recepcion,'dd-mm-yyyy') as fecha_recepcion,\
+                to_char(a.fecha_registro,'dd-mm-yyyy') as fecha_registro\
                 from recepcion_mercancia a\
                 inner join empresas b on a.empresa_id = b.empresa_id\
                 inner join terceros_proveedores c on a.codigo_proveedor_id = c.codigo_proveedor_id\

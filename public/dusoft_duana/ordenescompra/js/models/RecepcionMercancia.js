@@ -2,9 +2,9 @@ define(["angular", "js/models"], function(angular, models) {
 
     models.factory('RecepcionMercancia', ["$filter", function($filter) {
 
-            function RecepcionMercancia(empresa_id, numero_recepcion) {
-                this.empresa_id = empresa_id;
-                this.numero_recepcion = numero_recepcion;
+            function RecepcionMercancia(empresa_id, numero_recepcion, fecha_registro) {
+                this.empresa_id = empresa_id || '';
+                this.numero_recepcion = numero_recepcion || '';
                 this.orden_compra = '';
                 this.numero_guia = '';
                 this.numero_factura = '';
@@ -18,10 +18,11 @@ define(["angular", "js/models"], function(angular, models) {
                 this.contiene_dispositivos = false;
                 this.hora_ingreso = new Date();
                 this.fecha_ingreso = $filter('date')(new Date(), "dd-MM-yyyy");
+                this.fecha_registro = fecha_registro || '';
             }
 
-            this.get = function(empresa_id, numero_recepcion) {
-                return new RecepcionMercancia(empresa_id, numero_recepcion);
+            this.get = function(empresa_id, numero_recepcion, fecha_registro) {
+                return new RecepcionMercancia(empresa_id, numero_recepcion, fecha_registro);
             };
 
             RecepcionMercancia.prototype.set_numero_recepcion = function(numero_recepcion) {
@@ -85,6 +86,10 @@ define(["angular", "js/models"], function(angular, models) {
             RecepcionMercancia.prototype.set_fecha_ingreso = function(fecha_ingreso) {
                 this.fecha_ingreso = fecha_ingreso;
             };
+            
+            RecepcionMercancia.prototype.set_fecha_registro = function(fecha_registro) {
+                this.fecha_registro = fecha_registro;
+            };
 
 
 
@@ -146,6 +151,10 @@ define(["angular", "js/models"], function(angular, models) {
 
             RecepcionMercancia.prototype.get_fecha_ingreso = function() {
                 return this.fecha_ingreso;
+            };
+            
+            RecepcionMercancia.prototype.get_fecha_registro = function() {
+                return this.fecha_registro;
             };
 
             RecepcionMercancia.prototype.validar_campos_ingreso = function() {

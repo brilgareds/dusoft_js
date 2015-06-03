@@ -1010,7 +1010,7 @@ OrdenesCompra.prototype.listarRecepcionesMercancia = function(req, res) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
             return;
         } else {
-            res.send(G.utils.r(req.url, 'Lista Recepciones Mercancia', 200, {ordenes_compras: lista_recepciones_mercancia}));
+            res.send(G.utils.r(req.url, 'Lista Recepciones Mercancia', 200, {ordenes_compras: {recepciones_mercancia : lista_recepciones_mercancia}}));
             return;
         }
     });

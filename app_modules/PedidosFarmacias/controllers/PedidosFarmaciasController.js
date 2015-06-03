@@ -846,8 +846,8 @@ PedidosFarmacias.prototype.listar_productos = function(req, res) {
 
                                     var cantidad_reservada_cotizaciones = (total_reservado_cotizaciones.length > 0) ? total_reservado_cotizaciones[0].total_reservado : 0;
 
-                                    var disponibilidad_bodega = producto.existencia - cantidad_total_pendiente_farmacias - cantidad_total_pendiente_clientes
-                                            - cantidad_reservada_temporales - cantidad_reservada_cotizaciones;
+                                    var disponibilidad_bodega = producto.existencia - cantidad_total_pendiente_farmacias - cantidad_total_pendiente_clientes;
+                                           // - cantidad_reservada_temporales - cantidad_reservada_cotizaciones;
 
                                     producto.disponibilidad_bodega = (disponibilidad_bodega < 0) ? 0 : disponibilidad_bodega;
 
@@ -1893,26 +1893,35 @@ PedidosFarmacias.prototype.imprimirPedidoFarmacia = function(req, res) {
         return;
     }
     else {
-        args.detalle_pedido_farmacia.forEach(function(detalle) {
+        
+        //Inicialización Nueva Para eliminar uno de los ciclos
+        var i = args.detalle_pedido_farmacia.length;
+        
+        if (i === 0) {
+            res.send(G.utils.r(req.url, 'El detalle no tiene productos', 200, {lista_productos: []}));
+            return;
+        }
+        
+        args.detalle_pedido_farmacia.forEach(function(producto) {
 
-            console.log(">>>>>>>>>>>>>>>Leyendo elementos detalle");
+            console.log(">>>>>>>>>>>>>>>Leyendo elementos producto");
 
-            if (detalle.codigo_producto === undefined || detalle.descripcion === undefined) {
+            if (producto.codigo_producto === undefined || producto.descripcion === undefined) {
                 res.send(G.utils.r(req.url, 'codigo_producto o descripcion no están definidos', 404, {}));
                 return;
             }
 
-            if (detalle.cantidad_solicitada === undefined || detalle.cantidad_pendiente === undefined) {
+            if (producto.cantidad_solicitada === undefined || producto.cantidad_pendiente === undefined) {
                 res.send(G.utils.r(req.url, 'cantidad_solicitada o cantidad_pendiente no están definidos', 404, {}));
                 return;
             }
 
-            if (detalle.codigo_producto === '' || detalle.descripcion === '') {
+            if (producto.codigo_producto === '' || producto.descripcion === '') {
                 res.send(G.utils.r(req.url, 'codigo_producto o descripcion están vacios', 404, {}));
                 return;
             }
 
-            if (detalle.cantidad_solicitada === '' || detalle.cantidad_pendiente === '') {
+            if (producto.cantidad_solicitada === '' || producto.cantidad_pendiente === '') {
                 res.send(G.utils.r(req.url, 'cantidad_solicitada o cantidad_pendiente están vacios', 404, {}));
                 return;
             }
@@ -1923,58 +1932,55 @@ PedidosFarmacias.prototype.imprimirPedidoFarmacia = function(req, res) {
             var numero_pedido = args.encabezado_pedido_farmacia.numero_pedido;
             var empresa_id = args.encabezado_pedido_farmacia.empresa_origen_id;
 
-//            var empresa_destino_id = args.encabezado_pedido_farmacia.empresa_destino_id;
-//            var centro_utilidad_destino_id = args.encabezado_pedido_farmacia.centro_utilidad_destino_id;
-//            var bodega_destino_id = args.encabezado_pedido_farmacia.bodega_destino_id;
+                        that.m_pedidos_farmacias.calcular_cantidad_total_pendiente_producto(empresa_id, producto.codigo_producto, function(err, total_pendiente_farmacias) {
+                            console.log(">>>> F1 <<<<: ",producto.codigo_producto);
+                            var cantidad_total_pendiente_farmacias = (total_pendiente_farmacias.length > 0) ? total_pendiente_farmacias[0].cantidad_total_pendiente : 0;
 
-            //var tipo_producto = args.productos.tipo_producto;
+                            that.m_pedidos_clientes.calcular_cantidad_total_pendiente_producto(empresa_id, producto.codigo_producto, function(err, total_pendiente_clientes) {
+                                console.log(">>>> F2 <<<<: ",producto.codigo_producto);
+                                var cantidad_total_pendiente_clientes = (total_pendiente_clientes.length > 0) ? total_pendiente_clientes[0].cantidad_total_pendiente : 0;
+                                
+                                /*ADD*/
+                                that.m_pedidos_farmacias.calcular_cantidad_reservada_temporales_farmacias(producto.codigo_producto, function(err, total_reservado_temporales) {
+                                    
+                                    console.log(">>>> F3 <<<<: ",producto.codigo_producto);
 
-            var lista_productos = args.detalle_pedido_farmacia;
+                                    var cantidad_reservada_temporales = (total_reservado_temporales.length > 0) ? total_reservado_temporales[0].total_reservado : 0;
 
-            var pagina_actual = 1;
+                                    that.m_pedidos_clientes.calcular_cantidad_reservada_cotizaciones_clientes(producto.codigo_producto, function(err, total_reservado_cotizaciones) {
+                                        
+                                        console.log(">>>> F4 <<<<: ",producto.codigo_producto);
 
-            /**/
+                                        var cantidad_reservada_cotizaciones = (total_reservado_cotizaciones.length > 0) ? total_reservado_cotizaciones[0].total_reservado : 0;                                
+                                /*ADD*/
+                                        var disponibilidad_bodega = producto.existencia - cantidad_total_pendiente_farmacias - cantidad_total_pendiente_clientes;
+                                                                    - cantidad_reservada_temporales - cantidad_reservada_cotizaciones;
 
-            var i = lista_productos.length;
+                                        //producto.disponibilidad_bodega = (disponibilidad_bodega < 0)? 0 : disponibilidad_bodega;
+                                        producto.disponibilidad_bodega = (disponibilidad_bodega < 0)? 0 : disponibilidad_bodega;
+                                        
+                                        producto.disponibilidad = producto.disponibilidad_bodega;
+                                        
+                                        /*ADD*/
+                                        console.log(">>>> VALOR i <<<<: ", i);
+                                        
+                                        if (--i === 0) {
 
-            if (i === 0) {
-                res.send(G.utils.r(req.url, 'Lista de productos vacía', 200, {lista_productos: []}));
-                return;
-            }
-
-            lista_productos.forEach(function(producto) {
-
-//                var tipo_producto = producto.tipo_producto_id;
-//
-//                that.m_productos.consultar_stock_producto(empresa_destino_id, producto.codigo_producto, function(err, total_existencias_farmacias) {
-//
-//                    producto.total_existencias_farmacias = (total_existencias_farmacias.length > 0 && total_existencias_farmacias[0].existencia != null) ? total_existencias_farmacias[0].existencia : 0;
-//
-//                    that.m_productos.buscar_productos(empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id, producto.codigo_producto, pagina_actual, tipo_producto, function(err, existencias_farmacia) {
-//
-//
-//                        producto.existencias_farmacia = (existencias_farmacia.length > 0) ? existencias_farmacia[0].existencia : 0;
-//
-//
-//                        that.m_pedidos_farmacias.calcular_cantidad_total_pendiente_producto(empresa_id, producto.codigo_producto, function(err, total_pendiente_farmacias) {
-//
-//
-//                            var cantidad_total_pendiente_farmacias = (total_pendiente_farmacias.length > 0) ? total_pendiente_farmacias[0].cantidad_total_pendiente : 0;
-//
-//                            that.m_pedidos_clientes.calcular_cantidad_total_pendiente_producto(empresa_id, producto.codigo_producto, function(err, total_pendiente_clientes) {
-//
-//                                var cantidad_total_pendiente_clientes = (total_pendiente_clientes.length > 0) ? total_pendiente_clientes[0].cantidad_total_pendiente : 0;
-//
-//                                var disponibilidad_bodega = producto.existencia - cantidad_total_pendiente_farmacias - cantidad_total_pendiente_clientes;
-//                                
-//                                console.log(">>>>>> producto.existencia: ",producto.existencia);
-//                                console.log(">>>>>> cantidad_total_pendiente_farmacias: ",cantidad_total_pendiente_farmacias);
-//                                console.log(">>>>>> cantidad_total_pendiente_clientes: ",cantidad_total_pendiente_clientes);
-//                                console.log(">>>>>> disponibilidad_bodega: ",disponibilidad_bodega);
-//
-//                                producto.disponibilidad_bodega = (disponibilidad_bodega < 0)? 0 : disponibilidad_bodega;
-
-                var identificador = 'FM'; // Farmacias
+                                        if (err) {
+                                            res.send(G.utils.r(req.url, 'Se ha Generado un Error en la consulta de Productos', 500, {}));
+                                            return;
+                                        }
+                                        else
+                                        {
+                                            _generarDocumentoPedido(args, function(nombreTmp) {
+                                                res.send(G.utils.r(req.url, 'Url reporte pedido', 200, {reporte_pedido: {nombre_reporte: nombreTmp}}));
+                                                return;
+                                            });
+                                        }
+                                    }
+                                        /*ADD*/
+                                        
+                /*var identificador = 'FM'; // Farmacias
 
                 console.log(">>>> Identificador: ", identificador);
                 console.log(">>>> Empresa Id: ", empresa_id);
@@ -2003,8 +2009,8 @@ PedidosFarmacias.prototype.imprimirPedidoFarmacia = function(req, res) {
                             }
                             else
                             {
-                                /*res.send(G.utils.r(req.url, 'Listado de Productos', 200, {lista_productos: lista_productos}));
-                                 return;*/
+                                //res.send(G.utils.r(req.url, 'Listado de Productos', 200, {lista_productos: lista_productos}));
+                                //return;
 
                                 _generarDocumentoPedido(args, function(nombreTmp) {
                                     res.send(G.utils.r(req.url, 'Url reporte pedido', 200, {reporte_pedido: {nombre_reporte: nombreTmp}}));
@@ -2015,14 +2021,11 @@ PedidosFarmacias.prototype.imprimirPedidoFarmacia = function(req, res) {
 
                     }
 
-                });
-
-//                            });
-//                        });
-//                    });
-//
-//                });
-            });
+                });*/
+                                    });
+                                });
+                            });
+                        });
 
             /* Fin - Disponibilidad */
 

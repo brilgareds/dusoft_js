@@ -8,7 +8,7 @@
 
                     </div>
                     <div class="pull-right">
-                        <h3 class="text-center"><strong>Recepción #000</strong></h3>
+                        <h3 class="text-center"><strong>Recepciones</strong></h3>
                     </div>
                 </div>
                 <div class="panel-body">
@@ -28,7 +28,7 @@
                                     <legend class="medium-letter">Transportadora</legend> 
                                     <div class="row">
                                         <div class="col-md-12" style="margin-top: 33px;">                                          
-                                            <ui-select ng-model="recepcion.transportadora" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_transportadora(recepcion)">
+                                            <ui-select ng-disabled="recepcion.disabled_btn" ng-model="recepcion.transportadora" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_transportadora(recepcion)">
                                                 <ui-select-match  placeholder="Seleccionar transportadora">{{ $select.selected.get_nombre() }}</ui-select-match>
                                                 <ui-select-choices repeat="transportadora in Empresa.get_transportadoras() | filter:$select.search">
                                                     {{ transportadora.get_nombre() }}
@@ -43,7 +43,7 @@
                                     <legend class="medium-letter">No. Guía</legend> 
                                     <div class="row">
                                         <div class="col-md-12" style="margin-top: 33px;">  
-                                            <input ng-model="recepcion.numero_recepcion" class="form-control" type="text">
+                                            <input ng-disabled="recepcion.disabled_btn" ng-model="recepcion.numero_guia" class="form-control" type="text">
                                         </div>
                                     </div>
                                 </fieldset>
@@ -54,9 +54,9 @@
                                     <div class="row">
                                         <div class="col-md-12"> 
                                             <div class="input-group" style="margin-top: 33px;">
-                                                <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="recepcion.fecha_ingreso" is-open="datos_view.datepicker" min="minDate"   readonly  close-text="Cerrar" ng-change="" clear-text="Borrar" current-text="Hoy" placeholder="Fecha Inicial" show-weeks="false" toggle-weeks-text="#"  />
+                                                <input type="text" class="form-control readonlyinput" datepicker-popup="{{datos_view.format}}" ng-model="recepcion.fecha_ingreso" is-open="datos_view.datepicker" min="minDate"   readonly  close-text="Cerrar" ng-change="" clear-text="Borrar" current-text="Hoy" placeholder="Fecha Inicial" show-weeks="false" toggle-weeks-text="#"  />
                                                 <span class="input-group-btn">
-                                                    <button class="btn btn-default" ng-click="abrir_calendario($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+                                                    <button class="btn btn-default" ng-disabled="recepcion.disabled_btn" ng-click="abrir_calendario($event);"><i class="glyphicon glyphicon-calendar"></i></button>
                                                 </span> 
                                             </div>
                                         </div>
@@ -68,7 +68,7 @@
                                     <legend class="medium-letter">Hora</legend> 
                                     <div class="row">
                                         <div class="col-md-12">       
-                                            <timepicker ng-model="recepcion.hora_ingreso" hour-step="datos_view.hstep" minute-step="datos_view.mstep" show-meridian="datos_view.ismeridian"></timepicker>                                                                  
+                                            <timepicker ng-disabled="recepcion.disabled_btn" ng-model="recepcion.hora_ingreso" hour-step="datos_view.hstep" minute-step="datos_view.mstep" show-meridian="datos_view.ismeridian"></timepicker>                                                                  
                                         </div>
                                     </div>
                                 </fieldset>
@@ -80,7 +80,7 @@
                                     <legend class="medium-letter">Proveedor</legend> 
                                     <div class="row">
                                         <div class="col-md-12"> 
-                                            <ui-select ng-model="recepcion.proveedor" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_proveedor(recepcion)">
+                                            <ui-select ng-disabled="recepcion.disabled_btn" ng-model="recepcion.proveedor" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_proveedor(recepcion)">
                                                 <ui-select-match  placeholder="Seleccionar proveedor">{{ $select.selected.get_nombre() }}</ui-select-match>
                                                 <ui-select-choices refresh="listar_proveedores($select.search)" refresh-delay="0" repeat="proveedor in Empresa.get_proveedores() | filter:$select.search">
                                                     {{ proveedor.get_nombre() }}
@@ -95,7 +95,7 @@
                                     <legend class="medium-letter">No. Orden</legend> 
                                     <div class="row">
                                         <div class="col-md-12">  
-                                            <ui-select ng-model="recepcion.orden_compra" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_orden_compra(recepcion)">
+                                            <ui-select ng-disabled="recepcion.disabled_btn" ng-model="recepcion.orden_compra" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_orden_compra(recepcion)">
                                                 <ui-select-match  placeholder="Seleccionar Orden Compra">{{ $select.selected.get_numero_orden() }}</ui-select-match>
                                                 <ui-select-choices repeat="orden in Empresa.get_ordenes_compras() | filter:$select.search">
                                                     {{ orden.get_numero_orden() }}
@@ -110,7 +110,7 @@
                                     <legend class="medium-letter">No. Factura</legend> 
                                     <div class="row">
                                         <div class="col-md-12">  
-                                            <input ng-model="recepcion.numero_factura" class="form-control" type="text">
+                                            <input ng-disabled="recepcion.disabled_btn" ng-model="recepcion.numero_factura" class="form-control" type="text">
                                         </div>
                                     </div>
                                 </fieldset>
@@ -124,9 +124,9 @@
                                         <div class="col-md-12">  
                                             <div class="input-group">
                                                 <span class="input-group-addon" id="basic-addon2">Cajas</span>
-                                                <input ng-model="recepcion.cantidad_cajas" type="text" class="form-control" placeholder="Cajas" aria-describedby="basic-addon2">
+                                                <input ng-disabled="recepcion.disabled_btn" ng-model="recepcion.cantidad_cajas" type="text" class="form-control" placeholder="Cajas" aria-describedby="basic-addon2">
                                                 <span class="input-group-addon" id="basic-addon2">Nev.</span>
-                                                <input ng-model="recepcion.cantidad_neveras" type="text" class="form-control" placeholder="Neveras" aria-describedby="basic-addon2">
+                                                <input ng-disabled="recepcion.disabled_btn" ng-model="recepcion.cantidad_neveras" type="text" class="form-control" placeholder="Neveras" aria-describedby="basic-addon2">
                                             </div>
                                         </div>
 
@@ -140,7 +140,7 @@
                                     <div class="row">
                                         <div class="col-md-12">  
                                             <div class="input-group">
-                                                <input ng-model="recepcion.temperatura_neveras" type="text" class="form-control" placeholder="" aria-describedby="basic-addon2">
+                                                <input ng-disabled="recepcion.disabled_btn" ng-model="recepcion.temperatura_neveras" type="text" class="form-control" placeholder="" aria-describedby="basic-addon2">
                                                 <span class="input-group-addon" id="basic-addon">°C</span>                                                
                                             </div>
                                         </div>
@@ -153,11 +153,11 @@
                                     <div class="row">
                                         <div class="col-md-12" style="margin-top: 8px;">  
                                             <div class="btn-group " data-toggle="buttons">                        
-                                                <label class="btn btn-success btn-xs" btn-radio="true" ng-change="recepcion.set_contiene_medicamentos()" ng-model="recepcion.contiene_medicamentos" >
+                                                <label class="btn btn-success btn-xs" btn-radio="true" ng-disabled="recepcion.disabled_btn" ng-change="recepcion.set_contiene_medicamentos()" ng-model="recepcion.contiene_medicamentos" >
                                                     <input type="radio" name="options" id="option2" autocomplete="off" chacked>
                                                     <span class="glyphicon glyphicon-ok radio-btn"></span> M
                                                 </label>
-                                                <label class="btn btn-info btn-xs" btn-radio="false" ng-change="recepcion.set_contiene_dispositivos()" ng-model="recepcion.contiene_medicamentos">
+                                                <label class="btn btn-info btn-xs" btn-radio="false" ng-disabled="recepcion.disabled_btn" ng-change="recepcion.set_contiene_dispositivos()" ng-model="recepcion.contiene_medicamentos">
                                                     <input type="radio" name="options" id="option2" autocomplete="off">
                                                     <span class="glyphicon glyphicon-ok radio-btn"></span> D
                                                 </label>
@@ -172,7 +172,7 @@
                                     <legend class="medium-letter">Novedad</legend> 
                                     <div class="row">
                                         <div class="col-md-12">  
-                                            <ui-select ng-model="recepcion.novedad" theme="select2" class="form-control selectgeneral pull-left" ng-change="">
+                                            <ui-select ng-disabled="recepcion.disabled_btn" ng-model="recepcion.novedad" theme="select2" class="form-control selectgeneral pull-left" ng-change="">
                                                 <ui-select-match  placeholder="Seleccionar Novedad">{{ $select.selected.get_codigo_descripcion() }}</ui-select-match>
                                                 <ui-select-choices repeat="novedad in Empresa.get_novedades_mercancia() | filter:$select.search">
                                                     {{ novedad.get_codigo_descripcion() }}
@@ -198,24 +198,22 @@
                                 </fieldset>
                             </div>
                         </div> 
-
-                        <div ng-show="datos_view.recepciones.length > 1" class="panel-heading margin-top" style="border-color: #ddd ; background-color: #f5f5f5;margin-top: 15px;height: 20px;"> </div>
-
+                        <div ng-show="datos_view.recepciones.length > 1" class="panel-heading margin-top" style="border-color: #ddd ; background-color: #f5f5f5;margin-top: 15px;height: 20px;"> </div>                        
                     </div> 
                     <div class="modal-footer col-md-12">
                         <button class="btn btn-default" ng-click="cancelar_recepcion()">
                             <span class="glyphicon glyphicon-remove" ></span> Cancelar</button>
-                        <button class="btn btn-default" ng-click="finalizar_recepcion()" ng-disabled="" >
+                        <!--button class="btn btn-default" ng-click="finalizar_recepcion()" ng-disabled="" >
                             <span class="glyphicon glyphicon-ok" ></span> Aceptar
-                        </button>
+                        </button-->
                     </div> 
                 </div>                   
             </div>       
         </div>
-        <pre>
-            {{ datos_view | json }}
-        </pre>
     </div>
+    <!--pre>
+        {{ datos_view | json }}
+    </pre-->
 
     <div  class="slide" slide-content open-callback="gestionar_productos" close-callback="cerrar_gestion_productos"   >
         <div ng-include src="slideurl"  ng-controller="GestionarProductosController"></div>

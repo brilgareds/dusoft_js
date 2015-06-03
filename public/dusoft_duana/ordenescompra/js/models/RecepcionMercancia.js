@@ -1,13 +1,19 @@
 define(["angular", "js/models"], function(angular, models) {
 
-    models.factory('RecepcionMercancia', [ "$filter" ,function($filter) {
+    models.factory('RecepcionMercancia', ["$filter", function($filter) {
 
             function RecepcionMercancia(empresa_id, numero_recepcion) {
                 this.empresa_id = empresa_id;
                 this.numero_recepcion = numero_recepcion;
+                this.orden_compra = '';
+                this.numero_guia = '';
+                this.numero_factura = '';
                 this.proveedor = '';
                 this.transportadora = '';
                 this.novedad = '';
+                this.cantidad_cajas = 0;
+                this.cantidad_neveras = 0;
+                this.temperatura_neveras = '';
                 this.contiene_medicamentos = true;
                 this.contiene_dispositivos = false;
                 this.hora_ingreso = new Date();
@@ -140,6 +146,70 @@ define(["angular", "js/models"], function(angular, models) {
 
             RecepcionMercancia.prototype.get_fecha_ingreso = function() {
                 return this.fecha_ingreso;
+            };
+
+            RecepcionMercancia.prototype.validar_campos_ingreso = function() {
+
+                var continuar = true;
+                var msj = '';
+                var msj = [];
+
+                if (this.proveedor === '' || this.orden_compra === '' || this.transportadora === '') {
+                    continuar = false;
+                    msj.push('Seleccionar un proveedor');
+                }
+                if (this.orden_compra === '') {
+                    continuar = false;
+                    msj.push('Seleccionar una orden de compra');
+                }
+                if (this.transportadora === '') {
+                    continuar = false;
+                    msj.push('Seleccionar la transportadora');
+                }
+
+                if (this.numero_guia === '') {
+                    continuar = false;
+                    msj.push('Ingresar el numero de la guia');
+                }
+
+                if (this.numero_factura === '') {
+                    continuar = false;
+                    msj.push('Ingresar el numero de la factura');
+                }
+
+                if (this.fecha_ingreso === '') {
+                    continuar = false;
+                    msj.push('Ingresar la fecha de ingreso');
+                }
+
+                if (this.hora_ingreso === null) {
+                    continuar = false;
+                    msj.push('Ingresar hora de ingreso');
+                }
+
+
+                // Validar que las cantidad de cajas no sean 0 o vacias                                
+                if (this.cantidad_cajas === '' || this.cantidad_cajas === 0) {
+                    if (this.cantidad_neveras === '') {
+                        continuar = false;
+                        msj.push('Ingresar cantidad de cajas o neveras');
+                    }
+                }
+
+                if (this.cantidad_neveras === '' || this.cantidad_neveras === 0) {
+                    this.temperatura_neveras = '';
+                }
+
+                // Validar que si ingresar neveras, obligatoriamente ingresen la temperatura de la nevera
+                if (this.cantidad_neveras !== '' && this.cantidad_neveras !== 0) {
+                    if (this.temperatura_neveras === '') {
+                        continuar = false;
+                        msj.push('Ingresar la temperatura de las neveras');
+                    }
+                }
+
+
+                return {continuar: continuar, msj: msj.join(', ')};
             };
 
             return this;

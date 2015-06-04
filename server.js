@@ -80,11 +80,12 @@ if (program.prod) {
  * Inicializacion del Servidor
  * =========================================*/
 
-
+//determina el numero de procesadores del servidor, de modo que se concrete los workers que permite el balanceo de carga
 var cluster = require('cluster');
-var numCPUs = require('os').cpus().length;
 
 if (cluster.isMaster) {
+    
+  var numCPUs = require('os').cpus().length;
 
   for (var i = 0; i < numCPUs; i++) {
     cluster.fork();
@@ -92,6 +93,8 @@ if (cluster.isMaster) {
 
   cluster.on('exit', function(worker, code, signal) {
     console.log('worker ' + worker.process.pid + ' died');
+    //se reemplaza el worker que acaba de caer
+    cluster.fork();
   });
 } else {
 

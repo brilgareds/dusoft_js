@@ -288,7 +288,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                                     <a href="javascript:void(0);" ng-click="onEdicionEspecialPedidoFarmacia(row.entity)" ng-validate-events="{{rootVerPedidosFarmacias.opcionesModulo.btnModificarEspecialPedido}}" >Modificación Especial</a>\
                                                 </li>\
                                                 <li ng-if="row.entity.getTieneDespacho()">\
-                                                    <a href="javascript:void(0);" ng-click="imprimirDespachos(row.entity.getDespachoEmpresaId(),row.entity.getDespachoPrefijo(),row.entity.getDespachoNumero())">Documento Despacho</a>\
+                                                    <a href="javascript:void(0);" ng-click="imprimirDespachos(row.entity.getDespachoEmpresaId(),row.entity.getDespachoNumero(),row.entity.getDespachoPrefijo())">Documento Despacho</a>\
                                                 </li>\
                                             </ul>\n\
                                         </div>'

@@ -21,12 +21,16 @@ define(["angular", "js/models"], function(angular, models) {
                 return this.codigo;
             };
 
-            NovedadRecepcion.prototype.get_descripcion = function() {               
-                    return this.descripcion;
+            NovedadRecepcion.prototype.get_descripcion = function() {
+                return this.descripcion;
             };
-            
-            NovedadRecepcion.prototype.get_codigo_descripcion = function() {               
+
+            NovedadRecepcion.prototype.get_codigo_descripcion = function() {
+                if (this.codigo === '' || this.codigo === null) {
+                    return '';
+                } else {
                     return this.codigo + ' - ' + this.descripcion;
+                }
             };
 
             NovedadRecepcion.prototype.get_estado = function() {

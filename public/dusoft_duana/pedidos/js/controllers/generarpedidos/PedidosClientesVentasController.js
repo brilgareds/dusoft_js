@@ -147,6 +147,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 pedido.setObservacion(obj.observacion[0]);
                 
+                pedido.setDespachoEmpresaId(obj.despacho_empresa_id);
+                
+                pedido.setDespachoPrefijo(obj.despacho_prefijo);
+                
+                pedido.setDespachoNumero(obj.despacho_numero);
+                
+                pedido.setTieneDespacho(obj.tiene_despacho);
+                
                 //pedido.tiene_obs_cartera - propiedad solo existente en ésta instancia
                 pedido.tiene_obs_cartera = false;
                 
@@ -249,8 +257,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                                 <li ng-if="(row.entity.estado_actual_pedido == 0) && !row.entity.estado_separacion"></li>\
                                                 <li ng-if="(row.entity.estado_actual_pedido == 0) && !row.entity.estado_separacion && row.entity.estado==0"><a href="javascript:void(0);" ng-click="onAprobarCartera(row.entity)">Aprobar Cartera</a></li>\
                                                 <li ng-if="(row.entity.estado_actual_pedido == 0) && !row.entity.estado_separacion && row.entity.estado==0"></li>\
-                                                <li ng-if="(row.entity.estado_actual_pedido == 0) && !row.entity.estado_separacion && row.entity.estado!=0 && row.entity.tiene_obs_cartera"><a href="javascript:void(0);" ng-click="onVerObservacionCartera(row.entity)">Ver Obs Cartera</a></li>\
-                                                <li ng-if="(row.entity.estado_actual_pedido == 0) && !row.entity.estado_separacion && row.entity.estado!=0 && row.entity.tiene_obs_cartera"></li>\
+                                                <li ng-if="row.entity.tiene_obs_cartera"><a href="javascript:void(0);" ng-click="onVerObservacionCartera(row.entity)">Ver Obs Cartera</a></li>\
+                                                <li ng-if="row.entity.tiene_obs_cartera"></li>\\n\
+                                                <li ng-if="row.entity.getTieneDespacho()">\
+                                                    <a href="javascript:void(0);" ng-click="imprimirDespachos(row.entity.getDespachoEmpresaId(),row.entity.getDespachoPrefijo(),row.entity.getDespachoNumero())">Documento Despacho</a>\
+                                                </li>\
                                             </ul>\
                                         </div>'
                     }
@@ -260,6 +271,28 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
             
 /* NUEVO */
+
+            $scope.imprimirDespachos = function(empresa, numero, prefijo) {
+
+                var test = {
+                    session: $scope.session,
+                    data: {
+                        movimientos_bodegas: {
+                            empresa: empresa,
+                            numero: numero,
+                            prefijo: prefijo
+                        }
+                    }
+                };
+                Request.realizarRequest(API.DOCUMENTOS_DESPACHO.IMPRIMIR_DOCUMENTO_DESPACHO, "POST", test, function(data) {
+                    if (data.status === 200) {
+                        var nombre = data.obj.movimientos_bodegas.nombre_pdf;
+                        $scope.visualizarReporte("/reports/" + nombre, nombre, "download");
+                    }
+
+                });
+
+            };
 
             $scope.onAprobarCartera = function(obj) {
 

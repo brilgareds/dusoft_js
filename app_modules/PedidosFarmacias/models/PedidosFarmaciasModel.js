@@ -443,7 +443,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
                 g.empresa_id as despacho_empresa_id,\
                 g.prefijo as despacho_prefijo, \
                 g.numero as despacho_numero, \
-                CASE WHEN despacho_numero THEN true ELSE false END as tiene_despacho \
+                CASE WHEN g.numero IS NOT NULL THEN true ELSE false END as tiene_despacho \
                 from solicitud_productos_a_bodega_principal as a \
                 inner join bodegas as b on a.farmacia_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega \
                 inner join centros_utilidad as c on b.empresa_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad \

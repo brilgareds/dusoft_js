@@ -89,12 +89,13 @@ module.exports = function(app, di_container) {
         c_ordenes_compra.reporteOrdenCompra(req, res);
     });    
     
+    
+    /* =========== Recepcion de Mercancia ==================*/
+    
     // Listar recepciones mercancia
     app.post('/api/OrdenesCompra/listarRecepcionesMercancia', function(req, res) {
         c_ordenes_compra.listarRecepcionesMercancia(req, res);
     });
-    
-    /* =========== Recepcion de Mercancia ==================*/
     
     // consultar recepcion mercancia
     app.post('/api/OrdenesCompra/consultarRecepcionMercancia', function(req, res) {

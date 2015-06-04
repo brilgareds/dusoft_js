@@ -24,6 +24,11 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.observacion_cartera = "";
             this.valor_total_sin_iva = 0;
             this.valor_total_con_iva = 0;
+            
+            this.despacho_empresa_id = "";
+            this.despacho_prefijo = "";
+            this.despacho_numero = "";
+            this.tiene_despacho = false;
         };
 
         PedidoVenta.prototype = Object.create(Pedido.getClass().prototype);
@@ -135,6 +140,42 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         PedidoVenta.prototype.getObservacionCartera = function() {
             return this.observacion_cartera;
         };
+        
+        PedidoVenta.prototype.setDespachoEmpresaId = function(despacho_empresa_id) {
+            this.despacho_empresa_id = despacho_empresa_id;
+        };
+        
+        PedidoVenta.prototype.getDespachoEmpresaId = function() {
+            return this.despacho_empresa_id;
+        };
+        /**/
+        PedidoVenta.prototype.setDespachoPrefijo = function(despacho_prefijo) {
+            this.despacho_prefijo = despacho_prefijo;
+        };
+        
+        PedidoVenta.prototype.getDespachoPrefijo = function() {
+            return this.despacho_prefijo;
+        };
+        /**/
+        PedidoVenta.prototype.setDespachoNumero = function(despacho_numero) {
+            this.despacho_numero = despacho_numero;
+        };
+        
+        PedidoVenta.prototype.getDespachoNumero = function() {
+            return this.despacho_numero;
+        };
+        /**/
+        
+        //this.tiene_despacho
+        
+        PedidoVenta.prototype.setTieneDespacho = function(tiene_despacho) {
+            this.tiene_despacho = tiene_despacho;
+        };
+        
+        PedidoVenta.prototype.getTieneDespacho = function() {
+            return this.tiene_despacho;
+        };
+        
 
         this.get = function() {
             return new PedidoVenta();

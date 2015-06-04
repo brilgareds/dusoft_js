@@ -1032,31 +1032,27 @@ PedidosClienteModel.prototype.listado_pedidos_clientes = function(empresa_id, te
                     c.nombre_tercero as nombre_cliente,\
                     d.nombre as nombre_vendedor,\
                     d.telefono as telefono_vendedor,\
-                    /*e.pais,\
-                    f.departamento,\
-                    g.municipio,*/\
-                    h.estado as estado_separacion\
+                    e.estado as estado_separacion,\
+                    f.empresa_id as despacho_empresa_id,\
+                    f.prefijo as despacho_prefijo, \
+                    f.numero as despacho_numero, \
+                    CASE WHEN f.numero IS NOT NULL THEN true ELSE false END as tiene_despacho \
                 from ventas_ordenes_pedidos a\
                     left join ventas_ordenes_pedidos_d b on b.pedido_cliente_id = a.pedido_cliente_id\
                     join terceros c on c.tipo_id_tercero = a.tipo_id_tercero\
                         and c.tercero_id = a.tercero_id\
                     join vnts_vendedores d on d.tipo_id_vendedor = a.tipo_id_vendedor\
                         and d.vendedor_id = a.vendedor_id\
-                    /*left join tipo_pais as e on e.tipo_pais_id = c.tipo_pais_id\
-                    left join tipo_dptos as f on f.tipo_dpto_id = c.tipo_dpto_id\
-                        and f.tipo_pais_id = e.tipo_pais_id \
-                    left join tipo_mpios as g on g.tipo_mpio_id = c.tipo_mpio_id\
-                        and g.tipo_dpto_id = f.tipo_dpto_id\
-                        and g.tipo_pais_id = e.tipo_pais_id*/\
-                    left join inv_bodegas_movimiento_tmp_despachos_clientes h on a.pedido_cliente_id = h.pedido_cliente_id  \
+                    left join inv_bodegas_movimiento_tmp_despachos_clientes e on a.pedido_cliente_id = e.pedido_cliente_id  \
+                    left join inv_bodegas_movimiento_despachos_clientes f on a.pedido_cliente_id = f.pedido_cliente_id \
                 where a.empresa_id = $1\
                     and (   a.pedido_cliente_id ilike $2\
                             or c.nombre_tercero ilike $2\
                             or d.nombre ilike $2 )\
                 group by a.pedido_cliente_id, a.empresa_id, a.tipo_id_tercero, a.tercero_id, a.fecha_registro, a.usuario_id, a.fecha_envio,\
                     a.tipo_id_vendedor, a.vendedor_id, a.estado, a.estado_pedido, a.fecha_registro_anulacion, a.usuario_anulador, a.observacion_anulacion,\
-                    a.observacion, c.tipo_pais_id, c.tipo_dpto_id, c.tipo_mpio_id, c.direccion, c.telefono, c.nombre_tercero, d.nombre, d.telefono,/* e.pais,\
-                    f.departamento, g.municipio,*/ h.estado\
+                    a.observacion, c.tipo_pais_id, c.tipo_dpto_id, c.tipo_mpio_id, c.direccion, c.telefono, c.nombre_tercero, d.nombre, d.telefono, e.estado,\
+                    f.empresa_id, f.prefijo, f.numero \
                 order by 1 desc\
 ";
     

@@ -219,6 +219,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             that.crearPedido = function(obj) {
 
+                console.log(">>>> OBJETO DE CONSULTA -- DESPACHO: ", obj.despacho_numero," - " ,obj.tiene_despacho," - " ,obj.numero_pedido);
+                
                 var pedido = PedidoVenta.get();
 
                 var datos_pedido = {
@@ -233,6 +235,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 pedido.setTipo(PedidoVenta.TIPO_FARMACIA);
 
                 pedido.setObservacion(obj.observacion);
+                
+                pedido.setDespachoEmpresaId(obj.despacho_empresa_id);
+                
+                pedido.setDespachoPrefijo(obj.despacho_prefijo);
+                
+                pedido.setDespachoNumero(obj.despacho_numero);
+                
+                pedido.setTieneDespacho(obj.tiene_despacho);
+                
+                //Falta el campo del estado True o False para botón "Imprimir EFC"
 
                 //pedido.setEnUso(obj.en_uso);
 
@@ -271,11 +283,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                                 <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)" ng-if="rootVerPedidosFarmacias.opciones.sw_modificar_pedido">\n\
                                                     <a href="javascript:void(0);" ng-click="onEditarPedidoFarmacia(row.entity)" ng-validate-events="{{rootVerPedidosFarmacias.opcionesModulo.btnModificarPedido}}" >Modificar</a>\
                                                 </li>\
-                                                <!--<li class="divider" ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)"></li>-->\
                                                 <li><a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity)" ng-validate-events="{{rootVerPedidosFarmacias.opcionesModulo.btnConsultarPedido}}">Ver</a></li>\
-                                                <!--<li class="divider" ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)"></li>-->\
                                                 <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)" ng-if="rootVerPedidosFarmacias.opciones.sw_modificacion_especial_pedidos">\
                                                     <a href="javascript:void(0);" ng-click="onEdicionEspecialPedidoFarmacia(row.entity)" ng-validate-events="{{rootVerPedidosFarmacias.opcionesModulo.btnModificarEspecialPedido}}" >Modificación Especial</a>\
+                                                </li>\
+                                                <li ng-if="row.entity.getTieneDespacho()">\
+                                                    <a href="javascript:void(0);" ng-click="imprimirDespachos(row.entity.getDespachoEmpresaId(),row.entity.getDespachoPrefijo(),row.entity.getDespachoNumero())">Documento Despacho</a>\
                                                 </li>\
                                             </ul>\n\
                                         </div>'
@@ -285,6 +298,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             };
             
+         
             $scope.agregarClase = function(estado) {
 
                 /*if (estado === 6) {

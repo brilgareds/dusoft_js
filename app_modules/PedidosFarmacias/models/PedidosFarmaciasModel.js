@@ -439,13 +439,18 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
                 to_char(a.fecha_registro, 'dd-mm-yyyy') as fecha_registro,\
                 c.descripcion as nombre_centro_utilidad,\
                 a.empresa_destino as empresa_origen_id,\
-                a.observacion\
+                a.observacion,\
+                g.empresa_id as despacho_empresa_id,\
+                g.prefijo as despacho_prefijo, \
+                g.numero as despacho_numero, \
+                CASE WHEN g.numero IS NOT NULL THEN true ELSE false END as tiene_despacho \
                 from solicitud_productos_a_bodega_principal as a \
                 inner join bodegas as b on a.farmacia_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega \
                 inner join centros_utilidad as c on b.empresa_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad \
                 inner join empresas as d ON c.empresa_id = d.empresa_id \
                 inner join system_usuarios as e ON a.usuario_id = e.usuario_id \
                 left join inv_bodegas_movimiento_tmp_despachos_farmacias f on a.solicitud_prod_a_bod_ppal_id = f.solicitud_prod_a_bod_ppal_id  \
+                left join inv_bodegas_movimiento_despachos_farmacias g on a.solicitud_prod_a_bod_ppal_id = g.solicitud_prod_a_bod_ppal_id \
                 where a.farmacia_id = $1 " + sql_aux + "\
                 and ( a.solicitud_prod_a_bod_ppal_id ilike $2 \
                       or d.razon_social ilike $2 \

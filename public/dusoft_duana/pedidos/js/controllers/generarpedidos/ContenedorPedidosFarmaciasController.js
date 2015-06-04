@@ -14,6 +14,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
 
             $scope.root = {};
+            
+            $scope.root.session = {
+                usuario_id: Usuario.getUsuarioActual().getId(),
+                auth_token: Usuario.getUsuarioActual().getToken()
+            };
 
             $scope.root.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
             //$scope.root.opciones.sw_ver_listado_temporales = true;
@@ -29,7 +34,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             $scope.imprimirDespachos = function(empresa, numero, prefijo) {
 
                 var test = {
-                    session: $scope.session,
+                    session: $scope.root.session,
                     data: {
                         movimientos_bodegas: {
                             empresa: empresa,

@@ -260,7 +260,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                                 <li ng-if="row.entity.tiene_obs_cartera"><a href="javascript:void(0);" ng-click="onVerObservacionCartera(row.entity)">Ver Obs Cartera</a></li>\
                                                 <li ng-if="row.entity.tiene_obs_cartera"></li>\\n\
                                                 <li ng-if="row.entity.getTieneDespacho()">\
-                                                    <a href="javascript:void(0);" ng-click="imprimirDespachos(row.entity.getDespachoEmpresaId(),row.entity.getDespachoPrefijo(),row.entity.getDespachoNumero())">Documento Despacho</a>\
+                                                    <a href="javascript:void(0);" ng-click="imprimirDespachos(row.entity.getDespachoEmpresaId(),row.entity.getDespachoNumero(),row.entity.getDespachoPrefijo())">Documento Despacho</a>\
                                                 </li>\
                                             </ul>\
                                         </div>'
@@ -274,8 +274,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
             $scope.imprimirDespachos = function(empresa, numero, prefijo) {
 
+                console.log(">>>> Documentos Despacho: ",empresa," - " ,numero, " - ",prefijo);
+
                 var test = {
-                    session: $scope.session,
+                    session: $scope.rootPedidosClientes.session,
                     data: {
                         movimientos_bodegas: {
                             empresa: empresa,
@@ -284,6 +286,13 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         }
                     }
                 };
+                
+                /*
+                 var url = API.PEDIDOS.CONSULTA_ESTADO_COTIZACION;
+
+                Request.realizarRequest(url, "POST", obj, function(data_estado) {
+                 */
+                
                 Request.realizarRequest(API.DOCUMENTOS_DESPACHO.IMPRIMIR_DOCUMENTO_DESPACHO, "POST", test, function(data) {
                     if (data.status === 200) {
                         var nombre = data.obj.movimientos_bodegas.nombre_pdf;

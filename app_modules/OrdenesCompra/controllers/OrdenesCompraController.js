@@ -1042,7 +1042,7 @@ OrdenesCompra.prototype.consultarRecepcionMercancia = function(req, res) {
             res.send(G.utils.r(req.url, 'Error consultando la recepcion', 500, {ordenes_compras: []}));
             return;
         } else {
-            res.send(G.utils.r(req.url, 'Recepcion Mercancia', 200, {ordenes_compras: recepcion_mercancia}));
+            res.send(G.utils.r(req.url, 'Recepcion Mercancia', 200, {ordenes_compras: {recepcion_mercancia:recepcion_mercancia}}));
             return;
         }
     });
@@ -1154,25 +1154,25 @@ OrdenesCompra.prototype.listarProductosRecepcionMercancia = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.ordenes_compras === undefined || args.ordenes_compras.recepcion_mercancia_id === undefined) {
+    if (args.ordenes_compras === undefined || args.ordenes_compras.recepcion_id === undefined) {
         res.send(G.utils.r(req.url, 'recepcion_mercancia_id no esta definidas', 404, {}));
         return;
     }
 
-    if (args.ordenes_compras.recepcion_mercancia_id === '') {
+    if (args.ordenes_compras.recepcion_id === '') {
         res.send(G.utils.r(req.url, 'recepcion_mercancia_id esta vacias', 404, {}));
         return;
     }
 
-    var recepcion_mercancia_id = args.ordenes_compras.recepcion_mercancia_id;
+    var recepcion_id = args.ordenes_compras.recepcion_id;
 
-    that.m_ordenes_compra.listar_productos_recepcion_mercancia(recepcion_mercancia_id, function(err, productos) {
+    that.m_ordenes_compra.listar_productos_recepcion_mercancia(recepcion_id, function(err, productos) {
 
         if (err) {            
             res.send(G.utils.r(req.url, 'Error listando productos de la recepcion ', 500, {ordenes_compras: []}));
             return;
         } else {
-            res.send(G.utils.r(req.url, 'lista de productos', 200, {ordenes_compras: productos}));
+            res.send(G.utils.r(req.url, 'lista de productos', 200, {ordenes_compras: {recepcion_mercancia : productos} }));
             return;
         }
     });

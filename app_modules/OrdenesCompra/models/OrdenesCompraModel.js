@@ -507,6 +507,7 @@ OrdenesCompraModel.prototype.consultar_recepcion_mercancia = function(recepcion_
                 a.contiene_dispositivos,\
                 a.estado,\
                 to_char(a.fecha_recepcion,'dd-mm-yyyy') as fecha_recepcion,\
+                to_char(a.hora_recepcion,'HH24:MI:SS') as hora_recepcion,\
                 to_char(a.fecha_registro,'dd-mm-yyyy') as fecha_registro\
                 from recepcion_mercancia a\
                 inner join empresas b on a.empresa_id = b.empresa_id\

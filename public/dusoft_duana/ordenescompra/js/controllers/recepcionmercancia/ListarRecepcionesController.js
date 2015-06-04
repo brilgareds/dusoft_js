@@ -117,12 +117,7 @@ define(["angular", "js/controllers",
 
                     $scope.Empresa.set_recepciones_mercancia(recepcion);
                 });
-
-               // $scope.datos_view.response = $scope.Empresa.get_recepciones_mercancia();
-
             };
-
-
 
             $scope.lista_recepciones_mercancia = {
                 data: 'Empresa.get_recepciones_mercancia()',
@@ -150,11 +145,12 @@ define(["angular", "js/controllers",
 
             /***/
 
-            $scope.crear_recepcion = function() {
+            $scope.crear_recepcion = function() {                
                 $state.go('RecepcionMercancia');
             };
 
-            $scope.verificar_recepcion = function() {
+            $scope.verificar_recepcion = function(recepcion) {
+                localStorageService.add("numero_recepcion", recepcion.get_numero_recepcion());
                 $state.go('VerificarMercancia');
             };
 

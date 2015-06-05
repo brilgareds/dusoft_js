@@ -81,7 +81,12 @@ if (program.prod) {
  * =========================================*/
 
 //determina el numero de procesadores del servidor, de modo que se concrete los workers que permite el balanceo de carga
-var cluster = require('cluster');
+var cluster = require('cluster'),
+RedisStore = require("socket.io/lib/stores/redis"),
+redis = require("socket.io/node_modules/redis"),
+pub = redis.createClient(),
+sub = redis.createClient(),
+client = redis.createClient();
 
 if (cluster.isMaster) {
 
@@ -110,10 +115,16 @@ if (cluster.isMaster) {
      * =========================================*/
     io.configure(function() {
         io.set("log level", 0);
-        io.set('transports', [
+        /*io.set('transports', [
             'websocket'
-        ]);
+        ]);*/
     });
+    
+    io.set("store", new RedisStore(
+        pub,
+        sub,
+        client
+     ));
 
 
     /*=========================================

@@ -1614,7 +1614,7 @@ E008Controller.prototype.imprimirRotuloFarmacias = function(req, res) {
 };
 
 function _generarDocumentoRotulo(obj, callback) {
-    G.jsreport.reporter.render({
+    G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/MovimientosBodega/E008/reports/rotulos.html', 'utf8'),
             helpers: G.fs.readFileSync('app_modules/MovimientosBodega/E008/reports/javascripts/rotulos.js', 'utf8'),
@@ -1622,14 +1622,24 @@ function _generarDocumentoRotulo(obj, callback) {
             engine: 'jsrender'
         },
         data: obj
-    }).then(function(response) {
-
-        var name = response.result.path;
-        var fecha = new Date();
-        var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
-        G.fs.copySync(name, G.dirname + "/public/reports/" + nombreTmp);
-
-        callback(nombreTmp);
+    },function(err, response) {
+        
+        response.body(function(body) {
+           var fecha = new Date();
+           var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
+           G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body,  "binary",function(err) {
+                if(err) {
+                    console.log(err);
+                } else {
+                    callback(nombreTmp);
+                }
+            });
+                
+            
+        });
+        
+        
+        
     });
 }
 
@@ -2449,7 +2459,8 @@ function __validar_responsable_pedidos_farmacias(contexto, numero_pedido, respon
 }
 
 function __generarPdfDespacho(datos, callback) {  
-    G.jsreport.reporter.render({
+
+    G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/MovimientosBodega/E008/reports/despacho.html', 'utf8'),
             recipe: "phantom-pdf",
@@ -2460,14 +2471,21 @@ function __generarPdfDespacho(datos, callback) {
             }
         },
         data: datos
-    }).then(function(response) {
-
-        var name = response.result.path;
-        var fecha = new Date();
-        var nombreTmp = datos.encabezado.prefijo + "-" + datos.encabezado.numero + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
-        G.fs.copySync(name, G.dirname + "/public/reports/" + nombreTmp);
-
-        callback(nombreTmp);
+    }, function(err, response) {
+        
+        response.body(function(body) {
+           var fecha = new Date();
+           var nombreTmp = datos.encabezado.prefijo + "-" + datos.encabezado.numero + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
+           G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body,  "binary",function(err) {
+                if(err) {
+                    console.log(err);
+                } else {
+                    callback(nombreTmp);
+                }
+            });
+                
+            
+        });
     });
 }
 

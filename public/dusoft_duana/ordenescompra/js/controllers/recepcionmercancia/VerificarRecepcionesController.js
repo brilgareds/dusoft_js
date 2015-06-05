@@ -256,7 +256,8 @@ define(["angular", "js/controllers"
                     {field: 'getCodigoProducto()', displayName: 'Codigo Producto', width: "10%"},
                     {field: 'getDescripcion()', displayName: 'Descripcion', width: "35%"},
                     {field: 'get_cantidad_seleccionada()', displayName: 'Cnt.', width: "5%"},                    
-                    {field: 'get_cantidad_recibida()', displayName: 'Rec.', width: "5%"},                                        
+                    {field: 'get_cantidad_recibida()', displayName: 'Rec.', width: "15%", 
+                        cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_recibida" class="form-control grid-inline-input" name="" id="" /> </div>'},                                        
                     {displayName: "Novedad", cellClass: "dropdown-button",
                         cellTemplate: '<div class="row">\
                                             <div class="col-md-12">  \

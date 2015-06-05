@@ -207,18 +207,30 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
              ],
              beforeSelectionChange:function(row, event){
+                 /*console.log("row selected ", row);
+                 console.log("beforeSelectionChange >>>>>>>>>>>>>" , "seleccionado ", row.selected, "selected real", !row.selected, " index ",row.rowIndex);
+                 console.log("numero caja ", row.entity);*/
+                 
+               var seleccionar = false;
+                 
                 // console.log(row, "before selection ", event, row instanceof  Array);
-                 if(!row.entity || row.entity.numero_caja > 0) return false;
-
-                // console.log($scope.lotes_producto.selectedItems);
+               if(!row.entity || row.entity.cantidad_ingresada === 0 || row.entity.numero_caja > 0){
+                   seleccionar =  false;
+               }
+                 
+               seleccionar =  !row.selected;
+               
+               console.log("seleccionar? ",seleccionar);
+               return seleccionar;
+                /*/ console.log($scope.lotes_producto.selectedItems);
                  if($scope.esEventoPropagadoPorFila(event)){
                      return row.entity.seleccionado;
                  } else {
-                     /*if(!row.entity.seleccionado){
-                         return true;
-                     }*/
+                     console.log("no row >>>>>>>>>>>>>>>>>>>>>>>>> ", row.entity.seleccionado);
+
+                     row.selected = false;
                      return false;
-                 }
+                 }*/
              }
 
          };
@@ -235,7 +247,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
           $scope.onCantidadIngresadaChange= function(row,e){
              row.entity.seleccionado = false;
-             row.selected = false;
+             //row.selected = false;
          };
 
          $scope.duplicarLote = function(lote, row){
@@ -279,7 +291,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
              //eliminar el lote del temporal
              if(lote.cantidad_ingresada !== 0 && !lote.seleccionado || lote.numero_caja > 0){
-                 row.selected = false;
+                 //row.selected = false;
                  that.eliminiarLoteTemporal(lote);
              } else {
                  //agregar el lote al temporal

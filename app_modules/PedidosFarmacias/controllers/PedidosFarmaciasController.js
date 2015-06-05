@@ -1988,11 +1988,8 @@ PedidosFarmacias.prototype.imprimirPedidoFarmacia = function(req, res) {
 };
 
 function _generarDocumentoPedido(obj, callback) {
-    
-    console.log(">>>> Generar Documento ARG: ",obj);
-    
-    
-    G.jsreport.reporter.render({
+     
+    G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/PedidosFarmacias/reports/pedido.html', 'utf8'),
             //helpers: G.fs.readFileSync('app_modules/PedidosFarmacias/reports/javascripts/rotulos.js', 'utf8'),
@@ -2000,17 +1997,25 @@ function _generarDocumentoPedido(obj, callback) {
             engine: 'jsrender'
         },
         data: obj
-    }).then(function(response) {
-
-        var name = response.result.path;
-        var fecha = new Date();
-        var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
-        G.fs.copySync(name, G.dirname + "/public/reports/" + nombreTmp);
-
-        callback(nombreTmp);
+    }, function(err, response) {
+                
+        response.body(function(body) {
+           var fecha = new Date();
+           var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
+           G.fs.writeFile(G.dirname + "/public/reports/" + nombreTmp, body,  "binary",function(err) {
+                if(err) {
+                    console.log(err);
+                } else {
+                    callback(nombreTmp);
+                }
+            });
+                
+            
+        });
+        
+        
     });
-}
-;
+};
 
 PedidosFarmacias.prototype.listarDetallePedidoPDF = function(req, res) {
 

@@ -2471,7 +2471,7 @@ function __generarPdfDespacho(datos, callback) {
             }
         },
         data: datos
-    }, function(response) {
+    }, function(err, response) {
         
         response.body(function(body) {
            var fecha = new Date();

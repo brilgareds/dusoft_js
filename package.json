@@ -22,6 +22,7 @@
     "socket.io": "~0.9.16",
     "socket.io-client": "~0.9.16",
     "accounting": "~0.4.1",
-    "jsreport": "0.2.1"
+    "jsreport": "0.2.1",
+    "jsreport-client":"*"
   }
 }

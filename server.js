@@ -10,7 +10,8 @@ var program = require('commander');
 var nodemailer = require('nodemailer');
 var date_utils = require('date-utils');
 var multipart = require('connect-multiparty');
-var jsreport = require("jsreport");
+//var jsreport = require("jsreport");
+
 var accounting = require("accounting");
 
 
@@ -29,6 +30,7 @@ G.fs = require('fs-extra');
 G.xlsx = require('node-xlsx');
 G.path = path;
 G.accounting = accounting;
+G.jsreport = require("jsreport-client")(G.settings.reportsUrl);
 //G.thread = require('webworker-threads');
 
 /*=========================================
@@ -82,11 +84,11 @@ if (program.prod) {
 
 //determina el numero de procesadores del servidor, de modo que se concrete los workers que permite el balanceo de carga
 var cluster = require('cluster'),
-RedisStore = require("socket.io/lib/stores/redis"),
-redis = require("socket.io/node_modules/redis"),
-pub = redis.createClient(),
-sub = redis.createClient(),
-client = redis.createClient();
+        RedisStore = require("socket.io/lib/stores/redis"),
+        redis = require("socket.io/node_modules/redis"),
+        pub = redis.createClient(),
+        sub = redis.createClient(),
+        client = redis.createClient();
 
 if (cluster.isMaster) {
 
@@ -101,6 +103,7 @@ if (cluster.isMaster) {
         //se reemplaza el worker que acaba de caer
         cluster.fork();
     });
+    
 } else {
 
 
@@ -116,15 +119,15 @@ if (cluster.isMaster) {
     io.configure(function() {
         io.set("log level", 0);
         /*io.set('transports', [
-            'websocket'
-        ]);*/
+         'websocket'
+         ]);*/
     });
-    
+
     io.set("store", new RedisStore(
-        pub,
-        sub,
-        client
-     ));
+            pub,
+            sub,
+            client
+            ));
 
 
     /*=========================================
@@ -186,11 +189,11 @@ if (cluster.isMaster) {
     /*========================================
      Carga libreria de reportes
      ==========================================*/
-    jsreport.bootstrapper({
+    /*jsreport.bootstrapper({
         logger: {providerName: "console"}
     }).start().then(function(bootstrapper) {
         G.jsreport = bootstrapper;
-    });
+    });*/
 
     /*=========================================
      * Ruteo del Servidor
@@ -206,10 +209,16 @@ if (cluster.isMaster) {
     });
 
     process.on('SIGINT', function() {
-        console.log("Señal de Interrumpcion Detectada");
         io.sockets.emit('onDisconnect');
-        //if (i_should_exit)
-        process.exit();
+
+
+        for (var id in cluster.workers) {
+            console.log("killing worker ", cluster.workers[id]);
+            cluster.workers[id].kill();
+        }
+        // exit the master process
+        process.exit(0);
+
     });
 
     console.log('Express server listening on port ' + app.get('port') + ' in Dir ' + __dirname);

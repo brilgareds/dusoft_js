@@ -376,7 +376,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         {field: 'cantidad_pendiente', displayName: 'Pendiente'},
                         {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "7%",
                             cellTemplate: ' <div class="row">\n\
-                                                <button ng-if="!rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" class="btn btn-default btn-xs" ng-click="onEliminarSeleccionado(row)">\n\
+                                                <button ng-if="!rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" class="btn btn-default btn-xs" ng-click="onEliminarProductoPedidoTemporal(row)">\n\
                                                     <span class="glyphicon glyphicon-remove"> Eliminar</span>\n\
                                                 </button>\n\
                                                 <button ng-if="rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" class="btn btn-default btn-xs" ng-click="onEliminarSeleccionadoEspecial(row)">\n\
@@ -1226,8 +1226,49 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     that.insertarDetallePedidoDefinitivo(row);
                 }
             };
+            
+            $scope.onEliminarProductoPedidoTemporal = function(row){
 
-            $scope.onEliminarSeleccionado = function(row) {
+                var template = '<div class="modal-header">\
+                                      <button type="button" class="close" ng-click="close()">&times;</button>\
+                                      <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                  </div>\
+                                  <div class="modal-body">\
+                                      <h4>Seguro desea eliminar el producto código '+ row.entity.codigo_producto +' ? </h4> \
+                                  </div>\
+                                  <div class="modal-footer">\
+                                      <button class="btn btn-warning" ng-click="close()">No</button>\
+                                      <button class="btn btn-primary" ng-click="eliminarProductoPedidoTemporal()">Si</button>\
+                                  </div>';
+
+                  controller = function($scope, $modalInstance) {
+
+                    $scope.eliminarProductoPedidoTemporal = function() {
+
+                        that.onEliminarSeleccionado(row);
+                        $modalInstance.close();
+                    };
+
+                    $scope.close = function() {
+                        $modalInstance.close();
+                    };
+                  };
+
+                  $scope.opts = {
+                      backdrop: true,
+                      backdropClick: true,
+                      dialogFade: false,
+                      keyboard: true,
+                      template: template,
+                      scope: $scope,
+                      controller: controller
+                  };
+
+                  var modalInstance = $modal.open($scope.opts);                  
+                
+            }
+
+            that.onEliminarSeleccionado = function(row) {
 
                 $scope.rootSeleccionProductoFarmacia.no_incluir_producto = false;
                 

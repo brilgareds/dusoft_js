@@ -2395,8 +2395,48 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 
                 /* Fin - Validar Existencia de encabezado */
             };
-/**/            
-            $scope.abrirViewVerPedidosFarmaciasEliminarTemporal = function(){
+/**/        
+
+            $scope.onEliminarPedidoTemporal = function(){
+                var template = '<div class="modal-header">\
+                                      <button type="button" class="close" ng-click="close()">&times;</button>\
+                                      <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                  </div>\
+                                  <div class="modal-body">\
+                                      <h4>Seguro desea eliminar el Pedido Temporal ? </h4> \
+                                  </div>\
+                                  <div class="modal-footer">\
+                                      <button class="btn btn-warning" ng-click="close()">No</button>\
+                                      <button class="btn btn-primary" ng-click="eliminarPedidoTemporal()">Si</button>\
+                                  </div>';
+
+                  controller = function($scope, $modalInstance) {
+
+                    $scope.eliminarPedidoTemporal = function() {
+
+                        that.eliminarPedidoTemporal();
+                        $modalInstance.close();
+                    };
+
+                    $scope.close = function() {
+                        $modalInstance.close();
+                    };
+                  };
+
+                  $scope.opts = {
+                      backdrop: true,
+                      backdropClick: true,
+                      dialogFade: false,
+                      keyboard: true,
+                      template: template,
+                      scope: $scope,
+                      controller: controller
+                  };
+
+                  var modalInstance = $modal.open($scope.opts);  
+            };
+
+            that.eliminarPedidoTemporal = function(){
 
                 //Eliminación Detalle Temporal
                 var obj_detalle = {

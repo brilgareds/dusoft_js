@@ -514,26 +514,34 @@ UsuariosModel.prototype.obtenerEmpresasUsuario = function(usuario_id, callback) 
 
 UsuariosModel.prototype.obtenerCentrosUtilidadUsuario = function(empresa_id, login_id, callback) {
     var that = this;
+    
+    var sql =  "SELECT  a.centro_utilidad AS centro_utilidad_id, a.descripcion, COALESCE(b.seleccionado_usuario, '0') AS seleccionado_usuario, a.empresa_id, b.nombre_empresa\
+                FROM centros_utilidad a \
+                LEFT JOIN (\
+                    SELECT bb.estado AS seleccionado_usuario, bb.centro_utilidad_id, bb.empresa_id, cc.razon_social AS nombre_empresa FROM login_empresas AS aa\
+                    INNER JOIN login_centros_utilidad_bodega bb ON bb.login_empresa_id = aa.id\
+                    INNER JOIN empresas cc ON bb.empresa_id = cc.empresa_id\
+                    WHERE aa.login_id = $1 AND aa.estado = '1' GROUP BY 1,2,3,4\
+                ) AS b ON b.centro_utilidad_id = a.centro_utilidad AND a.empresa_id = b.empresa_id";
 
-    var sql = "SELECT a.centro_utilidad AS centro_utilidad_id, a.descripcion FROM centros_utilidad a\
-                INNER JOIN login_empresas b ON b.empresa_id = a.empresa_id \
-                INNER JOIN login_centros_utilidad_bodega c ON c.centro_utilidad_id = a.centro_utilidad AND c.login_empresa_id = b.id\
-                WHERE a.empresa_id = $1 AND b.login_id = $2 AND c.estado = '1' GROUP BY 1, 2";
-
-    G.db.query(sql, [empresa_id, login_id], function(err, rows, result) {
+    G.db.query(sql, [login_id], function(err, rows, result) {
         callback(err, rows, result);
     });
 };
 
 UsuariosModel.prototype.obtenerBodegasUsuario = function(empresa_id, login_id, centro_utilidad_id, callback) {
     var that = this;
+    
+    var sql =  "SELECT a.centro_utilidad AS centro_utilidad_id, a.descripcion, a.bodega AS bodega_id, COALESCE(b.seleccionado_usuario, '0') AS seleccionado_usuario\
+                FROM bodegas a\
+                LEFT JOIN (\
+                    SELECT bb.estado AS seleccionado_usuario, bb.centro_utilidad_id, bb.bodega_id FROM login_empresas AS aa\
+                    INNER JOIN login_centros_utilidad_bodega bb ON bb.login_empresa_id = aa.id\
+                    WHERE aa.login_id = $1 GROUP BY 1,2, 3\
+                ) AS b ON b.centro_utilidad_id = a.centro_utilidad AND a.bodega = b.bodega_id\
+                WHERE a.centro_utilidad = $2 AND a.empresa_id = $3";
 
-    var sql = "SELECT a.centro_utilidad AS centro_utilidad_id, a.descripcion, a.bodega AS bodega_id FROM bodegas a\
-               INNER JOIN login_empresas b ON b.empresa_id = a.empresa_id \
-               INNER JOIN login_centros_utilidad_bodega c ON c.bodega_id = a.bodega AND  c.login_empresa_id = b.id\
-               WHERE b.empresa_id = $1 AND b.login_id = $2 AND c.centro_utilidad_id = $3 AND c.estado = '1'";
-
-    G.db.query(sql, [empresa_id, login_id, centro_utilidad_id], function(err, rows, result) {
+    G.db.query(sql, [login_id, centro_utilidad_id, empresa_id ], function(err, rows, result) {
         callback(err, rows, result);
     });
 };
@@ -593,7 +601,7 @@ function __obtenerBodegasCentroUtilidadUsuario(that, index, empresa_id, usuario_
     }
 
 
-    that.obtenerBodegasUsuario(empresa_id, usuario_id, centro_utilidad.centro_utilidad_id, function(err, bodegas) {
+    that.obtenerBodegasUsuario(centro_utilidad.empresa_id, usuario_id, centro_utilidad.centro_utilidad_id, function(err, bodegas) {
         if (err) {
             callback(err);
             return;

@@ -80,7 +80,8 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                 columnDefs: [
                     {field: 'opciones', displayName: "", cellClass: "txt-center", width: "10%",
                         cellTemplate: '<div ng-if="row.entity.estado" style="color:#5cb85c;"><i class="glyphicon glyphicon-ok icon-success"></i></div>'},
-                    {field: 'codigo', displayName: 'Centro Utilidad', width: 120},
+                    //{field: 'empresaId', displayName : 'Empresa', width:60},
+                    {field: 'codigo', displayName: 'Centro Utilidad'},
                     {field: 'nombre', displayName: 'Nombre'},
                     {field: 'opciones', displayName: "", cellClass: "txt-center dropdown-button", width: "18%",
                         cellTemplate: '<div class="btn-group">\
@@ -321,30 +322,6 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                 });
             };
 
-            self.traerCentrosUtilidadEmpresa = function(callback) {
-
-                var obj = {
-                    session: $scope.rootUsuario.session,
-                    data: {
-                        centro_utilidad: {
-                            empresa_id: $scope.rootUsuario.empresaSeleccionada.getCodigo()
-                        }
-                    }
-                };
-
-                Request.realizarRequest(API.USUARIOS.LISTAR_CENTROS_UTILIDAD, "POST", obj, function(data) {
-                    if (data.status === 200) {
-                        var datos = data.obj.centros_utilidad;
-
-                        self.agregarCentroUtilidad(datos, false);
-
-                        callback();
-
-                    }
-
-                });
-            };
-
             self.traerCentrosUtilidadUsuario = function(callback) {
 
                 var obj = {
@@ -376,38 +353,13 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                     var _centroUtilidad = centrosUtilidad[i];
 
                     var centroUtilidad = CentroUtilidad.get(_centroUtilidad.descripcion, _centroUtilidad.centro_utilidad_id);
-                    centroUtilidad.setEstado(seleccionado);
+                    centroUtilidad.setEstado(Boolean(Number(_centroUtilidad.seleccionado_usuario)));
+                    centroUtilidad.setEmpresaId(_centroUtilidad.empresa_id);
 
                     $scope.rootUsuario.empresaSeleccionada.agregarCentroUtilidad(centroUtilidad);
                 }
             };
 
-            self.traerBodegas = function(callback) {
-
-                var centroUtilidad = $scope.rootUsuario.empresaSeleccionada.getCentroUtilidadSeleccionado();
-
-                var obj = {
-                    session: $scope.rootUsuario.session,
-                    data: {
-                        bodegas: {
-                            empresa_id: $scope.rootUsuario.empresaSeleccionada.getCodigo(),
-                            centro_utilidad_id: centroUtilidad.getCodigo()
-                        }
-                    }
-                };
-
-                Request.realizarRequest(API.USUARIOS.LISTAR_BODEGAS, "POST", obj, function(data) {
-                    if (data.status === 200) {
-                        var datos = data.obj.bodegas;
-
-                        self.agregarBodegas(datos, false);
-
-                        callback();
-
-                    }
-
-                });
-            };
 
             self.traerBodegasUsuario = function(callback) {
 
@@ -415,7 +367,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                     session: $scope.rootUsuario.session,
                     data: {
                         parametrizacion_usuarios: {
-                            empresa_id: $scope.rootUsuario.empresaSeleccionada.getCodigo(),
+                            empresa_id: $scope.rootUsuario.empresaSeleccionada.getCentroUtilidadSeleccionado().getEmpresaId(),
                             centro_utilidad_id: $scope.rootUsuario.empresaSeleccionada.getCentroUtilidadSeleccionado().getCodigo(),
                             usuario_id: $scope.rootUsuario.usuarioAGuardar.getId()
                         }
@@ -441,7 +393,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                     var _bodega = bodegas[i];
 
                     var bodega = Bodega.get(_bodega.descripcion, _bodega.bodega_id);
-                    bodega.setEstado(estado);
+                    bodega.setEstado(Boolean(Number(_bodega.seleccionado_usuario)));
 
                     centroUtilidad.agregarBodega(bodega);
 
@@ -664,7 +616,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                     session: $scope.rootUsuario.session,
                     data: {
                         parametrizacion_usuarios: {
-                            empresa_id: $scope.rootUsuario.empresaSeleccionada.getCodigo(),
+                            empresa_id: centroUtilidad.getEmpresaId(),
                             centro_utilidad_id: centroUtilidad.getCodigo(),
                             bodegas: bodegas,
                             login_empresa_id: $scope.rootUsuario.empresaSeleccionada.getLoginEmpresaId(),
@@ -705,9 +657,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
             $scope.seleccionarCentroUtilidad = function(centroUtilidad) {
                 $scope.rootUsuario.empresaSeleccionada.setCentroUtilidadSeleccionado(centroUtilidad);
                 self.traerBodegasUsuario(function() {
-                    self.traerBodegas(function() {
 
-                    });
                 });
             };
 
@@ -743,6 +693,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                         $scope.centroUtilidad = centroUtilidad;
 
                         $scope.confirmar = function() {
+                            $scope.rootUsuario.empresaSeleccionada.setCentroUtilidadSeleccionado(centroUtilidad);
                             self.deshabilitarBodegasUsuario(function() {
 
                             });
@@ -1182,9 +1133,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                             self.traerModulos(function() {
                                 self.traerRoles(function() {
                                     self.traerCentrosUtilidadUsuario(function() {
-                                        self.traerCentrosUtilidadEmpresa(function() {
 
-                                        });
                                     });
                                 });
                             });
@@ -1219,9 +1168,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                     self.traerUsuarioPorId(usuario_id, function() {
                         if ($scope.rootUsuario.empresaSeleccionada) {
                             self.traerCentrosUtilidadUsuario(function() {
-                                self.traerCentrosUtilidadEmpresa(function() {
 
-                                });
                             });
                         }
                     });

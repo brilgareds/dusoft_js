@@ -175,6 +175,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
              data: 'rootEditarProducto.producto.lotesSeleccionados',
              enableColumnResize: true,
              enableHighlighting: true,
+             enableRowSelection: false,
              selectedItems:[],
              columnDefs: [     
                 // {field: '', displayName: '', width:30, cellTemplate:'<input type="checkbox" ng-model="" />'},
@@ -206,23 +207,23 @@ define(["angular", "js/controllers",'models/ClientePedido',
                  }    
 
              ],
-             beforeSelectionChange:function(row, event){
+             afterSelectionChange:function(row, event){
                  /*console.log("row selected ", row);
                  console.log("beforeSelectionChange >>>>>>>>>>>>>" , "seleccionado ", row.selected, "selected real", !row.selected, " index ",row.rowIndex);
                  console.log("numero caja ", row.entity);*/
-                 
+               console.log(" lotes seleccionados >>>>>>>>>>>>>>>>>>",$scope.lotes_producto.selectedItems);
                var seleccionar = false;
                  
                 // console.log(row, "before selection ", event, row instanceof  Array);
-               if(!row.entity || row.entity.cantidad_ingresada === 0 || row.entity.numero_caja > 0){
+               /*if(!row.entity || row.entity.cantidad_ingresada === 0 || row.entity.numero_caja > 0){
                    seleccionar =  false;
-               }
+               }*/
                  
                seleccionar =  !row.selected;
                
-               console.log("seleccionar? ",seleccionar);
+               console.log("seleccionar?  >>>>>>>>>>>>>>>>>>>",seleccionar);
                return seleccionar;
-                /*/ console.log($scope.lotes_producto.selectedItems);
+                /*/ 
                  if($scope.esEventoPropagadoPorFila(event)){
                      return row.entity.seleccionado;
                  } else {
@@ -291,10 +292,11 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
              //eliminar el lote del temporal
              if(lote.cantidad_ingresada !== 0 && !lote.seleccionado || lote.numero_caja > 0){
-                 //row.selected = false;
+                 row.selected = false;
                  that.eliminiarLoteTemporal(lote);
              } else {
                  //agregar el lote al temporal
+                 row.selected = true;
                  that.agregarLoteAlTemporal(lote);
              }
 

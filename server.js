@@ -30,7 +30,19 @@ G.fs = require('fs-extra');
 G.xlsx = require('node-xlsx');
 G.path = path;
 G.accounting = accounting;
-G.jsreport = require("jsreport-client")(G.settings.reportsUrl);
+
+
+var reportUrl = G.settings.reportsUrl;
+//argumento del puerto
+
+if(process.argv.indexOf("-report") != -1){ 
+    reportUrl = process.argv[process.argv.indexOf("-report") + 1]; 
+    console.log(reportUrl);
+}
+
+
+
+G.jsreport = require("jsreport-client")(reportUrl);
 //G.thread = require('webworker-threads');
 
 /*=========================================

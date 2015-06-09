@@ -159,7 +159,7 @@
                     </div> 
                     <br>
                     <div class="" style="height: 350px" ng-grid="lista_productos" > </div>
-
+                    
                     </br>
 
                     <div class="row text-center">
@@ -170,11 +170,11 @@
                             <span class="glyphicon glyphicon-chevron-right" ></span>
                         </button>
                     </div>    
-                </div>
+                </div>                
                 <div class="modal-footer col-md-12">
-                    <button class="btn btn-default" ng-click="cancelar_orden_compra()">
+                    <button class="btn btn-default" ng-click="cancelar_recepcion()">
                         <span class="glyphicon glyphicon-remove" ></span> Cancelar</button>
-                    <button class="btn btn-default" ng-click="finalizar_orden_compra(true)" ng-disabled="vista_previa || numero_orden==0 || cantidad_productos_orden_compra==0" >
+                    <button class="btn btn-default" ng-disabled="deshabilitar_acciones() || !recepcion.continuar_finalizacion_recepcion()" ng-click="finalizar_recepcion_mercancia()">
                         <span class="glyphicon glyphicon-ok" ></span> Aceptar
                     </button>
                 </div>  

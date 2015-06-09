@@ -8,6 +8,8 @@ define(["angular", "js/models"], function(angular, models) {
             this.codigo = codigo || "";
             this.bodegas = [];
             this.estado = false;
+            this.empresaId = "";
+            this.nombreEmpresa = "";
             //this.clientes = []; 
             //this.proveedores = [];
         };
@@ -34,6 +36,22 @@ define(["angular", "js/models"], function(angular, models) {
 
         CentroUtilidad.prototype.getEstado = function() {
             return this.estado;
+        };
+        
+        CentroUtilidad.prototype.setEmpresaId = function(empresaId) {
+            this.empresaId = empresaId;
+        };
+
+        CentroUtilidad.prototype.getEmpresaId = function() {
+            return this.empresaId;
+        };
+        
+        CentroUtilidad.prototype.setNombreEmpresa = function(nombreEmpresa) {
+            this.nombreEmpresa = nombreEmpresa;
+        };
+
+        CentroUtilidad.prototype.getNombreEmpresa = function() {
+            return this.nombreEmpresa;
         };
         
         CentroUtilidad.prototype.agregarBodega = function(bodega) {

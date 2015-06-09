@@ -154,7 +154,6 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
 
                 Request.realizarRequest(URL.CONSTANTS.API.USUARIOS.OBTENER_PARAMETRIZACION_USUARIO, "POST", obj, function(data) {
                     var obj = data.obj.parametrizacion_usuarios;
-
                     if (obj) {
                         obj = obj.parametrizacion;
                         var modulos = obj.modulos || [];
@@ -177,16 +176,27 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
             self.asignarCentroUtilidadUsuario = function(centros) {
                 for (var i in centros) {
                     var centro = centros[i];
-                    var _centro = CentroUtilidad.get(centro.centro_utilidad_id, centro.descripcion);
-                    for (var ii in centro.bodegas) {
-                        var bodega = centro.bodegas[ii];
-                        var _bodega = Bodega.get(bodega.bodega_id, bodega.descripcion);
 
-                        _centro.agregarBodega(_bodega);
+                    if(centro.seleccionado_usuario === '1'){
+                        
+                        var _centro = CentroUtilidad.get(centro.centro_utilidad_id, centro.descripcion);
+                        _centro.setNombreEmpresa(centro.nombre_empresa);
+                        _centro.setEmpresaId(centro.empresa_id);
+                        for (var ii in centro.bodegas) {
+                            var bodega = centro.bodegas[ii];
+                            
+                           // console.log("usuario bodegas ******************************** ", bodega);
+                            if(bodega.seleccionado_usuario === '1'){
+                                var _bodega = Bodega.get(bodega.bodega_id, bodega.descripcion);
+
+                                _centro.agregarBodega(_bodega);
+                            }
+                        }
+                        //console.log("usuario ******************************** ", centro);
+                        $scope.Usuario.getEmpresa().agregarCentroUtilidad(_centro);
                     }
-
-                    $scope.Usuario.getEmpresa().agregarCentroUtilidad(_centro);
                 }
+                console.log("usuario ********************************code 2 ", $scope.Usuario.getEmpresa());
             };
             
             //se hace el set correspondiente para el plugin de jstree, y se crea un objeto valor de los modulos y opciones para facilidad de acceso del modulo actual
@@ -401,10 +411,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
 
                 self.traerParametrizacionPorUsuario(empresa_id, function(parametrizacion) {
 
-                    console.log("parametrizacion >>>>>>>>>>>>>", parametrizacion);
-
                     self.obtenerEmpresasUsuario(function() {
-                        console.log("usuario ", $scope.Usuario);
                         $rootScope.$emit("parametrizacionUsuarioLista", parametrizacion);
                     });
 

@@ -451,6 +451,9 @@ OrdenesCompraModel.prototype.listar_recepciones_mercancia = function(fecha_inici
                 a.contiene_medicamentos,\
                 a.contiene_dispositivos,\
                 a.estado,\
+                CASE WHEN a.estado = 0 THEN 'Anulada' \
+                     WHEN a.estado = 1 THEN 'Activa' \
+                     WHEN a.estado = 2 THEN 'Finalizada' END as descripcion_estado, \
                 to_char(a.fecha_recepcion,'dd-mm-yyyy') as fecha_recepcion,\
                 to_char(a.fecha_registro,'dd-mm-yyyy') as fecha_registro\
                 from recepcion_mercancia a\
@@ -459,7 +462,7 @@ OrdenesCompraModel.prototype.listar_recepciones_mercancia = function(fecha_inici
                 inner join terceros d on c.tipo_id_tercero = d.tipo_id_tercero and c.tercero_id=d.tercero_id\
                 inner join inv_transportadoras e on a.inv_transportador_id = e.transportadora_id \
                 left join novedades_recepcion_mercancia f on a.novedades_recepcion_id = f.id\
-                where a.fecha_registro between $1 and $2 and a.estado = '1' and \
+                where a.fecha_registro between $1 and $2 and \
                 (\
                     d.tercero_id ilike $3 or\
                     d.nombre_tercero ilike $3 or\
@@ -506,6 +509,9 @@ OrdenesCompraModel.prototype.consultar_recepcion_mercancia = function(recepcion_
                 a.contiene_medicamentos,\
                 a.contiene_dispositivos,\
                 a.estado,\
+                CASE WHEN a.estado = 0 THEN 'Anulada' \
+                     WHEN a.estado = 1 THEN 'Activa' \
+                     WHEN a.estado = 2 THEN 'Finalizada' END as descripcion_estado, \
                 to_char(a.fecha_recepcion,'dd-mm-yyyy') as fecha_recepcion,\
                 to_char(a.hora_recepcion,'HH24:MI:SS') as hora_recepcion,\
                 to_char(a.fecha_registro,'dd-mm-yyyy') as fecha_registro\
@@ -515,7 +521,7 @@ OrdenesCompraModel.prototype.consultar_recepcion_mercancia = function(recepcion_
                 inner join terceros d on c.tipo_id_tercero = d.tipo_id_tercero and c.tercero_id=d.tercero_id\
                 inner join inv_transportadoras e on a.inv_transportador_id = e.transportadora_id \
                 left join novedades_recepcion_mercancia f on a.novedades_recepcion_id = f.id\
-                where a.id = $1 and a.estado = '1' ;";
+                where a.id = $1 ;";
 
     G.db.query(sql, [recepcion_mercancia_id], function(err, rows, result, total_records) {
         callback(err, rows);
@@ -648,7 +654,9 @@ OrdenesCompraModel.prototype.listar_productos_recepcion_mercancia = function(rec
                 d.numero_unidades::integer as cantidad_solicitada,\
                 a.cantidad_recibida,\
                 a.novedades_recepcion_id,\
+                e.codigo as codigo_novedad,\
                 e.descripcion as descripcion_novedad,\
+                e.estado as estado_novedad,\
                 a.usuario_id,\
                 f.nombre as nombre_usuario,\
                 a.fecha_registro\
@@ -658,7 +666,7 @@ OrdenesCompraModel.prototype.listar_productos_recepcion_mercancia = function(rec
                 inner join compras_ordenes_pedidos_detalle d on c.orden_pedido_id = d.orden_pedido_id and a.codigo_producto = d.codigo_producto\
                 left join novedades_recepcion_mercancia e on a.novedades_recepcion_id = e.id\
                 inner join system_usuarios f on a.usuario_id = f.usuario_id\
-                where a.recepcion_mercancia_id = $1 and b.estado = '1' ;";
+                where a.recepcion_mercancia_id = $1 ;";
 
     G.db.query(sql, [recepcion_mercancia_id], function(err, rows, result, total_records) {
         callback(err, rows);
@@ -687,20 +695,41 @@ OrdenesCompraModel.prototype.insertar_productos_recepcion_mercancia = function(p
 
 
 // Modificar productos Recepcion mercancia
-OrdenesCompraModel.prototype.modificar_productos_recepcion_mercancia = function(producto_mercancia, callback) {
+OrdenesCompraModel.prototype.modificar_productos_recepcion_mercancia = function(recepcion_mercancia, producto_mercancia, callback) {
+
+    var validacion = __validar_campos_ingreso_producto(recepcion_mercancia, producto_mercancia);
+
+    if (!validacion.continuar) {
+        callback(validacion, null);
+        return;
+    }
+
+    if (producto_mercancia.novedad_recepcion === undefined || producto_mercancia.novedad_recepcion === '') {
+        producto_mercancia.novedad_recepcion = {id: null};
+    }
 
 
-    var sql = " update recepcion_mercancia_detalle set novedades_recepcion_id = $3 cantidad_recibida = $4 where  id = $1 and codigo_producto = $2 ; ";
+    var sql = " update recepcion_mercancia_detalle set novedades_recepcion_id = $3, cantidad_recibida = $4 where  recepcion_mercancia_id = $1 and codigo_producto = $2 ; ";
 
     var parametros = [
-        producto_mercancia.id,
+        recepcion_mercancia.numero_recepcion,
         producto_mercancia.codigo_producto,
-        producto_mercancia.recepcion_mercancia_id,
-        producto_mercancia.novedades_recepcion_id,
+        producto_mercancia.novedad_recepcion.id,
         producto_mercancia.cantidad_recibida
     ];
 
-    G.db.query(sql, [parametros], function(err, rows, result, total_records) {
+    G.db.query(sql, parametros, function(err, rows, result, total_records) {
+        callback(err, rows);
+    });
+};
+
+// Modificar productos Recepcion mercancia
+OrdenesCompraModel.prototype.finalizar_recepcion_mercancia = function(recepcion_mercancia_id, callback) {
+
+
+    var sql = " update recepcion_mercancia set estado = '2' where  id = $1 ; ";
+
+    G.db.query(sql, [recepcion_mercancia_id], function(err, rows, result, total_records) {
         callback(err, rows);
     });
 };
@@ -764,6 +793,40 @@ function __validar_campos_ingreso_recepcion(recepcion_mercancia) {
     if (recepcion_mercancia.fecha_ingreso === undefined || recepcion_mercancia.hora_ingreso === undefined) {
         continuar = false;
         msj = 'fecha_ingreso o hora_ingreso estan vacios';
+    }
+
+    return {continuar: continuar, msj: msj};
+}
+;
+
+function __validar_campos_ingreso_producto(recepcion, producto) {
+
+    var continuar = true;
+    var msj = '';
+
+    if (recepcion.numero_recepcion === undefined) {
+        continuar = false;
+        msj = 'numero_recepcion no estan definidas';
+    }
+
+    if (recepcion.numero_recepcion === '' || recepcion.numero_recepcion === 0 || recepcion.numero_recepcion === '0') {
+        continuar = false;
+        msj = 'numero_recepcion invalido';
+    }
+
+    if (producto.codigo_producto === undefined) {
+        continuar = false;
+        msj = 'codigo_producto no estan definidas';
+    }
+
+    if (producto.codigo_producto === '') {
+        continuar = false;
+        msj = 'codigo_producto esta vacio ';
+    }
+
+    if (producto.cantidad_recibida === undefined) {
+        continuar = false;
+        msj = 'cantidad_recibida esta vacio ';
     }
 
     return {continuar: continuar, msj: msj};

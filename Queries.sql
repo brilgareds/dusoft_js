@@ -1146,7 +1146,7 @@ ALTER TABLE "public"."recepcion_mercancia"
   ALTER COLUMN "estado" SET DEFAULT '1';
 
 COMMENT ON COLUMN "public"."recepcion_mercancia"."estado"
-IS 'Indica si la recepcion esta 0=> Inactiva 1=> activa';
+IS 'Indica si la recepcion esta 0=> Inactiva 1=> activa 2=> recepcion finalizada';
 
 ALTER TABLE "public"."recepcion_mercancia"
   ADD COLUMN "hora_recepcion" TIME WITHOUT TIME ZONE;

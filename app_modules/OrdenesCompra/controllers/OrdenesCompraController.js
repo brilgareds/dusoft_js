@@ -1219,27 +1219,66 @@ OrdenesCompra.prototype.modificarProductosRecepcionMercancia = function(req, res
 
     var args = req.body.data;
 
-    if (args.ordenes_compras === undefined || args.ordenes_compras.producto_mercancia === undefined) {
-        res.send(G.utils.r(req.url, 'producto_mercancia no esta definidas', 404, {}));
+    if (args.ordenes_compras === undefined || args.ordenes_compras.recepcion_mercancia === undefined || args.ordenes_compras.producto_mercancia === undefined) {
+        res.send(G.utils.r(req.url, 'recepcion_mercancia o producto_mercancia no esta definidas', 404, {}));
         return;
     }
 
-    if (args.ordenes_compras.producto_mercancia === '') {
+    if (args.ordenes_compras.recepcion_mercancia === '' || args.ordenes_compras.producto_mercancia === '') {
         res.send(G.utils.r(req.url, 'producto_mercancia esta vacias', 404, {}));
         return;
     }
 
+    var recepcion_mercancia = args.ordenes_compras.recepcion_mercancia;
     var producto_mercancia = args.ordenes_compras.producto_mercancia;
 
-    that.m_ordenes_compra.modificar_productos_recepcion_mercancia(producto_mercancia, function(err, productos) {
+    that.m_ordenes_compra.modificar_productos_recepcion_mercancia(recepcion_mercancia, producto_mercancia, function(err, result) {
 
-        if (err) {
+        if (err || result.rowCount === 0 ) {
+            
             var msj = (err.msj !== undefined) ? err.msj : '';
 
             res.send(G.utils.r(req.url, 'Error modificando productos a la recepcion ' + msj, 500, {ordenes_compras: []}));
             return;
         } else {
-            res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {ordenes_compras: productos}));
+            res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {ordenes_compras: {}}));
+            return;
+        }
+    });
+};
+
+// Finalizar recepcion de mercancia
+OrdenesCompra.prototype.finalizarRecepcionMercancia = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.ordenes_compras === undefined || args.ordenes_compras.recepcion_mercancia === undefined) {
+        res.send(G.utils.r(req.url, 'recepcion_mercancia  no esta definidas', 404, {}));
+        return;
+    }
+
+    if (args.ordenes_compras.recepcion_mercancia.numero_recepcion === undefined) {
+        res.send(G.utils.r(req.url, 'numero_recepcion no esta definido', 404, {}));
+        return;
+    }
+    
+    if (args.ordenes_compras.recepcion_mercancia.numero_recepcion === '' ) {
+        res.send(G.utils.r(req.url, 'numero_recepcion  esta vacias', 404, {}));
+        return;
+    }
+
+    var numero_recepcion = args.ordenes_compras.recepcion_mercancia.numero_recepcion;
+
+    that.m_ordenes_compra.finalizar_recepcion_mercancia(numero_recepcion, function(err, result) {
+
+        if (err || result.rowCount === 0 ) {          
+
+            res.send(G.utils.r(req.url, 'Error finalizando la recepcion ' , 500, {ordenes_compras: []}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Recepcion finalizada correctamente', 200, {ordenes_compras: {}}));
             return;
         }
     });

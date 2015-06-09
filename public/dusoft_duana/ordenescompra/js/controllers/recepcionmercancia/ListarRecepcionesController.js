@@ -100,7 +100,7 @@ define(["angular", "js/controllers",
 
                 recepciones.forEach(function(data) {
 
-                    var recepcion = Recepcion.get(data.empresa_id, data.id, data.fecha_registro);
+                    var recepcion = Recepcion.get(data.empresa_id, data.id, data.fecha_registro, data.estado);
                     var proveedor = Proveedor.get(data.tipo_id_tercero, data.tercero_id, data.codigo_proveedor_id, data.nombre_proveedor, data.direccion_proveedor, data.telefono_proveedor);
                     var transportadora = Transportadora.get(data.inv_transportador_id, data.nombre_transportadora, '', data.estado_transportadora);
                     var orden_compra = OrdenCompra.get(data.numero_orden);
@@ -114,6 +114,7 @@ define(["angular", "js/controllers",
                     recepcion.set_transportadora(transportadora);
                     recepcion.set_orden_compra(orden_compra);
                     recepcion.set_novedad(novedad_mercancia);
+                    recepcion.set_descripcion_estado(data.descripcion_estado);
 
                     $scope.Empresa.set_recepciones_mercancia(recepcion);
                 });
@@ -125,12 +126,13 @@ define(["angular", "js/controllers",
                 enableRowSelection: false,
                 columnDefs: [
                     {field: 'get_numero_guia()', displayName: '# Guía', width: "10%"},
-                    {field: 'get_transportadora().get_descripcion()', displayName: 'Transportador', width: "15%"},
-                    {field: 'get_proveedor().get_nombre()', displayName: 'Proveedor', width: "25%"},
+                    {field: 'get_transportadora().get_descripcion()', displayName: 'Transportador', width: "13%"},
+                    {field: 'get_proveedor().get_nombre()', displayName: 'Proveedor', width: "20%"},
                     {field: 'get_orden_compra().get_numero_orden()', displayName: "Orden Compra", width: "9%"},
                     {field: 'get_cantidad_cajas()', displayName: 'Cajas', width: "5%"},
                     {field: 'get_cantidad_neveras()', displayName: 'Neveras', width: "5%"},
                     {field: 'get_novedad().get_descripcion()', displayName: "Novedad", width: "15%"},
+                    {field: 'get_descripcion_estado()', displayName: "Estado", width: "5%"},
                     {field: 'get_fecha_registro()', displayName: "F. Registro", width: "9%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\

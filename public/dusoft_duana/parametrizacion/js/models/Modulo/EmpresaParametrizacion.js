@@ -23,12 +23,12 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             EmpresaParametrizacion.prototype.getListaEmpresas = function() {
                 return this.empresasModulos;
             };
-            
+
             EmpresaParametrizacion.prototype.agregarEmpresa = function(empresa_modulo) {
                 for (var i in this.empresasModulos) {
                     var empresa = this.empresasModulos[i];
                     if (empresa_modulo.getEmpresa().getCodigo() === empresa.getEmpresa().getCodigo()
-                        && empresa_modulo.getModulo().getId() === empresa.getModulo().getId()) {
+                            && empresa_modulo.getModulo().getId() === empresa.getModulo().getId()) {
                         this.empresasModulos[i] = empresa_modulo;
                         return;
                     }
@@ -38,34 +38,34 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             };
 
             EmpresaParametrizacion.prototype.setEstado = function(estado) {
-                this.estado =  estado;
+                this.estado = estado;
             };
-            
+
             EmpresaParametrizacion.prototype.getEstado = function() {
                 return this.estado;
             };
-            
+
             EmpresaParametrizacion.prototype.setLoginEmpresaId = function(login_empresa_id) {
-                this.login_empresa_id =  login_empresa_id;
+                this.login_empresa_id = login_empresa_id;
             };
-            
+
             EmpresaParametrizacion.prototype.getLoginEmpresaId = function() {
                 return this.login_empresa_id;
             };
-            
+
             EmpresaParametrizacion.prototype.setPredeterminado = function(predeterminada) {
                 this.predeterminada = Number(predeterminada);
             };
-            
+
             EmpresaParametrizacion.prototype.getPredeterminado = function() {
                 return this.predeterminada;
             };
-            
-            EmpresaParametrizacion.prototype.getRoles = function(){
+
+            EmpresaParametrizacion.prototype.getRoles = function() {
                 return this.roles;
             };
-            
-            EmpresaParametrizacion.prototype.vaciarRoles = function(){
+
+            EmpresaParametrizacion.prototype.vaciarRoles = function() {
                 this.roles = [];
             };
 
@@ -78,6 +78,18 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
                 }
 
                 this.roles.push(_rol);
+            };
+            
+            //@Override
+            EmpresaParametrizacion.prototype.agregarCentroUtilidad = function(centroUtilidad) {
+                for (var i in this.centrosUtilidad) {
+                    var _centroUtilidad = this.centrosUtilidad[i];
+                   /* if (_centroUtilidad.getCodigo() === centroUtilidad.getCodigo()) {
+                        return false;
+                    }*/
+                }
+
+                this.centrosUtilidad.push(centroUtilidad);
             };
 
             this.get = function(nombre, codigo, estado) {

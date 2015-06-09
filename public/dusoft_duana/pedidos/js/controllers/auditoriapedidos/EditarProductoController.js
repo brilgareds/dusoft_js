@@ -173,8 +173,10 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
         $scope.lotes_producto = {
              data: 'rootEditarProducto.producto.lotesSeleccionados',
-             enableColumnResize: true,
-             enableHighlighting: true,
+            // enableColumnResize: true,
+            // enableHighlighting: true,
+             enableRowSelection: true,
+             //rowTemplate: '<div ng-click="seleccionFilaLote(row)" ng-style="{ cursor: row.cursor }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" class="ngCell {{col.cellClass}}"><div class="ngVerticalBar" ng-style="{height: rowHeight}" ng-class="{ ngVerticalBarVisible: !$last }">&nbsp;</div><div ng-cell></div></div>',
              selectedItems:[],
              columnDefs: [     
                 // {field: '', displayName: '', width:30, cellTemplate:'<input type="checkbox" ng-model="" />'},
@@ -207,34 +209,18 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
              ],
              beforeSelectionChange:function(row, event){
-                 /*console.log("row selected ", row);
-                 console.log("beforeSelectionChange >>>>>>>>>>>>>" , "seleccionado ", row.selected, "selected real", !row.selected, " index ",row.rowIndex);
-                 console.log("numero caja ", row.entity);*/
                  
-               var seleccionar = false;
-                 
-                // console.log(row, "before selection ", event, row instanceof  Array);
-               if(!row.entity || row.entity.cantidad_ingresada === 0 || row.entity.numero_caja > 0){
-                   seleccionar =  false;
-               }
-                 
-               seleccionar =  !row.selected;
+                 console.log("row selected ", row.entity.seleccionado);
                
-               console.log("seleccionar? ",seleccionar);
-               return seleccionar;
-                /*/ console.log($scope.lotes_producto.selectedItems);
-                 if($scope.esEventoPropagadoPorFila(event)){
-                     return row.entity.seleccionado;
-                 } else {
-                     console.log("no row >>>>>>>>>>>>>>>>>>>>>>>>> ", row.entity.seleccionado);
+               if(!row.entity || row.entity.cantidad_ingresada === 0 || row.entity.numero_caja > 0 || !row.entity.seleccionado ){
+                   return false;
+               }
+               
+               return true;
 
-                     row.selected = false;
-                     return false;
-                 }*/
-             }
+           }
 
          };
-
 
 
          $scope.getClass = function(row){
@@ -291,7 +277,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
              //eliminar el lote del temporal
              if(lote.cantidad_ingresada !== 0 && !lote.seleccionado || lote.numero_caja > 0){
-                 //row.selected = false;
+                 row.selected = false;
                  that.eliminiarLoteTemporal(lote);
              } else {
                  //agregar el lote al temporal

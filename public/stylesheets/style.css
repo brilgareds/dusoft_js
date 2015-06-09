@@ -280,11 +280,11 @@ nav.navbar-default .navbar-nav>li>a:hover{
 }
 
 .ngCanvas .ngRow.even{
-    background-color: #f9f9f9;
+   /* background-color: #f9f9f9; ng-grid test*/
 }
 
 .ngCanvas .ngRow.odd{
-    background-color: white;
+ /*   background-color: white; ng-grid test*/
 }
 
 .navbar-content
@@ -308,7 +308,7 @@ nav.navbar-default .navbar-nav>li>a:hover{
 
 
 .ngGrid  .ngRow:hover{
-    background-color:#eee;
+    /*background-color:#eee; test*/
 }
 
 .ngGrid .ngViewport {
@@ -466,7 +466,7 @@ textarea {
 
 
 .ngRow.selected{
-    background-color: #c9dde1!important;
+    background-color: #c9dde1;
 }
 
 

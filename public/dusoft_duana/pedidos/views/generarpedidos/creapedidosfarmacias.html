@@ -283,7 +283,7 @@
                 <span class="glyphicon glyphicon-ok"></span> Guardar Temporal
             </button>
             <!--<button type="submit" ng-disabled="rootCreaPedidoFarmacia.bloqueo_generar_pedido" class="btn btn-dedault pull-right" ng-click="abrirViewVerPedidosFarmacias()" ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible == false"><span class="glyphicon glyphicon-ok"></span> Guardar Temporal</button>-->
-            <button type="submit" class="btn btn-default pull-right" ng-click="abrirViewVerPedidosFarmaciasEliminarTemporal()" ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible === false"><span class="glyphicon glyphicon-remove"></span> Cancelar Pedido</button>
+            <button type="submit" class="btn btn-default pull-right" ng-click="onEliminarPedidoTemporal()" ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible === false"><span class="glyphicon glyphicon-remove"></span> Cancelar Pedido</button>
             <button type="submit" class="btn btn-default pull-right" ng-click="abrirViewVerPedidosFarmacias()" ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible === true"><span class="glyphicon glyphicon-off"></span> Finalizar</button>
             <button type="submit" class="btn btn-default pull-right" ng-click="generarPdfPedidoFarmacia()" ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible === true"><span class="glyphicon glyphicon-file"></span> Generar PDF</button>
         </div>

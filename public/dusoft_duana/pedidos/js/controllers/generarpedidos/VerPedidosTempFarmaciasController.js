@@ -209,7 +209,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                         <ul class="dropdown-menu dropdown-options">\
                                             <li><a href="javascript:void(0);" ng-click="onEditarPedidoFarmaciaTemp(row.entity)">Modificar</a></li>\
                                             <li class="divider"></li>\
-                                            <li><a href="javascript:void(0);" ng-click="onEliminarPedidoFarmaciaTemp(row.entity.farmacia.farmacia_id, row.entity.farmacia.centro_utilidad_id, row.entity.farmacia.bodega_id, row.rowIndex)" >Eliminar</a></li>\
+                                            <li><a href="javascript:void(0);" ng-click="onEliminarPedidoTemporal(row.entity.farmacia.farmacia_id, row.entity.farmacia.centro_utilidad_id, row.entity.farmacia.bodega_id, row.rowIndex)" >Eliminar</a></li>\
                                         </ul>\n\
                                         </div>'
                         
@@ -255,7 +255,47 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $state.go('CreaPedidosFarmacias');
             };
             
-            $scope.onEliminarPedidoFarmaciaTemp = function(farmacia_id, centro_utilidad_id, bodega_id, index){
+            $scope.onEliminarPedidoTemporal = function(farmacia_id, centro_utilidad_id, bodega_id, index){
+
+                var template = '<div class="modal-header">\
+                                      <button type="button" class="close" ng-click="close()">&times;</button>\
+                                      <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                  </div>\
+                                  <div class="modal-body">\
+                                      <h4>Seguro desea eliminar el Pedido Temporal ? </h4> \
+                                  </div>\
+                                  <div class="modal-footer">\
+                                      <button class="btn btn-warning" ng-click="close()">No</button>\
+                                      <button class="btn btn-primary" ng-click="eliminarPedidoTemporal()">Si</button>\
+                                  </div>';
+
+                  controller = function($scope, $modalInstance) {
+
+                    $scope.eliminarPedidoTemporal = function() {
+
+                        that.onEliminarPedidoFarmaciaTemp(farmacia_id, centro_utilidad_id, bodega_id, index);
+                        $modalInstance.close();
+                    };
+
+                    $scope.close = function() {
+                        $modalInstance.close();
+                    };
+                  };
+
+                  $scope.opts = {
+                      backdrop: true,
+                      backdropClick: true,
+                      dialogFade: false,
+                      keyboard: true,
+                      template: template,
+                      scope: $scope,
+                      controller: controller
+                  };
+
+                  var modalInstance = $modal.open($scope.opts);  
+            };
+            
+            that.onEliminarPedidoFarmaciaTemp = function(farmacia_id, centro_utilidad_id, bodega_id, index){
 
                 //Eliminación Detalle Temporal
                 var obj_detalle = {

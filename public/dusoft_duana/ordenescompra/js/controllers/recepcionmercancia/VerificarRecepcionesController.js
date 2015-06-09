@@ -197,7 +197,7 @@ define(["angular", "js/controllers"
                     recepcion.set_fecha_ingreso(data.fecha_recepcion);
 
                     if (data.contiene_medicamentos === '1')
-                        recepcion.set_contiene_dispositivos();
+                        recepcion.set_contiene_medicamentos();
 
                     if (data.contiene_dispositivos === '1')
                         recepcion.set_contiene_dispositivos();

@@ -847,7 +847,7 @@ PedidosFarmacias.prototype.listar_productos = function(req, res) {
                                     var cantidad_reservada_cotizaciones = (total_reservado_cotizaciones.length > 0) ? total_reservado_cotizaciones[0].total_reservado : 0;
 
                                     var disponibilidad_bodega = producto.existencia - cantidad_total_pendiente_farmacias - cantidad_total_pendiente_clientes;
-                                           // - cantidad_reservada_temporales - cantidad_reservada_cotizaciones;
+                                            //- cantidad_reservada_temporales - cantidad_reservada_cotizaciones;
 
                                     producto.disponibilidad_bodega = (disponibilidad_bodega < 0) ? 0 : disponibilidad_bodega;
 

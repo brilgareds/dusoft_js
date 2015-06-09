@@ -2,9 +2,11 @@ define(["angular", "js/models"], function(angular, models) {
 
     models.factory('RecepcionMercancia', ["$filter", function($filter) {
 
-            function RecepcionMercancia(empresa_id, numero_recepcion, fecha_registro) {
+            function RecepcionMercancia(empresa_id, numero_recepcion, fecha_registro, estado) {
+
                 this.empresa_id = empresa_id || '';
                 this.numero_recepcion = numero_recepcion || '';
+                this.estado = estado || '';
                 this.orden_compra = '';
                 this.numero_guia = '';
                 this.numero_factura = '';
@@ -21,8 +23,8 @@ define(["angular", "js/models"], function(angular, models) {
                 this.fecha_registro = fecha_registro || '';
             }
 
-            this.get = function(empresa_id, numero_recepcion, fecha_registro) {
-                return new RecepcionMercancia(empresa_id, numero_recepcion, fecha_registro);
+            this.get = function(empresa_id, numero_recepcion, fecha_registro, estado) {
+                return new RecepcionMercancia(empresa_id, numero_recepcion, fecha_registro, estado);
             };
 
             RecepcionMercancia.prototype.set_numero_recepcion = function(numero_recepcion) {
@@ -86,9 +88,13 @@ define(["angular", "js/models"], function(angular, models) {
             RecepcionMercancia.prototype.set_fecha_ingreso = function(fecha_ingreso) {
                 this.fecha_ingreso = fecha_ingreso;
             };
-            
+
             RecepcionMercancia.prototype.set_fecha_registro = function(fecha_registro) {
                 this.fecha_registro = fecha_registro;
+            };
+
+            RecepcionMercancia.prototype.set_descripcion_estado = function(descripcion_estado) {
+                this.descripcion_estado = descripcion_estado;
             };
 
 
@@ -152,9 +158,17 @@ define(["angular", "js/models"], function(angular, models) {
             RecepcionMercancia.prototype.get_fecha_ingreso = function() {
                 return this.fecha_ingreso;
             };
-            
+
             RecepcionMercancia.prototype.get_fecha_registro = function() {
                 return this.fecha_registro;
+            };
+
+            RecepcionMercancia.prototype.get_estado = function() {
+                return this.estado;
+            };
+
+            RecepcionMercancia.prototype.get_descripcion_estado = function() {
+                return this.descripcion_estado;
             };
 
             RecepcionMercancia.prototype.validar_campos_ingreso = function() {
@@ -219,6 +233,20 @@ define(["angular", "js/models"], function(angular, models) {
 
 
                 return {continuar: continuar, msj: msj.join(', ')};
+            };
+
+            RecepcionMercancia.prototype.continuar_finalizacion_recepcion = function() {
+                
+                var total = 0;
+                
+                this.get_orden_compra().get_productos().forEach(function(producto) {
+                    total += producto.get_cantidad_recibida();
+                });
+
+                if (total > 0)
+                    return true;
+                else
+                    return false;
             };
 
             return this;

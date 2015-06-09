@@ -217,7 +217,7 @@ define(["angular", "js/controllers"
 
                     if (data.status === 200) {
                         recepcion.set_numero_recepcion(data.obj.ordenes_compras.numero_recepcion);
-                        $scope.datos_view.response = data;
+                        //$scope.datos_view.response = data;
                         callback(true);
                     } else {
                         callback(false);

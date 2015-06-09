@@ -28,7 +28,9 @@ define(["angular"], function(angular) {
                 'LISTAR_RECEPCIONES_MERCANCIA': BASE_URL + '/OrdenesCompra/listarRecepcionesMercancia',                
                 'CONSULTAR_RECEPCION_MERCANCIA': BASE_URL + '/OrdenesCompra/consultarRecepcionMercancia',                
                 'CONSULTAR_PRODUCTOS_RECEPCION_MERCANCIA': BASE_URL + '/OrdenesCompra/listarProductosRecepcionMercancia',                
-                'INGRESAR_RECEPCION_MERCANCIA': BASE_URL + '/OrdenesCompra/insertarRecepcionMercancia'                
+                'INGRESAR_RECEPCION_MERCANCIA': BASE_URL + '/OrdenesCompra/insertarRecepcionMercancia',                
+                'INGRESAR_PRODUCTOS_MERCANCIA': BASE_URL + '/OrdenesCompra/modificarProductosRecepcionMercancia',              
+                'FINALIZAR_RECEPCION': BASE_URL + '/OrdenesCompra/finalizarRecepcionMercancia'                
             },
             'PROVEEDORES': {
                 'LISTAR_PROVEEDORES': BASE_URL + '/Terceros/Proveedores/listar'

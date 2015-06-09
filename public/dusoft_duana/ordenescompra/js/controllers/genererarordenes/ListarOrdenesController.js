@@ -175,11 +175,11 @@ define(["angular", "js/controllers",
                 columnDefs: [
                     {field: 'numero_orden_compra', displayName: '# Orden', width: "5%"},
                     {field: 'proveedor.get_nombre()', displayName: 'Proveedor', width: "30%"},
-                    {field: 'proveedor.direccion', displayName: 'Ubicacion', width: "25%"},
-                    {field: 'proveedor.telefono', displayName: 'Telefono', width: "5%"},
-                    {field: 'fecha_registro', displayName: "F. Registro", width: "7%"},
                     {field: 'descripcion_estado', displayName: "Estado"},
                     {field: 'estado_digitacion', displayName: "Digitacion"},
+                    {field: 'fecha_registro', displayName: "F. Registro", width: "7%"},
+                    {field: 'fecha_registro', displayName: "F. Recibida", width: "7%"},
+                    {field: 'fecha_registro', displayName: "F. Ingreso", width: "7%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\

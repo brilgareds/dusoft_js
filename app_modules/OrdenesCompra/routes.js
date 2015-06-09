@@ -126,4 +126,9 @@ module.exports = function(app, di_container) {
     app.post('/api/OrdenesCompra/modificarProductosRecepcionMercancia', function(req, res) {
         c_ordenes_compra.modificarProductosRecepcionMercancia(req, res);
     });
+    
+    // Finalizar recepcion mercancia
+    app.post('/api/OrdenesCompra/finalizarRecepcionMercancia', function(req, res) {
+        c_ordenes_compra.finalizarRecepcionMercancia(req, res);
+    });
 };

@@ -181,6 +181,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                         
                         var _centro = CentroUtilidad.get(centro.centro_utilidad_id, centro.descripcion);
                         _centro.setNombreEmpresa(centro.nombre_empresa);
+                        _centro.setEmpresaId(centro.empresa_id);
                         for (var ii in centro.bodegas) {
                             var bodega = centro.bodegas[ii];
                             

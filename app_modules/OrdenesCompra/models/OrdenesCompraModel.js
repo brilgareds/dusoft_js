@@ -752,16 +752,17 @@ OrdenesCompraModel.prototype.modificar_productos_recepcion_mercancia = function(
 };
 
 // Modificar productos Recepcion mercancia
-OrdenesCompraModel.prototype.finalizar_recepcion_mercancia = function(recepcion_mercancia_id, callback) {
+OrdenesCompraModel.prototype.finalizar_recepcion_mercancia = function(recepcion, callback) {
 
-
+    var that = this;
+    
     var sql = " update recepcion_mercancia set estado = '2' where  id = $1 ; ";
 
-    G.db.query(sql, [recepcion_mercancia_id], function(err, rows, result, total_records) {
+    G.db.query(sql, [recepcion.numero_recepcion], function(err, rows, result, total_records) {
         
          var estado = '4'; // Verificada
         
-        that.actualizar_estado_orden_compra(recepcion_mercancia.orden_compra.numero_orden_compra, estado, function(_err, _rows,_result){
+        that.actualizar_estado_orden_compra(recepcion.orden_compra.numero_orden_compra, estado, function(_err, _rows,_result){
             
             callback(err, rows);
         });

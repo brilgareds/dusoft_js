@@ -1268,10 +1268,10 @@ OrdenesCompra.prototype.finalizarRecepcionMercancia = function(req, res) {
         res.send(G.utils.r(req.url, 'numero_recepcion  esta vacias', 404, {}));
         return;
     }
+    
+    var recepcion = args.ordenes_compras.recepcion_mercancia;
 
-    var numero_recepcion = args.ordenes_compras.recepcion_mercancia.numero_recepcion;
-
-    that.m_ordenes_compra.finalizar_recepcion_mercancia(numero_recepcion, function(err, result) {
+    that.m_ordenes_compra.finalizar_recepcion_mercancia(recepcion, function(err, result) {
 
         if (err || result.rowCount === 0 ) {          
 

@@ -755,6 +755,7 @@ OrdenesCompraModel.prototype.modificar_productos_recepcion_mercancia = function(
 OrdenesCompraModel.prototype.finalizar_recepcion_mercancia = function(recepcion, callback) {
 
     var that = this;
+    console.log(recepcion);
     
     var sql = " update recepcion_mercancia set estado = '2' where  id = $1 ; ";
 

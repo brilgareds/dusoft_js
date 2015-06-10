@@ -19,9 +19,11 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
                 c.direccion as direccion_proveedor,\
                 c.telefono as telefono_proveedor,\
                 a.estado,\
-                CASE WHEN a.estado = 0 THEN 'Recibida' \
+                CASE WHEN a.estado = 0 THEN 'Ingresada en bodega' \
                      WHEN a.estado = 1 THEN 'Activa' \
-                     WHEN a.estado = 2 THEN 'Anulado' END as descripcion_estado, \
+                     WHEN a.estado = 2 THEN 'Anulado' \
+                     WHEN a.estado = 3 THEN 'Recibida' \
+                     WHEN a.estado = 4 THEN 'Verificada' END as descripcion_estado, \
                 a.sw_orden_compra_finalizada,\
                 CASE WHEN a.sw_orden_compra_finalizada = '0' THEN 'En Proceso ...' \
                      WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion, \
@@ -251,6 +253,8 @@ OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_or
         callback(err, rows);
     });
 };
+
+
 // Ingresar Cabecera Orden de Compra
 OrdenesCompraModel.prototype.insertar_orden_compra = function(unidad_negocio, codigo_proveedor, empresa_id, observacion, usuario_id, callback) {
 
@@ -261,15 +265,23 @@ OrdenesCompraModel.prototype.insertar_orden_compra = function(unidad_negocio, co
         callback(err, rows, result);
     });
 };
+
 // Modificar Orden de Compra
-OrdenesCompraModel.prototype.modificar_orden_compra = function(numero_orden, callback) {
+OrdenesCompraModel.prototype.actualizar_estado_orden_compra = function(numero_orden, estado, callback) {
 
+    // Estados Orden de Compra
+    // 0 => Ingresada en Bodega
+    // 1 => Activa
+    // 2 => Anulada
+    // 3 => Recibida
+    // 4 => Verificada
 
-    var sql = "  ";
-    G.db.query(sql, [numero_orden], function(err, rows, result, total_records) {
-        callback(err, rows);
+    var sql = " UPDATE compras_ordenes_pedidos SET estado = $2 WHERE orden_pedido_id = $1  ";
+    G.db.query(sql, [numero_orden, estado], function(err, rows, result) {
+        callback(err, rows, result);
     });
 };
+
 // Modificar unidad de negocio de una Orden de Compra
 OrdenesCompraModel.prototype.modificar_unidad_negocio = function(numero_orden, unidad_negocio, callback) {
 
@@ -279,6 +291,7 @@ OrdenesCompraModel.prototype.modificar_unidad_negocio = function(numero_orden, u
         callback(err, rows, result);
     });
 };
+
 // Modificar unidad de negocio de una Orden de Compra
 OrdenesCompraModel.prototype.modificar_observacion = function(numero_orden, observacion, callback) {
 
@@ -288,7 +301,8 @@ OrdenesCompraModel.prototype.modificar_observacion = function(numero_orden, obse
         callback(err, rows, result);
     });
 };
-// Eliminar Orden de Compra
+
+// Anular Orden de Compra
 OrdenesCompraModel.prototype.anular_orden_compra = function(numero_orden, callback) {
 
 
@@ -297,6 +311,7 @@ OrdenesCompraModel.prototype.anular_orden_compra = function(numero_orden, callba
         callback(err, rows);
     });
 };
+
 // Ingresar Detalle Orden de Compra
 OrdenesCompraModel.prototype.insertar_detalle_orden_compra = function(numero_orden, codigo_producto, cantidad_solicitada, valor, iva, callback) {
 
@@ -307,6 +322,7 @@ OrdenesCompraModel.prototype.insertar_detalle_orden_compra = function(numero_ord
         callback(err, rows, result);
     });
 };
+
 // Modificar Detalle Orden de Compra
 OrdenesCompraModel.prototype.modificar_detalle_orden_compra = function(numero_orden, callback) {
 
@@ -316,6 +332,7 @@ OrdenesCompraModel.prototype.modificar_detalle_orden_compra = function(numero_or
         callback(err, rows);
     });
 };
+
 // Eliminar Detalle Orden de Compra
 OrdenesCompraModel.prototype.eliminar_detalle_orden_compra = function(numero_orden, callback) {
 
@@ -325,6 +342,7 @@ OrdenesCompraModel.prototype.eliminar_detalle_orden_compra = function(numero_ord
         callback(err, rows);
     });
 };
+
 // Eliminar producto Orden de Compra
 OrdenesCompraModel.prototype.eliminar_producto_orden_compra = function(numero_orden, codigo_producto, callback) {
 
@@ -334,6 +352,7 @@ OrdenesCompraModel.prototype.eliminar_producto_orden_compra = function(numero_or
         callback(err, rows, result);
     });
 };
+
 // Listar Las Ordenes de Compra Pendientes con ese producto
 OrdenesCompraModel.prototype.listar_ordenes_compra_pendientes_by_producto = function(empresa_id, codigo_producto, callback) {
 
@@ -359,6 +378,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_pendientes_by_producto = func
         callback(err, rows);
     });
 };
+
 // Finaliza la Orden de Compra
 OrdenesCompraModel.prototype.finalizar_orden_compra = function(numero_orden, orden_compra_finalizada, callback) {
 
@@ -532,6 +552,8 @@ OrdenesCompraModel.prototype.consultar_recepcion_mercancia = function(recepcion_
 // Insertar Recepcion mercancia
 OrdenesCompraModel.prototype.insertar_recepcion_mercancia = function(recepcion_mercancia, callback) {
 
+    var that = this;
+
     var validacion = __validar_campos_ingreso_recepcion(recepcion_mercancia);
 
     if (!validacion.continuar) {
@@ -590,7 +612,13 @@ OrdenesCompraModel.prototype.insertar_recepcion_mercancia = function(recepcion_m
     ];
 
     G.db.query(sql, parametros, function(err, rows, result, total_records) {
-        callback(err, rows);
+        
+        var estado = '3'; // Recibida
+        
+        that.actualizar_estado_orden_compra(recepcion_mercancia.orden_compra.numero_orden_compra, estado, function(_err, _rows,_result){
+            
+            callback(err, rows);
+        });
     });
 };
 
@@ -730,7 +758,13 @@ OrdenesCompraModel.prototype.finalizar_recepcion_mercancia = function(recepcion_
     var sql = " update recepcion_mercancia set estado = '2' where  id = $1 ; ";
 
     G.db.query(sql, [recepcion_mercancia_id], function(err, rows, result, total_records) {
-        callback(err, rows);
+        
+         var estado = '4'; // Verificada
+        
+        that.actualizar_estado_orden_compra(recepcion_mercancia.orden_compra.numero_orden_compra, estado, function(_err, _rows,_result){
+            
+            callback(err, rows);
+        });
     });
 };
 

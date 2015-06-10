@@ -169,7 +169,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         {field: 'ubicacion', displayName: 'Ubicación'},
                         {field: 'direccion', displayName: 'Dirección'},
                         {field: 'telefono', displayName: 'Teléfono', width: "11%"},
-                        {field: 'contrato_vigente', displayName: 'Contrato Vigente', width: "11%"},
+                        {field: 'contrato_vigente', displayName: 'Contrato Vigente', width: "11%", visible: false}, 
                         {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "8%",
                         cellTemplate: ' <div class="row">\n\
                                             <button ng-if="row.entity.contrato_id != 0 && row.entity.estado_contrato == 1 && row.entity.contrato_vigente == true" class="btn btn-default btn-xs" ng-click="onSeleccionarCliente(row)">\n\

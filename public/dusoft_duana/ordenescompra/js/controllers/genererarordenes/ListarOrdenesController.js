@@ -257,12 +257,17 @@ define(["angular", "js/controllers",
                 // Opcion => 1 = Novedades
 
 
-                if (orden_compra.get_estado() === '0' || orden_compra.get_estado() === '2' || orden_compra.get_ingreso_temporal()) {
+                if (orden_compra.get_estado() === '0' || orden_compra.get_estado() === '2' || orden_compra.get_estado() === '3' || 
+                        orden_compra.get_estado() === '4' || orden_compra.get_ingreso_temporal()) {
 
                     if (orden_compra.get_estado() === '0')
                         $scope.mensaje_sistema = "La Orden de Compra [ OC #" + orden_compra.get_numero_orden() + " ] ya fue Ingresada en bodega";
                     else if (orden_compra.get_estado() === '2')
                         $scope.mensaje_sistema = "La Orden de Compra [ OC #" + orden_compra.get_numero_orden() + " ] está anulada.";
+                    else if (orden_compra.get_estado() === '3')
+                        $scope.mensaje_sistema = "La Orden de Compra [ OC #" + orden_compra.get_numero_orden() + " ] ya fue recibida en bodega.";
+                    else if (orden_compra.get_estado() === '4')
+                        $scope.mensaje_sistema = "La Orden de Compra [ OC #" + orden_compra.get_numero_orden() + " ] ya fue verificada.";
                     else if (orden_compra.get_ingreso_temporal())
                         $scope.mensaje_sistema = "La Orden de Compra [ OC #" + orden_compra.get_numero_orden() + " ] esta siendo Ingresa en Bodega";
 

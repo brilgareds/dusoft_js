@@ -66,7 +66,7 @@ OrdenesCompra.prototype.listarOrdenesCompraProveedor = function(req, res) {
         res.send(G.utils.r(req.url, 'codigo_proveedor_id no estan definidas', 404, {}));
         return;
     }
-   
+
     if (args.ordenes_compras.codigo_proveedor_id === '') {
         res.send(G.utils.r(req.url, 'codigo_proveedor_id estan vacias', 404, {}));
         return;
@@ -1010,7 +1010,7 @@ OrdenesCompra.prototype.listarRecepcionesMercancia = function(req, res) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
             return;
         } else {
-            res.send(G.utils.r(req.url, 'Lista Recepciones Mercancia', 200, {ordenes_compras: {recepciones_mercancia : lista_recepciones_mercancia}}));
+            res.send(G.utils.r(req.url, 'Lista Recepciones Mercancia', 200, {ordenes_compras: {recepciones_mercancia: lista_recepciones_mercancia}}));
             return;
         }
     });
@@ -1042,7 +1042,7 @@ OrdenesCompra.prototype.consultarRecepcionMercancia = function(req, res) {
             res.send(G.utils.r(req.url, 'Error consultando la recepcion', 500, {ordenes_compras: []}));
             return;
         } else {
-            res.send(G.utils.r(req.url, 'Recepcion Mercancia', 200, {ordenes_compras: {recepcion_mercancia:recepcion_mercancia}}));
+            res.send(G.utils.r(req.url, 'Recepcion Mercancia', 200, {ordenes_compras: {recepcion_mercancia: recepcion_mercancia}}));
             return;
         }
     });
@@ -1068,7 +1068,7 @@ OrdenesCompra.prototype.insertarRecepcionMercancia = function(req, res) {
     var recepcion_mercancia = args.ordenes_compras.recepcion_mercancia;
     var usuario_id = req.session.user.usuario_id;
     recepcion_mercancia.usuario_id = usuario_id;
-    
+
     that.m_ordenes_compra.insertar_recepcion_mercancia(recepcion_mercancia, function(err, response) {
 
         if (err || response.length === 0) {
@@ -1092,13 +1092,13 @@ OrdenesCompra.prototype.insertarRecepcionMercancia = function(req, res) {
                     lista_productos.forEach(function(_producto) {
 
                         var producto = {
-                            recepcion_mercancia_id : numero_recepcion,
-                            novedades_recepcion_id : null,
-                            codigo_producto : _producto.codigo_producto,
-                            cantidad_recibida : 0,
-                            usuario_id : usuario_id
+                            recepcion_mercancia_id: numero_recepcion,
+                            novedades_recepcion_id: null,
+                            codigo_producto: _producto.codigo_producto,
+                            cantidad_recibida: 0,
+                            usuario_id: usuario_id
                         };
-                        
+
                         that.m_ordenes_compra.insertar_productos_recepcion_mercancia(producto, function(err) {
 
                             if (--i === 0) {
@@ -1168,11 +1168,11 @@ OrdenesCompra.prototype.listarProductosRecepcionMercancia = function(req, res) {
 
     that.m_ordenes_compra.listar_productos_recepcion_mercancia(recepcion_id, function(err, productos) {
 
-        if (err) {            
+        if (err) {
             res.send(G.utils.r(req.url, 'Error listando productos de la recepcion ', 500, {ordenes_compras: []}));
             return;
         } else {
-            res.send(G.utils.r(req.url, 'lista de productos', 200, {ordenes_compras: {recepcion_mercancia : productos} }));
+            res.send(G.utils.r(req.url, 'lista de productos', 200, {ordenes_compras: {recepcion_mercancia: productos}}));
             return;
         }
     });
@@ -1234,8 +1234,8 @@ OrdenesCompra.prototype.modificarProductosRecepcionMercancia = function(req, res
 
     that.m_ordenes_compra.modificar_productos_recepcion_mercancia(recepcion_mercancia, producto_mercancia, function(err, result) {
 
-        if (err || result.rowCount === 0 ) {
-            
+        if (err || result.rowCount === 0) {
+
             var msj = (err.msj !== undefined) ? err.msj : '';
 
             res.send(G.utils.r(req.url, 'Error modificando productos a la recepcion ' + msj, 500, {ordenes_compras: []}));
@@ -1263,19 +1263,19 @@ OrdenesCompra.prototype.finalizarRecepcionMercancia = function(req, res) {
         res.send(G.utils.r(req.url, 'numero_recepcion no esta definido', 404, {}));
         return;
     }
-    
-    if (args.ordenes_compras.recepcion_mercancia.numero_recepcion === '' ) {
+
+    if (args.ordenes_compras.recepcion_mercancia.numero_recepcion === '') {
         res.send(G.utils.r(req.url, 'numero_recepcion  esta vacias', 404, {}));
         return;
     }
 
-    var numero_recepcion = args.ordenes_compras.recepcion_mercancia.numero_recepcion;
+    var recepcion = args.ordenes_compras.recepcion_mercancia;
 
-    that.m_ordenes_compra.finalizar_recepcion_mercancia(numero_recepcion, function(err, result) {
+    that.m_ordenes_compra.finalizar_recepcion_mercancia(recepcion, function(err, result) {
 
-        if (err || result.rowCount === 0 ) {          
+        if (err || result.rowCount === 0) {
 
-            res.send(G.utils.r(req.url, 'Error finalizando la recepcion ' , 500, {ordenes_compras: []}));
+            res.send(G.utils.r(req.url, 'Error finalizando la recepcion ', 500, {ordenes_compras: []}));
             return;
         } else {
             res.send(G.utils.r(req.url, 'Recepcion finalizada correctamente', 200, {ordenes_compras: {}}));
@@ -1432,7 +1432,34 @@ function __validar_costo_productos_archivo_plano(contexto, empresa_id, codigo_pr
 
 
 function _generar_reporte_orden_compra(rows, callback) {
-    G.jsreport.reporter.render({
+    /*G.jsreport.reporter.render({
+     template: {
+     content: G.fs.readFileSync('app_modules/OrdenesCompra/reports/orden_compra.html', 'utf8'),
+     helpers: G.fs.readFileSync('app_modules/OrdenesCompra/reports/javascripts/helpers.js', 'utf8'),
+     recipe: "phantom-pdf",
+     engine: 'jsrender'
+     },
+     data: {
+     style: G.dirname + "/public/stylesheets/bootstrap.min.css",
+     orden_compra: rows.orden_compra,
+     lista_productos: rows.lista_productos,
+     fecha_actual: new Date().toFormat('DD/MM/YYYY HH24:MI:SS'),
+     usuario_imprime: rows.usuario_imprime
+     }
+     }).then(function(response) {
+     
+     var nombre_archivo = response.result.path;
+     var fecha_actual = new Date();
+     var nombre_reporte = G.random.randomKey(2, 5) + "_" + fecha_actual.toFormat('DD-MM-YYYY') + ".pdf";
+     G.fs.copySync(nombre_archivo, G.dirname + "/public/reports/" + nombre_reporte);
+     
+     callback(nombre_reporte);
+     });*/
+
+    console.log('=== Here ====');
+    console.log(rows);
+
+    G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/OrdenesCompra/reports/orden_compra.html', 'utf8'),
             helpers: G.fs.readFileSync('app_modules/OrdenesCompra/reports/javascripts/helpers.js', 'utf8'),
@@ -1446,15 +1473,30 @@ function _generar_reporte_orden_compra(rows, callback) {
             fecha_actual: new Date().toFormat('DD/MM/YYYY HH24:MI:SS'),
             usuario_imprime: rows.usuario_imprime
         }
-    }).then(function(response) {
+    }, function(err, response) {
 
-        var nombre_archivo = response.result.path;
-        var fecha_actual = new Date();
-        var nombre_reporte = G.random.randomKey(2, 5) + "_" + fecha_actual.toFormat('DD-MM-YYYY') + ".pdf";
-        G.fs.copySync(nombre_archivo, G.dirname + "/public/reports/" + nombre_reporte);
+        console.log(err, response);
 
-        callback(nombre_reporte);
-    });
+        response.body(function(body) {
+
+            var nombre_archivo = response.result.path;
+            var fecha_actual = new Date();
+            var nombre_reporte = G.random.randomKey(2, 5) + "_" + fecha_actual.toFormat('DD-MM-YYYY') + ".pdf";
+
+            G.fs.writeFile(G.dirname + "/public/reports/" + nombre_reporte, body, "binary", function(err) {
+                
+                console.log('=== Here ====');
+                console.log(err, nombre_reporte);
+
+                if (err) {
+                    console.log(err);
+                } else {
+                    callback(nombre_reporte);
+                }
+            });
+
+        });
+    });   
 }
 
 function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, subject, message, callback) {

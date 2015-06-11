@@ -923,6 +923,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 enableCellSelection: false,
+                enableHighlighting: true,
                 multiSelect: false,
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Código', width: "9%"},
@@ -954,6 +955,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 enableCellSelection: false,
+                enableHighlighting: true,
                 multiSelect: false,
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Código', width: "9%",
@@ -1005,27 +1007,27 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
             /*GRID EJEMPLO - INICIO*/
             //Grid Pedidos Farmacias
-            $scope.rootCreaPedidoFarmacia.lista_productos = {
-                data: 'rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().lista_productos',
-                enableColumnResize: true,
-                enableRowSelection: false,
-                multiSelect: false,
-                columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Código', width: "9%",
-                        cellTemplate : '<div class="ngCellText" ng-class="col.colIndex()">\
-                                            <span class="label label-success" ng-show="row.entity.tipo_producto_id == 1" >N</span>\
-                                            <span class="label label-danger" ng-show="row.entity.tipo_producto_id == 2">A</span>\
-                                            <span class="label label-warning" ng-show="row.entity.tipo_producto_id == 3">C</span>\
-                                            <span class="label label-primary" ng-show="row.entity.tipo_producto_id == 4">I</span>\
-                                            <span class="label label-info" ng-show="row.entity.tipo_producto_id == 5">Ne</span>\
-                                            <span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\
-                                        </div>'
-                    },
-                    {field: 'descripcion', displayName: 'Descripción', width: "37%"},
-                    {field: 'cantidad_solicitada', displayName: 'Solicitado'},
-                    {field: 'cantidad_pendiente', displayName: 'Pendiente'}
-                ]
-            };
+//            $scope.rootCreaPedidoFarmacia.lista_productos = {
+//                data: 'rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().lista_productos',
+//                enableColumnResize: true,
+//                enableRowSelection: false,
+//                multiSelect: false,
+//                columnDefs: [
+//                    {field: 'codigo_producto', displayName: 'Código', width: "9%",
+//                        cellTemplate : '<div class="ngCellText" ng-class="col.colIndex()">\
+//                                            <span class="label label-success" ng-show="row.entity.tipo_producto_id == 1" >N</span>\
+//                                            <span class="label label-danger" ng-show="row.entity.tipo_producto_id == 2">A</span>\
+//                                            <span class="label label-warning" ng-show="row.entity.tipo_producto_id == 3">C</span>\
+//                                            <span class="label label-primary" ng-show="row.entity.tipo_producto_id == 4">I</span>\
+//                                            <span class="label label-info" ng-show="row.entity.tipo_producto_id == 5">Ne</span>\
+//                                            <span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\
+//                                        </div>'
+//                    },
+//                    {field: 'descripcion', displayName: 'Descripción', width: "37%"},
+//                    {field: 'cantidad_solicitada', displayName: 'Solicitado'},
+//                    {field: 'cantidad_pendiente', displayName: 'Pendiente'}
+//                ]
+//            };
             /*GRID EJEMPLO - FIN*/
             
             $scope.onTeclaModificarCantidad = function(ev, row) {

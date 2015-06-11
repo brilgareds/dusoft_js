@@ -1552,6 +1552,8 @@ PedidosCliente.prototype.imprimirCotizacionCliente = function(req, res) {
         });
     }
 
+    args.serverUrl = req.protocol + '://' + req.get('host')+ "/";
+    
     _generarDocumentoCotizacion(that, args, function(nombreTmp, estado_mail) {
 
         if (estado_mail !== undefined) {
@@ -1724,6 +1726,8 @@ PedidosCliente.prototype.imprimirPedidoCliente = function(req, res) {
         });
     }
 
+    args.serverUrl = req.protocol + '://' + req.get('host')+ "/";
+    
     _generarDocumentoPedido(that, args, function(nombreTmp, estado_mail) {
 
         if (estado_mail !== undefined) {
@@ -1768,7 +1772,58 @@ PedidosCliente.prototype.imprimirPedidoCliente = function(req, res) {
 };
 
 function _generarDocumentoPedido(that, obj, callback) {
-    G.jsreport.reporter.render({
+    
+    
+    G.jsreport.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/PedidosClientes/reports/pedido.html', 'utf8'),
+            //helpers: G.fs.readFileSync('app_modules/PedidosFarmacias/reports/javascripts/rotulos.js', 'utf8'),
+            recipe: "phantom-pdf",
+            engine: 'jsrender'
+        },
+        data: obj
+    }, function(err, response) { 
+                
+        response.body(function(body) {
+           var fecha = new Date();
+           var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
+           var rutaArchivo = G.dirname + "/public/reports/" + nombreTmp;
+           
+           G.fs.writeFile(rutaArchivo, body,  "binary",function(err) {
+               
+                if(err) {
+                    console.log(err);
+                } else {
+                    //callback(nombreTmp);
+                    
+                    if (obj.encabezado_pedido_cliente.email === true) {
+                         var nombre_archivo = "Pedido No" + obj.encabezado_pedido_cliente.numero_pedido + ".pdf";
+                         var destinatario = obj.encabezado_pedido_cliente.destinatarios;
+                         //var subject = "Dusoft :: Pedido DUANA y Cia Ltda.";
+                         var asunto = obj.encabezado_pedido_cliente.asunto;
+                         var contenido = obj.encabezado_pedido_cliente.contenido;
+
+                         __emailDocumento(that, destinatario, rutaArchivo, nombre_archivo, asunto, contenido, function(mail_exitoso) {
+
+                             callback(nombreTmp, mail_exitoso);
+                             return;
+                         });
+                     }
+                     else {
+                         callback(nombreTmp);
+                         return;
+                     }                    
+                    
+                }
+                
+            });
+                
+            
+        });
+        
+        
+    });
+    /*G.jsreport.reporter.render({
         template: {
             content: G.fs.readFileSync('app_modules/PedidosClientes/reports/pedido.html', 'utf8'),
             //helpers: G.fs.readFileSync('app_modules/PedidosFarmacias/reports/javascripts/rotulos.js', 'utf8'),
@@ -1802,7 +1857,7 @@ function _generarDocumentoPedido(that, obj, callback) {
         }
 
         //callback(nombreTmp);
-    });
+    });*/
 }
 ;
 

@@ -1206,10 +1206,18 @@ IS 'Usuario que ingresa el registro';
 
 
 
-
+/* =================== Agregar campo fecha a la tabla temporal de pedidos farmacias ============*/
 
 ALTER TABLE "public"."solicitud_pro_a_bod_prpal_tmp"
   ADD COLUMN "fecha_registro" TIMESTAMP(1) WITHOUT TIME ZONE;
 
 ALTER TABLE "public"."solicitud_pro_a_bod_prpal_tmp"
   ALTER COLUMN "fecha_registro" SET DEFAULT now();
+
+
+/* =================== Agregar campo fecha verificado a la tabla de ordenes de compra ============*/
+ALTER TABLE "public"."compras_ordenes_pedidos"
+  ADD COLUMN "fecha_verificado" DATE;
+
+COMMENT ON COLUMN "public"."compras_ordenes_pedidos"."fecha_verificado"
+IS 'Fecha en que se verifica la recepcion de la orden de compra';

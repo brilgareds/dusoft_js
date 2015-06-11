@@ -65,7 +65,7 @@ define(["angular", "js/controllers",
                 orden_compra_seleccionada: OrdenCompra.get()
             };
 
-            var estados = ["btn btn-primary btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs",  "btn btn-info btn-xs"];
+            var estados = ["btn btn-primary btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-info btn-xs"];
 
 
             $scope.buscar_ordenes_compras = function(termino, paginando) {
@@ -143,24 +143,29 @@ define(["angular", "js/controllers",
 
                 ordenes_compras.forEach(function(orden) {
 
-                    var orden_compra = OrdenCompra.get(orden.numero_orden, orden.estado, orden.observacion, orden.fecha_registro);
-
-
-                    orden_compra.set_proveedor(Proveedor.get(orden.tipo_id_proveedor, orden.nit_proveedor, orden.codigo_proveedor_id, orden.nombre_proveedor, orden.direccion_proveedor, orden.telefono_proveedor));
-
-                    orden_compra.set_unidad_negocio(UnidadNegocio.get(orden.codigo_unidad_negocio, orden.descripcion_unidad_negocio, orden.imagen));
-
-                    orden_compra.set_usuario(Usuario.get(orden.usuario_id, orden.nombre_usuario));
-
-                    orden_compra.set_descripcion_estado(orden.descripcion_estado);
-
-                    orden_compra.set_ingreso_temporal(orden.tiene_ingreso_temporal);
-
-                    orden_compra.set_estado_digitacion(orden.sw_orden_compra_finalizada, orden.estado_digitacion);
-
-                    $scope.Empresa.set_ordenes_compras(orden_compra);
-
+                    $scope.Empresa.set_ordenes_compras(that.render_orden_compra(orden));
                 });
+            };
+
+            that.render_orden_compra = function(orden) {
+
+                var orden_compra = OrdenCompra.get(orden.numero_orden, orden.estado, orden.observacion, orden.fecha_registro);
+
+                orden_compra.set_proveedor(Proveedor.get(orden.tipo_id_proveedor, orden.nit_proveedor, orden.codigo_proveedor_id, orden.nombre_proveedor, orden.direccion_proveedor, orden.telefono_proveedor));
+
+                orden_compra.set_unidad_negocio(UnidadNegocio.get(orden.codigo_unidad_negocio, orden.descripcion_unidad_negocio, orden.imagen));
+
+                orden_compra.set_usuario(Usuario.get(orden.usuario_id, orden.nombre_usuario));
+
+                orden_compra.set_descripcion_estado(orden.descripcion_estado);
+
+                orden_compra.set_ingreso_temporal(orden.tiene_ingreso_temporal);
+
+                orden_compra.set_estado_digitacion(orden.sw_orden_compra_finalizada, orden.estado_digitacion);
+                
+                orden_compra.set_fechas_recepcion(orden.fecha_recibido, orden.fecha_verificado);
+
+                return orden_compra;
             };
 
             $scope.buscador_ordenes_compras = function(ev, termino_busqueda) {
@@ -181,8 +186,9 @@ define(["angular", "js/controllers",
                         cellTemplate: "<button type='button' ng-class='agregar_clase_btn(row.entity.estado)'>{{row.entity.descripcion_estado}} </button>", width: "220"},
                     {field: 'estado_digitacion', displayName: "Digitacion"},
                     {field: 'fecha_registro', displayName: "F. Registro", width: "7%"},
-                    {field: 'fecha_registro', displayName: "F. Recibida", width: "7%"},
-                    {field: 'fecha_registro', displayName: "F. Ingreso", width: "7%"},
+                    {field: 'fecha_recibido', displayName: "F. Recibida", width: "7%"},
+                    {field: 'fecha_verificacion', displayName: "F. Verificacion", width: "7%"},
+                    {field: 'fecha_ingreso', displayName: "F. Ingreso", width: "7%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
@@ -200,7 +206,7 @@ define(["angular", "js/controllers",
                     }
                 ]
             };
-            
+
             // Agregar Clase de acuerdo al estado del pedido
             $scope.agregar_clase_btn = function(estado) {
 
@@ -257,7 +263,7 @@ define(["angular", "js/controllers",
                 // Opcion => 1 = Novedades
 
 
-                if (orden_compra.get_estado() === '0' || orden_compra.get_estado() === '2' || orden_compra.get_estado() === '3' || 
+                if (orden_compra.get_estado() === '0' || orden_compra.get_estado() === '2' || orden_compra.get_estado() === '3' ||
                         orden_compra.get_estado() === '4' || orden_compra.get_ingreso_temporal()) {
 
                     if (orden_compra.get_estado() === '0')
@@ -317,26 +323,34 @@ define(["angular", "js/controllers",
 
                 $scope.orden_compra_seleccionada = orden_compra;
 
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        ordenes_compras: {
-                            numero_orden: $scope.orden_compra_seleccionada.get_numero_orden()
+                if (orden_compra.get_sw_estado_digitacion() === '1') {
+
+                    var obj = {
+                        session: $scope.session,
+                        data: {
+                            ordenes_compras: {
+                                numero_orden: $scope.orden_compra_seleccionada.get_numero_orden()
+                            }
                         }
-                    }
-                };
+                    };
 
-                Request.realizarRequest(API.ORDENES_COMPRA.REPORTE_ORDEN_COMPRA, "POST", obj, function(data) {
+                    Request.realizarRequest(API.ORDENES_COMPRA.REPORTE_ORDEN_COMPRA, "POST", obj, function(data) {
 
-                    if (data.status === 200) {
-                        var nombre_reporte = data.obj.ordenes_compras.nombre_reporte;
-                        console.log("reporte generado", nombre_reporte)
-                        $scope.visualizarReporte("/reports/" + nombre_reporte, "OrdenCompra" + $scope.orden_compra_seleccionada.get_numero_orden(), "blank");
-                    } else {
+                        if (data.status === 200) {
+                            var nombre_reporte = data.obj.ordenes_compras.nombre_reporte;
 
-                    }
-                });
+                            $scope.visualizarReporte("/reports/" + nombre_reporte, "OrdenCompra" + $scope.orden_compra_seleccionada.get_numero_orden(), "blank");
+                        } else {
+
+                        }
+                    });
+
+                } else {
+                    AlertService.mostrarMensaje("warning", "La ordend de compra No. " + orden_compra.get_numero_orden() + " no ha sido finalizada!!.");
+                    return;
+                }
             };
+
 
             $scope.ventana_enviar_email = function(orden_compra) {
 
@@ -493,6 +507,30 @@ define(["angular", "js/controllers",
                 var modalInstance = $modal.open($scope.opts);
 
             };
+
+            socket.on("onListarOrdenesCompras", function(datos) {
+
+                if (datos.status === 200) {
+                    
+                    var datos = datos.obj.ordenes_compras[0];
+                    
+                    var orden_compra = that.render_orden_compra(datos);
+
+                    for (var i in $scope.Empresa.get_ordenes_compras()) {
+
+                        var orden = $scope.Empresa.get_ordenes_compras()[i];
+
+                        if (orden.numero_orden_compra === orden_compra.numero_orden_compra) {
+                            $scope.Empresa.get_ordenes_compras()[i].set_estado(orden_compra.estado);
+                            $scope.Empresa.get_ordenes_compras()[i].set_descripcion_estado(orden_compra.descripcion_estado);
+                            $scope.Empresa.get_ordenes_compras()[i].set_fechas_recepcion(orden_compra.fecha_recibido, orden_compra.fecha_verificacion);
+                            break;
+                        }
+                    }
+
+                    AlertService.mostrarMensaje("success", "Orden Compra Actualizada");                    
+                }
+            });
 
             $scope.buscar_ordenes_compras();
 

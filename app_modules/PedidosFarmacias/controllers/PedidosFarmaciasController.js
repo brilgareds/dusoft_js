@@ -1842,8 +1842,8 @@ PedidosFarmacias.prototype.imprimirPedidoFarmacia = function(req, res) {
 
     var args = req.body.data;
 
-    console.log(">>>>Antes del encabezado");
-    console.log(">>>> Args: ", args);
+    //console.log(">>>>Antes del encabezado");
+    //console.log(">>>> Args: ", args);
 
     if (args.encabezado_pedido_farmacia === undefined || args.encabezado_pedido_farmacia.numero_pedido === undefined || args.encabezado_pedido_farmacia.empresa_origen_id === undefined) {
         res.send(G.utils.r(req.url, 'numero_pedido o empresa_origen_id no están definidos', 404, {}));
@@ -1905,7 +1905,7 @@ PedidosFarmacias.prototype.imprimirPedidoFarmacia = function(req, res) {
         
         args.detalle_pedido_farmacia.forEach(function(producto) {
 
-            console.log(">>>>>>>>>>>>>>>Leyendo elementos producto");
+            //console.log(">>>>>>>>>>>>>>>Leyendo elementos producto");
 
             if (producto.codigo_producto === undefined || producto.descripcion === undefined) {
                 res.send(G.utils.r(req.url, 'codigo_producto o descripcion no están definidos', 404, {}));
@@ -1950,7 +1950,7 @@ PedidosFarmacias.prototype.imprimirPedidoFarmacia = function(req, res) {
 
                         producto.disponibilidad_bodega = (disponibilidad_bodega < 0) ? 0 : disponibilidad_bodega;
                         
-                        console.log(">>>>> DISPONIBILIDAD: ", producto.disponibilidad_bodega);
+                        //console.log(">>>>> DISPONIBILIDAD: ", producto.disponibilidad_bodega);
 
 
                         if (--i === 0) {
@@ -1961,8 +1961,16 @@ PedidosFarmacias.prototype.imprimirPedidoFarmacia = function(req, res) {
                             }
                             else
                             {
-                                res.send(G.utils.r(req.url, 'Listado de Productos', 200, {lista_productos: lista_productos}));
-                                return;
+//                                res.send(G.utils.r(req.url, 'Listado de Productos', 200, {lista_productos: lista_productos}));
+//                                return;
+                                args.serverUrl = req.protocol + '://' + req.get('host')+ "/";
+                                
+                                console.log(">>>> ARGS antes _generarDocumentoPedido: ",args);
+
+                                _generarDocumentoPedido(args, function(nombreTmp) {
+                                    res.send(G.utils.r(req.url, 'Url reporte pedido', 200, {reporte_pedido: {nombre_reporte: nombreTmp}}));
+                                    return;
+                                });
                             }
                         }
 
@@ -2024,6 +2032,9 @@ PedidosFarmacias.prototype.imprimirPedidoFarmacia = function(req, res) {
 };
 
 function _generarDocumentoPedido(obj, callback) {
+    
+    console.log(">>> OBJ - ARGS: ". obj);
+    //return;
      
     G.jsreport.render({
         template: {

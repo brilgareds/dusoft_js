@@ -1203,3 +1203,13 @@ IS 'Fecha en que se registra el producto';
 
 COMMENT ON COLUMN "public"."recepcion_mercancia_detalle"."usuario_id"
 IS 'Usuario que ingresa el registro';
+
+
+
+
+
+ALTER TABLE "public"."solicitud_pro_a_bod_prpal_tmp"
+  ADD COLUMN "fecha_registro" TIMESTAMP(1) WITHOUT TIME ZONE;
+
+ALTER TABLE "public"."solicitud_pro_a_bod_prpal_tmp"
+  ALTER COLUMN "fecha_registro" SET DEFAULT now();

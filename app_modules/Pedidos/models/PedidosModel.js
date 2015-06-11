@@ -17,6 +17,7 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
     var cantidad_despachos = 0;
     var cantidad_despachada = 0;
     var disponible_bodega = 0;
+    var cantidad_reservada_temporales = 0;
 
 
 
@@ -29,55 +30,74 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
 
                 var fecha_registro_pedido = datos.fecha_registro_pedido;
 
+
                 consultar_cantidad_total_pendiente_producto(empresa_id, codigo_producto, fecha_registro_pedido, function(err, cantidad_total) {
 
                     cantidad_total_pendiente = (cantidad_total.length === 1) ? cantidad_total[0].cantidad_total_pendiente : 0;
 
-                    // Se consulta el detalle del pedido
-                    that.m_pedidos_farmacias.consultar_detalle_pedido(numero_pedido, function(err, detalle_pedido) {
 
-                        // Se extrae del pedido, el codigo seleccionado para conocer la cantidad que 
-                        //ha sido despachada hasta el momento
-                        var producto = detalle_pedido.filter(function(el) {
-                            return el.codigo_producto === codigo_producto;
+                    //cantidad reservada para cotizaciones
+                    that.m_pedidos_farmacias.calcular_cantidad_reservada_temporales_farmacias_por_fecha(codigo_producto, fecha_registro_pedido, function(err, total_reservado_temporales) {
+
+                        var cantidad_temporal_farmacia = (total_reservado_temporales.length > 0) ? total_reservado_temporales[0].total_reservado : 0;
+
+
+                        that.m_pedidos_clientes.calcular_cantidad_reservada_cotizaciones_clientes_por_fecha(codigo_producto, fecha_registro_pedido, function(err, total_reservado_cotizaciones) {
+
+                            var cantidad_temporal_clientes = (total_reservado_cotizaciones.length > 0) ? total_reservado_cotizaciones[0].total_reservado : 0;
+
+
+                            cantidad_reservada_temporales = cantidad_temporal_farmacia + cantidad_temporal_clientes;
+                            // Se consulta el detalle del pedido
+                            that.m_pedidos_farmacias.consultar_detalle_pedido(numero_pedido, function(err, detalle_pedido) {
+
+                                // Se extrae del pedido, el codigo seleccionado para conocer la cantidad que 
+                                //ha sido despachada hasta el momento
+                                var producto = detalle_pedido.filter(function(el) {
+                                    return el.codigo_producto === codigo_producto;
+                                });
+
+                                cantidad_despachada = 0;
+                                cantidad_despachos = 0;
+
+                                if (producto.length > 0) {
+                                    for (var i in producto) {
+                                        cantidad_despachada = parseInt(producto[i].cantidad_despachada_real);
+                                        cantidad_despachos += parseInt(producto[i].cantidad_temporalmente_separada);
+                                    }
+                                }
+
+                                cantidad_despachada = cantidad_despachada + cantidad_despachos;
+
+                                // se consulta el total de existencias del producto seleccionado
+                                that.m_productos.consultar_stock_producto(empresa_id, codigo_producto, function(err, stock_producto) {
+
+                                    stock = (stock_producto.length === 1) ? stock_producto[0].existencia : 0;
+
+                                    // Se aplica la Formula de Disponibilidad producto
+                                    disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - cantidad_reservada_temporales;
+
+                                    console.log('============ Here =================');
+                                    console.log("codigo producto ", codigo_producto);
+                                    console.log('stock', stock);
+                                    console.log("cantidad_total_pendiente ", cantidad_total_pendiente);
+                                    console.log('cantidad_despachada', cantidad_despachada);
+                                    console.log('disponible_bodega', disponible_bodega);
+                                    console.log('fecha_registro', fecha_registro_pedido);
+                                    console.log('===================================');
+
+                                    disponible_bodega = (disponible_bodega < 0) ? 0 : disponible_bodega;
+                                    disponible_bodega = (disponible_bodega > stock) ? stock : disponible_bodega;
+
+                                    callback(err, {codigo_producto: codigo_producto, disponible_bodega: disponible_bodega});
+                                });
+                            });
+
                         });
 
-                        cantidad_despachada = 0;
-                        cantidad_despachos = 0;
-
-                        if (producto.length > 0) {
-                            for (var i in producto) {
-                                cantidad_despachada = parseInt(producto[i].cantidad_despachada_real);
-                                cantidad_despachos += parseInt(producto[i].cantidad_temporalmente_separada);
-                            }
-                        }
-
-                        cantidad_despachada = cantidad_despachada + cantidad_despachos;
-
-                        // se consulta el total de existencias del producto seleccionado
-                        that.m_productos.consultar_stock_producto(empresa_id, codigo_producto, function(err, stock_producto) {
-
-                            stock = (stock_producto.length === 1) ? stock_producto[0].existencia : 0;
-
-                            // Se aplica la Formula de Disponibilidad producto
-                            disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada);
-
-                            console.log('============ Here =================');
-                            console.log("codigo producto ", codigo_producto);
-                            console.log('stock', stock);
-                            console.log("cantidad_total_pendiente ", cantidad_total_pendiente);                            
-                            console.log('cantidad_despachada', cantidad_despachada);
-                            console.log('disponible_bodega', disponible_bodega);
-                            console.log('fecha_registro', fecha_registro_pedido);
-                            console.log('===================================');
-
-                            disponible_bodega = (disponible_bodega < 0) ? 0 : disponible_bodega;
-                            disponible_bodega = (disponible_bodega > stock) ? stock : disponible_bodega;
-
-                            callback(err, {codigo_producto: codigo_producto, disponible_bodega: disponible_bodega});                            
-                        });
                     });
-                });                
+
+                });
             });
         });
     } else {
@@ -94,50 +114,67 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
 
                     cantidad_total_pendiente = (cantidad_total.length === 1) ? cantidad_total[0].cantidad_total_pendiente : 0;
 
-                    // Se consulta el detalle del pedido
-                    that.m_pedidos_clientes.consultar_detalle_pedido(numero_pedido, function(err, detalle_pedido) {
 
-                        // Se extrae del pedido, el codigo seleccionado para conocer la cantidad que 
-                        //ha sido despachada hasta el momento
-                        var producto = detalle_pedido.filter(function(el) {
-                            return el.codigo_producto === codigo_producto;
+
+                    that.m_pedidos_farmacias.calcular_cantidad_reservada_temporales_farmacias_por_fecha(codigo_producto, fecha_registro_pedido, function(err, total_reservado_temporales) {
+
+                        var cantidad_temporal_farmacia = (total_reservado_temporales.length > 0) ? total_reservado_temporales[0].total_reservado : 0;
+
+                        that.m_pedidos_clientes.calcular_cantidad_reservada_cotizaciones_clientes_por_fecha(codigo_producto, fecha_registro_pedido,  function(err, total_reservado_cotizaciones) {
+
+                            var cantidad_temporal_clientes = (total_reservado_cotizaciones.length > 0) ? total_reservado_cotizaciones[0].total_reservado : 0;
+
+                            cantidad_reservada_temporales = cantidad_temporal_farmacia + cantidad_temporal_clientes;
+
+                            // Se consulta el detalle del pedido
+                            that.m_pedidos_clientes.consultar_detalle_pedido(numero_pedido, function(err, detalle_pedido) {
+
+                                // Se extrae del pedido, el codigo seleccionado para conocer la cantidad que 
+                                //ha sido despachada hasta el momento
+                                var producto = detalle_pedido.filter(function(el) {
+                                    return el.codigo_producto === codigo_producto;
+                                });
+
+                                //cantidad_despachada = (producto.length === 1) ? producto[0].cantidad_despachada : 0;
+                                cantidad_despachada = 0;
+                                if (producto.length > 0) {
+                                    for (var i in producto) {
+                                        cantidad_despachada += producto[i].cantidad_despachada;
+                                    }
+                                }
+
+                                // se consulta el total de existencias del producto seleccionado
+                                that.m_productos.consultar_stock_producto(empresa_id, codigo_producto, function(err, stock_producto) {
+
+                                    stock = (stock_producto.length === 1) ? stock_producto[0].existencia : 0;
+
+                                    // Se aplica la Formula de Disponibilidad producto
+                                    disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - cantidad_reservada_temporales;
+
+                                    disponible_bodega = (disponible_bodega < 0) ? 0 : disponible_bodega;
+                                    disponible_bodega = (disponible_bodega > stock) ? stock : disponible_bodega;
+
+
+                                    console.log('============ Here =================');
+                                    console.log("codigo producto ", codigo_producto);
+                                    console.log('stock', stock);
+                                    console.log("cantidad_total_pendiente ", cantidad_total_pendiente);
+                                    console.log('cantidad_despachada', cantidad_despachada);
+                                    console.log('fecha_registro', fecha_registro_pedido);
+                                    console.log('disponible_bodega', disponible_bodega);
+                                    console.log("cantidad_reservada_temporales", cantidad_reservada_temporales);
+                                    console.log('===================================');
+                                    
+                                    callback(err, {codigo_producto: codigo_producto, disponible_bodega: disponible_bodega});
+
+                                });
+
+                            });
+
                         });
-
-                        //cantidad_despachada = (producto.length === 1) ? producto[0].cantidad_despachada : 0;
-                        cantidad_despachada = 0;
-                        if (producto.length > 0) {
-                            for (var i in producto) {
-                                cantidad_despachada += producto[i].cantidad_despachada;
-                            }
-                        }
-
-                        // se consulta el total de existencias del producto seleccionado
-                        that.m_productos.consultar_stock_producto(empresa_id, codigo_producto, function(err, stock_producto) {
-
-                            stock = (stock_producto.length === 1) ? stock_producto[0].existencia : 0;
-
-                            // Se aplica la Formula de Disponibilidad producto
-                            disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada);
-                            
-                            disponible_bodega = (disponible_bodega < 0) ? 0 : disponible_bodega;
-                            disponible_bodega = (disponible_bodega > stock) ? stock : disponible_bodega;
-
-
-                            console.log('============ Here =================');
-                            console.log("codigo producto ", codigo_producto);
-                            console.log('stock', stock);
-                            console.log("cantidad_total_pendiente ", cantidad_total_pendiente);                           
-                            console.log('cantidad_despachada', cantidad_despachada);
-                            console.log('fecha_registro', fecha_registro_pedido);
-                            console.log('disponible_bodega', disponible_bodega);
-                            console.log('===================================');
-
-                            callback(err, {codigo_producto: codigo_producto, disponible_bodega: disponible_bodega});
-
-                        });
-
                     });
-                });                
+
+                });
             });
         });
     }

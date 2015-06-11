@@ -706,6 +706,24 @@ PedidosClienteModel.prototype.calcular_cantidad_reservada_cotizaciones_clientes 
 };
 
 
+// Autor:      : Alexander López
+// Descripcion : Calcula la cantidad TOTAL de un producto que está reservada en cotizaciones de Clientes
+// Calls       : PedidosFarmacias -> PedidosFarmaciasController -> listar_productos(); PedidosClientes -> PedidosClienteController -> listarProductosClientes();
+//               
+
+PedidosClienteModel.prototype.calcular_cantidad_reservada_cotizaciones_clientes_por_fecha = function(codigo_producto, fecha_registro_pedido, callback) {
+
+    var sql = " SELECT b.codigo_producto, sum(b.numero_unidades) as total_reservado from ventas_ordenes_pedidos_tmp a\
+                INNER JOIN ventas_ordenes_pedidos_d_tmp b on b.pedido_cliente_id_tmp = a.pedido_cliente_id_tmp\
+                WHERE b.codigo_producto = $1 and a.estado = '1' AND fecha_registro < $2\
+                GROUP BY b.codigo_producto";
+
+    G.db.query(sql, [codigo_producto, fecha_registro_pedido], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+
 // lista todos los responsables del pedido
 PedidosClienteModel.prototype.obtener_responsables_del_pedido = function(numero_pedido, callback) {
 

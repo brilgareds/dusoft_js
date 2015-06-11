@@ -902,6 +902,23 @@ PedidosFarmaciasModel.prototype.calcular_cantidad_reservada_temporales_farmacias
     });
 };
 
+
+// Autor:      : Eduar Garcia
+// Descripcion : Calcula la cantidad TOTAL de un producto que está reservada en pedidos temporales de Farmacia por fecha de registro
+// Calls       : Pedidos -> PedidosModel -> calcular_disponibilidad_producto();
+//               
+
+PedidosFarmaciasModel.prototype.calcular_cantidad_reservada_temporales_farmacias_por_fecha = function(codigo_producto, fecha_registro_pedido, callback) {
+    
+    var sql = " select codigo_producto, SUM(cantidad_solic) as total_reservado from solicitud_pro_a_bod_prpal_tmp where codigo_producto = $1\
+                and fecha_registro < $2\
+                group by codigo_producto "; 
+    
+    G.db.query(sql, [codigo_producto, fecha_registro_pedido], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
 /**
  * @api {sql} actualizar_cantidad_pendiente_en_solicitud Pedidos farmacias model
  * @apiName Pedidos Farmacias

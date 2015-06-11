@@ -1961,8 +1961,13 @@ PedidosFarmacias.prototype.imprimirPedidoFarmacia = function(req, res) {
                             }
                             else
                             {
-                                res.send(G.utils.r(req.url, 'Listado de Productos', 200, {lista_productos: lista_productos}));
-                                return;
+//                                res.send(G.utils.r(req.url, 'Listado de Productos', 200, {lista_productos: lista_productos}));
+//                                return;
+
+                                _generarDocumentoPedido(args, function(nombreTmp) {
+                                    res.send(G.utils.r(req.url, 'Url reporte pedido', 200, {reporte_pedido: {nombre_reporte: nombreTmp}}));
+                                    return;
+                                });
                             }
                         }
 

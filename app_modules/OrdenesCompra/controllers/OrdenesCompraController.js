@@ -1492,9 +1492,6 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
 
     smtpTransport.sendMail(settings, function(error, response) {
         
-        console.log('=============== ENVIAR CORREO ===========')
-        console.log(error, response);
-        
         if (error) {
             callback(false);
             return;

@@ -1,11 +1,11 @@
 
-var OrdenesCompra = function(ordenes_compras, productos, emails) {
+var OrdenesCompra = function(ordenes_compras, productos, eventos_ordenes_compras, emails) {
 
     console.log("Modulo Ordenes Compra  Cargado ");
 
     this.m_ordenes_compra = ordenes_compras;
     this.m_productos = productos;
-
+    this.e_ordenes_compra = eventos_ordenes_compras;
     this.emails = emails;
 };
 
@@ -873,7 +873,7 @@ OrdenesCompra.prototype.reporteOrdenCompra = function(req, res) {
 
                     var orden = orden_compra[0];
 
-                    _generar_reporte_orden_compra({orden_compra: orden, lista_productos: lista_productos, usuario_imprime: req.session.user.nombre_usuario, serverUrl : req.protocol + '://' + req.get('host')+ "/"}, function(nombre_reporte) {
+                    _generar_reporte_orden_compra({orden_compra: orden, lista_productos: lista_productos, usuario_imprime: req.session.user.nombre_usuario, serverUrl: req.protocol + '://' + req.get('host') + "/"}, function(nombre_reporte) {
 
                         if (enviar_email) {
 
@@ -1078,6 +1078,10 @@ OrdenesCompra.prototype.insertarRecepcionMercancia = function(req, res) {
             return;
         } else {
 
+            // Notificacion Real Time de las Ordenes que fueron actualizadas
+            var numero_orden = recepcion_mercancia.orden_compra.numero_orden_compra;
+            that.e_ordenes_compra.onNotificarOrdenesComprasActualizados({numero_orden: numero_orden});
+
             //Insertar productos de la OC a la Recepcion de la Mercancia
             that.m_ordenes_compra.consultar_detalle_orden_compra(recepcion_mercancia.orden_compra.numero_orden_compra, '', '', function(err, lista_productos) {
 
@@ -1270,6 +1274,7 @@ OrdenesCompra.prototype.finalizarRecepcionMercancia = function(req, res) {
     }
 
     var recepcion = args.ordenes_compras.recepcion_mercancia;
+    var numero_orden = recepcion.orden_compra.numero_orden_compra;
 
     that.m_ordenes_compra.finalizar_recepcion_mercancia(recepcion, function(err, result) {
 
@@ -1278,6 +1283,10 @@ OrdenesCompra.prototype.finalizarRecepcionMercancia = function(req, res) {
             res.send(G.utils.r(req.url, 'Error finalizando la recepcion ', 500, {ordenes_compras: []}));
             return;
         } else {
+
+            // Notificacion Real Time de las Ordenes que fueron actualizadas
+            that.e_ordenes_compra.onNotificarOrdenesComprasActualizados({numero_orden: numero_orden});
+
             res.send(G.utils.r(req.url, 'Recepcion finalizada correctamente', 200, {ordenes_compras: {}}));
             return;
         }
@@ -1432,32 +1441,6 @@ function __validar_costo_productos_archivo_plano(contexto, empresa_id, codigo_pr
 
 
 function _generar_reporte_orden_compra(rows, callback) {
-    /*G.jsreport.reporter.render({
-     template: {
-     content: G.fs.readFileSync('app_modules/OrdenesCompra/reports/orden_compra.html', 'utf8'),
-     helpers: G.fs.readFileSync('app_modules/OrdenesCompra/reports/javascripts/helpers.js', 'utf8'),
-     recipe: "phantom-pdf",
-     engine: 'jsrender'
-     },
-     data: {
-     style: G.dirname + "/public/stylesheets/bootstrap.min.css",
-     orden_compra: rows.orden_compra,
-     lista_productos: rows.lista_productos,
-     fecha_actual: new Date().toFormat('DD/MM/YYYY HH24:MI:SS'),
-     usuario_imprime: rows.usuario_imprime
-     }
-     }).then(function(response) {
-     
-     var nombre_archivo = response.result.path;
-     var fecha_actual = new Date();
-     var nombre_reporte = G.random.randomKey(2, 5) + "_" + fecha_actual.toFormat('DD-MM-YYYY') + ".pdf";
-     G.fs.copySync(nombre_archivo, G.dirname + "/public/reports/" + nombre_reporte);
-     
-     callback(nombre_reporte);
-     });*/
-
-    console.log('=== Here ====');
-    console.log(rows);
 
     G.jsreport.render({
         template: {
@@ -1472,34 +1455,32 @@ function _generar_reporte_orden_compra(rows, callback) {
             lista_productos: rows.lista_productos,
             fecha_actual: new Date().toFormat('DD/MM/YYYY HH24:MI:SS'),
             usuario_imprime: rows.usuario_imprime,
-            serverUrl : rows.serverUrl
+            serverUrl: rows.serverUrl
         }
     }, function(err, response) {
 
-        console.log(err, response);
-
         response.body(function(body) {
 
-           // var nombre_archivo = response.result.path;
             var fecha_actual = new Date();
             var nombre_reporte = G.random.randomKey(2, 5) + "_" + fecha_actual.toFormat('DD-MM-YYYY') + ".pdf";
 
             G.fs.writeFile(G.dirname + "/public/reports/" + nombre_reporte, body, "binary", function(err) {
-                
+
                 if (err) {
-                    console.log(err);
+                    console.log('=== Se ha generado un error generando el reporte ====');
                 } else {
                     callback(nombre_reporte);
                 }
             });
 
         });
-    });   
+    });
 }
 
 function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, subject, message, callback) {
 
-    var smtpTransport = that.emails.createTransport();
+    //var smtpTransport = that.emails.createTransport();
+    var smtpTransport = that.emails.createTransport('direct', { debug: true });
 
     var settings = {
         from: G.settings.email_sender,
@@ -1510,7 +1491,10 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
     };
 
     smtpTransport.sendMail(settings, function(error, response) {
-
+        
+        console.log('=============== ENVIAR CORREO ===========')
+        console.log(error, response);
+        
         if (error) {
             callback(false);
             return;
@@ -1523,6 +1507,6 @@ function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, sub
 }
 ;
 
-OrdenesCompra.$inject = ["m_ordenes_compra", "m_productos", "emails"];
+OrdenesCompra.$inject = ["m_ordenes_compra", "m_productos", "e_ordenes_compra", "emails"];
 
 module.exports = OrdenesCompra;

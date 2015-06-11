@@ -22,8 +22,8 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
                 CASE WHEN a.estado = 0 THEN 'Ingresada en bodega' \
                      WHEN a.estado = 1 THEN 'Activa' \
                      WHEN a.estado = 2 THEN 'Anulado' \
-                     WHEN a.estado = 3 THEN 'Recibida' \
-                     WHEN a.estado = 4 THEN 'Verificada' END as descripcion_estado, \
+                     WHEN a.estado = 3 THEN 'Recibida en bodega' \
+                     WHEN a.estado = 4 THEN 'Verificada en bodega' END as descripcion_estado, \
                 a.sw_orden_compra_finalizada,\
                 CASE WHEN a.sw_orden_compra_finalizada = '0' THEN 'En Proceso ...' \
                      WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion, \
@@ -34,6 +34,8 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
                 a.usuario_id,\
                 e.nombre as nombre_usuario,\
                 To_char(a.fecha_orden,'dd-mm-yyyy') as fecha_registro,\
+                coalesce(To_char(a.fecha_recibido,'dd-mm-yyyy'),'') as fecha_recibido,\
+                coalesce(To_char(a.fecha_verificado,'dd-mm-yyyy'),'') as fecha_verificado,\
                 CASE WHEN COALESCE (g.orden_pedido_id,0)=0 then 0 else 1 end as tiene_ingreso_temporal \
                 FROM compras_ordenes_pedidos a\
                 inner join terceros_proveedores b on a.codigo_proveedor_id = b.codigo_proveedor_id\
@@ -74,9 +76,11 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(codigo_p
                 c.direccion as direccion_proveedor,\
                 c.telefono as telefono_proveedor,\
                 a.estado,\
-                CASE WHEN a.estado = 0 THEN 'Recibida' \
+                CASE WHEN a.estado = 0 THEN 'Ingresada en bodega' \
                      WHEN a.estado = 1 THEN 'Activa' \
-                     WHEN a.estado = 2 THEN 'Anulado' END as descripcion_estado, \
+                     WHEN a.estado = 2 THEN 'Anulado' \
+                     WHEN a.estado = 3 THEN 'Recibida en bodega' \
+                     WHEN a.estado = 4 THEN 'Verificada en bodega' END as descripcion_estado, \
                 a.sw_orden_compra_finalizada,\
                 CASE WHEN a.sw_orden_compra_finalizada = '0' THEN 'En Proceso ...' \
                      WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion, \
@@ -87,6 +91,8 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(codigo_p
                 a.usuario_id,\
                 e.nombre as nombre_usuario,\
                 To_char(a.fecha_orden,'dd-mm-yyyy') as fecha_registro,\
+                coalesce(To_char(a.fecha_recibido,'dd-mm-yyyy'),'') as fecha_recibido,\
+                coalesce(To_char(a.fecha_verificado,'dd-mm-yyyy'),'') as fecha_verificado,\
                 CASE WHEN COALESCE (g.orden_pedido_id,0)=0 then 0 else 1 end as tiene_ingreso_temporal \
                 FROM compras_ordenes_pedidos a\
                 inner join terceros_proveedores b on a.codigo_proveedor_id = b.codigo_proveedor_id\
@@ -168,9 +174,11 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
                 d.descripcion,\
                 d.imagen,\
                 a.estado,\
-                CASE WHEN a.estado = 0 THEN 'Recibida'\
-                     WHEN a.estado = 1 THEN 'Activa'\
-                     WHEN a.estado = 2 THEN 'Anulado' END as descripcion_estado,\
+                CASE WHEN a.estado = 0 THEN 'Ingresada en bodega' \
+                     WHEN a.estado = 1 THEN 'Activa' \
+                     WHEN a.estado = 2 THEN 'Anulado' \
+                     WHEN a.estado = 3 THEN 'Recibida en bodega' \
+                     WHEN a.estado = 4 THEN 'Verificada en bodega' END as descripcion_estado, \
                 a.sw_orden_compra_finalizada,\
                 CASE WHEN a.sw_orden_compra_finalizada = '0' THEN 'En Proceso ...'\
                      WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion,\
@@ -182,6 +190,8 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
                 h.valor_iva,\
                 h.total,\
                 To_char(a.fecha_orden, 'dd-mm-yyyy') as fecha_registro,\
+                coalesce(To_char(a.fecha_recibido,'dd-mm-yyyy'),'') as fecha_recibido,\
+                coalesce(To_char(a.fecha_verificado,'dd-mm-yyyy'),'') as fecha_verificado,\
                 CASE WHEN COALESCE (g.orden_pedido_id, 0) = 0 then 0 else 1 end as tiene_ingreso_temporal \
                 FROM compras_ordenes_pedidos a \
                 inner join terceros_proveedores b on a.codigo_proveedor_id = b.codigo_proveedor_id \
@@ -275,8 +285,15 @@ OrdenesCompraModel.prototype.actualizar_estado_orden_compra = function(numero_or
     // 2 => Anulada
     // 3 => Recibida
     // 4 => Verificada
+    
+    var sql_aux = " ";
+    
+    if(estado ==='3')
+        sql_aux = " ,fecha_recibido = now() ";
+    if(estado ==='4')
+        sql_aux = " ,fecha_verificado = now() ";
 
-    var sql = " UPDATE compras_ordenes_pedidos SET estado = $2 WHERE orden_pedido_id = $1  ";
+    var sql = " UPDATE compras_ordenes_pedidos SET estado = $2 " + sql_aux + " WHERE orden_pedido_id = $1  ";
     G.db.query(sql, [numero_orden, estado], function(err, rows, result) {
         callback(err, rows, result);
     });

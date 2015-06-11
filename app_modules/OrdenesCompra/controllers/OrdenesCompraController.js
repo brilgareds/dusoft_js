@@ -873,7 +873,7 @@ OrdenesCompra.prototype.reporteOrdenCompra = function(req, res) {
 
                     var orden = orden_compra[0];
 
-                    _generar_reporte_orden_compra({orden_compra: orden, lista_productos: lista_productos, usuario_imprime: req.session.user.nombre_usuario}, function(nombre_reporte) {
+                    _generar_reporte_orden_compra({orden_compra: orden, lista_productos: lista_productos, usuario_imprime: req.session.user.nombre_usuario, serverUrl : req.protocol + '://' + req.get('host')+ "/"}, function(nombre_reporte) {
 
                         if (enviar_email) {
 
@@ -1471,7 +1471,8 @@ function _generar_reporte_orden_compra(rows, callback) {
             orden_compra: rows.orden_compra,
             lista_productos: rows.lista_productos,
             fecha_actual: new Date().toFormat('DD/MM/YYYY HH24:MI:SS'),
-            usuario_imprime: rows.usuario_imprime
+            usuario_imprime: rows.usuario_imprime,
+            serverUrl : rows.serverUrl
         }
     }, function(err, response) {
 
@@ -1479,15 +1480,12 @@ function _generar_reporte_orden_compra(rows, callback) {
 
         response.body(function(body) {
 
-            var nombre_archivo = response.result.path;
+           // var nombre_archivo = response.result.path;
             var fecha_actual = new Date();
             var nombre_reporte = G.random.randomKey(2, 5) + "_" + fecha_actual.toFormat('DD-MM-YYYY') + ".pdf";
 
             G.fs.writeFile(G.dirname + "/public/reports/" + nombre_reporte, body, "binary", function(err) {
                 
-                console.log('=== Here ====');
-                console.log(err, nombre_reporte);
-
                 if (err) {
                     console.log(err);
                 } else {

@@ -307,9 +307,13 @@ nav.navbar-default .navbar-nav>li>a:hover{
 .navbar-footer-content { padding:15px 15px 15px 15px; }
 
 
-.ngGrid  .ngRow:hover{
-    /*background-color:#eee; test*/
+/*div.ngRow:hover{
+    background-color:#eee; 
 }
+
+div.ngRow.selected {
+  background-color: #c9dde1;
+}*/
 
 .ngGrid .ngViewport {
     overflow-x:hidden;

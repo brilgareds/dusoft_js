@@ -1,7 +1,7 @@
 
-define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers/MovimientoController"], function(angular, controllers) {
+define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers/movimientos/MovimientoController"], function(angular, controllers) {
 
-    var fo = controllers.controller('productoscontroller', [
+    var fo = controllers.controller('ConsultarExistenciaCcontroller', [
         '$scope', '$rootScope', "Request",
         "$filter", '$state', 'EmpresaKardex',
         'ProductoMovimiento', '$modal', "API",
@@ -120,7 +120,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
             };
 
 
-            $scope.gridOptions = {
+            $scope.listaProductos = {
                 data: 'Empresa.getProductos()',
                 multiSelect: false,
                 enableHighlighting: true,
@@ -147,7 +147,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
             $scope.onRowClick = function(row) {
                 //console.log($filter('date')($scope.fechainicial, "yyyy-MM-dd"));
                 //console.log($filter('date')($scope.fechafinal, "yyyy-MM-dd"));
-                $scope.slideurl = "views/kardex.html?time=" + new Date().getTime();
+                $scope.slideurl = "views/movimientos/kardex.html?t=" + new Date().getTime();
 
                 if ($scope.fechafinal === null || $scope.fechainicial === null) {
                     AlertService.mostrarMensaje("danger", "Las fechas son invalidas");

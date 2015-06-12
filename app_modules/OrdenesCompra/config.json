@@ -20,7 +20,13 @@
                     "alias": "m_productos"
                 }
             }],
-        "events": [],
+        "events": [{
+                "pedidos_clientes_events": {
+                    "module": "OrdenesCompra",
+                    "event": "OrdenesCompraEvents",
+                    "alias": "e_ordenes_compra"
+                }
+            }],
         "cronJobs": []
     }
 }

@@ -236,17 +236,20 @@ define(["angular", "js/models"], function(angular, models) {
             };
 
             RecepcionMercancia.prototype.continuar_finalizacion_recepcion = function() {
-                
-                var total = 0;
-                
-                this.get_orden_compra().get_productos().forEach(function(producto) {
-                    total += producto.get_cantidad_recibida();
-                });
 
-                if (total > 0)
-                    return true;
-                else
-                    return false;
+                var total = 0;
+
+                if (this.get_orden_compra() !== '') {
+                    
+                    this.get_orden_compra().get_productos().forEach(function(producto) {
+                        total += producto.get_cantidad_recibida();
+                    });
+
+                    if (total > 0)
+                        return true;
+                    else
+                        return false;
+                }
             };
 
             return this;

@@ -11,6 +11,7 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
                 OrdenCompra.getClass().call(this, numero_orden, estado, observacion, fecha_registro);
                 
                 this.observacion_contrato = observacion_contrato || '';
+                this.fecha_ingreso = '';
                 this.productos = [];
             }
             
@@ -135,6 +136,20 @@ define(["angular", "js/models", "includes/classes/OrdenCompra"], function(angula
             
             OrdenCompraPedido.prototype.limpiar_productos = function() {
                 this.productos = [];
+            };
+            
+            // Fechas recibido y verificacion 
+            OrdenCompraPedido.prototype.set_fechas_recepcion = function(fecha_recibido, fecha_verificacion) {
+                this.fecha_recibido = fecha_recibido;
+                this.fecha_verificacion = fecha_verificacion;
+            };
+            
+            OrdenCompraPedido.prototype.get_fecha_recibida = function() {
+                return this.fecha_recibido;
+            };
+            
+            OrdenCompraPedido.prototype.get_fecha_verificacion = function() {
+                this.fecha_verificacion;
             };
 
             // Instancia

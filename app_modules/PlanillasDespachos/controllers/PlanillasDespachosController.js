@@ -597,7 +597,7 @@ PlanillasDespachos.prototype.reportePlanillaDespacho = function(req, res) {
                         documentos.push({tercero: z, detalle: datos[z]});
                     }
 
-                    _generar_reporte_planilla_despacho({planilla_despacho: planilla_despacho, documentos_planilla: documentos, usuario_imprime: req.session.user.nombre_usuario}, function(nombre_reporte) {
+                    _generar_reporte_planilla_despacho({planilla_despacho: planilla_despacho, documentos_planilla: documentos, usuario_imprime: req.session.user.nombre_usuario, serverUrl: req.protocol + '://' + req.get('host') + "/"}, function(nombre_reporte) {
 
                         if (enviar_email) {
 
@@ -660,7 +660,7 @@ function __despachar_documentos_planilla(contexto, i, documentos_planilla, resul
                 } else if (estado_actual_pedido === '9') {
                     // si es Zona con pdtes => pasa a Despachado con pdtes                    
                     estado_pedido = '5';
-                }else{
+                } else {
                     estado_pedido = estado_actual_pedido;
                 }
 
@@ -724,39 +724,38 @@ function __despachar_documentos_planilla(contexto, i, documentos_planilla, resul
 
 function _generar_reporte_planilla_despacho(rows, callback) {
 
-
-    G.jsreport.reporter.render({
+    G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/PlanillasDespachos/reports/planilla_despacho.html', 'utf8'),
             helpers: G.fs.readFileSync('app_modules/PlanillasDespachos/reports/javascripts/helpers.js', 'utf8'),
             recipe: "phantom-pdf",
             engine: 'jsrender',
-            /*phantom: {*/
-            /*header: G.fs.readFileSync('app_modules/PlanillasDespachos/reports/encabezado_planilla_despacho.html', 'utf8')*/
-            /*header: '<div style="text-align:right">{#pageNum}/{#numPages}</div>',*/
-            /*orientation: "portrait",
-             width: "300px"*/
-            /*}*/
-        },
-        childTemplate: {
-            hola: '<div>Hola Child Template</div>'
         },
         data: {
             style: G.dirname + "/public/stylesheets/bootstrap.min.css",
             planilla_despacho: rows.planilla_despacho,
             documentos_planilla: rows.documentos_planilla,
             fecha_actual: new Date().toFormat('DD/MM/YYYY HH24:MI:SS'),
-            usuario_imprime: rows.usuario_imprime
+            usuario_imprime: rows.usuario_imprime,
+            serverUrl: rows.serverUrl
         }
-    }).then(function(response) {
-        console.log('=== response ====');
-        console.log(response);
-        var nombre_archivo = response.result.path;
-        var fecha_actual = new Date();
-        var nombre_reporte = G.random.randomKey(2, 5) + "_" + fecha_actual.toFormat('DD-MM-YYYY') + ".pdf";
-        G.fs.copySync(nombre_archivo, G.dirname + "/public/reports/" + nombre_reporte);
+    }, function(err, response) {
 
-        callback(nombre_reporte);
+        response.body(function(body) {
+
+            var fecha_actual = new Date();
+            var nombre_reporte = G.random.randomKey(2, 5) + "_" + fecha_actual.toFormat('DD-MM-YYYY') + ".pdf";
+
+            G.fs.writeFile(G.dirname + "/public/reports/" + nombre_reporte, body, "binary", function(err) {
+
+                if (err) {
+                    console.log('=== Se ha generado un error generando el reporte ====');
+                } else {
+                    callback(nombre_reporte);
+                }
+            });
+
+        });
     });
 }
 

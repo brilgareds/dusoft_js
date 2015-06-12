@@ -680,7 +680,7 @@ PedidosClienteModel.prototype.calcular_cantidad_total_pendiente_producto = funct
                 SUM((b.numero_unidades - b.cantidad_despachada)) as cantidad_total_pendiente\
                 FROM ventas_ordenes_pedidos a\
                 inner join ventas_ordenes_pedidos_d b ON a.pedido_cliente_id = b.pedido_cliente_id\
-                where a.empresa_id = $1 and b.codigo_producto = $2 and b.numero_unidades <> b.cantidad_despachada and a.estado = '1'  \
+                where a.empresa_id = $1 and b.codigo_producto = $2 and b.numero_unidades <> b.cantidad_despachada \
                 GROUP BY 1";
 
     G.db.query(sql, [empresa_id, codigo_producto], function(err, rows, result) {

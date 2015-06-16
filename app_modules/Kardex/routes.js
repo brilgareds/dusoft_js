@@ -11,4 +11,9 @@ module.exports = function(app, di_container) {
     app.post('/api/Kardex/obtenerMovimientosProducto', function(req, res) {
         c_kardex.obtener_movimientos_producto(req, res);
     });
+    
+    app.post('/api/Kardex/consultarExistenciasProducto', function(req, res) {
+        c_kardex.consultarExistenciasProducto(req, res);
+    });
+    
 };

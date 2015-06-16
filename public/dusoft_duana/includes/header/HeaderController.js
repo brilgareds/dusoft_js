@@ -79,7 +79,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
 
 
             self.obtenerEmpresasUsuario = function(callback) {
-
+               
                 var obj = {
                     session: session,
                     data: {
@@ -98,6 +98,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                         //se hace el set correspondiente para el plugin de jstree
                         for (var i in empresas) {
                             var empresa = Empresa.get(empresas[i].razon_social, empresas[i].empresa_id);
+                            empresa.setCentrosUtilidad($scope.Usuario.getEmpresa().getCentrosUtilidad());
 
                             if (empresa.getCodigo() === $scope.Usuario.getEmpresa().getCodigo()) {
                                 $scope.Usuario.setEmpresa(empresa);
@@ -185,7 +186,6 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                         for (var ii in centro.bodegas) {
                             var bodega = centro.bodegas[ii];
                             
-                           // console.log("usuario bodegas ******************************** ", bodega);
                             if(bodega.seleccionado_usuario === '1'){
                                 var _bodega = Bodega.get(bodega.bodega_id, bodega.descripcion);
 

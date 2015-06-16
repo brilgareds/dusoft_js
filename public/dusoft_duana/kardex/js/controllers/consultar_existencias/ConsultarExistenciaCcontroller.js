@@ -17,7 +17,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
             var fechaActual = new Date();
             $scope.paginas = 0;
             $scope.items = 0;
-            $scope.paginaactual = 0;
+            $scope.paginaactual = 1;
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
             $scope.listaEmpresas = [];
@@ -38,9 +38,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
             };
 
             $scope.buscarProductos = function(termino_busqueda, paginando) {
-
+                
                 if ($scope.ultima_busqueda !== $scope.termino_busqueda) {
-                    $scope.paginaactual = 0;
+                    $scope.paginaactual = 1;
                 }
 
                 if ($scope.filtro.empresa_seleccion === "") {
@@ -49,17 +49,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                 }
 
 
-                if ($scope.filtro.centro_seleccion === "") {
-                    AlertService.mostrarMensaje("warning", "Debe seleccionar un centro de utilidad");
-                    return;
-                }
-
-                if ($scope.filtro.bodega_seleccion === "") {
-                    AlertService.mostrarMensaje("warning", "Debe seleccionar una bodega");
-                    return;
-                }
                 Request.realizarRequest(
-                        API.KARDEX.LISTAR_PRODUCTOS,
+                        API.KARDEX.CONSULTAR_EXISTENCIAS,
                         "POST",
                         {
                             session: $scope.session,
@@ -67,9 +58,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                                 kardex: {
                                     termino_busqueda: termino_busqueda,
                                     pagina_actual: $scope.paginaactual,
-                                    empresa_id: $scope.filtro.empresa_seleccion,
-                                    centro_utilidad: $scope.filtro.centro_seleccion,
-                                    bodega_id: $scope.filtro.bodega_seleccion
+                                    empresa_id: $scope.filtro.empresa_seleccion
                                 }
                             }
                         },
@@ -88,7 +77,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                 $scope.items = data.lista_productos.length;
                 //se valida que hayan registros en una siguiente pagina
                 if (paginando && $scope.items === 0) {
-                    if ($scope.paginaactual > 0) {
+                    if ($scope.paginaactual > 1) {
                         $scope.paginaactual--;
                     }
                     AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
@@ -307,7 +296,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
             //eventos
 
             //eventos de widgets
-            $scope.onKeyPress = function(ev, termino_busqueda) {
+            $scope.onBuscarProducto = function(ev, termino_busqueda) {
                 if (ev.which === 13) {
                     $scope.buscarProductos(termino_busqueda);
                 }
@@ -380,7 +369,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
 
 
                     });
-                    //alert("")
                 });
 
             });

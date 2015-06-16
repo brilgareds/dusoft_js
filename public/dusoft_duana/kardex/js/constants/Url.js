@@ -12,7 +12,8 @@
 	    	"OBTENER_MOVIMIENTO":BASE_URL+"/Kardex/obtenerMovimientosProducto",
                 'LISTAR_EMPRESAS':BASE_URL+'/PedidosFarmacias/listarFarmacias',
                 'CENTROS_UTILIDAD_EMPRESAS':BASE_URL+'/PedidosFarmacias/listarCentrosUtilidad',
-                'BODEGAS_EMPRESA':BASE_URL+'/PedidosFarmacias/listarBodegas'
+                'BODEGAS_EMPRESA':BASE_URL+'/PedidosFarmacias/listarBodegas',
+                'CONSULTAR_EXISTENCIAS':BASE_URL+'/Kardex/consultarExistenciasProducto'
 	    }
 	  }
 	};

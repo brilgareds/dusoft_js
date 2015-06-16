@@ -827,6 +827,10 @@ PedidosFarmacias.prototype.listar_productos = function(req, res) {
 
 
                     producto.existencias_farmacia = (existencias_farmacia.length > 0) ? existencias_farmacia[0].existencia : 0;
+                    console.log(">>> Existencias Farmacias: ", existencias_farmacia);
+                    console.log("\nPágina Actual: ", pagina_actual);
+                    console.log(">>> LONG. Existencias Farmacias: ", existencias_farmacia.length);
+                    
                     producto.en_farmacia_seleccionada = (existencias_farmacia.length > 0) ? true : false;
 
                     that.m_pedidos_farmacias.calcular_cantidad_total_pendiente_producto(empresa_id, producto.codigo_producto, function(err, total_pendiente_farmacias) {
@@ -1953,9 +1957,10 @@ PedidosFarmacias.prototype.imprimirPedidoFarmacia = function(req, res) {
 
                                 var cantidad_reservada_cotizaciones = (total_reservado_cotizaciones.length > 0) ? total_reservado_cotizaciones[0].total_reservado : 0;
 
-
+                                //En ésta disponibilidad se suma la cantidad_solicitada para que para el separador sea más natural ver que la cantidad que va a
+                                //separar está contabilizándose en la disponibilidad.
                                 var disponibilidad_bodega = producto.existencia - cantidad_total_pendiente_farmacias - cantidad_total_pendiente_clientes
-                                                        - cantidad_reservada_temporales - cantidad_reservada_cotizaciones;
+                                                        - cantidad_reservada_temporales - cantidad_reservada_cotizaciones + producto.cantidad_solicitada;
 
                                 producto.disponibilidad_bodega = (disponibilidad_bodega < 0) ? 0 : disponibilidad_bodega;
 

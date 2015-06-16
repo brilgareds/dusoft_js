@@ -25,6 +25,14 @@ define(["angular", "js/controllers",'models/ClientePedido',
         $scope.rootEditarProducto.producto.lote.cantidad_ingresada = $scope.rootEditarProducto.producto.cantidad_separada;
         $scope.rootEditarProducto.lotes    = [];
         $scope.rootEditarProducto.seleccionados = [];
+        
+        $scope.justificaciones = [
+            {descripcion: "No hay fisico"},
+            {descripcion: "Averiado"},
+            {descripcion: "Proximo A Vencer"},
+            {descripcion: "Trocado"},
+            {descripcion: "Por presentacion"}
+        ];
 
         /*console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> documento_despacho code 2 ");
         console.log(documento_despacho);
@@ -176,6 +184,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
             // enableColumnResize: true,
             // enableHighlighting: true,
              enableRowSelection: true,
+             showFilter:true,
              //rowTemplate: '<div ng-click="seleccionFilaLote(row)" ng-style="{ cursor: row.cursor }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" class="ngCell {{col.cellClass}}"><div class="ngVerticalBar" ng-style="{height: rowHeight}" ng-class="{ ngVerticalBarVisible: !$last }">&nbsp;</div><div ng-cell></div></div>',
              selectedItems:[],
              columnDefs: [     

@@ -46,8 +46,12 @@
                 <h3 class="panel-title">Justificacion Auditor</h3>
             </div>
             <div class="panel-body">
-                <div class="span6">
-                    <textarea placeholder="Justificación por pendientes" ng-model="rootEditarProducto.producto.lote.justificacion_auditor" class="col-xs-12 textareajustificacion"></textarea>
+                <div class="span6" style="width:250px;">
+                    <!--textarea placeholder="Justificación por pendientes" ng-model="rootEditarProducto.producto.lote.justificacion_auditor" class="col-xs-12 textareajustificacion"></textarea-->
+                    <select ui-select2  class="form-control selectgeneral" ng-model="rootEditarProducto.producto.lote.justificacion_auditor"  placeholder="Seleccionar Justificacion" ng-change="justificacionSeleccionada()">
+                        <option></option>
+                        <option ng-repeat="justificacion in  justificaciones"  value="{{justificacion.descripcion}}" >{{::justificacion.descripcion}}</option>
+                    </select>
                 </div>
             </div>
         </div>

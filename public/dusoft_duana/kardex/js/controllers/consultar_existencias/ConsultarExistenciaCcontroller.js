@@ -15,23 +15,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
             var that = this;
             $scope.Empresa = Empresa.get("DUANA LTDA", "03");
             $scope.EmpresasProductos = [];
-            var fechaActual = new Date();
             $scope.paginas = 0;
             $scope.items = 0;
             $scope.paginaactual = 1;
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
             $scope.listaEmpresas = [];
-            $scope.listaCentroUtilidad = [];
-            $scope.listaBodegas = [];
-            $scope.slideurl = "";
 
             $scope.filtro = {};
-
-            //  $scope.fechainicial = new Date((fechaActual.getMonth() + 1)+"/01/" + (fechaActual.getFullYear() -1));
-            $scope.fechainicial = $filter('date')(new Date("01/01/" + fechaActual.getFullYear()), "yyyy-MM-dd");
-            $scope.fechafinal = $filter('date')(fechaActual, "yyyy-MM-dd");
-            $scope.abrirfechafinal = false;
 
             $scope.session = {
                  usuario_id: Usuario.getUsuarioActual().getId(),
@@ -120,11 +111,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                 enableHighlighting: true,
                 showFilter: true,
                 enableRowSelection: false,
-                /*afterSelectionChange:function(row){
-                 if(row.selected){
-                 $scope.onRowClick(row)
-                 }
-                 },*/
                 columnDefs: [
                     {field: 'empresa.nombre', displayName: 'Empresa'},
                     {field: 'empresa.getCentroUtilidadSeleccionado().getNombre()', displayName: 'Centro Utilidad'},
@@ -135,58 +121,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
 
             };
 
-
-            $scope.onRowClick = function(row) {
-                //console.log($filter('date')($scope.fechainicial, "yyyy-MM-dd"));
-                //console.log($filter('date')($scope.fechafinal, "yyyy-MM-dd"));
-                $scope.slideurl = "views/movimientos/kardex.html?t=" + new Date().getTime();
-
-                if ($scope.fechafinal === null || $scope.fechainicial === null) {
-                    AlertService.mostrarMensaje("danger", "Las fechas son invalidas");
-                    return;
-                }
-
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        kardex: {
-                            fecha_inicial: $filter('date')($scope.fechainicial, "yyyy-MM-dd") + " 00:00:00",
-                            fecha_final: $filter('date')($scope.fechafinal, "yyyy-MM-dd") + " 23:59:00",
-                            codigo_producto: row.entity.codigo_producto,
-                            empresa_id: $scope.filtro.empresa_seleccion,
-                            centro_utilidad: $scope.filtro.centro_seleccion,
-                            bodega_id: $scope.filtro.bodega_seleccion
-                        }
-                    }
-                };
-
-                Request.realizarRequest(
-                        API.KARDEX.OBTENER_MOVIMIENTO,
-                        "POST",
-                        obj,
-                        function(data) {
-                            if (data.status === 200) {
-                                if (data.obj.movimientos_producto.length > 0) {
-
-                                    /*console.log('===== data.obj ======');
-                                     console.log(data.obj);*/
-
-                                    $scope.$emit('mostrardetallekardex', row.entity, data.obj);
-                                } else {
-                                    AlertService.mostrarMensaje("warning", "El producto no tiene movimientos");
-                                }
-
-                            }
-                        }
-                );
-
-            };
-
             that.traerEmpresas = function(callback) {
 
                 $scope.listaEmpresas = [];
-                $scope.listaCentroUtilidad = [];
-                $scope.listaBodegas = [];
 
                 var obj = {
                     session: $scope.session,
@@ -222,12 +159,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                // that.consultarCentrosUtilidadPorEmpresa();
             };
 
-            $scope.onCentroSeleccionado = function() {
-            };
-
-            $scope.cerrar = function() {
-                $scope.$emit('cerrardetallekardex');
-            };
 
             //eventos
 
@@ -239,40 +170,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                 }
             };
 
-            $scope.abrirFechaInicial = function($event) {
-                $event.preventDefault();
-                $event.stopPropagation();
-
-                $scope.abrirfechainicial = true;
-                $scope.abrirfechafinal = false;
-
-
-                console.log($scope.fechainicial)
-            };
-
-            $scope.abrirFechaFinal = function($event) {
-                $event.preventDefault();
-                $event.stopPropagation();
-
-                $scope.abrirfechafinal = true;
-                $scope.abrirfechainicial = false;
-            };
-
-            $scope.fechainicialselected = function() {
-                if ($scope.fechainicial > $scope.fechafinal) {
-                    console.log($scope.fechafinal);
-                    $scope.fechafinal = $scope.fechainicial;
-                }
-
-
-            };
-
-            $scope.fechafinalselected = function() {
-                $scope.fechainicial = $scope.fechafinal;
-            };
-
 
             $scope.paginaAnterior = function() {
+                if($scope.paginaactual === 1) return;
                 $scope.paginaactual--;
                 $scope.buscarProductos($scope.termino_busqueda, true);
             };
@@ -290,15 +190,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
             that.traerEmpresas(function() {
                 $timeout(function() {
                     $scope.filtro.empresa_seleccion = '03';
-                    $timeout(function() {
-                        $scope.filtro.centro_seleccion = '1 ';
-
-                            $timeout(function() {
-                                $scope.filtro.bodega_seleccion = '03';
-                                $scope.buscarProductos("");
-                            });
-
-                    });
+                     $scope.buscarProductos("");
                 });
 
             });

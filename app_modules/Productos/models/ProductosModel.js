@@ -100,7 +100,7 @@ ProductosModel.prototype.consultarExistenciasProducto = function(empresa_id, ter
                 f.descripcion as unidad, h.descripcion AS laboratorio\
                 FROM existencias_bodegas a\
                 INNER JOIN inventarios_productos b ON a.codigo_producto = b.codigo_producto\
-                INNER JOIN empresas c ON a.empresa_id = c.empresa_id AND c.sw_tipo_empresa = '1' AND c.sw_activa = '1'\
+                INNER JOIN empresas c ON a.empresa_id = c.empresa_id /*AND c.sw_tipo_empresa = '1'*/ AND c.sw_activa = '1'\
                 INNER JOIN centros_utilidad d ON a.centro_utilidad = d.centro_utilidad AND a.empresa_id = d.empresa_id\
                 INNER JOIN bodegas e ON e.centro_utilidad = d.centro_utilidad AND e.empresa_id = d.empresa_id AND e.bodega = a.bodega\
                 INNER JOIN unidades f ON f.unidad_id = b.unidad_id\

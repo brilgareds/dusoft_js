@@ -98,9 +98,9 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                         //se hace el set correspondiente para el plugin de jstree
                         for (var i in empresas) {
                             var empresa = Empresa.get(empresas[i].razon_social, empresas[i].empresa_id);
-                            empresa.setCentrosUtilidad($scope.Usuario.getEmpresa().getCentrosUtilidad());
 
                             if (empresa.getCodigo() === $scope.Usuario.getEmpresa().getCodigo()) {
+                                empresa.setCentrosUtilidad($scope.Usuario.getEmpresa().getCentrosUtilidad());
                                 $scope.Usuario.setEmpresa(empresa);
                             }
 
@@ -180,7 +180,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
 
                     if(centro.seleccionado_usuario === '1'){
                         
-                        var _centro = CentroUtilidad.get(centro.centro_utilidad_id, centro.descripcion);
+                        var _centro = CentroUtilidad.get(centro.descripcion, centro.centro_utilidad_id);
                         _centro.setNombreEmpresa(centro.nombre_empresa);
                         _centro.setEmpresaId(centro.empresa_id);
                         for (var ii in centro.bodegas) {

@@ -11,57 +11,13 @@
         </p>
     </div>
 
-    <div class="col-md-12 col-lg-2">
-        <p class="input-group contenedorfiltrocombobox">
-            <select ui-select2 ng-model='filtro.centro_seleccion' style='width:200px;'  class="form-control selectgeneral"   placeholder="Seleccionar Centro Utilidad" ng-change='onCentroSeleccionado()' >
-                <option></option>
-                <option ng-repeat="centro in  listaCentroUtilidad"  value="{{centro.codigo}}" >
-                    {{centro.nombre}}</option>
-            </select>
-        </p>
-    </div>
-
-    <div class="col-md-12 col-lg-2">
-        <p class="input-group contenedorfiltrocombobox">
-            <select ui-select2 ng-model='filtro.bodega_seleccion' style='width:200px;'  class="form-control selectgeneral"   placeholder="Seleccionar Bodega" >
-                <option></option>
-                <option ng-repeat="bodega in  listaBodegas"  value="{{bodega.codigo}}" >
-                    {{bodega.nombre}}</option>
-            </select>
-        </p>
-    </div>
-
     <div class="row">
-        <div class="col-lg-2">
-            <p class="input-group">
-
-                <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" ng-model="fechainicial" is-open="abrirfechainicial" min="minDate"   readonly  close-text="Cerrar" ng-change="fechainicialselected()" clear-text="Borrar" current-text="Hoy" placeholder="Fecha inicio" show-weeks="false" toggle-weeks-text="#"  />
-                <!--input type="text" ng-datepickerange /-->
-                <span class="input-group-btn">
-
-                    <button class="btn btn-default" ng-click="abrirFechaInicial($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-                </span>
-            </p>
-        </div>
-
-        <div class="col-lg-2">
-            <p class="input-group">
-
-                <input type="text" class="form-control readonlyinput" name="fechain" datepicker-popup="{{format}}" ng-model="fechafinal" is-open="abrirfechafinal" min="fechainicial"  readonly  close-text="Cerrar"
-                       clear-text="Borrar"  placeholder="Fecha fin:" current-text="Hoy" show-weeks="false" toggle-weeks-text="#" />
-                <span class="input-group-btn">
-
-                    <button class="btn btn-default"  ng-click="abrirFechaFinal($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-                </span>
-            </p>
-        </div>
-
 
 
         <div class="col-lg-2 pull-right">
             <p class="input-group">
 
-                <input type="text" class="form-control" ng-keypress="onKeyPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term" />
+                <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term" />
                 <span class="input-group-btn">
 
                     <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>

@@ -193,6 +193,45 @@ Kardex.prototype.obtener_movimientos_producto = function(req, res) {
     });
 };
 
+
+Kardex.prototype.consultarExistenciasProducto = function(req, res) {
+    var that = this;
+
+    var args = req.body.data;
+    
+       if (args.kardex === undefined || args.kardex.termino_busqueda === undefined || args.kardex.pagina_actual === undefined || args.kardex.empresa_id === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+
+    if (args.kardex.pagina_actual === '') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
+        return;
+    }
+
+    if (args.kardex.empresa_id === '') {
+        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {}));
+        return;
+    }
+
+
+    var termino_busqueda = args.kardex.termino_busqueda;
+    var pagina_actual = args.kardex.pagina_actual;
+    var empresa_id = args.kardex.empresa_id;
+
+
+    this.m_productos.consultarExistenciasProducto(empresa_id, termino_busqueda, pagina_actual, function(err, lista_productos) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Listado de Productos', 500, {lista_productos: {}}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Listado de Productos', 200, {lista_productos: lista_productos}));
+            return;
+        }
+    });
+};
+
 Kardex.$inject = ["m_kardex", "m_pedidos_farmacias", "m_pedidos_clientes", "m_ordenes_compra", "m_productos"];
 
 module.exports = Kardex;

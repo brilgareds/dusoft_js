@@ -87,6 +87,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             */
            
+           $scope.rootCreaPedidoFarmacia.empresasDestino = Usuario;
+           
            $scope.rootCreaPedidoFarmacia.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
            
            $scope.rootCreaPedidoFarmacia.opcionesModulo = {
@@ -356,6 +358,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             });
 
             that.buscarPedido = function(termino, paginando) {
+
+
+                console.log("Visualizacion Empresas Destino: ", $scope.rootCreaPedidoFarmacia.empresasDestino);
 
                 //valida si cambio el termino de busqueda
                 if ($scope.rootCreaPedidoFarmacia.ultima_busqueda !== $scope.rootCreaPedidoFarmacia.termino_busqueda) {

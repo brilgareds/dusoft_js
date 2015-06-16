@@ -58,7 +58,7 @@
               }).
               state('ConsultarExistencias', {
                   url: "/ConsultarExistencias",
-                  text:"Kardex",
+                  text:"Consultar Existencias",
                   templateUrl: "views/consultar_existencias/listarproductos.html",
                   controller:"ConsultarExistenciaCcontroller"
               });

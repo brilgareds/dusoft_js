@@ -7,8 +7,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         '$scope', '$rootScope', 'Request',
         'EmpresaPedido', 'FarmaciaVenta', 'PedidoVenta',
         'API', "socket", "AlertService",
-        '$state', "Usuario", "localStorageService", '$modal', 'ProductoPedido',
-        function($scope, $rootScope, Request, EmpresaPedido, FarmaciaVenta, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService, $modal, ProductoPedido) {
+        '$state', "Usuario", "localStorageService", '$modal',
+        'ProductoPedido', '$filter',
+        function($scope, $rootScope, Request, EmpresaPedido, FarmaciaVenta, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService, $modal, ProductoPedido, $filter) {
 
             $scope.expreg = new RegExp("^[0-9]*$");
 
@@ -222,6 +223,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 
                 $scope.rootCreaPedidoFarmacia.para_lista_empresas = [];
                 $scope.rootCreaPedidoFarmacia.para_lista_centro_utilidad = [];
+                $scope.rootCreaPedidoFarmacia.para_lista_bodegas = [];
                 
                 $scope.rootCreaPedidoFarmacia.empresasDestino.forEach(function(obj){
 
@@ -276,6 +278,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 
                 var para_seleccion_empresa = "";
                 $scope.rootCreaPedidoFarmacia.para_lista_centro_utilidad = [];
+                //$scope.rootCreaPedidoFarmacia.para_lista_bodegas = [];
                 
                 if(empresa_id !== undefined && empresa_id !== ""){
                     para_seleccion_empresa = empresa_id;
@@ -286,6 +289,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     }
                     else {
                         para_seleccion_empresa = $scope.rootCreaPedidoFarmacia.para_seleccion_empresa.split(',')[0];
+                        console.log("para_seleccion_empresa: ", para_seleccion_empresa);
                     }
                 }
                     
@@ -336,6 +340,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 var para_seleccion_empresa = "";
                 var para_seleccion_centro_utilidad = "";
                 
+                $scope.rootCreaPedidoFarmacia.para_lista_bodegas = [];
+                
                 if(empresa_id != undefined && empresa_id != ""){
                     para_seleccion_empresa = empresa_id;
                 }
@@ -361,7 +367,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 }
                 
                 /**/
-                $scope.rootCreaPedidoFarmacia.para_lista_bodegas = [];
                 
                 $scope.rootCreaPedidoFarmacia.empresasDestino.forEach(function(obj){
                     
@@ -1835,6 +1840,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
             $scope.valorSeleccionado = function(valor) {
+                
+                
+                console.log("Valor Seleccionado: ", valor);
+                console.log("Empresa Sel: ", $scope.rootCreaPedidoFarmacia.para_seleccion_empresa);
+                console.log("Centro Utilidad Sel: ",$scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad);
+                console.log("Bodega Sel: ",$scope.rootCreaPedidoFarmacia.para_seleccion_bodega);
 
                 var para_seleccion_empresa = ['0'];
                 var para_seleccion_centro_utilidad = ['0'];
@@ -1852,6 +1863,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 //Pone en blanco los dos campos siguientes a la selección de la Farmacia (Centro Utilidad y Bodega)
                 if ($scope.rootCreaPedidoFarmacia.para_seleccion_empresa && valor === 4)
                 {
+                    //$scope.rootCreaPedidoFarmacia.para_lista_empresas = [];
+                    //$scope.rootCreaPedidoFarmacia.para_lista_centro_utilidad = [];
+                    //$scope.rootCreaPedidoFarmacia.para_lista_bodegas = [];
                     $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad = '0,';
                     $scope.rootCreaPedidoFarmacia.para_seleccion_bodega = '0,';
                 }
@@ -1859,6 +1873,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 //Pone en blanco el campo siguiente a la selección del Centro Utilidad (Bodega)
                 if ($scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad && valor === 5)
                 {
+                    //$scope.rootCreaPedidoFarmacia.para_lista_centro_utilidad = [];
+                    //$scope.rootCreaPedidoFarmacia.para_lista_bodegas = [];
                     $scope.rootCreaPedidoFarmacia.para_seleccion_bodega = '0,';
                 }
                 
@@ -1886,12 +1902,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 if (para_seleccion_empresa[0] !== '0')
                 {
+                    $scope.rootCreaPedidoFarmacia.para_lista_centro_utilidad = [];
+                    $scope.rootCreaPedidoFarmacia.para_lista_bodegas = [];
                     that.consultarCentrosUtilidadPara();
                     $scope.rootCreaPedidoFarmacia.bloqueo_centro_utilidad_para = false;                    
                 }
 
                 if (para_seleccion_centro_utilidad[0] !== '0')
-                {
+                {   
+                    $scope.rootCreaPedidoFarmacia.para_lista_bodegas = [];
                     that.consultarBodegaPara();
                     $scope.rootCreaPedidoFarmacia.bloqueo_bodega_para = false;
                 }

@@ -95,6 +95,13 @@
                                                 <option ng-repeat="empresa in  rootCreaPedidoFarmacia.para_lista_empresas"  ng-value="[empresa.empresa_id, empresa.nombre_empresa]" >{{empresa.nombre_empresa}}</option>
                                             </select>
                                             
+<!--                                            <ui-select ng-disabled="" ng-model="rootCreaPedidoFarmacia.para_seleccion_empresa" theme="select2" class="form-control selectgeneral pull-left" ng-change="valorSeleccionado(4)">
+                                                <ui-select-match  placeholder="Seleccionar Farmacia">{{empresa.nombre_empresa}}</ui-select-match>
+                                                <ui-select-choices repeat="empresa in rootCreaPedidoFarmacia.para_lista_empresas | filter:$select.search">
+                                                    {{empresa.nombre_empresa}}
+                                                </ui-select-choices>
+                                            </ui-select>-->
+                                            
                                             <!-- ng-if Modificación Especial -->
                                             <select ui-select2="paraseleccionempresa" ng-if="rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" class="form-control selectgeneral pull-left" ng-model="rootCreaPedidoFarmacia.para_seleccion_empresa_aux"  placeholder="Seleccionar Farmacia" ng-change="valorSeleccionadoEspecial(4)">
                                                 <option></option>

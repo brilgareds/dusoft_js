@@ -148,6 +148,7 @@ define(["angular", "js/controllers", 'models/ClientePedido',
                 data: 'DocumentoTemporal.getPedido().getProductos()',
                 enableHighlighting: true,
                 enableRowSelection: false,
+                showFilter:true,
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Código', width: 150},
                     {field: 'descripcion', displayName: 'Nombre Producto', width: 650},
@@ -172,13 +173,14 @@ define(["angular", "js/controllers", 'models/ClientePedido',
             $scope.lista_productos_auditados_clientes = {
                 data: 'productosAuditados',
                 enableRowSelection: false,
+                showFilter:true,
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Código', width: 100},
                     {field: 'descripcion', displayName: 'Nombre Producto', width: 500},
                     {field: 'cantidad_separada', displayName: "Cantidad Separada"},
                     {field: 'lote.codigo_lote', displayName: 'Lote'},
                     {field: 'lote.fecha_vencimiento', displayName: "Fecha Vencimiento"},
-                    {field: 'lote.item_id', displayName: 'Item'},
+                    //{field: 'lote.item_id', displayName: 'Item'},
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
                         cellTemplate: ' <div class="row">\n\
                                             <button class="btn btn-default btn-xs" ng-click="onEliminarProductoAuditado(DocumentoTemporal, row)">\n\
@@ -191,6 +193,7 @@ define(["angular", "js/controllers", 'models/ClientePedido',
 
             $scope.lista_productos_no_auditados_clientes = {
                 data: 'productosNoAuditados',
+                showFilter:true,       
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Código Producto'},
                     {field: 'descripcion', displayName: 'Nombre Producto'},

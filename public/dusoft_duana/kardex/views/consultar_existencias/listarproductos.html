@@ -1,15 +1,7 @@
 <div>
 
     <!--route 1 {{welcomemsg}} got to child  <a ui-sref="route1.item">Route item</a>-->
-    <div class="col-md-12 col-lg-2">
-        <p class="input-group contenedorfiltrocombobox">
-            <select ui-select2="" ng-model='filtro.empresa_seleccion' style='width:200px;'  class="form-control selectgeneral"   placeholder="Seleccionar Empresa" ng-change='onEmpresaSeleccionada()' >
-                <option></option>
-                <option ng-repeat="empresa in  listaEmpresas"  value="{{empresa.codigo}}"   >
-                    {{empresa.nombre}}</option>
-            </select>
-        </p>
-    </div>
+
 
     <div class="row">
 
@@ -22,6 +14,16 @@
 
                     <button class="btn btn-default" type="submit" ng-click="buscarProductos(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
                 </span>
+            </p>
+        </div>
+
+        <div class="col-md-12 col-lg-2 pull-right">
+            <p class="input-group contenedorfiltrocombobox">
+                <select ui-select2="" ng-model='filtro.empresa_seleccion' style='width:200px;'  class="form-control selectgeneral"   placeholder="Seleccionar Empresa" ng-change='onEmpresaSeleccionada()' >
+                    <option></option>
+                    <option ng-repeat="empresa in  listaEmpresas"  value="{{empresa.codigo}}"   >
+                        {{empresa.nombre}}</option>
+                </select>
             </p>
         </div>
 

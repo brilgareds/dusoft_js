@@ -14,6 +14,15 @@ EmpresasModel.prototype.listar_empresas = function(callback) {
     });
 };
 
+EmpresasModel.prototype.listarEmpresasFarmacias = function(callback) {
+
+    var sql = " SELECT  empresa_id, razon_social FROM empresas WHERE sw_activa='1' ORDER BY razon_social ";
+
+    G.db.query(sql, function(err, empresas, result) {
+        callback(err, empresas, result);
+    });
+};
+
 EmpresasModel.prototype.obtenerEmpresaPorCodigo = function(empresa_id, callback) {
 
     var sql = "SELECT  empresa_id, razon_social  FROM empresas WHERE empresa_id ILIKE $1";

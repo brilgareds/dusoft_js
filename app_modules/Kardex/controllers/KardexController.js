@@ -199,7 +199,7 @@ Kardex.prototype.consultarExistenciasProducto = function(req, res) {
 
     var args = req.body.data;
     
-       if (args.kardex === undefined || args.kardex.termino_busqueda === undefined || args.kardex.pagina_actual === undefined || args.kardex.empresa_id === undefined) {
+       if (args.kardex === undefined || args.kardex.termino_busqueda === undefined || args.kardex.pagina_actual === undefined /*|| args.kardex.empresa_id === undefined*/) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
     }
@@ -209,15 +209,15 @@ Kardex.prototype.consultarExistenciasProducto = function(req, res) {
         return;
     }
 
-    if (args.kardex.empresa_id === '') {
+   /* if (args.kardex.empresa_id === '') {
         res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {}));
         return;
-    }
+    }*/
 
 
     var termino_busqueda = args.kardex.termino_busqueda;
     var pagina_actual = args.kardex.pagina_actual;
-    var empresa_id = args.kardex.empresa_id;
+    var empresa_id = args.kardex.empresa_id || '';
 
 
     this.m_productos.consultarExistenciasProducto(empresa_id, termino_busqueda, pagina_actual, function(err, lista_productos) {

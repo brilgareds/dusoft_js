@@ -187,7 +187,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                             var bodega = centro.bodegas[ii];
                             
                             if(bodega.seleccionado_usuario === '1'){
-                                var _bodega = Bodega.get(bodega.bodega_id, bodega.descripcion);
+                                var _bodega = Bodega.get(bodega.descripcion, bodega.bodega_id);
 
                                 _centro.agregarBodega(_bodega);
                             }

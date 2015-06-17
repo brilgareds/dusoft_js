@@ -101,9 +101,6 @@ ProductosModel.prototype.consultarExistenciasProducto = function(empresa_id, ter
         parametros =  [ "%" + termino_busqueda + "%", empresa_id];
     }
     
-    console.log("empresa id ", empresa_id);
-    console.log("sql aux ", sql_aux);
-    
     var sql = " SELECT a.existencia, b.codigo_producto,b.descripcion as producto, b.cantidad, b.codigo_alterno, b.codigo_barras,\
                 b.contenido_unidad_venta, c.empresa_id, c.razon_social, d.descripcion AS centro, e.descripcion AS bodega,\
                 fc_descripcion_producto(b.codigo_producto) AS descripcion_producto\
@@ -467,13 +464,13 @@ var sql = " select\n\
 
 ProductosModel.prototype.consultar_stock_producto = function(empresa_id, codigo_producto, callback) {
 
-    var sql = " select SUM(a.existencia::integer) as existencia from existencias_bodegas a\
+    var sql = " select COALESCE(SUM(a.existencia::integer), 0) as existencia from existencias_bodegas a\
                 inner join inventarios b on a.codigo_producto = b.codigo_producto and a.empresa_id = b.empresa_id\
                 inner join inventarios_productos c on b.codigo_producto = c.codigo_producto\
                 where a.empresa_id = $1 and a.codigo_producto = $2 and a.estado = '1' and c.estado = '1'";
 
     G.db.query(sql, [empresa_id, codigo_producto], function(err, rows, result) {
-        callback(err, rows);
+        callback(err, rows); 
     });
 };
 

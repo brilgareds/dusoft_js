@@ -125,10 +125,10 @@ IS 'Correo Electronico del Usuario';
 ---- ==================================================================================== ----
 ---- Agregar columna lock_screen a la tbla de usuarios
 
-ALTER TABLE system_usuarios_sesiones ADD lock_screen char(1) DEFAULT NULL;
+/*ALTER TABLE system_usuarios_sesiones ADD lock_screen char(1) DEFAULT NULL;
 
 COMMENT ON COLUMN "public"."system_usuarios_sesiones"."lock_screen"
-IS '0 = False, es decir No esta bloqueado, 1 = true, es decir esta bloqueado';
+IS '0 = False, es decir No esta bloqueado, 1 = true, es decir esta bloqueado';*/
 
 ---- ==================================================================================== ----
 ---- Agregar columna estado a la tbla tmp de despacho farmacias inv_bodegas_movimiento_tmp_despachos_farmacias 
@@ -247,10 +247,10 @@ IS 'Observacion del pedido';
 ---- Agregar columna a tabla system_usuarios_sesiones 
 
 -- device
-ALTER TABLE "public"."system_usuarios_sesiones" ADD device character varying(40) DEFAULT null;
+/*ALTER TABLE "public"."system_usuarios_sesiones" ADD device character varying(40) DEFAULT null;
 
 COMMENT ON COLUMN "public"."system_usuarios_sesiones"."device"
-IS 'Dispositivo desde donde se conectan al servidor';
+IS 'Dispositivo desde donde se conectan al servidor';*/
 
 
 ---- ==================================================================================== ----
@@ -1221,3 +1221,16 @@ ALTER TABLE "public"."compras_ordenes_pedidos"
 
 COMMENT ON COLUMN "public"."compras_ordenes_pedidos"."fecha_verificado"
 IS 'Fecha en que se verifica la recepcion de la orden de compra';
+
+
+ALTER TABLE "public"."inv_bodegas_movimiento_justificaciones_pendientes"
+  ADD COLUMN "usuario_id" INTEGER;
+
+ALTER TABLE "public"."inv_bodegas_movimiento_justificaciones_pendientes"
+  ADD COLUMN "fecha_registro" TIMESTAMP(1) WITHOUT TIME ZONE;
+
+ALTER TABLE "public"."inv_bodegas_movimiento_justificaciones_pendientes"
+  ALTER COLUMN "fecha_registro" SET DEFAULT now();
+
+ALTER TABLE "public"."inv_bodegas_movimiento_justificaciones_pendientes"
+  ADD COLUMN "justificacion_auditor" TEXT;

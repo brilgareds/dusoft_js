@@ -837,8 +837,8 @@ function __ingresar_justificaciones_despachos(documento_temporal_id, usuario_id,
 
     console.log('========= ingresar_justificaciones_despachos =========');
 
-    var sql = " INSERT INTO inv_bodegas_movimiento_justificaciones_pendientes ( empresa_id, prefijo, numero, codigo_producto, cantidad_pendiente, observacion, existencia ) \
-                SELECT $3 AS empresa_id, $4 AS prefijo, $5 AS numero, codigo_producto, cantidad_pendiente, observacion, existencia FROM inv_bodegas_movimiento_tmp_justificaciones_pendientes\
+    var sql = " INSERT INTO inv_bodegas_movimiento_justificaciones_pendientes ( empresa_id, prefijo, numero, codigo_producto, cantidad_pendiente, observacion, existencia, usuario_id, justificacion_auditor ) \
+                SELECT $3 AS empresa_id, $4 AS prefijo, $5 AS numero, codigo_producto, cantidad_pendiente, observacion, existencia, usuario_id, justificacion_auditor FROM inv_bodegas_movimiento_tmp_justificaciones_pendientes\
                 WHERE doc_tmp_id = $1 AND usuario_id = $2 ;  ";
 
     G.db.transaction(sql, [documento_temporal_id, usuario_id, empresa_id, prefijo_documento, numero_documento], callback);

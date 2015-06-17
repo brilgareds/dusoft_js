@@ -16,10 +16,8 @@ define(["angular", "js/controllers",'models/ClientePedido',
                     documento_despacho, Caja, $modal) {
 
         $scope.rootEditarProducto = {}; 
-        //$scope.rootEditarProducto.producto = angular.copy(producto);
         $scope.rootEditarProducto.producto  = producto;
-        //console.log("lote por producto ", $scope.rootEditarProducto.producto)
-         //$scope.rootEditarProducto.producto.cantidad_solicitada = 120;
+
         $scope.rootEditarProducto.pedido   = angular.copy(documento.getPedido());
         $scope.rootEditarProducto.documento = documento;
         $scope.rootEditarProducto.producto.lote.cantidad_ingresada = $scope.rootEditarProducto.producto.cantidad_separada;
@@ -34,9 +32,6 @@ define(["angular", "js/controllers",'models/ClientePedido',
             {descripcion: "Por presentacion"}
         ];
 
-        /*console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> documento_despacho code 2 ");
-        console.log(documento_despacho);
-        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");*/
 
         var that = this;
 
@@ -59,7 +54,6 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
                      if(data.status === 200){
                          $scope.rootEditarProducto.mostrarJustificacion = ($scope.rootEditarProducto.producto.lote.justificacion_auditor.length > 0)?true:false;
-                        // console.log("justificacion auditor ",$scope.rootEditarProducto.producto.lote.justificacion_auditor);
                         var lotes = data.obj.existencias_producto;
                         var lotesDisponibles = [];
                         $scope.rootEditarProducto.producto.disponible = data.obj.disponibilidad_bodega;
@@ -116,7 +110,6 @@ define(["angular", "js/controllers",'models/ClientePedido',
                          lote.seleccionado = true;
                          lote.numero_caja = lotes[i].numero_caja;
                          lote.setTipoCaja(lotes[i].tipo_caja);
-                        // $scope.rootEditarProducto.seleccionados.push(lote);
                          $scope.rootEditarProducto.producto.agregarLote(lote);
 
                      }
@@ -181,14 +174,10 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
         $scope.lotes_producto = {
              data: 'rootEditarProducto.producto.lotesSeleccionados',
-            // enableColumnResize: true,
-            // enableHighlighting: true,
              enableRowSelection: true,
              showFilter:true,
-             //rowTemplate: '<div ng-click="seleccionFilaLote(row)" ng-style="{ cursor: row.cursor }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" class="ngCell {{col.cellClass}}"><div class="ngVerticalBar" ng-style="{height: rowHeight}" ng-class="{ ngVerticalBarVisible: !$last }">&nbsp;</div><div ng-cell></div></div>',
              selectedItems:[],
              columnDefs: [     
-                // {field: '', displayName: '', width:30, cellTemplate:'<input type="checkbox" ng-model="" />'},
                  {field: 'codigo_lote', displayName: 'Código Lote'},
                  {field: 'fecha_vencimiento', displayName: 'Fecha Vencimiento'},
                  {field: 'existencia_actual', displayName: 'Existencia'},
@@ -198,12 +187,6 @@ define(["angular", "js/controllers",'models/ClientePedido',
                          <div ng-switch-when="1"><span ng-if="row.entity.numero_caja > 0">Nevera - {{row.entity.numero_caja}}</span></div>\
                      </div>'
                  },
-                /* {field: 'tipoCaja', displayName: 'Tipo', cellClass: "ngCellText",
-                     cellTemplate: '<div ng-switch="row.entity.tipoCaja">\
-                         <div ng-switch-when="0">Caja</div>\
-                         <div ng-switch-when="1">Nevera</div>\
-                     </div>'
-                 },*/
                  {field:'cantidad_ingresada', displayName:'Cantidad', cellTemplate:'<div class="col-xs-12"><input type="text"  ng-focus="onCantidadFocus(row)" ng-model="row.entity.cantidad_ingresada" validacion-numero class="form-control grid-inline-input" ng-disabled="row.entity.seleccionado"  ng-change="onCantidadIngresadaChange(row)"'+
                           'ng-model="row.entity.cantidad_ingresada" ng-disabled="row.entity.numero_caja > 0" /></div>'},
                  {field: 'opciones', displayName: "Cambiar", cellClass: "txt-center", width: "10%",
@@ -218,9 +201,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
              ],
              beforeSelectionChange:function(row, event){
-                 
-                 console.log("row selected ", row.entity.seleccionado);
-               
+                                
                if(!row.entity || row.entity.cantidad_ingresada === 0 || row.entity.numero_caja > 0 || !row.entity.seleccionado ){
                    return false;
                }
@@ -247,7 +228,6 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
          $scope.duplicarLote = function(lote, row){
 
-            // console.log("lote a duplicar ", lote, " index ",row);
              var _lote = angular.copy(lote);
              _lote.item_id = 0;
              _lote.numero_caja = 0;
@@ -258,9 +238,6 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
          $scope.onCantidadFocus = function(row){
              var cantidad_ingresada = row.entity.cantidad_ingresada;
-            //
-            // console.log("cantidad_ingresada ",cantidad_ingresada, row.entity );
-
 
              if(cantidad_ingresada > 0){
                  row.entity.cantidad_ingresada = cantidad_ingresada;
@@ -310,7 +287,6 @@ define(["angular", "js/controllers",'models/ClientePedido',
                  }
              };
 
-             //console.log("eliminar lote ", obj);
 
              Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.ELIMINAR_ITEM_TEMPORAL, "POST", obj, function(data) {
 
@@ -340,8 +316,6 @@ define(["angular", "js/controllers",'models/ClientePedido',
          that.agregarLoteAlTemporal = function(lote){
            $scope.rootEditarProducto.validacionlote = that.esCantidadIngresadaValida(lote);
 
-             //console.log("cantidad ingresada ", lote.cantidad_ingresada, " validacion ", $scope.rootEditarProducto.validacionlote );
-
              if(lote.cantidad_ingresada === 0 || lote.cantidad_ingresada === '' || !$scope.rootEditarProducto.validacionlote.valido){
                  $scope.rootEditarProducto.mostrarJustificacion = false;
                  $scope.rootEditarProducto.validacionproducto.valido = false;
@@ -361,7 +335,6 @@ define(["angular", "js/controllers",'models/ClientePedido',
              $scope.rootEditarProducto.mostrarJustificacion = that.esJustificacionNecesaria();
 
 
-             console.log(">>>>>>>>>>>>>>>>>>>>>>> documento de despacho ",documento_despacho);
               var obj = {
                  session:$scope.session,
                  data:{
@@ -384,11 +357,9 @@ define(["angular", "js/controllers",'models/ClientePedido',
                  }
              };
 
-             //console.log("params to send ",obj);
 
             Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.MODIFICAR_DETALLE_TEMPORAL, "POST", obj, function(data) {
 
-                // console.log("respuesta al modificar lote ",data);
                  if(data.status === 200){
                      lote.item_id = data.obj.documento_temporal.item_id;
                      that.traerDisponibles(function(data){
@@ -415,7 +386,6 @@ define(["angular", "js/controllers",'models/ClientePedido',
              //var cantidad_ingresada = $scope.rootEditarProducto.producto.obtenerCantidadSeleccionada();
              var cantidad_por_lote  = $scope.rootEditarProducto.producto.obtenerCantidadSeleccionadaPorLote(lote.codigo_lote);
 
-             console.log("cantidad ingresada >>>>>>> ", cantidad_ingresada, " solicitada ",$scope.rootEditarProducto.producto.cantidad_solicitada, " por lote ",cantidad_por_lote, " disponible ", $scope.rootEditarProducto.producto.disponible);
              obj.cantidad_ingresada = cantidad_ingresada;
 
              if(cantidad_ingresada === 0){
@@ -427,7 +397,6 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
 
              if(cantidad_ingresada > $scope.rootEditarProducto.producto.cantidad_pendiente){
-                 console.log("cantidad_ingresada ",cantidad_ingresada ," pendiente ",$scope.rootEditarProducto.producto.cantidad_pendiente );
                  obj.valido  = false;
                  obj.mensaje = "La cantidad ingresada, debe ser menor o igual a la cantidad pendiente!!.";
                  return obj;
@@ -439,7 +408,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                  lote.cantidad_ingresada = 0;
                  obj.valido  = false;
                  obj.mensaje = "La cantidad ingresada, NO PUEDE SER MAYOR A la Disponibilidad en BODEGA!!.";
-                 console.log("lote.cantidad_ingresada ",lote.cantidad_ingresada, "$scope.rootEditarProducto.producto.disponible", $scope.rootEditarProducto.producto.disponible);
+
                  return obj;
              }
 
@@ -463,7 +432,6 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
 
              if($scope.rootEditarProducto.validacionlote.valido === false && parseInt($scope.rootEditarProducto.producto.disponible) > 0 ){
-                 console.log("validacion lote ", $scope.rootEditarProducto.validacionlote);
                  $scope.rootEditarProducto.validacionproducto.valido = $scope.rootEditarProducto.validacionlote.valido;
                  $scope.rootEditarProducto.validacionproducto.mensaje = $scope.rootEditarProducto.validacionlote.mensaje;
 
@@ -475,16 +443,14 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
              if($scope.rootEditarProducto.mostrarJustificacion && $scope.rootEditarProducto.producto.lote.justificacion_auditor.length < 10){
                  $scope.rootEditarProducto.validacionproducto.valido = false;
-                 $scope.rootEditarProducto.validacionproducto.mensaje = "Se debe ingresar la justificación del auditor";
+                 $scope.rootEditarProducto.validacionproducto.mensaje = "Se debe seleccionar la justificación del auditor";
                  return;
              }
 
-            console.log("lotes seleccionados >>>>>>>>>>>>>>>>>",$scope.rootEditarProducto.producto.lotesSeleccionados);
 
              //validar que los productos seleccionados tengan cajas
              for(var i in $scope.rootEditarProducto.producto.lotesSeleccionados){
                  var lote = $scope.rootEditarProducto.producto.lotesSeleccionados[i];
-                 console.log("validando caja en ", lote);
                  if(lote.seleccionado && (lote.numero_caja === 0 || isNaN(lote.numero_caja) || !lote.numero_caja) ){
                      $scope.rootEditarProducto.validacionproducto.valido = false;
                      $scope.rootEditarProducto.validacionproducto.mensaje = "El lote codigo: "+lote.codigo_lote+ ", esta seleccionado y no tiene caja asignada.";
@@ -495,7 +461,6 @@ define(["angular", "js/controllers",'models/ClientePedido',
              }
 
              if($scope.rootEditarProducto.producto.obtenerCantidadSeleccionada() > 0){
-                 console.log($scope.rootEditarProducto.producto.lotesSeleccionados.length, "seleccionados >>>>");
                  that.auditarItemsSeleccionados(0);
              } else {
                  that.justificarPendiente();
@@ -531,7 +496,6 @@ define(["angular", "js/controllers",'models/ClientePedido',
                  //console.log("params to send ",obj, lote);
                  //return;
                 Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.AUDITAR_DOCUMENTO_TEMPORAL, "POST", obj, function(data) {
-                    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>> justificar pendiente ", data);
                      if(data.status === 200){
                         $rootScope.$emit("productoAuditado", $scope.rootEditarProducto.producto, $scope.rootEditarProducto.documento);
                         $modalInstance.close();
@@ -579,8 +543,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                          justificacion:$scope.rootEditarProducto.producto.lote.justificacion_separador
                      };
                  }
-                 //console.log("params to send ",obj, lote);
-                 //return;
+
                 Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.AUDITAR_DOCUMENTO_TEMPORAL, "POST", obj, function(data) {
 
                      if(data.status === 200){
@@ -597,17 +560,6 @@ define(["angular", "js/controllers",'models/ClientePedido',
          that.esJustificacionNecesaria = function(){
              if($scope.rootEditarProducto.producto === undefined) return;
 
-             console.log("separada ",$scope.rootEditarProducto.producto.cantidad_separada, " solicitada ",$scope.rootEditarProducto.producto.cantidad_solicitada
-                 , " lengt just",$scope.rootEditarProducto.producto.lote.justificacion_auditor.length, " justificacion auditor ",$scope.rootEditarProducto.producto.lote.justificacion_auditor);
-
-
-             /*if($scope.rootEditarProducto.producto.obtenerCantidadSeleccionada() < 
-                 $scope.rootEditarProducto.producto.cantidad_solicitada ){
-
-                     return true;
-
-             }*/
-
              if($scope.rootEditarProducto.producto.cantidad_pendiente > 0){
                  return true;
              }
@@ -616,7 +568,6 @@ define(["angular", "js/controllers",'models/ClientePedido',
          };
 
          $scope.onValidarCaja = function(){
-            // console.log("formato de caja ",isNaN($scope.rootEditarProducto.caja.numero))
 
          };
 
@@ -632,9 +583,6 @@ define(["angular", "js/controllers",'models/ClientePedido',
              if(isNaN($scope.rootEditarProducto.caja.getNumero()) || $scope.rootEditarProducto.caja.getNumero() === 0 ||
                       isNaN($scope.rootEditarProducto.caja.getTipo())){
 
-                  console.log("numero de caja ", isNaN($scope.rootEditarProducto.caja.getNumero()), $scope.rootEditarProducto.caja.getNumero());
-                  console.log("tipo de caja ", isNaN($scope.rootEditarProducto.caja.getTipo()),  $scope.rootEditarProducto.caja.getTipo());
-
                  $scope.rootEditarProducto.validacionproducto.valido = false;
                  $scope.rootEditarProducto.caja.setValida(false);
                  $scope.rootEditarProducto.validacionproducto.mensaje = "El número o el tipo no son validos";
@@ -645,7 +593,6 @@ define(["angular", "js/controllers",'models/ClientePedido',
              var cliente = (!$scope.rootEditarProducto.pedido.cliente)?$scope.rootEditarProducto.pedido.farmacia:$scope.rootEditarProducto.pedido.cliente;
 
              var url = API.DOCUMENTOS_TEMPORALES.VALIDAR_CAJA;
-              //console.log($scope.rootEditarProducto.pedido.farmacia, " cliente ", cliente);
              var obj = {
                  session:$scope.session,
                  data:{
@@ -665,7 +612,6 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
                  if(data.status === 200){
                      var obj = data.obj.movimientos_bodegas;
-                      console.log("obj for box ",obj);
                      //$scope.rootEditarProducto.caja.valida = obj.caja_valida;
                      if(!obj.caja_valida){
                          $scope.rootEditarProducto.validacionproducto.valido = false;
@@ -790,7 +736,6 @@ define(["angular", "js/controllers",'models/ClientePedido',
              };
 
              Request.realizarRequest(url, "POST", obj, function(data) {
-                 console.log(data);
                  if(data.status === 200){
 
                      $scope.cerrar = true;

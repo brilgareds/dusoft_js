@@ -87,7 +87,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             */
            
-           $scope.rootCreaPedidoFarmacia.empresasDestino = Usuario;
+           $scope.rootCreaPedidoFarmacia.empresasDestino = Usuario.getUsuarioActual().getEmpresa().getCentrosUtilidad();
            
            $scope.rootCreaPedidoFarmacia.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
            
@@ -217,29 +217,65 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             /******************** DROPDOWN PARA ***********************/
 
             that.consultarEmpresasPara = function(callback) {
+                
+                //Recorrer Listado de Centros Utilidad y Crear lista de farmacias Destino
+                
+                $scope.rootCreaPedidoFarmacia.para_lista_empresas = [];
+                $scope.rootCreaPedidoFarmacia.para_lista_centro_utilidad = [];
+                
+                $scope.rootCreaPedidoFarmacia.empresasDestino.forEach(function(obj){
 
-                var obj = {
-                    session: $scope.rootCreaPedidoFarmacia.session,
-                    data: {}
-                };
+                    obj_empresa = {
+                        empresa_id: obj.empresaId,
+                        nombre_empresa: obj.nombreEmpresa
+                    };
+                    
+                    var existe = false;
 
-                Request.realizarRequest(API.PEDIDOS.LISTAR_FARMACIAS, "POST", obj, function(data) {
+                    if($scope.rootCreaPedidoFarmacia.para_lista_empresas.length > 0){
 
-                    if (data.status === 200) {
-                        $scope.rootCreaPedidoFarmacia.para_lista_empresas = data.obj.lista_farmacias;
+                        existe = $scope.rootCreaPedidoFarmacia.para_lista_empresas.some(function(empresa){
+                            return obj.empresaId === empresa.empresa_id;
+                        });
                         
-                        if(callback !== undefined && callback !== ""){
-                            callback();
+                        if(existe === false) {
+                            $scope.rootCreaPedidoFarmacia.para_lista_empresas.push(obj_empresa);
                         }
                     }
-
+                    else {
+                        $scope.rootCreaPedidoFarmacia.para_lista_empresas.push(obj_empresa);
+                    }
+                    
                 });
+                
+                if(callback !== undefined && callback !== ""){
+                    callback();
+                }
+                
+//                var obj = {
+//                    session: $scope.rootCreaPedidoFarmacia.session,
+//                    data: {}
+//                };
+//
+//                Request.realizarRequest(API.PEDIDOS.LISTAR_FARMACIAS, "POST", obj, function(data) {
+//
+//                    if (data.status === 200) {
+//                        
+//                        $scope.rootCreaPedidoFarmacia.para_lista_empresas = data.obj.lista_farmacias;
+//                        
+//                        if(callback !== undefined && callback !== ""){
+//                            callback();
+//                        }
+//                    }
+//
+//                });
 
             };
 
             that.consultarCentrosUtilidadPara = function(empresa_id, callback) {
                 
                 var para_seleccion_empresa = "";
+                $scope.rootCreaPedidoFarmacia.para_lista_centro_utilidad = [];
                 
                 if(empresa_id !== undefined && empresa_id !== ""){
                     para_seleccion_empresa = empresa_id;
@@ -253,28 +289,46 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     }
                 }
                     
-
-                var obj = {
-                    session: $scope.rootCreaPedidoFarmacia.session,
-                    data: {
-                        pedidos_farmacias: {
-                            empresa_id: para_seleccion_empresa
-                        }
+                $scope.rootCreaPedidoFarmacia.empresasDestino.forEach(function(obj){
+                    
+                    if(para_seleccion_empresa === obj.empresaId) {
+                        
+                        obj_centro_utilidad = {
+                            centro_utilidad_id: obj.codigo,
+                            nombre_centro_utilidad: obj.nombre
+                        };
+                        
+                        $scope.rootCreaPedidoFarmacia.para_lista_centro_utilidad.push(obj_centro_utilidad);
+                        
                     }
-                };
-                
-                Request.realizarRequest(API.PEDIDOS.CENTROS_UTILIDAD_FARMACIAS, "POST", obj, function(data) {
-
-                    if (data.status === 200) {
-                
-                        $scope.rootCreaPedidoFarmacia.para_lista_centro_utilidad = data.obj.lista_centros_utilidad;
-                
-                        if(callback !== undefined && callback !== ""){
-                            callback();
-                        }
-                    }
-
+                    
                 });
+                
+                if(callback !== undefined && callback !== ""){
+                    callback();
+                }
+                
+//                var obj = {
+//                    session: $scope.rootCreaPedidoFarmacia.session,
+//                    data: {
+//                        pedidos_farmacias: {
+//                            empresa_id: para_seleccion_empresa
+//                        }
+//                    }
+//                };
+//                
+//                Request.realizarRequest(API.PEDIDOS.CENTROS_UTILIDAD_FARMACIAS, "POST", obj, function(data) {
+//
+//                    if (data.status === 200) {
+//                
+//                        $scope.rootCreaPedidoFarmacia.para_lista_centro_utilidad = data.obj.lista_centros_utilidad;
+//                
+//                        if(callback !== undefined && callback !== ""){
+//                            callback();
+//                        }
+//                    }
+//
+//                });
             };
 
             that.consultarBodegaPara = function(empresa_id, centro_utilidad_id, callback) {
@@ -305,29 +359,55 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         para_seleccion_centro_utilidad = $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad.split(',')[0];
                     }
                 }
-
-                var obj = {
-                    session: $scope.rootCreaPedidoFarmacia.session,
-                    data: {
-                        pedidos_farmacias: {
-                            empresa_id: para_seleccion_empresa,
-                            centro_utilidad_id: para_seleccion_centro_utilidad
-                        }
-                    }
-                };
-
-                Request.realizarRequest(API.PEDIDOS.BODEGAS_FARMACIAS, "POST", obj, function(data) {
-
-                    if (data.status === 200) {
+                
+                /**/
+                $scope.rootCreaPedidoFarmacia.para_lista_bodegas = [];
+                
+                $scope.rootCreaPedidoFarmacia.empresasDestino.forEach(function(obj){
+                    
+                    if(para_seleccion_empresa === obj.empresaId && para_seleccion_centro_utilidad === obj.codigo) {
                         
-                        $scope.rootCreaPedidoFarmacia.para_lista_bodegas = data.obj.lista_bodegas;
-                        
-                        if(callback !== undefined && callback !== ""){
-                            callback();
-                        }
-                    }
+                        obj.bodegas.forEach(function(bodega){
+                            
+                            obj_bodega = {
+                                bodega_id: bodega.codigo,
+                                nombre_bodega: bodega.nombre
+                            };
+                            
+                            $scope.rootCreaPedidoFarmacia.para_lista_bodegas.push(obj_bodega);
+                            
+                        });
 
+                    }
+                    
                 });
+                
+                if(callback !== undefined && callback !== ""){
+                    callback();
+                }
+
+//                var obj = {
+//                    session: $scope.rootCreaPedidoFarmacia.session,
+//                    data: {
+//                        pedidos_farmacias: {
+//                            empresa_id: para_seleccion_empresa,
+//                            centro_utilidad_id: para_seleccion_centro_utilidad
+//                        }
+//                    }
+//                };
+//
+//                Request.realizarRequest(API.PEDIDOS.BODEGAS_FARMACIAS, "POST", obj, function(data) {
+//
+//                    if (data.status === 200) {
+//                        
+//                        $scope.rootCreaPedidoFarmacia.para_lista_bodegas = data.obj.lista_bodegas;
+//                        
+//                        if(callback !== undefined && callback !== ""){
+//                            callback();
+//                        }
+//                    }
+//
+//                });
             };
 
             /*************** EVENTO CARGA GRID **********************/

@@ -339,22 +339,26 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                         </div>'
                         },
                         {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "6%",
-                            cellTemplate: ' <div class="row">\n\
-                                                <button ng-if="!rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial() && row.entity.en_farmacia_seleccionada" class="btn btn-default btn-xs" ng-click="onIncluirProducto(row)" '+
-                                                ' ng-disabled="row.entity.cantidad_solicitada<=0 || row.entity.cantidad_solicitada==null || !expreg.test(row.entity.cantidad_solicitada)">\n\
-                                                    <span class="glyphicon glyphicon-plus-sign"> Incluir</span>\n\
-                                                </button>\n\
-                                                <button ng-if="!rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial() && !row.entity.en_farmacia_seleccionada" class="btn btn-default btn-xs" ng-click="" '+
-                                                ' ng-disabled="true">\n\
-                                                    <span class="glyphicon glyphicon-plus-sign"> Incluir</span>\n\
-                                                </button>\n\
-                                                <button ng-if="rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial() && row.entity.en_farmacia_seleccionada" class="btn btn-default btn-xs" ng-click="onIncluirProductoEspecial(row)" '+
-                                                ' ng-disabled="row.entity.cantidad_solicitada<=0 || row.entity.cantidad_solicitada==null || !expreg.test(row.entity.cantidad_solicitada)">\n\
-                                                    <span class="glyphicon glyphicon-plus-sign"> Incluir</span>\n\
-                                                </button>\n\
-                                                <button ng-if="rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial() && !row.entity.en_farmacia_seleccionada" class="btn btn-default btn-xs" ng-click="" '+
-                                                ' ng-disabled="true">\n\
-                                                    <span class="glyphicon glyphicon-plus-sign"> Incluir</span>\n\
+                            cellTemplate: ' <div class="row">\
+                                                <button ng-if="!rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial() && row.entity.en_farmacia_seleccionada && row.entity.estado==1" class="btn btn-default btn-xs" ng-click="onIncluirProducto(row)" '+
+                                                ' ng-disabled="row.entity.cantidad_solicitada<=0 || row.entity.cantidad_solicitada==null || !expreg.test(row.entity.cantidad_solicitada)">\
+                                                    <span class="glyphicon glyphicon-plus-sign"> Incluir</span>\
+                                                </button>\
+                                                <button ng-if="!rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial() && !row.entity.en_farmacia_seleccionada && row.entity.estado==1" class="btn btn-default btn-xs" ng-click="" '+
+                                                ' ng-disabled="true">\
+                                                    <span class="glyphicon glyphicon-plus-sign"> Incluir</span>\
+                                                </button>\
+                                                <button ng-if="rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial() && row.entity.en_farmacia_seleccionada && row.entity.estado==1" class="btn btn-default btn-xs" ng-click="onIncluirProductoEspecial(row)" '+
+                                                ' ng-disabled="row.entity.cantidad_solicitada<=0 || row.entity.cantidad_solicitada==null || !expreg.test(row.entity.cantidad_solicitada)">\
+                                                    <span class="glyphicon glyphicon-plus-sign"> Incluir</span>\
+                                                </button>\
+                                                <button ng-if="rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial() && !row.entity.en_farmacia_seleccionada && row.entity.estado==1" class="btn btn-default btn-xs" ng-click="" '+
+                                                ' ng-disabled="true">\
+                                                    <span class="glyphicon glyphicon-plus-sign"> Incluir</span>\
+                                                </button>\
+                                                <button ng-if="row.entity.estado==0" class="btn btn-default btn-xs" ng-click="" '+
+                                                ' ng-disabled="true">\
+                                                    <span class="glyphicon glyphicon-plus-sign"> Bloqueado</span>\
                                                 </button>\n\
                                             </div>'
                         }

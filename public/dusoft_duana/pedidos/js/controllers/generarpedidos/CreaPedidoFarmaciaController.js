@@ -289,7 +289,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     }
                     else {
                         para_seleccion_empresa = $scope.rootCreaPedidoFarmacia.para_seleccion_empresa.split(',')[0];
-                        console.log("para_seleccion_empresa: ", para_seleccion_empresa);
+                        console.log("para_seleccion_empresa in function: ", para_seleccion_empresa);
                     }
                 }
                     

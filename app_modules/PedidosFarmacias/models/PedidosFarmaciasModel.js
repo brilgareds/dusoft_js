@@ -814,37 +814,20 @@ PedidosFarmaciasModel.prototype.listar_pedidos_pendientes_by_producto = function
                 b.cantidad_pendiente,\
                 d.usuario_id,\
                 d.usuario,\
-                a.fecha_registro \
+                a.fecha_registro, \
+                e.justificacion_separador,\
+                e.justificacion_auditor\
                 from solicitud_productos_a_bodega_principal a \
                 inner join solicitud_productos_a_bodega_principal_detalle b on a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id\
                 inner join empresas c on a.farmacia_id = c.empresa_id\
                 inner join system_usuarios d on a.usuario_id = d.usuario_id \
+                left join(\
+                      select bb.observacion as justificacion_separador, bb.justificacion_auditor, aa.solicitud_prod_a_bod_ppal_id, bb.codigo_producto\
+                      from inv_bodegas_movimiento_despachos_farmacias aa\
+                      inner join inv_bodegas_movimiento_justificaciones_pendientes bb on aa.numero = bb.numero and aa.prefijo = bb.prefijo\
+                ) e on e.solicitud_prod_a_bod_ppal_id = a.solicitud_prod_a_bod_ppal_id  and e.codigo_producto = b.codigo_producto\
                 where a.empresa_destino = $1 and b.codigo_producto = $2 and b.cantidad_pendiente > 0 ; ";
 
-   /* var sql = " select \
-                a.solicitud_prod_a_bod_ppal_id as numero_pedido,\
-                a.cantidad_pendiente,\
-                a.cantidad_solicitada,\
-                a.farmacia_id,\
-                b.razon_social,\
-                a.usuario_id,\
-                c.usuario,\n\
-                a.fecha_registro \
-                from \
-                (  \
-                  select \
-                  a.solicitud_prod_a_bod_ppal_id,\
-                  a.cantidad_pendiente,\
-                  a.cantidad_solic as cantidad_solicitada,\
-                  a.farmacia_id,\
-                  b.usuario_id,\n\
-                  b.fecha_registro   \
-                  from solicitud_productos_a_bodega_principal_detalle a \
-                  inner join solicitud_productos_a_bodega_principal b on a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id\
-                  where b.empresa_destino = $1 and a.codigo_producto= $2 and b.sw_despacho = '0'  \
-                ) as a \
-                inner join empresas b on a.farmacia_id = b.empresa_id\
-                inner join system_usuarios c on a.usuario_id = c.usuario_id";*/
 
     G.db.query(sql, [empresa, codigo_producto], function(err, rows, result) {
         callback(err, rows);

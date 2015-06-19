@@ -3,7 +3,7 @@
   "angular", "socketservice", "route",
   "bootstrap","js/controllers", "js/models",
    "js/services",  "js/directive", "nggrid", "includes/validation/ValidacionNumero", "includes/validation/ValidacionNumeroEntero","includes/widgets/InputCheck",
-  "controllers/asignarpedidos/PedidosController","controllers/asignarpedidos/PedidosClientesController", "controllers/asignarpedidos/PedidosFarmaciasController",  "uiselect2", 
+  "controllers/asignarpedidos/PedidosController","controllers/asignarpedidos/PedidosClientesController", "controllers/asignarpedidos/PedidosFarmaciasController", "uiselect2", 
   "controllers/auditoriapedidos/AuditoriaPedidosController",  "controllers/auditoriapedidos/DetallepedidoSeparadoClienteController", "controllers/generarpedidos/CotizacionesController",
   "controllers/auditoriapedidos/DetallepedidoSeparadoFarmaciaController", "controllers/generarpedidos/CreaCotizacionesController","controllers/generarpedidos/SeleccionClienteController",
   "controllers/generarpedidos/SeleccionProductoClienteController", "controllers/generarpedidos/SeleccionProductoFarmaciaController", "controllers/generarpedidos/CreaPedidoFarmaciaController",
@@ -28,6 +28,7 @@
           'Url',
           'services',
           'ui.select2',
+          //'ui.select',
           'LocalStorageModule',
           'flow'
       ]);

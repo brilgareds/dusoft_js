@@ -22,6 +22,7 @@ requirejs.config({
         socket:"../includes/socket/socket.io/socket.io",
         socketservice:"../includes/socket/socket",
         uiselect2:"../../javascripts/uiselect2",
+        //uiselect2:"../../javascripts/select",
         storage:"../../javascripts/angular/storage",
         httpinterceptor:"../includes/http/HttpInterceptor",
         dragndropfile:"../../javascripts/dragndropfile/ng-flow-standalone",
@@ -63,6 +64,9 @@ requirejs.config({
         "uiselect2":{
             deps:["angular","select"]
         },
+//        "uiselect2":{
+//            deps:["angular","jquery"]
+//        },
         "storage":{
             deps:["angular"]
         },

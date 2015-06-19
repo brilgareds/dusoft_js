@@ -796,11 +796,18 @@ PedidosClienteModel.prototype.listar_pedidos_pendientes_by_producto = function(e
                 a.tercero_id,\
                 c.nombre_tercero,\
                 d.usuario,\
-                a.fecha_registro\
+                a.fecha_registro,\
+                e.justificacion_separador,\
+                e.justificacion_auditor\
                 FROM ventas_ordenes_pedidos a\
                 inner JOIN ventas_ordenes_pedidos_d AS b ON a.pedido_cliente_id = b.pedido_cliente_id\
                 inner JOIN terceros as c ON (a.tipo_id_tercero = c.tipo_id_tercero) AND (a.tercero_id = c.tercero_id)\
                 JOIN system_usuarios as d ON (a.usuario_id = d.usuario_id)\
+                left join(\
+                      select bb.observacion as justificacion_separador, bb.justificacion_auditor, aa.pedido_cliente_id, bb.codigo_producto\
+                      from inv_bodegas_movimiento_despachos_clientes aa\
+                      inner join inv_bodegas_movimiento_justificaciones_pendientes bb on aa.numero = bb.numero and aa.prefijo = bb.prefijo\
+                ) e on e.pedido_cliente_id = a.pedido_cliente_id  and e.codigo_producto = b.codigo_producto\
                 WHERE a.empresa_id = $1 and b.codigo_producto=$2 and a.estado = '1' and b.numero_unidades <> b.cantidad_despachada\
                 ORDER BY a.pedido_cliente_id; ";
 

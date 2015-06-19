@@ -80,11 +80,13 @@ define([
                         data: "producto.getPendientesFarmacia()",
                         enableHighlighting: true,
                         columnDefs: [
-                            {field: 'pedido.numero_pedido', displayName: 'Solicitud', width: "20%"},
-                            {field: 'pedido.cantidad_solicitada', displayName: 'Cant Solicitada', width: "20%"},
-                            {field: 'pedido.cantidad_pendiente', displayName: 'Cant Pendiente', width: "20%"},
-                            {field: 'pedido.farmacia.nombre_farmacia', displayName: 'Farmacia', width: "20%"},
-                            {field: 'pedido.usuario', displayName: 'Usuario', width: "20%"}
+                            {field: 'pedido.numero_pedido', displayName: 'Solicitud'},
+                            {field: 'pedido.cantidad_solicitada', displayName: 'Cant Solicitada'},
+                            {field: 'pedido.cantidad_pendiente', displayName: 'Cant Pendiente'},
+                            {field: 'pedido.farmacia.nombre_farmacia', displayName: 'Farmacia'},
+                            {field: 'pedido.usuario', displayName: 'Usuario'},
+                            {field: 'pedido.justificacionSeparador', displayName: 'Justificación separador'},
+                            {field: 'pedido.justificacionAuditor', displayName: 'Justificación auditor'}
                         ]
                     };
 
@@ -95,9 +97,12 @@ define([
                         columnDefs: [
                             {field: 'pedido.numero_pedido', displayName: 'Pedido'},
                             {field: 'pedido.cantidad_solicitada', displayName: 'Cant Solicitada'},
+                            {field: 'pedido.cantidad_pendiente', displayName: 'Cant Pendiente'},
                             {field: 'pedido.cliente.nombre_tercero', displayName: 'Cliente'},
                             {field: 'fecha_registro', displayName: 'Fecha'},
-                            {field: 'pedido.usuario', displayName: 'Usuario'}
+                            {field: 'pedido.usuario', displayName: 'Usuario'},
+                            {field: 'pedido.justificacionSeparador', displayName: 'Justificación separador'},
+                            {field: 'pedido.justificacionAuditor', displayName: 'Justificación auditor'}
                         ]
                     };
 
@@ -186,12 +191,15 @@ define([
                                         usuario: obj.usuario
                                     }
                             );
+                                
+                            pedido.justificacionSeparador= obj.justificacion_separador;
+                            pedido.justificacionAuditor  = obj.justificacion_auditor;
 
                             var farmacia = FarmaciaKardex.get(
                                     obj.farmacia_id,
                                     null,
                                     obj.razon_social
-                                    );
+                            );
 
                             pedido.setFarmacia(farmacia);
                             pendiente.setPedido(pedido);
@@ -213,13 +221,16 @@ define([
                                         usuario: obj.usuario
                                     }
                             );
+                                
+                            pedido.justificacionSeparador = obj.justificacion_separador;
+                            pedido.justificacionAuditor  = obj.justificacion_auditor;
 
                             var cliente = ClienteKardex.get(
                                     obj.nombre_tercero,
                                     null,
                                     obj.tipo_id_tercero,
                                     obj.tercero_id
-                                    );
+                            );
 
                             pedido.setCliente(cliente);
                             pendiente.setPedido(pedido);

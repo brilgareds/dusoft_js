@@ -98,7 +98,7 @@ UsuariosModel.prototype.guardarUsuario = function(usuario, callback) {
                 });
 
             } else if (usuario.clave.length > 0) {
-                self.cambiar_contrasenia(usuario.usuario, usuario.clave, function(err, rows) {
+                self.cambiar_contrasenia(usuario.usuario, usuario.clave, function(err) {
                     if (err) {
                         callback(err, rows);
                         return;
@@ -128,7 +128,7 @@ UsuariosModel.prototype.insertarUsuario = function(usuario, callback) {
 
 
     G.db.query(sql, params, function(err, rows, result) {
-        var usuario_id = (rows) ? rows[0] : undefined;
+        var usuario_id = (rows.length > 0) ? rows[0] : undefined;
         callback(err, usuario_id);
     });
 };
@@ -144,7 +144,7 @@ UsuariosModel.prototype.modificarUsuario = function(usuario, callback) {
     ];
 
     G.db.query(sql, params, function(err, rows, result) {
-        var usuario_id = (rows) ? rows[0] : undefined;
+        var usuario_id = (rows.length > 0) ? rows[0] : undefined;
         callback(err, usuario_id, result);
     });
 };
@@ -532,10 +532,11 @@ UsuariosModel.prototype.obtenerCentrosUtilidadUsuario = function(empresa_id, log
         });
     } else {
         
-        var sql = " SELECT bb.estado AS seleccionado_usuario, bb.centro_utilidad_id, bb.empresa_id, cc.razon_social AS nombre_empresa FROM login_empresas AS aa\
+        var sql = " SELECT bb.estado AS seleccionado_usuario, bb.centro_utilidad_id, bb.empresa_id, cc.razon_social AS nombre_empresa, dd.descripcion FROM login_empresas AS aa\
                     INNER JOIN login_centros_utilidad_bodega bb ON bb.login_empresa_id = aa.id\
                     INNER JOIN empresas cc ON bb.empresa_id = cc.empresa_id\
-                    WHERE aa.login_id = $1 AND aa.estado = '1' GROUP BY 1,2,3,4";
+                    INNER JOIN centros_utilidad dd ON bb.centro_utilidad_id = dd.centro_utilidad and dd.empresa_id = bb.empresa_id\
+                    WHERE aa.login_id = $1 AND aa.estado = '1' GROUP BY 1,2,3,4,5";
         
         G.db.query(sql, [login_id], function(err, rows, result) {
             callback(err, rows, result);
@@ -987,12 +988,49 @@ function __validarCreacionUsuario(that, usuario, callback) {
         return;
     }
 
-    /* if (usuario.clave && usuario.clave.length < 5) {
-     validacion.valido = false;
-     validacion.msj = "El usuario debe tener una clave valida de 6 caracteres";
-     callback(validacion);
-     return;
-     }*/
+    if (usuario.clave && usuario.clave.length > 0) {
+        
+        if(usuario.clave.length < 6){
+            validacion.valido = false;
+            validacion.msj = "La contraseña debe tener al menos 6 caracteres";
+            callback(validacion);
+            return;
+        }
+        
+        if(usuario.clave === usuario.usuario){
+            validacion.valido = false;
+            validacion.msj = "La contraseña debe ser diferente al nombre de usuario";
+            callback(validacion);
+            return;
+        }
+        
+        var re = /[0-9]/;
+        
+        if(!re.test(usuario.clave)) {
+            validacion.valido = false;
+            validacion.msj = "La clave debe contener por lo menos un número";
+            callback(validacion);
+            return;
+        }
+        
+        re = /[a-z]/;
+        
+        if(!re.test(usuario.clave)) {
+            validacion.valido = false;
+            validacion.msj = "La clave debe tener al menos una letra en minuscula";
+            callback(validacion);
+            return;
+        }
+        
+        re = /[A-Z]/;
+        
+        if(!re.test(usuario.clave)) {
+            validacion.valido = false;
+            validacion.msj = "La clave debe tener al menos una letra en mayuscula";
+            callback(validacion);
+            return;
+        }
+    }
 
     if (usuario.email === undefined || usuario.email.length === 0) {
         validacion.valido = false;

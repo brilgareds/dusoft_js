@@ -14,7 +14,6 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                 Modulo, RolModulo, ParametrizacionService, CentroUtilidad, Bodega) {
 
             var self = this;
-            console.log("usuario >>>>>>>", Usuario)
             $scope.estadoBodegas = false;
             $scope.rootUsuario = {
             };
@@ -106,7 +105,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                      headerCellTemplate: "<div class=\"ngHeaderSortColumn {{col.headerClass}}\" ng-style=\"{'cursor': col.cursor}\" ng-class=\"{ 'ngSorted': !noSortVisible }\"> \
                                             <div ng-click=\"col.sort($event)\" ng-class=\"'colt' + col.index\" class=\"ngHeaderText text-center\"> \
                                                 {{col.displayName}} \
-                                                <input-check ng-model='estadoBodegas' ng-disabled='!rootUsuario.empresaSeleccionada.getCentroUtilidadSeleccionado().getBodegas() > 0' ng-change='onSeleccionMultipleBodegas(estadoBodegas)' > \
+                                                <input type='checkbox' ng-model='estadoBodegas' ng-disabled='!rootUsuario.empresaSeleccionada.getCentroUtilidadSeleccionado().getBodegas() > 0' ng-change='onSeleccionMultipleBodegas(estadoBodegas)' > \
                                             </div> \
                                         </div>",
                         cellTemplate: '<div ng-if="row.entity.estado" style="color:#5cb85c;"><i class="glyphicon glyphicon-ok icon-success"></i></div>'},
@@ -658,10 +657,8 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
 
             $scope.seleccionarCentroUtilidad = function(centroUtilidad) {
                 
-                $timeout(function () {
-                    $scope.estadoBodegas = false;
-                    console.log("centro de utilidad >>>>>>>>>>>>>>>>");
-                });
+                $scope.estadoBodegas = false;
+                console.log("centro de utilidad >>>>>>>>>>>>>>>>>>>>>>>");
                 
                 $scope.rootUsuario.empresaSeleccionada.setCentroUtilidadSeleccionado(centroUtilidad);
                 self.traerBodegasUsuario(function() {
@@ -1062,11 +1059,9 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                     if (data.status === 200) {
                         var _usuario = data.obj.parametrizacion_usuarios.usuario;
                         if (_usuario) {
-                            var id = data.obj.parametrizacion_usuarios.usuario.usuario_id;
+                            var id = _usuario.usuario_id;
                             $scope.rootUsuario.usuarioAGuardar.setId(id);
                         }
-
-                        console.log("usuario guardado ", $scope.rootUsuario.usuarioAGuardar);
 
                         AlertService.mostrarMensaje("success", "Usuario guardado correctamente");
 
@@ -1095,7 +1090,6 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
 
                 $scope.opciones_archivo.upload();
 
-                console.log("file data ", $scope.opciones_archivo.opts);
 
             };
 

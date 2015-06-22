@@ -198,12 +198,28 @@
                     Centro Utilidad
                 </tab-heading>
                 
-                        
+                         <div class="input-group contenedorBuscarRol">
+
+                            <input type="text" class="form-control pull-right input-sm" ng-keypress="onBuscarCentroUtilidad($event)" ng-model="rootUsuario.termino_busqueda_centro" placeholder="Buscar Centro Utilidad" />
+                            <div class="input-group-btn" >
+                                <button class="btn btn-default input-sm" type="submit" ng-click="onBuscarCentroUtilidad({which:13})"><i class="glyphicon glyphicon-search"></i></button>
+                            </div>
+
+                        </div>
                         
                         <div class="table-responsive tablaRoles" >
                             <div class="grid-responsive listado_centros_utilidad" ng-grid="listado_centros_utilidad">
 
                             </div>
+                        </div>
+                
+                        <div class="row text-center">
+                            <button type="button" class="btn btn-default btn-medium" ng-disabled="rootUsuarios.paginaActualCentros == 1" ng-click="paginaAnteriorCentros()">
+                                <span class="glyphicon glyphicon-chevron-left" ></span>
+                            </button>
+                            <button type="button" class="btn btn-default btn-medium" ng-disabled="rootUsuario.empresaSeleccionada.centrosUtilidad.length == 0" ng-click="paginaSiguienteCentros()">
+                                <span class="glyphicon glyphicon-chevron-right" ></span>
+                            </button>
                         </div>
                         
                         

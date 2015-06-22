@@ -29,11 +29,16 @@
                             <div class="row">
                                 <div class="col-md-3">
                                     <p class="input-group col-md-12">
-
-                                        <select ui-select2=""  class="form-control selectgeneral pull-left" ng-model="$parent.laboratorio_id"  placeholder="Seleccionar laboratorio" ng-change="seleccionar_laboratorio()">
+                                        <!--select ui-select2=""  class="form-control selectgeneral pull-left" ng-model="$parent.laboratorio_id"  placeholder="Seleccionar laboratorio" ng-change="seleccionar_laboratorio()">
                                             <option></option>      
                                             <option ng-repeat="laboratorio in  Empresa.get_laboratorios()"  value="{{laboratorio.id}}">{{ laboratorio.descripcion }}</option>
-                                        </select>
+                                        </select-->
+                                        <ui-select ng-disabled="vista_previa"  ng-model="laboratorio_id" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_laboratorio(laboratorio_id)">
+                                            <ui-select-match  placeholder="Seleccionar proveedor">{{ $select.selected.get_nombre() }}</ui-select-match>
+                                            <ui-select-choices repeat="laboratorio in  Empresa.get_laboratorios() | filter:$select.search">
+                                                {{ laboratorio.get_nombre() }}
+                                            </ui-select-choices>
+                                        </ui-select>
                                     </p>
                                 </div>
 

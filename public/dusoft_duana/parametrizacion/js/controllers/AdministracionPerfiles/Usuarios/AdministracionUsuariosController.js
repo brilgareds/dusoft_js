@@ -15,7 +15,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
 
             var self = this;
             console.log("usuario >>>>>>>", Usuario)
-
+            $scope.estadoBodegas = false;
             $scope.rootUsuario = {
             };
 
@@ -25,7 +25,9 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
             $scope.rootUsuario.empresas = [];
 
             $scope.rootUsuario.termino_busqueda = "";
+            $scope.rootUsuario.termino_busqueda_centro = "";
             $scope.rootUsuario.paginaactual = 1;
+            $scope.rootUsuario.paginaActualCentros = 1;
 
             $scope.rootUsuario.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
@@ -74,15 +76,14 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
 
             $scope.listado_centros_utilidad = {
                 data: 'rootUsuario.empresaSeleccionada.getCentrosUtilidad()',
-                enableColumnResize: true,
+               // enableColumnResize: true,
                 enableRowSelection: false,
                 showFilter: true,
                 columnDefs: [
                     {field: 'opciones', displayName: "", cellClass: "txt-center", width: "10%",
                         cellTemplate: '<div ng-if="row.entity.estado" style="color:#5cb85c;"><i class="glyphicon glyphicon-ok icon-success"></i></div>'},
                     //{field: 'empresaId', displayName : 'Empresa', width:60},
-                    {field: 'codigo', displayName: 'Centro Utilidad'},
-                    {field: 'nombre', displayName: 'Nombre'},
+                    {field: 'nombre', displayName: 'Nombre', cellTemplate: '<div style="font-size:13px" class="ngCellText">{{row.entity.codigo}} - {{row.entity.nombre}}</div>'},
                     {field: 'opciones', displayName: "", cellClass: "txt-center dropdown-button", width: "18%",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción <span class="caret"></span></button>\
@@ -109,8 +110,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                                             </div> \
                                         </div>",
                         cellTemplate: '<div ng-if="row.entity.estado" style="color:#5cb85c;"><i class="glyphicon glyphicon-ok icon-success"></i></div>'},
-                    {field: 'codigo', displayName: 'Bodega', width: 120},
-                    {field: 'nombre', displayName: 'Observacion'},
+                    {field: 'nombre', displayName: 'Observacion', cellTemplate: '<div style="font-size:13px" class="ngCellText">{{row.entity.codigo}} - {{row.entity.nombre}}</div>'},
                     {field: 'opciones', displayName: "", cellClass: "txt-center dropdown-button", width: "18%",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción <span class="caret"></span></button>\
@@ -323,22 +323,24 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
             };
 
             self.traerCentrosUtilidadUsuario = function(callback) {
-
+                
                 var obj = {
                     session: $scope.rootUsuario.session,
                     data: {
                         parametrizacion_usuarios: {
                             empresa_id: $scope.rootUsuario.empresaSeleccionada.getCodigo(),
-                            usuario_id: $scope.rootUsuario.usuarioAGuardar.getId()
+                            usuario_id: $scope.rootUsuario.usuarioAGuardar.getId(),
+                            pagina: $scope.rootUsuario.paginaActualCentros,
+                            termino: $scope.rootUsuario.termino_busqueda_centro
                         }
                     }
                 };
 
                 Request.realizarRequest(API.USUARIOS.OBTENER_CENTROS_UTILIDAD_USUARIO, "POST", obj, function(data) {
-                    console.log("centros utilidad usuario ", data)
                     if (data.status === 200) {
                         var datos = data.obj.parametrizacion_usuarios.centros_utilidad;
-
+                        
+                        $scope.rootUsuario.empresaSeleccionada.vaciarCentrosUtilidad();
                         self.agregarCentroUtilidad(datos, true);
 
                         callback();
@@ -362,7 +364,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
 
 
             self.traerBodegasUsuario = function(callback) {
-
+                
                 var obj = {
                     session: $scope.rootUsuario.session,
                     data: {
@@ -655,6 +657,12 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
             };
 
             $scope.seleccionarCentroUtilidad = function(centroUtilidad) {
+                
+                $timeout(function () {
+                    $scope.estadoBodegas = false;
+                    console.log("centro de utilidad >>>>>>>>>>>>>>>>");
+                });
+                
                 $scope.rootUsuario.empresaSeleccionada.setCentroUtilidadSeleccionado(centroUtilidad);
                 self.traerBodegasUsuario(function() {
 
@@ -896,7 +904,15 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                     self.traerRoles();
                 }
             };
+            
+            $scope.onBuscarCentroUtilidad = function($event) {
+                if ($event.which === 13) {
+                    $scope.rootUsuario.paginaActualCentros = 1;
+                    self.traerCentrosUtilidadUsuario(function() {
 
+                    });
+                }
+            };
 
             $scope.$on("modulosSeleccionados", function(e, modulos_seleccionado) {
                 //determina el nodo que se va a guardar, de esta forma solo se envia los modulos del nodo
@@ -1157,6 +1173,24 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
             $scope.paginaSiguiente = function() {
                 $scope.rootUsuario.paginaactual++;
                 self.traerRoles();
+            };
+            
+            $scope.paginaAnteriorCentros = function() {
+                if($scope.rootUsuario.paginaActualCentros === 1){
+                    return;
+                }
+                
+                $scope.rootUsuario.paginaActualCentros--;
+                self.traerCentrosUtilidadUsuario(function() {
+
+                });
+            };
+
+            $scope.paginaSiguienteCentros = function() {
+                $scope.rootUsuario.paginaActualCentros++;
+                self.traerCentrosUtilidadUsuario(function() {
+
+                });
             };
 
             var usuario_id = localStorageService.get("usuario_id");

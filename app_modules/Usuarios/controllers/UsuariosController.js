@@ -577,6 +577,8 @@ Usuarios.prototype.obtenerCentrosUtilidadUsuario = function(req, res) {
 
     var empresa_id = args.parametrizacion_usuarios.empresa_id || undefined;
     var usuario_id = args.parametrizacion_usuarios.usuario_id;
+    var pagina     = args.parametrizacion_usuarios.pagina || undefined;
+    var termino    = args.parametrizacion_usuarios.termino || "";
 
     if (usuario_id === undefined || usuario_id.length === 0) {
         res.send(G.utils.r(req.url, 'El usuario no es valido', 500, {parametrizacion_usuarios: {}}));
@@ -589,11 +591,12 @@ Usuarios.prototype.obtenerCentrosUtilidadUsuario = function(req, res) {
     }
     
 
-    that.m_usuarios.obtenerCentrosUtilidadUsuario(empresa_id, usuario_id, function(err, rows) {
+    that.m_usuarios.obtenerCentrosUtilidadUsuario(empresa_id, usuario_id, true, pagina, termino, function(err, rows) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error consultando los centros de utilidad del usuario', 500, {parametrizacion_usuarios: {}}));
             return;
         }
+        
 
         res.send(G.utils.r(req.url, "Lista centros de utilidad", 200, {parametrizacion_usuarios: {centros_utilidad:rows}}));
 

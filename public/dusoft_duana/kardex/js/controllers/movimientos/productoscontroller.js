@@ -26,6 +26,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
             $scope.slideurl = "";
 
             $scope.filtro = {};
+            
+            
+            console.log("usuario actual >>>>>>>>>>>>>>>>>>> ", Usuario.getUsuarioActual());
 
             //  $scope.fechainicial = new Date((fechaActual.getMonth() + 1)+"/01/" + (fechaActual.getFullYear() -1));
             $scope.fechainicial = $filter('date')(new Date("01/01/" + fechaActual.getFullYear()), "yyyy-MM-dd");
@@ -195,7 +198,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                 $scope.listaEmpresas = [];
                 $scope.listaCentroUtilidad = [];
                 $scope.listaBodegas = [];
-
+                
+                //console.log("usuario >>>>>>>>>>", Usuario.getUsuarioActual().getEmpresa())
                 var obj = {
                     session: $scope.session,
                     data: {

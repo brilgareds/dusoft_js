@@ -41,12 +41,12 @@ define(["angular", "js/models"], function(angular, models) {
         };
         
         Empresa.prototype.agregarCentroUtilidad = function(centroUtilidad) {
-            for(var i in this.centrosUtilidad){
+            /*for(var i in this.centrosUtilidad){
                 var _centroUtilidad = this.centrosUtilidad[i];
                 if(_centroUtilidad.getCodigo() === centroUtilidad.getCodigo()){                    
                     return false;
                 }
-            }
+            }*/
             
             this.centrosUtilidad.push(centroUtilidad);
         };

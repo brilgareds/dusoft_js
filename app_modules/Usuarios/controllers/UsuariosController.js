@@ -589,11 +589,12 @@ Usuarios.prototype.obtenerCentrosUtilidadUsuario = function(req, res) {
     }
     
 
-    that.m_usuarios.obtenerCentrosUtilidadUsuario(empresa_id, usuario_id, function(err, rows) {
+    that.m_usuarios.obtenerCentrosUtilidadUsuario(empresa_id, usuario_id, true, function(err, rows) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error consultando los centros de utilidad del usuario', 500, {parametrizacion_usuarios: {}}));
             return;
         }
+        
 
         res.send(G.utils.r(req.url, "Lista centros de utilidad", 200, {parametrizacion_usuarios: {centros_utilidad:rows}}));
 

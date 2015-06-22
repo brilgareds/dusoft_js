@@ -199,8 +199,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                 $scope.listaCentroUtilidad = [];
                 $scope.listaBodegas = [];
                 
-
-               /* var obj = {
+                //console.log("usuario >>>>>>>>>>", Usuario.getUsuarioActual().getEmpresa())
+                var obj = {
                     session: $scope.session,
                     data: {
                         pedidos_farmacias:{
@@ -224,7 +224,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                             callback();
                     }
 
-                });*/
+                });
 
             };
 

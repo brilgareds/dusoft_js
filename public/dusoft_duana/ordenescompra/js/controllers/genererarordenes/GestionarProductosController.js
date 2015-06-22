@@ -225,7 +225,10 @@ define(["angular", "js/controllers",
             };
 
 
-            $scope.seleccionar_laboratorio = function() {
+            $scope.seleccionar_laboratorio = function(laboratorio) {
+                
+                $scope.laboratorio_id = laboratorio.get_id();
+                
                 that.buscar_productos($scope.termino_busqueda);
             };
 

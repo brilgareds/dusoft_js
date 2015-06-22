@@ -22,9 +22,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.Empresa = Empresa;
 
             // Variables de Sesion
-             $scope.session = {
-                 usuario_id: Sesion.getUsuarioActual().getId(),
-                 auth_token: Sesion.getUsuarioActual().getToken()
+            $scope.session = {
+                usuario_id: Sesion.getUsuarioActual().getId(),
+                auth_token: Sesion.getUsuarioActual().getToken()
             };
 
             // Variables
@@ -46,6 +46,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.valor_iva = 0;
             $scope.valor_total = 0;
 
+            $scope.datos_view = {
+                termino_busqueda_proveedores: ""
+            };
 
 
             // Variable para paginacion
@@ -116,8 +119,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         $scope.orden_compra.set_usuario(Usuario.get(datos.usuario_id, datos.nombre_usuario));
                         $scope.orden_compra.set_descripcion_estado(datos.descripcion_estado);
 
-                        $scope.codigo_proveedor_id = $scope.orden_compra.get_proveedor().get_codigo_proveedor();
-                        $scope.unidad_negocio_id = $scope.orden_compra.get_unidad_negocio().get_codigo();
+                        //$scope.codigo_proveedor_id = $scope.orden_compra.get_proveedor().get_codigo_proveedor();
+                        $scope.codigo_proveedor_id = $scope.orden_compra.get_proveedor();
+                        //$scope.unidad_negocio_id = $scope.orden_compra.get_unidad_negocio().get_codigo();
+                        $scope.unidad_negocio_id = $scope.orden_compra.get_unidad_negocio();
                         $scope.observacion_contrato = $scope.orden_compra.get_observacion_contrato();
                         $scope.observacion = $scope.orden_compra.get_observacion();
                         $scope.descripcion_estado = $scope.orden_compra.get_descripcion_estado();
@@ -149,7 +154,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                     $scope.ultima_busqueda = $scope.termino_busqueda;
 
-                    
+
 
                     if (data.status === 200) {
 
@@ -180,7 +185,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                             $scope.orden_compra.set_productos(producto);
 
-                            
+
                             // Totales                        
                             $scope.valor_subtotal += data.subtotal;
                             $scope.valor_iva += data.valor_iva;
@@ -193,13 +198,28 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 });
             };
 
+            $scope.listar_proveedores = function(termino_busqueda) {
+
+                if (termino_busqueda.length < 3) {
+                    return;
+                }
+
+                $scope.datos_view.termino_busqueda_proveedores = termino_busqueda;
+
+                that.buscar_proveedores(function(proveedores) {
+
+                    that.render_proveedores(proveedores);
+                });
+            };
+
+
             that.buscar_proveedores = function(callback) {
 
                 var obj = {
                     session: $scope.session,
                     data: {
                         proveedores: {
-                            termino_busqueda: ""
+                            termino_busqueda: $scope.datos_view.termino_busqueda_proveedores
                         }
                     }
                 };
@@ -208,9 +228,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                     if (data.status === 200) {
 
-                        that.render_proveedores(data.obj.proveedores);
+                        if ($scope.numero_orden > 0)
+                            that.render_proveedores(data.obj.proveedores);
 
-                        callback(true);
+                        //callback(true);
+                        callback(data.obj.proveedores);
                     }
                 });
             };
@@ -278,7 +300,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     if (data.status === 200) {
 
                         $scope.orden_compra.set_unidad_negocio($scope.Empresa.get_unidad_negocio($scope.unidad_negocio_id));
-                    }else{
+                    } else {
                         $scope.unidad_negocio_id = $scope.orden_compra.get_unidad_negocio().get_codigo();
                     }
                 });
@@ -387,20 +409,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
 
 
-            $scope.seleccionar_unidad_negocio = function() {
+            $scope.seleccionar_unidad_negocio = function(unidad) {
 
+                 $scope.unidad_negocio_id = unidad.get_codigo();
+                 
                 if ($scope.numero_orden > 0) {
                     // Actualizar unidad de negocio
                     that.modificar_unidad_negocio();
                 }
             };
 
-            $scope.seleccionar_proveedor = function() {
-
-                if ($scope.numero_orden > 0) {
-                    // Actualizar proveedor : OJO, los precios de los productos puede cambiar
-                }
-
+            $scope.seleccionar_proveedor = function(proveedor) {               
+                $scope.codigo_proveedor_id = proveedor.get_codigo_proveedor();
             };
 
             $scope.modificar_observacion = function() {

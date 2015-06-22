@@ -823,21 +823,12 @@ PedidosFarmacias.prototype.listar_productos = function(req, res) {
 
                 producto.total_existencias_farmacias = (total_existencias_farmacias.length > 0 && total_existencias_farmacias[0].existencia !== null) ? total_existencias_farmacias[0].existencia : 0;
 
-                console.log("\n>>> Empresa Destino - Centro - Bodega - cod_prod - pagina -tipo: ",empresa_destino_id,"-",centro_utilidad_destino_id,"-",bodega_destino_id,"-",producto.codigo_producto,"-",pagina_actual,"-",tipo_producto);
-                var j = 0;
-                that.m_productos.buscar_productos(empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id, producto.codigo_producto, pagina_actual, tipo_producto, function(err, existencias_farmacia) {
-
-                    j++;
-                    
-                    console.log("Contador: ", j);
+                that.m_productos.buscar_productos(empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id, producto.codigo_producto, 1, tipo_producto, function(err, existencias_farmacia) {
                     
                     producto.existencias_farmacia = (existencias_farmacia.length > 0) ? existencias_farmacia[0].existencia : 0;
-                    console.log(">>> Existencias Farmacias: ", existencias_farmacia);
-                    console.log("\nPágina Actual: ", pagina_actual);
-                    console.log(">>> LONG. Existencias Farmacias: ", existencias_farmacia.length);
                     
                     producto.en_farmacia_seleccionada = (existencias_farmacia.length > 0) ? true : false;
-                    /*--*/
+                    
                     that.m_pedidos_farmacias.calcular_cantidad_total_pendiente_producto(empresa_id, producto.codigo_producto, function(err, total_pendiente_farmacias) {
 
 
@@ -874,12 +865,12 @@ PedidosFarmacias.prototype.listar_productos = function(req, res) {
                                         }
                                     }
 
-                                }); //--
+                                });
 
-                            }); //--
+                            });
 
-                        }); //--
-                    }); //--
+                        });
+                    });
                 });
 
             });

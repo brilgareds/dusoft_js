@@ -33,6 +33,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
+            
+            $scope.rootVerPedidosTempFarmacias.empresasDestino = Usuario.getUsuarioActual().getEmpresa().getCentrosUtilidad();
 
             $scope.rootVerPedidosTempFarmacias.listado_farmacias = [];
 
@@ -247,12 +249,72 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         );
 
                 pedido.setFarmacia(farmacia);
-                //Insertar aquí el pedido seleccionado para el singleton Empresa
-                $scope.rootVerPedidosTempFarmacias.Empresa.setPedidoSeleccionado(pedido);
+                
+                //Verificación Previa de Farmacias, Centros de Utilidad y Bodega asignadas al usuario
+                
+                var existeFarmaciaCentroBodega = false;
+                
+                existeFarmaciaCentroBodega = $scope.rootVerPedidosTempFarmacias.empresasDestino.some(function(empresa){
+                                                return empresa.empresaId === data.farmacia.farmacia_id && empresa.codigo === data.farmacia.centro_utilidad_id
+                                                        && empresa.bodegas.some(function(bodega){
+                                                            return bodega.codigo === data.farmacia.bodega_id;
+                                                        });
+                                        });
 
-                //PedidoVenta.pedidoseleccionado = data.numero_pedido;
+                /*$scope.rootVerPedidosTempFarmacias.empresasDestino.forEach(function(empresa){
+                    if(empresa.empresaId === data.farmacia.farmacia_id && empresa.codigo === data.farmacia.centro_utilidad_id) {
+                        cantidadDatosValidos++;
+                        
+                        empresa.bodegas.forEach(function(bodega){
+                            if(bodega.codigo === data.farmacia.bodega_id) {
+                                cantidadDatosValidos++;
+                            }
+                        });
+                        
+                    }
 
-                $state.go('CreaPedidosFarmacias');
+                    
+                });*/
+                
+                
+                if(existeFarmaciaCentroBodega){
+                    //Insertar aquí el pedido seleccionado para el singleton Empresa
+                    $scope.rootVerPedidosTempFarmacias.Empresa.setPedidoSeleccionado(pedido);
+
+                    //PedidoVenta.pedidoseleccionado = data.numero_pedido;
+                    $state.go('CreaPedidosFarmacias');
+                }
+                else {
+                    $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: ' <div class="modal-header">\
+                                            <button type="button" class="close" ng-click="close()">&times;</button>\
+                                            <h4 class="modal-title">Aviso: </h4>\
+                                        </div>\
+                                        <div class="modal-body row">\
+                                            <div class="col-md-12">\
+                                                <h4 >Usted No tiene acceso a:<br><br>\
+                                                <b>FARMACIA:</b> '+data.farmacia.farmacia_id+'<br>\
+                                                <b>CENTRO UTILIDAD:</b> '+data.farmacia.centro_utilidad_id+'<br>\
+                                                <b>BODEGA:</b> '+data.farmacia.bodega_id+'</h4>\
+                                            </div>\
+                                        </div>\
+                                        <div class="modal-footer">\
+                                            <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                        </div>',
+                            scope: $scope,
+                            controller: function($scope, $modalInstance) {
+                                $scope.close = function() {
+                                    $modalInstance.close();
+                                };
+                            }
+                        };
+
+                        var modalInstance = $modal.open($scope.opts); 
+                }
             };
             
             $scope.onEliminarPedidoTemporal = function(farmacia_id, centro_utilidad_id, bodega_id, index){

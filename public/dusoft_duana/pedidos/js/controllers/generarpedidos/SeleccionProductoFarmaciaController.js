@@ -332,12 +332,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                                 'ng-keyup="onTeclaIngresaProductoEspecial($event, row)"/>\n\
                                             </div>'
                         },
-                        {field: 'en_farmacia_seleccionada', displayName: 'En Farmacia', /*width: "6%"*/
+                        /*{field: 'en_farmacia_seleccionada', displayName: 'En Farmacia',
                             cellTemplate : '<div class="ngCellText" ng-class="col.colIndex()">\
                                             <span ng-if="row.entity.en_farmacia_seleccionada" ng-cell-text >{{COL_FIELD}}</span>\
                                             <span ng-if="!row.entity.en_farmacia_seleccionada" ng-cell-text class="texto-alerta" >{{COL_FIELD}}</span>\
                                         </div>'
-                        },
+                        },*/
                         {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "6%",
                             cellTemplate: ' <div class="row">\
                                                 <button ng-if="!rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial() && row.entity.en_farmacia_seleccionada && row.entity.estado==1" class="btn btn-default btn-xs" ng-click="onIncluirProducto(row)" '+
@@ -424,7 +424,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                     }
                     else{
-                        //Avisar la no posibilidad de modiificar porque el pedido está abierto en una tablet
+                        //Avisar la no posibilidad de modificar porque el pedido está abierto en una tablet
                         $scope.opts = {
                             backdrop: true,
                             backdropClick: true,

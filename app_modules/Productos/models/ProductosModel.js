@@ -87,6 +87,9 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
     G.db.paginated(sql, array_parametros, pagina, G.settings.limit, function(err, rows, result) {
         callback(err, rows);
     });
+    /*G.db.query(sql, array_parametros, function(err, rows, result) {
+        callback(err, rows);
+    });*/
 
 };
 

@@ -87,7 +87,7 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             </br>
-                                            <h4 class="h4MarginTopBottom">Farmacia:</h4>
+                                            <h4 class="h4MarginTopBottom">Farmacia: {{rootCreaPedidoFarmacia.para_seleccion_empresa}}</h4>
                                             
                                             <!-- ng-if normal Farmacia -->
                                             <select ui-select2="paraseleccionempresa" ng-if="!rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" class="form-control selectgeneral pull-left" ng-disabled="rootCreaPedidoFarmacia.bloqueo_producto_incluido" ng-model="rootCreaPedidoFarmacia.para_seleccion_empresa"  data-placeholder="Seleccionar Farmacia" ng-change="valorSeleccionado(4)">
@@ -121,7 +121,7 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             </br>
-                                            <h4 class="h4MarginTopBottom">Centro Utilidad:</h4>
+                                            <h4 class="h4MarginTopBottom">Centro Utilidad: {{rootCreaPedidoFarmacia.para_seleccion_centro_utilidad}}</h4>
                                             
                                             <!-- ng-if normal Centro Utilidad-->
                                             <select ui-select2="paraseleccioncentroutilidad" ng-if="!rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" class="form-control selectgeneral pull-left" ng-disabled="rootCreaPedidoFarmacia.bloqueo_producto_incluido || rootCreaPedidoFarmacia.bloqueo_centro_utilidad_para" ng-model="rootCreaPedidoFarmacia.para_seleccion_centro_utilidad"  data-placeholder="Seleccionar Centro" ng-change="valorSeleccionado(5)">
@@ -149,7 +149,7 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             </br>
-                                            <h4 class="h4MarginTopBottom">Bodega:</h4>
+                                            <h4 class="h4MarginTopBottom">Bodega: {{rootCreaPedidoFarmacia.para_seleccion_bodega}}</h4>
                                             
                                             <!-- ng-if normal Bodega-->
                                             <select ui-select2="paraseleccionbodega" ng-if="!rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" class="form-control selectgeneral pull-left" ng-disabled="rootCreaPedidoFarmacia.bloqueo_producto_incluido || rootCreaPedidoFarmacia.bloqueo_bodega_para" ng-model="rootCreaPedidoFarmacia.para_seleccion_bodega"  data-placeholder="Seleccionar Bodega" ng-change="valorSeleccionado(6)">

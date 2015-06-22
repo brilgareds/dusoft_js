@@ -386,7 +386,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 }
                 
                 
-                /**/$scope.rootCreaPedidoFarmacia.empresasDestino.forEach(function(obj){
+                $scope.rootCreaPedidoFarmacia.empresasDestino.forEach(function(obj){
                     
                     if(para_seleccion_empresa === obj.empresaId && para_seleccion_centro_utilidad === obj.codigo) {
                         

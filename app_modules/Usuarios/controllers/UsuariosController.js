@@ -618,6 +618,7 @@ Usuarios.prototype.obtenerBodegasUsuario = function(req, res) {
     var empresa_id = args.parametrizacion_usuarios.empresa_id || undefined;
     var usuario_id = args.parametrizacion_usuarios.usuario_id || undefined;
     var centro_utilidad_id = args.parametrizacion_usuarios.centro_utilidad_id;
+    var empresa_id_perfil = args.parametrizacion_usuarios.empresa_id_perfil;
 
     if (usuario_id === undefined || usuario_id.length === 0) {
         res.send(G.utils.r(req.url, 'El usuario no es valido', 500, {parametrizacion_usuarios: {}}));
@@ -629,6 +630,10 @@ Usuarios.prototype.obtenerBodegasUsuario = function(req, res) {
         return;
     }
     
+    if (empresa_id_perfil === undefined || empresa_id_perfil.length === 0) {
+        res.send(G.utils.r(req.url, 'La empresa del usuario no es valida', 500, {parametrizacion_usuarios: {}}));
+        return;
+    }
         
     if (centro_utilidad_id === undefined || centro_utilidad_id.length === 0) {
         res.send(G.utils.r(req.url, 'El centro de utilidad no es valido', 500, {parametrizacion_usuarios: {}}));
@@ -636,7 +641,7 @@ Usuarios.prototype.obtenerBodegasUsuario = function(req, res) {
     }
     
 
-    that.m_usuarios.obtenerBodegasUsuario(empresa_id, usuario_id, centro_utilidad_id,  function(err, rows) {
+    that.m_usuarios.obtenerBodegasUsuario(empresa_id, usuario_id, centro_utilidad_id, empresa_id_perfil,  function(err, rows) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error consultando las bodegas del centro de utilidad', 500, {parametrizacion_usuarios: {}}));
             return;

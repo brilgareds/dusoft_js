@@ -368,14 +368,14 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
 
 
             self.traerBodegasUsuario = function(callback) {
-                
                 var obj = {
                     session: $scope.rootUsuario.session,
                     data: {
                         parametrizacion_usuarios: {
                             empresa_id: $scope.rootUsuario.empresaSeleccionada.getCentroUtilidadSeleccionado().getEmpresaId(),
                             centro_utilidad_id: $scope.rootUsuario.empresaSeleccionada.getCentroUtilidadSeleccionado().getCodigo(),
-                            usuario_id: $scope.rootUsuario.usuarioAGuardar.getId()
+                            usuario_id: $scope.rootUsuario.usuarioAGuardar.getId(),
+                            empresa_id_perfil:$scope.rootUsuario.rolAGuardar.getEmpresaId()
                         }
                     }
                 };
@@ -426,6 +426,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                         $scope.rootUsuario.empresaSeleccionada.getCentroUtilidadSeleccionado().vaciarBodegas();
                         $scope.rootUsuario.empresaSeleccionada.getCentroUtilidadSeleccionado().setEstado(false);
                         AlertService.mostrarMensaje("success", "El centro de utilidad y sus bodegas se removieron del usuario correctamente");
+                         $scope.estadoBodegas.estado = false;
                     } else {
                         AlertService.mostrarMensaje("warning", "Se genero un error...");
                     }
@@ -679,7 +680,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
 
 
             $scope.removerCentroUtilidad = function(centroUtilidad) {
-
+               
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,

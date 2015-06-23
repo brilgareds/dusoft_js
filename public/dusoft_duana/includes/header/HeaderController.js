@@ -184,7 +184,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                                                 
                         //se asigna los centros de utilidad y bodega de la empresa                        
                         centros.forEach(function(centro){
-                            if(empresa.getCodigo() === centro.empresa_id){
+                            if(empresa.getCodigo() === centro.empresa_id && centro.seleccionado_usuario === '1'){
                                 
                                 var _centro = CentroUtilidad.get(centro.descripcion, centro.centro_utilidad_id);
                                 _centro.setNombreEmpresa(centro.nombre_empresa);

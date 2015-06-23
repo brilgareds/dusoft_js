@@ -36,7 +36,7 @@ PedidosFarmaciasModel.prototype.listar_farmacias_usuario = function(tipo, usuari
                 JOIN centros_utilidad as c ON (b.empresa_id = c.empresa_id) AND (b.centro_utilidad = c.centro_utilidad)\
                 JOIN empresas as d ON (c.empresa_id = d.empresa_id) AND (sw_activa = '1')\
                 WHERE a.usuario_id = $1 group by 1,2; ";
-
+ 
         parametros = [usuario];
     }
 
@@ -55,7 +55,7 @@ PedidosFarmaciasModel.prototype.listar_farmacias_usuario = function(tipo, usuari
     }
 
     if (tipo === '3') {
-        
+        //Depreciado para el modulo de kardex, se traen las bodegas desde los permisos del usuario 23/06/2015
         if(!permisos_kardex){
             sql = " SELECT\
                     b.bodega as bodega_id,\

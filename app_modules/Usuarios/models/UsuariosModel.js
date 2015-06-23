@@ -305,12 +305,12 @@ UsuariosModel.prototype.deshabilitarBodegasUsuario = function(usuario_id, login_
 
     var that = this;
 
-    that.m_bodegas.listar_bodegas_empresa(empresa_id, centro_utilidad_id, function(err, rows) {
+    //that.m_bodegas.listar_bodegas_empresa(empresa_id, centro_utilidad_id, function(err, rows) {
 
-        __deshabilitarBodegasUsuario(that, usuario_id, login_empresa_id, empresa_id, centro_utilidad_id, rows, function(err, rows) {
+        __deshabilitarBodegasUsuario(that, usuario_id, login_empresa_id, empresa_id, centro_utilidad_id, function(err, rows) {
             callback(err, rows);
         });
-    });
+  //  });
 
 };
 
@@ -522,12 +522,12 @@ UsuariosModel.prototype.obtenerCentrosUtilidadUsuario = function(empresa_id, log
                     LEFT JOIN (\
                         SELECT bb.estado AS seleccionado_usuario, bb.centro_utilidad_id, bb.empresa_id FROM login_empresas AS aa\
                         INNER JOIN login_centros_utilidad_bodega bb ON bb.login_empresa_id = aa.id\
-                        WHERE aa.login_id = $1 AND aa.estado = '1' GROUP BY 1,2,3\
+                        WHERE aa.login_id = $2 AND aa.estado = '1' AND aa.empresa_id = $1 GROUP BY 1,2,3\
                     ) AS b ON b.centro_utilidad_id = a.centro_utilidad AND a.empresa_id = b.empresa_id\
                     INNER JOIN empresas c ON a.empresa_id = c.empresa_id\
-                    WHERE  a.descripcion ILIKE $2";
+                    WHERE  a.descripcion ILIKE $3";
         
-        G.db.pagination(sql, [login_id, "%"+termino+"%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
+        G.db.pagination(sql, [empresa_id, login_id, "%"+termino+"%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
             callback(err, rows, total_records);
         });
     } else {
@@ -536,16 +536,16 @@ UsuariosModel.prototype.obtenerCentrosUtilidadUsuario = function(empresa_id, log
                     INNER JOIN login_centros_utilidad_bodega bb ON bb.login_empresa_id = aa.id\
                     INNER JOIN empresas cc ON bb.empresa_id = cc.empresa_id\
                     INNER JOIN centros_utilidad dd ON bb.centro_utilidad_id = dd.centro_utilidad and dd.empresa_id = bb.empresa_id\
-                    WHERE aa.login_id = $1 AND aa.estado = '1' GROUP BY 1,2,3,4,5";
+                    WHERE aa.login_id = $2 AND aa.estado = '1' AND aa.empresa_id = $1 GROUP BY 1,2,3,4,5";
         
-        G.db.query(sql, [login_id], function(err, rows, result) {
+        G.db.query(sql, [empresa_id, login_id], function(err, rows, result) {
             callback(err, rows, result);
         });
     }
     
 };
 
-UsuariosModel.prototype.obtenerBodegasUsuario = function(empresa_id, login_id, centro_utilidad_id, callback) {
+UsuariosModel.prototype.obtenerBodegasUsuario = function(empresa_id, login_id, centro_utilidad_id, empresa_id_perfil, callback) {
     var that = this;
     
     var sql =  "SELECT a.centro_utilidad AS centro_utilidad_id, a.descripcion, a.bodega AS bodega_id, COALESCE(b.seleccionado_usuario, '0') AS seleccionado_usuario\
@@ -553,11 +553,11 @@ UsuariosModel.prototype.obtenerBodegasUsuario = function(empresa_id, login_id, c
                 LEFT JOIN (\
                     SELECT bb.estado AS seleccionado_usuario, bb.centro_utilidad_id, bb.bodega_id FROM login_empresas AS aa\
                     INNER JOIN login_centros_utilidad_bodega bb ON bb.login_empresa_id = aa.id\
-                    WHERE aa.login_id = $1 GROUP BY 1,2, 3\
+                    WHERE aa.login_id = $1 AND aa.empresa_id = $4 GROUP BY 1,2, 3\
                 ) AS b ON b.centro_utilidad_id = a.centro_utilidad AND a.bodega = b.bodega_id\
                 WHERE a.centro_utilidad = $2 AND a.empresa_id = $3";
 
-    G.db.query(sql, [login_id, centro_utilidad_id, empresa_id ], function(err, rows, result) {
+    G.db.query(sql, [login_id, centro_utilidad_id, empresa_id, empresa_id_perfil ], function(err, rows, result) {
         callback(err, rows, result);
     });
 };
@@ -617,7 +617,7 @@ function __obtenerBodegasCentroUtilidadUsuario(that, index, empresa_id, usuario_
     }
 
 
-    that.obtenerBodegasUsuario(centro_utilidad.empresa_id, usuario_id, centro_utilidad.centro_utilidad_id, function(err, bodegas) {
+    that.obtenerBodegasUsuario(centro_utilidad.empresa_id, usuario_id, centro_utilidad.centro_utilidad_id, empresa_id, function(err, bodegas) {
         if (err) {
             callback(err);
             return;
@@ -894,8 +894,23 @@ function __asignarVariablesModulo(that, modulos, index, callback) {
 }
 
 
-function __deshabilitarBodegasUsuario(that, usuario_id, login_empresa_id, empresa_id, centro_utilidad_id, bodegas, callback) {
-    if (bodegas.length === 0) {
+function __deshabilitarBodegasUsuario(that, usuario_id, login_empresa_id, empresa_id, centro_utilidad_id, callback) {
+    
+    var sql = "UPDATE login_centros_utilidad_bodega SET usuario_id_modifica = $1, fecha_modificacion = now(), estado = $3 \
+                WHERE  centro_utilidad_id = $2  AND login_empresa_id = $4 ";
+    
+    
+    G.db.query(sql, [usuario_id, centro_utilidad_id, '0', login_empresa_id], function(err, rows, result) {
+        if (err) {
+            callback(err, result);
+            return;
+        }
+        
+        callback(err, rows);
+       
+    });
+    
+    /*if (bodegas.length === 0) {
         callback(false);
         return;
     }
@@ -912,7 +927,7 @@ function __deshabilitarBodegasUsuario(that, usuario_id, login_empresa_id, empres
             __deshabilitarBodegasUsuario(that, usuario_id, login_empresa_id, empresa_id, centro_utilidad_id, bodegas, callback);
         }, 0);
 
-    });
+    });*/
 }
 
 function __guardarCentroUtilidadBodegaUsuario(that, usuario_id, login_empresa_id, empresa_id, centro_utilidad_id, bodegas, estado, callback) {
@@ -925,6 +940,7 @@ function __guardarCentroUtilidadBodegaUsuario(that, usuario_id, login_empresa_id
 
     var sql = "UPDATE login_centros_utilidad_bodega SET usuario_id_modifica = $1, fecha_modificacion = now(), estado = $5 \
                 WHERE empresa_id = $2 AND centro_utilidad_id = $3 AND  bodega_id = $4 AND login_empresa_id = $6 ";
+    
 
     G.db.query(sql, [usuario_id, empresa_id, centro_utilidad_id, bodega, estado, login_empresa_id], function(err, rows, result) {
         if (err) {

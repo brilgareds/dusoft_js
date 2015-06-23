@@ -30,7 +30,8 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
 
             //that.estados = [ "btn btn-warning btn-xs", "btn btn-success btn-xs" ];
-            that.estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs"];
+            //that.estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs"];
+            that.estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs"];
             
             /* INICIO - Operaciones nuevas */
             
@@ -208,18 +209,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 //showFilter: true,
                 multiSelect: false,
                 columnDefs: [
-                    {field: 'numero_pedido', displayName: 'Número Pedido', width: "9%"},
-                    {field: 'cliente.nombre_tercero', displayName: 'Cliente'},
-                    {field: 'vendedor.nombre_tercero', displayName: 'Vendedor'},
-                    {field: 'fecha_registro', displayName: 'Fecha', width: "10%"},
-                    {field: 'valor_pedido', displayName: '$ Valor', cellFilter: "currency:'$ '", width: "10%"},
-                    {field: 'estado', displayName: 'Estado Pedido', cellClass: "txt-center", width: "9%",
-                        cellTemplate:   "   <label ng-if='row.entity.estado==0'>Inactivo</label><!--Inactivo-->\
-                                            <label ng-if='row.entity.estado==1'>Activo</label>\
-                                            <label ng-if='row.entity.estado==2'>Anulado</label>\
-                                            <label ng-if='row.entity.estado==3'>Entregado</label>\
-                                        "},
-                    
                     {field: 'estado_pedido', displayName: 'Estado Proceso', cellClass: "txt-center", width: "9%",
                         cellTemplate:   "   <button ng-if='row.entity.estado_actual_pedido==0' ng-class='agregarClase(row.entity.estado_actual_pedido)'>\
                                                 <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> No Asignado\
@@ -245,8 +234,24 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                             <button ng-if='row.entity.estado_actual_pedido==7' ng-class='agregarClase(row.entity.estado_actual_pedido)'>\
                                                 <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> En Auditoria\
                                             </button>\
-                                        "},
-                    
+                                            <button ng-if='row.entity.estado_actual_pedido==8' ng-class='agregarClase(row.entity.estado_actual_pedido)'>\
+                                                <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> Auditado con pdtes\
+                                            </button>\
+                                            <button ng-if='row.entity.estado_actual_pedido==9' ng-class='agregarClase(row.entity.estado_actual_pedido)'>\
+                                                <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> En zona con pdtes\
+                                            </button>\
+                                        "},                
+                    {field: 'numero_pedido', displayName: 'Número Pedido', width: "9%"},
+                    {field: 'cliente.nombre_tercero', displayName: 'Cliente'},
+                    {field: 'vendedor.nombre_tercero', displayName: 'Vendedor'},
+                    {field: 'fecha_registro', displayName: 'Fecha', width: "10%"},
+                    {field: 'valor_pedido', displayName: '$ Valor', cellFilter: "currency:'$ '", width: "10%"},
+                    {field: 'estado', displayName: 'Estado Pedido', cellClass: "txt-center", width: "9%",
+                        cellTemplate:   "   <label ng-if='row.entity.estado==0'>Inactivo</label><!--Inactivo-->\
+                                            <label ng-if='row.entity.estado==1'>Activo</label>\
+                                            <label ng-if='row.entity.estado==2'>Anulado</label>\
+                                            <label ng-if='row.entity.estado==3'>Entregado</label>\
+                                        "},                    
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center dropdown-button", width: "7%",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\

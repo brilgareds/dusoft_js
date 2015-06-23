@@ -202,6 +202,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                 $scope.listaBodegas = [];
                 
                 $scope.listaEmpresas = Usuario.getUsuarioActual().getEmpresasFarmacias();
+                
+                //console.log("cantidad de empresas y farmacias ", $scope.listaEmpresas);
                 $scope.filtro.empresa_seleccion = '03';
                 $scope.onEmpresaSeleccionada();
             };
@@ -218,6 +220,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                 
                 if($scope.empresaSeleccion.length > 0){
                     $scope.empresaSeleccion = $scope.empresaSeleccion[0];
+                } else {
+                   $scope.empresaSeleccion = Empresa.get(); 
                 }
             };
 
@@ -299,21 +303,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
 
 
             that.traerEmpresas();
-           // $timeout(function() {
+            if($scope.empresaSeleccion.getCodigo() !== ""){
+                console.log("empresa seleccion >>>>>>>>>>>>> ", $scope.empresaSeleccion);
                 $scope.filtro.centro_seleccion = '1 ';
                 $scope.onCentroSeleccionado();
-
-               // $timeout(function() {
-                    $scope.filtro.bodega_seleccion = '03';
-
-                   // $timeout(function() {
-
-                        $scope.buscarProductos("");
-                   // });
-
-               // });
-
-           // });
+                $scope.filtro.bodega_seleccion = '03';
+                $scope.buscarProductos("");
+            } 
 
 
 

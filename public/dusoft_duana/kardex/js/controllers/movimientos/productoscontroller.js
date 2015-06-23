@@ -17,13 +17,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
             var fechaActual = new Date();
             $scope.paginas = 0;
             $scope.items = 0;
-            $scope.paginaactual = 0;
+            $scope.paginaactual = 1;
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
             $scope.listaEmpresas = [];
             $scope.listaCentroUtilidad = [];
             $scope.listaBodegas = [];
             $scope.slideurl = "";
+            $scope.empresaSeleccion;
+            $scope.centroSeleccion;
 
             $scope.filtro = {};
             
@@ -43,7 +45,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
             $scope.buscarProductos = function(termino_busqueda, paginando) {
 
                 if ($scope.ultima_busqueda !== $scope.termino_busqueda) {
-                    $scope.paginaactual = 0;
+                    $scope.paginaactual = 1;
                 }
 
                 if ($scope.filtro.empresa_seleccion === "") {
@@ -91,7 +93,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                 $scope.items = data.lista_productos.length;
                 //se valida que hayan registros en una siguiente pagina
                 if (paginando && $scope.items === 0) {
-                    if ($scope.paginaactual > 0) {
+                    if ($scope.paginaactual > 1) {
                         $scope.paginaactual--;
                     }
                     AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
@@ -193,115 +195,46 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
 
             };
 
-            that.traerEmpresas = function(callback) {
+            that.traerEmpresas = function() {
 
                 $scope.listaEmpresas = [];
                 $scope.listaCentroUtilidad = [];
                 $scope.listaBodegas = [];
                 
-
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        pedidos_farmacias:{
-                            permisos_kardex:true
-                        }
-                    }
-                };
-
-                Request.realizarRequest(API.KARDEX.LISTAR_EMPRESAS, "POST", obj, function(data) {
-                    if (data.status === 200) {
-                        for (var i in data.obj.lista_farmacias) {
-                            var empresa = Empresa.get(
-                                    data.obj.lista_farmacias[i].nombre_empresa,
-                                    data.obj.lista_farmacias[i].empresa_id
-                                    );
-
-                            $scope.listaEmpresas.push(empresa);
-                        }
-
-                        if (callback)
-                            callback();
-                    }
-
-                });
-
+                $scope.listaEmpresas = Usuario.getUsuarioActual().getEmpresasFarmacias();
+                $scope.filtro.empresa_seleccion = '03';
+                $scope.onEmpresaSeleccionada();
             };
 
-            that.consultarCentrosUtilidadPorEmpresa = function(callback) {
-
-                $scope.listaCentroUtilidad = [];
-                $scope.listaBodegas = [];
-                $scope.filtro.centro_seleccion = "";
-                $scope.filtro.bodega_seleccion = "";
-
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        pedidos_farmacias: {
-                            empresa_id: $scope.filtro.empresa_seleccion,
-                            permisos_kardex:true
-                        }
-                    }
-                };
-
-                Request.realizarRequest(API.KARDEX.CENTROS_UTILIDAD_EMPRESAS, "POST", obj, function(data) {
-
-                    if (data.status === 200) {
-                        console.log("centros de utilidad ", data);
-                        for (var i in data.obj.lista_centros_utilidad) {
-                            var centroUtilidad = CentroUtilidad.get(
-                                    data.obj.lista_centros_utilidad[i].nombre_centro_utilidad,
-                                    data.obj.lista_centros_utilidad[i].centro_utilidad_id
-                                    );
-
-                            $scope.listaCentroUtilidad.push(centroUtilidad);
-                        }
-                        if (callback)
-                            callback();
-                    }
-
-                });
-            };
-
-
-            that.consultarBodegasPorEmpresa = function(callback) {
-
-                $scope.listaBodegas = [];
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        pedidos_farmacias: {
-                            empresa_id: $scope.filtro.empresa_seleccion,
-                            centro_utilidad_id: $scope.filtro.centro_seleccion,
-                            permisos_kardex:true
-                        }
-                    }
-                };
-
-                Request.realizarRequest(API.KARDEX.BODEGAS_EMPRESA, "POST", obj, function(data) {
-
-                    if (data.status === 200) {
-                        for (var i in data.obj.lista_bodegas) {
-                            var bodega = Bodega.get(
-                                    data.obj.lista_bodegas[i].nombre_bodega,
-                                    data.obj.lista_bodegas[i].bodega_id
-                                    );
-
-                            $scope.listaBodegas.push(bodega);
-                        }
-                        if (callback)
-                            callback();
-                    }
-                });
-            };
 
             $scope.onEmpresaSeleccionada = function() {
-                that.consultarCentrosUtilidadPorEmpresa();
+                $scope.filtro.centro_seleccion = "";
+                $scope.filtro.bodega_seleccion = "";
+                var empresas = Usuario.getUsuarioActual().getEmpresasFarmacias();
+                
+                $scope.empresaSeleccion = empresas.filter(function(_empresa){
+                     return _empresa.getCodigo() === $scope.filtro.empresa_seleccion;
+                });
+                
+                if($scope.empresaSeleccion.length > 0){
+                    $scope.empresaSeleccion = $scope.empresaSeleccion[0];
+                }
             };
 
             $scope.onCentroSeleccionado = function() {
-                that.consultarBodegasPorEmpresa();
+                console.log("centro seleccionado ",  $scope.filtro.centro_seleccion);
+                $scope.filtro.bodega_seleccion = "";
+                var centros = $scope.empresaSeleccion.getCentrosUtilidad();
+                
+                $scope.centroSeleccion = centros.filter(function(_centro){
+                     return _centro.getCodigo() === $scope.filtro.centro_seleccion;
+                });
+                
+                console.log("$scope.centroSeleccion >>>>>>>>>>>>", $scope.centroSeleccion);
+                
+                if($scope.centroSeleccion.length > 0){
+                    $scope.centroSeleccion = $scope.centroSeleccion[0];
+                }
             };
 
             $scope.cerrar = function() {
@@ -365,29 +298,23 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
 
 
 
-            that.traerEmpresas(function() {
-                $timeout(function() {
-                    $scope.filtro.empresa_seleccion = '03';
-                    that.consultarCentrosUtilidadPorEmpresa(function() {
+            that.traerEmpresas();
+           // $timeout(function() {
+                $scope.filtro.centro_seleccion = '1 ';
+                $scope.onCentroSeleccionado();
 
-                        $timeout(function() {
-                            $scope.filtro.centro_seleccion = '1 ';
-                            that.consultarBodegasPorEmpresa(function() {
+               // $timeout(function() {
+                    $scope.filtro.bodega_seleccion = '03';
 
-                                $timeout(function() {
-                                    $scope.filtro.bodega_seleccion = '03';
-                                    $scope.buscarProductos("");
-                                });
+                   // $timeout(function() {
 
-                            });
-                        });
+                        $scope.buscarProductos("");
+                   // });
 
+               // });
 
-                    });
-                    //alert("")
-                });
+           // });
 
-            });
 
 
         }]);

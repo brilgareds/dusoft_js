@@ -21,7 +21,6 @@ define(["angular", "js/models"], function(angular, models) {
         };
 
         Detalle.prototype.setDetalle = function(detalle) {
-            console.log("set detalle >>>>>>>>>>>>", detalle);
             this.detalle = detalle;
             return this;
         };

@@ -55,7 +55,7 @@ PedidosFarmaciasModel.prototype.listar_farmacias_usuario = function(tipo, usuari
     }
 
     if (tipo === '3') {
-        
+        //Depreciado para el modulo de kardex, se traen las bodegas desde los permisos del usuario 23/06/2015
         if(!permisos_kardex){
             sql = " SELECT\
                     b.bodega as bodega_id,\

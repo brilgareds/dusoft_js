@@ -522,12 +522,12 @@ UsuariosModel.prototype.obtenerCentrosUtilidadUsuario = function(empresa_id, log
                     LEFT JOIN (\
                         SELECT bb.estado AS seleccionado_usuario, bb.centro_utilidad_id, bb.empresa_id FROM login_empresas AS aa\
                         INNER JOIN login_centros_utilidad_bodega bb ON bb.login_empresa_id = aa.id\
-                        WHERE aa.login_id = $1 AND aa.estado = '1' GROUP BY 1,2,3\
+                        WHERE aa.login_id = $2 AND aa.estado = '1' AND aa.empresa_id = $1 GROUP BY 1,2,3\
                     ) AS b ON b.centro_utilidad_id = a.centro_utilidad AND a.empresa_id = b.empresa_id\
                     INNER JOIN empresas c ON a.empresa_id = c.empresa_id\
-                    WHERE  a.descripcion ILIKE $2";
+                    WHERE  a.descripcion ILIKE $3";
         
-        G.db.pagination(sql, [login_id, "%"+termino+"%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
+        G.db.pagination(sql, [empresa_id, login_id, "%"+termino+"%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
             callback(err, rows, total_records);
         });
     } else {
@@ -536,9 +536,9 @@ UsuariosModel.prototype.obtenerCentrosUtilidadUsuario = function(empresa_id, log
                     INNER JOIN login_centros_utilidad_bodega bb ON bb.login_empresa_id = aa.id\
                     INNER JOIN empresas cc ON bb.empresa_id = cc.empresa_id\
                     INNER JOIN centros_utilidad dd ON bb.centro_utilidad_id = dd.centro_utilidad and dd.empresa_id = bb.empresa_id\
-                    WHERE aa.login_id = $1 AND aa.estado = '1' GROUP BY 1,2,3,4,5";
+                    WHERE aa.login_id = $2 AND aa.estado = '1' AND aa.empresa_id = $1 GROUP BY 1,2,3,4,5";
         
-        G.db.query(sql, [login_id], function(err, rows, result) {
+        G.db.query(sql, [empresa_id, login_id], function(err, rows, result) {
             callback(err, rows, result);
         });
     }

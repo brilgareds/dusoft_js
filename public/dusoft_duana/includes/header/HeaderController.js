@@ -161,7 +161,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                         
                         self.asignarModulosUsuario(modulos);
 
-                        self.asignarCentroUtilidadUsuario(obj.centros_utilidad);
+                        self.asignarEmpresasFarmacias(obj.centros_utilidad);
                         //console.log("empresa usuario ", $scope.Usuario.getEmpresa())
                         callback(obj);
                     } else {
@@ -173,30 +173,40 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 });
             };
 
-            //asigna los centros de utilidad y bodegas a la empresa al usuario
-            self.asignarCentroUtilidadUsuario = function(centros) {
+            //asigna los centros de utilidad y bodegas al usuario
+            self.asignarEmpresasFarmacias = function(centros) {
                 for (var i in centros) {
-                    var centro = centros[i];
-
-                    if(centro.seleccionado_usuario === '1'){
+                    var _empresa = centros[i];
+                    //se instancia las emrpesas del usuario
+                    if(_empresa.seleccionado_usuario === '1'){
                         
-                        var _centro = CentroUtilidad.get(centro.descripcion, centro.centro_utilidad_id);
-                        _centro.setNombreEmpresa(centro.nombre_empresa);
-                        _centro.setEmpresaId(centro.empresa_id);
-                        for (var ii in centro.bodegas) {
-                            var bodega = centro.bodegas[ii];
-                            
-                            if(bodega.seleccionado_usuario === '1'){
-                                var _bodega = Bodega.get(bodega.descripcion, bodega.bodega_id);
+                        var empresa = Empresa.get(_empresa.nombre_empresa, _empresa.empresa_id);
+                                                
+                        //se asigna los centros de utilidad y bodega de la empresa                        
+                        centros.forEach(function(centro){
+                            if(empresa.getCodigo() === centro.empresa_id){
+                                
+                                var _centro = CentroUtilidad.get(centro.descripcion, centro.centro_utilidad_id);
+                                _centro.setNombreEmpresa(centro.nombre_empresa);
+                                _centro.setEmpresaId(centro.empresa_id);
+                                
+                                for (var ii in centro.bodegas) {
+                                    var bodega = centro.bodegas[ii];
 
-                                _centro.agregarBodega(_bodega);
+                                    if(bodega.seleccionado_usuario === '1'){
+                                        var _bodega = Bodega.get(bodega.descripcion, bodega.bodega_id);
+
+                                        _centro.agregarBodega(_bodega);
+                                    }
+                                }
+                                empresa.agregarCentroUtilidad(_centro);
                             }
-                        }
-                        //console.log("usuario ******************************** ", centro);
-                        $scope.Usuario.getEmpresa().agregarCentroUtilidad(_centro);
+                        });
+                        
+                        $scope.Usuario.agregarEmpresaFarmacia(empresa);
                     }
                 }
-                console.log("usuario ********************************code 2 ", $scope.Usuario.getEmpresa());
+                console.log("HeaderController-> asignarEmpresasFarmacias() ", $scope.Usuario.getEmpresasFarmacias());
             };
             
             //se hace el set correspondiente para el plugin de jstree, y se crea un objeto valor de los modulos y opciones para facilidad de acceso del modulo actual

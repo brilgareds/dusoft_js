@@ -14,7 +14,11 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                 Modulo, RolModulo, ParametrizacionService, CentroUtilidad, Bodega) {
 
             var self = this;
-            $scope.estadoBodegas = false;
+            
+            $scope.estadoBodegas = {
+                estado : false
+            };
+            
             $scope.rootUsuario = {
             };
 
@@ -105,7 +109,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                      headerCellTemplate: "<div class=\"ngHeaderSortColumn {{col.headerClass}}\" ng-style=\"{'cursor': col.cursor}\" ng-class=\"{ 'ngSorted': !noSortVisible }\"> \
                                             <div ng-click=\"col.sort($event)\" ng-class=\"'colt' + col.index\" class=\"ngHeaderText text-center\"> \
                                                 {{col.displayName}} \
-                                                <input type='checkbox' ng-model='estadoBodegas' ng-disabled='!rootUsuario.empresaSeleccionada.getCentroUtilidadSeleccionado().getBodegas() > 0' ng-change='onSeleccionMultipleBodegas(estadoBodegas)' > \
+                                                <input-check ng-model='estadoBodegas.estado' ng-disabled='!rootUsuario.empresaSeleccionada.getCentroUtilidadSeleccionado().getBodegas() > 0' ng-change='onSeleccionMultipleBodegas(estadoBodegas.estado)' > \
                                             </div> \
                                         </div>",
                         cellTemplate: '<div ng-if="row.entity.estado" style="color:#5cb85c;"><i class="glyphicon glyphicon-ok icon-success"></i></div>'},
@@ -138,6 +142,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                 
                 
                 self.seleccionarBodega(_bodegas, estado, function(bodegas) {
+                    
                 });
                 
                 
@@ -611,7 +616,6 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
             };
 
             self.seleccionarBodega = function(bodegas, estado, callback) {
-                console.log("estado a cambiar ", estado)
                 var centroUtilidad = $scope.rootUsuario.empresaSeleccionada.getCentroUtilidadSeleccionado();
                 var obj = {
                     session: $scope.rootUsuario.session,
@@ -656,9 +660,8 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
             };
 
             $scope.seleccionarCentroUtilidad = function(centroUtilidad) {
-                
-                $scope.estadoBodegas = false;
-                console.log("centro de utilidad >>>>>>>>>>>>>>>>>>>>>>>");
+                                                 
+                $scope.estadoBodegas.estado = false;
                 
                 $scope.rootUsuario.empresaSeleccionada.setCentroUtilidadSeleccionado(centroUtilidad);
                 self.traerBodegasUsuario(function() {

@@ -197,13 +197,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 //showFilter: true,
                 multiSelect: false,
                 columnDefs: [
-                    {field: 'numero_cotizacion', displayName: 'Número Cotización', width: "10%"},
-                    {field: 'cliente.nombre_tercero', displayName: 'Cliente'},
-                    {field: 'vendedor.nombre_tercero', displayName: 'Vendedor'},
-                    {field: 'fecha_registro', displayName: 'Fecha', width: "10%"},
-                    {field: 'valor_cotizacion', displayName: '$ Valor', cellFilter: "currency:'$ '", width: "10%"},
-                    //{field: 'estado', displayName: 'Estado'},
-                    
                     {field: 'estado', displayName: 'Estado', cellClass: "txt-center", width: "7%",
                         cellTemplate: " <button ng-if='row.entity.estado==0' ng-class='agregarClase(row.entity.estado)'>\
                                             Inactivo\
@@ -213,8 +206,12 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                         </button>\n\
                                         <button ng-if='row.entity.estado==2' ng-class='agregarClase(row.entity.estado)'>\
                                             Cartera Ok\
-                                        </button>"},
-                    
+                                        </button>"},            
+                    {field: 'numero_cotizacion', displayName: 'Número Cotización', width: "10%"},
+                    {field: 'cliente.nombre_tercero', displayName: 'Cliente'},
+                    {field: 'vendedor.nombre_tercero', displayName: 'Vendedor'},
+                    {field: 'fecha_registro', displayName: 'Fecha', width: "10%"},
+                    {field: 'valor_cotizacion', displayName: '$ Valor', cellFilter: "currency:'$ '", width: "10%"},                
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center dropdown-button", width: "7%",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\

@@ -86,7 +86,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.rootVerPedidosFarmacias.listado_farmacias = [];
 
             //var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-default btn-xs", "btn btn-separacionfinalizada btn-xs", "btn btn-enauditoria btn-xs"];
-            var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs"];
+            //var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs"];
+            var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs"];
 
             that.listarFarmacias = function() {
 
@@ -268,14 +269,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
+                    {field: 'descripcion_estado_actual_pedido', displayName: 'Estado', cellClass: "txt-center", visible: $scope.rootVerPedidosFarmacias.opciones.sw_ver_columna_estado_pedidos,
+                        cellTemplate: "<button ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
                     {field: 'numero_pedido', displayName: 'Número Pedido'},
                     {field: 'farmacia.nombre_farmacia', displayName: 'Farmacia'},
                     {field: 'farmacia.nombre_bodega', displayName: 'Bodega'},
                     {field: 'zona', displayName: 'Zona'},
                     {field: 'fecha_registro', displayName: 'Fecha'},
                     {field: 'estado_actual_pedido', displayName: 'EstadoId', visible: false},
-                    {field: 'descripcion_estado_actual_pedido', displayName: 'Estado', cellClass: "txt-center", visible: $scope.rootVerPedidosFarmacias.opciones.sw_ver_columna_estado_pedidos,
-                        cellTemplate: "<button ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center dropdown-button", width: "8%",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\

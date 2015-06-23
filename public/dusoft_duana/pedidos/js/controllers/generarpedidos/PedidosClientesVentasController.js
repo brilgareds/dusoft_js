@@ -263,7 +263,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                                 <li ng-if="(row.entity.estado_actual_pedido == 0) && !row.entity.estado_separacion && row.entity.estado==0"><a href="javascript:void(0);" ng-click="onAprobarCartera(row.entity)">Aprobar Cartera</a></li>\
                                                 <li ng-if="(row.entity.estado_actual_pedido == 0) && !row.entity.estado_separacion && row.entity.estado==0"></li>\
                                                 <li ng-if="row.entity.tiene_obs_cartera"><a href="javascript:void(0);" ng-click="onVerObservacionCartera(row.entity)">Ver Obs Cartera</a></li>\
-                                                <li ng-if="row.entity.tiene_obs_cartera"></li>\\n\
+                                                <li ng-if="row.entity.tiene_obs_cartera"></li>\
                                                 <li ng-if="row.entity.getTieneDespacho()">\
                                                     <a href="javascript:void(0);" ng-click="imprimirDespachos(row.entity.getDespachoEmpresaId(),row.entity.getDespachoNumero(),row.entity.getDespachoPrefijo())">Documento Despacho</a>\
                                                 </li>\

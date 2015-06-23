@@ -88,7 +88,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             */
            
-           $scope.rootCreaPedidoFarmacia.empresasDestino = Usuario.getUsuarioActual().getEmpresa().getCentrosUtilidad();
+           //$scope.rootCreaPedidoFarmacia.empresasDestino = Usuario.getUsuarioActual().getEmpresa().getCentrosUtilidad();
+           $scope.rootCreaPedidoFarmacia.empresasDestino = Usuario.getUsuarioActual().getEmpresasFarmacias();
            
            $scope.rootCreaPedidoFarmacia.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
            
@@ -230,11 +231,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $scope.rootCreaPedidoFarmacia.empresasDestino.forEach(function(obj){
 
                     obj_empresa = {
-                        empresa_id: obj.empresaId,
-                        nombre_empresa: obj.nombreEmpresa
+                        empresa_id: obj.codigo,
+                        nombre_empresa: obj.nombre
                     };
                     
-                    var existe = false;
+                    para_lista_empresas.push(obj_empresa);
+                    
+                    /*var existe = false;
 
                     if(para_lista_empresas.length > 0){
 
@@ -250,7 +253,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     else {
                         //$scope.rootCreaPedidoFarmacia.para_lista_empresas.push(obj_empresa);
                         para_lista_empresas.push(obj_empresa);
-                    }
+                    }*/
                     
                 });
                 
@@ -307,14 +310,20 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     
                 $scope.rootCreaPedidoFarmacia.empresasDestino.forEach(function(obj){
                     
-                    if(para_seleccion_empresa === obj.empresaId) {
+                    if(para_seleccion_empresa === obj.codigo) {
                         
-                        obj_centro_utilidad = {
-                            centro_utilidad_id: obj.codigo,
-                            nombre_centro_utilidad: obj.nombre
-                        };
-                        
-                        para_lista_centro_utilidad.push(obj_centro_utilidad);
+                        //Recorrer la lista de Centros de Utilidad
+                        obj.centrosUtilidad.forEach(function(centro){
+                            
+                            obj_centro_utilidad = {
+                                centro_utilidad_id: centro.codigo,
+                                nombre_centro_utilidad: centro.nombre
+                            };                            
+                            
+                            para_lista_centro_utilidad.push(obj_centro_utilidad);
+                            
+                        });
+
                         
                     }
                     
@@ -388,19 +397,37 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 
                 $scope.rootCreaPedidoFarmacia.empresasDestino.forEach(function(obj){
                     
-                    if(para_seleccion_empresa === obj.empresaId && para_seleccion_centro_utilidad === obj.codigo) {
+                    if(para_seleccion_empresa === obj.codigo) {
                         
-                        obj.bodegas.forEach(function(bodega){
+                        obj.centrosUtilidad.forEach(function(centro){
                             
-                            obj_bodega = {
-                                bodega_id: bodega.codigo,
-                                nombre_bodega: bodega.nombre
-                            };
-                            
-                            //$scope.rootCreaPedidoFarmacia.para_lista_bodegas.push(obj_bodega);
-                            para_lista_bodegas.push(obj_bodega);
+                            if(para_seleccion_centro_utilidad === centro.codigo) {
+                                
+                                centro.bodegas.forEach(function(bodega){
+                                    
+                                    obj_bodega = {
+                                        bodega_id: bodega.codigo,
+                                        nombre_bodega: bodega.nombre
+                                    };
+                                    
+                                    para_lista_bodegas.push(obj_bodega);
+                                    
+                                });
+                            }
                             
                         });
+                        
+//                        obj.bodegas.forEach(function(bodega){
+//                            
+//                            obj_bodega = {
+//                                bodega_id: bodega.codigo,
+//                                nombre_bodega: bodega.nombre
+//                            };
+//                            
+//                            //$scope.rootCreaPedidoFarmacia.para_lista_bodegas.push(obj_bodega);
+//                            para_lista_bodegas.push(obj_bodega);
+//                            
+//                        });
 
                     }
                     

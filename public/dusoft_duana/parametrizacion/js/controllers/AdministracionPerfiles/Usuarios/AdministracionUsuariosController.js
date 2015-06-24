@@ -86,7 +86,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                     {field: 'opciones', displayName: "", cellClass: "txt-center", width: "10%",
                         cellTemplate: '<div ng-if="row.entity.estado" style="color:#5cb85c;"><i class="glyphicon glyphicon-ok icon-success"></i></div>'},
                     //{field: 'empresaId', displayName : 'Empresa', width:60},
-                    {field: 'nombre', displayName: 'Nombre', cellTemplate: '<div style="font-size:13px" class="ngCellText">{{row.entity.codigo}} - {{row.entity.nombre}}</div>'},
+                    {field: 'nombre', displayName: 'Nombre', cellTemplate: '<div style="font-size:11px" class="ngCellText">{{row.entity.nombreEmpresa}} - {{row.entity.nombre}}</div>'},
                     {field: 'opciones', displayName: "", cellClass: "txt-center dropdown-button", width: "18%",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción <span class="caret"></span></button>\
@@ -113,7 +113,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                                             </div> \
                                         </div>",
                         cellTemplate: '<div ng-if="row.entity.estado" style="color:#5cb85c;"><i class="glyphicon glyphicon-ok icon-success"></i></div>'},
-                    {field: 'nombre', displayName: 'Observacion', cellTemplate: '<div style="font-size:13px" class="ngCellText">{{row.entity.codigo}} - {{row.entity.nombre}}</div>'},
+                    {field: 'nombre', displayName: 'Observacion', cellTemplate: '<div style="font-size:11px" class="ngCellText">{{row.entity.codigo}} - {{row.entity.nombre}}</div>'},
                     {field: 'opciones', displayName: "", cellClass: "txt-center dropdown-button", width: "18%",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción <span class="caret"></span></button>\
@@ -361,6 +361,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                     var centroUtilidad = CentroUtilidad.get(_centroUtilidad.descripcion, _centroUtilidad.centro_utilidad_id);
                     centroUtilidad.setEstado(Boolean(Number(_centroUtilidad.seleccionado_usuario)));
                     centroUtilidad.setEmpresaId(_centroUtilidad.empresa_id);
+                    centroUtilidad.setNombreEmpresa(_centroUtilidad.nombre_empresa);
 
                     $scope.rootUsuario.empresaSeleccionada.agregarCentroUtilidad(centroUtilidad);
                 }

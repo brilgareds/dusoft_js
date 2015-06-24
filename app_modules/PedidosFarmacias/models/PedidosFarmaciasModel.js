@@ -25,7 +25,8 @@ PedidosFarmaciasModel.prototype.listar_farmacias_usuario = function(tipo, usuari
     if(permisos_kardex){
         tabla = "inv_bodegas_userpermisos_admin";
     }
-
+    
+    //Depreciado para el modulo de kardex, se traen las empresas desde el modulo de Empresas 24/06/2015
     if (tipo === '1') {
 
         sql = " SELECT\
@@ -39,7 +40,8 @@ PedidosFarmaciasModel.prototype.listar_farmacias_usuario = function(tipo, usuari
  
         parametros = [usuario];
     }
-
+    
+    //Depreciado para el modulo de kardex, se traen los centros de utilidad desde el modulo de CentrosUtilidad 24/06/2015
     if (tipo === '2') {
 
         sql = " SELECT\
@@ -54,8 +56,8 @@ PedidosFarmaciasModel.prototype.listar_farmacias_usuario = function(tipo, usuari
         parametros = [usuario, empresa_id];
     }
 
+    //Depreciado para el modulo de kardex, se traen las bodegas desde el modulo de Bodegas 24/06/2015
     if (tipo === '3') {
-        //Depreciado para el modulo de kardex, se traen las bodegas desde los permisos del usuario 23/06/2015
         if(!permisos_kardex){
             sql = " SELECT\
                     b.bodega as bodega_id,\

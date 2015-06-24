@@ -11,8 +11,8 @@
 	    	"LISTAR_PRODUCTOS":BASE_URL+"/Kardex/listarProductos",
 	    	"OBTENER_MOVIMIENTO":BASE_URL+"/Kardex/obtenerMovimientosProducto",
                 'LISTAR_EMPRESAS':BASE_URL+'/PedidosFarmacias/listarFarmacias',
-                'CENTROS_UTILIDAD_EMPRESAS':BASE_URL+'/PedidosFarmacias/listarCentrosUtilidad',
-                'BODEGAS_EMPRESA':BASE_URL+'/PedidosFarmacias/listarBodegas',
+                'CENTROS_UTILIDAD_EMPRESAS':BASE_URL+'/CentrosUtilidad/listarCentrosUtilidadEmpresa',
+                'BODEGAS_EMPRESA':BASE_URL+'/Bodegas/listarBodegasEmpresas',
                 'CONSULTAR_EXISTENCIAS':BASE_URL+'/Kardex/consultarExistenciasProducto',
                 'LISTAR_EMPRESAS_FARMACIAS':BASE_URL+'/Empresas/listarEmpresasFarmacias'
 	    }

@@ -56,5 +56,8 @@ module.exports = function(app, di_container) {
     app.post('/api/Modulos/eliminarVariable', function(req, res) {
         c_modulos.eliminarVariable(req, res);
     });
-
+    
+    app.post('/api/Modulos/esModuloPadre', function(req, res) {
+        c_modulos.esModuloPadre(req, res);
+    });
 };

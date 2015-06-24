@@ -83,14 +83,14 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                 enableRowSelection: false,
                 showFilter: true,
                 columnDefs: [
-                    {field: 'opciones', displayName: "", cellClass: "txt-center", width: "10%",
+                    {field: 'opciones', displayName: "", cellClass: "txt-center", width: "40",
                         cellTemplate: '<div ng-if="row.entity.estado" style="color:#5cb85c;"><i class="glyphicon glyphicon-ok icon-success"></i></div>'},
                     //{field: 'empresaId', displayName : 'Empresa', width:60},
-                    {field: 'nombre', displayName: 'Nombre', cellTemplate: '<div style="font-size:11px" class="ngCellText">{{row.entity.nombreEmpresa}} - {{row.entity.nombre}}</div>'},
-                    {field: 'opciones', displayName: "", cellClass: "txt-center dropdown-button", width: "18%",
+                    {field: 'nombre', displayName: 'Nombre', cellTemplate: '<div  class="ngCellText">{{row.entity.nombreEmpresa.toLowerCase()}} - {{row.entity.nombre.toLowerCase()}}</div>'},
+                    {field: 'opciones', displayName: "", cellClass: "txt-center dropdown-button", width: "40",
                         cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción <span class="caret"></span></button>\
-                                            <ul class="dropdown-menu dropdown-options">\
+                                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown"> <span class="caret"></span></button>\
+                                            <ul class="dropdown-menu dropdown-options grid-sm-options">\
                                                 <li><a href="javascript:void(0);" ng-click="seleccionarCentroUtilidad(row.entity);" >Listar Bodegas</a></li>\
                                                 <li ng-if="row.entity.estado"><a href="javascript:void(0);" ng-click="removerCentroUtilidad(row.entity);" >Remover</a></li>\
                                             </ul>\
@@ -105,7 +105,7 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                 enableRowSelection: false,
                 showFilter: true,
                 columnDefs: [
-                    {field: 'opciones', displayName: "", cellClass: "txt-center", width: "10%",
+                    {field: 'opciones', displayName: "", cellClass: "txt-center", width: "40",
                      headerCellTemplate: "<div class=\"ngHeaderSortColumn {{col.headerClass}}\" ng-style=\"{'cursor': col.cursor}\" ng-class=\"{ 'ngSorted': !noSortVisible }\"> \
                                             <div ng-click=\"col.sort($event)\" ng-class=\"'colt' + col.index\" class=\"ngHeaderText text-center\"> \
                                                 {{col.displayName}} \
@@ -113,11 +113,11 @@ define(["angular", "js/controllers", "js/models", "includes/classes/CentroUtilid
                                             </div> \
                                         </div>",
                         cellTemplate: '<div ng-if="row.entity.estado" style="color:#5cb85c;"><i class="glyphicon glyphicon-ok icon-success"></i></div>'},
-                    {field: 'nombre', displayName: 'Observacion', cellTemplate: '<div style="font-size:11px" class="ngCellText">{{row.entity.codigo}} - {{row.entity.nombre}}</div>'},
-                    {field: 'opciones', displayName: "", cellClass: "txt-center dropdown-button", width: "18%",
+                    {field: 'nombre', displayName: 'Observacion', cellTemplate: '<div  class="ngCellText">{{row.entity.codigo}} - {{row.entity.nombre.toLowerCase()}}</div>'},
+                    {field: 'opciones', displayName: "", cellClass: "txt-center dropdown-button", width: "40",
                         cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción <span class="caret"></span></button>\
-                                            <ul class="dropdown-menu dropdown-options">\
+                                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown"> <span class="caret"></span></button>\
+                                            <ul class="dropdown-menu dropdown-options grid-sm-options">\
                                                 <li ng-if="!row.entity.estado"><a href="javascript:void(0);" ng-click="onSeleccionarBodega(row.entity);" >Seleccionar</a></li>\
                                                 <li ng-if="row.entity.estado"><a href="javascript:void(0);" ng-click="removerBodega(row.entity);" >Remover</a></li>\
                                             </ul>\

@@ -27,9 +27,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
 
             $scope.filtro = {};
             
-            
-            console.log("usuario actual >>>>>>>>>>>>>>>>>>> ", Usuario.getUsuarioActual());
-
             //  $scope.fechainicial = new Date((fechaActual.getMonth() + 1)+"/01/" + (fechaActual.getFullYear() -1));
             $scope.fechainicial = $filter('date')(new Date("01/01/" + fechaActual.getFullYear()), "yyyy-MM-dd");
             $scope.fechafinal = $filter('date')(fechaActual, "yyyy-MM-dd");
@@ -38,6 +35,21 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
             $scope.session = {
                  usuario_id: Usuario.getUsuarioActual().getId(),
                  auth_token: Usuario.getUsuarioActual().getToken()
+            };
+            
+            that.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
+            
+            //permisos kardex
+            that.opcionesModulo = {
+                columnaCosto: {
+                    'visible': that.opciones.sw_ver_costo
+                },
+                columnaCostoUltimaCompra: {
+                    'visible': that.opciones.sw_costo_ultima_compra
+                },
+                columnaPrecioVenta: {
+                    'visible': that.opciones.sw_precio_venta_clinica
+                }        
             };
 
             $scope.buscarProductos = function(termino_busqueda, paginando) {
@@ -135,14 +147,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                  }
                  },*/
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Codigo', width: "10%"},
+                    {field: 'codigo_producto', displayName: 'Codigo', width:"130"},
                     {field: 'descripcion', displayName: 'Nombre'},
-                    {field: 'existencia', displayName: 'Existencia', width: "7%"},
-                    {field: 'costo', displayName: 'Costo', width: "7%"},
-                    {field: 'costo_ultima_compra', displayName: 'Costo Ultima Compra', width: "12%"},
-                    {field: 'precio', displayName: 'Precio', width: "7%"},
-                    {field: 'porc_iva', displayName: 'Iva', width: "5%"},
-                    {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'}]
+                    {field: 'existencia', displayName: 'Existencia', width:"100"},
+                    {field: 'costo', displayName: 'Costo', width:"150", visible:that.opcionesModulo.columnaCosto.visible},
+                    {field: 'costo_ultima_compra', width:"150", displayName: 'Costo Ultima Compra', visible:that.opcionesModulo.columnaCostoUltimaCompra.visible},
+                    {field: 'precio', width:"150", displayName: 'Precio', visible:that.opcionesModulo.columnaPrecioVenta.visible},
+                    {field: 'porc_iva', displayName: 'Iva', width: "100"},
+                    {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "100", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'}]
 
             };
 

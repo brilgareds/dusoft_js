@@ -8,6 +8,7 @@ var OrdenesCompraEvents = function(socket, ordenes_compras) {
 };
 
 
+// Notificaciones en Tiempo real, usandos Sockets.io
 OrdenesCompraEvents.prototype.onNotificarOrdenesComprasActualizados = function(datos) {
 
     var that = this;

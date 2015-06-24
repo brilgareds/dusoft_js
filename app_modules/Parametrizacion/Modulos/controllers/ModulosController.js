@@ -346,6 +346,27 @@ Modulos.prototype.listarRolesPorModulo = function(req, res) {
     });
 };
 
+Modulos.prototype.esModuloPadre = function(req, res){
+    var that = this;
+    var args = req.body.data;
+
+    if (args.parametrizacion_modulos.modulo_id === undefined && args.parametrizacion_modulos.modulo_id.length === '') {
+        res.send(G.utils.r(req.url, 'El id del modulo no esta definido', 500, {parametrizacion_modulos: {}}));
+        return;
+    }
+    
+    var modulo_id = args.parametrizacion_modulos.modulo_id;
+
+    that.m_modulo.esModuloPadre(modulo_id, function(err, esPadre) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error listando los roles del modulo', 500, {parametrizacion_modulos: {}}));
+            return;
+        }
+        res.send(G.utils.r(req.url, "Listado de roles", 200, {parametrizacion_modulos: {esPadre: esPadre}}));
+
+    });
+};
+
 
 Modulos.$inject = ["m_modulo"];
 

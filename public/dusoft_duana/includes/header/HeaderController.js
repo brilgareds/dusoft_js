@@ -230,6 +230,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
 
                         _modulo.setIcon(modulo.icon);
                         _modulo.setState(modulo.state);
+                        _modulo.setModuloPadre(modulo.es_padre);
 
                         var _opciones = modulo.opciones;
 
@@ -256,15 +257,18 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                         _modulos.push(_modulo);
 
                         //objeto para mejorar el perfomance en el momento de buscar el modulo actual cada vez que cambie el router
-                        _modulosObjetoValor[modulo.state] = {
-                            id: "usuario_modulo_" + modulo.modulo_id,
-                            parent: modulo.parent,
-                            nombre: modulo.nombre,
-                            state: modulo.state,
-                            icon: modulo.icon,
-                            opciones: _modulo.getOpciones(true),
-                            variables:_modulo.getVariables(true)
-                        };
+                        if(!_modulo.esModuloPadre()){
+                            _modulosObjetoValor[modulo.state] = {
+                                id: "usuario_modulo_" + modulo.modulo_id,
+                                parent: modulo.parent,
+                                nombre: modulo.nombre,
+                                state: modulo.state,
+                                icon: modulo.icon,
+                                opciones: _modulo.getOpciones(true),
+                                variables:_modulo.getVariables(true),
+                                esPadre:_modulo.esModuloPadre()
+                            };
+                        }
                         
                     }
 

@@ -813,6 +813,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     
                     var obj = that.crearObjetoDetalle(producto);
                     
+                    console.log("ParseFloat Sin Iva: ", parseFloat(obj.getTotalSinIva()));
+                    console.log("ParseFloat Con Iva: ", parseFloat(obj.getTotalConIva()));
+                    
                     $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_sin_iva += parseFloat(obj.getTotalSinIva());
                     $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_con_iva += parseFloat(obj.getTotalConIva());
                     

@@ -34,7 +34,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
             
-            $scope.rootVerPedidosTempFarmacias.empresasDestino = Usuario.getUsuarioActual().getEmpresa().getCentrosUtilidad();
+            //$scope.rootVerPedidosTempFarmacias.empresasDestino = Usuario.getUsuarioActual().getEmpresa().getCentrosUtilidad();
+            $scope.rootVerPedidosTempFarmacias.empresasDestino = Usuario.getUsuarioActual().getEmpresasFarmacias();
 
             $scope.rootVerPedidosTempFarmacias.listado_farmacias = [];
 
@@ -255,27 +256,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 var existeFarmaciaCentroBodega = false;
                 
                 existeFarmaciaCentroBodega = $scope.rootVerPedidosTempFarmacias.empresasDestino.some(function(empresa){
-                                                return empresa.empresaId === data.farmacia.farmacia_id && empresa.codigo === data.farmacia.centro_utilidad_id
-                                                        && empresa.bodegas.some(function(bodega){
-                                                            return bodega.codigo === data.farmacia.bodega_id;
-                                                        });
-                                        });
-
-                /*$scope.rootVerPedidosTempFarmacias.empresasDestino.forEach(function(empresa){
-                    if(empresa.empresaId === data.farmacia.farmacia_id && empresa.codigo === data.farmacia.centro_utilidad_id) {
-                        cantidadDatosValidos++;
-                        
-                        empresa.bodegas.forEach(function(bodega){
-                            if(bodega.codigo === data.farmacia.bodega_id) {
-                                cantidadDatosValidos++;
-                            }
-                        });
-                        
-                    }
-
-                    
-                });*/
-                
+                                                    return empresa.codigo === data.farmacia.farmacia_id
+                                                        && empresa.centrosUtilidad.some(function(centro){
+                                                            return centro.codigo === data.farmacia.centro_utilidad_id
+                                                                    && centro.bodegas.some(function(bodega){
+                                                                            return bodega.codigo === data.farmacia.bodega_id;
+                                                                        });
+                                                            }); 
+                                                        
+                                                });
                 
                 if(existeFarmaciaCentroBodega){
                     //Insertar aquí el pedido seleccionado para el singleton Empresa

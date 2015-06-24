@@ -11,6 +11,8 @@ define(["angular", "js/models"], function(angular, models) {
                 this.numero_pedido = numero_pedido;
                 this.cantidad_cajas = cantidad_cajas || '';
                 this.cantidad_neveras = cantidad_neveras || '';
+                this.cantidad_cajas_auditadas = 0;
+                this.cantidad_neveras_auditadas = 0;
                 this.temperatura_neveras = temperatura_neveras || '';
                 this.observacion = observacion || '';                
                 this.tipo = tipo;                
@@ -30,6 +32,14 @@ define(["angular", "js/models"], function(angular, models) {
             
             Documento.prototype.set_tercero = function(tercero) {
                 this.tercero = tercero;
+            };
+            
+            Documento.prototype.set_cantidad_cajas_auditadas = function(cantidad) {
+                this.cantidad_cajas_auditadas = cantidad;
+            };
+            
+            Documento.prototype.set_cantidad_neveras_auditadas = function(cantidad) {
+                this.cantidad_neveras_auditadas = cantidad;
             };
             
             Documento.prototype.get_id = function() {
@@ -82,6 +92,14 @@ define(["angular", "js/models"], function(angular, models) {
 
             Documento.prototype.get_tipo = function() {
                 return this.tipo;
+            };
+            
+            Documento.prototype.get_cantidad_cajas_auditadas = function() {
+                return this.cantidad_cajas_auditadas;
+            };
+            
+            Documento.prototype.get_cantidad_neveras_auditadas = function() {
+                return this.cantidad_neveras_auditadas;
             };
 
             return this;

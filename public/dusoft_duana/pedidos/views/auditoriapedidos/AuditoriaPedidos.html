@@ -81,7 +81,7 @@
             </tab-heading>
 
             <select ui-select2  class="pull-left" style="width:300px" ng-model="seleccion" data-placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
-                <option ng-repeat="empresa in  empresas"  ng-value="empresa.empresa_id" >{{empresa.razon_social}}</option>
+                <option ng-repeat="empresa in  empresas"  ng-value="empresa.codigo" >{{empresa.nombre}}</option>
             </select>
 
             <div class="input-group navbar-form">

@@ -695,7 +695,7 @@ PedidosClienteModel.prototype.calcular_cantidad_total_pendiente_producto = funct
 
 PedidosClienteModel.prototype.calcular_cantidad_reservada_cotizaciones_clientes = function(codigo_producto, callback) {
 
-    var sql = " SELECT b.codigo_producto, sum(b.numero_unidades) as total_reservado from ventas_ordenes_pedidos_tmp a\
+    var sql = " SELECT b.codigo_producto, sum(b.numero_unidades)::integer as total_reservado from ventas_ordenes_pedidos_tmp a\
                 INNER JOIN ventas_ordenes_pedidos_d_tmp b on b.pedido_cliente_id_tmp = a.pedido_cliente_id_tmp\
                 WHERE b.codigo_producto = $1 and a.estado = '1'\
                 GROUP BY b.codigo_producto";
@@ -713,7 +713,7 @@ PedidosClienteModel.prototype.calcular_cantidad_reservada_cotizaciones_clientes 
 
 PedidosClienteModel.prototype.calcular_cantidad_reservada_cotizaciones_clientes_por_fecha = function(codigo_producto, fecha_registro_pedido, callback) {
 
-    var sql = " SELECT b.codigo_producto, sum(b.numero_unidades) as total_reservado from ventas_ordenes_pedidos_tmp a\
+    var sql = " SELECT b.codigo_producto, sum(b.numero_unidades)::integer as total_reservado from ventas_ordenes_pedidos_tmp a\
                 INNER JOIN ventas_ordenes_pedidos_d_tmp b on b.pedido_cliente_id_tmp = a.pedido_cliente_id_tmp\
                 WHERE b.codigo_producto = $1 and a.estado = '1' AND a.fecha_registro < $2\
                 GROUP BY b.codigo_producto";

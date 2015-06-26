@@ -360,11 +360,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         {field: 'total_con_iva', displayName: 'Total Con Iva', cellFilter: "currency:'$ '", width: "10%"},
                         {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "10%",
                             cellTemplate: ' <div class="row">\n\
-                                                <button ng-if="rootSeleccionProductoCliente.bloquear_eliminar == false" class="btn btn-danger btn-xs" ng-click="onEliminarSeleccionado(row)">\n\
-                                                    <span class="glyphicon glyphicon-minus-sign">Eliminar</span>\n\
+                                                <button ng-if="rootSeleccionProductoCliente.bloquear_eliminar == false" class="btn btn-default btn-xs" ng-click="onEliminarSeleccionado(row)">\n\
+                                                    <span class="glyphicon glyphicon-remove">Eliminar</span>\n\
                                                 </button>\n\
-                                                <button ng-if="rootSeleccionProductoCliente.bloquear_eliminar == true" ng-disabled="true" class="btn btn-danger btn-xs" ng-click="">\n\
-                                                    <span class="glyphicon glyphicon-minus-sign">Eliminar</span>\n\
+                                                <button ng-if="rootSeleccionProductoCliente.bloquear_eliminar == true" ng-disabled="true" class="btn btn-default btn-xs" ng-click="">\n\
+                                                    <span class="glyphicon glyphicon-remove">Eliminar</span>\n\
                                                 </button>\n\
                                             </div>'
                         }
@@ -933,6 +933,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                             //var fecha_registro = data.obj.resultado_consulta[0].fecha_registro;
                             
                             //$scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().setFechaRegistro(fecha_registro);
+                            
+                            //Restar la cantidad solicitada de la disponibilidad visible en la grid de productos
+                            row.entity.disponible -= row.entity.cantidad_solicitada;
 
                             //Sumar Parcial de Total Con IVA y Sin IVA
                             $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().valor_total_sin_iva += parseFloat(producto.getTotalSinIva());
@@ -1210,6 +1213,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                             //var fecha_registro = data.obj.resultado_consulta[0].fecha_registro;
                             
                             //$scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().setFechaRegistro(fecha_registro);
+                            
+                            //Restar Valor de disponibilidad para que se refleje automáticamente en la grid
+                            row.entity.disponible -= row.entity.cantidad_solicitada;
 
                             //Sumar Parcial de Total Con IVA y Sin IVA
                             $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().valor_total_sin_iva += parseFloat(producto.getTotalSinIva());
@@ -1544,7 +1550,21 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                         console.log("Eliminación de detalle Exitosa: ", data.msj);
                         $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().valor_total_sin_iva -= parseFloat(row.entity.total_sin_iva);
                         $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().valor_total_con_iva -= parseFloat(row.entity.total_con_iva);                        
+                        
+                        //adicionar lo eliminado de éste código a la disponibilidad en la lista de productos
+                        
+                        $scope.rootSeleccionProductoCliente.Empresa.getProductos().forEach(function(producto){
+                            
+                            if(producto.codigo_producto === row.entity.codigo_producto) {
+                                
+                                producto.disponible += row.entity.cantidad_solicitada;
+                                
+                            }
+
+                        });
+
                         $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().eliminarProducto(row.rowIndex);
+
                     }
                     else
                     {
@@ -1577,7 +1597,20 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     if (data.status == 200) {
                         console.log("Eliminación de detalle Exitosa: ", data.msj);
                         $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().valor_total_sin_iva -= parseFloat(row.entity.total_sin_iva);
-                        $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().valor_total_con_iva -= parseFloat(row.entity.total_con_iva);                        
+                        $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().valor_total_con_iva -= parseFloat(row.entity.total_con_iva); 
+                        
+                        //adicionar lo eliminado de éste código a la disponibilidad en la lista de productos
+                        $scope.rootSeleccionProductoCliente.Empresa.getProductos().forEach(function(producto){
+                            
+                            if(producto.codigo_producto === row.entity.codigo_producto) {
+                                
+                                producto.disponible += row.entity.cantidad_solicitada;
+                                
+                            }
+
+                        });
+                        
+                        //Eliminar fila de la Grid
                         $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().eliminarProducto(row.rowIndex);
                     }
                     else

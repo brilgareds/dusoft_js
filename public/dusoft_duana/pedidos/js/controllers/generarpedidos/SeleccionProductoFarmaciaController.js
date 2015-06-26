@@ -817,6 +817,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                                     if (data.status === 200) {
                                         console.log("Registro Insertado Exitosamente en Detalle: ", data.msj);
+                                        
+                                        //Restar Valor de disponibilidad para que se refleje automáticamente en la grid
+                                        row.entity.disponibilidad_bodega -= row.entity.cantidad_solicitada;
+                                        
                                     }
                                     else {
                                         console.log("No se pudo Incluir éste produto: ",data.msj);
@@ -1093,6 +1097,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                                     if (data.status === 200) {
                                         console.log("Registro Insertado Exitosamente en Detalle: ", data.msj);
+                                        
+                                        //Restar Valor de disponibilidad para que se refleje automáticamente en la grid
+                                        row.entity.disponibilidad_bodega -= row.entity.cantidad_solicitada;
                                     }
                                     else {
                                         console.log("No se pudo Incluir éste produto: ",data.msj);
@@ -1284,6 +1291,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 $scope.rootSeleccionProductoFarmacia.no_incluir_producto = false;
                 
+                var codigo_producto = row.entity.codigo_producto;
+                var cantidad_solicitada = row.entity.cantidad_solicitada;
+                
                 $scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().eliminarProducto(row.rowIndex);
                 //$scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.splice(row.rowIndex, 1);
                 
@@ -1315,7 +1325,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                     if (data.status == 200) {
                         console.log("Eliminación de detalle Exitosa: ", data.msj);
-
+                        
+                        //adicionar lo eliminado de éste código a la disponibilidad en la lista de productos
+                        $scope.rootSeleccionProductoFarmacia.listado_productos.forEach(function(producto){
+                            
+                            if(producto.codigo_producto === codigo_producto) {
+                                producto.disponibilidad_bodega = parseInt(producto.disponibilidad_bodega) + parseInt(cantidad_solicitada);
+                                console.log("Disponibilidad Bodega: ", producto.disponibilidad_bodega);
+                            }
+                        });
                         /* Para desarrollar aquí: Si la grid está vacia, eliminar el encabezado */
                         
                         //console.log("Longitud de Productos Seleccionados en Grid: ", $scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().lista_producto.length);
@@ -1498,15 +1516,24 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                     var url = API.PEDIDOS.ELIMINAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA;
 
-                    Request.realizarRequest(url, "POST", obj_eliminar, function(data) {
+                    Request.realizarRequest(url, "POST", obj_eliminar, function(datadb) {
 
-                        if(data.status === 200) {
-                            console.log("Eliminación Exitosa: ", data.msj);
+                        if(datadb.status === 200) {
+                            console.log("Eliminación Exitosa: ", datadb.msj);
 
+                            //adicionar lo eliminado de éste código a la disponibilidad en la lista de productos
+                            $scope.rootSeleccionProductoFarmacia.listado_productos.forEach(function(producto){
+
+                                if(producto.codigo_producto === data.codigo_producto) {
+                                    producto.disponibilidad_bodega = parseInt(producto.disponibilidad_bodega) + parseInt(data.cantidad_solicitada);
+                                    console.log("Disponibilidad Bodega: ", producto.disponibilidad_bodega);
+                                }
+                            });
+                            
                             $scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().eliminarProducto(index);
                         }
                         else {
-                            console.log("Eliminación Falló: ", data.msj);
+                            console.log("Eliminación Falló: ", datadb.msj);
                         }
                     });
 

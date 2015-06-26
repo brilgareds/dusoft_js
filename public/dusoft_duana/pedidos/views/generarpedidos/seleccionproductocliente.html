@@ -13,9 +13,9 @@
                 <div class="panel-heading">
                   <h4 class="h4MarginTopBottom" align="center">Selección de Producto para Clientes</h4>
                 </div>
-                <div class="panel-body">
+                <div class="panel-body input-group">
                     
-                    <div class="col-sm-12 col-md-6 col-lg-5 pull-left input-group">
+                    <div class="center-y col-sm-12 col-md-6 col-lg-5 pull-left input-group">
                         <div class="row" style="margin-bottom: 20px;">
                             <div class="col-lg-12">
 
@@ -46,7 +46,26 @@
                         </div>
                     </div>
                     
-                    <div class="col-sm-12 col-md-6 col-lg-7 pull-right">
+                    <div class="center-y col-sm-12 col-md-6 col-lg-7 pull-right">
+                        
+                        <div class="row col-sm-12 col-md-12 col-lg-12 pull-right">
+                            
+                            <div class="row col-sm-4 col-md-4 col-lg-4 input-group pull-right">
+                                <div class=" row col-sm-12 col-md-12 col-lg-12">
+                                    
+                                    <label>Tipo Producto Búsqueda:</label> <!--{{rootSeleccionProductoFarmacia.tipoProducto}}-->
+                                    <span class="label label-default" ng-show="rootSeleccionProductoCliente.tipoProducto == 0" >Todos</span>
+                                    <span class="label label-success" ng-show="rootSeleccionProductoCliente.tipoProducto == 1" >Normales</span>
+                                    <span class="label label-danger" ng-show="rootSeleccionProductoCliente.tipoProducto == 2">Alto Costo</span>
+                                    <span class="label label-warning" ng-show="rootSeleccionProductoCliente.tipoProducto == 3">Controlados</span>
+                                    <span class="label label-primary" ng-show="rootSeleccionProductoCliente.tipoProducto == 4">Insumos</span>
+                                    <span class="label label-info" ng-show="rootSeleccionProductoCliente.tipoProducto == 5">Nevera</span>  
+                                    
+                                    
+                                </div>
+                            </div>                            
+                            
+                        </div>
 
                         <div class="row col-sm-4 col-md-4 col-lg-4 input-group pull-right">
                             
@@ -83,10 +102,10 @@
                             <input type="text" class="form-control" ng-keypress="onTeclaBuscarSeleccionProducto($event)" ng-model="rootSeleccionProductoCliente.laboratorio" placeholder="Laboratorio" name="srch-term" id="srch-term">
                         </div>
                         
-                        <div class="row col-sm-4 col-md-4 col-lg-4 input-group pull-right">
+<!--                        <div class="row col-sm-4 col-md-4 col-lg-4 input-group pull-right">
                             <div class=" row col-sm-12 col-md-12 col-lg-12">
                                 <br/>
-                                Tipo Producto Búsqueda: <!--{{rootSeleccionProductoFarmacia.tipoProducto}}-->
+                                Tipo Producto Búsqueda: {{rootSeleccionProductoFarmacia.tipoProducto}}
                                 <span class="label label-default" ng-show="rootSeleccionProductoCliente.tipoProducto == 0" >Todos</span>
                                 <span class="label label-success" ng-show="rootSeleccionProductoCliente.tipoProducto == 1" >Normales</span>
                                 <span class="label label-danger" ng-show="rootSeleccionProductoCliente.tipoProducto == 2">Alto Costo</span>
@@ -94,7 +113,7 @@
                                 <span class="label label-primary" ng-show="rootSeleccionProductoCliente.tipoProducto == 4">Insumos</span>
                                 <span class="label label-info" ng-show="rootSeleccionProductoCliente.tipoProducto == 5">Nevera</span>            
                             </div>
-                        </div>
+                        </div>-->
                         
                     </div>
                     

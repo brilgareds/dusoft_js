@@ -422,7 +422,24 @@ define(["angular", "js/controllers",'models/ClientePedido',
              return obj;
          };
 
-
+        that.existenLotesConNumeroCajaActual = function(){
+              for(var i in $scope.lotes_producto.selectedItems){
+                 
+                 var  lote = $scope.lotes_producto.selectedItems[i];
+                 console.log("numero de caja ",lote.numero_caja, " digitado ", $scope.rootEditarProducto.caja.getNumero()  );
+                 if(parseInt(lote.numero_caja) === parseInt($scope.rootEditarProducto.caja.getNumero()) && parseInt(lote.numero_caja) !== 0){
+                    
+                    return true;
+                 }
+              }
+              
+              return false;
+         };
+         
+         $scope.onNumeroCajaDigitado = function(){
+             $scope.cerrar = false;
+             $scope.imprimir = false;   
+         };
 
          $scope.auditarPedido = function(){
 
@@ -571,9 +588,10 @@ define(["angular", "js/controllers",'models/ClientePedido',
          $scope.onValidarCaja = function(){
 
          };
+        
 
          $scope.onSeleccionarCaja = function(){
-             $scope.cerrar = false;
+             $scope.imprimir = false;
              if($scope.lotes_producto.selectedItems.length === 0){
                  $scope.rootEditarProducto.validacionproducto.valido = false;
                  $scope.rootEditarProducto.caja.setValida(false);
@@ -663,6 +681,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
 
                                       $scope.rootEditarProducto.caja.setValida(true);
+                                      $scope.cerrar = true;
 
                                } else {
                                      $scope.rootEditarProducto.validacionproducto.valido = false;
@@ -742,16 +761,16 @@ define(["angular", "js/controllers",'models/ClientePedido',
              Request.realizarRequest(url, "POST", obj, function(data) {
                  if(data.status === 200){
 
-                     $scope.cerrar = true;
+                     $scope.imprimir = true;
                      //$scope.rootEditarProducto.caja.numero = "";
                  } else {
-                     $scope.cerrar = false;
+                     $scope.imprimir = false;
                  }
              });
          };
 
          $scope.onImprimirRotulo = function(){
-             $scope.cerrar = false;     
+               
              $rootScope.$emit("onGenerarPdfRotulo", $scope.rootEditarProducto.documento.pedido.tipo,
                                                     $scope.rootEditarProducto.documento.pedido.numero_pedido,
                                                     $scope.rootEditarProducto.caja.getNumero(),

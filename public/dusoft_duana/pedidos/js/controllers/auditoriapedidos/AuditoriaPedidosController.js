@@ -35,6 +35,20 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.filtro = {
                 codigo_barras: false
             };
+            
+            
+            var opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
+            
+            //permisos auditoria
+            $scope.opcionesModulo = {
+                btnAuditarClientes: {
+                    'click': opciones.sw_auditar_clientes
+                },
+                btnAuditarFarmacias: {
+                    'click': opciones.sw_auditar_farmacias
+                }       
+            };
+            
 
             var obj = {
                 session: $scope.session,

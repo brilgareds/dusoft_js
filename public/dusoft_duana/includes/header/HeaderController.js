@@ -236,7 +236,12 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
 
                         for(var ii in _opciones) {
                             var _opcion = _opciones[ii];
-                            // console.log("opcion >>>>>>>>>>>>>>> ", _opcion.estado_opcion_rol)
+                            
+                           //la opcion esta deshabilitada
+                            if(_opcion.estado === '0'){
+                                _opcion.estado_opcion_rol = _opcion.estado;
+                            }
+                            
                             var opcion = OpcionModulo.get(_opcion.id, _opcion.nombre, _opcion.alias, _opcion.modulo_id);
                             opcion.setEstado_opcion_rol(_opcion.estado_opcion_rol);
                             _modulo.agregarOpcion(opcion);

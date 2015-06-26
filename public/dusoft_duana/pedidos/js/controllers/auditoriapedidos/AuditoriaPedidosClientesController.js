@@ -64,7 +64,7 @@ define(["angular", "js/controllers",
                     {field: 'fecha_separacion_pedido', displayName: "Fecha Separación"},
                     {field: 'movimiento', displayName: "Detalle", cellClass: "txt-center", width: "7%",
                         cellTemplate: '<div ng-switch="esAuditorCreador(row)">\
-                                        <button ng-switch-when="true" class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in"></span> Auditar</button>\
+                                        <button ng-switch-when="true" ng-validate-events="{{opcionesModulo.btnAuditarClientes}}" class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in"></span> Auditar</button>\
                                         <button ng-switch-when="false" disabled class="btn btn-default btn-xs"><span class="glyphicon glyphicon-zoom-in"></span> Auditar</button>\
                                       </div>'
                     }

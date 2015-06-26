@@ -1,9 +1,9 @@
 define(["angular", "js/controllers"], function(angular, controllers) {
 
     var fo = controllers.controller('PedidosController', [
-        '$scope', '$rootScope',
+        '$scope', '$rootScope','Usuario',
         
-        function($scope, $rootScope) {
+        function($scope, $rootScope, Usuario) {
 
             $scope.selectestados = {
                 placeholder:"Seleccionar Estado"
@@ -24,5 +24,24 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             ];
 
             $scope.estadoseleccionado = "";
+            
+            
+            var opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
+            
+            //permisos asignacion de pedidos
+            $scope.opcionesModulo = {
+                btnAsignarPedidosClientes: {
+                    'click': opciones.sw_asignar_pedidos_clientes
+                },
+                btnAsignarPedidosFarmacias: {
+                    'click': opciones.sw_asignar_pedidos_farmacias
+                },
+                btnCambiarEstadoPedidos:{
+                    'click': opciones.sw_cambiar_estado_pedidos
+                }
+            };
+            
+            console.log("opciones de asignacion ", $scope.opcionesModulo);
+            
         }]);
 });

@@ -39,7 +39,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             var opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
             
-            //permisos kardex
+            //permisos auditoria
             $scope.opcionesModulo = {
                 btnAuditarClientes: {
                     'click': opciones.sw_auditar_clientes

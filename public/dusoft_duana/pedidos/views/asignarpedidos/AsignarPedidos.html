@@ -6,7 +6,7 @@
         <tab heading="Clientes" ng-controller="PedidosClientesController">
 
             <div class="col-md-1">
-                <button type="button" class="form-control btn btn-default btn-sm" ng-disabled="pedidosSeleccionados.length == 0" ng-click="abrirModalAsignar()">
+                <button type="button" class="form-control btn btn-default btn-sm" ng-validate-events="{{opcionesModulo.btnAsignarPedidosClientes}}" ng-disabled="pedidosSeleccionados.length == 0" ng-click="abrirModalAsignar()">
                     <span class="glyphicon glyphicon-ok" ></span> Asignar
                 </button>
             </div>    
@@ -61,7 +61,7 @@
             </div-->
             <div class="col-md-1">
 
-                <button type="button" class="form-control btn btn-default btn-sm" ng-disabled="pedidosSeleccionados.length == 0" ng-click="abrirModalAsignar()">
+                <button type="button" class="form-control btn btn-default btn-sm" ng-validate-events="{{opcionesModulo.btnAsignarPedidosFarmacias}}" ng-disabled="pedidosSeleccionados.length == 0" ng-click="abrirModalAsignar()">
                     <span class="glyphicon glyphicon-ok" ></span> Asignar
                 </button>
             </div> 

@@ -139,7 +139,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                         cellTemplate: '<div class="btn-group">\
                                             <button ng-disabled="habilitar_opciones(row.entity)" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li><a href="javascript:void(0);" ng-click="modificar_estado_pedido_cliente(row.entity);" >Cambiar Estado</a></li>\
+                                                <li><a href="javascript:void(0);" ng-validate-events="{{opcionesModulo.btnCambiarEstadoPedidos}}" ng-click="modificar_estado_pedido_cliente(row.entity);"  >Cambiar Estado</a></li>\
                                             </ul>\
                                         </div>'
                     }

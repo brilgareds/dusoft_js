@@ -538,6 +538,17 @@ DocuemntoBodegaE008.prototype.actualizar_estado_documento_temporal_farmacias = f
 
 };
 
+// Consultar el rotulo mayor para validar el consecutivo de la caja o nevera 
+DocuemntoBodegaE008.prototype.consultarNumeroMayorRotulo = function(documento_id, numero_pedido, tipo, callback) {
+    var sql = " select coalesce(max(a.numero_caja), 0) as numero_caja from inv_rotulo_caja a \
+                where a.documento_id = $1 and  solicitud_prod_a_bod_ppal_id = $2 and (sw_despachado = '0' or sw_despachado is null) and a.tipo = $3; ";
+
+    G.db.query(sql, [documento_id, numero_pedido, tipo], function(err, rows, result) {
+
+        callback(err, rows, result);
+    });
+};
+
 // Consultar el rotulo de una caja 
 DocuemntoBodegaE008.prototype.consultar_rotulo_caja = function(documento_id, numero_caja, numero_pedido, callback) {
     var sql = " select * from inv_rotulo_caja a where a.documento_id = $1 and numero_caja = $2 and solicitud_prod_a_bod_ppal_id = $3 and (sw_despachado = '0' or sw_despachado is null); ";

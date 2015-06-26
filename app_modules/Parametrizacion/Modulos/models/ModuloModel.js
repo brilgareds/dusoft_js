@@ -390,7 +390,11 @@ ModuloModel.prototype.listarModulosEmpresaPorRol = function(rol_id, callback) {
 ModuloModel.prototype.listarModulosUsuario = function(rol_id, empresa_id, login_id, callback) {
     //console.log("rol_id ", rol_id, " empresa id ",empresa_id, " login_id ", login_id, ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     var sql = " SELECT a.*, c.parent, b.modulo_id, b.estado as estado_modulo_usuario, c.nombre, c.state, c.url, c.icon, c.carpeta_raiz,\
-                b.id as login_modulos_empresas_id FROM login_empresas a\
+                b.id as login_modulos_empresas_id,\
+                CASE WHEN COALESCE(( SELECT bb.id FROM modulos aa\
+                                     INNER join modulos bb on aa.id = bb.parent\
+                                     WHERE aa.id = b.modulo_id limit 1 ), 0) > 0 THEN '1' ELSE '0' END as es_padre\
+                FROM login_empresas a\
 		INNER JOIN login_modulos_empresas b ON b.login_empresas_id = a.id\
                 INNER JOIN modulos c ON b.modulo_id = c.id and c.estado = '1'\
                 WHERE a.rol_id = $1 AND a.empresa_id = $2 AND a.login_id = $3   ORDER BY id";
@@ -412,6 +416,17 @@ ModuloModel.prototype.obtenerModulosHijos = function(modulo_id, callback) {
     });
 };
 
+
+ModuloModel.prototype.esModuloPadre = function(modulo_id, callback){
+    var sql = "SELECT b.id FROM modulos a\
+                INNER join modulos b on a.id= b.parent\
+                WHERE a.id = $1 limit 1";
+    
+    G.db.query(sql, [modulo_id], function(err, rows, result) {
+        var esPadre = (rows.length > 0)?true:false;
+        callback(err, esPadre);
+    });
+};
 
 ModuloModel.prototype.listarRolesPorModulo = function(modulo_id, empresa_id, callback) {
     var sql = " SELECT a. *, b.id_rol_modulo, b.estado_rol_modulo FROM roles a\

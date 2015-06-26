@@ -35,6 +35,7 @@ define(["angular", "js/models"], function(angular, models) {
                 this.modulosHijo = [];
                 this.empresasModulos = [];
                 this.rolesModulos = [];
+                this.esPadre;
 
             }
 
@@ -252,6 +253,14 @@ define(["angular", "js/models"], function(angular, models) {
 
             Modulo.prototype.setRoles = function(roles) {
                 this.rolesModulos = roles;
+            };
+            
+            Modulo.prototype.esModuloPadre = function() {
+                return this.esPadre;
+            };
+
+            Modulo.prototype.setModuloPadre = function(esPadre) {
+                this.esPadre = Boolean(Number(esPadre));
             };
 
             Modulo.prototype.agregarRol = function(rolModulo) {

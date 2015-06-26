@@ -221,6 +221,10 @@ define(["angular", "js/controllers",
                 documentos.forEach(function(data) {
 
                     var documento = Documento.get(0, data.empresa_id, data.prefijo, data.numero, data.numero_pedido);
+
+                    documento.set_cantidad_cajas_auditadas(data.total_cajas);
+                    documento.set_cantidad_neveras_auditadas(data.total_neveras);
+
                     $scope.datos_view.tercero_seleccionado.set_documentos(documento);
                 });
 
@@ -256,10 +260,19 @@ define(["angular", "js/controllers",
             };
 
             $scope.seleccionar_documento_planilla = function(documento) {
+                
+                console.log('=== seleccionar_documento_planilla===');
+                console.log(documento);
+                // Validar que la cantidad de cajas y neveras sean iguales a las cantidades auditadas
+                if (documento.get_cantidad_cajas() == documento.get_cantidad_cajas_auditadas() && documento.get_cantidad_neveras() == documento.get_cantidad_neveras_auditadas()) {
 
-                $scope.datos_view.documento_seleccionado = documento;
+                    $scope.datos_view.documento_seleccionado = documento;
 
-                that.gestionar_planilla_despacho();
+                    that.gestionar_planilla_despacho();
+
+                }else{
+                    AlertService.mostrarMensaje("warning", "Las cantidades de cajas y/o neveras NO coinciden con las cantidades auditadas");
+                }
             };
 
             $scope.seleccionar_documento_otras_empresas = function() {

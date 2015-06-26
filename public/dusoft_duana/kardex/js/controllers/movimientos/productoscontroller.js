@@ -17,21 +17,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
             var fechaActual = new Date();
             $scope.paginas = 0;
             $scope.items = 0;
-            $scope.paginaactual = 1;
+            $scope.paginaactual = 0;
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
             $scope.listaEmpresas = [];
             $scope.listaCentroUtilidad = [];
             $scope.listaBodegas = [];
             $scope.slideurl = "";
-            $scope.empresaSeleccion;
-            $scope.centroSeleccion;
 
             $scope.filtro = {};
             
-            
-            console.log("usuario actual >>>>>>>>>>>>>>>>>>> ", Usuario.getUsuarioActual());
-
             //  $scope.fechainicial = new Date((fechaActual.getMonth() + 1)+"/01/" + (fechaActual.getFullYear() -1));
             $scope.fechainicial = $filter('date')(new Date("01/01/" + fechaActual.getFullYear()), "yyyy-MM-dd");
             $scope.fechafinal = $filter('date')(fechaActual, "yyyy-MM-dd");
@@ -41,11 +36,26 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                  usuario_id: Usuario.getUsuarioActual().getId(),
                  auth_token: Usuario.getUsuarioActual().getToken()
             };
+            
+            that.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
+            
+            //permisos kardex
+            that.opcionesModulo = {
+                columnaCosto: {
+                    'visible': that.opciones.sw_ver_costo
+                },
+                columnaCostoUltimaCompra: {
+                    'visible': that.opciones.sw_costo_ultima_compra
+                },
+                columnaPrecioVenta: {
+                    'visible': that.opciones.sw_precio_venta_clinica
+                }        
+            };
 
             $scope.buscarProductos = function(termino_busqueda, paginando) {
 
                 if ($scope.ultima_busqueda !== $scope.termino_busqueda) {
-                    $scope.paginaactual = 1;
+                    $scope.paginaactual = 0;
                 }
 
                 if ($scope.filtro.empresa_seleccion === "") {
@@ -93,7 +103,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                 $scope.items = data.lista_productos.length;
                 //se valida que hayan registros en una siguiente pagina
                 if (paginando && $scope.items === 0) {
-                    if ($scope.paginaactual > 1) {
+                    if ($scope.paginaactual > 0) {
                         $scope.paginaactual--;
                     }
                     AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
@@ -137,14 +147,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                  }
                  },*/
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Codigo', width: "10%"},
+                    {field: 'codigo_producto', displayName: 'Codigo', width:"130"},
                     {field: 'descripcion', displayName: 'Nombre'},
-                    {field: 'existencia', displayName: 'Existencia', width: "7%"},
-                    {field: 'costo', displayName: 'Costo', width: "7%"},
-                    {field: 'costo_ultima_compra', displayName: 'Costo Ultima Compra', width: "12%"},
-                    {field: 'precio', displayName: 'Precio', width: "7%"},
-                    {field: 'porc_iva', displayName: 'Iva', width: "5%"},
-                    {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "7%", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'}]
+                    {field: 'existencia', displayName: 'Existencia', width:"100"},
+                    {field: 'costo', displayName: 'Costo', width:"150", visible:that.opcionesModulo.columnaCosto.visible},
+                    {field: 'costo_ultima_compra', width:"150", displayName: 'Costo Ultima Compra', visible:that.opcionesModulo.columnaCostoUltimaCompra.visible},
+                    {field: 'precio', width:"150", displayName: 'Precio', visible:that.opcionesModulo.columnaPrecioVenta.visible},
+                    {field: 'porc_iva', displayName: 'Iva', width: "100"},
+                    {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "100", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'}]
 
             };
 
@@ -195,50 +205,113 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
 
             };
 
-            that.traerEmpresas = function() {
+            that.traerEmpresas = function(callback) {
 
                 $scope.listaEmpresas = [];
                 $scope.listaCentroUtilidad = [];
                 $scope.listaBodegas = [];
                 
-                $scope.listaEmpresas = Usuario.getUsuarioActual().getEmpresasFarmacias();
-                
-                //console.log("cantidad de empresas y farmacias ", $scope.listaEmpresas);
-                $scope.filtro.empresa_seleccion = '03';
-                $scope.onEmpresaSeleccionada();
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_farmacias:{
+                            permisos_kardex:true
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.KARDEX.LISTAR_EMPRESAS_FARMACIAS, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        for (var i in data.obj.empresas) {
+                            var empresa = Empresa.get(
+                                    data.obj.empresas[i].razon_social,
+                                    data.obj.empresas[i].empresa_id
+                            );
+
+                            $scope.listaEmpresas.push(empresa);
+                        }
+
+                        if (callback)
+                            callback();
+                    }
+
+                });
+
+            };
+
+            that.consultarCentrosUtilidadPorEmpresa = function(callback) {
+
+                $scope.listaCentroUtilidad = [];
+                $scope.listaBodegas = [];
+                $scope.filtro.centro_seleccion = "";
+                $scope.filtro.bodega_seleccion = "";
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        centro_utilidad: {
+                            empresa_id: $scope.filtro.empresa_seleccion
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.KARDEX.CENTROS_UTILIDAD_EMPRESAS, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        console.log("centros de utilidad ", data);
+                        for (var i in data.obj.centros_utilidad) {
+                            var centroUtilidad = CentroUtilidad.get(
+                                    data.obj.centros_utilidad[i].descripcion,
+                                    data.obj.centros_utilidad[i].centro_utilidad_id
+                            );
+
+                            $scope.listaCentroUtilidad.push(centroUtilidad);
+                        }
+                        if (callback)
+                            callback();
+                    }
+
+                });
             };
 
 
-            $scope.onEmpresaSeleccionada = function() {
-                $scope.filtro.centro_seleccion = "";
-                $scope.filtro.bodega_seleccion = "";
-                var empresas = Usuario.getUsuarioActual().getEmpresasFarmacias();
-                
-                $scope.empresaSeleccion = empresas.filter(function(_empresa){
-                     return _empresa.getCodigo() === $scope.filtro.empresa_seleccion;
+            that.consultarBodegasPorEmpresa = function(callback) {
+
+                $scope.listaBodegas = [];
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        bodegas: {
+                            empresa_id: $scope.filtro.empresa_seleccion,
+                            centro_utilidad_id: $scope.filtro.centro_seleccion
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.KARDEX.BODEGAS_EMPRESA, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        for (var i in data.obj.bodegas) {
+                            var bodega = Bodega.get(
+                                    data.obj.bodegas[i].descripcion,
+                                    data.obj.bodegas[i].bodega_id
+                            );
+
+                            $scope.listaBodegas.push(bodega);
+                        }
+                        if (callback)
+                            callback();
+                    }
                 });
-                
-                if($scope.empresaSeleccion.length > 0){
-                    $scope.empresaSeleccion = $scope.empresaSeleccion[0];
-                } else {
-                   $scope.empresaSeleccion = Empresa.get(); 
-                }
+            };
+
+            $scope.onEmpresaSeleccionada = function() {
+                that.consultarCentrosUtilidadPorEmpresa();
             };
 
             $scope.onCentroSeleccionado = function() {
-                console.log("centro seleccionado ",  $scope.filtro.centro_seleccion);
-                $scope.filtro.bodega_seleccion = "";
-                var centros = $scope.empresaSeleccion.getCentrosUtilidad();
-                
-                $scope.centroSeleccion = centros.filter(function(_centro){
-                     return _centro.getCodigo() === $scope.filtro.centro_seleccion;
-                });
-                
-                console.log("$scope.centroSeleccion >>>>>>>>>>>>", $scope.centroSeleccion);
-                
-                if($scope.centroSeleccion.length > 0){
-                    $scope.centroSeleccion = $scope.centroSeleccion[0];
-                }
+                that.consultarBodegasPorEmpresa();
             };
 
             $scope.cerrar = function() {
@@ -302,15 +375,29 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
 
 
 
-            that.traerEmpresas();
-            if($scope.empresaSeleccion.getCodigo() !== ""){
-                console.log("empresa seleccion >>>>>>>>>>>>> ", $scope.empresaSeleccion);
-                $scope.filtro.centro_seleccion = '1 ';
-                $scope.onCentroSeleccionado();
-                $scope.filtro.bodega_seleccion = '03';
-                $scope.buscarProductos("");
-            } 
+            that.traerEmpresas(function() {
+                $timeout(function() {
+                    $scope.filtro.empresa_seleccion = '03';
+                    that.consultarCentrosUtilidadPorEmpresa(function() {
 
+                        $timeout(function() {
+                            $scope.filtro.centro_seleccion = '1 ';
+                            that.consultarBodegasPorEmpresa(function() {
+
+                                $timeout(function() {
+                                    $scope.filtro.bodega_seleccion = '03';
+                                    $scope.buscarProductos("");
+                                });
+
+                            });
+                        });
+
+
+                    });
+                    //alert("")
+                });
+
+            });
 
 
         }]);

@@ -58,7 +58,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                         $scope.ultima_busqueda = {
                             termino_busqueda: $scope.termino_busqueda,
                             seleccion: $scope.seleccion
-                        }
+                        };
                         $scope.renderPedidosFarmacias(data.obj, paginando);
                     }
 
@@ -66,18 +66,8 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
             };
 
             $scope.listarEmpresas = function() {
-
-                var obj = {
-                    session: $scope.session,
-                    data: {}
-                };
-
-                Request.realizarRequest(API.PEDIDOS.LISTAR_EMPRESAS, "POST", obj, function(data) {
-                    if (data.status === 200) {
-                        $scope.empresas = data.obj.empresas;
-                        //console.log(JSON.stringify($scope.empresas))
-                    }
-                });
+                
+                $scope.empresas = Usuario.getUsuarioActual().getEmpresasFarmacias();
             };
 
 
@@ -182,9 +172,6 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
             //fin delegado grid pedidos //
 
             $scope.onPedidoSeleccionado = function(check, row) {
-                console.log("agregar!!!!!");
-                console.log(check)
-                console.log(row);
 
                 row.selected = check;
                 if (check) {
@@ -237,7 +224,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                 // console.log(data);
                 $scope.items = data.pedidos_farmacias.length;
                 //se valida que hayan registros en una siguiente pagina
-                if (paginando && $scope.items == 0) {
+                if (paginando && $scope.items === 0) {
                     if ($scope.paginaactual > 1) {
                         $scope.paginaactual--;
                     }
@@ -272,7 +259,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                 for (var i in $scope.Empresa.getPedidosFarmacia()) {
                     var _pedido = $scope.Empresa.getPedidosFarmacia()[i];
 
-                    if (pedido.numero_pedido == _pedido.numero_pedido) {
+                    if (pedido.numero_pedido === _pedido.numero_pedido) {
 
                         console.log(pedido.numero_pedido);
                         _pedido.descripcion_estado_actual_pedido = pedido.descripcion_estado_actual_pedido;
@@ -284,9 +271,6 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
             };
 
             $scope.modificar_estado_pedido_farmacia = function(row) {
-
-                console.log('======== modificar_estado_pedido_farmacia =========');
-                console.log(row);
 
                 $scope.pedido_seleccionado = row;
 
@@ -388,7 +372,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
             //delegados del socket io
             socket.on("onListarPedidosFarmacias", function(datos) {
                 //console.log(datos);
-                if (datos.status == 200) {
+                if (datos.status === 200) {
                     var obj = datos.obj.pedidos_farmacias[0];
                     var pedido = $scope.crearPedido(obj);
                     console.log("objecto del socket");
@@ -400,7 +384,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
 
             //evento widgets
             $scope.onKeyPress = function(ev, termino_busqueda) {
-                if (ev.which == 13) {
+                if (ev.which === 13) {
                     $scope.buscarPedidosFarmacias(termino_busqueda);
                 }
             };

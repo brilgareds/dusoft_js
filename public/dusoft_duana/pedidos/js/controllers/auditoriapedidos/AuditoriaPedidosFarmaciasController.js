@@ -75,19 +75,7 @@ define(["angular", "js/controllers",
 
 
             $scope.listarEmpresas = function() {
-
-                var obj = {
-                    session: $scope.session,
-                    data: {}
-                };
-
-                Request.realizarRequest(API.PEDIDOS.LISTAR_EMPRESAS, "POST", obj, function(data) {
-
-                    if (data.status === 200) {
-                        $scope.empresas = data.obj.empresas;
-                        //console.log(JSON.stringify($scope.empresas))
-                    }
-                });
+                $scope.empresas = Usuario.getUsuarioActual().getEmpresasFarmacias();
             };
 
 

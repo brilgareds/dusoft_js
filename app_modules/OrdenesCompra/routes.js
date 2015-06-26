@@ -90,7 +90,7 @@ module.exports = function(app, di_container) {
     });    
     
     
-    /* =========== Recepcion de Mercancia ==================*/
+    /* =========== Routes para Recepcion de Mercancia ==================*/
     
     // Listar recepciones mercancia
     app.post('/api/OrdenesCompra/listarRecepcionesMercancia', function(req, res) {

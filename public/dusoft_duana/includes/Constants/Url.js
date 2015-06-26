@@ -22,6 +22,9 @@
                     'OBTENER_EMPRESAS_USUARIO':BASE_URL+"/Usuarios/obtenerEmpresasUsuario"
                     
 
+                },
+                'MODULOS':{
+                    'ES_MODULO_PADRE':BASE_URL+"/Modulos/esModuloPadre"
                 }
               },
               'STATIC' :{

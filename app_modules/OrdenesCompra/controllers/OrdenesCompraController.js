@@ -261,16 +261,6 @@ OrdenesCompra.prototype.insertarOrdenCompra = function(req, res) {
     var observacion = args.ordenes_compras.observacion;
     var usuario_id = req.session.user.usuario_id;
 
-
-    /*console.log('==== Parametros =========');
-     console.log(unidad_negocio);
-     console.log(proveedor);
-     console.log(empresa_id);
-     console.log(observacion);
-     console.log(usuario_id);
-     console.log('==========================');
-     return;*/
-
     that.m_ordenes_compra.insertar_orden_compra(unidad_negocio, proveedor, empresa_id, observacion, usuario_id, function(err, rows, result) {
 
         if (err) {
@@ -338,7 +328,7 @@ OrdenesCompra.prototype.modificarUnidadNegocio = function(req, res) {
                 });
 
             } else {
-                res.send(G.utils.r(req.url, 'No se pudo actualizar, la orde de compra esta siendo ingresada.', 403, {orden_compra: []}));
+                res.send(G.utils.r(req.url, 'No se pudo actualizar, la orden de compra esta siendo ingresada.', 403, {orden_compra: []}));
                 return;
             }
         }
@@ -395,13 +385,11 @@ OrdenesCompra.prototype.modificarObservacion = function(req, res) {
                         return;
                     }
                 });
-
             } else {
                 res.send(G.utils.r(req.url, 'No se pudo actualizar, la orde de compra esta siendo ingresada.', 403, {orden_compra: []}));
                 return;
             }
         }
-
     });
 };
 
@@ -441,15 +429,6 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
     var valor = args.ordenes_compras.valor;
     var iva = args.ordenes_compras.iva;
 
-
-    /*console.log('==== Parametros =========');
-     console.log(numero_orden);
-     console.log(codigo_producto);
-     console.log(cantidad_solicitada);
-     console.log(valor);
-     console.log(iva);
-     console.log('==========================');
-     return;*/
 
     //validar que la OC no tenga NINGUN ingreso temporal y este Activa.
     that.m_ordenes_compra.consultar_orden_compra(numero_orden, function(err, orden_compra) {
@@ -578,10 +557,6 @@ OrdenesCompra.prototype.eliminarProductoOrdenCompra = function(req, res) {
 
                             that.m_ordenes_compra.eliminar_producto_orden_compra(numero_orden, codigo_producto, function(err, rows, result) {
 
-                                console.log('====== resultado ========');
-                                console.log(err, rows, result);
-                                console.log('=========================');
-
                                 if (err || result.rowCount === 0) {
                                     res.send(G.utils.r(req.url, 'Error Eliminado el producto', 500, {ordenes_compras: []}));
                                     return;
@@ -594,7 +569,6 @@ OrdenesCompra.prototype.eliminarProductoOrdenCompra = function(req, res) {
                             res.send(G.utils.r(req.url, 'El producto contiene una novedad diligenciada, No se puede borrar', 404, {}));
                             return;
                         }
-
                     }
                 });
             } else {
@@ -891,7 +865,6 @@ OrdenesCompra.prototype.reporteOrdenCompra = function(req, res) {
                                 }
                             });
                         } else {
-                            //res.send(G.utils.r(req.url, 'Orden de Compra', 200, {orden_compra: orden_compra[0], lista_productos: lista_productos}));
                             res.send(G.utils.r(req.url, 'Nombre Reporte', 200, {ordenes_compras: {nombre_reporte: nombre_reporte}}));
                             return;
                         }
@@ -1362,7 +1335,7 @@ function __subir_archivo_novedad(data, files, callback) {
 }
 ;
 
-
+// Funcion que valida que los codigos de los productos del archivo plano sean validos.
 function __validar_productos_archivo_plano(contexto, contenido_archivo_plano, callback) {
 
     var that = contexto;
@@ -1403,6 +1376,7 @@ function __validar_productos_archivo_plano(contexto, contenido_archivo_plano, ca
 ;
 
 
+// Funcion que valida que los datos del archivo plano tengan el costo del producto.
 function __validar_costo_productos_archivo_plano(contexto, empresa_id, codigo_proveedor_id, numero_orden, productos, callback) {
 
     var that = contexto;
@@ -1440,6 +1414,7 @@ function __validar_costo_productos_archivo_plano(contexto, empresa_id, codigo_pr
 ;
 
 
+// Funcion que genera el reporte en formato PDF usando la libreria JSReport
 function _generar_reporte_orden_compra(rows, callback) {
 
     G.jsreport.render({
@@ -1477,6 +1452,8 @@ function _generar_reporte_orden_compra(rows, callback) {
     });
 }
 
+
+// Funcion para enviar correos electronicos usando nodemailer
 function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, subject, message, callback) {
 
     //var smtpTransport = that.emails.createTransport();

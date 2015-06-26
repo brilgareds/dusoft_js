@@ -298,6 +298,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                          if(data.status === 200){
 
                             $scope.rootEditarProducto.producto.cantidad_pendiente += parseInt(lote.cantidad_ingresada);
+                            lote.cantidad_pendiente += parseInt(lote.cantidad_ingresada);
                             $scope.rootEditarProducto.producto.disponible = data.obj.disponibilidad_bodega;
                             console.log("datos retirados ",$scope.rootEditarProducto.producto);
 
@@ -332,9 +333,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
              $scope.rootEditarProducto.producto.lote = lote;
              $scope.rootEditarProducto.producto.cantidad_separada = Number($scope.rootEditarProducto.validacionlote.cantidad_ingresada);
              $scope.rootEditarProducto.producto.lote.cantidad_pendiente = $scope.rootEditarProducto.producto.cantidad_solicitada - lote.cantidad_ingresada;
-             $scope.rootEditarProducto.mostrarJustificacion = that.esJustificacionNecesaria();
-
-
+             
               var obj = {
                  session:$scope.session,
                  data:{
@@ -367,7 +366,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                          if(data.status === 200){
                             $scope.rootEditarProducto.producto.cantidad_pendiente -= parseInt(lote.cantidad_ingresada);
                             $scope.rootEditarProducto.producto.disponible = data.obj.disponibilidad_bodega;
-
+                            $scope.rootEditarProducto.mostrarJustificacion = that.esJustificacionNecesaria();
                          } 
 
                     });
@@ -423,7 +422,24 @@ define(["angular", "js/controllers",'models/ClientePedido',
              return obj;
          };
 
-
+        that.existenLotesConNumeroCajaActual = function(){
+              for(var i in $scope.lotes_producto.selectedItems){
+                 
+                 var  lote = $scope.lotes_producto.selectedItems[i];
+                 console.log("numero de caja ",lote.numero_caja, " digitado ", $scope.rootEditarProducto.caja.getNumero()  );
+                 if(parseInt(lote.numero_caja) === parseInt($scope.rootEditarProducto.caja.getNumero()) && parseInt(lote.numero_caja) !== 0){
+                    
+                    return true;
+                 }
+              }
+              
+              return false;
+         };
+         
+         $scope.onNumeroCajaDigitado = function(){
+             $scope.cerrar = false;
+             $scope.imprimir = false;   
+         };
 
          $scope.auditarPedido = function(){
 
@@ -480,7 +496,8 @@ define(["angular", "js/controllers",'models/ClientePedido',
                          }
                      }
                  };
-
+                 
+                // console.log("$scope.rootEditarProducto.producto.lote.justificacion_auditor ", $scope.rootEditarProducto.producto.lote.justificacion_auditor, " pendiente ",$scope.rootEditarProducto.producto.lote.cantidad_pendiente, " cantidad ingresada ", $scope.rootEditarProducto.producto.lote.cantidad_ingresada);
 
                  if($scope.rootEditarProducto.producto.lote.justificacion_auditor.length > 0 && $scope.rootEditarProducto.producto.lote.cantidad_pendiente > 0 ){
                      obj.data.documento_temporal.justificacion = {
@@ -558,6 +575,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
          };
 
          that.esJustificacionNecesaria = function(){
+             console.log("esJustificacionNecesaria >>>>>>>>>>>>>>>>  pendiente", $scope.rootEditarProducto.producto.cantidad_pendiente);
              if($scope.rootEditarProducto.producto === undefined) return;
 
              if($scope.rootEditarProducto.producto.cantidad_pendiente > 0){
@@ -570,9 +588,10 @@ define(["angular", "js/controllers",'models/ClientePedido',
          $scope.onValidarCaja = function(){
 
          };
+        
 
          $scope.onSeleccionarCaja = function(){
-             $scope.cerrar = false;
+             $scope.imprimir = false;
              if($scope.lotes_producto.selectedItems.length === 0){
                  $scope.rootEditarProducto.validacionproducto.valido = false;
                  $scope.rootEditarProducto.caja.setValida(false);
@@ -662,15 +681,19 @@ define(["angular", "js/controllers",'models/ClientePedido',
 
 
                                       $scope.rootEditarProducto.caja.setValida(true);
+                                      $scope.cerrar = true;
 
                                } else {
                                      $scope.rootEditarProducto.validacionproducto.valido = false;
                                      $scope.rootEditarProducto.validacionproducto.mensaje = "Ha ocurrido un error generanado la caja";
                                }
                            });
-                     }
+                     } 
 
-                 } 
+                 } else {
+                     $scope.rootEditarProducto.validacionproducto.valido = false;
+                     $scope.rootEditarProducto.validacionproducto.mensaje = data.msj;
+                 }
              });
 
 
@@ -738,16 +761,16 @@ define(["angular", "js/controllers",'models/ClientePedido',
              Request.realizarRequest(url, "POST", obj, function(data) {
                  if(data.status === 200){
 
-                     $scope.cerrar = true;
+                     $scope.imprimir = true;
                      //$scope.rootEditarProducto.caja.numero = "";
                  } else {
-                     $scope.cerrar = false;
+                     $scope.imprimir = false;
                  }
              });
          };
 
          $scope.onImprimirRotulo = function(){
-             $scope.cerrar = false;     
+               
              $rootScope.$emit("onGenerarPdfRotulo", $scope.rootEditarProducto.documento.pedido.tipo,
                                                     $scope.rootEditarProducto.documento.pedido.numero_pedido,
                                                     $scope.rootEditarProducto.caja.getNumero(),

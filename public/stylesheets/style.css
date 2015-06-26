@@ -464,6 +464,11 @@ ul.dropdown-options{
     left: -100px;
 }
 
+
+ul.grid-sm-options{
+    left:-140px;
+}
+
 textarea { 
     resize: none; 
 }

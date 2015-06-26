@@ -25,7 +25,10 @@ PedidosFarmaciasModel.prototype.listar_farmacias_usuario = function(tipo, usuari
     if(permisos_kardex){
         tabla = "inv_bodegas_userpermisos_admin";
     }
-
+    
+    //Depreciado para el modulo de kardex, se traen las empresas desde el modulo de Empresas 24/06/2015
+    //Depreciado para el modulo de asignacion, se traen del perfil del usuario   25/06/2015
+    //Depreciado para el modulo de auditoria, se traen del perfil del usuario 25/06/2015
     if (tipo === '1') {
 
         sql = " SELECT\
@@ -39,7 +42,8 @@ PedidosFarmaciasModel.prototype.listar_farmacias_usuario = function(tipo, usuari
  
         parametros = [usuario];
     }
-
+    
+    //Depreciado para el modulo de kardex, se traen los centros de utilidad desde el modulo de CentrosUtilidad 24/06/2015
     if (tipo === '2') {
 
         sql = " SELECT\
@@ -54,8 +58,8 @@ PedidosFarmaciasModel.prototype.listar_farmacias_usuario = function(tipo, usuari
         parametros = [usuario, empresa_id];
     }
 
+    //Depreciado para el modulo de kardex, se traen las bodegas desde el modulo de Bodegas 24/06/2015
     if (tipo === '3') {
-        //Depreciado para el modulo de kardex, se traen las bodegas desde los permisos del usuario 23/06/2015
         if(!permisos_kardex){
             sql = " SELECT\
                     b.bodega as bodega_id,\
@@ -877,7 +881,7 @@ PedidosFarmaciasModel.prototype.calcular_cantidad_total_pendiente_producto = fun
 
 PedidosFarmaciasModel.prototype.calcular_cantidad_reservada_temporales_farmacias = function(codigo_producto, callback) {
     
-    var sql = " select codigo_producto, SUM(cantidad_solic) as total_reservado from solicitud_pro_a_bod_prpal_tmp where codigo_producto = $1\
+    var sql = " select codigo_producto, SUM(cantidad_solic)::integer as total_reservado from solicitud_pro_a_bod_prpal_tmp where codigo_producto = $1\
                 group by codigo_producto"; 
     
     G.db.query(sql, [codigo_producto], function(err, rows, result) {
@@ -893,7 +897,7 @@ PedidosFarmaciasModel.prototype.calcular_cantidad_reservada_temporales_farmacias
 
 PedidosFarmaciasModel.prototype.calcular_cantidad_reservada_temporales_farmacias_por_fecha = function(codigo_producto, fecha_registro_pedido, callback) {
     
-    var sql = " select codigo_producto, SUM(cantidad_solic) as total_reservado from solicitud_pro_a_bod_prpal_tmp where codigo_producto = $1\
+    var sql = " select codigo_producto, SUM(cantidad_solic)::integer as total_reservado from solicitud_pro_a_bod_prpal_tmp where codigo_producto = $1\
                 and fecha_registro < $2\
                 group by codigo_producto "; 
     

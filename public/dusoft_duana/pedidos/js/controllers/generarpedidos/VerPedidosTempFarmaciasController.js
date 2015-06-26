@@ -33,27 +33,46 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
-            
+
             //$scope.rootVerPedidosTempFarmacias.empresasDestino = Usuario.getUsuarioActual().getEmpresa().getCentrosUtilidad();
             $scope.rootVerPedidosTempFarmacias.empresasDestino = Usuario.getUsuarioActual().getEmpresasFarmacias();
 
             $scope.rootVerPedidosTempFarmacias.listado_farmacias = [];
 
             that.listarFarmacias = function() {
-
-                var obj = {
-                    session: $scope.rootVerPedidosTempFarmacias.session,
-                    data: {}
-                };
-
-                Request.realizarRequest(API.PEDIDOS.LISTAR_EMPRESAS, "POST", obj, function(data) {
-
-                    if (data.status === 200) {
-                        $scope.rootVerPedidosTempFarmacias.listado_farmacias = data.obj.empresas;
-                        //that.renderFarmacias(data.obj.empresas);
-                    }
-
+                
+                var listado_farmacias = [];
+                
+                console.log("Listado Empresas Farmacias: ", $scope.rootVerPedidosTempFarmacias.empresasDestino);
+                
+                $scope.rootVerPedidosTempFarmacias.empresasDestino.forEach(function(farmacia){
+                    
+                    var obj_farmacia = {
+                        empresa_id: farmacia.codigo,
+                        razon_social: farmacia.nombre
+                    };
+                    
+                    listado_farmacias.push(obj_farmacia);
+                    
                 });
+                
+                $scope.rootVerPedidosTempFarmacias.listado_farmacias = listado_farmacias;
+                console.log("Listado Farmacias: ", $scope.rootVerPedidosTempFarmacias.listado_farmacias);
+                
+//                var obj = {
+//                    session: $scope.rootVerPedidosTempFarmacias.session,
+//                    data: {}
+//                };
+//
+//                Request.realizarRequest(API.PEDIDOS.LISTAR_EMPRESAS, "POST", obj, function(data) {
+//
+//                    if (data.status === 200) {
+//                        $scope.rootVerPedidosTempFarmacias.listado_farmacias = data.obj.empresas;
+//                        console.log("Listado Farmacias: ", $scope.rootVerPedidosTempFarmacias.listado_farmacias);
+//                        //that.renderFarmacias(data.obj.empresas);
+//                    }
+//
+//                });
             };
             
             $scope.obtenerParametrosTemp = function() {

@@ -16,7 +16,7 @@
                         <label for="habilitar" style='margin-right: 5px;' >Activar</label>
                         <input-check ng-model="rootModulos.moduloAGuardar.estado" id="habilitar"  ></input-check>
 
-                        <button type="button" class="btn btn-default btn-sm pull-right" ng-disabled="rootModulos.moduloAGuardar.id == 0"  ng-click='onHabilitarModuloEnEmpresas()'>Habilitar En Empresas</button>
+                        <button type="button" class="btn btn-default  pull-right" ng-disabled="rootModulos.moduloAGuardar.id == 0"  ng-click='onHabilitarModuloEnEmpresas()'>Habilitar En Empresas</button>
 
                         </p>
 
@@ -70,7 +70,7 @@
                         </p> 
 
                         <div class="btn-group listaIconos">
-                            <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false" ng-disabled='rootModulos.moduloAGuardar.nodo_principal'>
+                            <button class="btn btn-default  dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false" ng-disabled='rootModulos.moduloAGuardar.nodo_principal'>
                                 <i class="{{rootModulos.moduloAGuardar.icon}}" style='margin-right:3px;'></i> Icono Del Modulo <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" role="menu">
@@ -90,12 +90,12 @@
                         </p> 
 
                         <div class="pull-right">
-                            <button class="btn btn-default btn-sm" ng-click='onLimpiarFormulario()'>
+                            <button class="btn btn-default " ng-click='onLimpiarFormulario()'>
                                 <span class="glyphicon glyphicon-plus"></span>
                                 Nuevo
                             </button>
 
-                            <button class="btn btn-default btn-sm" ng-click='onGuardarModulo()'>
+                            <button class="btn btn-default " ng-click='onGuardarModulo()'>
                                 <span class="glyphicon glyphicon-floppy-disk"></span>
                                 Guardar
                             </button>
@@ -147,18 +147,18 @@
 
 
                         <p class="input-group pull-right">
-                            <button class="btn btn-default btn-sm" ng-click='onLimpiarFormularioOpcion()'>
+                            <button class="btn btn-default " ng-click='onLimpiarFormularioOpcion()'>
                                 <span class="glyphicon glyphicon-plus"></span>
                                 Nuevo
                             </button>
                             <span ng-switch="rootModulos.moduloAGuardar.modulo_id != 0">
 
-                                <button ng-switch-when="true" class="btn btn-default btn-sm" ng-click='onGuardarOpcion()'>
+                                <button ng-switch-when="true" class="btn btn-default " ng-click='onGuardarOpcion()'>
                                     <span class="glyphicon glyphicon-floppy-disk"></span>
                                     Guardar
                                 </button>
 
-                                <button ng-switch-when="false" disabled="disabled" class="btn btn-success btn-sm">
+                                <button ng-switch-when="false" disabled="disabled" class="btn btn-success ">
                                     Guardar
                                     <span class="glyphicon glyphicon-floppy-disk"></span>
                                 </button>
@@ -210,18 +210,18 @@
 
 
                         <p class="input-group pull-right">
-                            <button class="btn btn-default btn-sm" ng-click='onLimpiarFormularioVariable()'>
+                            <button class="btn btn-default " ng-click='onLimpiarFormularioVariable()'>
                                 <span class="glyphicon glyphicon-plus"></span>
                                 Nuevo
                             </button>
                             <span ng-switch="rootModulos.moduloAGuardar.modulo_id != 0">
 
-                                <button ng-switch-when="true" class="btn btn-default btn-sm" ng-click='onGuardarVariable()'>
+                                <button ng-switch-when="true" class="btn btn-default " ng-click='onGuardarVariable()'>
                                     <span class="glyphicon glyphicon-floppy-disk"></span>
                                     Guardar
                                 </button>
 
-                                <button ng-switch-when="false" disabled="disabled" class="btn btn-success btn-sm">
+                                <button ng-switch-when="false" disabled="disabled" class="btn btn-success ">
                                     Guardar
                                     <span class="glyphicon glyphicon-floppy-disk"></span>
                                 </button>

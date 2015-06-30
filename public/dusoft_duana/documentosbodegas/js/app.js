@@ -24,7 +24,8 @@ define([
     "includes/http/Request",
     "dragndropfile",
     "includes/helpersdirectives/visualizarReporte",
-    "includes/validation/NgValidateEvents"
+    "includes/validation/NgValidateEvents",
+    "controllers/indexController",
 ], function(angular) {
 
     /* App Module and its dependencies */
@@ -65,15 +66,31 @@ define([
                 documentos_bodegas.stateProvider.state('DocumentosBodegas', {
                     url: "/DocumentosBodegas",
                     text: "Administración Documentos de Bodega",
-                    templateUrl: "views/index.html",                    
+                    templateUrl: "views/index.html",
                 });
+
+                // E007 
+                documentos_bodegas.stateProvider.state('E007', {
+                    url: "/E007",
+                    text: "Administración Documentos de Bodega [E007]",
+                    templateUrl: "views/E007/index.html",
+                    parent_name : "DocumentosBodegas"
+                });
+                
+                // I002 
+                documentos_bodegas.stateProvider.state('I002', {
+                    url: "/I002",
+                    text: "Administración Documentos de Bodega [I002]",
+                    templateUrl: "views/I002/index.html",
+                    parent_name : "DocumentosBodegas"
+                });
+
 
                 if ($location.path() === "")
                     $state.go(vista_predeterminada);
                 else
                     $state.go($location.path().replace("/", ""));
             });
-
         }]);
 
     angular.bootstrap(document, ['documentos_bodegas']);

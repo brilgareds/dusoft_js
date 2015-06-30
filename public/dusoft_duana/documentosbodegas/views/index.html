@@ -1,5 +1,5 @@
-<div>
-    <div class="row">
+<div ng-controller="indexController">
+    <div class="row">        
         <div class="col-md-12">
             <tabset>
                 <tab>
@@ -8,255 +8,148 @@
                     </tab-heading>
                     <br>
                     <div class="row">
+                        <div class="col-md-2 pull-right">
+                            <p class="input-group">
+                                <input type="text" class="form-control" ng-model="datos_view.termino_busqueda_documentos" placeholder="Buscar" name="" id="" />
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-md-6">
-                            <div class="panel panel-green">
+                            <div class="panel panel-green" style="height: 350px;">
                                 <div class="panel-heading clearfix">                   
                                     <div class="pull-left">
-                                        <h3 class="text-center"><strong>Documentos de Salida</strong></h3>
+                                        <h4 class="text-center"><strong>Documentos de Salida</strong></h4>
                                     </div>                    
                                 </div>
                                 <div class="panel-body">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>Tipo</th>
-                                                <th>Prefijo</th>
-                                                <th>Descripcion</th>
-                                                <th></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <th scope="row">E008</th>
-                                                <td>EFC</td>
-                                                <td>DESPACHOS A FARMACIAS Y CLIENTES </td>
-                                                <td>
-                                                    <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-send"></span></button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">E008</th>
-                                                <td>EDFM</td>
-                                                <td>DESPACHOS A FARMACIAS MEDMFEN </td>
-                                                <td>
-                                                    <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-send"></span></button>
-                                                </td>
-                                            </tr>                                            
-                                            <tr>
-                                                <th scope="row">E008</th>
-                                                <td>EFM</td>
-                                                <td>DESPACHOS FARMACIAS MEDIPOL</td>
-                                                <td>
-                                                    <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-send"></span></button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">E008</th>
-                                                <td>EFM</td>
-                                                <td>DESPACHOS FARMACIAS MEDIPOL</td>
-                                                <td>
-                                                    <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-send"></span></button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">E008</th>
-                                                <td>EFM</td>
-                                                <td>DESPACHOS FARMACIAS MEDIPOL</td>
-                                                <td>
-                                                    <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-send"></span></button>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                    <div style="max-height:250px; overflow:hidden; overflow-y:auto;">
+
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Tipo</th>
+                                                    <th>Prefijo</th>
+                                                    <th>Descripcion</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="documento in datos_view.documentos_salida | filter:datos_view.termino_busqueda_documentos">
+                                                    <th scope="row">{{ documento.tipo_doc_bodega_id }}</th>
+                                                    <td>{{ documento.prefijo }}</td>
+                                                    <td>{{ documento.descripcion }}</td>
+                                                    <td>
+                                                        <button class="btn btn-default btn-xs" ng-click="gestionar_documento(documento)" ><span class="glyphicon glyphicon-send"></span></button>
+                                                    </td>
+                                                </tr>                                                
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>       
                         </div>
                         <div class="col-md-6">
-                            <div class="panel panel-yellow">
+                            <div class="panel panel-yellow" style="height: 350px;">
                                 <div class="panel-heading clearfix">                   
                                     <div class="pull-left">
-                                        <h3 class="text-center"><strong>Documentos de Entrada</strong></h3>
+                                        <h4 class="text-center"><strong>Documentos de Entrada</strong></h4>
                                     </div>                   
                                 </div>
                                 <div class="panel-body">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>Tipo</th>
-                                                <th>Prefijo</th>
-                                                <th>Descripcion</th>
-                                                <th></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <th scope="row">E008</th>
-                                                <td>EFC</td>
-                                                <td>DESPACHOS A FARMACIAS Y CLIENTES </td>
-                                                <td>
-                                                    <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-send"></span></button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">E008</th>
-                                                <td>EDFM</td>
-                                                <td>DESPACHOS A FARMACIAS MEDMFEN </td>
-                                                <td>
-                                                    <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-send"></span></button>
-                                                </td>
-                                            </tr>                                            
-                                            <tr>
-                                                <th scope="row">E008</th>
-                                                <td>EFM</td>
-                                                <td>DESPACHOS FARMACIAS MEDIPOL</td>
-                                                <td>
-                                                    <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-send"></span></button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">E008</th>
-                                                <td>EFM</td>
-                                                <td>DESPACHOS FARMACIAS MEDIPOL</td>
-                                                <td>
-                                                    <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-send"></span></button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">E008</th>
-                                                <td>EFM</td>
-                                                <td>DESPACHOS FARMACIAS MEDIPOL</td>
-                                                <td>
-                                                    <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-send"></span></button>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+
+                                    <div style="max-height:250px; overflow:hidden; overflow-y:auto;">
+
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Tipo</th>
+                                                    <th>Prefijo</th>
+                                                    <th>Descripcion</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="documento in datos_view.documentos_entrada | filter:datos_view.termino_busqueda_documentos">
+                                                    <th scope="row">{{ documento.tipo_doc_bodega_id }}</th>
+                                                    <td>{{ documento.prefijo }}</td>
+                                                    <td>{{ documento.descripcion }}</td>
+                                                    <td>
+                                                        <button class="btn btn-default btn-xs" ng-click="gestionar_documento(documento)"><span class="glyphicon glyphicon-send"></span></button>
+                                                    </td>
+                                                </tr>    
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>       
                         </div>
                         <div class="col-md-6">
-                            <div class="panel panel-blue">
+                            <div class="panel panel-blue" style="height: 300px;">
                                 <div class="panel-heading clearfix">                   
                                     <div class="pull-left">
-                                        <h3 class="text-center"><strong>Documentos de Ajuste</strong></h3>
+                                        <h4 class="text-center"><strong>Documentos de Ajuste</strong></h4>
                                     </div>                   
                                 </div>
                                 <div class="panel-body">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>Tipo</th>
-                                                <th>Prefijo</th>
-                                                <th>Descripcion</th>
-                                                <th></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <th scope="row">E008</th>
-                                                <td>EFC</td>
-                                                <td>DESPACHOS A FARMACIAS Y CLIENTES </td>
-                                                <td>
-                                                    <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-send"></span></button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">E008</th>
-                                                <td>EDFM</td>
-                                                <td>DESPACHOS A FARMACIAS MEDMFEN </td>
-                                                <td>
-                                                    <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-send"></span></button>
-                                                </td>
-                                            </tr>                                            
-                                            <tr>
-                                                <th scope="row">E008</th>
-                                                <td>EFM</td>
-                                                <td>DESPACHOS FARMACIAS MEDIPOL</td>
-                                                <td>
-                                                    <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-send"></span></button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">E008</th>
-                                                <td>EFM</td>
-                                                <td>DESPACHOS FARMACIAS MEDIPOL</td>
-                                                <td>
-                                                    <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-send"></span></button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">E008</th>
-                                                <td>EFM</td>
-                                                <td>DESPACHOS FARMACIAS MEDIPOL</td>
-                                                <td>
-                                                    <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-send"></span></button>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                    <div style="max-height:250px; overflow:hidden; overflow-y:auto;">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Tipo</th>
+                                                    <th>Prefijo</th>
+                                                    <th>Descripcion</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="documento in datos_view.documentos_ajustes | filter:datos_view.termino_busqueda_documentos">
+                                                    <th scope="row">{{ documento.tipo_doc_bodega_id }}</th>
+                                                    <td>{{ documento.prefijo }}</td>
+                                                    <td>{{ documento.descripcion }}</td>
+                                                    <td>
+                                                        <button class="btn btn-default btn-xs" ng-click="gestionar_documento(documento)"><span class="glyphicon glyphicon-send"></span></button>
+                                                    </td>
+                                                </tr> 
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>       
                         </div>
                         <div class="col-md-6">
-                            <div class="panel panel-purple">
+                            <div class="panel panel-purple" style="height: 300px;">
                                 <div class="panel-heading clearfix">                   
                                     <div class="pull-left">
-                                        <h3 class="text-center"><strong>Documentos de Traslado</strong></h3>
+                                        <h4 class="text-center"><strong>Documentos de Traslado</strong></h4>
                                     </div>                   
                                 </div>
                                 <div class="panel-body">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th>Tipo</th>
-                                                <th>Prefijo</th>
-                                                <th>Descripcion</th>
-                                                <th></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <th scope="row">E008</th>
-                                                <td>EFC</td>
-                                                <td>DESPACHOS A FARMACIAS Y CLIENTES </td>
-                                                <td>
-                                                    <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-send"></span></button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">E008</th>
-                                                <td>EDFM</td>
-                                                <td>DESPACHOS A FARMACIAS MEDMFEN </td>
-                                                <td>
-                                                    <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-send"></span></button>
-                                                </td>
-                                            </tr>                                            
-                                            <tr>
-                                                <th scope="row">E008</th>
-                                                <td>EFM</td>
-                                                <td>DESPACHOS FARMACIAS MEDIPOL</td>
-                                                <td>
-                                                    <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-send"></span></button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">E008</th>
-                                                <td>EFM</td>
-                                                <td>DESPACHOS FARMACIAS MEDIPOL</td>
-                                                <td>
-                                                    <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-send"></span></button>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">E008</th>
-                                                <td>EFM</td>
-                                                <td>DESPACHOS FARMACIAS MEDIPOL</td>
-                                                <td>
-                                                    <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-send"></span></button>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                    <div style="max-height:250px; overflow:hidden; overflow-y:auto;">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Tipo</th>
+                                                    <th>Prefijo</th>
+                                                    <th>Descripcion</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr ng-repeat="documento in datos_view.documentos_traslado | filter:datos_view.termino_busqueda_documentos              ">
+                                                    <th scope="row">{{ documento.tipo_doc_bodega_id }}</th>
+                                                    <td>{{ documento.prefijo }}</td>
+                                                    <td>{{ documento.descripcion }}</td>
+                                                    <td>
+                                                        <button class="btn btn-default btn-xs" ng-click="gestionar_documento(documento)"><span class="glyphicon glyphicon-send"></span></button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>       
                         </div>
@@ -313,7 +206,7 @@
                             </p>
                         </div>
                     </div>
-                    <div class="defaultGrid" ng-grid="lista_ordenes_compras" > </div>
+                    <!--div class="defaultGrid" ng-grid="lista_ordenes_compras" > </div-->
 
                     </br>
 
@@ -354,7 +247,7 @@
                             </p>
                         </div>
                     </div>
-                    <div class="defaultGrid" ng-grid="lista_ordenes_compras" > </div>
+                    <!--div class="defaultGrid" ng-grid="lista_ordenes_compras" > </div-->
 
                     </br>
 
@@ -369,9 +262,5 @@
                 </tab>                                
             </tabset>                                      
         </div>
-
-    </div>
-
-
-
+    </div>    
 </div>

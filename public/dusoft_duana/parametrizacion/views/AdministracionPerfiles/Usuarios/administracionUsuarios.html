@@ -29,14 +29,14 @@
                                 <br>
 
                                 <div class="contenedorOpcionesFoto" ng-if="rootUsuario.usuarioAGuardar.id != ''">
-                                    <span class="btn btn-default btn-sm" flow-btn="" ng-hide="$flow.files.length" ng-disabled="vista_previa">
+                                    <span class="btn btn-default " flow-btn="" ng-hide="$flow.files.length" ng-disabled="vista_previa">
                                         <span class="glyphicon glyphicon-folder-open" style="margin-right: 5px;"></span>
                                         <input type="file" style="visibility: hidden; position: absolute;">
                                     </span>                                                
-                                    <button class="btn btn-default btn-sm" ng-click="$flow.cancel()" ng-show="$flow.files.length">
+                                    <button class="btn btn-default " ng-click="$flow.cancel()" ng-show="$flow.files.length">
                                         <span class="glyphicon glyphicon-minus" ></span>
                                     </button>
-                                    <button class="btn btn-default btn-sm" ng-click="subirImagenUsuario()"  ng-show="$flow.files.length">
+                                    <button class="btn btn-default " ng-click="subirImagenUsuario()"  ng-show="$flow.files.length">
                                         <span class="glyphicon glyphicon-cloud-upload" ></span>
                                     </button>
                                 </div>
@@ -120,18 +120,18 @@
                         </p> 
                         </br>
 
-                        <button class="btn btn-default btn-sm pull-left" ng-click='onVolver()'>
+                        <button class="btn btn-default  pull-left" ng-click='onVolver()'>
                             Cancelar
                             <span class="glyphicon glyphicon-menu-left"></span>
                         </button>
 
                         <div class="pull-right">
-                            <button class="btn btn-default btn-sm" ng-click='onLimpiarFormulario()'>
+                            <button class="btn btn-default " ng-click='onLimpiarFormulario()'>
                                 <span class="glyphicon glyphicon-plus"></span>
                                 Nuevo
                             </button>
 
-                            <button class="btn btn-default btn-sm" ng-click='onGuardarUsuario()'>
+                            <button class="btn btn-default " ng-click='onGuardarUsuario()'>
                                 <span class="glyphicon glyphicon-floppy-disk"></span> 
                                 Guardar
                             </button>
@@ -182,10 +182,10 @@
                         </div>
 
                         <div class="row text-center">
-                            <button type="button" class="btn btn-default btn-sm" ng-disabled="rootUsuario.paginaactual == 1" ng-click="paginaAnterior()">
+                            <button type="button" class="btn btn-default " ng-disabled="rootUsuario.paginaactual == 1" ng-click="paginaAnterior()">
                                 <span class="glyphicon glyphicon-chevron-left" ></span>
                             </button>
-                            <button type="button" class="btn btn-default btn-sm" ng-disabled="rootUsuario.empresaSeleccionada.getRoles().length == 0" ng-click="paginaSiguiente()">
+                            <button type="button" class="btn btn-default " ng-disabled="rootUsuario.empresaSeleccionada.getRoles().length == 0" ng-click="paginaSiguiente()">
                                 <span class="glyphicon glyphicon-chevron-right" ></span>
                             </button>
                         </div>

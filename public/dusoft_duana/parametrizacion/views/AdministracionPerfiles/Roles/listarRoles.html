@@ -1,26 +1,27 @@
 
-<div class="col-md-1">
-    <button class="btn btn-default btn-sm" ng-click='onNuevoRol()'>
-        <span class="glyphicon glyphicon-plus"></span>
-        Nuevo
+<div>
+    <div class="col-md-1">
+        <button class="btn btn-default " ng-click='onNuevoRol()'>
+            <span class="glyphicon glyphicon-plus"></span>
+            Nuevo
 
-    </button>
+        </button>
+    </div>
+
+    <div class="col-sm-3 col-md-3">
+
+        <ui-select ng-model="rootRoles.empresaSeleccionada"
+                   theme="select2"
+                   ng-change="onEmpresaSeleccionada()"
+                   class="form-control selectgeneral">
+            <ui-select-match  placeholder="Seleccionar Empresa">{{$select.selected.getNombre()}}</ui-select-match>
+            <ui-select-choices repeat="empresa in rootRoles.empresas | filter:$select.search">
+                {{empresa.getNombre()}}
+            </ui-select-choices>
+        </ui-select>
+    </div>
 </div>
-
-<div class="col-sm-12 col-md-3">
-
-    <ui-select ng-model="rootRoles.empresaSeleccionada"
-               theme="select2"
-               ng-change="onEmpresaSeleccionada()"
-               class="contenedor_combo_grande">
-        <ui-select-match  placeholder="Seleccionar Empresa">{{$select.selected.getNombre()}}</ui-select-match>
-        <ui-select-choices repeat="empresa in rootRoles.empresas | filter:$select.search">
-            {{empresa.getNombre()}}
-        </ui-select-choices>
-    </ui-select>
-</div>
-
-<div class="input-group  navbar-form buscadorgeneral">
+<div class="input-group navbar-form">
 
     <input type="text" class="form-control pull-right" ng-keypress="onBuscarRol($event)" ng-model="rootRoles.termino_busqueda" placeholder="Buscar" />
     <div class="input-group-btn" >
@@ -28,7 +29,6 @@
     </div>
 
 </div>
-
 
 
 <div class="table-responsive" >

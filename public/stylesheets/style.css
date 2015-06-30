@@ -324,6 +324,21 @@ div.ngHeaderCell	{
     text-align: left;
 }
 
+.selectTopBar{
+    margin-right: 7px;
+}
+.selectTopBar span{
+    font-size: 12px;
+}
+
+.selectTopBar li{
+    font-size: 12px;
+}
+
+.selectTopBar button{
+    padding:5px;
+}
+
 #systemAlerlt{
     position: fixed;
     top: 5px;

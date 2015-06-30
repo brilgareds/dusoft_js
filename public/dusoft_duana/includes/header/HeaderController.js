@@ -7,9 +7,11 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
         '$scope', '$rootScope', "$state", "Request",
         "Usuario", "socket", "URL", "localStorageService", "Empresa",
         "Modulo", "Rol", "OpcionModulo", "AlertService", "CentroUtilidad", "Bodega","VariableModulo",
+        "$timeout",
         function($scope, $rootScope, $state,
                 Request, Usuario, socket, URL, localStorageService, Empresa,
-                Modulo, Rol, OpcionModulo, AlertService, CentroUtilidad, Bodega, VariableModulo) {
+                Modulo, Rol, OpcionModulo, AlertService, CentroUtilidad, Bodega, VariableModulo,
+                $timeout) {
 
             var self = this;
            
@@ -36,6 +38,8 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 usuario: "",
                 clave: ""
             };
+            
+            $scope.centrosUtilidad = [];
 
             var session = {
                 usuario_id: obj_session.usuario_id,
@@ -200,13 +204,27 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                                     }
                                 }
                                 empresa.agregarCentroUtilidad(_centro);
+                                //centros de utilidad por la empresa que el usuario selecciona en el dropdown superior
+                                if($scope.Usuario.getEmpresa().getCodigo() === _centro.getEmpresaId() ){
+                                    $scope.Usuario.getEmpresa().agregarCentroSiNoExiste(angular.copy(_centro));
+                                }
+                                
                             }
                         });
                         
                         $scope.Usuario.agregarEmpresaFarmacia(empresa);
                     }
                 }
-                console.log("HeaderController-> asignarEmpresasFarmacias() ", $scope.Usuario.getEmpresasFarmacias());
+                
+            };
+            
+            
+            $scope.onCentroSeleccionado = function(centro){
+                $scope.Usuario.getEmpresa().setCentroUtilidadSeleccionado(centro);
+            };
+            
+            $scope.onBodegaSeleccionada = function(bodega){
+                $scope.Usuario.getEmpresa().getCentroUtilidadSeleccionado().setBodegaSeleccionada(bodega); 
             };
             
             //se hace el set correspondiente para el plugin de jstree, y se crea un objeto valor de los modulos y opciones para facilidad de acceso del modulo actual
@@ -432,6 +450,16 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
 
                     self.obtenerEmpresasUsuario(function() {
                         $rootScope.$emit("parametrizacionUsuarioLista", parametrizacion);
+                        
+                        var centrosUtilidadEmpresa = $scope.Usuario.getEmpresa().getCentrosUtilidad();
+                
+                        if(centrosUtilidadEmpresa.length > 0){
+                            $scope.onCentroSeleccionado(centrosUtilidadEmpresa[0]);
+                            var bodegas = centrosUtilidadEmpresa[0].getBodegas(); 
+                            if(bodegas.length > 0){
+                                $scope.onBodegaSeleccionada(bodegas[0]);
+                            }
+                        }
                     });
 
                 });

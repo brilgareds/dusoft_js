@@ -7,15 +7,18 @@ define(["angular"], function(angular) {
     var data = {
         'API': {
             'BASE_URL': BASE_URL,
+            'INDEX':{
+                'LISTA_DOCUMENTOS_USUARIOS': BASE_URL+'/movBodegas/consultarDocumentosUsuario',
+            },
             'I002': {
-                'LISTAR_PLANILLAS': BASE_URL + '/PlanillasDespachos/listar',                
+                                
             },           
             'I003': {
-                'LISTAR_PLANILLAS': BASE_URL + '/PlanillasDespachos/listar',                
+                           
             },           
             'E007': {
-                'LISTAR_PLANILLAS': BASE_URL + '/PlanillasDespachos/listar',                
-            },           
+                         
+            }          
         }
     };
 

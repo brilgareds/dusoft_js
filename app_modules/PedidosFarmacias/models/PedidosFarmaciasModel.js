@@ -270,12 +270,12 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido_final = function(numero
     });
 };
 
-PedidosFarmaciasModel.prototype.actualizar_cantidades_detalle_pedido_final = function(numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente, callback)
+PedidosFarmaciasModel.prototype.actualizar_cantidades_detalle_pedido_final = function(numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente, usuario, callback)
 {    
     G.db.begin(function() {
         
         //Los logs de modificaciones se registran en la misma tabla de registro de los eliminados
-        __log_eliminar_producto_detalle_pedido_final(numero_pedido, codigo_producto, function(err, result) {
+        __log_eliminar_producto_detalle_pedido_final(numero_pedido, codigo_producto, usuario, function(err, result) {
 
             if(err){
                 callback(err);
@@ -298,11 +298,11 @@ PedidosFarmaciasModel.prototype.actualizar_cantidades_detalle_pedido_final = fun
      });
 };
 
-PedidosFarmaciasModel.prototype.eliminar_producto_detalle_pedido_final = function(numero_pedido, codigo_producto, callback)
+PedidosFarmaciasModel.prototype.eliminar_producto_detalle_pedido_final = function(numero_pedido, codigo_producto, usuario, callback)
 {
     G.db.begin(function() {
         
-       __log_eliminar_producto_detalle_pedido_final(numero_pedido, codigo_producto, function(err, result) {
+       __log_eliminar_producto_detalle_pedido_final(numero_pedido, codigo_producto, usuario, function(err, result) {
 
            if(err){
                callback(err);
@@ -343,18 +343,18 @@ function __eliminar_producto_detalle_pedido_final(numero_pedido, codigo_producto
     G.db.transaction(sql, [numero_pedido, codigo_producto], callback);
 };
 
-function __log_eliminar_producto_detalle_pedido_final(numero_pedido, codigo_producto, callback)
+function __log_eliminar_producto_detalle_pedido_final(numero_pedido, codigo_producto, usuario, callback)
 {
     
     var sql = "INSERT INTO log_eliminacion_pedidos_farmacia(pedido_id,farmacia,usuario_solicitud,codigo_producto,cant_solicita,cant_pendiente,usuario_id,fecha_registro,usuario_ejecuta)\
                 SELECT a.solicitud_prod_a_bod_ppal_id as pedido_id, b.razon_social as farmacia, c.usuario as usuario_solicitud, a.codigo_producto, a.cantidad_solic as cant_solicita, a.cantidad_pendiente as cant_pendiente, a.usuario_id, CURRENT_TIMESTAMP as fecha_registro, c.nombre as usuario_ejecuta\
                 FROM solicitud_productos_a_bodega_principal_detalle a\
                 LEFT JOIN empresas b on b.empresa_id = a.farmacia_id\
-                LEFT JOIN system_usuarios c on c.usuario_id = a.usuario_id\
+                LEFT JOIN system_usuarios c on c.usuario_id = $3\
                 WHERE a.solicitud_prod_a_bod_ppal_id = $1\
                 AND a.codigo_producto = $2";
 
-    G.db.transaction(sql, [numero_pedido, codigo_producto], callback);
+    G.db.transaction(sql, [numero_pedido, codigo_producto, usuario], callback);
 };
 
 // Listar todos los pedidos de farmacias

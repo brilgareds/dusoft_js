@@ -10,7 +10,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Dusoft</a>
+            <a class="navbar-brand" ng-click="onIrAlHome()" href="javascript:void(0);">Dusoft</a>
         </div>
 
 
@@ -88,7 +88,7 @@
             </div>
 
             <div class="btn-group selectTopBar" role="group"     >
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" >
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" ng-disabled="!enHome" >
                     <span ng-if="Usuario.getEmpresa().getCentroUtilidadSeleccionado()">
                         {{Usuario.getEmpresa().getCentroUtilidadSeleccionado().getNombre()}}
                     </span>
@@ -103,7 +103,7 @@
             </div>
 
             <div class="btn-group selectTopBar" role="group"     >
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" >
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" ng-disabled="!enHome" >
                     <span ng-if="Usuario.getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada()">
                         {{Usuario.getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getNombre()}}
                     </span>

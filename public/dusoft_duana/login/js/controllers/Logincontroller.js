@@ -30,7 +30,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 Request.realizarRequest("/login", "POST", obj, function(datos) {
                     if (datos.status === 200) {
                         localStorageService.add("session", JSON.stringify(datos.obj.sesion));
-                        window.location = "../kardex/";
+                        window.location = "../home/";
                     } else {
                         $scope.mostrarmensaje = true;
                         $scope.msgerror = datos.msj || "Ha ocurrido un error...";

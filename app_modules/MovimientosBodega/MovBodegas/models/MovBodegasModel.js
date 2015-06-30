@@ -214,38 +214,38 @@ MovimientosBodegasModel.prototype.consultar_detalle_movimiento_bodega_temporal_p
 
 
     var sql = " select * from (\
-            select\
-            b.item_id,\
-            b.doc_tmp_id,\
-            b.empresa_id,\
-            b.centro_utilidad as centro_utilidad_id,\
-            b.bodega as bodega_id,\
-            b.codigo_producto,\
-            fc_descripcion_producto(b.codigo_producto) as descripcion_producto,\
-            b.cantidad :: integer as cantidad_ingresada,\
-            b.porcentaje_gravamen,\
-            b.total_costo,\
-            to_char(b.fecha_vencimiento, 'dd-mm-yyyy') as fecha_vencimiento,\
-            b.lote,\
-            b.local_prod,\
-            b.observacion_cambio,\
-            b.valor_unitario,\
-            b.total_costo_pedido,\
-            b.sw_ingresonc,\
-            b.item_id_compras,\
-            b.prefijo_temp,\
-            b.lote_devuelto,\
-            b.cantidad_sistema,\
-            b.auditado,\
-            c.codigo_barras,\
-            b.numero_caja,\
-            b.tipo_caja,\
-            '1' as tipo_estado_auditoria\
-            from inv_bodegas_movimiento_tmp a\
-            inner join inv_bodegas_movimiento_tmp_d b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
-            inner join inventarios_productos c on b.codigo_producto = c.codigo_producto\
-            where a.doc_tmp_id = $1 and a.usuario_id = $2\
-        ) a\
+                    select\
+                    b.item_id,\
+                    b.doc_tmp_id,\
+                    b.empresa_id,\
+                    b.centro_utilidad as centro_utilidad_id,\
+                    b.bodega as bodega_id,\
+                    b.codigo_producto,\
+                    fc_descripcion_producto(b.codigo_producto) as descripcion_producto,\
+                    b.cantidad :: integer as cantidad_ingresada,\
+                    b.porcentaje_gravamen,\
+                    b.total_costo,\
+                    to_char(b.fecha_vencimiento, 'dd-mm-yyyy') as fecha_vencimiento,\
+                    b.lote,\
+                    b.local_prod,\
+                    b.observacion_cambio,\
+                    b.valor_unitario,\
+                    b.total_costo_pedido,\
+                    b.sw_ingresonc,\
+                    b.item_id_compras,\
+                    b.prefijo_temp,\
+                    b.lote_devuelto,\
+                    b.cantidad_sistema,\
+                    b.auditado,\
+                    c.codigo_barras,\
+                    b.numero_caja,\
+                    b.tipo_caja,\
+                    '1' as tipo_estado_auditoria\
+                    from inv_bodegas_movimiento_tmp a\
+                    inner join inv_bodegas_movimiento_tmp_d b on a.doc_tmp_id = b.doc_tmp_id and a.usuario_id = b.usuario_id\
+                    inner join inventarios_productos c on b.codigo_producto = c.codigo_producto\
+                    where a.doc_tmp_id = $1 and a.usuario_id = $2\
+                ) a\
         ";
 
     sql += sql_aux;
@@ -279,7 +279,7 @@ MovimientosBodegasModel.prototype.consultar_documentos_usuario = function(usuari
                 inner join inv_bodegas_documentos b on a.documento_id = b.documento_id\
                 inner join documentos c on b.documento_id = c.documento_id and b.empresa_id = c.empresa_id\
                 inner join tipos_doc_generales d on c.tipo_doc_general_id = d.tipo_doc_general_id\
-                where a.usuario_id = $1 and a.centro_utilidad = $2 and a.bodega= $3 " + sql_aux;
+                where a.usuario_id = $1 and a.centro_utilidad = $2 and a.bodega= $3 " + sql_aux + " order by tipo_movimiento, tipo_doc_bodega_id ";
 
     G.db.query(sql, [usuario_id, centro_utilidad_id, bodega_id], function(err, rows, result) {
 

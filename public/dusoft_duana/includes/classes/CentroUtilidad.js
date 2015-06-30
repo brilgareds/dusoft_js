@@ -10,6 +10,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.estado = false;
             this.empresaId = "";
             this.nombreEmpresa = "";
+            this.bodega = undefined;
             //this.clientes = []; 
             //this.proveedores = [];
         };
@@ -88,6 +89,14 @@ define(["angular", "js/models"], function(angular, models) {
             this.bodegas = [];
         };
 
+        CentroUtilidad.prototype.setBodegaSeleccionada = function(bodega) {
+            this.bodega = bodega;
+        };
+        
+        CentroUtilidad.prototype.getBodegaSeleccionada = function() {
+            return this.bodega;
+        };
+        
         this.get = function(nombre, codigo) {
             return new CentroUtilidad(nombre, codigo);
         };

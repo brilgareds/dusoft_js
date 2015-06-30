@@ -6,7 +6,17 @@
     <div class="row">
 
 
-        <div class="col-lg-2 pull-right">
+        <div class="col-md-3">
+            <p class="input-group contenedorfiltrocombobox">
+                <select ui-select2="" ng-model='filtro.empresa_seleccion' class="form-control selectgeneral"   placeholder="Seleccionar Empresa" ng-change='onEmpresaSeleccionada()' >
+                    <option></option>
+                    <option ng-repeat="empresa in  listaEmpresas"  value="{{empresa.codigo}}"   >
+                        {{empresa.nombre}}</option>
+                </select>
+            </p>
+        </div>
+
+        <div class="col-lg-3 pull-right">
             <p class="input-group">
 
                 <input type="text" class="form-control" ng-keypress="onBuscarProducto($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term" />
@@ -17,15 +27,7 @@
             </p>
         </div>
 
-        <div class="col-md-12 col-lg-2 pull-right">
-            <p class="input-group contenedorfiltrocombobox">
-                <select ui-select2="" ng-model='filtro.empresa_seleccion' style='width:200px;'  class="form-control selectgeneral"   placeholder="Seleccionar Empresa" ng-change='onEmpresaSeleccionada()' >
-                    <option></option>
-                    <option ng-repeat="empresa in  listaEmpresas"  value="{{empresa.codigo}}"   >
-                        {{empresa.nombre}}</option>
-                </select>
-            </p>
-        </div>
+
 
     </div>
 

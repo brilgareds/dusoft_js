@@ -73,7 +73,7 @@ div{
 
 
 .contenedorArbol{
-    height:550px;
+    height:604px;
     overflow-y: auto;
 }
 
@@ -322,6 +322,21 @@ div.ngRow.selected {
 div.ngHeaderCell	{
     padding-top:0px;
     text-align: left;
+}
+
+.selectTopBar{
+    margin-right: 7px;
+}
+.selectTopBar span{
+    font-size: 12px;
+}
+
+.selectTopBar li{
+    font-size: 12px;
+}
+
+.selectTopBar button{
+    padding:5px;
 }
 
 #systemAlerlt{

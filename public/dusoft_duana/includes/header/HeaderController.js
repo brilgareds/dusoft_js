@@ -7,9 +7,11 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
         '$scope', '$rootScope', "$state", "Request",
         "Usuario", "socket", "URL", "localStorageService", "Empresa",
         "Modulo", "Rol", "OpcionModulo", "AlertService", "CentroUtilidad", "Bodega","VariableModulo",
+        "$timeout",
         function($scope, $rootScope, $state,
                 Request, Usuario, socket, URL, localStorageService, Empresa,
-                Modulo, Rol, OpcionModulo, AlertService, CentroUtilidad, Bodega, VariableModulo) {
+                Modulo, Rol, OpcionModulo, AlertService, CentroUtilidad, Bodega, VariableModulo,
+                $timeout) {
 
             var self = this;
            
@@ -36,11 +38,15 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 usuario: "",
                 clave: ""
             };
+            
+            $scope.centrosUtilidad = [];
 
             var session = {
                 usuario_id: obj_session.usuario_id,
                 auth_token: obj_session.auth_token
             };
+            
+            $scope.enHome = false;
 
             $scope.empresas = [];
 
@@ -200,13 +206,33 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                                     }
                                 }
                                 empresa.agregarCentroUtilidad(_centro);
+                                //centros de utilidad por la empresa que el usuario selecciona en el dropdown superior
+                                if($scope.Usuario.getEmpresa().getCodigo() === _centro.getEmpresaId() ){
+                                    $scope.Usuario.getEmpresa().agregarCentroSiNoExiste(angular.copy(_centro));
+                                }
+                                
                             }
                         });
                         
                         $scope.Usuario.agregarEmpresaFarmacia(empresa);
                     }
                 }
-                console.log("HeaderController-> asignarEmpresasFarmacias() ", $scope.Usuario.getEmpresasFarmacias());
+                
+            };
+            
+            
+            $scope.onCentroSeleccionado = function(centro){
+                localStorageService.set("centro_utilidad_usuario", centro.getCodigo());
+                $scope.Usuario.getEmpresa().setCentroUtilidadSeleccionado(centro);
+            };
+            
+            $scope.onBodegaSeleccionada = function(bodega){
+                localStorageService.set("bodega_usuario", bodega.getCodigo());
+                $scope.Usuario.getEmpresa().getCentroUtilidadSeleccionado().setBodegaSeleccionada(bodega); 
+            };
+            
+            $scope.onIrAlHome = function(){
+                window.location = "/dusoft_duana/home";
             };
             
             //se hace el set correspondiente para el plugin de jstree, y se crea un objeto valor de los modulos y opciones para facilidad de acceso del modulo actual
@@ -372,6 +398,10 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
 
 
             $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+                
+                if(toState.name.toLowerCase() === "dashboard"){
+                    $scope.enHome = true;
+                }
 
                 var moduloActual = self.obtenerModuloActual(toState.name);
 
@@ -432,6 +462,33 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
 
                     self.obtenerEmpresasUsuario(function() {
                         $rootScope.$emit("parametrizacionUsuarioLista", parametrizacion);
+                        
+                        
+                        //se selecciona el centro de utilidad y bodega predeterminado del usuario
+                        var centrosUtilidadEmpresa = $scope.Usuario.getEmpresa().getCentrosUtilidad();
+                        var codigoCentroUtilidadUsuario = localStorageService.get("centro_utilidad_usuario");
+                        var codigoBodegaUsuario = localStorageService.get("bodega_usuario");
+                        
+                        for(var i in centrosUtilidadEmpresa){
+                            var _centro = centrosUtilidadEmpresa[i];
+                            
+                            if(_centro.getCodigo() === codigoCentroUtilidadUsuario){
+                                $scope.onCentroSeleccionado(_centro);
+                                var bodegas = _centro.getBodegas(); 
+
+                                for(var ii in bodegas){
+                                    if(codigoBodegaUsuario === bodegas[ii].getCodigo()){
+                                        $scope.onBodegaSeleccionada(bodegas[ii]);
+                                        break;
+                                    }
+                                }
+                                
+                                break;
+                                
+                                
+                            }
+                        }
+
                     });
 
                 });

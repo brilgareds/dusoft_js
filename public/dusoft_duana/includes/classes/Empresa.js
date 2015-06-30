@@ -7,7 +7,7 @@ define(["angular", "js/models"], function(angular, models) {
             this.nombre = nombre || "";
             this.codigo = codigo || "";
             this.centrosUtilidad = [];
-            this.centroUtilidad;
+            this.centroUtilidad = undefined;
             //this.clientes = []; 
             //this.proveedores = [];
         };
@@ -41,12 +41,17 @@ define(["angular", "js/models"], function(angular, models) {
         };
         
         Empresa.prototype.agregarCentroUtilidad = function(centroUtilidad) {
-            /*for(var i in this.centrosUtilidad){
+            
+            this.centrosUtilidad.push(centroUtilidad);
+        };
+        
+        Empresa.prototype.agregarCentroSiNoExiste = function(centroUtilidad) {
+            for(var i in this.centrosUtilidad){
                 var _centroUtilidad = this.centrosUtilidad[i];
                 if(_centroUtilidad.getCodigo() === centroUtilidad.getCodigo()){                    
                     return false;
                 }
-            }*/
+            }
             
             this.centrosUtilidad.push(centroUtilidad);
         };

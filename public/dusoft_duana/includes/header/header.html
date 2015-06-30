@@ -12,7 +12,7 @@
             </button>
             <a class="navbar-brand" href="#">Dusoft</a>
         </div>
-        
+
 
         <div class="collapse navbar-collapse" style=" margin-left: 18px; float: right;" id="bs-example-navbar-collapse-1">            
             <ul class="nav navbar-nav navbar-right" >                  
@@ -31,15 +31,15 @@
                             <div class="navbar-content" style="background-color: white;">
                                 <div class="row">
                                     <div class="col-md-5">
-                                       
-                                        
-                                        
+
+
+
                                         <img ng-show="Usuario.rutaAvatar != ''" ng-src="{{Usuario.getRutaAvatar()}}"  style="height:  80px;"  />
 
                                     </div>
                                     <div class="col-md-7">
                                         <span>{{::Usuario.usuario}}</span>
-                                        
+
                                         <div class="divider">
                                         </div>
                                         <p class="text-muted small">{{::Usuario.email}}</p>
@@ -63,31 +63,60 @@
                 </li>
             </ul>
         </div>
-        
+
         <div class="btn-group contenedorEmpresaUsuario" ng-if="Usuario.empresa.getNombre() != ''">    
-           <!--ui-select ng-model="Usuario.empresa"
-              theme="bootstrap"
-             ng-change="onEmpresaSeleccionada()"
-             style="width: 200px; margin-right: 20px"
-             class="">
-              <ui-select-match  placeholder="Seleccionar Empresa">{{$select.selected.getNombre()}}</ui-select-match>
-              <ui-select-choices repeat="empresa in empresas | filter:$select.search">
-                  {{empresa.getNombre()}}
-              </ui-select-choices>
-          </ui-select-->
-           
-           <!--button type="button" class="btn btn-default">Empresa</button-->
-           <div class="btn-group" role="group"     >
+            <!--ui-select ng-model="Usuario.empresa"
+               theme="bootstrap"
+              ng-change="onEmpresaSeleccionada()"
+              style="width: 200px; margin-right: 20px"
+              class="">
+               <ui-select-match  placeholder="Seleccionar Empresa">{{$select.selected.getNombre()}}</ui-select-match>
+               <ui-select-choices repeat="empresa in empresas | filter:$select.search">
+                   {{empresa.getNombre()}}
+               </ui-select-choices>
+           </ui-select-->
+
+            <!--button type="button" class="btn btn-default">Empresa</button-->
+            <div class="btn-group selectTopBar" role="group"     >
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" >
                     <span>{{Usuario.empresa.getNombre()}}</span>
-                  <span class="caret"></span>
+                    <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu" >
-                  <li role="presentation" ng-repeat="empresa in empresas"><a role="menuitem" tabindex="-1" href="javascript:void(0);" ng-click="onEmpresaSeleccionada(empresa)">{{empresa.getNombre()}}</a></li>
+                    <li role="presentation" ng-repeat="empresa in empresas"><a role="menuitem" tabindex="-1" href="javascript:void(0);" ng-click="onEmpresaSeleccionada(empresa)">{{empresa.getNombre()}}</a></li>
                 </ul>
-          </div>
-           
-           
+            </div>
+
+            <div class="btn-group selectTopBar" role="group"     >
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" >
+                    <span ng-if="Usuario.getEmpresa().getCentroUtilidadSeleccionado()">
+                        {{Usuario.getEmpresa().getCentroUtilidadSeleccionado().getNombre()}}
+                    </span>
+                    <span ng-if="Usuario.getEmpresa().getCentroUtilidadSeleccionado() === undefined">
+                        C/U
+                    </span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu" >
+                    <li role="presentation" ng-repeat="centro in Usuario.getEmpresa().getCentrosUtilidad()"><a role="menuitem" tabindex="-1" href="javascript:void(0);" ng-click="onCentroSeleccionado(centro)">{{centro.getNombre()}}</a></li>
+                </ul>
+            </div>
+
+            <div class="btn-group selectTopBar" role="group"     >
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false" >
+                    <span ng-if="Usuario.getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada()">
+                        {{Usuario.getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getNombre()}}
+                    </span>
+                    <span ng-if="Usuario.getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada() == undefined">
+                        Bodega
+                    </span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu" >
+                    <li role="presentation" ng-repeat="bodega in Usuario.getEmpresa().getCentroUtilidadSeleccionado().getBodegas()"><a role="menuitem" tabindex="-1" href="javascript:void(0);" ng-click="onBodegaSeleccionada(bodega)">{{bodega.getNombre()}}</a></li>
+                </ul>
+            </div>
+
         </div>
     </div>
 

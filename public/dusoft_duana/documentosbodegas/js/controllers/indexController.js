@@ -18,7 +18,7 @@ define(["angular", "js/controllers",
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Sesion) {
 
             var that = this;
-            
+
             console.log('============= Indexcontroller =====', $state.get());
 
             // Variables de Sesion
@@ -28,7 +28,7 @@ define(["angular", "js/controllers",
             };
 
             $scope.datos_view = {
-                termino_busqueda_documentos : "",
+                termino_busqueda_documentos: "",
                 documentos_salida: [],
                 documentos_entrada: [],
                 documentos_ajustes: [],
@@ -67,26 +67,35 @@ define(["angular", "js/controllers",
                                     documento.tipo_doc_bodega_id === 'I005' || documento.tipo_doc_bodega_id === 'I006' || documento.tipo_doc_bodega_id === 'I007') {
                                 $scope.datos_view.documentos_entrada.push(documento)
                             }
-                            
+
                             if (documento.tipo_doc_bodega_id === 'E003' || documento.tipo_doc_bodega_id === 'I003') {
                                 $scope.datos_view.documentos_ajustes.push(documento)
                             }
-                            
+
                             if (documento.tipo_doc_bodega_id === 'T001' || documento.tipo_doc_bodega_id === 'T004') {
                                 $scope.datos_view.documentos_traslado.push(documento)
                             }
                         });
-                        
+
                         // Emitir Evento
                         $rootScope.$emit("onDocumentosBodegas", documentos_bodegas);
                     }
                 });
             };
-            
-            $scope.gestionar_documento = function(documento){
-              console.log('======= gestionar_documento ======');  
-              console.log(documento);
-              $state.go(documento.tipo_doc_bodega_id);
+
+            $scope.gestionar_documento = function(documento) {
+                console.log('======= gestionar_documento ======');
+                console.log(documento);
+
+                var result = $state.get().filter(function(obj) {
+                    return obj.name === documento.tipo_doc_bodega_id;
+                });
+
+                if (result.length > 0)
+                    $state.go(documento.tipo_doc_bodega_id);
+                else
+                    AlertService.mostrarMensaje("warning", 'El modulo [ '+documento.tipo_doc_bodega_id+'-'+ documento.descripcion +' ] aun no esta disponible en esta version!!!');
+                
             };
 
             $scope.consultar_listado_documentos_usuario();

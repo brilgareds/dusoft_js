@@ -8,39 +8,24 @@
                     Pedidos Farmacias <!--<span ng-show="notificacionclientes > 0" class="badge badge-warning">{{notificacionclientes}}</span>-->
                 </tab-heading>
 
-                <!--<div class="row">-->
-                    <!--<br/>-->
+                <button type="button" class="btn btn-default pull-left" ng-click="abrirViewPedidoFarmacia()" ng-validate-events="{{root.opcionesModulo.btnCrearPedido}}" name="btnCrearPedido">
+                    <span class="glyphicon glyphicon-plus"></span> Crear Pedido
+                </button>
 
-                    <div class="">
-                        <!--<div class="input-group">-->
-                            <button type="button" class="btn btn-default btn-sm pull-left" ng-click="abrirViewPedidoFarmacia()" ng-validate-events="{{root.opcionesModulo.btnCrearPedido}}" name="btnCrearPedido">
-                                <span class="glyphicon glyphicon-plus"></span> Crear Pedido
-                            </button>
-                        <!--</div>-->
-                    </div>
+                <div class="col-sm-4 col-md-4 col-lg-4 marginLeft">
+                    <select ui-select2  class="form-control selectgeneral anchoSeleccionEmpresa" ng-model="rootVerPedidosFarmacias.seleccion" data-placeholder="Seleccionar Farmacia" ng-change="valorSeleccionado()">
+                        <option ng-repeat="farmacia in rootVerPedidosFarmacias.listado_farmacias"  ng-value="farmacia.empresa_id" >{{farmacia.razon_social}}</option>
+                    </select>
+                </div>
 
-                    <div class="col-sm-4 col-md-4 col-lg-4 marginLeft">
-                        <!--<div class="input-group">-->
-                            <select ui-select2  class="selectgeneral anchoSeleccionEmpresa" ng-model="rootVerPedidosFarmacias.seleccion" data-placeholder="Seleccionar Farmacia" ng-change="valorSeleccionado()">
-                                <option ng-repeat="farmacia in rootVerPedidosFarmacias.listado_farmacias"  ng-value="farmacia.empresa_id" >{{farmacia.razon_social}}</option>
-                            </select>
-
-                        <!--</div>-->
-                    </div>
-
-                    <div class="input-group  navbar-form buscadorgeneral">
-                        <!--<div class="input-group">-->
-                            <input type="text" class="form-control pull-right" ng-keypress="onTeclaBuscarPedidosFarmacias($event)" ng-model="rootVerPedidosFarmacias.termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
-                            <span class="input-group-btn" >
-                                <button class="btn btn-default" type="submit" ng-click="onBuscarPedidosFarmacias(obtenerParametros())"><i class="glyphicon glyphicon-search"></i></button>
-                            </span>
-                        <!--</div>-->    
-                    </div>                    
-
-                <!--</div>-->
+                <div class="input-group  navbar-form buscadorgeneral">
+                    <input type="text" class="form-control pull-right" ng-keypress="onTeclaBuscarPedidosFarmacias($event)" ng-model="rootVerPedidosFarmacias.termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
+                    <span class="input-group-btn" >
+                        <button class="btn btn-default" type="submit" ng-click="onBuscarPedidosFarmacias(obtenerParametros())"><i class="glyphicon glyphicon-search"></i></button>
+                    </span>
+                </div>                
 
                 <div class="table-responsive">
-                    <!--<br/>-->
                     <div class="defaultGrid grid-responsive" ng-grid="rootVerPedidosFarmacias.lista_pedidos_farmacias"></div>
                 </div>
 
@@ -61,40 +46,25 @@
                 <tab-heading >
                     Pedidos Temporales
                 </tab-heading>
-                <!--<div class="row">-->
 
-                    <!--<br/>-->
+                <button type="button" class="btn btn-default pull-left" ng-click="abrirViewPedidoFarmaciaTemp()" ng-validate-events="{{root.opcionesModulo.btnCrearPedido}}" name="btnCrearPedido">
+                    <span class="glyphicon glyphicon-plus"></span> Crear Pedido
+                </button>
 
-                    <div class="col-sm-2 col-md-2 col-lg-2">
-                        <!--<div class="input-group">-->
-                            <button type="button" class="form-control btn btn-default btn-sm" ng-click="abrirViewPedidoFarmaciaTemp()" ng-validate-events="{{root.opcionesModulo.btnCrearPedido}}" name="btnCrearPedido">
-                                <span class="glyphicon glyphicon-plus"></span> Crear Pedido
-                            </button>
-                        <!--</div>-->
-                    </div>
+                <div class="col-sm-4 col-md-4 col-lg-4 marginLeft">
+                        <select ui-select2  class="form-control selectgeneral anchoSeleccionEmpresa" ng-model="rootVerPedidosTempFarmacias.seleccion" data-placeholder="Seleccionar Farmacia" ng-change="valorSeleccionadoTemp()">
+                            <option ng-repeat="farmacia in  rootVerPedidosTempFarmacias.listado_farmacias"  ng-value="farmacia.empresa_id" >{{farmacia.razon_social}}</option>
+                        </select>
+                </div>
 
-                    <div class="col-sm-4 col-md-4 col-lg-4 marginLeft">
-                        <!--<div class="input-group">-->
-                            <select ui-select2  class="form-control selectgeneral anchoSeleccionEmpresa" ng-model="rootVerPedidosTempFarmacias.seleccion" data-placeholder="Seleccionar Farmacia" ng-change="valorSeleccionadoTemp()">
-                                <option ng-repeat="farmacia in  rootVerPedidosTempFarmacias.listado_farmacias"  ng-value="farmacia.empresa_id" >{{farmacia.razon_social}}</option>
-                            </select>
-                        <!--</div>-->
-                    </div>
-
-                    <div class="input-group navbar-form buscadorgeneral">
-                        <!--<div class="input-group">-->
-                            <input type="text" class="form-control pull-right" ng-keypress="onTeclaBuscarPedidosFarmaciasTemp($event)" ng-model="rootVerPedidosFarmacias.termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
-                            <span class="input-group-btn" >
-                                <button class="btn btn-default" type="submit" ng-click="onBuscarPedidosFarmaciasTemp(obtenerParametrosTemp())"><i class="glyphicon glyphicon-search"></i></button>
-                            </span>
-                        <!--</div>-->    
-                    </div>
-
-                <!--</div>-->
-
+                <div class="input-group navbar-form buscadorgeneral">
+                        <input type="text" class="form-control pull-right" ng-keypress="onTeclaBuscarPedidosFarmaciasTemp($event)" ng-model="rootVerPedidosFarmacias.termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
+                        <span class="input-group-btn" >
+                            <button class="btn btn-default" type="submit" ng-click="onBuscarPedidosFarmaciasTemp(obtenerParametrosTemp())"><i class="glyphicon glyphicon-search"></i></button>
+                        </span>
+                </div>
 
                 <div class="table-responsive">
-                    <!--<br/>-->
                     <div class="defaultGrid grid-responsive" ng-grid="rootVerPedidosTempFarmacias.lista_pedidos_temporales_farmacias"></div>
                 </div>
 

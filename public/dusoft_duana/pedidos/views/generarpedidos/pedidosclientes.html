@@ -5,31 +5,19 @@
             <tab-heading>
                 Cotizaciones Clientes
             </tab-heading>
-            
-            <div class="row">
-                <br/>
 
-                <div class="col-sm-1 col-md-1 col-lg-1">
-                    <div class="input-group">
-                        <button type="button" class="btn btn-default btn-medium ng-scope" ng-click="onNuevaCotizacion()">
-                            <span class="glyphicon glyphicon-plus"></span>  Crear Cotización
-                        </button>
-                    </div>
-                </div>
+            <button type="button" class="btn btn-default pull-left" ng-click="onNuevaCotizacion()">
+                <span class="glyphicon glyphicon-plus"></span>  Crear Cotización
+            </button>
 
-                <div class="col-sm-3 col-md-3 col-lg-3 pull-right">
-                    <div class="input-group">
-                        <input type="text" class="form-control pull-right" ng-keypress="onKeyBuscarCotizaciones($event)" ng-model="rootCotizaciones.termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
-                        <span class="input-group-btn" >
-                            <button class="btn btn-default" type="submit" ng-click="onBuscarCotizacion()"><i class="glyphicon glyphicon-search"></i></button>
-                        </span>  
-                    </div>
-                </div>
-
+            <div class="input-group navbar-form buscadorgeneral">
+                <input type="text" class="form-control pull-right" ng-keypress="onKeyBuscarCotizaciones($event)" ng-model="rootCotizaciones.termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
+                <span class="input-group-btn" >
+                    <button class="btn btn-default" type="submit" ng-click="onBuscarCotizacion()"><i class="glyphicon glyphicon-search"></i></button>
+                </span>  
             </div>
             
             <div class="table-responsive">
-                <br/>
                 <div class="defaultGrid grid-responsive" ng-grid="rootCotizaciones.lista_pedidos_clientes"></div>
             </div>
             
@@ -50,20 +38,13 @@
             <tab-heading>
                 Pedidos Clientes
             </tab-heading>
-            
-            <div class="row">
 
-                <div class="col-sm-3 col-md-3 col-lg-3 pull-right">
-                    <br/>
-                    <div class="input-group">
-                        <input type="text" class="form-control pull-right" ng-keypress="onKeyBuscarPedidos($event)" ng-model="rootPedidosClientes.termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
-                        <span class="input-group-btn" >
-                            <button class="btn btn-default" type="submit" ng-click="onBuscarPedido()"><i class="glyphicon glyphicon-search"></i></button>
-                        </span>  
-                    </div>    
-                </div>
-
-            </div>
+            <div class="input-group navbar-form buscadorgeneral">
+                <input type="text" class="form-control pull-right" ng-keypress="onKeyBuscarPedidos($event)" ng-model="rootPedidosClientes.termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
+                <span class="input-group-btn" >
+                    <button class="btn btn-default" type="submit" ng-click="onBuscarPedido()"><i class="glyphicon glyphicon-search"></i></button>
+                </span>  
+            </div>    
 
             <div class="table-responsive">
                 <br/>

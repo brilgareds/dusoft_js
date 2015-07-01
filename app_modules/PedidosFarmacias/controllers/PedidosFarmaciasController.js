@@ -374,9 +374,10 @@ PedidosFarmacias.prototype.actualizarCantidadesDetallePedidoFinal = function(req
     var codigo_producto = args.pedidos_farmacias.codigo_producto;
     var cantidad_solicitada = args.pedidos_farmacias.cantidad_solicitada;
     var cantidad_pendiente = args.pedidos_farmacias.cantidad_pendiente;
+    var usuario = req.session.user.usuario_id;
 
     //Se procede a modificar el archivo
-    that.m_pedidos_farmacias.actualizar_cantidades_detalle_pedido_final(numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente, function(err, rows) {
+    that.m_pedidos_farmacias.actualizar_cantidades_detalle_pedido_final(numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente, usuario, function(err, rows) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error en la modificación de cantidades', 500, {error: err}));
@@ -406,9 +407,10 @@ PedidosFarmacias.prototype.eliminarProductoDetallePedidoFinal = function(req, re
 
     var numero_pedido = args.pedidos_farmacias.numero_pedido;
     var codigo_producto = args.pedidos_farmacias.codigo_producto;
+    var usuario = req.session.user.usuario_id;
 
     //Se procede a eliminar el archivo
-    that.m_pedidos_farmacias.eliminar_producto_detalle_pedido_final(numero_pedido, codigo_producto, function(err, rows) {
+    that.m_pedidos_farmacias.eliminar_producto_detalle_pedido_final(numero_pedido, codigo_producto, usuario, function(err, rows) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'No se pudo eliminar el producto', 500, {error: err}));

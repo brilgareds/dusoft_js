@@ -7,11 +7,11 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
         '$scope', '$rootScope', "$state", "Request",
         "Usuario", "socket", "URL", "localStorageService", "Empresa",
         "Modulo", "Rol", "OpcionModulo", "AlertService", "CentroUtilidad", "Bodega","VariableModulo",
-        "$timeout",
+        "$timeout","$modal",
         function($scope, $rootScope, $state,
                 Request, Usuario, socket, URL, localStorageService, Empresa,
                 Modulo, Rol, OpcionModulo, AlertService, CentroUtilidad, Bodega, VariableModulo,
-                $timeout) {
+                $timeout, $modal) {
 
             var self = this;
            
@@ -232,7 +232,49 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
             };
             
             $scope.onIrAlHome = function(){
-                window.location = "/dusoft_duana/home";
+                 var moduloActual = $scope.Usuario.getModuloActual();
+                 if(moduloActual.nombre.toLowerCase() === 'dashboard'){
+                     return;
+                 }
+                
+                 $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                  //  size: 'sm',
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Desea ir al inicio?</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <h5>Actualmente se encuentra en el modulo {{ moduloActual.nombre }}</h5>\
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-primary" ng-click="close()">No</button>\
+                                    <button class="btn btn-warning" ng-click="confirmar()" ng-disabled="" >Si</button>\
+                                </div>',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance, moduloActual) {
+                        $scope.moduloActual = moduloActual;
+                        $scope.confirmar = function() {
+                            window.location = "/dusoft_duana/home";
+                            $modalInstance.close();
+                        };
+
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+
+                    },
+                    resolve: {
+                        moduloActual: function() {
+                            return moduloActual;
+                        }
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+                
             };
             
             //se hace el set correspondiente para el plugin de jstree, y se crea un objeto valor de los modulos y opciones para facilidad de acceso del modulo actual

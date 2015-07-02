@@ -384,7 +384,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             //Edición Especial de Pedido Farmacia - Solo Jefe de Farmacia
             $scope.onEdicionEspecialPedidoFarmacia = function(data) {
-                
+                if(!$scope.validarPermisosPedido(data)){
+                    
+                    $scope.mostrarAlertaPermisoDenegadoPedido(data);
+                    return;
+                }
                 var pedido = PedidoVenta.get();
 
                 var datos_pedido = {
@@ -479,9 +483,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 
             };
             
+            
             //Edición Normal de Pedido Farmacia
             $scope.onEditarPedidoFarmacia = function(data) {
-                console.log("============================ onEditarPedidoFarmacia ", data);
+                if(!$scope.validarPermisosPedido(data)){
+                    
+                    $scope.mostrarAlertaPermisoDenegadoPedido(data);
+                    return;
+                }
+                
+                
                 var pedido = PedidoVenta.get();
 
                 var datos_pedido = {
@@ -578,7 +589,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
 /********************/
             $scope.onVerPedidoFarmacia = function(data) {
-
+                if(!$scope.validarPermisosPedido(data)){
+                    
+                    $scope.mostrarAlertaPermisoDenegadoPedido(data);
+                    return;
+                }
+                
                 var pedido = PedidoVenta.get();
 
                 var datos_pedido = {
@@ -676,7 +692,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             //referencia del socket io
             socket.on("onListarPedidosFarmacias", function(datos) {
 
-                if (datos.status == 200) {
+                if (datos.status === 200) {
                     var obj = datos.obj.pedidos_farmacias[0];
                     var pedido = that.crearPedido(obj);
 
@@ -689,12 +705,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             that.reemplazarPedidoEstado = function(pedido) {
                 
-                if($scope.rootVerPedidosFarmacias.Empresa != undefined){
+                if($scope.rootVerPedidosFarmacias.Empresa !== undefined){
                 
                     for (var i in $scope.rootVerPedidosFarmacias.Empresa.getPedidosFarmacia()) {
                         var _pedido = $scope.rootVerPedidosFarmacias.Empresa.getPedidosFarmacia()[i];
 
-                        if (pedido.numero_pedido == _pedido.numero_pedido) {
+                        if (pedido.numero_pedido === _pedido.numero_pedido) {
                             _pedido.descripcion_estado_actual_pedido = pedido.descripcion_estado_actual_pedido;
                             _pedido.estado_actual_pedido = pedido.estado_actual_pedido;
                             _pedido.estado_separacion = pedido.estado_separacion;

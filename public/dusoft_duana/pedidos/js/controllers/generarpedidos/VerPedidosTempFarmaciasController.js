@@ -272,57 +272,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 
                 //Verificación Previa de Farmacias, Centros de Utilidad y Bodega asignadas al usuario
                 
-                var existeFarmaciaCentroBodega = false;
-                
-                existeFarmaciaCentroBodega = $scope.rootVerPedidosTempFarmacias.empresasDestino.some(function(empresa){
-                                                    return empresa.codigo === data.farmacia.farmacia_id
-                                                        && empresa.centrosUtilidad.some(function(centro){
-                                                            return centro.codigo === data.farmacia.centro_utilidad_id
-                                                                    && centro.bodegas.some(function(bodega){
-                                                                            return bodega.codigo === data.farmacia.bodega_id;
-                                                                        });
-                                                            }); 
-                                                        
-                                                });
-                
-                if(existeFarmaciaCentroBodega){
-                    //Insertar aquí el pedido seleccionado para el singleton Empresa
-                    $scope.rootVerPedidosTempFarmacias.Empresa.setPedidoSeleccionado(pedido);
-
-                    //PedidoVenta.pedidoseleccionado = data.numero_pedido;
-                    $state.go('CreaPedidosFarmacias');
+                if(!$scope.validarPermisosPedido(pedido)){
+                    
+                    $scope.mostrarAlertaPermisoDenegadoPedido(pedido);
+                    return;
                 }
-                else {
-                    $scope.opts = {
-                            backdrop: true,
-                            backdropClick: true,
-                            dialogFade: false,
-                            keyboard: true,
-                            template: ' <div class="modal-header">\
-                                            <button type="button" class="close" ng-click="close()">&times;</button>\
-                                            <h4 class="modal-title">Aviso: </h4>\
-                                        </div>\
-                                        <div class="modal-body row">\
-                                            <div class="col-md-12">\
-                                                <h4 >Usted No tiene acceso a:<br><br>\
-                                                <b>FARMACIA:</b> '+data.farmacia.farmacia_id+'<br>\
-                                                <b>CENTRO UTILIDAD:</b> '+data.farmacia.centro_utilidad_id+'<br>\
-                                                <b>BODEGA:</b> '+data.farmacia.bodega_id+'</h4>\
-                                            </div>\
-                                        </div>\
-                                        <div class="modal-footer">\
-                                            <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
-                                        </div>',
-                            scope: $scope,
-                            controller: function($scope, $modalInstance) {
-                                $scope.close = function() {
-                                    $modalInstance.close();
-                                };
-                            }
-                        };
+                
+                //Insertar aquí el pedido seleccionado para el singleton Empresa
+                $scope.rootVerPedidosTempFarmacias.Empresa.setPedidoSeleccionado(pedido);
 
-                        var modalInstance = $modal.open($scope.opts); 
-                }
+                //PedidoVenta.pedidoseleccionado = data.numero_pedido;
+                $state.go('CreaPedidosFarmacias');
+
             };
             
             $scope.onEliminarPedidoTemporal = function(farmacia_id, centro_utilidad_id, bodega_id, index){

@@ -240,7 +240,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             that.crearPedido = function(obj) {
 
-                console.log(">>>> OBJETO DE CONSULTA -- DESPACHO: ", obj.despacho_numero," - " ,obj.tiene_despacho," - " ,obj.numero_pedido);
+                //console.log(">>>> OBJETO DE CONSULTA -- DESPACHO: ", obj.despacho_numero," - " ,obj.tiene_despacho," - " ,obj.numero_pedido);
                 
                 var pedido = PedidoVenta.get();
 
@@ -481,7 +481,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             //Edición Normal de Pedido Farmacia
             $scope.onEditarPedidoFarmacia = function(data) {
-
+                console.log("============================ onEditarPedidoFarmacia ", data);
                 var pedido = PedidoVenta.get();
 
                 var datos_pedido = {

@@ -98,7 +98,7 @@
             .state('AsignarPedidos', {
                   url: "/AsignarPedidos",
                   text:"Asignar Pedidos",
-                  templateUrl: "views/asignarpedidos/AsignarPedidos.html",
+                  templateUrl: "views/asignarpedidos/AsignarPedidos.html"
                   //controller:"pedidoscontroller"
               })
               .state('AuditarPedidos', {

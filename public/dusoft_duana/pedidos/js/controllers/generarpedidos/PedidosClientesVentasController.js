@@ -66,7 +66,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                     $scope.rootPedidosClientes.ultima_busqueda = {
                         termino_busqueda: $scope.rootPedidosClientes.termino_busqueda
-                    }
+                    };
 
                     that.renderPedidos(data.obj, paginando);
 
@@ -331,7 +331,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 var modalInstance = $modal.open($scope.opts);
                 
-            }
+            };
             /**/
             
             $scope.onVerObservacionCartera = function(obj){
@@ -395,7 +395,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     session: $scope.rootPedidosClientes.session,
                     data: {
                         estado_cotizacion: {
-                            numero_cotizacion: data.numero_cotizacion,
+                            numero_cotizacion: data.numero_cotizacion
                         }
                     }
                 };
@@ -429,7 +429,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     session: $scope.rootPedidosClientes.session,
                     data: {
                         estado_pedido: {
-                            numero_pedido: data.numero_pedido,
+                            numero_pedido: data.numero_pedido
                         }
                     }
                 };
@@ -604,7 +604,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             //eventos de widgets
             $scope.onKeyBuscarPedidos = function(ev) {
 
-                 if (ev.which == 13) {
+                 if (ev.which === 13) {
                      //Aquí no se usa el parámetro "termino_busqueda" porque ésta variable se usa en el scope y se actualiza sin necesidad de pasarla como parámetro
                      $scope.onBuscarPedido($scope.obtenerParametros(), true);
                  }
@@ -625,8 +625,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             };
             
             $scope.onTabPedidosClick = function(){
-                $scope.onBuscarPedido($scope.obtenerParametros(),"");
-            }
+                if($scope.rootPedidosClientes.Empresa.getPedidos().length === 0){
+                    $scope.onBuscarPedido($scope.obtenerParametros(),"");
+                }
+            };
             
             //$scope.onBuscarPedido($scope.obtenerParametros(),"");
 

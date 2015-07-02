@@ -64,7 +64,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                     $scope.rootCotizaciones.ultima_busqueda = {
                         termino_busqueda: $scope.rootCotizaciones.termino_busqueda
-                    }
+                    };
 
                     that.renderCotizaciones(data.obj, paginando);
 
@@ -273,7 +273,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
                 var modalInstance = $modal.open($scope.opts);
                 
-            }
+            };
             /**/
             
             $scope.onVerObservacionCartera = function(obj){
@@ -596,10 +596,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
 
             });
             
-            //eventos de widgets
             $scope.onKeyBuscarCotizaciones = function(ev) {
 
-                 if (ev.which == 13) {
+                 if (ev.which === 13) {
                      //Aquí no se usa el parámetro "termino_busqueda" porque ésta variable se usa en el scope y se actualiza sin necesidad de pasarla como parámetro
                      $scope.onBuscarCotizacion($scope.obtenerParametros(), true);
                  }

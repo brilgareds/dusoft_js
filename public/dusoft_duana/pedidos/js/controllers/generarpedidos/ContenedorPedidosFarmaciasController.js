@@ -79,7 +79,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             };
             
             $scope.mostrarAlertaPermisoDenegadoPedido = function(pedido){
-                console.log("pedido ", pedido);
+                console.log("pedido >>>>>>>>>>>>>> ", pedido);
                 $scope.opts = {
                             backdrop: true,
                             backdropClick: true,
@@ -92,9 +92,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                         <div class="modal-body row">\
                                             <div class="col-md-12">\
                                                 <h4 >Usted No tiene acceso a:<br><br>\
-                                                <b>FARMACIA:</b> '+pedido.getFarmacia().get_farmacia_id()+'<br>\
-                                                <b>CENTRO UTILIDAD:</b> '+pedido.getFarmacia().getCentroUtilidadId()+'<br>\
-                                                <b>BODEGA:</b> '+pedido.getFarmacia().getBodegaId()+'</h4>\
+                                                <b>FARMACIA:</b> '+pedido.getFarmacia().get_farmacia_id()+' - '+pedido.getFarmacia().get_nombre_farmacia()+'<br>\
+                                                <b>CENTRO UTILIDAD:</b> '+pedido.getFarmacia().getCentroUtilidadId()+' - '+pedido.getFarmacia().getNombreCentroUtilidad()+'<br>\
+                                                <b>BODEGA:</b> '+pedido.getFarmacia().getBodegaId()+' - '+pedido.getFarmacia().getNombreBodega()+'</h4>\
                                             </div>\
                                         </div>\
                                         <div class="modal-footer">\

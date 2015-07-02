@@ -231,7 +231,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                         <ul class="dropdown-menu dropdown-options">\
                                             <li><a href="javascript:void(0);" ng-click="onEditarPedidoFarmaciaTemp(row.entity)">Modificar</a></li>\
                                             <li class="divider"></li>\
-                                            <li><a href="javascript:void(0);" ng-click="onEliminarPedidoTemporal(row.entity.farmacia.farmacia_id, row.entity.farmacia.centro_utilidad_id, row.entity.farmacia.bodega_id, row.rowIndex)" >Eliminar</a></li>\
+                                            <li><a href="javascript:void(0);" ng-click="onEliminarPedidoTemporal(row.entity.farmacia.farmacia_id, row.entity.farmacia.centro_utilidad_id, row.entity.farmacia.bodega_id, row.rowIndex, row.entity)" >Eliminar</a></li>\
                                         </ul>\n\
                                         </div>'
                         
@@ -286,7 +286,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             };
             
-            $scope.onEliminarPedidoTemporal = function(farmacia_id, centro_utilidad_id, bodega_id, index){
+            $scope.onEliminarPedidoTemporal = function(farmacia_id, centro_utilidad_id, bodega_id, index, pedido){
+                
+                if(!$scope.validarPermisosPedido(pedido)){
+                    
+                    $scope.mostrarAlertaPermisoDenegadoPedido(pedido);
+                    return;
+                }
 
                 var template = '<div class="modal-header">\
                                       <button type="button" class="close" ng-click="close()">&times;</button>\

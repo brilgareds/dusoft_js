@@ -70,7 +70,15 @@ define(["angular", "js/directive", "includes/menu/treeSearch"], function(angular
 
                             },
                             "state": {"key": "tree"},
-                            plugins: ["state"]
+                            plugins: ["state","sort"],
+                            "sort": function(a,b){
+                                
+                                 if(this.get_text(b).toLowerCase() === "home"){
+                                     return 1;
+                                 }
+                                
+                                 return this.get_text(a) > this.get_text(b) ? 1 : -1; 
+                            }
 
                         }).on("select_node.jstree", function(node, selected, event) {
                             //se valida si fue por medio de un evento o por el state del plugin

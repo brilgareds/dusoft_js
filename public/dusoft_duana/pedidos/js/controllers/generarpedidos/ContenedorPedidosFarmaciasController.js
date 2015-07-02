@@ -5,8 +5,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
     var fo = controllers.controller('ContenedorPedidosFarmaciasController', [
         '$scope', '$rootScope', 'Request',
         'API', "socket", "AlertService",
-        '$state', "Usuario",
-        function($scope, $rootScope, Request, API, socket, AlertService, $state, Usuario) {
+        '$state', "Usuario", "$modal",
+        function($scope, $rootScope, Request, API, socket, AlertService, $state, Usuario, $modal) {
 
             console.log(">>>> Usuario", Usuario.getUsuarioActual());
 
@@ -51,6 +51,64 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                 });
 
+            };
+            
+            $scope.validarPermisosPedido = function(pedido){
+                var empresas = Usuario.getUsuarioActual().getEmpresasFarmacias();
+                
+                //se busca la empresa
+                var existeFarmaciaCentroBodega = empresas.some(function(empresa){
+                    return empresa.getCodigo() === pedido.getFarmacia().get_farmacia_id()
+                    
+                    & 
+                    //se busca el centro de utilidad
+                    empresa.getCentrosUtilidad().some(function(centro){
+                        return  centro.getCodigo() === pedido.getFarmacia().getCentroUtilidadId()
+                        
+                        &
+                        //se busca la bodega
+                        centro.bodegas.some(function(bodega){
+                            return bodega.getCodigo() === pedido.getFarmacia().getBodegaId();
+                        });
+                    });
+                    
+                });
+                
+                return existeFarmaciaCentroBodega;
+
+            };
+            
+            $scope.mostrarAlertaPermisoDenegadoPedido = function(pedido){
+                console.log("pedido >>>>>>>>>>>>>> ", pedido);
+                $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: ' <div class="modal-header">\
+                                            <button type="button" class="close" ng-click="close()">&times;</button>\
+                                            <h4 class="modal-title">Aviso: </h4>\
+                                        </div>\
+                                        <div class="modal-body row">\
+                                            <div class="col-md-12">\
+                                                <h4 >Usted No tiene acceso a:<br><br>\
+                                                <b>FARMACIA:</b> '+pedido.getFarmacia().get_farmacia_id()+' - '+pedido.getFarmacia().get_nombre_farmacia()+'<br>\
+                                                <b>CENTRO UTILIDAD:</b> '+pedido.getFarmacia().getCentroUtilidadId()+' - '+pedido.getFarmacia().getNombreCentroUtilidad()+'<br>\
+                                                <b>BODEGA:</b> '+pedido.getFarmacia().getBodegaId()+' - '+pedido.getFarmacia().getNombreBodega()+'</h4>\
+                                            </div>\
+                                        </div>\
+                                        <div class="modal-footer">\
+                                            <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                        </div>',
+                            scope: $scope,
+                            controller: function($scope, $modalInstance) {
+                                $scope.close = function() {
+                                    $modalInstance.close();
+                                };
+                            }
+                        };
+
+                        var modalInstance = $modal.open($scope.opts); 
             };
 
 

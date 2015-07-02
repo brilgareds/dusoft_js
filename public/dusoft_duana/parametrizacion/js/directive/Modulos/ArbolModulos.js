@@ -143,6 +143,14 @@ define(["angular", "js/directive"], function(angular, directive) {
                             },
                             "state": {"key": attrs.estado || ""},
                             plugins: plugins,
+                            "sort": function(a,b){
+                                
+                                 if(this.get_text(b).toLowerCase() === "home"){
+                                     return 1;
+                                 }
+                                
+                                 return this.get_text(a) > this.get_text(b) ? 1 : -1; 
+                            },
                             "contextmenu": {
                                 select_node: false,
                                 "items": function($node) {

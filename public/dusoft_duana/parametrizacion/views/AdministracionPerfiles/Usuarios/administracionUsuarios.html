@@ -237,7 +237,7 @@
 
     <div class="col-md-4" ng-if='rootUsuario.rolAGuardar.id > 0' >
         <tree-search treeId="modulos_empresas_usuario" class="pull-right" style="padding-bottom: 7px" > </tree-search>
-        <div arbol-modulos  obtenerHijos="obtenerHijos()" plugins='checkbox,contextmenu' style="clear:both;" tipo='multiple' estado='modulos_empresas_usuario' multiples_nodos="true" id="modulos_empresas_usuario" class="contenedorArbol"></div>
+        <div arbol-modulos  obtenerHijos="obtenerHijos()" plugins='checkbox,contextmenu,sort' style="clear:both;" tipo='multiple' estado='modulos_empresas_usuario' multiples_nodos="true" id="modulos_empresas_usuario" class="contenedorArbol"></div>
     </div>
 
     <div class="col-md-4" ng-if='rootUsuario.rolAGuardar.id > 0' ng-controller='OpcionesModulosController' ng-init='init({eliminar:false, detalle:false, seleccionar:true})'>

@@ -60,7 +60,7 @@
 
     <div class="col-md-4" ng-if='rootRoles.rolAGuardar.id > 0'>
         <tree-search treeId="modulos_empresas" class="pull-right" style="padding-bottom: 2px" > </tree-search>
-        <div arbol-modulos plugins='checkbox,contextmenu' tipo='multiple' estado='modulos_empresas' multiples_nodos="true" id="modulos_empresas" style="clear:both" class="contenedorArbol"></div>
+        <div arbol-modulos plugins='checkbox,contextmenu,sort' tipo='multiple' estado='modulos_empresas' multiples_nodos="true" id="modulos_empresas" style="clear:both" class="contenedorArbol"></div>
     </div>
 
     <div class="col-md-4" ng-if='rootRoles.rolAGuardar.id > 0' ng-controller='OpcionesModulosController' ng-init='init({eliminar:false, detalle:false, seleccionar:true})'>

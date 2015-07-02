@@ -21,6 +21,30 @@ define(["angular", "js/models"], function(angular, models) {
             return this.nombre_farmacia;
         };
         
+        Farmacia.prototype.getCentroUtilidadId = function() {
+            return this.centro_utilidad_id;
+        };
+
+        Farmacia.prototype.setCentroUtilidadId = function(centro_utilidad_id) {
+            this.centro_utilidad_id = centro_utilidad_id;
+        };
+        
+        Farmacia.prototype.getBodegaId = function() {
+            return this.bodega_id;
+        };
+
+        Farmacia.prototype.setBodegaId = function(bodega_id) {
+            this.bodega_id = bodega_id;
+        };
+        
+        Farmacia.prototype.getNombreCentroUtilidad = function() {
+            return this.nombre_centro_utilidad;
+        };
+        
+        Farmacia.prototype.getNombreBodega = function() {
+            return this.nombre_bodega;
+        };
+        
         this.get = function(farmacia_id, bodega_id, nombre_farmacia, nombre_bodega, centro_utilidad_id, nombre_centro_utilidad) {
             return new Farmacia(farmacia_id, bodega_id, nombre_farmacia, nombre_bodega, centro_utilidad_id, nombre_centro_utilidad);
         };

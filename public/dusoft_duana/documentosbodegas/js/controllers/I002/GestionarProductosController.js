@@ -8,21 +8,44 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state) {
 
             var that = this;
-            
+
 
             $rootScope.$on('gestionar_productosCompleto', function(e, parametros) {
 
-                console.log('=============== Iniciando Slider =============');
-                
+                $scope.datos_view = {
+                    listado_productos: []
+                };
+
+                $timeout(function() {
+                    $scope.buscar_productos();
+                }, 3);
+
             });
 
             $rootScope.$on('cerrar_gestion_productosCompleto', function(e, parametros) {
-                
                 $scope.$$watchers = null;
             });
 
+            $scope.buscar_productos = function() {
+
+                for (i = 0; i < 20; i++) {
+                    $scope.datos_view.listado_productos.push({nombre: 'producto - ' + i});
+                }
+                console.log($scope.datos_view.listado_productos);
+            };
+
+            $scope.abrir_fecha_vencimiento = function($event) {
+
+                $event.preventDefault();
+                $event.stopPropagation();
+
+                $scope.datos_view.datepicker_fecha_inicial = true;
+                $scope.datos_view.datepicker_fecha_final = false;
+
+            };
+
             $scope.lista_productos_orden_compra = {
-                data: 'Empresa.get_productos()',
+                data: 'datos_view.listado_productos',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 enableCellSelection: true,
@@ -30,21 +53,28 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 enableCellEdit: true,
                 enableHighlighting: true,
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Codigo Producto', width: "20%", enableCellEdit: false},
-                    {field: 'descripcion', displayName: 'Descripcion', enableCellEdit: false},
-                    {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "15%", cellFilter: "currency:'$ '", enableCellEdit: true,
-                        cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
-                                            <span class="label label-primary" ng-show="row.entity.regulado == 1" >Reg</span>\
-                                            <span class="label label-danger" ng-show="row.entity.tiene_valor_pactado == 0">S.C</span>\
-                                            <span class="label label-success" ng-show="row.entity.tiene_valor_pactado == 1">C.C</span>\
-                                            <span ng-cell-text class="pull-right" >{{COL_FIELD | currency:"$ "}}</span>\
+                    {field: 'nombre', displayName: 'Codigo Producto', width: "10%", enableCellEdit: false},
+                    {field: 'nombre', displayName: 'Descripcion', width: "30%", enableCellEdit: false},
+                    {field: 'nombre', displayName: 'Cantidad', width: "10%", enableCellEdit: false},
+                    {field: 'nombre', displayName: 'Cant Recibido', width: "10%", enableCellEdit: false,
+                        cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                    {field: 'nombre', displayName: 'V. Unt', width: "10%", enableCellEdit: false,
+                        cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                    {field: 'nombre', displayName: 'Lote', width: "10%", enableCellEdit: false,
+                        cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                    {field: 'nombre', displayName: 'F. Vcto', width: "10%", enableCellEdit: false,
+                        cellTemplate: ' <div class="col-xs-12">\
+                                            <p class="input-group">\
+                                                <input type="text" class="form-control grid-inline-input readonlyinput" name="" id="" \
+                                                    datepicker-popup="{{format}}" ng-model="datos_view.fecha_inicial" is-open="datos_view.datepicker_fecha_inicial" \
+                                                    min="minDate"   readonly  close-text="Cerrar" ng-change="" clear-text="Borrar" current-text="Hoy" placeholder="F. Vcto" show-weeks="false" toggle-weeks-text="#"/> \\n\
+                                                <span class="input-group-btn">\
+                                                    <button class="btn btn-xs" ng-click="abrir_fecha_vencimiento($event);"><i class="glyphicon glyphicon-calendar"></i></button>\
+                                                </span>\
+                                            </p>\
                                         </div>'},
-                    {field: 'cantidad', width: "7%", displayName: "Cantidad", enableCellEdit: true, cellFilter: "number"},
-                    {width: "7%", displayName: "Opcion", cellClass: "txt-center", enableCellEdit: false,
-                        cellTemplate: '<div class="btn-toolbar">\
-                                            <button class="btn btn-default btn-xs" ng-click="calcular_valores_producto(row)" ><span class="glyphicon glyphicon-zoom-in"></span></button>\
-                                            <button class="btn btn-default btn-xs" ng-click="solicitar_producto(row)" ><span class="glyphicon glyphicon-ok"></span></button>\
-                                        </div>'}
+                    {field: 'nombre', displayName: 'Acciones', width: "10%", enableCellEdit: false},
+                                        
                 ]
             };
 

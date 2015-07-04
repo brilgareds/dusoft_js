@@ -11,7 +11,6 @@ requirejs.config({
         models:"js/models",
         directive:"js/directive",
         bootstrap:"../../javascripts/bootstrap/bootstrap",
-        facturacion: "../facturacion/js/models/",
         nggrid:"../../javascripts/angular/ng-grid",
         jquery:"../../javascripts/jquery",
         treemenu:"../includes/menu/myTree",
@@ -23,7 +22,9 @@ requirejs.config({
         uiselect2: "../../javascripts/select",
         storage:"../../javascripts/angular/storage",
         httpinterceptor:"../includes/http/HttpInterceptor",
-        dragndropfile:"../../javascripts/dragndropfile/ng-flow-standalone"
+        d3:"../../javascripts/charts/d3.min",
+        nvd3:"../../javascripts/charts/nv.d3.min",
+        chart:"../../javascripts/charts/angularjs-nvd3-directives.min"
     },
     shim: {
         "angular": {
@@ -60,8 +61,14 @@ requirejs.config({
         "storage":{
             deps:["angular"]
         },
-        "dragndropfile":{
+        "d3":{
             deps:["angular"]
+        },
+        "nvd3":{
+            deps:["d3"]
+        },
+        "chart":{
+            deps:["angular","nvd3"]
         }
     }
 });

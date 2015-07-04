@@ -1,7 +1,7 @@
 //main app module
  define(["angular", "route", "bootstrap","js/controllers", "js/models", 
   "controllers/Logincontroller", "models/User", "bootstrapjs", "js/directive","directive/focus","js/services",
-   "loader","storage", "includes/http/Request", 
+   "loader","storage", "includes/http/Request"
   
   ], function(angular){
   /* App Module and its dependencies */

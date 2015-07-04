@@ -9,8 +9,6 @@ define([
     "js/services",
     "js/directive",
     "nggrid",
-    "includes/validation/ValidacionNumero",
-    "includes/validation/ValidacionNumeroEntero",
     "includes/widgets/InputCheck",
     "uiselect2",
     "loader",
@@ -22,9 +20,10 @@ define([
     "httpinterceptor",
     "includes/classes/Usuario",
     "includes/http/Request",
-    "dragndropfile",
     "includes/helpersdirectives/visualizarReporte",
-    "includes/validation/NgValidateEvents"
+    "includes/validation/NgValidateEvents",
+    "chart",
+    "controllers/HomeController"
 ], function(angular) {
 
     /* App Module and its dependencies */
@@ -40,7 +39,7 @@ define([
         'services',
         'ui.select',
         'LocalStorageModule',
-        'flow'
+        'nvd3ChartDirectives'
     ]);
 
     home.urlRouterProvider;
@@ -64,8 +63,9 @@ define([
 
                 home.stateProvider.state('Dashboard', {
                     url: "/Dashboard",
-                    text: "Bienvenido",
-                    templateUrl: "views/dashboard/index.html",                    
+                    text: "Bienvenido "+Usuario.getUsuarioActual().getNombre(),
+                    templateUrl: "views/dashboard/index.html",
+                    controller: "HomeController"
                 });
 
                 if ($location.path() === "")

@@ -1,3 +1,180 @@
-<div >
-    <p>Documentos I002</p>
+<div ng-controller="I002Controller">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading clearfix">
+                    <div class="pull-left">
+                        <h3 class="text-center"><strong>Prefijo ICD</strong></h3>
+                    </div>
+                    <div class="pull-right">
+                        <h3 class="text-center"><strong>No. Tmp # 000123 </strong></h3>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-6">
+
+                            <fieldset>
+                                <legend>Proveedor</legend>      
+
+                                <div class="row">
+                                    <div class="col-md-7">  
+                                        <select ui-select2=""  class="form-control selectgeneral pull-left" ng-model="unidad_negocio_id"  ng-disabled="vista_previa" placeholder="Seleccionar unidad de negocio" ng-change="seleccionar_unidad_negocio()">
+                                            <option></option>    
+                                            <option ng-repeat="unidad_negocio in  Empresa.get_unidades_negocios()"  value="{{unidad_negocio.codigo}}">{{ unidad_negocio.get_nombre() }}</option>
+                                        </select>
+                                        <!--ui-select ng-disabled="vista_previa"  ng-model="unidad_negocio_id" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_unidad_negocio(unidad_negocio_id)">
+                                            <ui-select-match  placeholder="Seleccionar proveedor">{{ $select.selected.get_nombre() }}</ui-select-match>
+                                            <ui-select-choices repeat="unidad_negocio in  Empresa.get_unidades_negocios() | filter:$select.search">
+                                                {{ unidad_negocio.get_nombre() }}
+                                            </ui-select-choices>
+                                        </ui-select-->
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-6">
+                            <fieldset>
+                                <legend>Orden Compra</legend> 
+                                <div class="row">
+                                    <div class="col-md-7">  
+                                        <select ui-select2="{minimumInputLength: 3}"  ng-disabled="numero_orden > 0" class="form-control selectgeneral pull-left" ng-model="codigo_proveedor_id"  placeholder="Seleccionar proveedor" ng-change="seleccionar_proveedor()">
+                                            <option></option> 
+                                            <option ng-repeat="proveedor in  Empresa.get_proveedores()"  value="{{proveedor.codigo_proveedor_id}}">{{ proveedor.get_nombre() }}</option>
+                                        </select>
+                                        <!--ui-select ng-disabled="numero_orden > 0"  ng-model="codigo_proveedor_id" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_proveedor(codigo_proveedor_id)">
+                                            <ui-select-match  placeholder="Seleccionar proveedor">{{ $select.selected.get_nombre() }}</ui-select-match>
+                                            <ui-select-choices refresh="listar_proveedores($select.search)" refresh-delay="0" repeat="proveedor in Empresa.get_proveedores() | filter:$select.search">
+                                                {{ proveedor.get_nombre() }}
+                                            </ui-select-choices>
+                                        </ui-select-->
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row">  
+                        <div class="col-md-6">
+
+                            <fieldset>
+                                <legend>Observación</legend>                                 
+                                <div class="row">  
+                                    <div class="col-md-12">  
+                                        <textarea  class="col-lg-12 col-md-12 col-sm-12" rows="4" ng-model='observacion' ng-blur="modificar_observacion();" ng-disabled="vista_previa" name="" placeholder="Ingresar Observación"></textarea>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-6">
+                            <fieldset>
+                                <legend>Fecha</legend> 
+                                <div class="row">
+                                    <div class="col-md-7">  
+                                        <h3><strong>02-07-2015</strong></h3>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                    </div>   
+                    <br>
+                    <br>
+                    <div class="row">  
+                        <div class="col-md-12">
+
+                            <tabset>
+                                <tab heading="Productos Ingresados">
+
+                                    <br>
+                                    <div class="row">  
+                                        <div class="">
+                                            <div class="col-md-3">
+                                                <p class="input-group">
+                                                    <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="" ng-click="seleccionar_productos()">
+                                                        <span class="glyphicon glyphicon-plus"></span> Seleccionar Productos
+                                                    </button>
+                                                </p>
+
+                                            </div>
+
+                                            <div class="col-md-3 pull-right">
+                                                <p class="input-group">
+
+                                                    <input type="text" class="form-control" ng-keypress="buscador_productos_orden_compra($event, termino_busqueda);" ng-model="termino_busqueda" placeholder="Buscar" name="" id="" />
+                                                    <span class="input-group-btn">
+                                                        <button class="btn btn-default" type="submit" ng-click="buscar_detalle_orden_compra(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                                                    </span>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="" style="height: 240px" ng-grid="lista_productos_ingresados" > </div>
+
+                                    <div class="row text-center col-md-12">
+                                        <button type="button" class="btn btn-default btn-medium" ng-disabled="pagina_actual == 1" ng-click="pagina_anterior()">
+                                            <span class="glyphicon glyphicon-chevron-left" ></span>
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-medium" ng-disabled="cantidad_items == 0" ng-click="pagina_siguiente()">
+                                            <span class="glyphicon glyphicon-chevron-right" ></span>
+                                        </button>
+                                    </div>  
+                                </tab>                        
+                                <tab>
+                                    <tab-heading>
+                                        <i class="glyphicon glyphicon-time"></i> Pendientes X Autorizar
+                                    </tab-heading>
+
+                                    <br>
+                                    <div class="row">  
+                                        <div class="">
+                                            <div class="col-md-3">
+                                                <p class="input-group">
+                                                    <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="" ng-click="seleccionar_productos()()">
+                                                        <span class="glyphicon glyphicon-plus"></span> Buscar Productos
+                                                    </button>
+                                                </p>
+
+                                            </div>
+
+                                            <div class="col-md-3 pull-right">
+                                                <p class="input-group">
+
+                                                    <input type="text" class="form-control" ng-keypress="buscador_productos_orden_compra($event, termino_busqueda);" ng-model="termino_busqueda" placeholder="Buscar" name="" id="" />
+                                                    <span class="input-group-btn">
+                                                        <button class="btn btn-default" type="submit" ng-click="buscar_detalle_orden_compra(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                                                    </span>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="" style="height: 240px" ng-grid="lista_productos_no_autorizados" > </div>
+                                </tab>                                
+                            </tabset>
+
+                            <div class="modal-footer col-md-12">
+                                <button class="btn btn-default" ng-click="cancelar_documento()">
+                                    <span class="glyphicon glyphicon-remove" ></span> Cancelar
+                                </button>
+                                <button class="btn btn-default" ng-click="btn_eliminar_documento()">
+                                    <span class="glyphicon glyphicon-trash" ></span> Eliminar
+                                </button>
+                                <button class="btn btn-default" ng-click="generar_documento()" >
+                                    <span class="glyphicon glyphicon-ok" ></span> Aceptar
+                                </button>
+                            </div>                            
+                        </div>
+                    </div>   
+                </div>
+            </div>       
+        </div>
+    </div>
+
+    <div  class="slide" slide-content open-callback="gestionar_productos" close-callback="cerrar_gestion_productos"   >
+        <div ng-include src="slideurl" ng-controller="GestionarProductosController"></div>
+    </div>
 </div>
+
+

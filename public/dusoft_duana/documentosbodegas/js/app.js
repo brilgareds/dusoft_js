@@ -26,6 +26,7 @@ define([
     "includes/helpersdirectives/visualizarReporte",
     "includes/validation/NgValidateEvents",
     "controllers/indexController",
+    "controllers/I002/I002Controller",
 ], function(angular) {
 
     /* App Module and its dependencies */

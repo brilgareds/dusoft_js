@@ -1,7 +1,7 @@
 
 define(["angular", "js/controllers"], function(angular, controllers) {
 
-    controllers.controller('GestionarProductosController', [
+    controllers.controller('GestionarProductosOrdenCompraController', [
         '$scope', '$rootScope', 'Request',
         '$modal', 'API', "socket", "$timeout",
         "AlertService", "localStorageService", "$state",
@@ -10,15 +10,14 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             var that = this;
 
 
-            $rootScope.$on('gestionar_productosCompleto', function(e, parametros) {
+            $rootScope.$on('gestionar_productos_orden_compraCompleto', function(e, parametros) {
 
                 $scope.datos_form = {
                     listado_productos: [],
-                    titulo : 'Buscar Productos'
+                    titulo : 'Ingresar Productos Orden de Compra'
                 };
                 
-                console.log('======== gestionar_productosCompleto ======');
-                console.log($scope.datos_form);
+                console.log('======== gestionar_productos_orden_compraCompleto ======');                
 
                 $timeout(function() {
                     $scope.buscar_productos();
@@ -26,14 +25,15 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
             });
 
-            $rootScope.$on('cerrar_gestion_productosCompleto', function(e, parametros) {
+            $rootScope.$on('cerrar_gestion_productos_orden_compraCompleto', function(e, parametros) {
+                console.log('======== cerrar_gestion_productos_orden_compraCompleto ======');
                 $scope.$$watchers = null;
             });
 
             $scope.buscar_productos = function() {
-
-                console.log('here 2');
-
+                
+                console.log('here 1');
+                
                 for (i = 0; i < 5; i++) {
                     $scope.datos_form.listado_productos.push({nombre: 'producto - ' + i});
                 }
@@ -55,14 +55,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 enableCellSelection: true,
                 enableHighlighting: true,
                 columnDefs: [
-                    {field: 'nombre', displayName: 'Codigo Producto', width: "10%", enableCellEdit: false},
+                    {field: 'nombre', displayName: 'Codigo Producto 123', width: "10%", enableCellEdit: false},
                     {field: 'nombre', displayName: 'Descripcion', width: "30%", enableCellEdit: false},
-                    {field: 'nombre', displayName: 'Cantidad', width: "7%", enableCellEdit: false,
+                    {field: 'nombre', displayName: 'Cantidad', width: "10%", enableCellEdit: false},
+                    {field: 'nombre', displayName: 'Lote', width: "10%", enableCellEdit: false,
                         cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    {field: 'nombre', displayName: 'IVA', width: "5%", enableCellEdit: false},
-                    {field: 'nombre', displayName: 'Lote', width: "8%", enableCellEdit: false,
-                        cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    {field: 'nombre', displayName: 'Fecha. Vencimiento', width: "12%", enableCellEdit: false, cellClass: "dropdown-button",
+                    {field: 'nombre', displayName: 'Fecha. Vencimiento', width: "13%", enableCellEdit: false, cellClass: "dropdown-button",
                         cellTemplate: ' <div class="col-xs-12">\
                                             <p class="input-group">\
                                                 <input type="text" class="form-control grid-inline-input readonlyinput" name="" id="" \
@@ -73,9 +71,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                                                 </span>\
                                             </p>\
                                         </div>'},
-                    {field: 'nombre', displayName: 'Valor Unitario', width: "9%", enableCellEdit: false,
+                    {field: 'nombre', displayName: 'Cant Recibido', width: "10%", enableCellEdit: false,
                         cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    {field: 'nombre', displayName: 'Justificacion', width: "13%", enableCellEdit: false,
+                    {field: 'nombre', displayName: 'Valor Unitario', width: "10%", enableCellEdit: false,
                         cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {width: "7%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-group">\

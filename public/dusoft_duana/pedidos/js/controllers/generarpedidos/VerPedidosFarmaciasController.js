@@ -24,28 +24,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             //$scope.rootVerPedidosFarmacias.opciones = $scope.$parent.$parent.opciones;
             $scope.rootVerPedidosFarmacias.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
             
-            //$scope.rootVerPedidosFarmacias.opciones.sw_ver_columna_estado_pedidos = true;
-            //var opciones = $scope.$parent.$parent.opciones;
-            //var opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
             
             console.log(">>>>> Opciones Módulo: ", $scope.rootVerPedidosFarmacias.opciones/*opciones*/);
             
-            /*
-             Opciones:
-            
-                sw_cargar_plano: true
-                sw_consultar_pedido: true
-                sw_crear_pedido: true
-                sw_generar_pedido: true
-                sw_guardar_temporal: true
-                --sw_modificacion_especial_pedidos: false
-                --sw_modificar_pedido: true
-                --sw_ver_columna_estado_pedidos: true --No van
-                --sw_ver_listado_temporales: true --No van
-            
-            
-                ng-validate-events="{{rootVerPedidosFarmacias.opcionesModulo.btnConsultarPedido}}"
-             */
             
             $scope.rootVerPedidosFarmacias.opcionesModulo = {
                 btnModificarPedido: {
@@ -76,7 +57,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.rootVerPedidosFarmacias.ultima_busqueda.seleccion = "";
             $scope.rootVerPedidosFarmacias.ultima_busqueda.termino_busqueda = "";
 
-            $scope.rootVerPedidosFarmacias.seleccion = "FD";
+            $scope.rootVerPedidosFarmacias.seleccion = Usuario.getUsuarioActual().getEmpresa().getCodigo();
 
             $scope.rootVerPedidosFarmacias.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
@@ -87,8 +68,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             $scope.rootVerPedidosFarmacias.listado_farmacias = [];
 
-            //var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-default btn-xs", "btn btn-separacionfinalizada btn-xs", "btn btn-enauditoria btn-xs"];
-            //var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs"];
+
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs"];
 
             that.listarFarmacias = function() {
@@ -110,38 +90,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $scope.rootVerPedidosFarmacias.listado_farmacias = listado_farmacias;
                 console.log("Listado Farmacias: ", $scope.rootVerPedidosFarmacias.listado_farmacias);
                 
-//                var obj = {
-//                    session: $scope.rootVerPedidosFarmacias.session,
-//                    data: {}
-//                };
-//
-//                Request.realizarRequest(API.PEDIDOS.LISTAR_EMPRESAS, "POST", obj, function(data) {
-//
-//                    if (data.status === 200) {
-//                        $scope.rootVerPedidosFarmacias.listado_farmacias = data.obj.empresas;
-//                        console.log("Listado Farmacias: ", $scope.rootVerPedidosFarmacias.listado_farmacias);
-//                        //that.renderFarmacias(data.obj.empresas);
-//                    }
-//
-//                });
             };
 
-            /*that.renderFarmacias = function(farmacias){
-             
-             $scope.rootVerPedidosFarmacias.Empresa.vaciarFarmacias();
-             
-             farmacias.forEach(function(registro){
-             
-             var farmacia = FarmaciaVenta.get(registro.empresa_id, "", registro.razon_social, "", 0, "");
-             
-             $scope.rootVerPedidosFarmacias.Empresa.agregarFarmacias(farmacia);
-             });
-             console.log("EmpresaPedido Farmacias: ", $scope.rootVerPedidosFarmacias.Empresa.getFarmacias());
-             };*/
-
-            /* $scope.seleccion_farmacia = function(){
-             console.log('>>>>>>>>>>>>',$scope.farmacia_seleccionada.get_farmacia_id(), $scope.farmacia_seleccionada.get_nombre_farmacia());                
-             }*/
 
             $scope.obtenerParametros = function() {
 
@@ -179,7 +129,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         termino_busqueda: $scope.rootVerPedidosFarmacias.termino_busqueda,
                         seleccion: $scope.rootVerPedidosFarmacias.seleccion
                                 //seleccion: $scope.farmacia_seleccionada.get_farmacia_id()
-                    }
+                    };
 
                     that.renderPedidosFarmacias(data.obj, paginando);
 
@@ -322,10 +272,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
          
             $scope.agregarClase = function(estado) {
 
-                /*if (estado === 6) {
-                    return estados[1];
-                }*/
-
                 return estados[estado];
             };
 
@@ -367,7 +313,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         "",
                         0,
                         ""
-                        );
+                );
 
                 that.pedido.setFarmacia(farmacia);
 

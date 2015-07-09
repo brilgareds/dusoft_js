@@ -118,7 +118,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     }
                 }
                 
+                var empresa = Usuario.getUsuarioActual().getEmpresa();
                 console.log(">>>>> Usuario Datos: ", Usuario.getUsuarioActual().empresa.codigo);
+                
 
                 var obj = {
                     session: $scope.rootSeleccionProductoCliente.session,
@@ -128,9 +130,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                             concentracion: $scope.rootSeleccionProductoCliente.concentracion,
                             termino_busqueda: $scope.rootSeleccionProductoCliente.termino_busqueda,
                             pagina_actual: $scope.rootSeleccionProductoCliente.paginaactual,
-                            empresa_id: Usuario.getUsuarioActual().empresa.codigo,//$scope.rootSeleccionProductoCliente.de_empresa_id,
-                            centro_utilidad_id: '1 ',//$scope.rootSeleccionProductoCliente.de_centro_utilidad_id,
-                            bodega_id: '03',//$scope.rootSeleccionProductoCliente.de_bodega_id,
+                            empresa_id: empresa.getCodigo(),//$scope.rootSeleccionProductoCliente.de_empresa_id,
+                           // centro_utilidad_id: '1 ',//$scope.rootSeleccionProductoCliente.de_centro_utilidad_id,
+                            //bodega_id: '03',//$scope.rootSeleccionProductoCliente.de_bodega_id,
+                            centro_utilidad_id: empresa.getCentroUtilidadSeleccionado().getCodigo(),
+                            bodega_id: empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
                             tipo_producto: $scope.rootSeleccionProductoCliente.tipoProducto,
                             contrato_cliente_id: $scope.rootSeleccionProductoCliente.cliente.contrato_id,
                             pedido_cliente_id_tmp: '0', //$scope.rootSeleccionProductoCliente.pedido_cliente_id_tmp
@@ -1638,7 +1642,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             //eventos de widgets
             $scope.onTeclaBuscarSeleccionProducto = function(ev) {
 
-                 if (ev.which == 13) {
+                 if (ev.which === 13) {
                      $scope.onBuscarSeleccionProducto($scope.obtenerParametros());
                  }
             };

@@ -1,7 +1,47 @@
 define(["angular", "js/controllers"], function(angular, controllers) {
 
-    controllers.controller('HomeController', ['$scope', 'Usuario', "Request", "localStorageService",
-        function($scope, Usuario, Request, localStorageService) {
+    controllers.controller('HomeController', ['$scope', 'Usuario', "Request", "localStorageService","$modal",
+        function($scope, Usuario, Request, localStorageService, $modal) {
+            
+            
+            var mensaje = localStorageService.get("mensajeDashboard");
+            
+            if(mensaje){
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: false,
+                    dialogFade: false,
+                  //  size: 'sm',
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Aviso</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <h5 >{{mensaje.mensaje}}</h5>\
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-primary" ng-click="close()">Ok</button>\
+                                </div>',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance, mensaje) {
+                        $scope.mensaje = mensaje;
+                        $scope.close = function() {
+                            console.log("on close dashboard");
+                            localStorageService.set("mensajeDashboard", undefined);
+                            $modalInstance.close();
+                        };
+
+                    },
+                    resolve: {
+                        mensaje: function() {
+                            return mensaje;
+                        }
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+                
+            }
 
             $scope.Usuario = Usuario.getUsuarioActual();
 

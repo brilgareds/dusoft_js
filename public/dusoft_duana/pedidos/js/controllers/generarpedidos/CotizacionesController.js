@@ -12,6 +12,18 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
         function($scope, $rootScope, Request, EmpresaPedido, ClientePedido, PedidoVenta, API, socket, AlertService, $state, Usuario, VendedorPedido, $modal) {
 
             var that = this;
+            
+            //se valida que el usuario tenga centro de utilidad y bodega
+            var empresa = Usuario.getUsuarioActual().getEmpresa();
+            
+            if(!empresa){
+                $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene una empresa valida para generar pedidos de clientes", tipo:"warning"});
+            } else if(!empresa.getCentroUtilidadSeleccionado()){
+                $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene un centro de utilidad valido para generar pedidos de clientes.", tipo:"warning"});
+            } else if(!empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada()){
+                $rootScope.$emit("onIrAlHome",{mensaje:"El usuario no tiene una bodega valida para generar pedidos de clientes", tipo:"warning"});
+            }
+            
 
             $scope.rootCotizaciones = {};
             

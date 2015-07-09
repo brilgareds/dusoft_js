@@ -161,6 +161,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
 
                 Request.realizarRequest(URL.CONSTANTS.API.USUARIOS.OBTENER_PARAMETRIZACION_USUARIO, "POST", obj, function(data) {
                     var obj = data.obj.parametrizacion_usuarios;
+                    
                     if (obj) {
                         obj = obj.parametrizacion;
                         var modulos = obj.modulos || [];
@@ -232,10 +233,6 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
             };
             
             $scope.onIrAlHome = function(){
-                 var moduloActual = $scope.Usuario.getModuloActual();
-                 if(moduloActual.nombre.toLowerCase() === 'dashboard'){
-                     return;
-                 }
                 
                  $scope.opts = {
                     backdrop: true,
@@ -258,7 +255,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                     controller: function($scope, $modalInstance, moduloActual) {
                         $scope.moduloActual = moduloActual;
                         $scope.confirmar = function() {
-                            window.location = "/dusoft_duana/home";
+                            self.irAlHome();
                             $modalInstance.close();
                         };
 
@@ -275,6 +272,28 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 };
                 var modalInstance = $modal.open($scope.opts);
                 
+            };
+            
+            self.irAlHome = function(mensaje){
+                var moduloActual = $scope.Usuario.getModuloActual();
+                localStorageService.set("mensajeDashboard", null);
+                
+                //si el usuario no tiene asignado el home
+                if(!moduloActual){
+                    if(mensaje){
+                        AlertService.mostrarMensaje("warning", mensaje.mensaje);
+                    }
+                    return;
+                }
+                
+                if(mensaje){
+                    localStorageService.set("mensajeDashboard", mensaje);
+                }
+                                
+                if(moduloActual.nombre.toLowerCase() === 'dashboard'){
+                    return;
+                }
+                window.location = "/dusoft_duana/home";
             };
             
             //se hace el set correspondiente para el plugin de jstree, y se crea un objeto valor de los modulos y opciones para facilidad de acceso del modulo actual
@@ -437,7 +456,12 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
 
                 });
             };
+            
+            $rootScope.$on("onIrAlHome",function(e,mensaje){
+                
+                self.irAlHome(mensaje);
 
+            });
 
             $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 
@@ -455,12 +479,12 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 //no se encontro el modulo, el usuario no tiene permisos para verlo
                 if (!moduloActual) {
                     event.preventDefault();
-                    AlertService.mostrarMensaje("warning", "El usuario no tiene permisos para ver la sección de " + toState.name);
+                    self.irAlHome({mensaje: "El usuario no tiene permisos para ver la sección de "+ toState.name, tipo:"warning"});
                     return;
                 }
 
                 $scope.Usuario.setModuloActual(moduloActual);
-
+                
 
             });
 
@@ -503,9 +527,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 self.traerParametrizacionPorUsuario(empresa_id, function(parametrizacion) {
 
                     self.obtenerEmpresasUsuario(function() {
-                        $rootScope.$emit("parametrizacionUsuarioLista", parametrizacion);
-                        
-                        
+           
                         //se selecciona el centro de utilidad y bodega predeterminado del usuario
                         var centrosUtilidadEmpresa = $scope.Usuario.getEmpresa().getCentrosUtilidad();
                         var codigoCentroUtilidadUsuario = localStorageService.get("centro_utilidad_usuario");
@@ -530,6 +552,8 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                                 
                             }
                         }
+                        
+                        $rootScope.$emit("parametrizacionUsuarioLista", parametrizacion);
 
                     });
 

@@ -38,6 +38,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                         pedidos_clientes: {
                             termino_busqueda: termino,
                             pagina_actual: $scope.paginaactual,
+                            empresa_id:Usuario.getUsuarioActual().getEmpresa().getCodigo(),
                             filtro: {}
                         }
                     }
@@ -50,7 +51,12 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
 
                 Request.realizarRequest(API.PEDIDOS.LISTAR_PEDIDOS, "POST", obj, function(data) {
                     $scope.ultima_busqueda = $scope.termino_busqueda;
-                    that.renderPedidosCliente(data.obj, paginando);
+                    if(data.status === 200){
+                        
+                        that.renderPedidosCliente(data.obj, paginando);
+                    } else {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
                     //Mostrar data en consola
                     console.log("Información de la data: ", data);
                 });
@@ -79,7 +85,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
 
                     $scope.Empresa.agregarPedido(
                             pedido
-                            );
+                    );
 
 
                 }

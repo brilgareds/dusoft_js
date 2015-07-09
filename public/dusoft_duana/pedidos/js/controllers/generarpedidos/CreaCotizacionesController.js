@@ -44,15 +44,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             $scope.rootCreaCotizaciones.bloquear_eliminar = false; //NUEVO
             
-            $scope.rootCreaCotizaciones.Empresa.setCodigo('03');
-            $scope.rootCreaCotizaciones.Empresa.setNombre('DUANA & CIA LTDA.');
+            
+            $scope.rootCreaCotizaciones.Empresa.setCodigo(Usuario.getUsuarioActual().getEmpresa().getCodigo());
+            $scope.rootCreaCotizaciones.Empresa.setNombre(Usuario.getUsuarioActual().getEmpresa().getNombre());
             
             /* Nuevas variables y objetos para almacenamiento y validación - Inicio */
             
-                $scope.rootCreaCotizaciones.tab_estados = {tab1: true, tab2: false};
-            
-                $scope.rootCreaCotizaciones.titulo_tab_1 = "Incluir Producto Manual";
-                $scope.rootCreaCotizaciones.titulo_tab_2 = "Cargar Archivo Plano";
+            $scope.rootCreaCotizaciones.tab_estados = {tab1: true, tab2: false};
+
+            $scope.rootCreaCotizaciones.titulo_tab_1 = "Incluir Producto Manual";
+            $scope.rootCreaCotizaciones.titulo_tab_2 = "Cargar Archivo Plano";
             
             /* Nuevas variables y objetos para almacenamiento y validación - Fin */
             
@@ -256,9 +257,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setEncabezadoBloqueado(false);
                     $scope.rootCreaCotizaciones.bloquear_incluir_producto = true;
                     $scope.rootCreaCotizaciones.bloquear_upload = true;
-                    
-//                    localStorageService.set("cotizacionseleccionada", "");
-//                    localStorageService.set("pedidoseleccionado", "");
+
 
                 }
                 //Si hay Pedido/Cotizacion Seleccionado recibe el objeto Pedido/Cotización Correspondiente
@@ -266,77 +265,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 else{
                     console.log(">>>> CASO CAMBIO VISTA");
                     that.completarEncabezadoAndGenerarDetalle();
-//                    $scope.rootCreaCotizaciones.seleccion_vendedor = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getVendedor().getId();
-//                    
-//                    $scope.rootCreaCotizaciones.observacion = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getObservacion();
-//                    
-//                    //Hacer aquí consultas para traer nombres de pais, departamento y ciudad. Luego armar Ubicación con setUbicación
-//                    
-//                    var tipo_pais_id = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getTipoPaisId();
-//                    var tipo_dpto_id = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getTipoDepartamentoId();
-//                    var tipo_mpio_id = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getTipoMunicipioId();
-//                    
-//                    var nombre_pais = '';
-//                    var nombre_departamento = '';
-//                    var nombre_municipio = '';
-//                    
-//                    that.nombrePais(tipo_pais_id, function(result_nombre_pais){
-//                        
-//                        nombre_pais = result_nombre_pais;
-//                        
-//                        that.nombreDepartamento(tipo_pais_id, tipo_dpto_id, function(result_nombre_departamento){
-//                            
-//                            nombre_departamento = result_nombre_departamento;
-//                            
-//                            that.nombreMunicipio(tipo_pais_id, tipo_dpto_id, tipo_mpio_id, function(result_nombre_municipio){
-//                                
-//                                nombre_municipio = result_nombre_municipio;
-//                                
-//                                $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setPais(nombre_pais);
-//                                $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setDepartamento(nombre_departamento);
-//                                $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setMunicipio(nombre_municipio);
-//
-//                                $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().setUbicacion();
-//                                
-//                                if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== undefined)
-//                                {
-//                                    $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setEncabezadoBloqueado(true);
-//                                    $scope.rootCreaCotizaciones.bloquear_incluir_producto = false;
-//                                    //Por seguridad pero no influye mucho
-//                                    $scope.rootCreaCotizaciones.bloquear_upload = true;
-//                                    
-//                                    localStorageService.set("cotizacionseleccionada", $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion());
-//                                    localStorageService.set("pedidoseleccionado", "");
-//
-//                                    that.consultarDetalleCotizacion(function(data){
-//
-//                                        var detalle = data.obj.resultado_consulta;
-//                                        that.renderDetalleCotizacion(detalle);
-//
-//                                    });
-//                                }                       
-//                                else if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido() !== undefined){
-//
-//                                    $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setEncabezadoBloqueado(true);
-//                                    $scope.rootCreaCotizaciones.bloquear_incluir_producto = false;
-//                                    //Por seguridad pero no influye mucho
-//                                    $scope.rootCreaCotizaciones.bloquear_upload = true;
-//
-//                                    $scope.rootCreaCotizaciones.es_cotizacion = false;
-//                                    
-//                                    localStorageService.set("pedidoseleccionado", $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido());
-//                                    localStorageService.set("cotizacionseleccionada", "");
-//
-//                                    that.consultarDetallePedido(function(data){
-//
-//                                        var detalle = data.obj.resultado_consulta;
-//                                        that.renderDetalleCotizacion(detalle);
-//
-//                                    });
-//                                }
-//                            });
-//                        });
-//                    });                           
+                          
                 }
             };
             
@@ -718,7 +647,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         session: $scope.rootCreaCotizaciones.session,
                         data: {
                             detalle_cotizacion: {
-                                numero_cotizacion: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion(),                            
+                                numero_cotizacion: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion()                            
                             }
                         }
                     };
@@ -749,7 +678,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         session: $scope.rootCreaCotizaciones.session,
                         data: {
                             detalle_pedido: {
-                                numero_pedido: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido(),                            
+                                numero_pedido: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido()                     
                             }
                         }
                     };
@@ -928,7 +857,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             $scope.onTeclaModificarCantidad = function(ev, row) {
 
-                if (ev.which == 13) {
+                if (ev.which === 13) {
                     
                     $scope.onModificarCantidad(row);
                     
@@ -1069,7 +998,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     }); //Fin consultarEstadoPedido    
 /**/
                 }
-            }
+            };
             
             that.modificarCotizacion = function(row){
                 
@@ -1145,45 +1074,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 });
                 
             };
-            
-            /*$scope.onEliminarProducto = function(row){
-                
-                if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() !== undefined)
-                {
-                    var obj_pedido = {
-                        session: $scope.rootCreaCotizaciones.session,
-                        data: {
-                        }
-                    };
-
-                    var url = API.PEDIDOS.ELIMINAR_CANTIDADES_COTIZACION;
-                }
-                else if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido() !== '' && $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().get_numero_pedido() !== undefined)
-                {
-                    var obj_pedido = {
-                        session: $scope.rootCreaCotizaciones.session,
-                        data: {
-                        }
-                    };
-
-                    var url = API.PEDIDOS.ELIMINAR_CANTIDADES_PEDIDO;
-                }
-                
-                Request.realizarRequest(url, "POST", obj_pedido, function(data) {
-
-                    if (data.status === 200) {
-                        console.log("Eliminación Exitosa: ",data.msj);
-                        //that.renderVendedores(data.obj);
-                    }
-                    else{
-                        console.log("Error al intentar Eliminar: ", data.msj);
-                    }
-
-                });
-                
-            };*/
-            
-/**/
+ 
 
             $scope.onEliminarProducto = function(row){
                 
@@ -1379,7 +1270,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 Request.realizarRequest(url_eliminar_detalle_cotizacion, "POST", obj_detalle, function(data) {
 
-                    if (data.status == 200) {
+                    if (data.status === 200) {
                         console.log("Eliminación de detalle Exitosa: ", data.msj);
                         $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_sin_iva -= parseFloat(row.entity.total_sin_iva);
                         $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_con_iva -= parseFloat(row.entity.total_con_iva);                        
@@ -1413,7 +1304,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 Request.realizarRequest(url_eliminar_detalle_pedido, "POST", obj_detalle, function(data) {
 
-                    if (data.status == 200) {
+                    if (data.status === 200) {
                         console.log("Eliminación de detalle Exitosa: ", data.msj);
                         $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_sin_iva -= parseFloat(row.entity.total_sin_iva);
                         $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().valor_total_con_iva -= parseFloat(row.entity.total_con_iva);                        
@@ -1491,7 +1382,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 var cantidad_productos = $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().obtenerProductos().length;
                 
                 /* Bloqueos Incluir Producto y Subir Archivo Plano */
-                if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente() != undefined)
+                if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente() !== undefined)
                 {
                     if ($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getId() !== '' && $scope.rootCreaCotizaciones.seleccion_vendedor !== 0)
                     {
@@ -1614,7 +1505,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
             $scope.subir_archivo_plano = function() {
-                            
+                var empresa = Usuario.getUsuarioActual().getEmpresa();
+               
+                              
                 var observacion = $scope.rootCreaCotizaciones.observacion;
 
                 $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().setObservacion(observacion);
@@ -1624,8 +1517,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     pedido_cliente: {
                         //DATOS PARA CONSULTA LISTADO PRODUCTOS
                         empresa_id: $scope.rootCreaCotizaciones.Empresa.getCodigo(),
-                        centro_utilidad_id: '1 ',
-                        bodega_id: '03',
+                        centro_utilidad_id: empresa.getCentroUtilidadSeleccionado().getCodigo(),
+                        bodega_id: empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
                         tipo_producto: '0',
                         contrato_cliente_id: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getCliente().getContratoId(),
                         pedido_cliente_id_tmp: '0',
@@ -1890,7 +1783,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     session: $scope.rootCreaCotizaciones.session,
                     data: {
                         estado_cotizacion: {
-                            numero_cotizacion: numero_cotizacion,
+                            numero_cotizacion: numero_cotizacion
                         }
                     }
                 };
@@ -2113,7 +2006,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     
                 }
                 
-            }
+            };
             
             that.mailPDF = function() {
                 
@@ -2149,7 +2042,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 var modalInstance = $modal.open($scope.opts);
                 
-            }
+            };
             
             that.cargarListadoVendedores();
             

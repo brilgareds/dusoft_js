@@ -56,9 +56,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     session: $scope.rootSeleccionCliente.session,
                     data: {
                         clientes: {
-                            empresa_id: '03',
+                            empresa_id: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
                             termino_busqueda: $scope.rootSeleccionCliente.termino_busqueda,
-                            pagina_actual: $scope.rootSeleccionCliente.paginaactual,
+                            pagina_actual: $scope.rootSeleccionCliente.paginaactual
                         }
                     }
                 };
@@ -222,7 +222,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             //eventos de widgets
             $scope.onKeySeleccionClientePress = function(ev) {
 
-                 if (ev.which == 13) {
+                 if (ev.which === 13) {
                      $scope.onBuscarSeleccionCliente($scope.obtenerParametros(),"");
                  }
             };

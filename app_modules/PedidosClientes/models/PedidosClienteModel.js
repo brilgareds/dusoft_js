@@ -427,6 +427,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
     }
 
     var sql = " select \
+                a.empresa_id,\
                 f.doc_tmp_id as documento_temporal_id,\
                 a.pedido_cliente_id as numero_pedido, \
                 b.tipo_id_tercero as tipo_id_cliente, \

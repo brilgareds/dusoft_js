@@ -13,7 +13,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs"];
             $scope.pedidosSeleccionados = [];
             $scope.empresas = [];
-            $scope.seleccion = "FD";
+            $scope.seleccion = Usuario.getUsuarioActual().getEmpresa().getCodigo();
             $scope.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()

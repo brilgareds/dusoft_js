@@ -27,7 +27,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.rootVerPedidosTempFarmacias.ultima_busqueda.seleccion = "";
             $scope.rootVerPedidosTempFarmacias.ultima_busqueda.termino_busqueda = "";
 
-            $scope.rootVerPedidosTempFarmacias.seleccion = "FD";
+            $scope.rootVerPedidosTempFarmacias.seleccion = Usuario.getUsuarioActual().getEmpresa().getCodigo();;
            
             $scope.rootVerPedidosTempFarmacias.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
@@ -59,20 +59,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $scope.rootVerPedidosTempFarmacias.listado_farmacias = listado_farmacias;
                 console.log("Listado Farmacias: ", $scope.rootVerPedidosTempFarmacias.listado_farmacias);
                 
-//                var obj = {
-//                    session: $scope.rootVerPedidosTempFarmacias.session,
-//                    data: {}
-//                };
-//
-//                Request.realizarRequest(API.PEDIDOS.LISTAR_EMPRESAS, "POST", obj, function(data) {
-//
-//                    if (data.status === 200) {
-//                        $scope.rootVerPedidosTempFarmacias.listado_farmacias = data.obj.empresas;
-//                        console.log("Listado Farmacias: ", $scope.rootVerPedidosTempFarmacias.listado_farmacias);
-//                        //that.renderFarmacias(data.obj.empresas);
-//                    }
-//
-//                });
+
             };
             
             $scope.obtenerParametrosTemp = function() {
@@ -134,7 +121,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         termino_busqueda: $scope.rootVerPedidosTempFarmacias.termino_busqueda,
                         seleccion: $scope.rootVerPedidosTempFarmacias.seleccion
                                 //seleccion: $scope.farmacia_seleccionada.get_farmacia_id()
-                    }
+                    };
 
                     that.renderPedidosFarmacias(data.obj, paginando);
 

@@ -47,7 +47,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     session: $scope.rootPedidosClientes.session,
                     data: {
                         pedidos_cliente: {
-                            empresa_id: '03',                            
+                            empresa_id: Usuario.getUsuarioActual().getEmpresa().getCodigo(),                            
                             termino_busqueda: $scope.rootPedidosClientes.termino_busqueda,
                             pagina_actual: $scope.rootPedidosClientes.paginaactual,
                             filtro: {}

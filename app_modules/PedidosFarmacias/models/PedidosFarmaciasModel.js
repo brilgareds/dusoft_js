@@ -212,8 +212,9 @@ PedidosFarmaciasModel.prototype.eliminar_detalle_temporal_completo = function(em
 
 PedidosFarmaciasModel.prototype.insertar_pedido_farmacia_definitivo = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion, tipo_pedido, callback) {
     
-    var sql = "INSERT INTO solicitud_productos_a_bodega_principal(farmacia_id, centro_utilidad, bodega, observacion, usuario_id, fecha_registro, empresa_destino, sw_despacho, estado, tipo_pedido) \
-                SELECT farmacia_id, centro_utilidad, bodega, $5, usuario_id, CURRENT_TIMESTAMP, empresa_destino, 0, 0, $6 from solicitud_Bodega_principal_aux \
+    var sql = "INSERT INTO solicitud_productos_a_bodega_principal(farmacia_id, centro_utilidad, bodega, observacion, usuario_id, fecha_registro, empresa_destino, centro_destino,\
+                bodega_destino, sw_despacho, estado, tipo_pedido) \
+                SELECT farmacia_id, centro_utilidad, bodega, $5, usuario_id, CURRENT_TIMESTAMP, empresa_destino, centro_destino, bogega_destino, 0, 0, $6 from solicitud_Bodega_principal_aux \
                 WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and usuario_id = $4 \
                 RETURNING solicitud_prod_a_bod_ppal_id";
 
@@ -488,7 +489,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_temporales_farmacias = function(e
                 inner join centros_utilidad as c on b.empresa_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad \
                 inner join empresas as d ON c.empresa_id = d.empresa_id\
                 inner join system_usuarios as e ON a.usuario_id = e.usuario_id\
-                where a.farmacia_id = $1\
+                where a.empresa_destino = $1\
                 and a.usuario_id = $3\
                 and ( c.descripcion ilike $2 \
                       or b.descripcion ilike $2\
@@ -631,6 +632,9 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                 d.empresa_id, \
                 a.centro_utilidad, \
                 a.bodega as bodega_id, \
+                a.empresa_destino,\
+                a.centro_destino,\
+                a.bodega_destino,\
                 d.razon_social as nombre_farmacia, \
                 b.descripcion as nombre_bodega,\
                 a.usuario_id, \

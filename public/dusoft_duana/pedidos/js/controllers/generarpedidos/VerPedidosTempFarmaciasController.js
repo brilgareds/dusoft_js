@@ -259,11 +259,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 
                 //Verificación Previa de Farmacias, Centros de Utilidad y Bodega asignadas al usuario
                 
-                if(!$scope.validarPermisosPedido(pedido)){
+                /*if(!$scope.validarPermisosPedido(pedido)){
                     
                     $scope.mostrarAlertaPermisoDenegadoPedido(pedido);
                     return;
-                }
+                }*/
                 
                 //Insertar aquí el pedido seleccionado para el singleton Empresa
                 $scope.rootVerPedidosTempFarmacias.Empresa.setPedidoSeleccionado(pedido);
@@ -275,11 +275,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             $scope.onEliminarPedidoTemporal = function(farmacia_id, centro_utilidad_id, bodega_id, index, pedido){
                 
-                if(!$scope.validarPermisosPedido(pedido)){
+               /* if(!$scope.validarPermisosPedido(pedido)){
                     
                     $scope.mostrarAlertaPermisoDenegadoPedido(pedido);
                     return;
-                }
+                }*/
 
                 var template = '<div class="modal-header">\
                                       <button type="button" class="close" ng-click="close()">&times;</button>\

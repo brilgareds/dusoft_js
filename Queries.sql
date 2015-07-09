@@ -1234,3 +1234,22 @@ ALTER TABLE "public"."inv_bodegas_movimiento_justificaciones_pendientes"
 
 ALTER TABLE "public"."inv_bodegas_movimiento_justificaciones_pendientes"
   ADD COLUMN "justificacion_auditor" TEXT;
+
+
+
+-- guarda centro de utilidad y bodega de la empresa de donde sale el pedido (destino)
+
+ALTER TABLE "public"."solicitud_productos_a_bodega_principal"
+  ADD COLUMN "centro_destino" CHAR(2);
+
+
+ALTER TABLE "public"."solicitud_productos_a_bodega_principal"
+  ADD COLUMN "bodega_destino" CHAR(2);
+
+
+ALTER TABLE "public"."solicitud_productos_a_bodega_principal"
+  ADD CONSTRAINT "solicitud_productos_a_bodega_principal_fk" FOREIGN KEY ("empresa_destino", "centro_destino", "bogega_destino")
+    REFERENCES "public"."bodegas"("empresa_id", "centro_utilidad", "bodega")
+    ON DELETE RESTRICT
+    ON UPDATE CASCADE
+    NOT DEFERRABLE;

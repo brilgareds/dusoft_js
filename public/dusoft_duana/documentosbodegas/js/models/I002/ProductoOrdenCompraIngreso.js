@@ -2,117 +2,97 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
 
     models.factory('ProductoOrdenCompraIngreso', ["Producto", function(Producto) {
 
-            function ProductoOrdenCompraIngreso(codigo, nombre, existencia, iva, costo_ultima_compra, tiene_valor_pactado, presentacion, cantidad_presentacion) {
+            function ProductoOrdenCompraIngreso(codigo, nombre, valor_unitario, lote, fecha_vencmiento) {
 
-                Producto.getClass().call(this, codigo, nombre, existencia);
+                Producto.getClass().call(this, codigo, nombre);
 
                 this.iva = iva;
-                this.costo_ultima_compra = costo_ultima_compra || "";
-                this.tiene_valor_pactado = tiene_valor_pactado || "";
-                this.presentacion = presentacion || "";
-                this.cantidad_presentacion = cantidad_presentacion || "";
-                this.cantidad_recibida = 0;
+                this.valor_unitario = valor_unitario || 0;
+                this.lote = lote || "";
+                this.fecha_vencmiento = fecha_vencmiento || "";
+                this.autorizado = true;
             }
 
             ProductoOrdenCompraIngreso.prototype = Object.create(Producto.getClass().prototype);
 
-            this.get = function(codigo, nombre, existencia, iva, costo_ultima_compra, tiene_valor_pactado, presentacion, cantidad_presentacion) {
-                return new ProductoOrdenCompraIngreso(codigo, nombre, existencia, iva, costo_ultima_compra, tiene_valor_pactado, presentacion, cantidad_presentacion);
+            this.get = function(codigo, nombre, valor_unitario, lote, fecha_vencmiento) {
+                return new ProductoOrdenCompraIngreso(codigo, nombre, valor_unitario, lote, fecha_vencmiento);
             };
-            
-            
 
             // IVA
             ProductoOrdenCompraIngreso.prototype.get_iva = function() {
                 return parseFloat(this.iva).toFixed(2);
             };
 
-            // Presentacion
-            ProductoOrdenCompraIngreso.prototype.set_presentacion = function(presentacion) {
-                this.presentacion = presentacion;
-            };
-            ProductoOrdenCompraIngreso.prototype.get_presentacion = function() {
-
-                return this.presentacion;
-            };
-            
-            // Producto Regulado
-            ProductoOrdenCompraIngreso.prototype.set_regulado = function(regulado) {
-                this.regulado = regulado;
-            };
-            
-            ProductoOrdenCompraIngreso.prototype.get_regulado = function() {
-                return this.regulado;
+            // Valor Unitario
+            ProductoOrdenCompraIngreso.prototype.get_valor_unitario = function() {
+                return this.valor_unitario;
             };
 
-            // Cantidad Presentacion
-            ProductoOrdenCompraIngreso.prototype.get_cantidad_presentacion = function() {
-
-                return this.cantidad_presentacion;
+            // Lote
+            ProductoOrdenCompraIngreso.prototype.get_lote = function() {
+                return this.lote;
             };
 
-            // Costo
-            ProductoOrdenCompraIngreso.prototype.set_costo = function(costo) {
-                this.costo_ultima_compra = costo;
-            };
-            ProductoOrdenCompraIngreso.prototype.get_costo = function() {
-
-                return this.costo_ultima_compra;
+            // Fecha vencimiento
+            ProductoOrdenCompraIngreso.prototype.get_fecha_vencmiento = function() {
+                return this.fecha_vencmiento;
             };
 
-            //Cantdad Seleccionada            
+            // Cantidad Solicitada (Cantidad que se solicito en la orden de compra
+            ProductoOrdenCompraIngreso.prototype.set_cantidad_solicitada = function(cantidad_solicitada) {
+                this.cantidad_solicitada = cantidad_solicitada;
+                return this;
+            };
+
+            ProductoOrdenCompraIngreso.prototype.get_cantidad_solicitada = function() {
+                return this.cantidad_solicitada;
+            };
+
+            // Cantidad Ingresada (Cantidad que se va a ingresar a la bodega )
+            ProductoOrdenCompraIngreso.prototype.set_cantidad_ingresada = function(cantidad_ingresada) {
+                this.cantidad_ingresada = cantidad_ingresada;
+                return this;
+            };
+
+            ProductoOrdenCompraIngreso.prototype.get_cantidad_ingresada = function() {
+                return this.cantidad_ingresada;
+            };
+
+            // Cantidad Seleccionada (Cantidad que solicitada que necesita ser autoriazada )
             ProductoOrdenCompraIngreso.prototype.set_cantidad_seleccionada = function(cantidad_seleccionada) {
+                this.autorizado = false;
                 this.cantidad_seleccionada = cantidad_seleccionada;
+                return this;
             };
 
             ProductoOrdenCompraIngreso.prototype.get_cantidad_seleccionada = function() {
-
                 return this.cantidad_seleccionada;
             };
-            
-            //Set Item id -> Identificador en el detalle de la Orden de Compra          
-            ProductoOrdenCompraIngreso.prototype.set_id = function(id) {
-                this.id = id;
+
+            // Justificacion (Cantidad que solicitada que necesita ser autoriazada y justificada)
+            ProductoOrdenCompraIngreso.prototype.set_justificacion = function(justificacion) {
+                this.justificacion = justificacion;
+                return this;
             };
 
-            ProductoOrdenCompraIngreso.prototype.get_id = function() {
-                return this.id;
-            };
-            
-            //Novedad Producto           
-            ProductoOrdenCompraIngreso.prototype.set_novedad = function(novedad) {
-                this.novedad = novedad;
+            ProductoOrdenCompraIngreso.prototype.get_justificacion = function() {
+                return this.justificacion;
             };
 
-            ProductoOrdenCompraIngreso.prototype.get_novedad = function() {
-                return this.novedad;
-            };
-            
-            //politicas Producto           
-            ProductoOrdenCompraIngreso.prototype.set_politicas = function(politicas) {
-                this.politicas = politicas;
+            // Validar si tiene autorizacion
+            ProductoOrdenCompraIngreso.prototype.get_autorizacion = function() {
+                return this.autorizado;
             };
 
-            ProductoOrdenCompraIngreso.prototype.get_politicas = function() {
-                return this.politicas;
-            };
-            
-            //Cantidad Recibida            
-            ProductoOrdenCompraIngreso.prototype.set_cantidad_recibida = function(cantidad_recibida) {
-                this.cantidad_recibida = cantidad_recibida;
+            // Total 
+            ProductoOrdenCompraIngreso.prototype.set_total = function(total) {
+                this.total = total;
+                return this;
             };
 
-            ProductoOrdenCompraIngreso.prototype.get_cantidad_recibida = function() {
-                return this.cantidad_recibida;
-            };
-            
-            //Novedades recepcion
-            ProductoOrdenCompraIngreso.prototype.set_novedad_recepcion = function(novedad_recepcion) {
-                this.novedad_recepcion = novedad_recepcion;
-            };
-
-            ProductoOrdenCompraIngreso.prototype.get_novedad_recepcion = function() {
-                return this.novedad_recepcion;
+            ProductoOrdenCompraIngreso.prototype.get_total = function() {
+                return this.total;
             };
 
             return this;

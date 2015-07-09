@@ -90,7 +90,7 @@
                                         <div class="">
                                             <div class="col-md-3">
                                                 <p class="input-group">
-                                                    <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="" ng-click="seleccionar_productos()">
+                                                    <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="" ng-click="seleccionar_productos(0)">
                                                         <span class="glyphicon glyphicon-plus"></span> Seleccionar Productos
                                                     </button>
                                                 </p>
@@ -130,7 +130,7 @@
                                         <div class="">
                                             <div class="col-md-3">
                                                 <p class="input-group">
-                                                    <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="" ng-click="seleccionar_productos()()">
+                                                    <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="" ng-click="seleccionar_productos(1)">
                                                         <span class="glyphicon glyphicon-plus"></span> Buscar Productos
                                                     </button>
                                                 </p>
@@ -172,6 +172,10 @@
         </div>
     </div>
 
+    <div  class="slide" slide-content open-callback="gestionar_productos_orden_compra" close-callback="cerrar_gestion_productos_orden_compra"   >
+        <div ng-include src="slideurl" ng-controller="GestionarProductosOrdenCompraController"></div>
+    </div>
+    
     <div  class="slide" slide-content open-callback="gestionar_productos" close-callback="cerrar_gestion_productos"   >
         <div ng-include src="slideurl" ng-controller="GestionarProductosController"></div>
     </div>

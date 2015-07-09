@@ -3,6 +3,7 @@ define([
     "angular",
     "js/controllers",
     'includes/slide/slideContent',
+    "controllers/I002/GestionarProductosOrdenCompraController",
     "controllers/I002/GestionarProductosController",
 ], function(angular, controllers) {
 
@@ -14,29 +15,37 @@ define([
 
             var that = this;
 
-            console.log('===== $state ========');
-            console.log($state.current);
-            
-            $state.current.text += " - Esto es una prueba del Doc002"
-            console.log($state.current);
-            
-            
             $scope.datos_view = {
-                listado :[]
+                listado: [],
+                btn_buscar_productos: ""
             };
 
+            // Desplegar slider para gestionar productos
+            $scope.seleccionar_productos = function(opcion) {
 
-            $scope.seleccionar_productos = function() {
+                $scope.datos_view.btn_buscar_productos = opcion;
 
-                $scope.slideurl = "views/I002/gestionarproductos.html?time=" + new Date().getTime();
+                if ($scope.datos_view.btn_buscar_productos === 0) {
+                    $scope.slideurl = "views/I002/gestionarproductos.html?time=" + new Date().getTime();
+                    $scope.$emit('gestionar_productos_orden_compra');
+                }
 
-                $scope.$emit('gestionar_productos');
+                if ($scope.datos_view.btn_buscar_productos === 1) {
+                    $scope.slideurl = "views/I002/gestionarproductos.html?time=" + new Date().getTime();
+                    $scope.$emit('gestionar_productos');
+                }
+
 
             };
 
+            // Cerrar slider para gestionar productos
             $scope.cerrar_seleccion_productos = function() {
 
-                $scope.$emit('cerrar_gestion_productos', {animado: true});
+                if ($scope.datos_view.btn_buscar_productos === 0)
+                    $scope.$emit('cerrar_gestion_productos_orden_compra', {animado: true});
+
+                if ($scope.datos_view.btn_buscar_productos === 1)
+                    $scope.$emit('cerrar_gestion_productos', {animado: true});
             };
 
             $scope.btn_eliminar_documento = function() {
@@ -82,11 +91,11 @@ define([
             $scope.eliminar_documento = function() {
                 $state.go('DocumentosBodegas');
             };
-            
+
             $scope.cancelar_documento = function() {
                 $state.go('DocumentosBodegas');
             };
-            
+
             $scope.generar_documento = function() {
                 $state.go('DocumentosBodegas');
             };
@@ -141,7 +150,7 @@ define([
             };
 
             $scope.lista_productos_no_autorizados = {
-                data: 'orden_compra.get_productos()',
+                data: 'datos_view.listado',
                 enableColumnResize: true,
                 enableRowSelection: true,
                 enableCellSelection: true,
@@ -159,11 +168,11 @@ define([
                                         </div>'}
                 ]
             };
-            
-            
-                for (i = 0; i < 200; i++) {
-                    $scope.datos_view.listado.push({nombre: 'producto - ' + i});
-                }
+
+
+            for (i = 0; i < 200; i++) {
+                $scope.datos_view.listado.push({nombre: 'producto - ' + i});
+            }
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;

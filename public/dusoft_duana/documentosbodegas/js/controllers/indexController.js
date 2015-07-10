@@ -21,14 +21,20 @@ define(["angular", "js/controllers",
         "Usuario",
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Empresa, Documento, Sesion) {
 
-            var that = this;
-            
-            var that = this;
+            var that = this;          
 
             $scope.Empresa = Empresa;
-            
-            console.log('============= Indexcontroller =====', Empresa, Documento);
-            console.log(Sesion.getUsuarioActual().getEmpresa());
+
+            //se valida que el usuario tenga centro de utilidad y bodega
+            var empresa = Sesion.getUsuarioActual().getEmpresa();
+
+            if (!empresa) {
+                $rootScope.$emit("onIrAlHome", {mensaje: "Documentos Bodegas : Se debe seleccionar una Empresa", tipo: "warning"});
+            } else if (!empresa.getCentroUtilidadSeleccionado()) {
+                $rootScope.$emit("onIrAlHome", {mensaje: "Documentos Bodegas : Se debe seleccionar un Centro de Utilidad", tipo: "warning"});
+            } else if (!empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada()) {
+                $rootScope.$emit("onIrAlHome", {mensaje: "Documentos Bodegas : Se debe seleccionar una Bodega", tipo: "warning"});
+            }
 
             // Variables de Sesion
             $scope.session = {
@@ -51,8 +57,8 @@ define(["angular", "js/controllers",
                     session: $scope.session,
                     data: {
                         movimientos_bodegas: {
-                            centro_utilidad_id: '1 ',
-                            bodega_id: '03',
+                            centro_utilidad_id: Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
+                            bodega_id: Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
                             tipo_documento: ''
                         }
                     }
@@ -63,52 +69,49 @@ define(["angular", "js/controllers",
                     $scope.datos_view.response = data;
 
                     if (data.status === 200) {
-                        var documentos_bodegas = data.obj.movimientos_bodegas;
 
-                        documentos_bodegas.forEach(function(documento) {
+                        that.render_documentos(data.obj.movimientos_bodegas);
 
-                            if (documento.tipo_doc_bodega_id === 'E007' || documento.tipo_doc_bodega_id === 'E008' || documento.tipo_doc_bodega_id === 'E012' ||
-                                    documento.tipo_doc_bodega_id === 'E012' || documento.tipo_doc_bodega_id === 'NC01' || documento.tipo_doc_bodega_id === 'ND01') {
-                                $scope.datos_view.documentos_salida.push(documento);
-                            }
-
-                            if (documento.tipo_doc_bodega_id === 'I001' || documento.tipo_doc_bodega_id === 'I002' || documento.tipo_doc_bodega_id === 'I004' ||
-                                    documento.tipo_doc_bodega_id === 'I005' || documento.tipo_doc_bodega_id === 'I006' || documento.tipo_doc_bodega_id === 'I007') {
-                                $scope.datos_view.documentos_entrada.push(documento);
-                            }
-
-                            if (documento.tipo_doc_bodega_id === 'E003' || documento.tipo_doc_bodega_id === 'I003') {
-                                $scope.datos_view.documentos_ajustes.push(documento);
-                            }
-
-                            if (documento.tipo_doc_bodega_id === 'T001' || documento.tipo_doc_bodega_id === 'T004') {
-                                $scope.datos_view.documentos_traslado.push(documento);
-                            }
-                        });
-
-                        // Emitir Evento
-                        //$rootScope.$emit("onDocumentosBodegas", documentos_bodegas);
+                        $scope.datos_view.documentos_salida = $scope.Empresa.get_documentos_salida();
+                        $scope.datos_view.documentos_entrada = $scope.Empresa.get_documentos_entrada();
+                        $scope.datos_view.documentos_ajustes = $scope.Empresa.get_documentos_ajuste();
+                        $scope.datos_view.documentos_traslado = $scope.Empresa.get_documentos_traslado();                                               
                     }
                 });
             };
 
-            $scope.gestionar_documento = function(documento) {
-                console.log('======= gestionar_documento ======');
-                console.log(documento);
+            that.render_documentos = function(documentos) {
 
+                $scope.Empresa.limpiar_documentos();
+
+                documentos.forEach(function(data) {
+
+                    var documento = Documento.get(data.bodegas_doc_id, data.prefijo);
+                    documento.set_empresa(data.empresa_id).set_centro_utilidad(data.centro_utilidad).set_bodega(data.bodega);
+                    documento.set_tipo_movimiento(data.tipo_movimiento).set_tipo(data.tipo_doc_bodega_id).set_tipo_clase_documento(data.tipo_clase_documento);
+                    documento.set_descripcion(data.descripcion);
+                    
+                    $scope.Empresa.set_documentos(documento);
+                });
+            };
+
+            $scope.gestionar_documento = function(documento) {
+              
                 var result = $state.get().filter(function(obj) {
-                    return obj.name === documento.tipo_doc_bodega_id;
+                    return obj.name === documento.get_tipo();
                 });
 
-                if (result.length > 0){
-                    localStorageService.add("bodegas_doc_id_"+documento.prefijo, 0);
-                    $state.go(documento.tipo_doc_bodega_id);
-                }else
-                    AlertService.mostrarMensaje("warning", 'El modulo [ '+documento.tipo_doc_bodega_id+'-'+ documento.descripcion +' ] aun no esta disponible en esta version!!!');
-                
+                if (result.length > 0) {
+                    
+                    var datos = { bodegas_doc_id : documento.get_bodegas_doc_id(), prefijo : documento.get_prefijo(), numero : documento.get_numero()}
+                    localStorageService.add("documento_bodega_" + documento.get_tipo(), datos);
+                    
+                    $state.go(documento.get_tipo());
+                } else
+                    AlertService.mostrarMensaje("warning", 'El modulo [ ' + documento.get_tipo() + '-' + documento.get_descripcion() + ' ] aun no esta disponible en esta version!!!');
+
             };
 
             $scope.consultar_listado_documentos_usuario();
-
         }]);
 });

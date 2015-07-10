@@ -3,6 +3,9 @@ define([
     "angular",
     "js/controllers",
     'includes/slide/slideContent',
+    "models/I002/EmpresaIngreso",
+    "models/I002/DocumentoIngreso",
+    "models/I002/ProveedorIngreso",
     "controllers/I002/GestionarProductosOrdenCompraController",
     "controllers/I002/GestionarProductosController",
 ], function(angular, controllers) {
@@ -11,14 +14,125 @@ define([
         '$scope', '$rootScope', 'Request',
         '$modal', 'API', "socket", "$timeout",
         "AlertService", "localStorageService", "$state", "$filter",
-        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter) {
+        "EmpresaIngreso",
+        "DocumentoIngreso",
+        "ProveedorIngreso",
+        "Usuario",
+        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Empresa, Documento, Proveedor, Sesion) {
 
             var that = this;
 
+            $scope.Empresa = Empresa;
+
+            var datos_documento = localStorageService.get("documento_bodega_I002");
+            $scope.DocumentoIngreso = Documento.get(datos_documento.bodegas_doc_id, datos_documento.prefijo, datos_documento.numero);
+            $scope.DocumentoIngreso.set_proveedor(Proveedor.get());
+            
+            // Variables de Sesion
+            $scope.session = {
+                usuario_id: Sesion.getUsuarioActual().getId(),
+                auth_token: Sesion.getUsuarioActual().getToken()
+            };
+            
+            // Variables 
             $scope.datos_view = {
                 listado: [],
+                termino_busqueda_proveedores: "",
                 btn_buscar_productos: ""
             };
+            
+            
+            // Consultas de datos 
+            
+            
+            // Proveedores
+            $scope.listar_proveedores = function(termino_busqueda) {
+
+                if (termino_busqueda.length < 3) {
+                    return;
+                }
+
+                $scope.datos_view.termino_busqueda_proveedores = termino_busqueda;
+
+                that.buscar_proveedores(function(proveedores) {
+
+                    that.render_proveedores(proveedores);
+                });
+            };
+            
+            that.buscar_proveedores = function(callback) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        proveedores: {
+                            termino_busqueda: $scope.datos_view.termino_busqueda_proveedores
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.I002.LISTAR_PROVEEDORES, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        //that.render_proveedores(data.obj.proveedores);
+                        callback(data.obj.proveedores);
+                    }
+                });
+            };
+
+            that.render_proveedores = function(proveedores) {
+
+                $scope.Empresa.limpiar_proveedores();
+
+                proveedores.forEach(function(data) {
+
+                    var proveedor = Proveedor.get(data.tipo_id_tercero, data.tercero_id, data.codigo_proveedor_id, data.nombre_proveedor, data.direccion, data.telefono);
+
+                    $scope.Empresa.set_proveedores(proveedor);
+                });
+            };
+            
+            $scope.seleccionar_proveedor = function() {
+                //console.log('==== Seleccionar ====');
+                //console.log($scope.DocumentoIngreso.get_proveedor());
+                // Buscar Ordenes Compra del Proveedor Seleccionado
+                that.buscar_ordenes_compra();
+            };
+
+            //=========== Ordenes Compra =============
+            that.buscar_ordenes_compra = function() {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        ordenes_compras: {
+                            codigo_proveedor_id: $scope.DocumentoIngreso.get_proveedor().get_codigo()
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.I002.LISTAR_ORDENES_COMPRAS_PROVEEDOR, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        console.log('====== server data ====', data.obj.ordenes_compras);
+                        //that.render_ordenes_compras(data.obj.ordenes_compras);
+                    }
+                });
+            };
+
+            that.render_ordenes_compras = function(ordenes_compras) {
+
+                $scope.Empresa.limpiar_ordenes_compras();
+
+                ordenes_compras.forEach(function(orden) {
+
+                    var orden_compra = OrdenCompra.get(orden.numero_orden, orden.estado, orden.observacion, orden.fecha_registro);
+
+                    $scope.Empresa.set_ordenes_compras(orden_compra);
+                });
+            };
+
+
 
             // Desplegar slider para gestionar productos
             $scope.seleccionar_productos = function(opcion) {
@@ -34,8 +148,6 @@ define([
                     $scope.slideurl = "views/I002/gestionarproductos.html?time=" + new Date().getTime();
                     $scope.$emit('gestionar_productos');
                 }
-
-
             };
 
             // Cerrar slider para gestionar productos
@@ -173,6 +285,7 @@ define([
             for (i = 0; i < 200; i++) {
                 $scope.datos_view.listado.push({nombre: 'producto - ' + i});
             }
+
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;

@@ -39,9 +39,9 @@
                                             </thead>
                                             <tbody>
                                                 <tr ng-repeat="documento in datos_view.documentos_salida | filter:datos_view.termino_busqueda_documentos">
-                                                    <th scope="row">{{ documento.tipo_doc_bodega_id }}</th>
-                                                    <td>{{ documento.prefijo }}</td>
-                                                    <td>{{ documento.descripcion }}</td>
+                                                    <th scope="row">{{ documento.get_tipo() }}</th>
+                                                    <td>{{ documento.get_prefijo() }}</td>
+                                                    <td>{{ documento.get_descripcion() }}</td>
                                                     <td>
                                                         <button class="btn btn-default btn-xs" ng-click="gestionar_documento(documento)" ><span class="glyphicon glyphicon-send"></span></button>
                                                     </td>
@@ -74,9 +74,9 @@
                                             </thead>
                                             <tbody>
                                                 <tr ng-repeat="documento in datos_view.documentos_entrada | filter:datos_view.termino_busqueda_documentos">
-                                                    <th scope="row">{{ documento.tipo_doc_bodega_id }}</th>
-                                                    <td>{{ documento.prefijo }}</td>
-                                                    <td>{{ documento.descripcion }}</td>
+                                                    <th scope="row">{{ documento.get_tipo() }}</th>
+                                                    <td>{{ documento.get_prefijo() }}</td>
+                                                    <td>{{ documento.get_descripcion() }}</td>
                                                     <td>
                                                         <button class="btn btn-default btn-xs" ng-click="gestionar_documento(documento)"><span class="glyphicon glyphicon-send"></span></button>
                                                     </td>
@@ -107,9 +107,9 @@
                                             </thead>
                                             <tbody>
                                                 <tr ng-repeat="documento in datos_view.documentos_ajustes | filter:datos_view.termino_busqueda_documentos">
-                                                    <th scope="row">{{ documento.tipo_doc_bodega_id }}</th>
-                                                    <td>{{ documento.prefijo }}</td>
-                                                    <td>{{ documento.descripcion }}</td>
+                                                    <th scope="row">{{ documento.get_tipo() }}</th>
+                                                    <td>{{ documento.get_prefijo() }}</td>
+                                                    <td>{{ documento.get_descripcion() }}</td>
                                                     <td>
                                                         <button class="btn btn-default btn-xs" ng-click="gestionar_documento(documento)"><span class="glyphicon glyphicon-send"></span></button>
                                                     </td>
@@ -140,9 +140,9 @@
                                             </thead>
                                             <tbody>
                                                 <tr ng-repeat="documento in datos_view.documentos_traslado | filter:datos_view.termino_busqueda_documentos              ">
-                                                    <th scope="row">{{ documento.tipo_doc_bodega_id }}</th>
-                                                    <td>{{ documento.prefijo }}</td>
-                                                    <td>{{ documento.descripcion }}</td>
+                                                    <th scope="row">{{ documento.get_tipo() }}</th>
+                                                    <td>{{ documento.get_prefijo() }}</td>
+                                                    <td>{{ documento.get_descripcion() }}</td>
                                                     <td>
                                                         <button class="btn btn-default btn-xs" ng-click="gestionar_documento(documento)"><span class="glyphicon glyphicon-send"></span></button>
                                                     </td>

@@ -412,8 +412,13 @@ E008Controller.prototype.consultarDocumentosTemporalesClientes = function(req, r
         res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual o que sea mayor a 0', 404, {}));
         return;
     }
+    
+    if (args.documento_temporal.empresa_id === undefined || args.documento_temporal.empresa_id === '') {
+        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {}));
+        return;
+    }
 
-    var empresa_id = '03';
+    var empresa_id = args.documento_temporal.empresa_id;
     var termino_busqueda = args.documento_temporal.termino_busqueda;
     var pagina_actual = args.documento_temporal.pagina_actual;
     var filtro = args.documento_temporal.filtro;

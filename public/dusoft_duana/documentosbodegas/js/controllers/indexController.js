@@ -1,5 +1,7 @@
 
 define(["angular", "js/controllers",
+    "models/Index/EmpresaDocumento",
+    "models/Index/DocumentoBodega"
 ], function(angular, controllers) {
 
     controllers.controller('indexController', [
@@ -14,12 +16,19 @@ define(["angular", "js/controllers",
         "localStorageService",
         "$state",
         "$filter",
+        "EmpresaDocumento",
+        "DocumentoBodega",
         "Usuario",
-        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Sesion) {
+        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Empresa, Documento, Sesion) {
 
             var that = this;
+            
+            var that = this;
 
-            console.log('============= Indexcontroller =====', $state.get());
+            $scope.Empresa = Empresa;
+            
+            console.log('============= Indexcontroller =====', Empresa, Documento);
+            console.log(Sesion.getUsuarioActual().getEmpresa());
 
             // Variables de Sesion
             $scope.session = {
@@ -60,25 +69,25 @@ define(["angular", "js/controllers",
 
                             if (documento.tipo_doc_bodega_id === 'E007' || documento.tipo_doc_bodega_id === 'E008' || documento.tipo_doc_bodega_id === 'E012' ||
                                     documento.tipo_doc_bodega_id === 'E012' || documento.tipo_doc_bodega_id === 'NC01' || documento.tipo_doc_bodega_id === 'ND01') {
-                                $scope.datos_view.documentos_salida.push(documento)
+                                $scope.datos_view.documentos_salida.push(documento);
                             }
 
                             if (documento.tipo_doc_bodega_id === 'I001' || documento.tipo_doc_bodega_id === 'I002' || documento.tipo_doc_bodega_id === 'I004' ||
                                     documento.tipo_doc_bodega_id === 'I005' || documento.tipo_doc_bodega_id === 'I006' || documento.tipo_doc_bodega_id === 'I007') {
-                                $scope.datos_view.documentos_entrada.push(documento)
+                                $scope.datos_view.documentos_entrada.push(documento);
                             }
 
                             if (documento.tipo_doc_bodega_id === 'E003' || documento.tipo_doc_bodega_id === 'I003') {
-                                $scope.datos_view.documentos_ajustes.push(documento)
+                                $scope.datos_view.documentos_ajustes.push(documento);
                             }
 
                             if (documento.tipo_doc_bodega_id === 'T001' || documento.tipo_doc_bodega_id === 'T004') {
-                                $scope.datos_view.documentos_traslado.push(documento)
+                                $scope.datos_view.documentos_traslado.push(documento);
                             }
                         });
 
                         // Emitir Evento
-                        $rootScope.$emit("onDocumentosBodegas", documentos_bodegas);
+                        //$rootScope.$emit("onDocumentosBodegas", documentos_bodegas);
                     }
                 });
             };
@@ -91,9 +100,10 @@ define(["angular", "js/controllers",
                     return obj.name === documento.tipo_doc_bodega_id;
                 });
 
-                if (result.length > 0)
+                if (result.length > 0){
+                    localStorageService.add("bodegas_doc_id_"+documento.prefijo, 0);
                     $state.go(documento.tipo_doc_bodega_id);
-                else
+                }else
                     AlertService.mostrarMensaje("warning", 'El modulo [ '+documento.tipo_doc_bodega_id+'-'+ documento.descripcion +' ] aun no esta disponible en esta version!!!');
                 
             };

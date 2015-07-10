@@ -276,7 +276,7 @@ MovimientosBodegasModel.prototype.consultar_documentos_usuario = function(usuari
                 c.prefijo,\
                 c.descripcion\
                 from inv_bodegas_userpermisos a\
-                inner join inv_bodegas_documentos b on a.documento_id = b.documento_id\
+                inner join inv_bodegas_documentos b on a.documento_id = b.documento_id and b.empresa_id = a.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega\
                 inner join documentos c on b.documento_id = c.documento_id and b.empresa_id = c.empresa_id\
                 inner join tipos_doc_generales d on c.tipo_doc_general_id = d.tipo_doc_general_id\
                 where a.usuario_id = $1 and a.centro_utilidad = $2 and a.bodega= $3 " + sql_aux + " order by tipo_movimiento, tipo_doc_bodega_id ";

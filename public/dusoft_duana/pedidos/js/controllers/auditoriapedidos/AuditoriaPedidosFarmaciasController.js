@@ -12,7 +12,7 @@ define(["angular", "js/controllers",
             $scope.Empresa = Empresa;
             $scope.pedidosSeparadosSeleccionados = [];
             $scope.empresas = [];
-            $scope.seleccion = "FD";
+            $scope.seleccion = Usuario.getUsuarioActual().getEmpresa().getCodigo();
 
 
             $scope.paginas = 0;

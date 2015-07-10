@@ -46,12 +46,15 @@ define(["angular", "js/controllers", 'models/Farmacia',
                 $scope.filtro.codigo_barras = true;
 
                 //TEMPORALEMNTE HARDCODED HASTA QUE SE REALIZE LA FUNCIONALIDAD DE PERSMISOS
+                
+                var empresa = Usuario.getUsuarioActual().getEmpresa();
+                
                 var obj = {
                     session: $scope.session,
                     data: {
                         movimientos_bodegas: {
-                            centro_utilidad_id: '1',
-                            bodega_id: '03',
+                            centro_utilidad_id: empresa.getCentroUtilidadSeleccionado().getCodigo(),
+                            bodega_id: empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
                             tipo_documento: 'E008'
                         }
                     }

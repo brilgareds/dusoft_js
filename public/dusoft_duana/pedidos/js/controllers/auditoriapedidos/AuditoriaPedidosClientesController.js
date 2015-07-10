@@ -32,6 +32,7 @@ define(["angular", "js/controllers",
                         documento_temporal: {
                             termino_busqueda: $scope.termino_busqueda,
                             pagina_actual: $scope.paginaactual,
+                            empresa_id:Usuario.getUsuarioActual().getEmpresa().getCodigo(),
                             filtro: {
                                 finalizados: true
                             }

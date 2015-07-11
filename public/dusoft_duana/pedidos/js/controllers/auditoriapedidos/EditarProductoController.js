@@ -129,7 +129,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
                          codigo_producto: $scope.rootEditarProducto.producto.codigo_producto,
                          identificador: ($scope.rootEditarProducto.pedido.tipo === 1)?"CL":"FM",
                          limite:100,
-                         empresa_id:"03"
+                         empresa_id:Usuario.getUsuarioActual().getEmpresa().getCodigo()
                      }
                  }
              };

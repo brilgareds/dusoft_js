@@ -315,7 +315,8 @@ MovimientosBodegasModel.prototype.crear_documento = function(documento_temporal_
             var empresa_id = documento_temporal.empresa_id;
             var centro_utilidad = documento_temporal.centro_utilidad;
             var bodega = documento_temporal.bodega;
-
+            
+            
             // Consultar detalle del docuemnto temporal
             __consultar_detalle_movimiento_bodega_temporal(documento_temporal_id, usuario_id, function(err, detalle_documento_temporal) {
                 console.log("__consultar_detalle_movimiento_bodega_temporal >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");

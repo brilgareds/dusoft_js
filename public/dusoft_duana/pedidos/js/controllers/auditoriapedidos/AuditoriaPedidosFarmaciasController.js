@@ -21,6 +21,11 @@ define(["angular", "js/controllers",
             $scope.ultima_busqueda = {};
             $scope.paginaactual = 1;
             $scope.numero_pedido = "";
+            
+            
+            var empresa = Usuario.getUsuarioActual().getEmpresa();
+            
+           
             var that = this;
 
 
@@ -42,7 +47,9 @@ define(["angular", "js/controllers",
                             empresa_id: $scope.seleccion,
                             pagina_actual: $scope.paginaactual,
                             filtro: {
-                                finalizados: true
+                                finalizados: true,
+                                centro_utilidad:empresa.getCentroUtilidadSeleccionado().getCodigo(),
+                                bodega_id:empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
                             }
                         }
                     }
@@ -157,8 +164,19 @@ define(["angular", "js/controllers",
             //fin de eventos
 
             //se realiza el llamado a api para pedidos
-            $scope.buscarPedidosSeparados(that.obtenerParametros(), 2, false, $scope.renderPedidosSeparados);
-            $scope.listarEmpresas("");
+            
+            if(!empresa){
+                $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene una empresa valida para auditar pedidos.", tipo:"warning"});
+            } else if(!empresa.getCentroUtilidadSeleccionado()){
+                $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene un centro de utilidad valido para auditar pedidos.", tipo:"warning"});
+            } else if(!empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada()){
+                $rootScope.$emit("onIrAlHome",{mensaje:"El usuario no tiene una bodega valida para auditar pedidos", tipo:"warning"});
+            } else {
+                $scope.buscarPedidosSeparados(that.obtenerParametros(), 2, false, $scope.renderPedidosSeparados);
+                $scope.listarEmpresas("");
+                
+            }
+            
             
             
             

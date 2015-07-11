@@ -175,6 +175,8 @@ DocuemntoBodegaE008.prototype.consultar_documentos_temporales_clientes = functio
 DocuemntoBodegaE008.prototype.consultar_documentos_temporales_farmacias = function(empresa_id, termino_busqueda, filtro, pagina, callback) {
 
     var sql_aux = " ";
+    var sql_empresa = " c.farmacia_id = $1 ";
+    var parametros = [empresa_id, "%" + termino_busqueda + "%"];
 
     if (filtro !== undefined) {
 
@@ -182,7 +184,10 @@ DocuemntoBodegaE008.prototype.consultar_documentos_temporales_farmacias = functi
             sql_aux = " AND a.estado = '0' ";
         }
         if (filtro.finalizados) {
-            sql_aux = " AND a.estado IN ('1','2') ";
+            //en auditoria se necesia filtrar por la empresa de donde sale el pedido ademas por centro de utilidad y bodega
+            sql_empresa = " c.empresa_destino = $1 ";
+            sql_aux = " and a.estado IN ('1','2') and  c.bodega_destino = $3 and c.centro_destino = $4 ";
+            parametros = [empresa_id, "%" + termino_busqueda + "%", filtro.bodega_id, filtro.centro_utilidad];
         }
     }
 
@@ -222,7 +227,7 @@ DocuemntoBodegaE008.prototype.consultar_documentos_temporales_farmacias = functi
                 inner join centros_utilidad e on d.empresa_id = e.empresa_id and d.centro_utilidad = e.centro_utilidad \
                 inner join empresas f ON e.empresa_id = f.empresa_id \
                 inner join system_usuarios g ON c.usuario_id = g.usuario_id \
-                where c.farmacia_id = $1 " + sql_aux + "\
+                where " +sql_empresa + sql_aux + "\
                 and (\
                         a.solicitud_prod_a_bod_ppal_id ilike $2 or\
                         f.razon_social ilike $2 or\
@@ -230,7 +235,7 @@ DocuemntoBodegaE008.prototype.consultar_documentos_temporales_farmacias = functi
                         g.nombre ilike $2 \
                 )";
 
-    G.db.pagination(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
+    G.db.pagination(sql, parametros, pagina, G.settings.limit, function(err, rows, result, total_records) {
         callback(err, rows, total_records);
     });
 };

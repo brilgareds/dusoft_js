@@ -4,9 +4,23 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
 
             var EmpresaIngreso = Object.create(Empresa.getClass().prototype)
 
+            EmpresaIngreso.proveedores = [];
             EmpresaIngreso.documentos = [];
             EmpresaIngreso.productos = [];
 
+            // Proveedores
+            EmpresaIngreso.set_proveedores = function(proveedor) {
+                this.proveedores.push(proveedor);
+            };
+
+            EmpresaIngreso.get_proveedores = function() {
+                return this.proveedores;
+            };
+
+            EmpresaIngreso.limpiar_proveedores = function() {
+                this.proveedores = [];
+            };
+            
             // Documentos
             EmpresaIngreso.set_documentos = function(orden_compra) {
                 this.documentos.push(orden_compra);

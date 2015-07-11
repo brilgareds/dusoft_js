@@ -19,14 +19,17 @@ define(["angular", "js/models", "includes/classes/Tercero"], function(angular, m
                 return Proveedor;
             };
 
-            this.get_codigo = function() {
+            Proveedor.prototype.get_codigo = function() {
 
                 return this.codigo_proveedor_id;
             };
 
-            this.get_nombre_completo = function() {
-
-                var nombre_proveedor = this.tipo_id_tercero + ' ' + this.id + ' - ' + this.nombre_tercero;
+            Proveedor.prototype.get_nombre_completo = function() {
+                
+                var nombre_proveedor = "";
+                
+                if (this.nombre_tercero !== "")
+                    nombre_proveedor = this.tipo_id_tercero + ' ' + this.id + ' - ' + this.nombre_tercero;
 
                 return nombre_proveedor;
             };

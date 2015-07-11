@@ -11,6 +11,8 @@ define(["angular"], function(angular) {
                 'LISTA_DOCUMENTOS_USUARIOS': BASE_URL + '/movBodegas/consultarDocumentosUsuario',
             },
             'I002': {
+                'LISTAR_PROVEEDORES' :  BASE_URL + '/Terceros/Proveedores/listar',
+                'LISTAR_ORDENES_COMPRAS_PROVEEDOR': BASE_URL + '/OrdenesCompra/listarOrdenesCompraProveedor',
                 'CONSULTAR_PRODUCTOS' : BASE_URL + '/OrdenesCompra/listarProductos'
             },
             'I003': {

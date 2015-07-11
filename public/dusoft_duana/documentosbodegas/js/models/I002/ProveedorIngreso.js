@@ -10,11 +10,22 @@ define(["angular", "js/models", "includes/classes/Proveedor"], function(angular,
             function ProveedorIngreso(tipo_id, id, codigo_proveedor_id, nombre, direccion, telefono) {
 
                 Proveedor.getClass().call(this, tipo_id, id, codigo_proveedor_id, nombre, direccion, telefono);
+                
+                this.ordenes_compra = [];
             }
 
 
             this.get = function(tipo_id, id, codigo_proveedor_id, nombre, direccion, telefono) {
                 return new ProveedorIngreso(tipo_id, id, codigo_proveedor_id, nombre, direccion, telefono);
+            };
+            
+            // Orden de Compra
+            ProveedorIngreso.prototype.set_ordenes_compra = function(orden_compra) {
+                this.ordenes_compra.push(orden_compra);
+            };
+
+            ProveedorIngreso.prototype.get_ordenes_compra = function() {
+                return this.ordenes_compra;
             };
             
             return this;

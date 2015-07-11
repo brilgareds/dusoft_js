@@ -44,9 +44,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             $scope.rootCreaCotizaciones.bloquear_eliminar = false; //NUEVO
             
+            var empresa = Usuario.getUsuarioActual().getEmpresa();
             
-            $scope.rootCreaCotizaciones.Empresa.setCodigo(Usuario.getUsuarioActual().getEmpresa().getCodigo());
-            $scope.rootCreaCotizaciones.Empresa.setNombre(Usuario.getUsuarioActual().getEmpresa().getNombre());
+            $scope.rootCreaCotizaciones.Empresa.setCodigo(empresa.getCodigo());
+            $scope.rootCreaCotizaciones.Empresa.setNombre(empresa.getNombre());
+           // $scope.rootCreaCotizaciones.Empresa = Usuario.getUsuarioActual().getEmpresa();
             
             /* Nuevas variables y objetos para almacenamiento y validación - Inicio */
             
@@ -1452,6 +1454,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                 vendedor_id: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getVendedor().getId(),
                                 estado: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().estado,
                                 observaciones: $scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getObservacion()
+                                /*centro_utilidad: empresa.getCentroUtilidadSeleccionado().getCodigo(),
+                                bodega: empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()*/
 
                             }
                         }

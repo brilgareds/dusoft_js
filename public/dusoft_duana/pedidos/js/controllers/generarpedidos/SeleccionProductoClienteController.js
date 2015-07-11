@@ -16,6 +16,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
             var that = this;
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
+            var empresa = Usuario.getUsuarioActual().getEmpresa();
             
             $scope.cerrar = function(){
                 $scope.$emit('cerrarseleccionproducto', {animado:true});
@@ -53,6 +54,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                 
                 $scope.rootSeleccionProductoCliente.tipoProducto = '0';
                 
+                
 /**/
                 /* Inicio - Consulta Tipo Producto */
 
@@ -61,7 +63,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                     data: {
                         tipo_producto: {}
                     }
-                }
+                };
 
                 var url_tipo_producto = API.PEDIDOS.LISTADO_TIPO_PRODUCTOS;
 
@@ -725,7 +727,9 @@ define(["angular", "js/controllers",'includes/slide/slideContent',
                                 tipo_id_vendedor: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getVendedor().getTipoId(),
                                 vendedor_id: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().getVendedor().getId(),
                                 estado: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().estado,
-                                observaciones: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().observacion
+                                observaciones: $scope.rootSeleccionProductoCliente.Empresa.getPedidoSeleccionado().observacion,
+                                centro_utilidad: empresa.getCentroUtilidadSeleccionado().getCodigo(),
+                                bodega: empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
 
                             }
                         }

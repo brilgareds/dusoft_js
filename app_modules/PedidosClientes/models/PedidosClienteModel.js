@@ -427,7 +427,9 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
     }
 
     var sql = " select \
-                a.empresa_id,\
+                a.empresa_id as empresa_destino,\
+                a.centro_destino,\
+                a.bodega_destino,\
                 f.doc_tmp_id as documento_temporal_id,\
                 a.pedido_cliente_id as numero_pedido, \
                 b.tipo_id_tercero as tipo_id_cliente, \
@@ -883,13 +885,14 @@ PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(nu
  * @apiParam {Number} numero_pedido Numero del pedido a asignar
  * @apiParam {Function} callback Funcion de retorno de informacion.
  */
-PedidosClienteModel.prototype.insertar_cotizacion = function(empresa_id, tipo_id_tercero, tercero_id, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones, callback) {
+PedidosClienteModel.prototype.insertar_cotizacion = function(empresa_id, tipo_id_tercero, tercero_id, usuario_id, 
+                                                             tipo_id_vendedor, vendedor_id, estado, observaciones, centro_utilidad, bodega, callback) {
     
-    var sql = "INSERT INTO ventas_ordenes_pedidos_tmp(empresa_id, tipo_id_tercero, tercero_id, fecha_registro, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones) \
-                VALUES($1, $2, $3, CURRENT_TIMESTAMP, $4, $5, $6, $7, $8) \
+    var sql = "INSERT INTO ventas_ordenes_pedidos_tmp(empresa_id, tipo_id_tercero, tercero_id, fecha_registro, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones, centro_destino, bodega_destino) \
+                VALUES($1, $2, $3, CURRENT_TIMESTAMP, $4, $5, $6, $7, $8, $9, $10) \
                 RETURNING pedido_cliente_id_tmp, fecha_registro";
 
-    G.db.query(sql, [empresa_id, tipo_id_tercero, tercero_id, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones], function(err, rows, result) {
+    G.db.query(sql, [empresa_id, tipo_id_tercero, tercero_id, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones ,centro_utilidad, bodega], function(err, rows, result) {
         callback(err, rows, result);
     });
 
@@ -992,7 +995,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, termino
                     e.pais,\
                     f.departamento,\
                     g.municipio\
-                from ventas_ordenes_pedidos_tmp a\
+                    from ventas_ordenes_pedidos_tmp a\
                     left join ventas_ordenes_pedidos_d_tmp b on b.pedido_cliente_id_tmp = a.pedido_cliente_id_tmp\
                     join terceros c on c.tipo_id_tercero = a.tipo_id_tercero\
                         and c.tercero_id = a.tercero_id\
@@ -1448,9 +1451,9 @@ function __insertar_encabezado_pedido_cliente(numero_cotizacion, callback)
      */
     
     var sql = " INSERT INTO ventas_ordenes_pedidos( empresa_id, tipo_id_tercero, tercero_id, fecha_registro, usuario_id, estado, tipo_id_vendedor,\
-                    vendedor_id, observacion, estado_pedido) \
+                    vendedor_id, observacion, estado_pedido, centro_destino, bodega_destino) \
                 SELECT empresa_id, tipo_id_tercero, tercero_id, CURRENT_TIMESTAMP, usuario_id, 1, tipo_id_vendedor,\
-                    vendedor_id, observaciones, 0\
+                    vendedor_id, observaciones, 0, centro_destino, bodega_destino\
                 FROM ventas_ordenes_pedidos_tmp \
                 WHERE pedido_cliente_id_tmp = $1 \
                 RETURNING pedido_cliente_id, fecha_registro";

@@ -1253,3 +1253,33 @@ ALTER TABLE "public"."solicitud_productos_a_bodega_principal"
     ON DELETE RESTRICT
     ON UPDATE CASCADE
     NOT DEFERRABLE;
+
+
+ALTER TABLE "public"."ventas_ordenes_pedidos_tmp"
+  ADD COLUMN "centro_destino" CHAR(2);
+
+ALTER TABLE "public"."ventas_ordenes_pedidos_tmp"
+  ADD COLUMN "bodega_destino" CHAR(2);
+
+
+ALTER TABLE "public"."ventas_ordenes_pedidos_tmp"
+  ADD CONSTRAINT "ventas_ordenes_pedidos_tmp_fk" FOREIGN KEY ("empresa_id", "centro_destino", "bodega_destino")
+    REFERENCES "public"."bodegas"("empresa_id", "centro_utilidad", "bodega")
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+    NOT DEFERRABLE;
+
+
+ALTER TABLE "public"."ventas_ordenes_pedidos"
+  ADD COLUMN "centro_destino" CHAR(2);
+
+ALTER TABLE "public"."ventas_ordenes_pedidos"
+  ADD COLUMN "bodega_destino" CHAR(2);
+
+
+ALTER TABLE "public"."ventas_ordenes_pedidos"
+  ADD CONSTRAINT "ventas_ordenes_pedidos_fk" FOREIGN KEY ("empresa_id", "centro_destino", "bodega_destino")
+    REFERENCES "public"."bodegas"("empresa_id", "centro_utilidad", "bodega")
+    ON DELETE RESTRICT
+    ON UPDATE RESTRICT
+    NOT DEFERRABLE;

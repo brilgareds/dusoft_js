@@ -580,17 +580,23 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
 
     var args = req.body.data;
 
-    if (args.cotizacion_encabezado === undefined || args.cotizacion_encabezado.empresa_id === undefined || args.cotizacion_encabezado.tipo_id_tercero === undefined || args.cotizacion_encabezado.tercero_id === undefined) {
+    if (args.cotizacion_encabezado === undefined || args.cotizacion_encabezado.empresa_id === undefined 
+        || args.cotizacion_encabezado.tipo_id_tercero === undefined || args.cotizacion_encabezado.tercero_id === undefined
+        || args.cotizacion_encabezado.centro_utilidad === undefined || args.cotizacion_encabezado.bodega === undefined ) {
+    
         res.send(G.utils.r(req.url, 'empresa_id, tipo_tercero_id o tercero_id No Están Definidos', 404, {}));
         return;
     }
 
-    if (args.cotizacion_encabezado.tipo_id_vendedor === undefined || args.cotizacion_encabezado.vendedor_id === undefined || args.cotizacion_encabezado.estado === undefined) {
+    if (args.cotizacion_encabezado.tipo_id_vendedor === undefined || args.cotizacion_encabezado.vendedor_id === undefined 
+        || args.cotizacion_encabezado.estado === undefined) {
+    
         res.send(G.utils.r(req.url, 'tipo_id_vendedor, vendedor_id o estado No Están Definidos', 404, {}));
         return;
     }
 
-    if (args.cotizacion_encabezado.empresa_id === '' || args.cotizacion_encabezado.tipo_id_tercero === '' || args.cotizacion_encabezado.tercero_id === '') {
+    if (args.cotizacion_encabezado.empresa_id === '' || args.cotizacion_encabezado.tipo_id_tercero === '' || args.cotizacion_encabezado.tercero_id === ''
+        || args.cotizacion_encabezado.centro_utilidad === '' || args.cotizacion_encabezado.bodega === '') {
         res.send(G.utils.r(req.url, 'empresa_id, tipo_id_tercero o tercero_id Están Vacios', 404, {}));
         return;
     }
@@ -609,8 +615,11 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
     var vendedor_id = args.cotizacion_encabezado.vendedor_id;
     var estado = args.cotizacion_encabezado.estado;
     var observaciones = args.cotizacion_encabezado.observaciones;
+    var centro_utilidad = args.cotizacion_encabezado.centro_utilidad;
+    var bodega = args.cotizacion_encabezado.bodega;
 
-    that.m_pedidos_clientes.insertar_cotizacion(empresa_id, tipo_id_tercero, tercero_id, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones, function(err, row) {
+    that.m_pedidos_clientes.insertar_cotizacion(empresa_id, tipo_id_tercero, tercero_id, usuario_id, 
+                                                tipo_id_vendedor, vendedor_id, estado, observaciones,centro_utilidad, bodega, function(err, row) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error en Inserción del Encabezado de Cotización', 500, {}));

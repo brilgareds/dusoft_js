@@ -20,6 +20,9 @@ define(["angular", "js/controllers",
             $scope.numero_pedido = "";
 
             var that = this;
+            
+            var empresa = Usuario.getUsuarioActual().getEmpresa();
+            
             that.obtenerParametros = function() {
                 //valida si cambio el termino de busqueda
                 if ($scope.ultima_busqueda !== $scope.termino_busqueda) {
@@ -34,7 +37,9 @@ define(["angular", "js/controllers",
                             pagina_actual: $scope.paginaactual,
                             empresa_id:Usuario.getUsuarioActual().getEmpresa().getCodigo(),
                             filtro: {
-                                finalizados: true
+                                finalizados: true,
+                                centro_utilidad:empresa.getCentroUtilidadSeleccionado().getCodigo(),
+                                bodega_id:empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
                             }
                         }
                     }
@@ -119,7 +124,7 @@ define(["angular", "js/controllers",
                             1,
                             false,
                             $scope.renderPedidosSeparados
-                            );
+                     );
                 }
             };
 

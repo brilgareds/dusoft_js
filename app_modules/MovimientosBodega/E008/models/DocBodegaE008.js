@@ -107,6 +107,7 @@ DocuemntoBodegaE008.prototype.consultar_documentos_temporales_clientes = functio
     /*=========================================================================*/
 
     var sql_aux = " ";
+    var parametros = [empresa_id, "%" + termino_busqueda + "%"];
 
     if (filtro !== undefined) {
 
@@ -114,7 +115,9 @@ DocuemntoBodegaE008.prototype.consultar_documentos_temporales_clientes = functio
             sql_aux = " AND a.estado = '0' ";
         }
         if (filtro.finalizados) {
-            sql_aux = " AND a.estado IN ('1','2') ";
+            //en auditoria se necesia filtrar por la empresa de donde sale el pedido ademas por centro de utilidad y bodega
+            sql_aux = " and a.estado IN ('1','2') and  c.bodega_destino = $3 and c.centro_destino = $4 ";
+            parametros = [empresa_id, "%" + termino_busqueda + "%", filtro.bodega_id, filtro.centro_utilidad];
         }
     }
 
@@ -166,7 +169,7 @@ DocuemntoBodegaE008.prototype.consultar_documentos_temporales_clientes = functio
                      e.nombre ilike $2 \
                 )";
 
-    G.db.pagination(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
+    G.db.pagination(sql, parametros, pagina, G.settings.limit, function(err, rows, result, total_records) {
         callback(err, rows, total_records);
     });
 };

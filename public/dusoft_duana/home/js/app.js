@@ -1,4 +1,4 @@
-//main app module
+//main app module 
 define([
     "angular",
     "socketservice",

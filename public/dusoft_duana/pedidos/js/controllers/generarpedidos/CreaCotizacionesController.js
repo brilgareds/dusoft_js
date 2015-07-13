@@ -1439,6 +1439,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             //Función que inserta el encabezado del pedido temporal
             that.insertarEncabezadoCotizacion = function(callback) {
+                console.log("crear encabezado >>>>>>>>>>>>>>>");
+                return;
                 
                 if($scope.rootCreaCotizaciones.Empresa.getPedidoSeleccionado().getNumeroCotizacion() === "") {
 

@@ -12,12 +12,14 @@ Pedidos.prototype.consultarDisponibilidadProducto = function(req, res) {
     var that = this;
     var args = req.body.data;
 
-    if (args.pedidos === undefined || args.pedidos.empresa_id === undefined ||
-            args.pedidos.numero_pedido === undefined || args.pedidos.codigo_producto === undefined || args.pedidos.identificador === undefined) {
+    if (args.pedidos === undefined || args.pedidos.empresa_id === undefined
+        || args.pedidos.numero_pedido === undefined || args.pedidos.codigo_producto === undefined || args.pedidos.identificador === undefined
+        || args.pedidos.centro_utilidad_id === undefined || args.pedidos.bodega_id === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
     }
-    if (args.pedidos.empresa_id === '' || args.pedidos.numero_pedido === '' || args.pedidos.codigo_producto === '' || args.pedidos.identificador === '') {
+    if (args.pedidos.empresa_id === '' || args.pedidos.numero_pedido === '' || args.pedidos.codigo_producto === '' || args.pedidos.identificador === ''
+        || args.pedidos.centro_utilidad_id === '' || args.pedidos.bodega_id === '') {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Vacíos ', 404, {}));
         return;
     }
@@ -33,9 +35,11 @@ Pedidos.prototype.consultarDisponibilidadProducto = function(req, res) {
     var codigo_producto = args.pedidos.codigo_producto;
     var numero_pedido = args.pedidos.numero_pedido;
     var identificador = args.pedidos.identificador; // FM o CL
+    var centro_utilidad = args.pedidos.centro_utilidad_id;
+    var bodega = args.pedidos.bodega_id;
 
 
-    that.m_productos.consultar_existencias_producto(empresa_id, codigo_producto, function(err, existencias_productos) {
+    that.m_productos.consultar_existencias_producto(empresa_id, codigo_producto, centro_utilidad, bodega, function(err, existencias_productos) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Se Ha Generado Un Error Interno', 500, {}));

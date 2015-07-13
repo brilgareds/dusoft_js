@@ -191,7 +191,7 @@
         
     </div-->
 
-    <button class="btn btn-primary ng-binding pull-right" ng-click="auditarPedido()">Auditar</button>
+    <button class="btn btn-primary ng-binding pull-right" ng-disabled="!rootEditarProducto.itemValido" ng-click="auditarPedido()">Auditar</button>
     <button class="btn btn-warning pull-right" style="margin-right:20px;" ng-click="cerrarModal()">Cancelar</button>
 
 </div>

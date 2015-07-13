@@ -47,6 +47,8 @@ define(["angular", "js/controllers",'models/ClientePedido',
          $scope.rootEditarProducto.validacionproducto = {
              valido:true
          };
+         
+        $scope.rootEditarProducto.itemValido = true;
 
         $modalInstance.opened.then(function() {
             that.traerItemsAuditados(function(){
@@ -121,6 +123,7 @@ define(["angular", "js/controllers",'models/ClientePedido',
         };
 
         that.traerDisponibles = function(callback){
+            var empresa = Usuario.getUsuarioActual().getEmpresa();
             var obj = {
                  session:$scope.session,
                  data:{
@@ -129,13 +132,21 @@ define(["angular", "js/controllers",'models/ClientePedido',
                          codigo_producto: $scope.rootEditarProducto.producto.codigo_producto,
                          identificador: ($scope.rootEditarProducto.pedido.tipo === 1)?"CL":"FM",
                          limite:100,
-                         empresa_id:Usuario.getUsuarioActual().getEmpresa().getCodigo()
+                         empresa_id:Usuario.getUsuarioActual().getEmpresa().getCodigo(),
+                         centro_utilidad_id: empresa.getCentroUtilidadSeleccionado().getCodigo(),
+                         bodega_id: empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
                      }
                  }
              };
 
             Request.realizarRequest(API.PEDIDOS.DISPONIBILIDAD, "POST", obj, function(data) {
-
+                if(data.status !== 200){
+                    $scope.rootEditarProducto.validacionproducto.valido = false;
+                    $scope.rootEditarProducto.validacionproducto.mensaje = "Ha ocurrido un error...";
+                    $scope.rootEditarProducto.itemValido = false;
+                    return;
+                }
+                $scope.rootEditarProducto.itemValido = true;
                 callback(data);
              });
         };

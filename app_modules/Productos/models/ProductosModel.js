@@ -479,7 +479,7 @@ ProductosModel.prototype.consultar_stock_producto = function(empresa_id, codigo_
 
 
 // Consultar lotes y fechas vencimientos produto
-ProductosModel.prototype.consultar_existencias_producto = function(empresa_id, codigo_producto, callback) {
+ProductosModel.prototype.consultar_existencias_producto = function(empresa_id, codigo_producto, centro_utilidad, bodega, callback) {
 
     var sql = " select \
                 a.empresa_id,\
@@ -491,7 +491,7 @@ ProductosModel.prototype.consultar_existencias_producto = function(empresa_id, c
                 to_char(a.fecha_vencimiento, 'dd-mm-yyyy') AS fecha_vencimiento,\
                 a.existencia_actual\
                 from existencias_bodegas_lote_fv a \
-                inner join existencias_bodegas b on a.empresa_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega and a.codigo_producto = b.codigo_producto\
+                inner join existencias_bodegas b on a.empresa_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega and a.codigo_producto = b.codigo_producto and a.centro_utilidad = $3 and a.bodega= $4\
                 inner join inventarios c on b.codigo_producto = c.codigo_producto and b.empresa_id = c.empresa_id\
                 inner join inventarios_productos d on c.codigo_producto = d.codigo_producto\
                 where a.empresa_id = $1 \
@@ -501,7 +501,7 @@ ProductosModel.prototype.consultar_existencias_producto = function(empresa_id, c
                 and d.estado = '1'\
                 order by a.fecha_vencimiento desc ;";
 
-    G.db.query(sql, [empresa_id, codigo_producto], function(err, rows, result) {
+    G.db.query(sql, [empresa_id, codigo_producto, centro_utilidad, bodega], function(err, rows, result) {
         callback(err, rows);
     });
 };

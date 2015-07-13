@@ -144,7 +144,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 Request.realizarRequest(API.PEDIDOS.LISTAR_EMPRESAS_GRUPO, "POST", obj, function(data) {
                     
                     if (data.status === 200) {
-                        $scope.rootCreaPedidoFarmacia.de_lista_empresas = data.obj.empresas;
+                        //$scope.rootCreaPedidoFarmacia.de_lista_empresas = data.obj.empresas;
+                        
+                        for(var i in data.obj.empresas){
+                            if(data.obj.empresas[i].empresa_id === Usuario.getUsuarioActual().getEmpresa().getCodigo()){
+                                $scope.rootCreaPedidoFarmacia.de_lista_empresas.push(data.obj.empresas[i]);
+                                return;
+                            }
+                        }
+                        
                         
                         if(callback !== undefined && callback !== ""){
                             callback();

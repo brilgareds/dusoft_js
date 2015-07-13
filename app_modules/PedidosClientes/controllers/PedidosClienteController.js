@@ -1299,18 +1299,18 @@ PedidosCliente.prototype.pedidoClienteArchivoPlano = function(req, res) {
                     var vendedor_id = args.pedido_cliente.vendedor_id;
                     var estado = args.pedido_cliente.estado;
                     var observaciones = args.pedido_cliente.observaciones;
+                    var centro_utilidad_id = args.pedido_cliente.centro_utilidad_id;
+                    var bodega_id = args.pedido_cliente.bodega_id;
 
                     if (j > 0) {
                         //INSERTAR ENCABEZADO
-                        that.m_pedidos_clientes.insertar_cotizacion(empresa_id, tipo_id_tercero, tercero_id, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones, function(err, array_pedido_cliente_id_tmp) {
+                        that.m_pedidos_clientes.insertar_cotizacion(empresa_id, tipo_id_tercero, tercero_id, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones, centro_utilidad_id, bodega_id, function(err, array_pedido_cliente_id_tmp) { 
 
                             if (err) {
                                 res.send(G.utils.r(req.url, 'Error en Inserción del Encabezado de Cotización', 500, {}));
                                 return;
                             }
 
-                            var centro_utilidad_id = args.pedido_cliente.centro_utilidad_id;
-                            var bodega_id = args.pedido_cliente.bodega_id;
                             var contrato_cliente_id = args.pedido_cliente.contrato_cliente_id;
                             var pedido_cliente_id_tmp = array_pedido_cliente_id_tmp[0].pedido_cliente_id_tmp;
                             var tipo_producto = args.pedido_cliente.tipo_producto;
@@ -1328,7 +1328,7 @@ PedidosCliente.prototype.pedidoClienteArchivoPlano = function(req, res) {
                                 var termino_busqueda = producto_valido.codigo_producto;
 
                                 //Consultar tipo_producto_id y cantidad_pendiente
-                                that.m_productos.listar_productos_clientes(empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pedido_cliente_id_tmp, tipo_producto, pagina_actual, filtro, function(err, lista_productos) {
+                                that.m_productos.listar_productos_clientes(empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pedido_cliente_id_tmp, tipo_producto, "" , "", pagina_actual, filtro, function(err, lista_productos) {
 
                                     var i = lista_productos.length;
 

@@ -151,7 +151,18 @@ define(["angular", "js/controllers",
 
 
             //se realiza el llamado a api para pedidos
-            $scope.buscarPedidosSeparados(that.obtenerParametros(), 1, false, $scope.renderPedidosSeparados);
+                        //se valida que el usuario tenga centro de utilidad y bodega
+            
+            if(!empresa){
+                $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene una empresa valida para generar pedidos de clientes", tipo:"warning"});
+            } else if(!empresa.getCentroUtilidadSeleccionado()){
+                $rootScope.$emit("onIrAlHome",{mensaje: "El usuario no tiene un centro de utilidad valido para generar pedidos de clientes.", tipo:"warning"});
+            } else if(!empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada()){
+                $rootScope.$emit("onIrAlHome",{mensaje:"El usuario no tiene una bodega valida para generar pedidos de clientes", tipo:"warning"});
+            } else {
+                $scope.buscarPedidosSeparados(that.obtenerParametros(), 1, false, $scope.renderPedidosSeparados);
+            }
+            
 
         }]);
 });

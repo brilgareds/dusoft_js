@@ -33,17 +33,13 @@
                             <fieldset>
                                 <legend>Orden Compra</legend> 
                                 <div class="row">
-                                    <div class="col-md-7">  
-                                        <select ui-select2="{minimumInputLength: 3}"  ng-disabled="numero_orden > 0" class="form-control selectgeneral pull-left" ng-model="codigo_proveedor_id"  placeholder="Seleccionar proveedor" ng-change="seleccionar_proveedor()">
-                                            <option></option> 
-                                            <option ng-repeat="proveedor in  Empresa.get_proveedores()"  value="{{proveedor.codigo_proveedor_id}}">{{ proveedor.get_nombre() }}</option>
-                                        </select>
-                                        <!--ui-select ng-disabled="numero_orden > 0"  ng-model="codigo_proveedor_id" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_proveedor(codigo_proveedor_id)">
-                                            <ui-select-match  placeholder="Seleccionar proveedor">{{ $select.selected.get_nombre() }}</ui-select-match>
-                                            <ui-select-choices refresh="listar_proveedores($select.search)" refresh-delay="0" repeat="proveedor in Empresa.get_proveedores() | filter:$select.search">
-                                                {{ proveedor.get_nombre() }}
+                                    <div class="col-md-7">                                          
+                                        <ui-select ng-model="DocumentoIngreso.orden_compra" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_orden_compra()">
+                                            <ui-select-match  placeholder="Seleccionar Orden Compra">{{ $select.selected.get_numero_orden() }}</ui-select-match>
+                                            <ui-select-choices repeat="orden in DocumentoIngreso.get_proveedor().get_ordenes_compras() | filter:$select.search">
+                                                {{ orden.get_numero_orden() }}
                                             </ui-select-choices>
-                                        </ui-select-->
+                                        </ui-select>
                                     </div>
                                 </div>
                             </fieldset>
@@ -57,7 +53,7 @@
                                 <legend>Observación</legend>                                 
                                 <div class="row">  
                                     <div class="col-md-12">  
-                                        <textarea  class="col-lg-12 col-md-12 col-sm-12" rows="4" ng-model='observacion' ng-blur="modificar_observacion();" ng-disabled="vista_previa" name="" placeholder="Ingresar Observación"></textarea>
+                                        <textarea  class="col-lg-12 col-md-12 col-sm-12" rows="4" ng-model='DocumentoIngreso.observacion' name="" placeholder="Ingresar Observación"></textarea>
                                     </div>
                                 </div>
                             </fieldset>
@@ -67,7 +63,7 @@
                                 <legend>Fecha</legend> 
                                 <div class="row">
                                     <div class="col-md-7">  
-                                        <h3><strong>02-07-2015</strong></h3>
+                                        <h3><strong>{{ DocumentoIngreso.get_fecha_registro() }}</strong></h3>
                                     </div>
                                 </div>
                             </fieldset>
@@ -86,7 +82,7 @@
                                         <div class="">
                                             <div class="col-md-3">
                                                 <p class="input-group">
-                                                    <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="" ng-click="seleccionar_productos(0)">
+                                                    <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="habilitar_btn_productos()" ng-click="seleccionar_productos(0)">
                                                         <span class="glyphicon glyphicon-plus"></span> Seleccionar Productos
                                                     </button>
                                                 </p>
@@ -126,16 +122,14 @@
                                         <div class="">
                                             <div class="col-md-3">
                                                 <p class="input-group">
-                                                    <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="" ng-click="seleccionar_productos(1)">
+                                                    <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="habilitar_btn_productos()" ng-click="seleccionar_productos(1)">
                                                         <span class="glyphicon glyphicon-plus"></span> Buscar Productos
                                                     </button>
                                                 </p>
-
                                             </div>
 
                                             <div class="col-md-3 pull-right">
                                                 <p class="input-group">
-
                                                     <input type="text" class="form-control" ng-keypress="buscador_productos_orden_compra($event, termino_busqueda);" ng-model="termino_busqueda" placeholder="Buscar" name="" id="" />
                                                     <span class="input-group-btn">
                                                         <button class="btn btn-default" type="submit" ng-click="buscar_detalle_orden_compra(termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>

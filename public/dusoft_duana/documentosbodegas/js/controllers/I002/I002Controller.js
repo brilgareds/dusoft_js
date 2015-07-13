@@ -6,6 +6,7 @@ define([
     "models/I002/EmpresaIngreso",
     "models/I002/DocumentoIngreso",
     "models/I002/ProveedorIngreso",
+    "models/I002/OrdenCompraIngreso",
     "controllers/I002/GestionarProductosOrdenCompraController",
     "controllers/I002/GestionarProductosController",
 ], function(angular, controllers) {
@@ -17,34 +18,33 @@ define([
         "EmpresaIngreso",
         "DocumentoIngreso",
         "ProveedorIngreso",
+        "OrdenCompraIngreso",
         "Usuario",
-        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Empresa, Documento, Proveedor, Sesion) {
+        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter,
+                Empresa, Documento, Proveedor, OrdenCompra, Sesion) {
 
             var that = this;
 
             $scope.Empresa = Empresa;
 
             var datos_documento = localStorageService.get("documento_bodega_I002");
-            $scope.DocumentoIngreso = Documento.get(datos_documento.bodegas_doc_id, datos_documento.prefijo, datos_documento.numero);
+            $scope.DocumentoIngreso = Documento.get(datos_documento.bodegas_doc_id, datos_documento.prefijo, datos_documento.numero, $filter('date')(new Date(), "dd/MM/yyyy"));
             $scope.DocumentoIngreso.set_proveedor(Proveedor.get());
-            
+
             // Variables de Sesion
             $scope.session = {
                 usuario_id: Sesion.getUsuarioActual().getId(),
                 auth_token: Sesion.getUsuarioActual().getToken()
             };
-            
+
             // Variables 
             $scope.datos_view = {
                 listado: [],
                 termino_busqueda_proveedores: "",
                 btn_buscar_productos: ""
             };
-            
-            
-            // Consultas de datos 
-            
-            
+
+
             // Proveedores
             $scope.listar_proveedores = function(termino_busqueda) {
 
@@ -59,7 +59,7 @@ define([
                     that.render_proveedores(proveedores);
                 });
             };
-            
+
             that.buscar_proveedores = function(callback) {
 
                 var obj = {
@@ -91,10 +91,8 @@ define([
                     $scope.Empresa.set_proveedores(proveedor);
                 });
             };
-            
+
             $scope.seleccionar_proveedor = function() {
-                //console.log('==== Seleccionar ====');
-                //console.log($scope.DocumentoIngreso.get_proveedor());
                 // Buscar Ordenes Compra del Proveedor Seleccionado
                 that.buscar_ordenes_compra();
             };
@@ -114,25 +112,46 @@ define([
                 Request.realizarRequest(API.I002.LISTAR_ORDENES_COMPRAS_PROVEEDOR, "POST", obj, function(data) {
 
                     if (data.status === 200) {
-                        console.log('====== server data ====', data.obj.ordenes_compras);
-                        //that.render_ordenes_compras(data.obj.ordenes_compras);
+                        that.render_ordenes_compras(data.obj.ordenes_compras);
                     }
                 });
             };
 
             that.render_ordenes_compras = function(ordenes_compras) {
 
-                $scope.Empresa.limpiar_ordenes_compras();
+                $scope.DocumentoIngreso.get_proveedor().limpiar_ordenes_compras();
 
                 ordenes_compras.forEach(function(orden) {
 
                     var orden_compra = OrdenCompra.get(orden.numero_orden, orden.estado, orden.observacion, orden.fecha_registro);
 
-                    $scope.Empresa.set_ordenes_compras(orden_compra);
+                    $scope.DocumentoIngreso.get_proveedor().set_ordenes_compras(orden_compra);
                 });
             };
 
+            $scope.seleccionar_orden_compra = function() {
 
+            };
+
+
+            $scope.habilitar_btn_productos = function() {
+                
+                var disabled = false;
+                
+                if($scope.DocumentoIngreso.get_proveedor() === undefined || $scope.DocumentoIngreso.get_proveedor() === ""){
+                    disabled = true;
+                }
+                
+                if($scope.DocumentoIngreso.get_orden_compra() === undefined || $scope.DocumentoIngreso.get_orden_compra() === ""){
+                    disabled = true;
+                }
+                
+                if($scope.DocumentoIngreso.get_observacion() === ""){
+                    disabled = true;
+                }
+                
+                return disabled;
+            };
 
             // Desplegar slider para gestionar productos
             $scope.seleccionar_productos = function(opcion) {
@@ -160,6 +179,45 @@ define([
                     $scope.$emit('cerrar_gestion_productos', {animado: true});
             };
 
+            $scope.btn_eliminar_producto = function() {
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="cerrar()">&times;</button>\
+                                    <h4 class="modal-title">Desea eliminar el producto?</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <h4>Desea eliminar producto?</h4>\
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-warning" ng-click="cerrar()">No</button>\
+                                    <button class="btn btn-primary" ng-click="confirmar_eliminar_producto()" >Si</button>\
+                                </div>',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.confirmar_eliminar_producto = function() {
+                            $scope.eliminar_producto();
+                            $modalInstance.close();
+                        };
+
+                        $scope.cerrar = function() {
+                            $modalInstance.close();
+                        };
+
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+            };
+            
+            $scope.eliminar_producto = function() {
+                AlertService.mostrarMensaje("warning", "Producto Eliminado Correctamente");
+            };
+            
             $scope.btn_eliminar_documento = function() {
 
                 $scope.opts = {
@@ -190,11 +248,6 @@ define([
                             $modalInstance.close();
                         };
 
-                    },
-                    resolve: {
-                        producto_eliminar: function() {
-                            return $scope.producto_eliminar;
-                        }
                     }
                 };
                 var modalInstance = $modal.open($scope.opts);
@@ -256,7 +309,7 @@ define([
                     {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "10%", cellFilter: "currency:'$ '"},
                     {width: "7%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="eliminar_producto_orden_compra(row)" ng-disabled="vista_previa" ><span class="glyphicon glyphicon-remove"></span></button>\
+                                            <button class="btn btn-default btn-xs" ng-click="btn_eliminar_producto(row.entity)"><span class="glyphicon glyphicon-remove"></span></button>\
                                         </div>'}
                 ]
             };
@@ -276,7 +329,7 @@ define([
                     {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "10%", cellFilter: "currency:'$ '"},
                     {width: "7%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="eliminar_producto_orden_compra(row)" ng-disabled="vista_previa" ><span class="glyphicon glyphicon-remove"></span></button>\
+                                            <button class="btn btn-default btn-xs" ng-click="btn_eliminar_producto(row)" ><span class="glyphicon glyphicon-remove"></span></button>\
                                         </div>'}
                 ]
             };

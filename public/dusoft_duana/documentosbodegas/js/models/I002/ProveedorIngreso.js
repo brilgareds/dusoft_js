@@ -20,12 +20,16 @@ define(["angular", "js/models", "includes/classes/Proveedor"], function(angular,
             };
             
             // Orden de Compra
-            ProveedorIngreso.prototype.set_ordenes_compra = function(orden_compra) {
+            ProveedorIngreso.prototype.set_ordenes_compras = function(orden_compra) {
                 this.ordenes_compra.push(orden_compra);
             };
 
-            ProveedorIngreso.prototype.get_ordenes_compra = function() {
+            ProveedorIngreso.prototype.get_ordenes_compras = function() {
                 return this.ordenes_compra;
+            };
+            
+            ProveedorIngreso.prototype.limpiar_ordenes_compras = function() {
+                this.ordenes_compra = [];
             };
             
             return this;

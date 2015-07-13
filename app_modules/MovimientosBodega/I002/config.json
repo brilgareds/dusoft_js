@@ -1,0 +1,62 @@
+{
+    "module": "E008",
+    "dependency": {
+        "controllers": [{
+                "e008_controller": {
+                    "module": "MovimientosBodega/E008",
+                    "controller": "E008Controller",
+                    "alias": "c_e008"
+                }
+            }],
+        "models": [{
+                "movimientos_bodegas_model": {
+                    "module": "MovimientosBodega/MovBodegas",
+                    "model": "MovBodegasModel",
+                    "alias": "m_movimientos_bodegas"
+                },
+                "E008_model": {
+                    "module": "MovimientosBodega/E008",
+                    "model": "DocBodegaE008",
+                    "alias": "m_e008"
+                },
+                "pedidos_clientes_model": {
+                    "module": "PedidosClientes",
+                    "model": "PedidosClienteModel",
+                    "alias": "m_pedidos_clientes"
+                },
+                "pedidos_farmacias_model": {
+                    "module": "PedidosFarmacias",
+                    "model": "PedidosFarmaciasModel",
+                    "alias": "m_pedidos_farmacias"
+                },
+                "terceros_model": {
+                    "module": "Terceros/OperariosBodega",
+                    "model": "OperariosBodegaModel",
+                    "alias": "m_terceros"
+                },
+                "pedidos_model": {
+                    "module": "Pedidos",
+                    "model": "PedidosModel",
+                    "alias": "m_pedidos"
+                }
+            }],
+        "events": [{
+                "E008_events": {
+                    "module": "MovimientosBodega/E008",
+                    "event": "E008Events",
+                    "alias": "e_e008"
+                },
+                "pedidos_clientes_events": {
+                    "module": "PedidosClientes",
+                    "event": "PedidosClientesEvents",
+                    "alias": "e_pedidos_clientes"
+                },
+                "pedidos_farmacias_events": {
+                    "module": "PedidosFarmacias",
+                    "event": "PedidosFarmaciasEvents",
+                    "alias": "e_pedidos_farmacias"
+                }
+            }],
+        "cronJobs": []
+    }
+}

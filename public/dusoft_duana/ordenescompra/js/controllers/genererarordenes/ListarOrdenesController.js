@@ -162,7 +162,7 @@ define(["angular", "js/controllers",
                 orden_compra.set_ingreso_temporal(orden.tiene_ingreso_temporal);
 
                 orden_compra.set_estado_digitacion(orden.sw_orden_compra_finalizada, orden.estado_digitacion);
-                
+
                 orden_compra.set_fechas_recepcion(orden.fecha_recibido, orden.fecha_verificado);
 
                 return orden_compra;
@@ -186,8 +186,10 @@ define(["angular", "js/controllers",
                         cellTemplate: "<button type='button' ng-class='agregar_clase_btn(row.entity.estado)'>{{row.entity.descripcion_estado}} </button>", width: "220"},
                     {field: 'estado_digitacion', displayName: "Digitacion"},
                     {field: 'fecha_registro', displayName: "F. Registro", width: "7%"},
-                    {field: 'fecha_recibido', displayName: "F. Recibida", width: "7%"},
-                    {field: 'fecha_verificacion', displayName: "F. Verificacion", width: "7%"},
+                    {field: 'fecha_recibido', displayName: "F. Recibida", width: "7%",
+                        cellTemplate: '<div class="ngCellText {{ agregar_indicador_fechas(row.entity) }}" ng-class="col.colIndex()">{{row.entity.fecha_recibido}}</div>'},
+                    {field: 'fecha_verificacion', displayName: "F. Verificacion", width: "7%",
+                        cellTemplate: '<div class="ngCellText {{ agregar_indicador_fechas(row.entity) }}" ng-class="col.colIndex()">{{row.entity.fecha_verificacion}}</div>'},
                     {field: 'fecha_ingreso', displayName: "F. Ingreso", width: "7%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
@@ -212,6 +214,31 @@ define(["angular", "js/controllers",
 
                 return estados[estado];
             };
+
+            $scope.agregar_indicador_fechas = function(orden) {
+
+                //NOTA ESTO TOCA ARREGLARLO CON MOMENT JS 
+                //
+                // The number of milliseconds in one day
+                var ONE_DAY = 1000 * 60 * 60 * 24;
+
+                // Convert both dates to milliseconds
+                var date1_ms = (orden.fecha_recibido === "") ? new Date().getTime() : new Date(orden.fecha_recibido.replace(/(\d{2})-(\d{2})-(\d{4})/, "$2/$1/$3")).getTime();
+                var date2_ms = new Date(orden.fecha_registro.replace(/(\d{2})-(\d{2})-(\d{4})/, "$2/$1/$3")).getTime();
+
+                // Calculate the difference in milliseconds
+                var difference_ms = Math.abs(date1_ms - date2_ms);
+
+                // Convert back to days and return
+                var days = Math.round(difference_ms / ONE_DAY);
+
+                if (days >= 3 || orden.fecha_recibido === "")
+                    return "ng-cell-red";
+                else
+                    return "ng-cell-green";
+            };
+
+
 
             $scope.pagina_anterior = function() {
                 $scope.pagina_actual--;
@@ -511,9 +538,9 @@ define(["angular", "js/controllers",
             socket.on("onListarOrdenesCompras", function(datos) {
 
                 if (datos.status === 200) {
-                    
+
                     var datos = datos.obj.ordenes_compras[0];
-                    
+
                     var orden_compra = that.render_orden_compra(datos);
 
                     for (var i in $scope.Empresa.get_ordenes_compras()) {
@@ -528,7 +555,7 @@ define(["angular", "js/controllers",
                         }
                     }
 
-                    AlertService.mostrarMensaje("success", "Orden Compra Actualizada");                    
+                    AlertService.mostrarMensaje("success", "Orden Compra Actualizada");
                 }
             });
 

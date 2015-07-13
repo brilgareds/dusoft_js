@@ -393,7 +393,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                     obj.empresa_id = parametrizacion.rol.empresa_id;
 
                     localStorageService.add("session", JSON.stringify(obj));
-                    location.reload();
+                    self.irAlHome("");
                 });
             };
 

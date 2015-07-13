@@ -505,7 +505,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             that.buscarPedido = function(termino, paginando) {
 
-                console.log("Visualizacion Empresas Destino: ", $scope.rootCreaPedidoFarmacia.empresasDestino);
+                console.log("Visualizacion Empresas Destino: >>>>>>>>>>>>>>>>>>>>>>> ", $scope.rootCreaPedidoFarmacia.empresasDestino);
 
                 //valida si cambio el termino de busqueda
                 if ($scope.rootCreaPedidoFarmacia.ultima_busqueda !== $scope.rootCreaPedidoFarmacia.termino_busqueda) {

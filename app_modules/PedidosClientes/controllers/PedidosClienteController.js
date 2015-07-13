@@ -1604,7 +1604,9 @@ PedidosCliente.prototype.imprimirCotizacionCliente = function(req, res) {
 };
 
 function _generarDocumentoCotizacion(that, obj, callback) {
-    G.jsreport.reporter.render({
+    
+    
+    G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/PedidosClientes/reports/cotizacion.html', 'utf8'),
             //helpers: G.fs.readFileSync('app_modules/PedidosFarmacias/reports/javascripts/rotulos.js', 'utf8'),
@@ -1612,32 +1614,41 @@ function _generarDocumentoCotizacion(that, obj, callback) {
             engine: 'jsrender'
         },
         data: obj
-    }).then(function(response) {
-        //console.log(">>>> RESPONSE: ", response);
-        var name = response.result.path;
-        var fecha = new Date();
-        var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
-        G.fs.copySync(name, G.dirname + "/public/reports/" + nombreTmp);
+    },
+    function(err, response) {
+       
+        
+        response.body(function(body) {
+            
+            
+           var fecha = new Date();
+           var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
+           var rutaArchivo = G.dirname + "/public/reports/" + nombreTmp;
+           
+           
+           G.fs.writeFile(rutaArchivo, body,  "binary",function(err) {
+               
+                if (obj.encabezado_pedido_cliente.email === true) {
 
-        if (obj.encabezado_pedido_cliente.email === true) {
+                    var nombre_archivo = "Cotizacion No" + obj.encabezado_pedido_cliente.numero_cotizacion + ".pdf";
+                    var destinatario = obj.encabezado_pedido_cliente.destinatarios;
+                    //var subject = "Dusoft :: Cotización DUANA y Cia Ltda.";
+                    var asunto = obj.encabezado_pedido_cliente.asunto;
+                    var contenido = obj.encabezado_pedido_cliente.contenido;
 
-            var nombre_archivo = "Cotizacion No" + obj.encabezado_pedido_cliente.numero_cotizacion + ".pdf";
-            var destinatario = obj.encabezado_pedido_cliente.destinatarios;
-            //var subject = "Dusoft :: Cotización DUANA y Cia Ltda.";
-            var asunto = obj.encabezado_pedido_cliente.asunto;
-            var contenido = obj.encabezado_pedido_cliente.contenido;
+                    __emailDocumento(that, destinatario, rutaArchivo, nombre_archivo, asunto, contenido, function(mail_exitoso) {
 
-            __emailDocumento(that, destinatario, name, nombre_archivo, asunto, contenido, function(mail_exitoso) {
+                        callback(nombreTmp, mail_exitoso);
+                    });
 
-                callback(nombreTmp, mail_exitoso);
-                return;
+                } else {
+                    callback(nombreTmp);
+                }
+                
             });
-
-        }
-        else {
-            callback(nombreTmp);
-            return;
-        }
+            
+        });
+        
 
     });
 }

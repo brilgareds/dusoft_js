@@ -62,6 +62,8 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
 // Listar las Ordenes de Compra de un Proveedor
 OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(codigo_proveedor_id, callback) {
 
+    // Falta realizar un tipo de filtro, para dejar esta funcion mas global
+    // se debe filtrar por el estado. ESTA ACTIVIDAD ESTA PENDIENTE
 
     var sql = " SELECT \
                 a.orden_pedido_id as numero_orden,\
@@ -285,12 +287,12 @@ OrdenesCompraModel.prototype.actualizar_estado_orden_compra = function(numero_or
     // 2 => Anulada
     // 3 => Recibida
     // 4 => Verificada
-    
+
     var sql_aux = " ";
-    
-    if(estado ==='3')
+
+    if (estado === '3')
         sql_aux = " ,fecha_recibido = now() ";
-    if(estado ==='4')
+    if (estado === '4')
         sql_aux = " ,fecha_verificado = now() ";
 
     var sql = " UPDATE compras_ordenes_pedidos SET estado = $2 " + sql_aux + " WHERE orden_pedido_id = $1  ";
@@ -629,11 +631,11 @@ OrdenesCompraModel.prototype.insertar_recepcion_mercancia = function(recepcion_m
     ];
 
     G.db.query(sql, parametros, function(err, rows, result, total_records) {
-        
+
         var estado = '3'; // Recibida
-        
-        that.actualizar_estado_orden_compra(recepcion_mercancia.orden_compra.numero_orden_compra, estado, function(_err, _rows,_result){
-            
+
+        that.actualizar_estado_orden_compra(recepcion_mercancia.orden_compra.numero_orden_compra, estado, function(_err, _rows, _result) {
+
             callback(err, rows);
         });
     });
@@ -773,15 +775,15 @@ OrdenesCompraModel.prototype.finalizar_recepcion_mercancia = function(recepcion,
 
     var that = this;
     console.log(recepcion);
-    
+
     var sql = " update recepcion_mercancia set estado = '2' where  id = $1 ; ";
 
     G.db.query(sql, [recepcion.numero_recepcion], function(err, rows, result, total_records) {
-        
-         var estado = '4'; // Verificada
-        
-        that.actualizar_estado_orden_compra(recepcion.orden_compra.numero_orden_compra, estado, function(_err, _rows,_result){
-            
+
+        var estado = '4'; // Verificada
+
+        that.actualizar_estado_orden_compra(recepcion.orden_compra.numero_orden_compra, estado, function(_err, _rows, _result) {
+
             callback(err, rows);
         });
     });

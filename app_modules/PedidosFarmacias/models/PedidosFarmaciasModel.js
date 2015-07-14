@@ -923,6 +923,7 @@ PedidosFarmaciasModel.prototype.calcular_cantidad_reservada_temporales_farmacias
  */
 
 PedidosFarmaciasModel.prototype.actualizar_cantidad_pendiente_en_solicitud = function(numero_pedido, callback) {
+    
      var sql = " select b.codigo_producto, b.cantidad_solic, sum(coalesce(c.cantidad_despachada,0)) as cantidad_despachada,\
                  b.cantidad_solic - sum(coalesce(c.cantidad_despachada,0)) as cantidad_pendiente from\
                 solicitud_productos_a_bodega_principal a\

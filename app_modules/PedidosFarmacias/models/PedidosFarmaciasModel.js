@@ -250,7 +250,7 @@ PedidosFarmaciasModel.prototype.insertar_producto_detalle_pedido_farmacia = func
 
 PedidosFarmaciasModel.prototype.consultar_encabezado_pedido_final = function(numero_pedido, callback)
 {
-    var sql = "SELECT farmacia_id, centro_utilidad, bodega, observacion, usuario_id, fecha_registro, empresa_destino, sw_despacho, estado, tipo_pedido\
+    var sql = "SELECT farmacia_id, centro_utilidad, bodega, observacion, usuario_id, fecha_registro, empresa_destino, sw_despacho, estado, tipo_pedido, centro_destino, bodega_destino\
                 FROM solicitud_productos_a_bodega_principal\
                 WHERE solicitud_prod_a_bod_ppal_id = $1";
 

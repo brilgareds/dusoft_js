@@ -67,23 +67,30 @@ legend.medium-letter{
 }
 
 .btn span.glyphicon.radio-btn {    			
-	opacity: 0;				
+    opacity: 0;				
 }
 .btn.active span.glyphicon.radio-btn {				
-	opacity: 1;				
+    opacity: 1;				
 }
 
 
 .datetimepicker-wrapper {
-  vertical-align: middle;
-  display: inline-block;
+    vertical-align: middle;
+    display: inline-block;
 }
 
 .datetimepicker-wrapper > input {
-  margin-bottom: 0 !important;
-  width: 130px;
+    margin-bottom: 0 !important;
+    width: 130px;
 }
 
 .datetimepicker-wrapper [ng-model=hours], [ng-model=minutes] {
-  width: 46px !important;
+    width: 46px !important;
+}
+
+.ng-cell-red {
+    background-color: #FFCFCF;
+}
+.ng-cell-green {
+    background-color: #DFFFDF;
 }

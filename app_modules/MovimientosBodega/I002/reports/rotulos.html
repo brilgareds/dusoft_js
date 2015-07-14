@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            h1, h2{
+                text-align:center;
+            
+            }    
+            
+            .cabecera{
+                overflow:hidden;
+            }
+            
+            .departamento{
+                float:right;
+                font-weight:bold;
+            }
+            
+            .documentos{
+                margin-bottom:50px;
+            }
+            
+            .numero_caja_span{
+                margin-right:5px;
+            }
+            
+            .separador{
+                margin-top:30px;
+                margin-bottom:30px;
+            }
+        </style>
+        
+    </head>
+    <body>
+        <div class="cabecera"><span class="departamento">{{:detalle.departamento}}</span></div>
+        <div>DESTINATARIO:</div>
+        <h1>{{:detalle.cliente}}</h1>
+        <div>DIRECCION:</div>
+        <h2>{{:detalle.direccion}}</h2>
+        <div class="documentos">DOCUMENTOS:</div>
+        <br/>
+        <!--span class="numero_caja_span">NUMERO </span-->
+        <strong> 
+            {{if detalle.tipo == 0}} CAJA {{else}} NEVERA  {{/if}}
+            
+            {{:detalle.numero_caja}} DE ______
+        </strong>
+        <h1>((((( DELICADO ))))</h1>
+        
+        <hr class="separador"/>
+        
+        <div class="cabecera"><span class="departamento">{{:detalle.departamento}}</span></div>
+        <div>DESTINATARIO:</div>
+        <h1>{{:detalle.cliente}}</h1>
+        <div>DIRECCION:</div>
+        <h2>{{:detalle.direccion}}</h2>
+        <div class="documentos">DOCUMENTOS:</div>
+        <br/>
+        <strong> 
+            {{if detalle.tipo == 0}} CAJA {{else}} NEVERA  {{/if}}
+            
+            {{:detalle.numero_caja}} DE ______
+        </strong>
+        <h1>((((( DELICADO ))))</h1>
+    </body>
+</html>

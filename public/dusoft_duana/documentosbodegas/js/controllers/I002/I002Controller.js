@@ -7,6 +7,7 @@ define([
     "models/I002/DocumentoIngreso",
     "models/I002/ProveedorIngreso",
     "models/I002/OrdenCompraIngreso",
+    "models/I002/ProductoIngreso",
     "controllers/I002/GestionarProductosOrdenCompraController",
     "controllers/I002/GestionarProductosController",
 ], function(angular, controllers) {
@@ -135,18 +136,18 @@ define([
 
 
             $scope.habilitar_btn_productos = function() {
-                
+
                 var disabled = false;
-                
-                if($scope.DocumentoIngreso.get_proveedor() === undefined || $scope.DocumentoIngreso.get_proveedor() === ""){
+
+                if ($scope.DocumentoIngreso.get_proveedor() === undefined || $scope.DocumentoIngreso.get_proveedor() === "") {
                     disabled = true;
                 }
-                
-                if($scope.DocumentoIngreso.get_orden_compra() === undefined || $scope.DocumentoIngreso.get_orden_compra() === ""){
+
+                if ($scope.DocumentoIngreso.get_orden_compra() === undefined || $scope.DocumentoIngreso.get_orden_compra() === "") {
                     disabled = true;
                 }
-                
-                if($scope.DocumentoIngreso.get_observacion() === ""){
+
+                if ($scope.DocumentoIngreso.get_observacion() === undefined || $scope.DocumentoIngreso.get_observacion() === "") {
                     disabled = true;
                 }
                 
@@ -213,11 +214,11 @@ define([
                 };
                 var modalInstance = $modal.open($scope.opts);
             };
-            
+
             $scope.eliminar_producto = function() {
                 AlertService.mostrarMensaje("warning", "Producto Eliminado Correctamente");
             };
-            
+
             $scope.btn_eliminar_documento = function() {
 
                 $scope.opts = {

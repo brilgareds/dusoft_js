@@ -34,7 +34,8 @@ define(["angular"], function(angular) {
                 'IMPRIMIR_ROTULO_FARMACIAS':BASE_URL+'/movBodegas/E008/imprimirRotuloFarmacias'
             },
             'PEDIDOS' : {
-                'LISTAR_PEDIDOS': BASE_URL+'/PedidosClientes/listarPedidos',	
+                // URLS PEDIDOS FARMACIAS.
+                'LISTAR_PEDIDOS': BASE_URL+'/PedidosClientes/listarPedidos',	                
                 'LISTAR_PEDIDOS_FARMACIAS': BASE_URL+'/PedidosFarmacias/listarPedidos',	
                 'ASIGNAR_RESPONSABLE_CLIENTE':BASE_URL+'/PedidosClientes/asignarResponsable',
                 'ELIMINAR_RESPONSABLE_CLIENTE':BASE_URL+'/PedidosClientes/eliminarResponsablesPedido',
@@ -46,6 +47,7 @@ define(["angular"], function(angular) {
                 'CENTROS_UTILIDAD_EMPRESAS_GRUPO':BASE_URL+'/CentrosUtilidad/listarCentrosUtilidadEmpresa',
                 'BODEGAS_EMPRESAS_GRUPO':BASE_URL+'/Bodegas/listarBodegasEmpresas',
                 'LISTAR_FARMACIAS':BASE_URL+'/PedidosFarmacias/listarFarmacias',
+                // URLS PEDIDOS CLIENTES.
                 'CENTROS_UTILIDAD_FARMACIAS':BASE_URL+'/PedidosFarmacias/listarCentrosUtilidad',
                 'BODEGAS_FARMACIAS':BASE_URL+'/PedidosFarmacias/listarBodegas',
                 'LISTAR_PRODUCTOS' :BASE_URL+'/Productos/listarProductos',

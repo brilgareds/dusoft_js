@@ -1,7 +1,7 @@
 //Controlador de la View seleccionproducto.html asociado a Slide en cotizacioncliente.html y creapedidosfarmacias.html
 
 define(["angular", "js/controllers",'includes/slide/slideContent',
-        'models/ClientePedido', 'models/PedidoVenta'], function(angular, controllers) {
+        'models/generarpedidos/ClientePedido', 'models/generarpedidos/PedidoVenta'], function(angular, controllers) {
 
     var fo = controllers.controller('SeleccionProductoClienteController', [
         '$scope', '$rootScope', 'Request',

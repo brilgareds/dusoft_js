@@ -1,6 +1,8 @@
 define(["angular", "js/controllers",
-    'models/Farmacia', 'models/PedidoAuditoria', 'models/Separador',
-    'models/DocumentoTemporal'], function(angular, controllers) {
+    'models/auditoriapedidos/Farmacia', 
+    'models/auditoriapedidos/PedidoAuditoria', 
+    'models/auditoriapedidos/Separador',
+    'models/auditoriapedidos/DocumentoTemporal'], function(angular, controllers) {
 
     var fo = controllers.controller('AuditoriaPedidosFarmaciasController', [
         '$scope', '$rootScope', 'Request',

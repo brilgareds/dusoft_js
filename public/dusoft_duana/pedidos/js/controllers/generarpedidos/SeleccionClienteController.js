@@ -1,7 +1,9 @@
 //Controlador de la View seleccioncliente.html asociado a Slide en cotizacioncliente.html
 
-define(["angular", "js/controllers",'includes/slide/slideContent',
-        'models/ClientePedido', 'models/PedidoVenta'], function(angular, controllers) {
+define(["angular", "js/controllers",
+    'includes/slide/slideContent',
+        'models/generarpedidos/ClientePedido', 
+        'models/generarpedidos/PedidoVenta'], function(angular, controllers) {
 
     var fo = controllers.controller('SeleccionClienteController', [
         '$scope', '$rootScope', 'Request',

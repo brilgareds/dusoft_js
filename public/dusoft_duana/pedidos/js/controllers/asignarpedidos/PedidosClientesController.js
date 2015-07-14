@@ -1,5 +1,9 @@
 
-define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontroller', 'models/ClientePedido', 'models/PedidoAuditoria'], function(angular, controllers) {
+define(["angular",
+    "js/controllers",
+    'controllers/asignarpedidos/asignacioncontroller',
+    'models/asignacionpedidos/ClientePedido',
+    'models/asignacionpedidos/PedidoAuditoria'], function(angular, controllers) {
 
     var fo = controllers.controller('PedidosClientesController', [
         '$scope', '$rootScope', 'Request',
@@ -38,7 +42,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
                         pedidos_clientes: {
                             termino_busqueda: termino,
                             pagina_actual: $scope.paginaactual,
-                            empresa_id:Usuario.getUsuarioActual().getEmpresa().getCodigo(),
+                            empresa_id: Usuario.getUsuarioActual().getEmpresa().getCodigo(),
                             filtro: {}
                         }
                     }
@@ -51,8 +55,8 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
 
                 Request.realizarRequest(API.PEDIDOS.LISTAR_PEDIDOS, "POST", obj, function(data) {
                     $scope.ultima_busqueda = $scope.termino_busqueda;
-                    if(data.status === 200){
-                        
+                    if (data.status === 200) {
+
                         that.renderPedidosCliente(data.obj, paginando);
                     } else {
                         AlertService.mostrarMensaje("warning", data.msj);
@@ -85,7 +89,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
 
                     $scope.Empresa.agregarPedido(
                             pedido
-                    );
+                            );
 
 
                 }

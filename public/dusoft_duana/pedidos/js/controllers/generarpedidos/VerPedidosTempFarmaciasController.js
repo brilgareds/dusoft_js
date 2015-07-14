@@ -1,7 +1,7 @@
 //Controlador de la View verpedidosfarmacias.html
 
 define(["angular", "js/controllers", 'includes/slide/slideContent',
-    'models/ClientePedido', 'models/PedidoVenta'], function(angular, controllers) {
+    'models/generarpedidos/ClientePedido', 'models/generarpedidos/PedidoVenta'], function(angular, controllers) {
 
     var fo = controllers.controller('VerPedidosTempFarmaciasController', [
         '$scope', '$rootScope', 'Request',

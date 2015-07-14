@@ -1,6 +1,9 @@
-define(["angular", "js/controllers", 'models/ClientePedido',
-    'models/Separador', 'models/DocumentoTemporal',
-    'models/ProductoPedido', 'models/LoteProductoPedido'], function(angular, controllers) {
+define(["angular", "js/controllers", 
+    'models/auditoriapedidos/ClientePedido',
+    'models/auditoriapedidos/Separador', 
+    'models/auditoriapedidos/DocumentoTemporal',
+    'models/auditoriapedidos/ProductoPedido', 
+    'models/auditoriapedidos/LoteProductoPedido'], function(angular, controllers) {
 
     var fo = controllers.controller('DetallepedidoSeparadoClienteController', [
         '$scope', '$rootScope', 'Request',

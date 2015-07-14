@@ -1,8 +1,14 @@
 //Este controlador sirve como parent para los controladores DetallepedidoSeparadoCliente y DetallepedidoSeparadoFarmacia, encapsula logica en comun por estos dos ultimos
-define(["angular", "js/controllers", 'includes/slide/slideContent',
-    'models/ClientePedido', 'models/PedidoAuditoria', 'models/Separador', 'models/Auditor',
-    'models/DocumentoTemporal', "controllers/auditoriapedidos/AuditoriaPedidosClientesController", 
-    "controllers/auditoriapedidos/AuditoriaPedidosFarmaciasController", 'models/Caja',
+define(["angular", "js/controllers", 
+    'includes/slide/slideContent',
+    'models/auditoriapedidos/ClientePedido', 
+    'models/auditoriapedidos/PedidoAuditoria', 
+    'models/auditoriapedidos/Separador', 
+    'models/auditoriapedidos/Auditor',
+    'models/auditoriapedidos/DocumentoTemporal', 
+    'models/auditoriapedidos/Caja',
+    "controllers/auditoriapedidos/AuditoriaPedidosClientesController", 
+    "controllers/auditoriapedidos/AuditoriaPedidosFarmaciasController", 
     "controllers/auditoriapedidos/EditarProductoController"], function(angular, controllers) {
 
     var fo = controllers.controller('AuditoriaPedidosController', [

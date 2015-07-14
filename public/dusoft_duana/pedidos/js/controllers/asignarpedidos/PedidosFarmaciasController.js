@@ -1,5 +1,9 @@
 
-define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontroller', 'models/Farmacia', 'models/PedidoAuditoria'], function(angular, controllers) {
+define(["angular",
+    "js/controllers",
+    'controllers/asignarpedidos/asignacioncontroller',
+    'models/asignacionpedidos/Farmacia',
+    'models/asignacionpedidos/PedidoAuditoria'], function(angular, controllers) {
 
     controllers.controller('PedidosFarmaciasController', [
         '$scope', '$rootScope', 'Request',
@@ -66,7 +70,7 @@ define(["angular", "js/controllers", 'controllers/asignarpedidos/asignacioncontr
             };
 
             $scope.listarEmpresas = function() {
-                
+
                 $scope.empresas = Usuario.getUsuarioActual().getEmpresasFarmacias();
             };
 

@@ -1,4 +1,4 @@
-define(["angular", "js/controllers", 'models/Separador'], function(angular, controllers) {
+define(["angular", "js/controllers", 'models/asignacionpedidos/Separador'], function(angular, controllers) {
 
     controllers.controller('asignacioncontroller', [
         '$scope', '$rootScope', 'API',

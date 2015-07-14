@@ -1,7 +1,10 @@
 //Controlador de la View pedidosclientes.html
 
-define(["angular", "js/controllers",'includes/slide/slideContent',
-        'models/ClientePedido', 'models/PedidoVenta', 'models/VendedorPedido'], function(angular, controllers) {
+define(["angular", "js/controllers",
+    'includes/slide/slideContent',
+        'models/generarpedidos/ClientePedido', 
+        'models/generarpedidos/PedidoVenta', 
+        'models/generarpedidos/VendedorPedido'], function(angular, controllers) {
 
     var fo = controllers.controller('PedidosClientesVentasController', [
         '$scope', '$rootScope', 'Request',

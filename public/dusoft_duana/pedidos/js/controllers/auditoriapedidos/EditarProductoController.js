@@ -216,8 +216,8 @@ define(["angular", "js/controllers",
 
                 ],
                 beforeSelectionChange: function(row, event) {
-
-                    if (!row.entity || row.entity.cantidad_ingresada === 0 || row.entity.numero_caja > 0 || !row.entity.seleccionado) {
+                    //console.log("row seleccionado ", row.entity);
+                    if (!row.entity || row.entity.cantidad_ingresada === 0 || row.entity.numero_caja > 0 || !row.entity.seleccionado || row.entity.item_id === 0) {
                         return false;
                     }
 
@@ -604,11 +604,23 @@ define(["angular", "js/controllers",
             $scope.onValidarCaja = function() {
 
             };
+            
+            that.cantidadItemsSeleccionados = function(){
+                var cantidad = 0;
+                for(var i in $scope.lotes_producto.selectedItems){
+                    if($scope.lotes_producto.selectedItems[i].item_id !== 0){
+                        cantidad++;
+                    }
+                }
+                
+                return cantidad;
+            };
 
 
             $scope.onSeleccionarCaja = function() {
                 $scope.imprimir = false;
-                if ($scope.lotes_producto.selectedItems.length === 0) {
+                console.log("items seleccionados ", $scope.lotes_producto.selectedItems);
+                if (that.cantidadItemsSeleccionados() === 0) {
                     $scope.rootEditarProducto.validacionproducto.valido = false;
                     $scope.rootEditarProducto.caja.setValida(false);
                     $scope.rootEditarProducto.validacionproducto.mensaje = "No se han seleccionado lotes para la caja";

@@ -2133,28 +2133,20 @@ E008Controller.prototype.actualizarCajaDeTemporales = function(req, res) {
     var i = temporales.length;
 
     temporales.forEach(function(temporal) {
-        
-        if(parseInt(temporal) !== 0){
-            that.m_e008.actualizarCajaDeTemporal(temporal, numero_caja, tipo, function(err, rows, result) {
 
-                if (err || result.rowCount === 0) {
-                    res.send(G.utils.r(req.url, 'Error actualizand  la caja', 500, {documento_temporal: {}}));
-                    return;
-                } else {
+        that.m_e008.actualizarCajaDeTemporal(temporal, numero_caja, tipo, function(err, rows, result) {
 
-                    if (--i === 0) {
-                        res.send(G.utils.r(req.url, 'Cajas asignadas correctamente', 200, {documento_temporal: {}}));
-                        return;
-                    }
-                }
-            });
-        } else {
-            if (--i === 0) {
-                res.send(G.utils.r(req.url, 'Cajas asignadas correctamente', 200, {documento_temporal: {}}));
+            if (err || result.rowCount === 0) {
+                res.send(G.utils.r(req.url, 'Error actualizand  la caja', 500, {documento_temporal: {}}));
                 return;
-            }
-        }
+            } else {
 
+                if (--i === 0) {
+                    res.send(G.utils.r(req.url, 'Cajas asignadas correctamente', 200, {documento_temporal: {}}));
+                    return;
+                }
+            }
+        });
     });
 
 };

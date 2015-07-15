@@ -660,7 +660,9 @@ define(["angular", "js/controllers",
 
 
                             for (var i in $scope.lotes_producto.selectedItems) {
-                                items.push($scope.lotes_producto.selectedItems[i].item_id);
+                                if($scope.lotes_producto.selectedItems[i].item_id !== 0){
+                                    items.push($scope.lotes_producto.selectedItems[i].item_id);
+                                }
                             }
 
                             var obj = {

@@ -20,8 +20,8 @@ define(["angular", "js/controllers",
 
             var that = this;
             $scope.Empresa = Empresa;
-            
-            
+
+
             //variables
             $scope.laboratorio_id = '';
             $scope.codigo_proveedor_id = '';
@@ -199,9 +199,13 @@ define(["angular", "js/controllers",
             that.render_laboratorios = function(laboratorios) {
 
                 $scope.Empresa.limpiar_laboratorios();
+
+                var laboratorio = Laboratorio.get("", "-- TODOS --");
+                $scope.Empresa.set_laboratorios(laboratorio);
+
                 laboratorios.forEach(function(data) {
 
-                    var laboratorio = Laboratorio.get(data.laboratorio_id, data.descripcion_laboratorio);
+                    laboratorio = Laboratorio.get(data.laboratorio_id, data.descripcion_laboratorio);
                     $scope.Empresa.set_laboratorios(laboratorio);
                 });
             };
@@ -226,9 +230,14 @@ define(["angular", "js/controllers",
 
 
             $scope.seleccionar_laboratorio = function(laboratorio) {
-                
-                $scope.laboratorio_id = laboratorio.get_id();
-                
+
+                console.log('=== seleccionar_laboratorio ===');
+                console.log(laboratorio);
+
+                $scope.laboratorio_id = "";
+                if (laboratorio !== undefined)
+                    $scope.laboratorio_id = laboratorio.get_id();
+
                 that.buscar_productos($scope.termino_busqueda);
             };
 

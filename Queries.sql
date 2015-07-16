@@ -274,7 +274,7 @@ IS 'Estado Orden de Compra 0 => Recibida (Ingresada en Bodega), 1 => Activa, 2 =
 ---- ==================================================================================== ----
 ---- Agregar columna tipo_producto a la tabla ventas_ordenes_pedidos_d_tmp para poder controlar que cotizaciones a clientes vayan por un solo tipo de producto
 
-ALTER TABLE ventas_ordenes_pedidos_d_tmp ADD COLUMN tipo_producto varchar(1)
+ALTER TABLE ventas_ordenes_pedidos_d_tmp ADD COLUMN tipo_producto varchar(1);
 
 COMMENT ON COLUMN "public"."ventas_ordenes_pedidos_d_tmp"."tipo_producto"
 IS ' Indica tipo de producto según los definidos en tabla inv_tipo_producto ';
@@ -282,7 +282,7 @@ IS ' Indica tipo de producto según los definidos en tabla inv_tipo_producto ';
 ---- ==================================================================================== ----
 ---- Agregar columna tipo_producto a la tabla ventas_ordenes_pedidos_d para poder controlar que pedidos de clientes vayan por un solo tipo de producto
 
-ALTER TABLE ventas_ordenes_pedidos_d ADD COLUMN tipo_producto varchar(1)
+ALTER TABLE ventas_ordenes_pedidos_d ADD COLUMN tipo_producto varchar(1);
 
 COMMENT ON COLUMN "public"."ventas_ordenes_pedidos_d"."tipo_producto"
 IS ' Indica tipo de producto según los definidos en tabla inv_tipo_producto ';
@@ -579,7 +579,7 @@ CREATE TABLE "public"."roles" (
 	
 	
 CREATE TABLE "public"."login_empresas" (
-  "id" INTEGER DEFAULT nextval('login_empresa_id_seq'::regclass) NOT NULL, 
+  "id" SERIAL NOT NULL, 
   "login_id" INTEGER, 
   "empresa_id" CHAR(2), 
   "predeterminado" CHAR(1), 
@@ -1248,7 +1248,7 @@ ALTER TABLE "public"."solicitud_productos_a_bodega_principal"
 
 
 ALTER TABLE "public"."solicitud_productos_a_bodega_principal"
-  ADD CONSTRAINT "solicitud_productos_a_bodega_principal_fk" FOREIGN KEY ("empresa_destino", "centro_destino", "bogega_destino")
+  ADD CONSTRAINT "solicitud_productos_a_bodega_principal_fk" FOREIGN KEY ("empresa_destino", "centro_destino", "bodega_destino")
     REFERENCES "public"."bodegas"("empresa_id", "centro_utilidad", "bodega")
     ON DELETE RESTRICT
     ON UPDATE CASCADE

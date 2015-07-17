@@ -45,18 +45,17 @@ define([
     "controllers/auditoriapedidos/AuditoriaPedidosController",
     "controllers/auditoriapedidos/DetallepedidoSeparadoClienteController",
     "controllers/auditoriapedidos/DetallepedidoSeparadoFarmaciaController",
-<<<<<<< HEAD
     
     //pedidos farmacias
     "controllers/generacionpedidos/pedidosfarmacias/ListaPedidosController",
     "controllers/generacionpedidos/pedidosfarmacias/ListaPedidosTemporalesController",
-    "models/generacionpedidos/pedidosfarmacias/EmpresaPedidoFarmacia"
-=======
+    "models/generacionpedidos/pedidosfarmacias/EmpresaPedidoFarmacia",
+    
     // Nuevas Urls para el proceso de pedidos clientes
     "controllers/generacionpedidos/pedidosclientes/ListarPedidosClientesController",
     "controllers/generacionpedidos/pedidosclientes/PedidosClienteController",
-    "controllers/generacionpedidos/pedidosclientes/GestionarProductosClientesController",
->>>>>>> febd50c474dd34c0c2825c1945c95ad885bfe684
+    "controllers/generacionpedidos/pedidosclientes/GestionarProductosClientesController"
+
 ], function(angular) {
     /* App Module and its dependencies */
 

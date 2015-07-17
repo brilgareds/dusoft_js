@@ -10,41 +10,43 @@ define([
     "js/directive",
     "nggrid",
     "uiselect2",
-    "loader", 
-    "url", 
-    'storage', 
+    "loader",
+    "url",
+    'storage',
     "httpinterceptor",
     "dragndropfile",
     "includes/validation/ValidacionNumero",
     "includes/validation/ValidacionNumeroEntero",
     "includes/widgets/InputCheck",
-    "includes/menu/menucontroller", 
+    "includes/menu/menucontroller",
     "includes/alert/Alert",
-    "includes/header/HeaderController", 
-    "includes/classes/Usuario", 
-    "includes/http/Request", 
-    "includes/helpersdirectives/visualizarReporte", 
+    "includes/header/HeaderController",
+    "includes/classes/Usuario",
+    "includes/http/Request",
+    "includes/helpersdirectives/visualizarReporte",
     "includes/validation/NgValidateEvents",
     "models/pedidos/EmpresaPedido",
     "controllers/generarpedidos/CotizacionesController",
-    "controllers/generarpedidos/CreaCotizacionesController", 
+    "controllers/generarpedidos/CreaCotizacionesController",
     "controllers/generarpedidos/SeleccionClienteController",
-    "controllers/generarpedidos/SeleccionProductoClienteController", 
-    "controllers/generarpedidos/SeleccionProductoFarmaciaController", 
+    "controllers/generarpedidos/SeleccionProductoClienteController",
+    "controllers/generarpedidos/SeleccionProductoFarmaciaController",
     "controllers/generarpedidos/CreaPedidoFarmaciaController",
-    "controllers/generarpedidos/VerPedidosFarmaciasController", 
-    "controllers/generarpedidos/VerPedidosTempFarmaciasController", 
+    "controllers/generarpedidos/VerPedidosFarmaciasController",
+    "controllers/generarpedidos/VerPedidosTempFarmaciasController",
     "controllers/generarpedidos/PedidosClientesVentasController",
-    "controllers/generarpedidos/MailPdfController", 
-    "controllers/generarpedidos/ContenedorPedidosFarmaciasController", 
+    "controllers/generarpedidos/MailPdfController",
+    "controllers/generarpedidos/ContenedorPedidosFarmaciasController",
     "controllers/generarpedidos/AprobarCotizacionController",
     "controllers/generarpedidos/AprobarPedidoController",
     "controllers/asignarpedidos/PedidosController",
     "controllers/asignarpedidos/PedidosClientesController",
     "controllers/asignarpedidos/PedidosFarmaciasController",
-    "controllers/auditoriapedidos/AuditoriaPedidosController", 
-    "controllers/auditoriapedidos/DetallepedidoSeparadoClienteController", 
-    "controllers/auditoriapedidos/DetallepedidoSeparadoFarmaciaController"
+    "controllers/auditoriapedidos/AuditoriaPedidosController",
+    "controllers/auditoriapedidos/DetallepedidoSeparadoClienteController",
+    "controllers/auditoriapedidos/DetallepedidoSeparadoFarmaciaController",
+    // Nuevas Urls para el proceso de pedidos clientes
+    "controllers/generacionpedidos/pedidosclientes/ListarPedidosClientesController",
 ], function(angular) {
     /* App Module and its dependencies */
 
@@ -157,6 +159,24 @@ define([
                     text: "Crear/Editar Pedidos Farmacias",
                     templateUrl: "views/generarpedidos/creapedidosfarmacias.html",
                     parent_name: "VerPedidosFarmacias"
+                });
+
+
+                // URL's Pedidos Clientes
+                pedidos.stateProvider.state('ListarPedidosClientes', {
+                    url: "/ListarPedidosClientes",
+                    text: "Listado Pedidos Clientes",
+                    templateUrl: "views/generacionpedidos/pedidosclientes/index.html"
+                }).state('Cotizaciones', {
+                    url: "/Cotizaciones",
+                    text: "Gestionar Cotizaciones",
+                    templateUrl: "views/generacionpedidos/pedidosclientes/gestionarpedidocliente.html",
+                    parent_name : "ListarPedidosClientes"
+                }).state('PedidoCliente', {
+                    url: "/PedidoCliente",
+                    text: "Gestionar Pedidos Clientes",
+                    templateUrl: "views/generacionpedidos/pedidosclientes/gestionarpedidocliente.html",
+                    parent_name : "ListarPedidosClientes"
                 });
 
                 if ($location.path() === "") {

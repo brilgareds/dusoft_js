@@ -45,11 +45,18 @@ define([
     "controllers/auditoriapedidos/AuditoriaPedidosController",
     "controllers/auditoriapedidos/DetallepedidoSeparadoClienteController",
     "controllers/auditoriapedidos/DetallepedidoSeparadoFarmaciaController",
+<<<<<<< HEAD
     
     //pedidos farmacias
     "controllers/generacionpedidos/pedidosfarmacias/ListaPedidosController",
     "controllers/generacionpedidos/pedidosfarmacias/ListaPedidosTemporalesController",
     "models/generacionpedidos/pedidosfarmacias/EmpresaPedidoFarmacia"
+=======
+    // Nuevas Urls para el proceso de pedidos clientes
+    "controllers/generacionpedidos/pedidosclientes/ListarPedidosClientesController",
+    "controllers/generacionpedidos/pedidosclientes/PedidosClienteController",
+    "controllers/generacionpedidos/pedidosclientes/GestionarProductosClientesController",
+>>>>>>> febd50c474dd34c0c2825c1945c95ad885bfe684
 ], function(angular) {
     /* App Module and its dependencies */
 
@@ -131,6 +138,24 @@ define([
                     url: "/ListarPedidosFarmacias",
                     text: "Pedidos Farmacias",
                     templateUrl: "views/generacionpedidos/listapedidos.html"
+                });
+
+
+                // URL's Pedidos Clientes
+                pedidos.stateProvider.state('ListarPedidosClientes', {
+                    url: "/ListarPedidosClientes",
+                    text: "Listado Pedidos Clientes",
+                    templateUrl: "views/generacionpedidos/pedidosclientes/index.html"
+                }).state('Cotizaciones', {
+                    url: "/Cotizaciones",
+                    text: "Gestionar Cotizaciones",
+                    templateUrl: "views/generacionpedidos/pedidosclientes/gestionarpedidocliente.html",
+                    parent_name : "ListarPedidosClientes"
+                }).state('PedidoCliente', {
+                    url: "/PedidoCliente",
+                    text: "Gestionar Pedidos Clientes",
+                    templateUrl: "views/generacionpedidos/pedidosclientes/gestionarpedidocliente.html",
+                    parent_name : "ListarPedidosClientes"
                 });
 
                 if ($location.path() === "") {

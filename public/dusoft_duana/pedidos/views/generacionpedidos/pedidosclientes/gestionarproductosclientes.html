@@ -1,0 +1,77 @@
+<div>
+
+
+    <div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading clearfix">
+                        <!--                <h4 class="panel-title pull-left" style="padding-top: 7.5px;">Imagen</h4>-->
+                        <div class="pull-left col-md-11">
+                            <h4 class="text-center"><strong>Buscar Productos</strong></h4>
+                        </div>
+                        <div class="pull-right">
+                            <div>
+                                <button ng-click="cerrar_busqueda_productos()" class="pull-right btn btn-default btn-xs" style="margin-right:15px"><i class="glyphicon glyphicon-remove-circle"> </i> Cerrar</button>   
+                            </div> 
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div>
+                            <div class="row" style="margin-bottom: 20px;">
+                                <div class="col-lg-12">
+                                    <h4>Convenciones</h4>
+                                    <div class="label label-primary" style="position: relative;">Todos</div>      
+                                    <div class="label label-success" style="position: relative;">Normales</div>      
+                                    <div class="label label-danger" style="position: relative;">Alto Costo</div>      
+                                    <div class="label label-info" style="position: relative;">Controlados</div>      
+                                    <div class="label label-danger" style="position: relative;">Insumos</div>      
+                                    <div class="label label-danger" style="position: relative;">Neveras</div>      
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <p class="input-group col-md-12">
+                                        <!--select ui-select2=""  class="form-control selectgeneral pull-left" ng-model="$parent.laboratorio_id"  placeholder="Seleccionar laboratorio" ng-change="seleccionar_laboratorio()">
+                                            <option></option>      
+                                            <option ng-repeat="laboratorio in  Empresa.get_laboratorios()"  value="{{laboratorio.id}}">{{ laboratorio.descripcion }}</option>
+                                        </select-->
+                                    <ui-select ng-disabled="vista_previa"  ng-model="laboratorio_id" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_laboratorio(laboratorio_id)">
+                                        <ui-select-match  placeholder="Seleccionar laboratorio">{{ $select.selected.get_nombre() }}</ui-select-match>                                        
+                                        <ui-select-choices repeat="laboratorio in  Empresa.get_laboratorios() | filter:$select.search">
+                                            {{ laboratorio.get_nombre() }}
+                                        </ui-select-choices>
+                                    </ui-select>
+                                    </p>
+                                </div>
+
+                                <div class="col-md-3 pull-right">
+                                    <p class="input-group">
+
+                                        <input type="text" class="form-control" ng-keypress="buscador_productos($event, termino_busqueda);"  ng-model="termino_busqueda" placeholder="Buscar" name="" id="" />
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default" type="submit" ng-click=""><i class="glyphicon glyphicon-search"></i></button>
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="" style="height: 700px" ng-grid="lista_productos" > </div>
+
+                            </br>
+
+                            <div class="row text-center">
+                                <button type="button" class="btn btn-default btn-medium" ng-disabled="pagina_actual == 1" ng-click="pagina_anterior()" >
+                                    <span class="glyphicon glyphicon-chevron-left" ></span>
+                                </button>
+                                <button type="button" class="btn btn-default btn-medium" ng-disabled="cantidad_items == 0" ng-click="pagina_siguiente()">
+                                    <span class="glyphicon glyphicon-chevron-right" ></span>
+                                </button>
+                            </div>    
+                        </div>
+                    </div>
+                </div>       
+            </div>
+        </div>        
+    </div>
+</div>

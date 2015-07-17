@@ -47,6 +47,8 @@ define([
     "controllers/auditoriapedidos/DetallepedidoSeparadoFarmaciaController",
     // Nuevas Urls para el proceso de pedidos clientes
     "controllers/generacionpedidos/pedidosclientes/ListarPedidosClientesController",
+    "controllers/generacionpedidos/pedidosclientes/PedidosClienteController",
+    "controllers/generacionpedidos/pedidosclientes/GestionarProductosClientesController",
 ], function(angular) {
     /* App Module and its dependencies */
 

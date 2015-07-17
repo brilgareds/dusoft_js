@@ -1,0 +1,30 @@
+<div>
+    <div> 
+
+        <tabset>
+
+            <tab ng-controller="ListaPedidosController">
+                <tab-heading>
+                    Pedidos Farmacias <!--<span ng-show="notificacionclientes > 0" class="badge badge-warning">{{notificacionclientes}}</span>-->
+                </tab-heading>
+                
+                <div ng-include src="'views/generacionpedidos/tabPedidos.html'"></div>
+
+            </tab>
+
+            <tab ng-controller="ListaPedidosTemporalesController" > 
+                <tab-heading >
+                    Pedidos Temporales
+                </tab-heading>
+                
+                <div ng-include src="'views/generacionpedidos/tabPedidosTemporales.html'"></div>
+               
+            </tab>                
+
+        </tabset>
+
+    </div>
+    
+    <visualizar-reporte></visualizar-reporte>
+
+</div>

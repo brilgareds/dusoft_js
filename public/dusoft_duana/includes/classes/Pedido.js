@@ -10,6 +10,7 @@ define(["angular", "js/models"], function(angular, models) {
         function Pedido() {
             this.cliente;
             this.farmacia;
+            this.descripcion = "";
         }
 
         // Pedidos
@@ -24,6 +25,10 @@ define(["angular", "js/models"], function(angular, models) {
             this.estado_separacion = datos.estado_separacion || null;
         };
 
+
+        Pedido.prototype.setNumeroPedido = function(numero_pedido){
+            this.numero_pedido = numero_pedido;
+        };
 
         Pedido.prototype.get_numero_pedido = function() {
             return this.numero_pedido;
@@ -48,17 +53,23 @@ define(["angular", "js/models"], function(angular, models) {
         Pedido.prototype.getFechaRegistro = function() {
             return this.fecha_registro;
         };
+        
+        Pedido.prototype.setDescripcion = function(descripcion){
+            this.descripcion = descripcion;
+        };
+
+        Pedido.prototype.getDescripcion = function() {
+            return this.descripcion;
+        };
 
         this.getClass = function(){
             return Pedido;
         };
 
-        //we return new instance of usermodel class  because factory is a singleton and we dont need like that
         this.get = function() {
             return new Pedido();
         };
 
-        //just return the factory wrapper
         return this;
 
     });

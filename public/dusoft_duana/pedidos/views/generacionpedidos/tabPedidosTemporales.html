@@ -1,0 +1,34 @@
+<button type="button" class="btn btn-default pull-left" ng-click="abrirViewPedidoFarmaciaTemp()" ng-validate-events="{{root.opcionesModulo.btnCrearPedido}}" name="btnCrearPedido">
+    <span class="glyphicon glyphicon-plus"></span> Crear Pedido
+</button>
+
+<div class="col-sm-4 col-md-4 col-lg-4 marginLeft">
+    <select ui-select2  class="form-control selectgeneral anchoSeleccionEmpresa" ng-model="rootPedidosTempFarmacias.seleccion" data-placeholder="Seleccionar Farmacia" ng-change="valorSeleccionadoTemp()">
+        <option ng-repeat="farmacia in  rootPedidosTempFarmacias.listado_farmacias"  ng-value="farmacia.empresa_id" >{{farmacia.razon_social}}</option>
+    </select>
+</div>
+
+<div class="input-group navbar-form buscadorgeneral">
+    <input type="text" class="form-control pull-right" ng-keypress="onTeclaBuscarPedidosFarmaciasTemp($event)" ng-model="rootPedidosFarmacias.termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
+    <span class="input-group-btn" >
+        <button class="btn btn-default" type="submit" ng-click="onBuscarPedidosFarmaciasTemp(obtenerParametrosTemp())"><i class="glyphicon glyphicon-search"></i></button>
+    </span>
+</div>
+
+<div class="table-responsive">
+    <div class="defaultGrid grid-responsive" ng-grid="rootPedidosTempFarmacias.lista_pedidos_temporales_farmacias"></div>
+</div>
+
+
+
+<div class="row text-center">
+    <br/>
+    <button type="button" class="btn btn-default btn-medium" ng-disabled="rootPedidosTempFarmacias.paginaactual == 1" ng-click="paginaAnteriorTemp()">
+        <span class="glyphicon glyphicon-chevron-left" ></span>
+    </button>
+    <button type="button" class="btn btn-default btn-medium" ng-disabled="rootPedidosTempFarmacias.items == 0" ng-click="paginaSiguienteTemp()">
+        <span class="glyphicon glyphicon-chevron-right" ></span>
+    </button>
+</div>
+
+</br>

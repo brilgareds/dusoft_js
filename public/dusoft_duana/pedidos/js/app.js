@@ -10,41 +10,46 @@ define([
     "js/directive",
     "nggrid",
     "uiselect2",
-    "loader", 
-    "url", 
-    'storage', 
+    "loader",
+    "url",
+    'storage',
     "httpinterceptor",
     "dragndropfile",
     "includes/validation/ValidacionNumero",
     "includes/validation/ValidacionNumeroEntero",
     "includes/widgets/InputCheck",
-    "includes/menu/menucontroller", 
+    "includes/menu/menucontroller",
     "includes/alert/Alert",
-    "includes/header/HeaderController", 
-    "includes/classes/Usuario", 
-    "includes/http/Request", 
-    "includes/helpersdirectives/visualizarReporte", 
+    "includes/header/HeaderController",
+    "includes/classes/Usuario",
+    "includes/http/Request",
+    "includes/helpersdirectives/visualizarReporte",
     "includes/validation/NgValidateEvents",
     "models/pedidos/EmpresaPedido",
     "controllers/generarpedidos/CotizacionesController",
-    "controllers/generarpedidos/CreaCotizacionesController", 
+    "controllers/generarpedidos/CreaCotizacionesController",
     "controllers/generarpedidos/SeleccionClienteController",
-    "controllers/generarpedidos/SeleccionProductoClienteController", 
-    "controllers/generarpedidos/SeleccionProductoFarmaciaController", 
+    "controllers/generarpedidos/SeleccionProductoClienteController",
+    "controllers/generarpedidos/SeleccionProductoFarmaciaController",
     "controllers/generarpedidos/CreaPedidoFarmaciaController",
-    "controllers/generarpedidos/VerPedidosFarmaciasController", 
-    "controllers/generarpedidos/VerPedidosTempFarmaciasController", 
+    "controllers/generarpedidos/VerPedidosFarmaciasController",
+    "controllers/generarpedidos/VerPedidosTempFarmaciasController",
     "controllers/generarpedidos/PedidosClientesVentasController",
-    "controllers/generarpedidos/MailPdfController", 
-    "controllers/generarpedidos/ContenedorPedidosFarmaciasController", 
+    "controllers/generarpedidos/MailPdfController",
+    "controllers/generarpedidos/ContenedorPedidosFarmaciasController",
     "controllers/generarpedidos/AprobarCotizacionController",
     "controllers/generarpedidos/AprobarPedidoController",
     "controllers/asignarpedidos/PedidosController",
     "controllers/asignarpedidos/PedidosClientesController",
     "controllers/asignarpedidos/PedidosFarmaciasController",
-    "controllers/auditoriapedidos/AuditoriaPedidosController", 
-    "controllers/auditoriapedidos/DetallepedidoSeparadoClienteController", 
-    "controllers/auditoriapedidos/DetallepedidoSeparadoFarmaciaController"
+    "controllers/auditoriapedidos/AuditoriaPedidosController",
+    "controllers/auditoriapedidos/DetallepedidoSeparadoClienteController",
+    "controllers/auditoriapedidos/DetallepedidoSeparadoFarmaciaController",
+    
+    //pedidos farmacias
+    "controllers/generacionpedidos/pedidosfarmacias/ListaPedidosController",
+    "controllers/generacionpedidos/pedidosfarmacias/ListaPedidosTemporalesController",
+    "models/generacionpedidos/pedidosfarmacias/EmpresaPedidoFarmacia"
 ], function(angular) {
     /* App Module and its dependencies */
 
@@ -78,42 +83,6 @@ define([
             pedidos.urlRouterProvider = $urlRouterProvider;
             pedidos.stateProvider = $stateProvider;
 
-//            $urlRouterProvider.otherwise("/AsignarPedidos");
-//          
-//            $stateProvider
-//              .state('AsignarPedidos', {
-//                  url: "/AsignarPedidos",
-//                  text:"Asignar Pedidos",
-//                  templateUrl: "views/asignarpedidos/AsignarPedidos.html"
-//                  //controller:"pedidoscontroller"
-//              })
-//              .state('AuditarPedidos', {
-//                  url: "/AuditarPedidos",
-//                  text:"Auditar Pedidos",
-//                  templateUrl: "views/auditoriapedidos/AuditoriaPedidos.html"
-//                })
-//              .state('PedidosClientes', {
-//                  url: "/PedidosClientes",
-//                  text:"Pedidos Clientes",
-//                  templateUrl: "views/generarpedidos/pedidosclientes.html"
-//                })
-//              .state('CotizacionCliente', {
-//                  url: "/CotizacionCliente",
-//                  text:"Cotización Clientes",
-//                  templateUrl: "views/generarpedidos/cotizacioncliente.html"
-//                })
-//              .state('VerPedidosFarmacias', {
-//                  url: "/VerPedidosFarmacias",
-//                  text:"Pedidos Farmacias",
-//                  templateUrl: "views/generarpedidos/verpedidosfarmacias.html"
-//                })
-//              .state('CreaPedidosFarmacias', {
-//                  url: "/CreaPedidosFarmacias",
-//                  text:"Crear/Editar Pedidos Farmacias",
-//                  templateUrl: "views/generarpedidos/creapedidosfarmacias.html"
-//                });
-
-
         }]).run(["$rootScope", "$location", "$state", function($rootScope, $location, $state) {
             //$rootScope.titulo_modulo = "pedidos";
             $rootScope.name = "pedidos";
@@ -125,38 +94,43 @@ define([
                 pedidos.urlRouterProvider.otherwise(vistaDefecto);
 
                 pedidos.stateProvider
-                        .state('AsignarPedidos', {
+                .state('AsignarPedidos', {
                     url: "/AsignarPedidos",
                     text: "Asignar Pedidos",
                     templateUrl: "views/asignarpedidos/AsignarPedidos.html"
                             //controller:"pedidoscontroller"
                 })
-                        .state('AuditarPedidos', {
+                .state('AuditarPedidos', {
                     url: "/AuditarPedidos",
                     text: "Auditar Pedidos",
                     templateUrl: "views/auditoriapedidos/AuditoriaPedidos.html"
                 })
-                        .state('PedidosClientes', {
+                .state('PedidosClientes', {
                     url: "/PedidosClientes",
                     text: "Pedidos Clientes",
                     templateUrl: "views/generarpedidos/pedidosclientes.html"
                 })
-                        .state('CotizacionCliente', {
+                .state('CotizacionCliente', {
                     url: "/CotizacionCliente",
                     text: "Cotización Clientes",
                     templateUrl: "views/generarpedidos/cotizacioncliente.html",
                     parent_name: "PedidosClientes"
                 })
-                        .state('VerPedidosFarmacias', {
+                .state('VerPedidosFarmacias', {
                     url: "/VerPedidosFarmacias",
                     text: "Pedidos Farmacias",
                     templateUrl: "views/generarpedidos/verpedidosfarmacias.html"
                 })
-                        .state('CreaPedidosFarmacias', {
+                .state('CreaPedidosFarmacias', {
                     url: "/CreaPedidosFarmacias",
                     text: "Crear/Editar Pedidos Farmacias",
                     templateUrl: "views/generarpedidos/creapedidosfarmacias.html",
                     parent_name: "VerPedidosFarmacias"
+                })
+                .state('ListarPedidosFarmacias',{
+                    url: "/ListarPedidosFarmacias",
+                    text: "Pedidos Farmacias",
+                    templateUrl: "views/generacionpedidos/listapedidos.html"
                 });
 
                 if ($location.path() === "") {

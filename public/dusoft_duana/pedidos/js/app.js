@@ -47,9 +47,9 @@ define([
     "controllers/auditoriapedidos/DetallepedidoSeparadoFarmaciaController",
     
     //pedidos farmacias
-    "controllers/generacionpedidos/pedidosfarmacias/ListaPedidosController",
-    "controllers/generacionpedidos/pedidosfarmacias/ListaPedidosTemporalesController",
+
     "models/generacionpedidos/pedidosfarmacias/EmpresaPedidoFarmacia",
+    "controllers/generacionpedidos/pedidosfarmacias/PedidosFarmaciaController",
     
     // Nuevas Urls para el proceso de pedidos clientes
     "controllers/generacionpedidos/pedidosclientes/ListarPedidosClientesController",

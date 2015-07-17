@@ -6,7 +6,7 @@ define(["angular",
     'models/generarpedidos/ClientePedido',
     'models/generarpedidos/PedidoVenta'], function(angular, controllers) {
 
-    var fo = controllers.controller('ListaPedidosController', [
+    controllers.controller('ListaPedidosController', [
         '$scope', '$rootScope', 'Request',
         'EmpresaPedidoFarmacia', 'FarmaciaVenta', 'PedidoVenta',
         'API', "socket", "AlertService",
@@ -20,7 +20,6 @@ define(["angular",
             
             //$scope.rootPedidosFarmacias.opciones = $scope.$parent.$parent.opciones;
             $scope.rootPedidosFarmacias.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
-            
             
             
             
@@ -113,10 +112,7 @@ define(["angular",
 
                     if (data.status === 200) {
                         console.log("Consulta exitosa: ", data.msj);
-
-                        if (callback !== undefined && callback !== "" && callback !== 0) {
-                            callback(data);
-                        }
+                        callback(data);
                     }
                     else {
                         console.log("Error en la consulta: ", data.msj);
@@ -125,21 +121,41 @@ define(["angular",
             };
             
             
-            self.buscarPedidos = function(obj, paginando) {
+            self.buscarPedidos = function() {
+                
+                
+                 var obj = {
+                    session: $scope.rootPedidosFarmacias.session,
+                    data: {
+                        pedidos_farmacias: {
+                            termino_busqueda: $scope.rootPedidosFarmacias.termino_busqueda,
+                            empresa_id: $scope.rootPedidosFarmacias.seleccion,
+                            //empresa_id: $scope.farmacia_seleccionada.get_farmacia_id(),
+                            pagina_actual: $scope.rootPedidosFarmacias.paginaactual,
+                            filtro: {}
+                        }
+                    }
+                };
 
                 self.consultarEncabezadosPedidos(obj, function(data) {
-
-                    $scope.rootPedidosFarmacias.ultima_busqueda = {
+                    console.log("pedios >>>>>>>>> ", data);
+                    /*$scope.rootPedidosFarmacias.ultima_busqueda = {
                         termino_busqueda: $scope.rootPedidosFarmacias.termino_busqueda,
                         seleccion: $scope.rootPedidosFarmacias.seleccion
-                    };
+                    };*/
 
-                    self.renderPedidos(data.obj, paginando);
+                    //self.renderPedidos();
 
                 });
             };
+            
+            
+            
+            
 
-           /* var that = this;
+           /*
+            * warning area toxica
+            *   var that = this;
             
             that.pedido = PedidoVenta.get();
 

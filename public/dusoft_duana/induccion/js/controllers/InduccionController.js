@@ -1,13 +1,20 @@
-define(["angular", "js/controllers"], function(angular, controllers) {
+define(["angular", "js/controllers", "models/EmpresaInduccion", "models/CentroUtilidadesInduccion","models/BodegasInduccion"], function(angular, controllers) {
 
-    controllers.controller('InduccionController', ['$scope', 'Usuario', "Request", "localStorageService", "$modal", "API",
-        function($scope, Usuario, Request, localStorageService, $modal, API) {
-
+    controllers.controller('InduccionController', ['$scope', 'Usuario', "Request",
+                                                   "localStorageService","$modal", 
+                                                   "API", "EmpresaInduccion", 
+                                                   "CentroUtilidadesInduccion","BodegasInduccion",
+        function($scope, Usuario, Request, 
+                 localStorageService, $modal, API, 
+                 EmpresaInduccion, CentroUtilidadesInduccion,BodegasInduccion) {
+           
             $scope.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
 
+            $scope.empresaSeleccionada;
+            $scope.centroUtilidadSeleccionado;
             /*
              * 
              * @param {type} selected
@@ -16,7 +23,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
              * empresa con todas las empresas disponibles
              */
             $scope.listarEmpresa = function() {
-                
+
                 Request.realizarRequest(
                         API.INDUCCION.LISTAR_EMPRESAS,
                         "POST",
@@ -29,10 +36,20 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         },
                 function(data) {
 
-                    $scope.empresas = data.obj.listar_empresas;
+                    $scope.empresas = [];
+
+                    for (var i in data.obj.listar_empresas) {
+
+                        var _empresa = data.obj.listar_empresas[i];
+                        var empresa = EmpresaInduccion.get(_empresa.razon_social, _empresa.id);
+
+                        $scope.empresas.push(empresa);
+
+
+                    }
                 }
                 );
-                    
+
             };
             /*
              * 
@@ -41,8 +58,16 @@ define(["angular", "js/controllers"], function(angular, controllers) {
              * +Descripcion: metodo el cual se encarga de cargar el combobox
              * con los centros de utilidades disponibles segun la empresa
              */
-            $scope.selectActionCntroUtliddsEmprsa = function(id_empresa) {
+            $scope.seleccionarCentroUtilidadesEmpresa = function(id_empresa) {
 
+
+                for (var i in $scope.empresas) {
+
+                    if ($scope.empresas[i].getCodigo() === id_empresa) {
+                        $scope.empresaSeleccionada = $scope.empresas[i];
+                        break;
+                    }
+                }
 
                 Request.realizarRequest(
                         API.INDUCCION.LISTAR_CENTRO_UTILIDADES,
@@ -51,15 +76,21 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             session: $scope.session,
                             data: {
                                 induccion: {
-                                    id_empresa: id_empresa,
+                                    id_empresa: $scope.empresaSeleccionada.getCodigo(),
                                 }
                             }
                         },
                 function(data) {
 
+                    for (var i in data.obj.listar_centro_utilidad) {
 
-                    $scope.centroUtilidad = data.obj.listar_centro_utilidad;
+                        var _centroUtilidad = data.obj.listar_centro_utilidad[i];
+                        var centroUtilidad = CentroUtilidadesInduccion.get(_centroUtilidad.centro_utilidad, _centroUtilidad.descripcion);
 
+                        $scope.empresaSeleccionada.agregarCentroUtilidad(centroUtilidad);
+
+                    }
+                   
                 }
                 );
             };
@@ -72,8 +103,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
              * +Descripcion: metodo el cual se encarga de cargar el combobox
              * con los centros de utilidades disponibles segun la empresa
              */
-            $scope.selectActionBodegas = function(centros_utilidad) {
+            $scope.seleccionarBodegas = function(centros_utilidad) {
 
+               
+               $scope.empresaSeleccionada.seleccionarCentroUtilidad(centros_utilidad);
+               var centroUtilidadSeleccionado = $scope.empresaSeleccionada.getCentroUtilidadSeleccionado();
                 Request.realizarRequest(
                         API.INDUCCION.LISTAR_BODEGAS,
                         "POST",
@@ -81,13 +115,23 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             session: $scope.session,
                             data: {
                                 induccion: {
-                                    centros_utilidad: centros_utilidad,
+                                   
+                                   centros_utilidad: centroUtilidadSeleccionado.getNombre()
                                 }
                             }
                         },
                 function(data) {
+                    
+                     for (var i in data.obj.listar_bodegas) {
 
-                    $scope.bodega = data.obj.listar_bodegas;
+                        var _Bodega = data.obj.listar_bodegas[i];
+                        
+                        var bodega = BodegasInduccion.get(_Bodega.bodega, _Bodega.descripcion);
+                      
+                        centroUtilidadSeleccionado.agregarBodega(bodega);
+    
+                    }
+                  
                 }
                 );
             };

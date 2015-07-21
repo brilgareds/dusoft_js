@@ -36,13 +36,13 @@ InduccionModel.prototype.empresas_activas = function(callback) {
  */
 InduccionModel.prototype.centros_utilidades = function(id_empresa,callback) {
  
-    var sql = "SELECT \n\
-               centro.centro_utilidad, \
-               centro.descripcion \
-               FROM centros_utilidad centro INNER JOIN empresas emp \
-               ON centro.empresa_id =  emp.empresa_id \
-               WHERE centro.empresa_id like  $1\
-               ORDER BY centro.descripcion asc;";
+    var sql = "SELECT \
+               a.centro_utilidad, \
+               a.descripcion \
+               FROM centros_utilidad a \
+               INNER JOIN empresas b ON a.empresa_id =  b.empresa_id \
+               WHERE a.empresa_id like  $1\
+               ORDER BY a.descripcion asc;";
                
 
     G.db.query(sql, ["%" + id_empresa + "%"], function(err, rows, result) {
@@ -63,13 +63,12 @@ InduccionModel.prototype.centros_utilidades = function(id_empresa,callback) {
 InduccionModel.prototype.bodegas = function(centros_utilidad,callback) {
  
     var sql = "SELECT \
-                bod.bodega, \
-                bod.descripcion  \
-               FROM bodegas bod INNER JOIN empresas emp \
-                ON  bod.empresa_id =  emp.empresa_id  \
-               WHERE bod.centro_utilidad like  $1;";
+               a.bodega, \
+               a.descripcion \
+               FROM bodegas a \
+               INNER JOIN empresas b ON  a.empresa_id =  b.empresa_id \
+               WHERE a.centro_utilidad like  $1;";
                
-
     G.db.query(sql, ["%" + centros_utilidad + "%"], function(err, rows, result) {
         callback(err, rows);
     });

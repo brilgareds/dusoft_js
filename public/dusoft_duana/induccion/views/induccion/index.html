@@ -9,27 +9,27 @@
                 <tr>
                     
                         <div class="col-xs-3"  >  
-        <select ng-model="selected"  
-                ng-options="value.id as value.razon_social  for value in empresas" 
-                ng-change="selectActionCntroUtliddsEmprsa(selected)" 
+       <select ng-model="selected"  
+                ng-options="value.codigo as value.nombre  for value in empresas" 
+                ng-change="seleccionarCentroUtilidadesEmpresa(selected)" 
                 class="form-control">
             <!--
             ng-init="selected='Angularjs'"//-->
-
+            
         </select>
 
     </div>
     <div class="col-xs-3"  >
         <select ng-model="selectedcentroutilidad" 
-                ng-options="value.centro_utilidad as value.descripcion  for value in centroUtilidad"
-                ng-change="selectActionBodegas(selectedcentroutilidad)" 
+                ng-options="value.nombre as value.codigo  for value in empresaSeleccionada.getCentrosUtilidad()"
+                ng-change="seleccionarBodegas(selectedcentroutilidad)" 
                 class="form-control">
         </select>
     </div>
 
     <div class="col-xs-3"  >
         <select ng-model="selectedbodega" 
-                ng-options="value.bodega as value.descripcion  for value in bodega"
+                ng-options="value.nombre as value.codigo  for value in empresaSeleccionada.getCentroUtilidadSeleccionado().getBodega()"
                 class="form-control">
         </select>
     </div>

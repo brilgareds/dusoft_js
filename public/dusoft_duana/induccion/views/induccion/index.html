@@ -1,0 +1,87 @@
+<div >
+
+
+
+
+    <div class='panel-body'>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    
+                        <div class="col-xs-3"  >  
+        <select ng-model="selected"  
+                ng-options="value.id as value.razon_social  for value in empresas" 
+                ng-change="selectActionCntroUtliddsEmprsa(selected)" 
+                class="form-control">
+            <!--
+            ng-init="selected='Angularjs'"//-->
+
+        </select>
+
+    </div>
+    <div class="col-xs-3"  >
+        <select ng-model="selectedcentroutilidad" 
+                ng-options="value.centro_utilidad as value.descripcion  for value in centroUtilidad"
+                ng-change="selectActionBodegas(selectedcentroutilidad)" 
+                class="form-control">
+        </select>
+    </div>
+
+    <div class="col-xs-3"  >
+        <select ng-model="selectedbodega" 
+                ng-options="value.bodega as value.descripcion  for value in bodega"
+                class="form-control">
+        </select>
+    </div>
+
+    <div class="col-xs-3"  >
+
+        <div class="input-group">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+            <input type="text" class="form-control" placeholder="Buscare empleado" ng-model="buscar.nombre">
+        </div>
+    </div>
+            
+            
+            
+            
+            
+            
+            
+            
+            
+                </tr>
+                
+                <tr> .</tr>
+                <tr>
+                    <th>identificador</th>
+                    <th>
+                        <a href="" ng-click="ordenarPor('nombre')">Nombre/s</a>
+                        <span class="caret" style="cursor: pointer" ng-click="ordenarPor('-nombre')"></span>
+                    </th>
+                    <th>apellido paterno</th>
+                    <th>apellido materno</th>
+                    <th>Dia</th>
+                    <th>Salario</th>
+                    <th>Telefono</th>
+                    <th>Bono</th>
+                </tr>
+
+            </thead>
+            <tbody>
+                <tr ng-repeat="empleado in empleados | orderBy : ordenSeleccionado | filter:buscar">
+                    <td>{{ $index + 1 }}</td>
+                    <td>{{empleado.nombre }}</td>
+                    <td>{{empleado.paterno }}</td>
+                    <td>{{empleado.materno }}</td>
+                    <td>{{empleado.primerDia | date: 'fullDate'}}</td>
+                    <td>{{empleado.salario }}</td>
+                    <td>{{empleado.telefono }}</td>
+                    <td>% {{empleado.bono }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+

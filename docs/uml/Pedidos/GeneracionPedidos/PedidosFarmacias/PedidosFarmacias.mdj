@@ -872,7 +872,7 @@
 											"containerExtending": false,
 											"left": 309,
 											"top": 263,
-											"width": 265.18603515625,
+											"width": 322.638671875,
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
@@ -941,7 +941,7 @@
 									"containerExtending": false,
 									"left": 304,
 									"top": 256,
-									"width": 275.18603515625,
+									"width": 332.638671875,
 									"height": 25,
 									"autoResize": false,
 									"stereotypeLabel": {
@@ -987,7 +987,7 @@
 											"containerExtending": false,
 											"left": 309,
 											"top": 286,
-											"width": 265.18603515625,
+											"width": 322.638671875,
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
@@ -1015,7 +1015,7 @@
 											"containerExtending": false,
 											"left": 309,
 											"top": 301,
-											"width": 265.18603515625,
+											"width": 322.638671875,
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
@@ -1043,7 +1043,7 @@
 											"containerExtending": false,
 											"left": 309,
 											"top": 316,
-											"width": 265.18603515625,
+											"width": 322.638671875,
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
@@ -1063,7 +1063,7 @@
 									"containerExtending": false,
 									"left": 304,
 									"top": 281,
-									"width": 275.18603515625,
+									"width": 332.638671875,
 									"height": 53,
 									"autoResize": false
 								},
@@ -1076,6 +1076,120 @@
 									"model": {
 										"$ref": "AAAAAAFOk82XcdrGvzA="
 									},
+									"subViews": [
+										{
+											"_type": "UMLOperationView",
+											"_id": "AAAAAAFOl+W2OXems8U=",
+											"_parent": {
+												"$ref": "AAAAAAFOk82XddrPlj0="
+											},
+											"model": {
+												"$ref": "AAAAAAFOl+W183ejt8s="
+											},
+											"visible": true,
+											"enabled": true,
+											"lineColor": "#000000",
+											"fillColor": "#ffffff",
+											"fontColor": "#000000",
+											"font": "Arial;13;0",
+											"showShadow": true,
+											"containerChangeable": false,
+											"containerExtending": false,
+											"left": 309,
+											"top": 339,
+											"width": 322.638671875,
+											"height": 13,
+											"autoResize": false,
+											"underline": false,
+											"text": "+agregarProducto(producto: ProductoPedidoFarmacia)",
+											"horizontalAlignment": 0,
+											"verticalAlignment": 5
+										},
+										{
+											"_type": "UMLOperationView",
+											"_id": "AAAAAAFOl+Y8KnkIO/4=",
+											"_parent": {
+												"$ref": "AAAAAAFOk82XddrPlj0="
+											},
+											"model": {
+												"$ref": "AAAAAAFOl+Y73nkFXLI="
+											},
+											"visible": true,
+											"enabled": true,
+											"lineColor": "#000000",
+											"fillColor": "#ffffff",
+											"fontColor": "#000000",
+											"font": "Arial;13;0",
+											"showShadow": true,
+											"containerChangeable": false,
+											"containerExtending": false,
+											"left": 309,
+											"top": 354,
+											"width": 322.638671875,
+											"height": 13,
+											"autoResize": false,
+											"underline": false,
+											"text": "+obtenerProductos(): Array <ProductoPedidoFarmacia>",
+											"horizontalAlignment": 0,
+											"verticalAlignment": 5
+										},
+										{
+											"_type": "UMLOperationView",
+											"_id": "AAAAAAFOl+atMHnjEI0=",
+											"_parent": {
+												"$ref": "AAAAAAFOk82XddrPlj0="
+											},
+											"model": {
+												"$ref": "AAAAAAFOl+as7nng9H4="
+											},
+											"visible": true,
+											"enabled": true,
+											"lineColor": "#000000",
+											"fillColor": "#ffffff",
+											"fontColor": "#000000",
+											"font": "Arial;13;0",
+											"showShadow": true,
+											"containerChangeable": false,
+											"containerExtending": false,
+											"left": 309,
+											"top": 369,
+											"width": 322.638671875,
+											"height": 13,
+											"autoResize": false,
+											"underline": false,
+											"text": "+eliminarProducto(index: Int)",
+											"horizontalAlignment": 0,
+											"verticalAlignment": 5
+										},
+										{
+											"_type": "UMLOperationView",
+											"_id": "AAAAAAFOl+cTQHrdH8Q=",
+											"_parent": {
+												"$ref": "AAAAAAFOk82XddrPlj0="
+											},
+											"model": {
+												"$ref": "AAAAAAFOl+cS+nraMGY="
+											},
+											"visible": true,
+											"enabled": true,
+											"lineColor": "#000000",
+											"fillColor": "#ffffff",
+											"fontColor": "#000000",
+											"font": "Arial;13;0",
+											"showShadow": true,
+											"containerChangeable": false,
+											"containerExtending": false,
+											"left": 309,
+											"top": 384,
+											"width": 322.638671875,
+											"height": 13,
+											"autoResize": false,
+											"underline": false,
+											"text": "+vaciarProductos(): void",
+											"horizontalAlignment": 0,
+											"verticalAlignment": 5
+										}
+									],
 									"visible": true,
 									"enabled": true,
 									"lineColor": "#000000",
@@ -1087,8 +1201,8 @@
 									"containerExtending": false,
 									"left": 304,
 									"top": 334,
-									"width": 275.18603515625,
-									"height": 10,
+									"width": 332.638671875,
+									"height": 68,
 									"autoResize": false
 								},
 								{
@@ -1151,7 +1265,7 @@
 							"containerExtending": false,
 							"left": 304,
 							"top": 256,
-							"width": 275.18603515625,
+							"width": 332.638671875,
 							"height": 233,
 							"autoResize": false,
 							"stereotypeDisplay": "label",
@@ -1502,6 +1616,62 @@
 											"text": "+obtenerCentros(): Array",
 											"horizontalAlignment": 0,
 											"verticalAlignment": 5
+										},
+										{
+											"_type": "UMLOperationView",
+											"_id": "AAAAAAFOl7fIQXRv2cY=",
+											"_parent": {
+												"$ref": "AAAAAAFOk89s1tr7W70="
+											},
+											"model": {
+												"$ref": "AAAAAAFOl7fH/HRspPk="
+											},
+											"visible": true,
+											"enabled": true,
+											"lineColor": "#000000",
+											"fillColor": "#ffffff",
+											"fontColor": "#000000",
+											"font": "Arial;13;0",
+											"showShadow": true,
+											"containerChangeable": false,
+											"containerExtending": false,
+											"left": 725,
+											"top": 353,
+											"width": 302.7705078125,
+											"height": 13,
+											"autoResize": false,
+											"underline": false,
+											"text": "+agregarFarmacia(farmacia: Farmacia): void",
+											"horizontalAlignment": 0,
+											"verticalAlignment": 5
+										},
+										{
+											"_type": "UMLOperationView",
+											"_id": "AAAAAAFOl7iHzHYf95I=",
+											"_parent": {
+												"$ref": "AAAAAAFOk89s1tr7W70="
+											},
+											"model": {
+												"$ref": "AAAAAAFOl7iHi3Yc3f8="
+											},
+											"visible": true,
+											"enabled": true,
+											"lineColor": "#000000",
+											"fillColor": "#ffffff",
+											"fontColor": "#000000",
+											"font": "Arial;13;0",
+											"showShadow": true,
+											"containerChangeable": false,
+											"containerExtending": false,
+											"left": 725,
+											"top": 368,
+											"width": 302.7705078125,
+											"height": 13,
+											"autoResize": false,
+											"underline": false,
+											"text": "+vaciarFarmacias(): void",
+											"horizontalAlignment": 0,
+											"verticalAlignment": 5
 										}
 									],
 									"visible": true,
@@ -1516,7 +1686,7 @@
 									"left": 720,
 									"top": 333,
 									"width": 312.7705078125,
-									"height": 23,
+									"height": 53,
 									"autoResize": false
 								},
 								{
@@ -2563,34 +2733,6 @@
 										},
 										{
 											"_type": "UMLAttributeView",
-											"_id": "AAAAAAFOk+5/7Sgzc0k=",
-											"_parent": {
-												"$ref": "AAAAAAFOk9B+INt58TY="
-											},
-											"model": {
-												"$ref": "AAAAAAFOk+5/rygwMi8="
-											},
-											"visible": true,
-											"enabled": true,
-											"lineColor": "#000000",
-											"fillColor": "#ffffff",
-											"fontColor": "#000000",
-											"font": "Arial;13;0",
-											"showShadow": true,
-											"containerChangeable": false,
-											"containerExtending": false,
-											"left": 765,
-											"top": 84,
-											"width": 231,
-											"height": 13,
-											"autoResize": false,
-											"underline": false,
-											"text": "-pedidos: Array<PedidoFarmacia>",
-											"horizontalAlignment": 0,
-											"verticalAlignment": 5
-										},
-										{
-											"_type": "UMLAttributeView",
 											"_id": "AAAAAAFOl7aUEXLd5G4=",
 											"_parent": {
 												"$ref": "AAAAAAFOk9B+INt58TY="
@@ -2608,12 +2750,40 @@
 											"containerChangeable": false,
 											"containerExtending": false,
 											"left": 765,
-											"top": 99,
+											"top": 84,
 											"width": 231,
 											"height": 13,
 											"autoResize": false,
 											"underline": false,
 											"text": "-farmacias: Array<Farmacia>",
+											"horizontalAlignment": 0,
+											"verticalAlignment": 5
+										},
+										{
+											"_type": "UMLAttributeView",
+											"_id": "AAAAAAFOl7lzFncndhg=",
+											"_parent": {
+												"$ref": "AAAAAAFOk9B+INt58TY="
+											},
+											"model": {
+												"$ref": "AAAAAAFOl7ly13ckNL4="
+											},
+											"visible": true,
+											"enabled": true,
+											"lineColor": "#000000",
+											"fillColor": "#ffffff",
+											"fontColor": "#000000",
+											"font": "Arial;13;0",
+											"showShadow": true,
+											"containerChangeable": false,
+											"containerExtending": false,
+											"left": 765,
+											"top": 99,
+											"width": 231,
+											"height": 13,
+											"autoResize": false,
+											"underline": false,
+											"text": "+farmaciaSeleccionada: Farmacia",
 											"horizontalAlignment": 0,
 											"verticalAlignment": 5
 										}
@@ -3606,7 +3776,7 @@
 									"containerChangeable": false,
 									"containerExtending": false,
 									"left": 223,
-									"top": 319,
+									"top": 316,
 									"width": 48.07080078125,
 									"height": 13,
 									"autoResize": false,
@@ -3640,7 +3810,7 @@
 									"containerChangeable": false,
 									"containerExtending": false,
 									"left": 243,
-									"top": 333,
+									"top": 330,
 									"width": 0,
 									"height": 13,
 									"autoResize": false,
@@ -3673,7 +3843,7 @@
 									"containerChangeable": false,
 									"containerExtending": false,
 									"left": 256,
-									"top": 290,
+									"top": 287,
 									"width": 0,
 									"height": 13,
 									"autoResize": false,
@@ -3706,7 +3876,7 @@
 									"containerChangeable": false,
 									"containerExtending": false,
 									"left": 273,
-									"top": 328,
+									"top": 324,
 									"width": 0,
 									"height": 13,
 									"autoResize": false,
@@ -3739,7 +3909,7 @@
 									"containerChangeable": false,
 									"containerExtending": false,
 									"left": 267,
-									"top": 340,
+									"top": 336,
 									"width": 0,
 									"height": 13,
 									"autoResize": false,
@@ -3771,8 +3941,8 @@
 									"showShadow": true,
 									"containerChangeable": false,
 									"containerExtending": false,
-									"left": 283,
-									"top": 303,
+									"left": 282,
+									"top": 298,
 									"width": 7.22998046875,
 									"height": 13,
 									"autoResize": false,
@@ -3806,7 +3976,7 @@
 									"containerChangeable": false,
 									"containerExtending": false,
 									"left": 210,
-									"top": 311,
+									"top": 308,
 									"width": 22.04541015625,
 									"height": 13,
 									"autoResize": false,
@@ -3839,8 +4009,8 @@
 									"showShadow": true,
 									"containerChangeable": false,
 									"containerExtending": false,
-									"left": 219,
-									"top": 324,
+									"left": 220,
+									"top": 322,
 									"width": 0,
 									"height": 13,
 									"autoResize": false,
@@ -3873,7 +4043,7 @@
 									"containerChangeable": false,
 									"containerExtending": false,
 									"left": 216,
-									"top": 283,
+									"top": 281,
 									"width": 19.5126953125,
 									"height": 13,
 									"autoResize": false,
@@ -3953,7 +4123,7 @@
 								"$ref": "AAAAAAFOk82Xc9rIzm4="
 							},
 							"lineStyle": 1,
-							"points": "303:328;201:295",
+							"points": "303:323;201:293",
 							"stereotypeDisplay": "label",
 							"showVisibility": true,
 							"showProperty": true,
@@ -4037,7 +4207,7 @@
 								"$ref": "AAAAAAFOk+SxuRAYToE="
 							},
 							"lineStyle": 1,
-							"points": "252:311;260:253"
+							"points": "252:308;260:253"
 						},
 						{
 							"_type": "UMLNoteView",
@@ -4505,7 +4675,7 @@
 									"showShadow": true,
 									"containerChangeable": false,
 									"containerExtending": false,
-									"left": 649,
+									"left": 678,
 									"top": 353,
 									"width": 0,
 									"height": 13,
@@ -4538,7 +4708,7 @@
 									"showShadow": true,
 									"containerChangeable": false,
 									"containerExtending": false,
-									"left": 649,
+									"left": 678,
 									"top": 338,
 									"width": 0,
 									"height": 13,
@@ -4571,8 +4741,8 @@
 									"showShadow": true,
 									"containerChangeable": false,
 									"containerExtending": false,
-									"left": 648,
-									"top": 382,
+									"left": 678,
+									"top": 383,
 									"width": 0,
 									"height": 13,
 									"autoResize": false,
@@ -4604,8 +4774,8 @@
 									"showShadow": true,
 									"containerChangeable": false,
 									"containerExtending": false,
-									"left": 594,
-									"top": 352,
+									"left": 651,
+									"top": 353,
 									"width": 22.04541015625,
 									"height": 13,
 									"autoResize": false,
@@ -4638,7 +4808,7 @@
 									"showShadow": true,
 									"containerChangeable": false,
 									"containerExtending": false,
-									"left": 607,
+									"left": 665,
 									"top": 339,
 									"width": 0,
 									"height": 13,
@@ -4671,8 +4841,8 @@
 									"showShadow": true,
 									"containerChangeable": false,
 									"containerExtending": false,
-									"left": 591,
-									"top": 379,
+									"left": 649,
+									"top": 380,
 									"width": 19.5126953125,
 									"height": 13,
 									"autoResize": false,
@@ -4739,8 +4909,8 @@
 									"showShadow": true,
 									"containerChangeable": false,
 									"containerExtending": false,
-									"left": 691,
-									"top": 340,
+									"left": 690,
+									"top": 339,
 									"width": 0,
 									"height": 13,
 									"autoResize": false,
@@ -4773,7 +4943,7 @@
 									"containerChangeable": false,
 									"containerExtending": false,
 									"left": 694,
-									"top": 381,
+									"top": 380,
 									"width": 7.22998046875,
 									"height": 13,
 									"autoResize": false,
@@ -4853,7 +5023,7 @@
 								"$ref": "AAAAAAFOk82Xc9rIzm4="
 							},
 							"lineStyle": 1,
-							"points": "579:373;719:375",
+							"points": "637:374;719:374",
 							"stereotypeDisplay": "label",
 							"showVisibility": true,
 							"showProperty": true,
@@ -5535,6 +5705,136 @@
 							"isID": false
 						}
 					],
+					"operations": [
+						{
+							"_type": "UMLOperation",
+							"_id": "AAAAAAFOl+W183ejt8s=",
+							"_parent": {
+								"$ref": "AAAAAAFOk82XcdrGvzA="
+							},
+							"name": "agregarProducto",
+							"visibility": "public",
+							"isStatic": false,
+							"isLeaf": false,
+							"parameters": [
+								{
+									"_type": "UMLParameter",
+									"_id": "AAAAAAFOl+YBcnhPpsE=",
+									"_parent": {
+										"$ref": "AAAAAAFOl+W183ejt8s="
+									},
+									"name": "producto",
+									"visibility": "public",
+									"isStatic": false,
+									"isLeaf": false,
+									"type": {
+										"$ref": "AAAAAAFOk8dRxNoIke4="
+									},
+									"isReadOnly": false,
+									"isOrdered": false,
+									"isUnique": false,
+									"direction": "in"
+								}
+							],
+							"concurrency": "sequential",
+							"isQuery": false,
+							"isAbstract": false
+						},
+						{
+							"_type": "UMLOperation",
+							"_id": "AAAAAAFOl+Y73nkFXLI=",
+							"_parent": {
+								"$ref": "AAAAAAFOk82XcdrGvzA="
+							},
+							"name": "obtenerProductos",
+							"visibility": "public",
+							"isStatic": false,
+							"isLeaf": false,
+							"parameters": [
+								{
+									"_type": "UMLParameter",
+									"_id": "AAAAAAFOl+aLjXmEjVc=",
+									"_parent": {
+										"$ref": "AAAAAAFOl+Y73nkFXLI="
+									},
+									"visibility": "public",
+									"isStatic": false,
+									"isLeaf": false,
+									"type": "Array <ProductoPedidoFarmacia>",
+									"isReadOnly": false,
+									"isOrdered": false,
+									"isUnique": false,
+									"direction": "return"
+								}
+							],
+							"concurrency": "sequential",
+							"isQuery": false,
+							"isAbstract": false
+						},
+						{
+							"_type": "UMLOperation",
+							"_id": "AAAAAAFOl+as7nng9H4=",
+							"_parent": {
+								"$ref": "AAAAAAFOk82XcdrGvzA="
+							},
+							"name": "eliminarProducto",
+							"visibility": "public",
+							"isStatic": false,
+							"isLeaf": false,
+							"parameters": [
+								{
+									"_type": "UMLParameter",
+									"_id": "AAAAAAFOl+bxxnp+4To=",
+									"_parent": {
+										"$ref": "AAAAAAFOl+as7nng9H4="
+									},
+									"name": "index",
+									"visibility": "public",
+									"isStatic": false,
+									"isLeaf": false,
+									"type": "Int",
+									"isReadOnly": false,
+									"isOrdered": false,
+									"isUnique": false,
+									"direction": "in"
+								}
+							],
+							"concurrency": "sequential",
+							"isQuery": false,
+							"isAbstract": false
+						},
+						{
+							"_type": "UMLOperation",
+							"_id": "AAAAAAFOl+cS+nraMGY=",
+							"_parent": {
+								"$ref": "AAAAAAFOk82XcdrGvzA="
+							},
+							"name": "vaciarProductos",
+							"visibility": "public",
+							"isStatic": false,
+							"isLeaf": false,
+							"parameters": [
+								{
+									"_type": "UMLParameter",
+									"_id": "AAAAAAFOl+c17XuGIr8=",
+									"_parent": {
+										"$ref": "AAAAAAFOl+cS+nraMGY="
+									},
+									"visibility": "public",
+									"isStatic": false,
+									"isLeaf": false,
+									"type": "void",
+									"isReadOnly": false,
+									"isOrdered": false,
+									"isUnique": false,
+									"direction": "return"
+								}
+							],
+							"concurrency": "sequential",
+							"isQuery": false,
+							"isAbstract": false
+						}
+					],
 					"isAbstract": false,
 					"isFinalSpecialization": false,
 					"isLeaf": false,
@@ -5881,6 +6181,86 @@
 									"isStatic": false,
 									"isLeaf": false,
 									"type": "Array",
+									"isReadOnly": false,
+									"isOrdered": false,
+									"isUnique": false,
+									"direction": "return"
+								}
+							],
+							"concurrency": "sequential",
+							"isQuery": false,
+							"isAbstract": false
+						},
+						{
+							"_type": "UMLOperation",
+							"_id": "AAAAAAFOl7fH/HRspPk=",
+							"_parent": {
+								"$ref": "AAAAAAFOk89s1Nry1RQ="
+							},
+							"name": "agregarFarmacia",
+							"visibility": "public",
+							"isStatic": false,
+							"isLeaf": false,
+							"parameters": [
+								{
+									"_type": "UMLParameter",
+									"_id": "AAAAAAFOl7hJj3VVnT0=",
+									"_parent": {
+										"$ref": "AAAAAAFOl7fH/HRspPk="
+									},
+									"name": "farmacia",
+									"visibility": "public",
+									"isStatic": false,
+									"isLeaf": false,
+									"type": {
+										"$ref": "AAAAAAFOk89s1Nry1RQ="
+									},
+									"isReadOnly": false,
+									"isOrdered": false,
+									"isUnique": false,
+									"direction": "in"
+								},
+								{
+									"_type": "UMLParameter",
+									"_id": "AAAAAAFOl7hJkXVWpLI=",
+									"_parent": {
+										"$ref": "AAAAAAFOl7fH/HRspPk="
+									},
+									"visibility": "public",
+									"isStatic": false,
+									"isLeaf": false,
+									"type": "void",
+									"isReadOnly": false,
+									"isOrdered": false,
+									"isUnique": false,
+									"direction": "return"
+								}
+							],
+							"concurrency": "sequential",
+							"isQuery": false,
+							"isAbstract": false
+						},
+						{
+							"_type": "UMLOperation",
+							"_id": "AAAAAAFOl7iHi3Yc3f8=",
+							"_parent": {
+								"$ref": "AAAAAAFOk89s1Nry1RQ="
+							},
+							"name": "vaciarFarmacias",
+							"visibility": "public",
+							"isStatic": false,
+							"isLeaf": false,
+							"parameters": [
+								{
+									"_type": "UMLParameter",
+									"_id": "AAAAAAFOl7iwX3abyLM=",
+									"_parent": {
+										"$ref": "AAAAAAFOl7iHi3Yc3f8="
+									},
+									"visibility": "public",
+									"isStatic": false,
+									"isLeaf": false,
+									"type": "void",
 									"isReadOnly": false,
 									"isOrdered": false,
 									"isUnique": false,
@@ -6274,24 +6654,6 @@
 						},
 						{
 							"_type": "UMLAttribute",
-							"_id": "AAAAAAFOk+5/rygwMi8=",
-							"_parent": {
-								"$ref": "AAAAAAFOk9B+H9txfEU="
-							},
-							"name": "pedidos",
-							"visibility": "private",
-							"isStatic": false,
-							"isLeaf": false,
-							"type": "Array<PedidoFarmacia>",
-							"isReadOnly": false,
-							"isOrdered": false,
-							"isUnique": false,
-							"isDerived": false,
-							"aggregation": "none",
-							"isID": false
-						},
-						{
-							"_type": "UMLAttribute",
 							"_id": "AAAAAAFOl7aT0HLaqJM=",
 							"_parent": {
 								"$ref": "AAAAAAFOk9B+H9txfEU="
@@ -6301,6 +6663,26 @@
 							"isStatic": false,
 							"isLeaf": false,
 							"type": "Array<Farmacia>",
+							"isReadOnly": false,
+							"isOrdered": false,
+							"isUnique": false,
+							"isDerived": false,
+							"aggregation": "none",
+							"isID": false
+						},
+						{
+							"_type": "UMLAttribute",
+							"_id": "AAAAAAFOl7ly13ckNL4=",
+							"_parent": {
+								"$ref": "AAAAAAFOk9B+H9txfEU="
+							},
+							"name": "farmaciaSeleccionada",
+							"visibility": "public",
+							"isStatic": false,
+							"isLeaf": false,
+							"type": {
+								"$ref": "AAAAAAFOk89s1Nry1RQ="
+							},
 							"isReadOnly": false,
 							"isOrdered": false,
 							"isUnique": false,

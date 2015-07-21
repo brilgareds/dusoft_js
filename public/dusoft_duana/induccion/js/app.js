@@ -23,12 +23,11 @@ define([
     "includes/helpersdirectives/visualizarReporte",
     "includes/validation/NgValidateEvents",
     "chart",
-    "controllers/HomeController"
+    "controllers/InduccionController"
 ], function(angular) {
 
     /* App Module and its dependencies */
-
-    var home = angular.module('home', [
+    var induccion = angular.module('induccion', [
         'ui.router',
         'controllers',
         'models',
@@ -42,14 +41,14 @@ define([
         'nvd3ChartDirectives'
     ]);
 
-    home.urlRouterProvider;
-    home.stateProvider;
+    induccion.urlRouterProvider;
+    induccion.stateProvider;
 
-    home.config(["$stateProvider", "$urlRouterProvider", "$httpProvider", function($stateProvider, $urlRouterProvider, $httpProvider) {
+    induccion.config(["$stateProvider", "$urlRouterProvider", "$httpProvider", function($stateProvider, $urlRouterProvider, $httpProvider) {
 
             $httpProvider.interceptors.push('HttpInterceptor');
-            home.urlRouterProvider = $urlRouterProvider;
-            home.stateProvider = $stateProvider;
+            induccion.urlRouterProvider = $urlRouterProvider;
+            induccion.stateProvider = $stateProvider;
 
         }]).run(["$rootScope", "localStorageService", "Usuario", "$state", "$location", function($rootScope, localStorageService, Usuario, $state, $location) {
 
@@ -57,15 +56,15 @@ define([
 
             $rootScope.$on("parametrizacionUsuarioLista", function(e, parametrizacion) {
 
-                var vista_predeterminada = "Dashboard";
+                var vista_predeterminada = "ListarProductos";
 
-                home.urlRouterProvider.otherwise(vista_predeterminada);
+                induccion.urlRouterProvider.otherwise(vista_predeterminada);
 
-                home.stateProvider.state('Dashboard', {
-                    url: "/Dashboard",
-                    text: "Bienvenido "+Usuario.getUsuarioActual().getNombre(),
-                    templateUrl: "views/dashboard/index.html",
-                    controller: "HomeController"
+                induccion.stateProvider.state('ListarProductos', {
+                    url: "/ListarProductos",
+                    text: "Induccion",
+                    templateUrl: "views/induccion/index.html",
+                    controller: "InduccionController"
                 });
 
                 if ($location.path() === "")
@@ -76,6 +75,6 @@ define([
 
         }]);
 
-    angular.bootstrap(document, ['home']);
-    return home;
+    angular.bootstrap(document, ['induccion']);
+    return induccion;
 });

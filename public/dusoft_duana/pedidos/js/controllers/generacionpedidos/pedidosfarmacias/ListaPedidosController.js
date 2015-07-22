@@ -10,16 +10,31 @@ define(["angular",
         '$scope', '$rootScope', 'Request',
         'EmpresaPedidoFarmacia', 'FarmaciaVenta', 'PedidoVenta',
         'API', "socket", "AlertService",
-        '$state', "Usuario", "localStorageService", "$modal",
-        function($scope, $rootScope, Request, EmpresaPedido, FarmaciaVenta, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService, $modal) {
+        '$state', "Usuario", "localStorageService", "$modal","FarmaciaPedido",
+        function($scope, $rootScope, Request, EmpresaPedido, FarmaciaVenta,
+                 PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService, $modal, FarmaciaPedido) {
            var self = this;
            
            
            
             $scope.rootPedidosFarmacias = {};
             
+            $scope.rootPedidosFarmacias.session = {
+                usuario_id: Usuario.getUsuarioActual().getId(),
+                auth_token: Usuario.getUsuarioActual().getToken()
+            };
+            
             //$scope.rootPedidosFarmacias.opciones = $scope.$parent.$parent.opciones;
             $scope.rootPedidosFarmacias.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
+            
+            //selecciona la empresa del usuario
+            $scope.rootPedidosFarmacias.seleccion = Usuario.getUsuarioActual().getEmpresa().getCodigo();
+            
+            $scope.rootPedidosFarmacias.ultima_busqueda = {};
+            
+            $scope.rootPedidosFarmacias.paginaactual = 1;
+
+            $scope.rootPedidosFarmacias.termino_busqueda = "";
             
             
             
@@ -71,8 +86,52 @@ define(["angular",
 
             };
             
+            that.crearPedido = function(obj) {
+
+                //console.log(">>>> OBJETO DE CONSULTA -- DESPACHO: ", obj.despacho_numero," - " ,obj.tiene_despacho," - " ,obj.numero_pedido);
+                
+                var pedido = PedidoVenta.get();
+
+                var datos_pedido = {
+                    numero_pedido: obj.numero_pedido,
+                    fecha_registro: obj.fecha_registro,
+                    descripcion_estado_actual_pedido: obj.descripcion_estado_actual_pedido,
+                    estado_actual_pedido: obj.estado_actual_pedido,
+                    estado_separacion: obj.estado_separacion
+                };
+
+                pedido.setDatos(datos_pedido);
+                pedido.setTipo(PedidoVenta.TIPO_FARMACIA);
+
+                pedido.setObservacion(obj.observacion);
+                
+                pedido.setDespachoEmpresaId(obj.despacho_empresa_id);
+                
+                pedido.setDespachoPrefijo(obj.despacho_prefijo);
+                
+                pedido.setDespachoNumero(obj.despacho_numero);
+                
+                pedido.setTieneDespacho(obj.tiene_despacho);
+                
+                //Falta el campo del estado True o False para botón "Imprimir EFC"
+
+                //pedido.setEnUso(obj.en_uso);
+
+                var farmacia = FarmaciaVenta.get(
+                        obj.farmacia_id,
+                        obj.bodega_id,
+                        obj.nombre_farmacia,
+                        obj.nombre_bodega,
+                        obj.centro_utilidad,
+                        obj.nombre_centro_utilidad
+                        );
+
+                pedido.setFarmacia(farmacia);
+
+                return pedido;
+            };
             
-            self.renderPedidos = function(data, paginando) {
+            self.renderPedidos = function(pedidos) {
 
                /* $scope.rootPedidosFarmacias.items = data.pedidos_farmacias.length;
 
@@ -101,9 +160,20 @@ define(["angular",
                     $scope.rootPedidosFarmacias.Empresa.agregarPedidoFarmacia(pedido);
 
                 }*/
+                
+                for (var i in pedidos) {
+
+                    var obj = pedidos[i];
+
+                    var pedido = that.crearPedido(obj);
+
+                    $scope.rootPedidosFarmacias.Empresa.agregarPedidoFarmacia(pedido);
+
+                }
 
             };
             
+            //function que realiza el request para traer los encabezados de los pedidos
             self.consultarEncabezados = function(obj, callback) {
 
                 var url = API.PEDIDOS.LISTAR_PEDIDOS_FARMACIAS;
@@ -120,7 +190,7 @@ define(["angular",
                 });
             };
             
-            
+            //function helper que prepara los parametros y hace el llamado para buscar los encabezados de pedidos de farmacia
             self.buscarPedidos = function() {
                 
                 
@@ -137,7 +207,11 @@ define(["angular",
                     }
                 };
 
-                self.consultarEncabezadosPedidos(obj, function(data) {
+                self.consultarEncabezados(obj, function(data) {
+                    
+                    if(data.status === 200){
+                        self.renderPedidos(data.obj.pedidos_farmacias);
+                    }
                     console.log("pedios >>>>>>>>> ", data);
                     /*$scope.rootPedidosFarmacias.ultima_busqueda = {
                         termino_busqueda: $scope.rootPedidosFarmacias.termino_busqueda,
@@ -151,7 +225,7 @@ define(["angular",
             
             
             
-            
+            self.buscarPedidos();
 
            /*
             * warning area toxica

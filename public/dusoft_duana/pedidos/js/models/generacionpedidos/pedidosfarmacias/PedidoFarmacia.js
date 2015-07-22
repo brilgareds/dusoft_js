@@ -6,10 +6,28 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         function PedidoFarmacia() {
             Pedido.getClass().call(this);
             this.productos = [];
+            this.farmaciaDestino;
+            this.farmaciaOrigen;
+            
         };
 
         PedidoFarmacia.prototype = Object.create(Pedido.getClass().prototype);
 
+        PedidoFarmacia.setFarmaciaDestino = function(farmaciaDestino) {
+            this.farmaciaDestino = farmaciaDestino;
+        };
+        
+        PedidoFarmacia.getFarmaciaDestino = function() {
+            return this.farmaciaDestino;
+        };
+        
+        PedidoFarmacia.setFarmaciaOrigen = function(farmaciaOrigen) {
+            this.farmaciaOrigen = farmaciaOrigen;
+        };
+        
+        PedidoFarmacia.getFarmaciaOrigen = function() {
+            return this.farmaciaOrigen;
+        };
 
         PedidoFarmacia.prototype.agregarProducto = function(producto) {
             this.productos.unshift(producto);
@@ -26,6 +44,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         PedidoFarmacia.prototype.vaciarProductos = function() {
             this.productos = [];
         };
+        
         
         this.get = function() {
             return new PedidoFarmacia();

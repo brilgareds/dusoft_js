@@ -6,8 +6,14 @@ define(["angular"], function(angular) {
 
     var data = {
         'API': {
-            'BASE_URL': BASE_URL,                  
+            'BASE_URL': BASE_URL,
+            'INDUCCION': {
+                "LISTAR_EMPRESAS":BASE_URL+"/Induccion/listar/empresas",
+                "LISTAR_CENTRO_UTILIDADES":BASE_URL+"/Induccion/listar/centroutilidad",
+                "LISTAR_BODEGAS":BASE_URL+"/Induccion/listar/bodegas"
+            }
         }
+
     };
 
     angular.forEach(data, function(key, value) {

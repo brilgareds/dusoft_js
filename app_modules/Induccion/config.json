@@ -1,0 +1,41 @@
+{
+    "module": "Induccion",
+    "dependency": {
+        "controllers": [{
+                "induccion_controller": {
+                    "module": "Induccion",
+                    "controller": "InduccionController",
+                    "alias": "c_induccion"
+                }
+            }],
+        "models": [{
+                "induccion_model": {
+                    "module": "Induccion",
+                    "model": "InduccionModel",
+                    "alias": "m_induccion"
+                },
+                "pedidos_farmacias_model": {
+                    "module": "PedidosFarmacias",
+                    "model": "PedidosFarmaciasModel",
+                    "alias": "m_pedidos_farmacias"
+                },
+                "pedidos_clientes_model": {
+                    "module": "PedidosClientes",
+                    "model": "PedidosClienteModel",
+                    "alias": "m_pedidos_clientes"
+                },
+                "ordenes_compra_model": {
+                    "module": "OrdenesCompra",
+                    "model": "OrdenesCompraModel",
+                    "alias": "m_ordenes_compra"
+                },
+                "productos_model": {
+                    "module": "Productos",
+                    "model": "ProductosModel",
+                    "alias": "m_productos"
+                }
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

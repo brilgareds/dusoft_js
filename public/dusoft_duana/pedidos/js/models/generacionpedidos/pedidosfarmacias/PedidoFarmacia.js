@@ -13,19 +13,19 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
 
         PedidoFarmacia.prototype = Object.create(Pedido.getClass().prototype);
 
-        PedidoFarmacia.setFarmaciaDestino = function(farmaciaDestino) {
+        PedidoFarmacia.prototype.setFarmaciaDestino = function(farmaciaDestino) {
             this.farmaciaDestino = farmaciaDestino;
         };
         
-        PedidoFarmacia.getFarmaciaDestino = function() {
+        PedidoFarmacia.prototype.getFarmaciaDestino = function() {
             return this.farmaciaDestino;
         };
         
-        PedidoFarmacia.setFarmaciaOrigen = function(farmaciaOrigen) {
+        PedidoFarmacia.prototype.setFarmaciaOrigen = function(farmaciaOrigen) {
             this.farmaciaOrigen = farmaciaOrigen;
         };
         
-        PedidoFarmacia.getFarmaciaOrigen = function() {
+        PedidoFarmacia.prototype.getFarmaciaOrigen = function() {
             return this.farmaciaOrigen;
         };
 

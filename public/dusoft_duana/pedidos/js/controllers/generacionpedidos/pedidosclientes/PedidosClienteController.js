@@ -77,7 +77,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
             that.render_clientes = function(clientes) {
-
+                                
                 $scope.Empresa.limpiar_clientes();
 
                 clientes.forEach(function(data) {
@@ -85,6 +85,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     var cliente = Cliente.get(data.nombre_tercero, data.direccion, data.tipo_id_tercero, data.tercero_id, data.telefono);
                     cliente.setDepartamento(data.departamento);
                     cliente.setMunicipio(data.municipio);
+                    cliente.set_contrato(data.contrato_cliente_id);
 
                     $scope.Empresa.set_clientes(cliente);
                 });

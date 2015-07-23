@@ -322,21 +322,56 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
 
     var that = this;
 
+    var args = req.body.data;
+    
     if (args.pedidos_clientes === undefined || args.pedidos_clientes.empresa_id === undefined || args.pedidos_clientes.centro_utilidad_id === undefined || args.pedidos_clientes.bodega_id === undefined) {
         res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id No Estan Definidos', 404, {}));
         return;
     }
-    
-    if (args.pedidos_clientes.pagina_actual === undefined || args.pedidos_clientes.termino_busqueeeda === undefined || args.pedidos_clientes.centro_utilidad_id === undefined || args.pedidos_clientes.bodega_id === undefined) {
-        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id No Estan Definidos', 404, {}));
+
+    if (args.pedidos_clientes.contrato_cliente_id === undefined) {
+        res.send(G.utils.r(req.url, 'contrato_cliente_id No Estan Definidos', 404, {}));
         return;
     }
-    
+
+    if (args.pedidos_clientes.pagina_actual === undefined || args.pedidos_clientes.termino_busqueda === undefined) {
+        res.send(G.utils.r(req.url, 'termino_busqueda o pagina actual No Estan Definidos', 404, {}));
+        return;
+    }
+
     if (args.pedidos_clientes.empresa_id === '' || args.pedidos_clientes.centro_utilidad_id === '' || args.pedidos_clientes.bodega_id === '') {
         res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacíos', 404, {}));
         return;
     }
-   
+
+    if (args.pedidos_clientes.contrato_cliente_id === '') {
+        res.send(G.utils.r(req.url, 'contrato_cliente_id esta vacío', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_clientes.pagina_actual === '' || parseInt(args.pedidos_clientes.pagina_actual) <= 0) {
+        res.send(G.utils.r(req.url, 'pagina_actual esta vacio o es 0', 404, {}));
+        return;
+    }
+
+
+    var empresa_id = args.pedidos_clientes.empresa_id;
+    var centro_utilidad = args.pedidos_clientes.centro_utilidad_id;
+    var bodega = args.pedidos_clientes.bodega_id;
+    var contrato_cliente = args.pedidos_clientes.contrato_cliente_id;
+    var termino_busqueda = args.pedidos_clientes.termino_busqueda;
+    var pagina = args.pedidos_clientes.pagina_actual;
+
+    that.m_pedidos_clientes.listar_productos(empresa_id, centro_utilidad, bodega, contrato_cliente, termino_busqueda, pagina, function(err, lista_productos) {
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, { pedidos_clientes : { lista_productos: [] } }));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Lista Productos', 200, {pedidos_clientes : {lista_productos: lista_productos}}));
+            return;
+        }       
+    });
+
 
 
     return;

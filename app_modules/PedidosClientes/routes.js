@@ -27,10 +27,15 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.listaPedidosOperariosBodega(req, res);
     });
 
+
+    // ============== COTIZACIONES / PEDIDOS  ==============
+    
+    
     //Listar Productos Clientes para ingresar productos a una cotizacion
     app.post('/api/PedidosClientes/listarProductosClientes', function(req, res) {
         c_pedidos_clientes.listarProductosClientes(req, res);
     });
+
 
 
     /**************************************************

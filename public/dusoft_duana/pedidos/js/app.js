@@ -68,8 +68,8 @@ define([
         'directive',
         'Url',
         'services',
-        'ui.select2',
-        //'ui.select',
+        //'ui.select2',
+        'ui.select',
         'LocalStorageModule',
         'flow'
     ]);

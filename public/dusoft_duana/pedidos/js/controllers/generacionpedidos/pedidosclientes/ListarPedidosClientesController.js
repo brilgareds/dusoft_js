@@ -1,5 +1,9 @@
 
 define(["angular", "js/controllers",
+    "models/generacionpedidos/pedidosclientes/EmpresaPedidoCliente",
+    "models/generacionpedidos/pedidosclientes/PedidoCliente",
+    "models/generacionpedidos/pedidosclientes/ClientePedido",
+    "models/generacionpedidos/pedidosclientes/VendedorPedidoCliente",
 ], function(angular, controllers) {
 
     controllers.controller('ListarPedidosClientesController', [
@@ -18,7 +22,7 @@ define(["angular", "js/controllers",
                 $state.go('Cotizaciones');
 
             };
-           
+
 
             $scope.lista_pedidos_clientes = {
                 data: 'Empresa.get_planillas()',

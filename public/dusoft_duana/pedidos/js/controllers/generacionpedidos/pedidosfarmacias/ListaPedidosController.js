@@ -4,15 +4,15 @@ define(["angular",
     "js/controllers",
     'includes/slide/slideContent',
     'models/generarpedidos/ClientePedido',
-    'models/generarpedidos/PedidoVenta'], function(angular, controllers) {
+    'models/generarpedidos/PedidoFarmacia'], function(angular, controllers) {
 
     controllers.controller('ListaPedidosController', [
         '$scope', '$rootScope', 'Request',
-        'EmpresaPedidoFarmacia', 'FarmaciaVenta', 'PedidoVenta',
+        'EmpresaPedidoFarmacia', 'FarmaciaVenta', 'PedidoFarmacia',
         'API', "socket", "AlertService",
         '$state', "Usuario", "localStorageService", "$modal","FarmaciaPedido",
         function($scope, $rootScope, Request, EmpresaPedido, FarmaciaVenta,
-                 PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService, $modal, FarmaciaPedido) {
+                 PedidoFarmacia, API, socket, AlertService, $state, Usuario, localStorageService, $modal, FarmaciaPedido) {
            var self = this;
            
            
@@ -24,7 +24,8 @@ define(["angular",
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
             
-            //$scope.rootPedidosFarmacias.opciones = $scope.$parent.$parent.opciones;
+            
+            $scope.rootPedidosFarmacias.Empresa = EmpresaPedido;
             $scope.rootPedidosFarmacias.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
             
             //selecciona la empresa del usuario
@@ -87,8 +88,6 @@ define(["angular",
             };
             
             self.crearPedido = function(obj) {
-
-                //console.log(">>>> OBJETO DE CONSULTA -- DESPACHO: ", obj.despacho_numero," - " ,obj.tiene_despacho," - " ,obj.numero_pedido);
                 
                 var pedido = PedidoVenta.get();
 

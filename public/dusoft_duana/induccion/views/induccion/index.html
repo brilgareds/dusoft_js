@@ -1,6 +1,7 @@
 <div >
 
 
+  
 
 
     <div class='panel-body'>
@@ -8,85 +9,97 @@
             <thead>
                 <tr>
 
-            <div class="col-xs-3"  >  
-                <select ng-model="selected"  
-                        ng-options="value.codigo as value.nombre  for value in empresas" 
-                        ng-change="seleccionarCentroUtilidadesEmpresa(selected)" 
-                        class="form-control">
+                    <!--  <div class="col-xs-3"  >  
+                          <select ng-model="selected"  
+                                  ng-options="value.codigo as value.nombre  for value in empresas" 
+                                  ng-change="onSeleccionarEmpresa(selected)" 
+                                  class="form-control">
                     <!--
                     ng-init="selected='Angularjs'"//-->
 
-                </select>
-
-            </div>
+                    <!--   </select>
+       
+                   </div>
+                   <div class="col-xs-3"  >
+                       <select ng-model="empresaSeleccionada.centroUtilidadSeleccionado.codigo" 
+                               ng-options="value.codigo as value.nombre  for value in empresaSeleccionada.getCentrosUtilidad()"
+                               ng-change="seleccionarUtilidad(empresaSeleccionada.centroUtilidadSeleccionado.codigo)" 
+                               class="form-control">
+                       </select>
+                   </div>
+       
+                   <div class="col-xs-3"  >
+                       <select ng-model="empresaSeleccionada.centroUtilidadSeleccionado.bodegaSeleccionada.codigo" 
+                               ng-options="value.codigo as value.nombre  for value in empresaSeleccionada.getCentroUtilidadSeleccionado().getBodega()"
+                               ng-change="onSeleccionarBodega(empresaSeleccionada.centroUtilidadSeleccionado.bodegaSeleccionada.codigo)" 
+                               class="form-control">
+                       </select>
+                   </div>
+                   //-->
             <div class="col-xs-3"  >
-                <select ng-model="selectedcentroutilidad" 
-                        ng-options="value.codigo as value.nombre  for value in empresaSeleccionada.getCentrosUtilidad()"
-                        ng-change="seleccionarBodegas(selectedcentroutilidad)" 
-                        class="form-control">
-                </select>
+                <ui-select ng-model="root.empresaSeleccionada"  theme="select2" class="form-control selectgeneral pull-left" ng-change="onSeleccionarEmpresa()">
+                    <ui-select-match  placeholder="Seleccionar empresa">{{ $select.selected.getNombre() }}</ui-select-match>
+                    <ui-select-choices  refresh-delay="0" repeat="empresa in empresas | filter:$select.search">
+                        {{ empresa.getNombre() }}
+                    </ui-select-choices>
+                </ui-select>        
+            </div>
+
+
+            <div class="col-xs-3"  >
+                <ui-select ng-model="root.empresaSeleccionada.centroUtilidadSeleccionado"  theme="select2" class="form-control selectgeneral pull-left" ng-change="onSeleccionarUtilidad()">
+                    <ui-select-match  placeholder="Seleccionar centro utilidad">{{ $select.selected.getNombre() }}</ui-select-match>
+                    <ui-select-choices  refresh-delay="0" repeat="centroUtilidad in root.empresaSeleccionada.getCentrosUtilidad() | filter:$select.search">
+                        {{ centroUtilidad.getNombre() }}
+                    </ui-select-choices>
+                </ui-select>        
             </div>
 
             <div class="col-xs-3"  >
-                <select ng-model="selectedbodega" 
-                        ng-options="value.codigo as value.nombre  for value in empresaSeleccionada.getCentroUtilidadSeleccionado().getBodega()"
-                        class="form-control">
-                </select>
+                <ui-select ng-model="root.empresaSeleccionada.centroUtilidadSeleccionado.bodegaSeleccionada"  theme="select2" class="form-control selectgeneral pull-left">
+                    <ui-select-match  placeholder="Seleccionar bodega">{{ $select.selected.getNombre() }}</ui-select-match>
+                    <ui-select-choices  refresh-delay="0" repeat="bodega in root.empresaSeleccionada.getCentroUtilidadSeleccionado().getBodega() | filter:$select.search">
+                        {{ bodega.getNombre() }}
+                    </ui-select-choices>
+                </ui-select>        
             </div>
+
 
             <div class="col-xs-3"  >
 
                 <div class="input-group">
-                    <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
-                    <input type="text" class="form-control" placeholder="Buscare empleado" ng-model="buscar.descripcion">
+
+                    <input type="text" class="form-control" placeholder="Buscare empleado" ng-model="buscar.descripcion" >
+                    <span class="input-group-addon"><li class="glyphicon glyphicon-search" ng-click="onListarProductos()"></li></span>
                 </div>
             </div>
 
-            <div class="col-xs-3"  >
-            <button ng-click="listarProductos()">
-                Increment
-            </button>
-            
-                </div>
 
 
-
-
-
-
-            </tr>
-
-            <tr> .</tr>
-            <tr>
-                <th>index</th>
-                <th>
-                    Codigo producto
-                </th>
-
-                <th> <a href="" ng-click="ordenarPor('nombre')">Descripcion</a>
-                    <span class="caret" style="cursor: pointer" ng-click="ordenarPor('-nombre')"></span></th>
-                <th>Costo</th>
-                <th>Existencia</th>
-                <th>Iva</th>
-                <th>Precio de venta</th>
-
-            </tr>
-
-            </thead>
-            <tbody>
-                <tr ng-repeat="producto in empresaSeleccionada.getCentroUtilidadSeleccionado().getBodegaSeleccionado().getProductos() | orderBy : ordenSeleccionado | filter:buscar">
-                    <td>{{ $index + 1 }}</td> 
-                    <td>{{producto.codigo_producto }}</td>
-                    <td>{{producto.descripcion }}</td>
-                    <td>{{producto.costo }}</td>
-                    <td>{{producto.existencia}}</td>
-                    <td>{{producto.iva }}</td>
-                    <td>{{producto.precio_venta }}</td>
-
-                </tr>
-            </tbody>
-        </table>
     </div>
+
+
+
+
+
+
+</tr>
+
+
+</thead>
+
+</table>
+           <div class="" style="height: 240px" ng-grid="listaProductos" > </div>
+           <div class="row text-center">
+        <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 0" ng-click="paginaAnterior()">
+            <span class="glyphicon glyphicon-chevron-left" ></span>
+        </button>
+        <button type="button" class="btn btn-default btn-medium" ng-disabled="items == 0" ng-click="paginaSiguiente()">
+            <span class="glyphicon glyphicon-chevron-right" ></span>
+        </button>
+    </div>
+
+</div>
 </div>
 
 

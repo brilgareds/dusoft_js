@@ -85,8 +85,9 @@ InduccionModel.prototype.bodegas = function(centros_utilidad,callback) {
  * +Descripcion: Metodo que ejecuta el query de la consulta encargada de listar
  * los productos
  */
-InduccionModel.prototype.productos = function(empresaId,centroUtilidad,bodega,descripcion,callback) {
- 
+InduccionModel.prototype.productos = function(empresaId,centroUtilidad,bodega,descripcion,pagina,callback) {
+    
+      console.log("productos--------------------------------- " + pagina);
     var sql = "select \
 d.codigo_producto, \
 d.existencia,  \
@@ -100,9 +101,12 @@ INNER JOIN bodegas c ON c.centro_utilidad = b.centro_utilidad AND b.empresa_id =
 INNER JOIN existencias_bodegas d ON d.empresa_id = c.empresa_id AND d.centro_utilidad  = c.centro_utilidad AND d.bodega = c.bodega \
 INNER JOIN inventarios_productos e ON e.codigo_producto = d.codigo_producto \
 INNER JOIN inventarios f ON c.empresa_id = f.empresa_id AND f.codigo_producto = e.codigo_producto \
-WHERE a.empresa_id = $1 AND b.centro_utilidad = $2 AND c.bodega = $3 AND a.sw_activa = 1 and e.descripcion ilike $4 limit 100;";
+WHERE a.empresa_id = $1 AND b.centro_utilidad = $2 AND c.bodega = $3 AND a.sw_activa = 1 and e.descripcion ilike $4";
   
-    G.db.query(sql, [empresaId,centroUtilidad,bodega,'%'+descripcion+'%'], function(err, rows, result) {
+  /*  G.db.query(sql, [empresaId,centroUtilidad,bodega,'%'+descripcion+'%'], function(err, rows, result) {
+        callback(err, rows);
+    });*/
+     G.db.paginated(sql, [empresaId,centroUtilidad,bodega,'%'+descripcion+'%'], pagina, G.settings.limit, function(err, rows, result) {
         callback(err, rows);
     });
 

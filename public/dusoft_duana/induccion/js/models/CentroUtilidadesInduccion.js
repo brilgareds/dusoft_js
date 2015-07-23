@@ -26,19 +26,10 @@ define(["angular", "js/models", "includes/classes/CentroUtilidad"], function(ang
             return this.bodegaSeleccionada;
         }
         
-         CentroUtilidadesInduccion.prototype.seleccionarBodega= function(bodega){
-            
-             for (var i = 0; i < this.bodegas.length; i++) {
-                
-                    if (this.bodegas[i].getCodigo() === bodega) {
-                        this.bodegaSeleccionada = this.bodegas[i];
-                        break;
-                    }
-                }
-                
-              return this;  
+       
+         CentroUtilidadesInduccion.prototype.vaciarBodegas = function(){
+            this.bodegas = [];
         }
-         
         this.get = function(nombre, codigo) {
             return new CentroUtilidadesInduccion(nombre, codigo);
         };

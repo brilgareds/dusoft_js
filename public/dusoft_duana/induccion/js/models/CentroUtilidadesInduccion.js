@@ -6,47 +6,39 @@ define(["angular", "js/models", "includes/classes/CentroUtilidad"], function(ang
        
        function CentroUtilidadesInduccion(nombre, codigo) {
             CentroUtilidad.getClass().call(this, nombre, codigo);
-             this.bodegasInduccion = [];
+             this.bodegas = [];
+             this.bodegaSeleccionada = null;
         };
 
          CentroUtilidadesInduccion.prototype =  Object.create(CentroUtilidad.getClass().prototype);
         
          CentroUtilidadesInduccion.prototype.agregarBodega = function(centro){
-              this.bodegasInduccion.push(centro);
+              this.bodegas.push(centro);
          };
          
          
          CentroUtilidadesInduccion.prototype.getBodega = function(){
-             return this.bodegasInduccion;
+             return this.bodegas;
          };
-        /*EmpresaInduccion.farmacias = [];
-        EmpresaInduccion.farmaciaSeleccionada;
-
-        //Agregar farmacia
-        EmpresaInduccion.agregarFarmacias = function(farmacia){
-            this.farmacias.push(farmacia);
-        };
-        
-        EmpresaInduccion.getFarmacias = function(){
-            return this.farmacias;
-        };
-        
-        EmpresaInduccion.vaciarFarmacias = function() {
-            this.farmacias = [];
-        };
-
-        EmpresaInduccion.setFarmaciaSeleccionada = function(farmaciaSeleccionada) {
-            this.farmaciaSeleccionada = farmaciaSeleccionada;
-        };
-        
-        EmpresaInduccion.getFarmaciaSeleccionada = function() {
-            return this.farmaciaSeleccionada;
-        };*/
        
-       
-       
+        CentroUtilidadesInduccion.prototype.getBodegaSeleccionado = function(){
+            
+            return this.bodegaSeleccionada;
+        }
         
-        
+         CentroUtilidadesInduccion.prototype.seleccionarBodega= function(bodega){
+            
+             for (var i = 0; i < this.bodegas.length; i++) {
+                
+                    if (this.bodegas[i].getCodigo() === bodega) {
+                        this.bodegaSeleccionada = this.bodegas[i];
+                        break;
+                    }
+                }
+                
+              return this;  
+        }
+         
         this.get = function(nombre, codigo) {
             return new CentroUtilidadesInduccion(nombre, codigo);
         };

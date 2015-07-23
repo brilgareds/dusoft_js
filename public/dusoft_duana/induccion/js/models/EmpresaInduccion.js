@@ -29,7 +29,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             
              for (var i = 0; i < this.centrosUtilidad.length; i++) {
 
-                    if (this.centrosUtilidad[i].getNombre() === centrosUtilidad) {
+                    if (this.centrosUtilidad[i].getCodigo() === centrosUtilidad) {
                         this.centroUtilidadSeleccionado = this.centrosUtilidad[i];
                         break;
                     }

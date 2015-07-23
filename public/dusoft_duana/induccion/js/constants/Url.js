@@ -10,7 +10,8 @@ define(["angular"], function(angular) {
             'INDUCCION': {
                 "LISTAR_EMPRESAS":BASE_URL+"/Induccion/listar/empresas",
                 "LISTAR_CENTRO_UTILIDADES":BASE_URL+"/Induccion/listar/centroutilidad",
-                "LISTAR_BODEGAS":BASE_URL+"/Induccion/listar/bodegas"
+                "LISTAR_BODEGAS":BASE_URL+"/Induccion/listar/bodegas",
+                "LISTAR_PRODUCTOS":BASE_URL+"/Induccion/listar/productos"
             }
         }
 

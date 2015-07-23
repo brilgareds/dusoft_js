@@ -7,77 +7,82 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    
-                        <div class="col-xs-3"  >  
-       <select ng-model="selected"  
-                ng-options="value.codigo as value.nombre  for value in empresas" 
-                ng-change="seleccionarCentroUtilidadesEmpresa(selected)" 
-                class="form-control">
-            <!--
-            ng-init="selected='Angularjs'"//-->
-            
-        </select>
 
-    </div>
-    <div class="col-xs-3"  >
-        <select ng-model="selectedcentroutilidad" 
-                ng-options="value.nombre as value.codigo  for value in empresaSeleccionada.getCentrosUtilidad()"
-                ng-change="seleccionarBodegas(selectedcentroutilidad)" 
-                class="form-control">
-        </select>
-    </div>
+            <div class="col-xs-3"  >  
+                <select ng-model="selected"  
+                        ng-options="value.codigo as value.nombre  for value in empresas" 
+                        ng-change="seleccionarCentroUtilidadesEmpresa(selected)" 
+                        class="form-control">
+                    <!--
+                    ng-init="selected='Angularjs'"//-->
 
-    <div class="col-xs-3"  >
-        <select ng-model="selectedbodega" 
-                ng-options="value.nombre as value.codigo  for value in empresaSeleccionada.getCentroUtilidadSeleccionado().getBodega()"
-                class="form-control">
-        </select>
-    </div>
+                </select>
 
-    <div class="col-xs-3"  >
+            </div>
+            <div class="col-xs-3"  >
+                <select ng-model="selectedcentroutilidad" 
+                        ng-options="value.codigo as value.nombre  for value in empresaSeleccionada.getCentrosUtilidad()"
+                        ng-change="seleccionarBodegas(selectedcentroutilidad)" 
+                        class="form-control">
+                </select>
+            </div>
 
-        <div class="input-group">
-            <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
-            <input type="text" class="form-control" placeholder="Buscare empleado" ng-model="buscar.nombre">
-        </div>
-    </div>
+            <div class="col-xs-3"  >
+                <select ng-model="selectedbodega" 
+                        ng-options="value.codigo as value.nombre  for value in empresaSeleccionada.getCentroUtilidadSeleccionado().getBodega()"
+                        class="form-control">
+                </select>
+            </div>
+
+            <div class="col-xs-3"  >
+
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+                    <input type="text" class="form-control" placeholder="Buscare empleado" ng-model="buscar.descripcion">
+                </div>
+            </div>
+
+            <div class="col-xs-3"  >
+            <button ng-click="listarProductos()">
+                Increment
+            </button>
             
-            
-            
-            
-            
-            
-            
-            
-            
-                </tr>
-                
-                <tr> .</tr>
-                <tr>
-                    <th>identificador</th>
-                    <th>
-                        <a href="" ng-click="ordenarPor('nombre')">Nombre/s</a>
-                        <span class="caret" style="cursor: pointer" ng-click="ordenarPor('-nombre')"></span>
-                    </th>
-                    <th>apellido paterno</th>
-                    <th>apellido materno</th>
-                    <th>Dia</th>
-                    <th>Salario</th>
-                    <th>Telefono</th>
-                    <th>Bono</th>
-                </tr>
+                </div>
+
+
+
+
+
+
+            </tr>
+
+            <tr> .</tr>
+            <tr>
+                <th>index</th>
+                <th>
+                    Codigo producto
+                </th>
+
+                <th> <a href="" ng-click="ordenarPor('nombre')">Descripcion</a>
+                    <span class="caret" style="cursor: pointer" ng-click="ordenarPor('-nombre')"></span></th>
+                <th>Costo</th>
+                <th>Existencia</th>
+                <th>Iva</th>
+                <th>Precio de venta</th>
+
+            </tr>
 
             </thead>
             <tbody>
-                <tr ng-repeat="empleado in empleados | orderBy : ordenSeleccionado | filter:buscar">
-                    <td>{{ $index + 1 }}</td>
-                    <td>{{empleado.nombre }}</td>
-                    <td>{{empleado.paterno }}</td>
-                    <td>{{empleado.materno }}</td>
-                    <td>{{empleado.primerDia | date: 'fullDate'}}</td>
-                    <td>{{empleado.salario }}</td>
-                    <td>{{empleado.telefono }}</td>
-                    <td>% {{empleado.bono }}</td>
+                <tr ng-repeat="producto in empresaSeleccionada.getCentroUtilidadSeleccionado().getBodegaSeleccionado().getProductos() | orderBy : ordenSeleccionado | filter:buscar">
+                    <td>{{ $index + 1 }}</td> 
+                    <td>{{producto.codigo_producto }}</td>
+                    <td>{{producto.descripcion }}</td>
+                    <td>{{producto.costo }}</td>
+                    <td>{{producto.existencia}}</td>
+                    <td>{{producto.iva }}</td>
+                    <td>{{producto.precio_venta }}</td>
+
                 </tr>
             </tbody>
         </table>

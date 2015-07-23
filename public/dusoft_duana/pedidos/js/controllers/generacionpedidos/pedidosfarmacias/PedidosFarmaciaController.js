@@ -6,6 +6,8 @@ define(["angular",
     'models/generarpedidos/ClientePedido',
     'models/generarpedidos/PedidoVenta',
     "models/generacionpedidos/pedidosfarmacias/FarmaciaPedido",
+    "models/generacionpedidos/pedidosfarmacias/CentroUtilidadPedidoFarmacia",
+    "models/generacionpedidos/pedidosfarmacias/BodegaPedidoFarmacia",
     "controllers/generacionpedidos/pedidosfarmacias/ListaPedidosController",
     "controllers/generacionpedidos/pedidosfarmacias/ListaPedidosTemporalesController"], function(angular, controllers) {
 

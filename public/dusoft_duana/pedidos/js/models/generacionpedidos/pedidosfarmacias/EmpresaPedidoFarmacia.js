@@ -6,30 +6,33 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
         var EmpresaPedidoFarmacia =  Object.create(Empresa.getClass().prototype);
         
         EmpresaPedidoFarmacia.farmacias = [];
-        EmpresaPedidoFarmacia.farmaciaSeleccionada;
+        EmpresaPedidoFarmacia.pedidos = [];
 
         //Agregar farmacia
         EmpresaPedidoFarmacia.agregarFarmacias = function(farmacia){
             this.farmacias.push(farmacia);
         };
         
-        EmpresaPedidoFarmacia.getFarmacias = function(){
+        EmpresaPedidoFarmacia.obtenerFarmacias = function(){
             return this.farmacias;
         };
         
         EmpresaPedidoFarmacia.vaciarFarmacias = function() {
             this.farmacias = [];
         };
+        
+        EmpresaPedidoFarmacia.prototype.obtenerPedidos = function() {
+            return this.pedidos;
+        };
 
-        EmpresaPedidoFarmacia.setFarmaciaSeleccionada = function(farmaciaSeleccionada) {
-            this.farmaciaSeleccionada = farmaciaSeleccionada;
+        EmpresaPedidoFarmacia.prototype.agregarPedido = function(pedido) {
+            this.pedidos.push(pedido);
+        };
+             
+        EmpresaPedidoFarmacia.prototype.vaciarPedidos = function() {
+            this.pedidos = [];
         };
         
-        EmpresaPedidoFarmacia.getFarmaciaSeleccionada = function() {
-            return this.farmaciaSeleccionada;
-        };
-        
-
         return EmpresaPedidoFarmacia;
 
     }]);

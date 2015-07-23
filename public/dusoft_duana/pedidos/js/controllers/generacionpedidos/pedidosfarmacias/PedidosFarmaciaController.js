@@ -5,6 +5,7 @@ define(["angular",
     'includes/slide/slideContent',
     'models/generarpedidos/ClientePedido',
     'models/generarpedidos/PedidoVenta',
+    "models/generacionpedidos/pedidosfarmacias/FarmaciaPedido",
     "controllers/generacionpedidos/pedidosfarmacias/ListaPedidosController",
     "controllers/generacionpedidos/pedidosfarmacias/ListaPedidosTemporalesController"], function(angular, controllers) {
 

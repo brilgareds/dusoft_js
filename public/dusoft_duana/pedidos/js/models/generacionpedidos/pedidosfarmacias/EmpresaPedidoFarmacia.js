@@ -21,15 +21,15 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             this.farmacias = [];
         };
         
-        EmpresaPedidoFarmacia.prototype.obtenerPedidos = function() {
+        EmpresaPedidoFarmacia.obtenerPedidos = function() {
             return this.pedidos;
         };
 
-        EmpresaPedidoFarmacia.prototype.agregarPedido = function(pedido) {
+        EmpresaPedidoFarmacia.agregarPedidoFarmacia = function(pedido) {
             this.pedidos.push(pedido);
         };
              
-        EmpresaPedidoFarmacia.prototype.vaciarPedidos = function() {
+        EmpresaPedidoFarmacia.vaciarPedidos = function() {
             this.pedidos = [];
         };
         

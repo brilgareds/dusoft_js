@@ -86,7 +86,7 @@ define(["angular",
 
             };
             
-            that.crearPedido = function(obj) {
+            self.crearPedido = function(obj) {
 
                 //console.log(">>>> OBJETO DE CONSULTA -- DESPACHO: ", obj.despacho_numero," - " ,obj.tiene_despacho," - " ,obj.numero_pedido);
                 
@@ -165,7 +165,7 @@ define(["angular",
 
                     var obj = pedidos[i];
 
-                    var pedido = that.crearPedido(obj);
+                    var pedido = self.crearPedido(obj);
 
                     $scope.rootPedidosFarmacias.Empresa.agregarPedidoFarmacia(pedido);
 

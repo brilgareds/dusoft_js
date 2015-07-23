@@ -25,56 +25,7 @@ var PedidosCliente = function(pedidos_clientes, eventos_pedidos_clientes, produc
  * @apiParam {String} auth_token  Token de Autenticación, este define si el usuario esta autenticado o no.
  * @apiParam {Number} empresa_id Identificacion de la empresa de la cual se requieren los pedidos.
  * @apiParam {String} termino_busqueda Termino por el cual desea filtrar los pedidos.
- * @apiParam {Number} pagina_actual Numero de la pagina, requerido para la paginacion.
- * @apiSuccessExample Ejemplo Válido del Request.
- *     HTTP/1.1 200 OK
- *     {  
- *          session: {              
- *              usuario_id: 'jhon.doe',
- *              auth_token: 'asdf2hgt56hjjhgrt-mnjhbgfd-asdfgyh-ghjmnbgfd'
- *          },
- *          data : {
- *              pedidos_clientes :  { 
- *                                      termino_busqueda : '',
- *                                      pagina_actual: ''
- *                                  }
- *          }
- *     }
- * @apiSuccessExample Respuesta-Exitosa:
- *     HTTP/1.1 200 OK
- *     {
- *       service : '/api/PedidosClientes/listarPedidos',   
- *       msj : 'Lista Pedidos Clientes',
- *       status: '200',
- *       obj : {
- *                  pedidos_clientes : [ 
- *                                        {   
- *                                             numero_pedido: 33872,
- *                                             tipo_id_cliente: 'CE',
- *                                             identificacion_cliente: '10365',
- *                                             nombre_cliente: 'CLINICA SANTA GRACIA DUMIAN MEDICAL
- *                                             direccion_cliente: 'CALLE 14 15-49',
- *                                             telefono_cliente: '8236444',
- *                                             tipo_id_vendedor: 'CC ',
- *                                             idetificacion_vendedor: '94518917',
- *                                             nombre_vendedor: 'GUSTAVO ADOLFO MEJIA',
- *                                             estado: '1',
- *                                             descripcion_estado: 'Activo',
- *                                             estado_actual_pedido: '1',
- *                                             descripcion_estado_actual_pedido: 'Separado',
- *                                             fecha_registro: '2014-01-21T17:28:50.700Z' 
- *                                         }
- *                                      ]
- *             }
- *     }
- * @apiErrorExample Respuesta-Error:
- *     HTTP/1.1 404 Not Found
- *     {
- *       service : '/api/PedidosClientes/listarPedidos',   
- *       msj : 'Mensaje Error',
- *       status: 404,
- *       obj : {},
- *     }  
+ * @apiParam {Number} pagina_actual Numero de la pagina, requerido para la paginacion. 
  */
 
 PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
@@ -87,18 +38,17 @@ PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {pedidos_clientes: []}));
         return;
     }
-    
-    if(args.pedidos_clientes.empresa_id === undefined){
+
+    if (args.pedidos_clientes.empresa_id === undefined) {
         res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {pedidos_clientes: []}));
         return;
     }
-    
+
     if (args.pedidos_clientes.pagina_actual === '') {
         res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {pedidos_clientes: []}));
         return;
     }
 
-    //var empresa_id = '03';
     var empresa_id = args.pedidos_clientes.empresa_id;
     var termino_busqueda = args.pedidos_clientes.termino_busqueda;
     var pagina_actual = args.pedidos_clientes.pagina_actual;
@@ -109,11 +59,6 @@ PedidosCliente.prototype.listarPedidosClientes = function(req, res) {
     });
 };
 
-/**/
-PedidosCliente.prototype.consultarPedido = function(req, res) {
-
-
-};
 
 /**
  * @api {post} /api/PedidosClientes/asignarResponsable Asignar Responsables 
@@ -128,38 +73,7 @@ PedidosCliente.prototype.consultarPedido = function(req, res) {
  * @apiParam {String[]} pedidos Lista de pedidos 
  * @apiParam {Number} estado_pedido ID del estado a asignar 
  * @apiParam {Number} responsable Operario de Bodega al que se le asigna el pedido.
- * @apiSuccessExample Ejemplo Válido del Request.
- *     HTTP/1.1 200 OK
- *     {  
- *          session: {              
- *              usuario_id: 'jhon.doe',
- *              auth_token: 'asdf2hgt56hjjhgrt-mnjhbgfd-asdfgyh-ghjmnbgfd'
- *          },
- *          data : {
- *              asignacion_pedidos :  { 
- *                                      pedidos : [],
- *                                      estado_pedido: '',
- *                                      responsable : ''
- *                                  }
- *          }
- *     }
- * @apiSuccessExample Respuesta-Exitosa:
- *     HTTP/1.1 200 OK
- *     {
- *       service : '/api/PedidosClientes/asignarResponsable',   
- *       msj : 'Asignacion de Resposables',
- *       status: '200',
- *       obj : {
- *             }
- *     }
- * @apiErrorExample Respuesta-Error:
- *     HTTP/1.1 404 Not Found
- *     {
- *       service : '/api/PedidosClientes/asignarResponsable',   
- *       msj : 'Mensaje Error',
- *       status: 404,
- *       obj : {},
- *     }  
+ * @apiSuccessExample Ejemplo Válido del Request. 
  */
 
 PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
@@ -180,9 +94,6 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
         return;
     }
 
-
-
-    //var empresa_id = req.body.empresa_id;
     var pedidos = params.pedidos;
     var estado_pedido = params.estado_pedido;
     var responsable = params.responsable;
@@ -210,9 +121,7 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
                     responsable_estado_pedido = responsable_estado_pedido[0];
 
                     if (responsable !== responsable_estado_pedido.responsable_id) {
-                        console.log('==== Notificar Reasignación ======');
-                        console.log("responsable Nuevo", responsable, " Repsonable Vejo", responsable_estado_pedido.responsable_id);
-                        console.log('===================================');
+
                         that.e_pedidos_clientes.onNotificacionOperarioPedidosReasignados({numero_pedidos: pedidos, responsable: responsable_estado_pedido.responsable_id});
                     }
                 }
@@ -239,38 +148,7 @@ PedidosCliente.prototype.asignarResponsablesPedido = function(req, res) {
  * @apiParam {String[]} pedidos Lista de pedidos 
  * @apiParam {Number} estado_pedido ID del estado a asignar 
  * @apiParam {Number} responsable Operario de Bodega al que se le asigna el pedido.
- * @apiSuccessExample Ejemplo Válido del Request.
- *     HTTP/1.1 200 OK
- *     {  
- *          session: {              
- *              usuario_id: 'jhon.doe',
- *              auth_token: 'asdf2hgt56hjjhgrt-mnjhbgfd-asdfgyh-ghjmnbgfd'
- *          },
- *          data : {
- *              asignacion_pedidos :  { 
- *                                      pedidos : [],
- *                                      estado_pedido: '',
- *                                      responsable : ''
- *                                  }
- *          }
- *     }
- * @apiSuccessExample Respuesta-Exitosa:
- *     HTTP/1.1 200 OK
- *     {
- *       service : '/api/PedidosClientes/asignarResponsable',   
- *       msj : 'Asignacion de Resposables',
- *       status: '200',
- *       obj : {
- *             }
- *     }
- * @apiErrorExample Respuesta-Error:
- *     HTTP/1.1 404 Not Found
- *     {
- *       service : '/api/PedidosClientes/asignarResponsable',   
- *       msj : 'Mensaje Error',
- *       status: 404,
- *       obj : {},
- *     }  
+ * @apiSuccessExample Ejemplo Válido del Request.  
  */
 
 PedidosCliente.prototype.eliminarResponsablesPedido = function(req, res) {
@@ -312,7 +190,7 @@ PedidosCliente.prototype.eliminarResponsablesPedido = function(req, res) {
                             res.send(G.utils.r(req.url, 'El Pedido no ha registrado responsables', 500, {}));
                             return;
                         }
-                        
+
                         that.m_pedidos_clientes.eliminar_responsables_pedidos(numero_pedido, function(err, rows, resultado) {
 
                             if (err) {
@@ -367,74 +245,7 @@ PedidosCliente.prototype.eliminarResponsablesPedido = function(req, res) {
  * @apiParam {Number} operario_id Identificador asignado al operario de Bodega.
  * @apiParam {Number} pagina_actual Numero de la pagina que requiere.
  * @apiParam {Number} [limite] Cantidad de registros por cada pagina.
- * @apiSuccessExample Ejemplo Válido del Request.
- *     HTTP/1.1 200 OK
- *     {  
- *          session: {              
- *              usuario_id: 'jhon.doe',
- *              auth_token: 'asdf2hgt56hjjhgrt-mnjhbgfd-asdfgyh-ghjmnbgfd'
- *          },
- *          data : {
- *              pedidos_clientes : { 
- *                                  operario_id:  19,
- *                                  pagina_actual : 1,
- *                                  limite : 40
- *                              }
- *          }
- *     }
- * @apiSuccessExample Respuesta-Exitosa:
- *     HTTP/1.1 200 OK
- *     {
- *       service : '/api/PedidosClientes/listaPedidosOperarioBodega',   
- *       msj : 'Lista Pedidos Clientes',
- *       status: '200',
- *       obj : {
- *                  pedidos_clientes : [ 
- *                                        {   
- *                                             numero_pedido: 33872,
- *                                             tipo_id_cliente: 'CE',
- *                                             identificacion_cliente: '10365',
- *                                             nombre_cliente: 'CLINICA SANTA GRACIA DUMIAN MEDICAL
- *                                             direccion_cliente: 'CALLE 14 15-49',
- *                                             telefono_cliente: '8236444',
- *                                             tipo_id_vendedor: 'CC ',
- *                                             idetificacion_vendedor: '94518917',
- *                                             nombre_vendedor: 'GUSTAVO ADOLFO MEJIA',
- *                                             estado: '1',
- *                                             descripcion_estado: 'Activo',
- *                                             estado_actual_pedido: '1',
- *                                             descripcion_estado_actual_pedido: 'Separado',
- *                                             fecha_registro: '2014-01-21T17:28:50.700Z',
- *                                             responsable_id: 19,
- *                                             responsable_pedido: 'Ixon Eduardo Niño',
- *                                             fecha_asignacion_pedido: '2014-03-04T17:44:30.911Z',
- *                                             lista_productos:[
- *                                                               {
- *                                                                  numero_pedido : 33872,
- *                                                                  codigo_producto : '1145C1131279',
- *                                                                  descripcion_producto : 'OFTAFLOX . UNGUENTO OFTALMICO | TUBO X 5GR. SCANDINAVIA',
- *                                                                  cantidad_solicitada : 10,
- *                                                                  cantidad_despachada : 0,
- *                                                                  cantidad_pendiente : 10,
- *                                                                  cantidad_facturada : 0,
- *                                                                  valor_unitario: 8450,
- *                                                                  porcentaje_iva : 0,
- *                                                                  valor_unitario_con_iva: 8450,
- *                                                                  valor_iva: 0
- *                                                               }
- *                                             ] 
- *                                         }
- *                                      ]
- *             }
- *     }
- * @apiErrorExample Respuesta-Error:
- *     HTTP/1.1 404 Not Found
- *     {
- *       service : '/api/PedidosClientes/listaPedidosOperarioBodega',   
- *       msj : 'Mensaje Error',
- *       status: 404,
- *       obj : {},
- *     }  
+ * @apiSuccessExample Ejemplo Válido del Request. 
  */
 
 PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
@@ -503,7 +314,133 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
 
 };
 
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : Buscar productos para la solictid de una cotizacion o pedido
+ */
+PedidosCliente.prototype.listarProductosClientes = function(req, res) {
 
+    var that = this;
+
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.empresa_id === undefined || args.pedidos_clientes.centro_utilidad_id === undefined || args.pedidos_clientes.bodega_id === undefined) {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id No Estan Definidos', 404, {}));
+        return;
+    }
+    
+    if (args.pedidos_clientes.pagina_actual === undefined || args.pedidos_clientes.termino_busqueeeda === undefined || args.pedidos_clientes.centro_utilidad_id === undefined || args.pedidos_clientes.bodega_id === undefined) {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id No Estan Definidos', 404, {}));
+        return;
+    }
+    
+    if (args.pedidos_clientes.empresa_id === '' || args.pedidos_clientes.centro_utilidad_id === '' || args.pedidos_clientes.bodega_id === '') {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacíos', 404, {}));
+        return;
+    }
+   
+
+
+    return;
+    /****************************/
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.productos === undefined || args.productos.termino_busqueda === undefined || args.productos.empresa_id === undefined || args.productos.centro_utilidad_id === undefined || args.productos.bodega_id === undefined) {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id no estan definidos', 404, {}));
+        return;
+    }
+
+    if (args.productos.empresa_id === '' || args.productos.centro_utilidad_id === '' || args.productos.bodega_id === '') {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacíos', 404, {}));
+        return;
+    }
+
+    if (args.productos.pagina_actual === '') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
+        return;
+    }
+
+    var empresa_id = args.productos.empresa_id;
+    var centro_utilidad_id = args.productos.centro_utilidad_id;
+    var bodega_id = args.productos.bodega_id;
+    var contrato_cliente_id = args.productos.contrato_cliente_id;
+    var termino_busqueda = args.productos.termino_busqueda;
+    var laboratorio = args.productos.laboratorio;
+    var concentracion = args.productos.concentracion;
+    var pagina_actual = args.productos.pagina_actual;
+    var pedido_cliente_id_tmp = args.productos.pedido_cliente_id_tmp;
+    var filtro = args.productos.filtro;
+
+    /* Inicio - Modificación para Tipo Producto */
+    var tipo_producto = '0';
+
+    if (args.productos.tipo_producto !== undefined) {
+        tipo_producto = args.productos.tipo_producto;
+    }
+    /* Fin - Modificación para Tipo Producto */
+
+
+    this.m_productos.listar_productos_clientes(empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pedido_cliente_id_tmp, tipo_producto, laboratorio, concentracion, pagina_actual, filtro, function(err, lista_productos) {
+
+        var i = lista_productos.length;
+
+        if (i === 0) {
+            res.send(G.utils.r(req.url, 'Lista de productos vacía', 200, {lista_productos: []}));
+            return;
+        }
+
+        lista_productos.forEach(function(producto) {
+
+            //producto.existencia
+            that.m_pedidos_farmacias.calcular_cantidad_total_pendiente_producto(empresa_id, producto.codigo_producto, function(err, total_pendiente_farmacias) {
+
+                var cantidad_total_pendiente_farmacias = (total_pendiente_farmacias.length > 0) ? total_pendiente_farmacias[0].cantidad_total_pendiente : 0;
+
+                that.m_pedidos_clientes.calcular_cantidad_total_pendiente_producto(empresa_id, producto.codigo_producto, function(err, total_pendiente_clientes) {
+
+                    var cantidad_total_pendiente_clientes = (total_pendiente_clientes.length > 0) ? total_pendiente_clientes[0].cantidad_total_pendiente : 0;
+
+                    that.m_pedidos_farmacias.calcular_cantidad_reservada_temporales_farmacias(producto.codigo_producto, function(err, total_reservado_temporales) {
+
+                        var cantidad_reservada_temporales = (total_reservado_temporales.length > 0) ? total_reservado_temporales[0].total_reservado : 0;
+
+                        that.m_pedidos_clientes.calcular_cantidad_reservada_cotizaciones_clientes(producto.codigo_producto, function(err, total_reservado_cotizaciones) {
+
+                            var cantidad_reservada_cotizaciones = (total_reservado_cotizaciones.length > 0) ? total_reservado_cotizaciones[0].total_reservado : 0;
+
+                            var disponibilidad_bodega = producto.existencia - cantidad_total_pendiente_farmacias - cantidad_total_pendiente_clientes
+                                    - cantidad_reservada_temporales - cantidad_reservada_cotizaciones;
+
+                            producto.disponible = (disponibilidad_bodega < 0) ? 0 : disponibilidad_bodega;
+
+                            if (--i === 0) {
+
+                                if (err) {
+                                    res.send(G.utils.r(req.url, 'Error Listado de Productos', 500, {lista_productos: {}}));
+                                    return;
+                                } else {
+                                    res.send(G.utils.r(req.url, 'Listado de Productos', 200, {lista_productos: lista_productos}));
+                                    return;
+                                }
+
+                            }
+                        });
+                    });
+                });
+            });
+        });
+    });
+};
+
+
+/**************************************************
+ * 
+ *  REVISAR DESDE ACA HACIA ABAJO 
+ *
+ /**************************************************/
+
+
+// ????????????????????????????????????????
 PedidosCliente.prototype.obtenerDetallePedido = function(req, res) {
     var self = this;
 
@@ -540,63 +477,33 @@ PedidosCliente.prototype.obtenerDetallePedido = function(req, res) {
  * @apiParam {String[]} pedidos Lista de pedidos 
  * @apiParam {Number} estado_pedido ID del estado a asignar 
  * @apiParam {Number} responsable Operario de Bodega al que se le asigna el pedido.
- * @apiSuccessExample Ejemplo Válido del Request.
- *     HTTP/1.1 200 OK
- *     {  
- *          session: {              
- *              usuario_id: 'jhon.doe',
- *              auth_token: 'asdf2hgt56hjjhgrt-mnjhbgfd-asdfgyh-ghjmnbgfd'
- *          },
- *          data : {
- *              asignacion_pedidos :  { 
- *                                      pedidos : [],
- *                                      estado_pedido: '',
- *                                      responsable : ''
- *                                  }
- *          }
- *     }
- * @apiSuccessExample Respuesta-Exitosa:
- *     HTTP/1.1 200 OK
- *     {
- *       service : '/api/PedidosClientes/insertarCotizacion',   
- *       msj : 'Asignacion de Resposables',
- *       status: '200',
- *       obj : {
- *             }
- *     }
- * @apiErrorExample Respuesta-Error:
- *     HTTP/1.1 404 Not Found
- *     {
- *       service : '/api/PedidosClientes/insertarCotizacion',   
- *       msj : 'Mensaje Error',
- *       status: 404,
- *       obj : {},
- *     }  
+ * @apiSuccessExample Ejemplo Válido del Request. 
  */
 
+// ????????????????????????????????????????
 PedidosCliente.prototype.insertarCotizacion = function(req, res) {
 
     var that = this;
 
     var args = req.body.data;
 
-    if (args.cotizacion_encabezado === undefined || args.cotizacion_encabezado.empresa_id === undefined 
-        || args.cotizacion_encabezado.tipo_id_tercero === undefined || args.cotizacion_encabezado.tercero_id === undefined
-        || args.cotizacion_encabezado.centro_utilidad === undefined || args.cotizacion_encabezado.bodega === undefined ) {
-    
+    if (args.cotizacion_encabezado === undefined || args.cotizacion_encabezado.empresa_id === undefined
+            || args.cotizacion_encabezado.tipo_id_tercero === undefined || args.cotizacion_encabezado.tercero_id === undefined
+            || args.cotizacion_encabezado.centro_utilidad === undefined || args.cotizacion_encabezado.bodega === undefined) {
+
         res.send(G.utils.r(req.url, 'empresa_id, tipo_tercero_id o tercero_id No Están Definidos', 404, {}));
         return;
     }
 
-    if (args.cotizacion_encabezado.tipo_id_vendedor === undefined || args.cotizacion_encabezado.vendedor_id === undefined 
-        || args.cotizacion_encabezado.estado === undefined) {
-    
+    if (args.cotizacion_encabezado.tipo_id_vendedor === undefined || args.cotizacion_encabezado.vendedor_id === undefined
+            || args.cotizacion_encabezado.estado === undefined) {
+
         res.send(G.utils.r(req.url, 'tipo_id_vendedor, vendedor_id o estado No Están Definidos', 404, {}));
         return;
     }
 
     if (args.cotizacion_encabezado.empresa_id === '' || args.cotizacion_encabezado.tipo_id_tercero === '' || args.cotizacion_encabezado.tercero_id === ''
-        || args.cotizacion_encabezado.centro_utilidad === '' || args.cotizacion_encabezado.bodega === '') {
+            || args.cotizacion_encabezado.centro_utilidad === '' || args.cotizacion_encabezado.bodega === '') {
         res.send(G.utils.r(req.url, 'empresa_id, tipo_id_tercero o tercero_id Están Vacios', 404, {}));
         return;
     }
@@ -618,8 +525,8 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
     var centro_utilidad = args.cotizacion_encabezado.centro_utilidad;
     var bodega = args.cotizacion_encabezado.bodega;
 
-    that.m_pedidos_clientes.insertar_cotizacion(empresa_id, tipo_id_tercero, tercero_id, usuario_id, 
-                                                tipo_id_vendedor, vendedor_id, estado, observaciones,centro_utilidad, bodega, function(err, row) {
+    that.m_pedidos_clientes.insertar_cotizacion(empresa_id, tipo_id_tercero, tercero_id, usuario_id,
+            tipo_id_vendedor, vendedor_id, estado, observaciones, centro_utilidad, bodega, function(err, row) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error en Inserción del Encabezado de Cotización', 500, {}));
@@ -679,6 +586,7 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
  *     }  
  */
 
+// ????????????????????????????????????????
 PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
 
     var that = this;
@@ -728,6 +636,7 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
 };
 
 //INSERTAR PEDIDO CLIENTES
+// ????????????????????????????????????????
 PedidosCliente.prototype.insertarPedidoCliente = function(req, res) {
 
     var that = this;
@@ -806,6 +715,7 @@ PedidosCliente.prototype.insertarPedidoCliente = function(req, res) {
 };
 
 //LISTAR COTIZACIONES CLIENTES
+// ????????????????????????????????????????
 PedidosCliente.prototype.listarCotizaciones = function(req, res) {
 
     var that = this;
@@ -841,6 +751,7 @@ PedidosCliente.prototype.listarCotizaciones = function(req, res) {
 };
 
 //LISTAR PEDIDOS
+// ????????????????????????????????????????
 PedidosCliente.prototype.listadoPedidosClientes = function(req, res) {
 
     var that = this;
@@ -878,6 +789,7 @@ PedidosCliente.prototype.listadoPedidosClientes = function(req, res) {
 };
 
 //consultarEncabezadoCotizacion
+// ????????????????????????????????????????
 PedidosCliente.prototype.consultarEncabezadoCotizacion = function(req, res) {
 
     var that = this;
@@ -909,6 +821,7 @@ PedidosCliente.prototype.consultarEncabezadoCotizacion = function(req, res) {
 
 };
 //consultarEncabezadoPedido
+// ????????????????????????????????????????
 PedidosCliente.prototype.consultarEncabezadoPedido = function(req, res) {
 
     var that = this;
@@ -940,6 +853,7 @@ PedidosCliente.prototype.consultarEncabezadoPedido = function(req, res) {
 };
 
 //ESTADO COTIZACIÓN DEL CLIENTE
+// ????????????????????????????????????????
 PedidosCliente.prototype.estadoCotizacion = function(req, res) {
 
     var that = this;
@@ -974,6 +888,7 @@ PedidosCliente.prototype.estadoCotizacion = function(req, res) {
 
 //ESTADO PEDIDO DEL CLIENTE
 //estadoPedido
+// ????????????????????????????????????????
 PedidosCliente.prototype.estadoPedido = function(req, res) {
 
     var that = this;
@@ -1006,6 +921,7 @@ PedidosCliente.prototype.estadoPedido = function(req, res) {
 
 };
 
+// ????????????????????????????????????????
 PedidosCliente.prototype.listarDetalleCotizacion = function(req, res) {
 
     var that = this;
@@ -1038,6 +954,7 @@ PedidosCliente.prototype.listarDetalleCotizacion = function(req, res) {
 };
 
 //listarDetallePedido
+// ????????????????????????????????????????
 PedidosCliente.prototype.listarDetallePedido = function(req, res) {
 
     var that = this;
@@ -1070,6 +987,7 @@ PedidosCliente.prototype.listarDetallePedido = function(req, res) {
 };
 
 //eliminar_registro_detalle_cotizacion
+// ????????????????????????????????????????
 PedidosCliente.prototype.eliminarRegistroDetalleCotizacion = function(req, res) {
 
     var that = this;
@@ -1105,6 +1023,7 @@ PedidosCliente.prototype.eliminarRegistroDetalleCotizacion = function(req, res) 
 };
 
 //cotizacionEsPedido
+// ????????????????????????????????????????
 PedidosCliente.prototype.cambiarEstadoCotizacion = function(req, res) {
 
     var that = this;
@@ -1138,6 +1057,7 @@ PedidosCliente.prototype.cambiarEstadoCotizacion = function(req, res) {
 
 };
 
+// ????????????????????????????????????????
 PedidosCliente.prototype.cambiarEstadoAprobacionCotizacion = function(req, res) {
 
     var that = this;
@@ -1172,6 +1092,7 @@ PedidosCliente.prototype.cambiarEstadoAprobacionCotizacion = function(req, res) 
 
 };
 
+// ????????????????????????????????????????
 PedidosCliente.prototype.cambiarEstadoAprobacionPedido = function(req, res) {
 
     var that = this;
@@ -1206,6 +1127,7 @@ PedidosCliente.prototype.cambiarEstadoAprobacionPedido = function(req, res) {
 
 };
 
+// ????????????????????????????????????????
 PedidosCliente.prototype.pedidoClienteArchivoPlano = function(req, res) {
 
     var that = this;
@@ -1304,7 +1226,7 @@ PedidosCliente.prototype.pedidoClienteArchivoPlano = function(req, res) {
 
                     if (j > 0) {
                         //INSERTAR ENCABEZADO
-                        that.m_pedidos_clientes.insertar_cotizacion(empresa_id, tipo_id_tercero, tercero_id, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones, centro_utilidad_id, bodega_id, function(err, array_pedido_cliente_id_tmp) { 
+                        that.m_pedidos_clientes.insertar_cotizacion(empresa_id, tipo_id_tercero, tercero_id, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones, centro_utilidad_id, bodega_id, function(err, array_pedido_cliente_id_tmp) {
 
                             if (err) {
                                 res.send(G.utils.r(req.url, 'Error en Inserción del Encabezado de Cotización', 500, {}));
@@ -1328,7 +1250,7 @@ PedidosCliente.prototype.pedidoClienteArchivoPlano = function(req, res) {
                                 var termino_busqueda = producto_valido.codigo_producto;
 
                                 //Consultar tipo_producto_id y cantidad_pendiente
-                                that.m_productos.listar_productos_clientes(empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pedido_cliente_id_tmp, tipo_producto, "" , "", pagina_actual, filtro, function(err, lista_productos) {
+                                that.m_productos.listar_productos_clientes(empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pedido_cliente_id_tmp, tipo_producto, "", "", pagina_actual, filtro, function(err, lista_productos) {
 
                                     var i = lista_productos.length;
 
@@ -1387,6 +1309,8 @@ PedidosCliente.prototype.pedidoClienteArchivoPlano = function(req, res) {
     });
 };
 
+// ????????????????????????????????????????
+
 function __subir_archivo_plano(files, callback) {
 
     var ruta_tmp = files.file.path;
@@ -1424,6 +1348,7 @@ function __subir_archivo_plano(files, callback) {
 }
 ;
 
+// ????????????????????????????????????????
 function __validar_productos_archivo_plano(contexto, contenido_archivo_plano, callback) {
 
     var that = contexto;
@@ -1469,6 +1394,7 @@ function __validar_productos_archivo_plano(contexto, contenido_archivo_plano, ca
 }
 ;
 
+// ????????????????????????????????????????
 PedidosCliente.prototype.imprimirCotizacionCliente = function(req, res) {
 
     var that = this;
@@ -1568,8 +1494,8 @@ PedidosCliente.prototype.imprimirCotizacionCliente = function(req, res) {
         });
     }
 
-    args.serverUrl = req.protocol + '://' + req.get('host')+ "/";
-    
+    args.serverUrl = req.protocol + '://' + req.get('host') + "/";
+
     _generarDocumentoCotizacion(that, args, function(nombreTmp, estado_mail) {
 
         if (estado_mail !== undefined) {
@@ -1603,9 +1529,10 @@ PedidosCliente.prototype.imprimirCotizacionCliente = function(req, res) {
 
 };
 
+// ????????????????????????????????????????
 function _generarDocumentoCotizacion(that, obj, callback) {
-    
-    
+
+
     G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/PedidosClientes/reports/cotizacion.html', 'utf8'),
@@ -1616,18 +1543,18 @@ function _generarDocumentoCotizacion(that, obj, callback) {
         data: obj
     },
     function(err, response) {
-       
-        
+
+
         response.body(function(body) {
-            
-            
-           var fecha = new Date();
-           var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
-           var rutaArchivo = G.dirname + "/public/reports/" + nombreTmp;
-           
-           
-           G.fs.writeFile(rutaArchivo, body,  "binary",function(err) {
-               
+
+
+            var fecha = new Date();
+            var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
+            var rutaArchivo = G.dirname + "/public/reports/" + nombreTmp;
+
+
+            G.fs.writeFile(rutaArchivo, body, "binary", function(err) {
+
                 if (obj.encabezado_pedido_cliente.email === true) {
 
                     var nombre_archivo = "Cotizacion No" + obj.encabezado_pedido_cliente.numero_cotizacion + ".pdf";
@@ -1644,16 +1571,18 @@ function _generarDocumentoCotizacion(that, obj, callback) {
                 } else {
                     callback(nombreTmp);
                 }
-                
+
             });
-            
+
         });
-        
+
 
     });
 }
 ;
 
+
+// ????????????????????????????????????????
 PedidosCliente.prototype.imprimirPedidoCliente = function(req, res) {
 
     var that = this;
@@ -1753,8 +1682,8 @@ PedidosCliente.prototype.imprimirPedidoCliente = function(req, res) {
         });
     }
 
-    args.serverUrl = req.protocol + '://' + req.get('host')+ "/";
-    
+    args.serverUrl = req.protocol + '://' + req.get('host') + "/";
+
     _generarDocumentoPedido(that, args, function(nombreTmp, estado_mail) {
 
         if (estado_mail !== undefined) {
@@ -1798,9 +1727,11 @@ PedidosCliente.prototype.imprimirPedidoCliente = function(req, res) {
 
 };
 
+// ????????????????????????????????????????
+
 function _generarDocumentoPedido(that, obj, callback) {
-    
-    
+
+
     G.jsreport.render({
         template: {
             content: G.fs.readFileSync('app_modules/PedidosClientes/reports/pedido.html', 'utf8'),
@@ -1809,86 +1740,87 @@ function _generarDocumentoPedido(that, obj, callback) {
             engine: 'jsrender'
         },
         data: obj
-    }, function(err, response) { 
-                
+    }, function(err, response) {
+
         response.body(function(body) {
-           var fecha = new Date();
-           var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
-           var rutaArchivo = G.dirname + "/public/reports/" + nombreTmp;
-           
-           G.fs.writeFile(rutaArchivo, body,  "binary",function(err) {
-               
-                if(err) {
+            var fecha = new Date();
+            var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
+            var rutaArchivo = G.dirname + "/public/reports/" + nombreTmp;
+
+            G.fs.writeFile(rutaArchivo, body, "binary", function(err) {
+
+                if (err) {
                     console.log(err);
                 } else {
                     //callback(nombreTmp);
-                    
+
                     if (obj.encabezado_pedido_cliente.email === true) {
-                         var nombre_archivo = "Pedido No" + obj.encabezado_pedido_cliente.numero_pedido + ".pdf";
-                         var destinatario = obj.encabezado_pedido_cliente.destinatarios;
-                         //var subject = "Dusoft :: Pedido DUANA y Cia Ltda.";
-                         var asunto = obj.encabezado_pedido_cliente.asunto;
-                         var contenido = obj.encabezado_pedido_cliente.contenido;
+                        var nombre_archivo = "Pedido No" + obj.encabezado_pedido_cliente.numero_pedido + ".pdf";
+                        var destinatario = obj.encabezado_pedido_cliente.destinatarios;
+                        //var subject = "Dusoft :: Pedido DUANA y Cia Ltda.";
+                        var asunto = obj.encabezado_pedido_cliente.asunto;
+                        var contenido = obj.encabezado_pedido_cliente.contenido;
 
-                         __emailDocumento(that, destinatario, rutaArchivo, nombre_archivo, asunto, contenido, function(mail_exitoso) {
+                        __emailDocumento(that, destinatario, rutaArchivo, nombre_archivo, asunto, contenido, function(mail_exitoso) {
 
-                             callback(nombreTmp, mail_exitoso);
-                             return;
-                         });
-                     }
-                     else {
-                         callback(nombreTmp);
-                         return;
-                     }                    
-                    
+                            callback(nombreTmp, mail_exitoso);
+                            return;
+                        });
+                    }
+                    else {
+                        callback(nombreTmp);
+                        return;
+                    }
+
                 }
-                
+
             });
-                
-            
+
+
         });
-        
-        
+
+
     });
     /*G.jsreport.reporter.render({
-        template: {
-            content: G.fs.readFileSync('app_modules/PedidosClientes/reports/pedido.html', 'utf8'),
-            //helpers: G.fs.readFileSync('app_modules/PedidosFarmacias/reports/javascripts/rotulos.js', 'utf8'),
-            recipe: "phantom-pdf",
-            engine: 'jsrender'
-        },
-        data: obj
-    }).then(function(response) {
-
-        var name = response.result.path;
-        var fecha = new Date();
-        var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
-        G.fs.copySync(name, G.dirname + "/public/reports/" + nombreTmp);
-
-        if (obj.encabezado_pedido_cliente.email === true) {
-            var nombre_archivo = "Pedido No" + obj.encabezado_pedido_cliente.numero_pedido + ".pdf";
-            var destinatario = obj.encabezado_pedido_cliente.destinatarios;
-            //var subject = "Dusoft :: Pedido DUANA y Cia Ltda.";
-            var asunto = obj.encabezado_pedido_cliente.asunto;
-            var contenido = obj.encabezado_pedido_cliente.contenido;
-
-            __emailDocumento(that, destinatario, name, nombre_archivo, asunto, contenido, function(mail_exitoso) {
-
-                callback(nombreTmp, mail_exitoso);
-                return;
-            });
-        }
-        else {
-            callback(nombreTmp);
-            return;
-        }
-
-        //callback(nombreTmp);
-    });*/
+     template: {
+     content: G.fs.readFileSync('app_modules/PedidosClientes/reports/pedido.html', 'utf8'),
+     //helpers: G.fs.readFileSync('app_modules/PedidosFarmacias/reports/javascripts/rotulos.js', 'utf8'),
+     recipe: "phantom-pdf",
+     engine: 'jsrender'
+     },
+     data: obj
+     }).then(function(response) {
+     
+     var name = response.result.path;
+     var fecha = new Date();
+     var nombreTmp = G.random.randomKey(2, 5) + "_" + fecha.toFormat('DD-MM-YYYY') + ".pdf";
+     G.fs.copySync(name, G.dirname + "/public/reports/" + nombreTmp);
+     
+     if (obj.encabezado_pedido_cliente.email === true) {
+     var nombre_archivo = "Pedido No" + obj.encabezado_pedido_cliente.numero_pedido + ".pdf";
+     var destinatario = obj.encabezado_pedido_cliente.destinatarios;
+     //var subject = "Dusoft :: Pedido DUANA y Cia Ltda.";
+     var asunto = obj.encabezado_pedido_cliente.asunto;
+     var contenido = obj.encabezado_pedido_cliente.contenido;
+     
+     __emailDocumento(that, destinatario, name, nombre_archivo, asunto, contenido, function(mail_exitoso) {
+     
+     callback(nombreTmp, mail_exitoso);
+     return;
+     });
+     }
+     else {
+     callback(nombreTmp);
+     return;
+     }
+     
+     //callback(nombreTmp);
+     });*/
 }
 ;
 
 //Envío de Email
+// ????????????????????????????????????????
 function __emailDocumento(that, destinatario, ruta_archivo, nombre_archivo, subject, contenido, callback) {
 
 //    var smtpTransport = that.emails.createTransport("SMTP", {
@@ -1935,6 +1867,7 @@ function __emailDocumento(that, destinatario, ruta_archivo, nombre_archivo, subj
 ;
 
 //Insertar Detalle Pedido
+// ????????????????????????????????????????
 PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
 
     var that = this;
@@ -1984,7 +1917,8 @@ PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
     });
 };
 
-//eliminarRegistroDetallePedido
+//eliminarRegistroDetallePedido}
+// ????????????????????????????????????????
 PedidosCliente.prototype.eliminarRegistroDetallePedido = function(req, res) {
 
     var that = this;
@@ -2020,6 +1954,7 @@ PedidosCliente.prototype.eliminarRegistroDetallePedido = function(req, res) {
 };
 
 //Modificar Cantidades Cotización
+// ????????????????????????????????????????
 PedidosCliente.prototype.modificarCantidadesCotizacion = function(req, res) {
 
     var that = this;
@@ -2064,6 +1999,7 @@ PedidosCliente.prototype.modificarCantidadesCotizacion = function(req, res) {
 };
 
 //Modificar Cantidades Pedido
+// ????????????????????????????????????????
 PedidosCliente.prototype.modificarCantidadesPedido = function(req, res) {
 
     var that = this;
@@ -2109,98 +2045,6 @@ PedidosCliente.prototype.modificarCantidadesPedido = function(req, res) {
 
 };
 
-PedidosCliente.prototype.listarProductosClientes = function(req, res) {
-
-    var that = this;
-
-    var args = req.body.data;
-
-    if (args.productos === undefined || args.productos.termino_busqueda === undefined || args.productos.empresa_id === undefined || args.productos.centro_utilidad_id === undefined || args.productos.bodega_id === undefined) {
-        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id no estan definidos', 404, {}));
-        return;
-    }
-
-    if (args.productos.empresa_id === '' || args.productos.centro_utilidad_id === '' || args.productos.bodega_id === '') {
-        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacíos', 404, {}));
-        return;
-    }
-
-    if (args.productos.pagina_actual === '') {
-        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
-        return;
-    }
-
-    var empresa_id = args.productos.empresa_id;
-    var centro_utilidad_id = args.productos.centro_utilidad_id;
-    var bodega_id = args.productos.bodega_id;
-    var contrato_cliente_id = args.productos.contrato_cliente_id;
-    var termino_busqueda = args.productos.termino_busqueda;
-    var laboratorio = args.productos.laboratorio;
-    var concentracion = args.productos.concentracion;
-    var pagina_actual = args.productos.pagina_actual;
-    var pedido_cliente_id_tmp = args.productos.pedido_cliente_id_tmp;
-    var filtro = args.productos.filtro;
-
-    /* Inicio - Modificación para Tipo Producto */
-    var tipo_producto = '0';
-
-    if (args.productos.tipo_producto !== undefined) {
-        tipo_producto = args.productos.tipo_producto;
-    }
-    /* Fin - Modificación para Tipo Producto */
-
-
-    this.m_productos.listar_productos_clientes(empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pedido_cliente_id_tmp, tipo_producto, laboratorio, concentracion, pagina_actual, filtro, function(err, lista_productos) {
-
-        var i = lista_productos.length;
-
-        if (i === 0) {
-            res.send(G.utils.r(req.url, 'Lista de productos vacía', 200, {lista_productos: []}));
-            return;
-        }
-
-        lista_productos.forEach(function(producto) {
-
-            //producto.existencia
-            that.m_pedidos_farmacias.calcular_cantidad_total_pendiente_producto(empresa_id, producto.codigo_producto, function(err, total_pendiente_farmacias) {
-
-                var cantidad_total_pendiente_farmacias = (total_pendiente_farmacias.length > 0) ? total_pendiente_farmacias[0].cantidad_total_pendiente : 0;
-
-                that.m_pedidos_clientes.calcular_cantidad_total_pendiente_producto(empresa_id, producto.codigo_producto, function(err, total_pendiente_clientes) {
-
-                    var cantidad_total_pendiente_clientes = (total_pendiente_clientes.length > 0) ? total_pendiente_clientes[0].cantidad_total_pendiente : 0;
-
-                    that.m_pedidos_farmacias.calcular_cantidad_reservada_temporales_farmacias(producto.codigo_producto, function(err, total_reservado_temporales) {
-
-                        var cantidad_reservada_temporales = (total_reservado_temporales.length > 0) ? total_reservado_temporales[0].total_reservado : 0;
-
-                        that.m_pedidos_clientes.calcular_cantidad_reservada_cotizaciones_clientes(producto.codigo_producto, function(err, total_reservado_cotizaciones) {
-
-                            var cantidad_reservada_cotizaciones = (total_reservado_cotizaciones.length > 0) ? total_reservado_cotizaciones[0].total_reservado : 0;
-
-                            var disponibilidad_bodega = producto.existencia - cantidad_total_pendiente_farmacias - cantidad_total_pendiente_clientes
-                                    - cantidad_reservada_temporales - cantidad_reservada_cotizaciones;
-
-                            producto.disponible = (disponibilidad_bodega < 0) ? 0 : disponibilidad_bodega;
-
-                            if (--i === 0) {
-
-                                if (err) {
-                                    res.send(G.utils.r(req.url, 'Error Listado de Productos', 500, {lista_productos: {}}));
-                                    return;
-                                } else {
-                                    res.send(G.utils.r(req.url, 'Listado de Productos', 200, {lista_productos: lista_productos}));
-                                    return;
-                                }
-
-                            }
-                        });
-                    });
-                });
-            });
-        });
-    });
-};
 
 PedidosCliente.$inject = ["m_pedidos_clientes", "e_pedidos_clientes", "m_productos", "m_pedidos", "m_terceros", "emails", "m_pedidos_farmacias"];
 

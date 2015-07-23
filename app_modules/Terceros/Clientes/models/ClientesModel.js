@@ -11,86 +11,48 @@ var ClientesModel = function() {
  * Requiere que el usuario esté autenticado.
  * @apiPermission autenticado
  * @apiParam {Function} callback Funcion de retorno de informacion.
- * @apiSuccessExample Este SQL se usa en:
- *     Modulo : 
- *     Accion : 
- * @apiSuccessExample SQL.
- *   SELECT
- *       a.tipo_id_tercero,
- *       a.tercero_id,
- *       a.direccion,
- *       a.telefono,
- *       a.email,
- *       a.nombre_tercero,
- *       a.tipo_bloqueo_id,
- *       c.descripcion as bloqueo,
- *       COALESCE(d.tipo_id_tercero,'0') as contrato_cliente_id,
- *       g.pais,
- *       f.departamento,
- *       municipio
- *       FROM
- *       terceros as a
- *       JOIN terceros_clientes as b ON (a.tipo_id_tercero = b.tipo_id_tercero)
- *       AND (a.tercero_id = b.tercero_id)
- *       AND (b.empresa_id = $1)
- *       LEFT JOIN inv_tipos_bloqueos as c ON (a.tipo_bloqueo_id = c.tipo_bloqueo_id)
- *       LEFT JOIN vnts_contratos_clientes as d ON (a.tipo_id_tercero = d.tipo_id_tercero)
- *       AND (a.tercero_id = d.tercero_id)
- *       AND (d.empresa_id = $1)
- *       AND (d.estado = '1')
- *       LEFT JOIN tipo_mpios as e ON (a.tipo_pais_id = e.tipo_pais_id)
- *       AND (a.tipo_dpto_id = e.tipo_dpto_id)
- *       AND (a.tipo_mpio_id = e.tipo_mpio_id)
- *       LEFT JOIN tipo_dptos as f ON (e.tipo_pais_id = f.tipo_pais_id)
- *       AND (e.tipo_dpto_id = f.tipo_dpto_id)
- *       LEFT JOIN tipo_pais as g ON (f.tipo_pais_id = g.tipo_pais_id)
- *       WHERE a.tercero_id ilike $2
- *       or a.nombre_tercero ilike $2;
- */ 
-ClientesModel.prototype.listar_clientes = function(empresa_id, termino_busqueda, pagina, callback) {
+ */
+ClientesModel.prototype.listar_clientes = function(empresa_id, termino_busqueda, paginacion, pagina, callback) {
 
-    var sql = "SELECT\
-                    a.tipo_id_tercero,\
-                    a.tercero_id,\
-                    a.direccion,\
-                    a.telefono,\
-                    a.email,\
-                    a.nombre_tercero,\
-                    a.tipo_bloqueo_id,\
-                    c.descripcion as bloqueo,\
-                    COALESCE(d.contrato_cliente_id,0) as contrato_cliente_id,\
-                    g.pais,\
-                    f.departamento,\
-                    e.municipio,\
-                    d.estado as estado_contrato,\
-                    case when d.fecha_final >= CURRENT_TIMESTAMP\
-                        THEN true\
-                        ELSE false\
-                    END as contrato_vigente\
-		FROM\
-                    terceros as a\
-                    JOIN terceros_clientes as b ON (a.tipo_id_tercero = b.tipo_id_tercero)\
-                        AND (a.tercero_id = b.tercero_id)\
-                        AND (b.empresa_id = $1)\
-                    LEFT JOIN inv_tipos_bloqueos as c ON (a.tipo_bloqueo_id = c.tipo_bloqueo_id)\
-                    LEFT JOIN vnts_contratos_clientes as d ON (a.tipo_id_tercero = d.tipo_id_tercero)\
-                        AND (a.tercero_id = d.tercero_id)\
-                        AND (d.empresa_id = $1)\
-                        /*AND (d.estado = '1')*/\
-                    LEFT JOIN tipo_mpios as e ON (a.tipo_pais_id = e.tipo_pais_id)\
-                        AND (a.tipo_dpto_id = e.tipo_dpto_id)\
-                        AND (a.tipo_mpio_id = e.tipo_mpio_id)\
-                    LEFT JOIN tipo_dptos as f ON (e.tipo_pais_id = f.tipo_pais_id)\
-                        AND (e.tipo_dpto_id = f.tipo_dpto_id)\
-                    LEFT JOIN tipo_pais as g ON (f.tipo_pais_id = g.tipo_pais_id)\
-                WHERE a.tipo_bloqueo_id = 1\
-                    AND (a.tercero_id ilike $2 OR a.nombre_tercero ilike $2)\
-                ORDER BY d.fecha_final desc, /*CAST(d.estado AS INT)*/ d.estado desc";
+    var sql = " SELECT\
+                a.tipo_id_tercero,\
+                a.tercero_id,\
+                a.direccion,\
+                a.telefono,\
+                a.email,\
+                a.nombre_tercero,\
+                a.tipo_bloqueo_id,\
+                c.descripcion as bloqueo,\
+                COALESCE(d.contrato_cliente_id,0) as contrato_cliente_id,\
+                g.pais,\
+                f.departamento,\
+                e.municipio,\
+                d.estado as estado_contrato,\
+                CASE when d.fecha_final >= CURRENT_TIMESTAMP THEN true ELSE false END as contrato_vigente\
+                FROM terceros as a\
+                JOIN terceros_clientes b ON a.tipo_id_tercero = b.tipo_id_tercero AND a.tercero_id = b.tercero_id AND b.empresa_id = $1\
+                LEFT JOIN inv_tipos_bloqueos c ON a.tipo_bloqueo_id = c.tipo_bloqueo_id\
+                LEFT JOIN vnts_contratos_clientes as d ON a.tipo_id_tercero = d.tipo_id_tercero AND a.tercero_id = d.tercero_id AND d.empresa_id = $1 AND d.estado='1'\
+                LEFT JOIN tipo_mpios e ON a.tipo_pais_id = e.tipo_pais_id AND a.tipo_dpto_id = e.tipo_dpto_id AND a.tipo_mpio_id = e.tipo_mpio_id\
+                LEFT JOIN tipo_dptos f ON e.tipo_pais_id = f.tipo_pais_id AND e.tipo_dpto_id = f.tipo_dpto_id\
+                LEFT JOIN tipo_pais g ON f.tipo_pais_id = g.tipo_pais_id\
+                WHERE \
+                (   a.tercero_id ilike $2 OR \
+                    a.nombre_tercero ilike $2\
+                )";
 
-    G.db.pagination(sql, [empresa_id,"%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
-        callback(err, rows);
-    });
-    
+    if (paginacion) {
+        // Paginacion
+        G.db.pagination(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
+            callback(err, rows);
+        });
+    } else {
+        //
+        G.db.query(sql, [empresa_id, "%" + termino_busqueda + "%"], function(err, rows) {
+            callback(err, rows);
+        });
+    }
+
 };
 
 ClientesModel.prototype.listar_clientes_ciudad = function(empresa_id, pais_id, departamento_id, ciudad_id, termino_busqueda, callback) {
@@ -127,7 +89,7 @@ ClientesModel.prototype.listar_clientes_ciudad = function(empresa_id, pais_id, d
     G.db.query(sql, [empresa_id, pais_id, departamento_id, ciudad_id, "%" + termino_busqueda + "%"], function(err, rows, result, total_records) {
         callback(err, rows);
     });
-    
+
 };
 
 /**
@@ -144,7 +106,7 @@ ClientesModel.prototype.listar_clientes_ciudad = function(empresa_id, pais_id, d
  *     Accion : 
  * @apiSuccessExample SQL.
  *   SELECT
- */ 
+ */
 ClientesModel.prototype.consultar_contrato_cliente = function(tipo_id_cliente, cliente_id, callback) {
 
     var sql = " SELECT\
@@ -158,7 +120,7 @@ ClientesModel.prototype.consultar_contrato_cliente = function(tipo_id_cliente, c
     G.db.query(sql, [tipo_id_cliente, cliente_id], function(err, rows, result) {
         callback(err, rows, result);
     });
-    
+
 };
 
 module.exports = ClientesModel;

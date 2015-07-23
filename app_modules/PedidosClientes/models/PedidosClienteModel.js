@@ -874,6 +874,78 @@ PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(nu
     });
 };
 
+/*
+ * Author : Camilo Orozco
+ * Descripcion :  SQL listado de productos para la seleccion de medicamentos en una cotizacion o en un pedido de cliente.
+ */
+PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, callback) {
+
+    var sql = " select \
+                a.codigo_producto,\
+                fc_descripcion_producto(a.codigo_producto) as nombre_producto,\
+                b.codigo_cum,\
+                b.codigo_invima,\
+                b.vencimiento_codigo_invima,\
+                b.porc_iva as iva,\
+                a.existencia::integer as existencia,\
+                coalesce(h.cantidad_total_pendiente, 0) as cantidad_total_pendiente,\
+                case when coalesce((a.existencia - h.cantidad_total_pendiente)::integer, 0) < 0 then 0 \
+                        else coalesce((a.existencia - h.cantidad_total_pendiente)::integer, 0) end as cantidad_disponible,\
+                case when g.precio_pactado > 0 then true else false end as tiene_precio_pactado,\
+                split_part(fc_precio_producto_contrato_cliente($4,a.codigo_producto,$1), '@', 1) as precio_producto,\
+                b.sw_regulado,\
+                c.precio_regulado\
+                from existencias_bodegas a \
+                inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
+                inner join inventarios c on b.codigo_producto = c.codigo_producto and a.empresa_id = c.empresa_id\
+                inner join inv_tipo_producto d ON b.tipo_producto_id = d.tipo_producto_id\
+                inner join inv_subclases_inventarios e ON b.grupo_id = e.grupo_id and b.clase_id = e.clase_id and b.subclase_id = e.subclase_id\
+                inner join inv_clases_inventarios f ON e.grupo_id = f.grupo_id and e.clase_id = f.clase_id\
+                left join (\
+                    select b.codigo_producto, coalesce(b.precio_pactado,0) as precio_pactado\
+                    from vnts_contratos_clientes a\
+                    inner join vnts_contratos_clientes_productos b on a.contrato_cliente_id = b.contrato_cliente_id\
+                    where a.contrato_cliente_id = $4\
+                ) g on c.codigo_producto = g.codigo_producto\
+                left join (\
+                  select aa.codigo_producto, sum(aa.cantidad_total_pendiente) as cantidad_total_pendiente\
+                  from (\
+                    select b.codigo_producto, SUM((b.numero_unidades - b.cantidad_despachada)) as cantidad_total_pendiente, 1\
+                    from ventas_ordenes_pedidos a\
+                    inner join ventas_ordenes_pedidos_d b ON a.pedido_cliente_id = b.pedido_cliente_id\
+                    where a.empresa_id = $1 and (b.numero_unidades - b.cantidad_despachada) > 0  \
+                    group by 1\
+                    UNION\
+                    select b.codigo_producto, SUM( b.cantidad_pendiente) AS cantidad_total_pendiente, 2\
+                    from solicitud_productos_a_bodega_principal a \
+                    inner join solicitud_productos_a_bodega_principal_detalle b ON a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id    \
+                    where a.empresa_destino = $1 and b.cantidad_pendiente > 0 \
+                    group by 1\
+                  ) aa group by 1\
+                ) h on c.codigo_producto = h.codigo_producto\
+                where a.empresa_id = $1 and (\
+                    a.codigo_producto ilike $5 or\
+                    fc_descripcion_producto(a.codigo_producto) ilike $5 or\
+                    e.descripcion ilike $5\
+                ) order by 2";
+
+    G.db.paginated(sql, [empresa, '','',contrato_cliente_id, '%'+termino_busqueda+'%'], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+
+
+
+
+/**************************************************
+ * 
+ *  REVISAR DESDE ACA HACIA ABAJO 
+ *
+/**************************************************
+
+
+
 /**
  * @api {sql} insertar_cotizacion Pedidos clientes model
  * @apiName Pedidos Clientes

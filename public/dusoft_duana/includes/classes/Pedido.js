@@ -50,6 +50,10 @@ define(["angular", "js/models"], function(angular, models) {
             return this.farmacia;
         };
         
+        Pedido.prototype.setFechaRegistro = function(fecha) {
+            this.fecha_registro = fecha;
+        };
+        
         Pedido.prototype.getFechaRegistro = function() {
             return this.fecha_registro;
         };

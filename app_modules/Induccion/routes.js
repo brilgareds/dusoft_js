@@ -33,4 +33,15 @@ module.exports = function(app, di_container) {
 
         c_induccion.listar_bodegas(req, res);
     });
+    
+    
+     /**
+     * @author Cristian Ardila
+     * +Descripcion: path del servicio que ejecutara la funcion para listar los
+     * productos
+     */
+    app.post('/api/Induccion/listar/productos', function(req, res) {
+
+        c_induccion.listar_productos(req, res);
+    });
 };

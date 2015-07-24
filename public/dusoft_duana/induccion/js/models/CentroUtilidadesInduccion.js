@@ -7,7 +7,6 @@ define(["angular", "js/models", "includes/classes/CentroUtilidad"], function(ang
        function CentroUtilidadesInduccion(nombre, codigo) {
             CentroUtilidad.getClass().call(this, nombre, codigo);
              this.bodegas = [];
-           //  this.bodegaSeleccionada = null;
         };
 
          CentroUtilidadesInduccion.prototype =  Object.create(CentroUtilidad.getClass().prototype);
@@ -20,12 +19,6 @@ define(["angular", "js/models", "includes/classes/CentroUtilidad"], function(ang
          CentroUtilidadesInduccion.prototype.getBodega = function(){
              return this.bodegas;
          };
-       
-     /*   CentroUtilidadesInduccion.prototype.getBodegaSeleccionado = function(){
-            
-            return this.bodegaSeleccionada;
-        }*/
-        
        
          CentroUtilidadesInduccion.prototype.vaciarBodegas = function(){
             this.bodegas = [];

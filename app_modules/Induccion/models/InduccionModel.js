@@ -87,7 +87,7 @@ InduccionModel.prototype.bodegas = function(centros_utilidad,callback) {
  */
 InduccionModel.prototype.productos = function(empresaId,centroUtilidad,bodega,descripcion,pagina,callback) {
     
-      console.log("productos--------------------------------- " + pagina);
+   
     var sql = "select \
 d.codigo_producto, \
 d.existencia,  \

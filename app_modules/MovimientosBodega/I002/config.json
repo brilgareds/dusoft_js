@@ -1,5 +1,5 @@
 {
-    "module": "E008",
+    "module": "I002",
     "dependency": {
         "controllers": [{
                 "e008_controller": {

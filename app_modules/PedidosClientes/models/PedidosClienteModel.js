@@ -878,7 +878,7 @@ PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(nu
  * Author : Camilo Orozco
  * Descripcion :  SQL listado de productos para la seleccion de medicamentos en una cotizacion o en un pedido de cliente.
  */
-PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, callback) {
+PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pagina, callback) {
 
     var sql = " select \
                 a.codigo_producto,\
@@ -923,13 +923,16 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                     group by 1\
                   ) aa group by 1\
                 ) h on c.codigo_producto = h.codigo_producto\
-                where a.empresa_id = $1 and (\
+                where a.empresa_id = $1 and a.centro_utilidad = $2 and a.bodega = $3 \
+                and (\
                     a.codigo_producto ilike $5 or\
                     fc_descripcion_producto(a.codigo_producto) ilike $5 or\
                     e.descripcion ilike $5\
                 ) order by 2";
+    
+    console.log(sql);
 
-    G.db.paginated(sql, [empresa, '','',contrato_cliente_id, '%'+termino_busqueda+'%'], function(err, rows, result) {
+    G.db.paginated(sql, [empresa, centro_utilidad_id, bodega_id,contrato_cliente_id, '%'+termino_busqueda+'%'], pagina, G.settings.limit, function(err, rows, result) {
         callback(err, rows);
     });
 };

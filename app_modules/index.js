@@ -198,7 +198,7 @@ function _load_config(di_container, config, modulo, submodulo) {
                 });
             }
         } else {
-            console.log('!!!! Error , El Nombre del Modulo No Coincide con el registrado en el Archivo config.json !!!!!');
+            console.log('!!!! Error , El Nombre del Modulo ['+config.module+'-'+module+'] No Coincide con el registrado en el Archivo config.json !!!!!');
         }
     } else {
         console.log('!!!! Error Cargando configuraciones del modulo ' + modulo + ' No tiene las propiedades module o dependecy !!!!!');

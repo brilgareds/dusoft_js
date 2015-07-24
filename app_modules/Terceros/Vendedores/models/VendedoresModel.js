@@ -25,13 +25,13 @@ var VendedoresModel = function() {
  */ 
 VendedoresModel.prototype.listar_vendedores = function(callback) {
     
-    var sql = "Select\
-                    a.tipo_id_vendedor,\
-                    a.vendedor_id,\
-                    a.nombre,\
-                    a.telefono\
-                    from vnts_vendedores as a\
-                    WHERE a.estado = '1'";
+    var sql = " select\
+                a.tipo_id_vendedor,\
+                a.vendedor_id,\
+                a.nombre,\
+                a.telefono\
+                from vnts_vendedores as a\
+                WHERE a.estado = '1'";
 
     G.db.query(sql, [], function(err, rows, result) {
         callback(err, rows);

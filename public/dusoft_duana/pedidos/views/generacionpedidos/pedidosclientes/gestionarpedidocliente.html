@@ -16,10 +16,10 @@
 
                             <fieldset>
                                 <legend>Cliente</legend>  
-                                <ui-select ng-model="planilla.ciudad" ng-disabled="planilla.get_numero_guia() > 0" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_ciudad()">
-                                    <ui-select-match  placeholder="Seleccionar ciudad">{{ $select.selected.get_nombre_ciudad() }}</ui-select-match>
-                                    <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="ciudad in Empresa.get_ciudades() | filter:$select.search">
-                                        {{ ciudad.get_nombre_ciudad() }}
+                                <ui-select ng-model="Pedido.cliente" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_cliente()">
+                                    <ui-select-match  placeholder="Seleccionar cliente">{{ $select.selected.get_descripcion() }}</ui-select-match>
+                                    <ui-select-choices refresh="listar_clientes($select.search)" refresh-delay="0" repeat="cliente in Empresa.get_clientes() | filter:$select.search">
+                                        {{ cliente.get_descripcion() }}
                                     </ui-select-choices>
                                 </ui-select>                                   
                             </fieldset>
@@ -27,20 +27,19 @@
                         <div class="col-md-4">
                             <fieldset>
                                 <legend>Dirección</legend> 
-                                <ui-select ng-model="planilla.transportadora" ng-disabled="planilla.get_numero_guia() > 0" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_transportadora()">
-                                    <ui-select-match  placeholder="Seleccionar transportadora">{{ $select.selected.get_descripcion() }}</ui-select-match>
-                                    <ui-select-choices repeat="transportadora in Empresa.get_transportadoras() | filter:$select.search">
-                                        {{ transportadora.get_descripcion() }}
-                                    </ui-select-choices>
-                                </ui-select>
+                                <div class="row">  
+                                    <div class="col-md-12">                                          
+                                        <input type="text" ng-value="Pedido.getCliente().get_ubicacion()" ng-disabled="true" class="form-control" />
+                                    </div>
+                                </div>
                             </fieldset>
                         </div>
                         <div class="col-md-4">
                             <fieldset>
                                 <legend>Telefono</legend> 
-                                <div class="row">
-                                    <div class="col-md-7" style="margin-top: -14px">  
-                                        <h3><strong>{{planilla.get_fecha_registro()}}</strong></h3>
+                                <div class="row">  
+                                    <div class="col-md-12">                                          
+                                        <input type="text" ng-value="Pedido.getCliente().getTelefono()" ng-disabled="true" class="form-control" />
                                     </div>
                                 </div>
                             </fieldset>
@@ -53,7 +52,7 @@
                                 <legend>Observación</legend>                                 
                                 <div class="row">  
                                     <div class="col-md-12">                                          
-                                        <textarea  ng-model="planilla.observacion" ng-disabled="planilla.get_numero_guia() > 0" class="col-lg-12 col-md-12 col-sm-12" rows="4" name="" placeholder="Ingresar Observación"></textarea>
+                                        <textarea  ng-model="Pedido.observacion" class="col-lg-12 col-md-12 col-sm-12" rows="4" name="" placeholder="Ingresar Observación"></textarea>
                                     </div>
                                 </div>
                             </fieldset>
@@ -61,11 +60,12 @@
                         <div class="col-md-4">
                             <fieldset>
                                 <legend>Vendedor</legend>                                 
-                                <div class="row">  
-                                    <div class="col-md-12">                                          
-                                        <input type="text" ng-model="planilla.nombre_conductor" ng-disabled="planilla.get_numero_guia() > 0" class="form-control"  placeholder="Ingrese Nombre del Conductor" name="" id="" />
-                                    </div>
-                                </div>
+                                <ui-select ng-model="Pedido.vendedor" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_vendedor()">
+                                    <ui-select-match  placeholder="Seleccionar vendedor">{{ $select.selected.getNombre() }}</ui-select-match>
+                                    <ui-select-choices repeat="vendedor in Empresa.get_vendedores() | filter:$select.search">
+                                        {{ vendedor.getNombre() }}
+                                    </ui-select-choices>
+                                </ui-select>
                             </fieldset>
                         </div>                                              
                         <div class="col-md-4">
@@ -73,13 +73,13 @@
                                 <legend>Fecha</legend> 
                                 <div class="row">
                                     <div class="col-md-7" style="margin-top: -14px">  
-                                        <h3><strong>{{planilla.get_descripcion_estado()}}</strong></h3>
+                                        <h3><strong>{{Pedido.getFechaRegistro()}}</strong></h3>
                                     </div>
                                 </div>
                             </fieldset>
                         </div>
                     </div>   
-                    <br>
+                    <br>                    
                     <br>                      
                     <!-- -->
                     <div class="row">  

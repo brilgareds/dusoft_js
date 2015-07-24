@@ -14,23 +14,126 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         "localStorageService",
         "$state",
         "$filter",
-        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter) {
+        "EmpresaPedidoCliente",
+        "PedidoCliente",
+        "ClientePedido",
+        "VendedorPedidoCliente",
+        "Usuario",
+        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter,
+                Empresa, Pedido, Cliente, Vendedor, Sesion) {
 
             var that = this;
 
+            // Definicion Variables de Sesion
+            $scope.session = {
+                usuario_id: Sesion.getUsuarioActual().getId(),
+                auth_token: Sesion.getUsuarioActual().getToken()
+            };
 
+            // Definicion Variables            
+            $scope.Empresa = Empresa;
+
+            // Inicializacion Pedido
+            $scope.Pedido = Pedido.get();
+            $scope.Pedido.setCliente(Cliente.get());
+            $scope.Pedido.setFechaRegistro($filter('date')(new Date(), "dd/MM/yyyy"));
+
+            $scope.datos_view = {
+                termino_busqueda_clientes: ''
+            };
+
+            // Clientes
+            $scope.listar_clientes = function(termino_busqueda) {
+
+                if (termino_busqueda.length < 3) {
+                    return;
+                }
+
+                $scope.datos_view.termino_busqueda_clientes = termino_busqueda;
+                that.buscar_clientes(function(clientes) {
+                    that.render_clientes(clientes);
+                });
+            };
+
+            that.buscar_clientes = function(callback) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        clientes: {
+                            empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
+                            termino_busqueda: $scope.datos_view.termino_busqueda_clientes,
+                            paginacion: false
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.TERCEROS.LISTAR_CLIENTES, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        callback(data.obj.listado_clientes);
+                    }
+                });
+            };
+
+            that.render_clientes = function(clientes) {
+                                
+                $scope.Empresa.limpiar_clientes();
+
+                clientes.forEach(function(data) {
+
+                    var cliente = Cliente.get(data.nombre_tercero, data.direccion, data.tipo_id_tercero, data.tercero_id, data.telefono);
+                    cliente.setDepartamento(data.departamento);
+                    cliente.setMunicipio(data.municipio);
+                    cliente.set_contrato(data.contrato_cliente_id);
+
+                    $scope.Empresa.set_clientes(cliente);
+                });
+            };
+
+            // Vendedores
+            that.buscar_vendedores = function() {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {}
+                };
+
+                Request.realizarRequest(API.TERCEROS.LISTAR_VENDEDORES, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        that.render_vendedores(data.obj.listado_vendedores);
+                    }
+                });
+            };
+            
+            that.render_vendedores = function(vendedores) {
+
+                $scope.Empresa.limpiar_vendedores();
+
+                vendedores.forEach(function(data) {
+
+                    var vendedor = Vendedor.get(data.nombre, data.tipo_id_vendedor, data.vendedor_id, data.telefono);
+
+                    $scope.Empresa.set_vendedores(vendedor);
+                });                                
+            };
+
+
+            // Ingresar Productos
             $scope.buscar_productos = function() {
 
                 $scope.slideurl = "views/generacionpedidos/pedidosclientes/gestionarproductosclientes.html?time=" + new Date().getTime();
 
                 $scope.$emit('gestionar_productos_clientes');
             };
-            
-            $scope.cerrar_busqueda_productos = function() {                
 
-                $scope.$emit('cerrar_gestion_productos_clientes',{animado: true});
+            $scope.cerrar_busqueda_productos = function() {
+
+                $scope.$emit('cerrar_gestion_productos_clientes', {animado: true});
             };
 
+            // Lista Productos Seleccionados
             $scope.lista_productos = {
                 data: 'planilla.get_documentos()',
                 enableColumnResize: true,
@@ -72,6 +175,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 ]
             };
 
+
+            
+            that.buscar_vendedores();
+            
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
             });

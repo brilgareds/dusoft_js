@@ -2,10 +2,18 @@ module.exports = function(app, di_container) {
     
     var c_clientes = di_container.get("c_clientes");
     
+    /*
+     * Author:  Camilo Orozco
+     * Descripcion: Consulta el listado de clientes de una ciudad
+     */
     app.post('/api/Terceros/Clientes/listarClientes', function(req, res) {
          c_clientes.listarClientes(req, res);
-    });
+    });    
     
+    /*
+     * Author:  Camilo Orozco
+     * Descripcion: Consulta el listado de clientes de una ciudad
+     */
     app.post('/api/Terceros/Clientes/listarClientesCiudad', function(req, res) {
          c_clientes.listarClientesCiudad(req, res);
     });

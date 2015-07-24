@@ -6,8 +6,7 @@ define(["angular", "js/models","includes/classes/Tercero"], function(angular, mo
         function Cliente(nombre, direccion, tipo_id, id, telefono) {
             
             Tercero.getClass().call(this,nombre, tipo_id, id, direccion, telefono);
-            
-            //this.ubicacion = pais+"-"+departamento+"-"+municipio;
+           
         };
 
         this.get = function(nombre, direccion, tipo_id, id, telefono) {

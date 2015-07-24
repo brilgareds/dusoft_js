@@ -882,13 +882,15 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
 
     var sql = " select \
                 a.codigo_producto,\
-                fc_descripcion_producto(a.codigo_producto) as nombre_producto,\
+                fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
+                b.tipo_producto_id,\
+                d.descripcion as descripcion_tipo_producto,\
                 b.codigo_cum,\
                 b.codigo_invima,\
                 b.vencimiento_codigo_invima,\
                 b.porc_iva as iva,\
                 a.existencia::integer as existencia,\
-                coalesce(h.cantidad_total_pendiente, 0) as cantidad_total_pendiente,\
+                coalesce(h.cantidad_total_pendiente, 0)::integer as cantidad_total_pendiente,\
                 case when coalesce((a.existencia - h.cantidad_total_pendiente)::integer, 0) < 0 then 0 \
                         else coalesce((a.existencia - h.cantidad_total_pendiente)::integer, 0) end as cantidad_disponible,\
                 case when g.precio_pactado > 0 then true else false end as tiene_precio_pactado,\
@@ -908,21 +910,21 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                     where a.contrato_cliente_id = $4\
                 ) g on c.codigo_producto = g.codigo_producto\
                 left join (\
-                  select aa.codigo_producto, sum(aa.cantidad_total_pendiente) as cantidad_total_pendiente\
-                  from (\
-                    select b.codigo_producto, SUM((b.numero_unidades - b.cantidad_despachada)) as cantidad_total_pendiente, 1\
-                    from ventas_ordenes_pedidos a\
-                    inner join ventas_ordenes_pedidos_d b ON a.pedido_cliente_id = b.pedido_cliente_id\
-                    where a.empresa_id = $1 and (b.numero_unidades - b.cantidad_despachada) > 0  \
-                    group by 1\
-                    UNION\
-                    select b.codigo_producto, SUM( b.cantidad_pendiente) AS cantidad_total_pendiente, 2\
-                    from solicitud_productos_a_bodega_principal a \
-                    inner join solicitud_productos_a_bodega_principal_detalle b ON a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id    \
-                    where a.empresa_destino = $1 and b.cantidad_pendiente > 0 \
-                    group by 1\
-                  ) aa group by 1\
-                ) h on c.codigo_producto = h.codigo_producto\
+                    select aa.empresa_id, aa.centro_utilidad, aa.bodega, aa.codigo_producto, sum(aa.cantidad_total_pendiente) as cantidad_total_pendiente\
+                    from (\
+                      select a.empresa_id, a.centro_destino as centro_utilidad, a.bodega_destino as bodega, b.codigo_producto, SUM((b.numero_unidades - b.cantidad_despachada)) as cantidad_total_pendiente, 1\
+                      from ventas_ordenes_pedidos a\
+                      inner join ventas_ordenes_pedidos_d b ON a.pedido_cliente_id = b.pedido_cliente_id\
+                      where (b.numero_unidades - b.cantidad_despachada) > 0  \
+                      group by 1,2,3,4\
+                      UNION\
+                      select a.empresa_destino as empresa_id, a.centro_destino as centro_utilidad, a.bodega_destino as bodega, b.codigo_producto, SUM( b.cantidad_pendiente) AS cantidad_total_pendiente, 2\
+                      from solicitud_productos_a_bodega_principal a \
+                      inner join solicitud_productos_a_bodega_principal_detalle b ON a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id    \
+                      where b.cantidad_pendiente > 0 \
+                      group by 1,2,3,4\
+                    ) aa group by 1,2,3,4\
+                ) h on a.empresa_id = h.empresa_id and a.centro_utilidad = h.centro_utilidad and a.bodega =h.bodega and c.codigo_producto = h.codigo_producto\
                 where a.empresa_id = $1 and a.centro_utilidad = $2 and a.bodega = $3 \
                 and (\
                     a.codigo_producto ilike $5 or\

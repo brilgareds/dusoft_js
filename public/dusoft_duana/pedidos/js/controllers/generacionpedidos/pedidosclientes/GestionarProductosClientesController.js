@@ -12,25 +12,20 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         "AlertService",
         "localStorageService",
         "$state",
+        "ProductoPedidoCliente",
         "Usuario",
-        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, Sesion) {
+        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state,
+                Producto, Sesion) {
 
             var that = this;
 
             $rootScope.$on('gestionar_productos_clientesCompleto', function(e, parametros) {
 
                 $scope.datos_form = {
-                    lista_productos: []
+                    
                 };
-
-                console.log($scope.Pedido.getCliente());
-                that.buscar_productos();
-
-                $timeout(function() {
-                    for (var i = 0; i < 10; i++) {
-                        $scope.datos_form.lista_productos.push({codigo_producto: 'codi' + i})
-                    }
-                }, 3);
+                
+                that.buscar_productos();                
             });
 
             $rootScope.$on('cerrar_gestion_productos_clientesCompleto', function(e, parametros) {
@@ -40,7 +35,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
 
             // Productos 
-
             that.buscar_productos = function() {
 
                 var obj = {
@@ -58,38 +52,47 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 };
 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_PRODUCTOS_CLIENTES, "POST", obj, function(data) {
-
-                    console.log('=========== server response =========');
-                    console.log(data);
-
-                    /*if (data.status === 200) {
-                        //that.render_productos(data.obj.lista_productos);
-                    }*/
+                    
+                    if (data.status === 200) {
+                        that.render_productos(data.obj.pedidos_clientes.lista_productos);
+                    }
                 });
             };
 
+            that.render_productos = function(productos) {
 
+                $scope.Empresa.limpiar_productos();
+
+                productos.forEach(function(data) {
+                    
+                    var producto = Producto.get(data.codigo_producto, data.descripcion_producto, data.existencia, data.iva, data.tipo_producto_id, data.estado);
+                    producto.set_descripcion_tipo_producto(data.descripcion_tipo_producto);
+                    producto.set_codigo_cum(data.codigo_cum).set_codigo_invima(data.codigo_invima).set_fecha_vencimiento_invima(data.vencimiento_codigo_invima);
+                    producto.set_regulado(data.sw_regulado).set_precio_regulado(data.precio_regulado);
+                    producto.set_pactado(data.tiene_precio_pactado).set_precio_venta(data.precio_producto);
+                    producto.set_cantidad_disponible(data.cantidad_disponible);
+                    $scope.Empresa.set_productos(producto);
+                });                              
+            };
 
             $scope.lista_productos = {
-                data: 'datos_form.lista_productos',
+                data: 'Empresa.get_productos()',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 enableCellSelection: true,
-                //enableCellEditOnFocus: true,
-                //enableCellEdit: true,
                 enableHighlighting: true,
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Codigo', width: "10%", enableCellEdit: false},
-                    {field: 'descripcion', displayName: 'Descripcion', enableCellEdit: false},
-                    {field: 'costo_ultima_compra', displayName: 'CUM', width: "7%", cellFilter: "currency:'$ '"},
-                    {field: 'costo_ultima_compra', displayName: 'Invima', width: "7%", cellFilter: "currency:'$ '"},
-                    {field: 'costo_ultima_compra', displayName: 'Venc. Invima', width: "7%", cellFilter: "currency:'$ '"},
-                    {field: 'costo_ultima_compra', displayName: 'IVA', width: "5%", cellFilter: "currency:'$ '"},
-                    {field: 'costo_ultima_compra', displayName: '$ Regulado', width: "7%", cellFilter: "currency:'$ '"},
-                    {field: 'costo_ultima_compra', displayName: '$ Venta', width: "7%", cellFilter: "currency:'$ '",
+                    {field: 'getCodigoProducto()', displayName: 'Codigo', width: "7%", enableCellEdit: false},
+                    {field: 'getDescripcion()', displayName: 'Descripcion', enableCellEdit: false},
+                    {field: 'get_codigo_cum()', displayName: 'CUM', width: "7%"},
+                    {field: 'get_codigo_invima()', displayName: 'Invima', width: "7%"},
+                    {field: 'get_fecha_vencimiento_invima()', displayName: 'Venc. Invima', width: "7%", cellFilter: "date:'dd/MM/yyyy'"},
+                    {field: 'get_iva()', displayName: 'IVA', width: "5%"},
+                    {field: 'get_precio_regulado()', displayName: '$ Regulado', width: "7%", cellFilter: "currency:'$ '"},
+                    {field: 'get_precio_venta()', displayName: '$ Venta', width: "7%", cellFilter: "currency:'$ '",
                         cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    {field: 'costo_ultima_compra', displayName: 'Existencia', width: "7%", cellFilter: "currency:'$ '"},
-                    {field: 'costo_ultima_compra', displayName: 'Disponible', width: "7%", cellFilter: "currency:'$ '"},
+                    {field: 'get_existencia()', displayName: 'Stock', width: "5%"},
+                    {field: 'get_cantidad_disponible()', displayName: 'Dispo.', width: "5%"},
                     {field: 'cantidad', width: "7%", displayName: "Cantidad", cellFilter: "number",
                         cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {width: "7%", displayName: "Opcion", cellClass: "txt-center",

@@ -7,7 +7,6 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
        function EmpresaInduccion(nombre, codigo) {
             Empresa.getClass().call(this, nombre, codigo);
             this.centrosUtilidad = [];
-            this.centroUtilidadSeleccionado = null;
         };
 
          EmpresaInduccion.prototype =  Object.create(Empresa.getClass().prototype);
@@ -20,25 +19,11 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
          EmpresaInduccion.prototype.getCentrosUtilidad = function(){
              return this.centrosUtilidad;
          };
-         
-        EmpresaInduccion.prototype.getCentroUtilidadSeleccionado = function(){
-            
-            return this.centroUtilidadSeleccionado;
-        }
-        EmpresaInduccion.prototype.seleccionarCentroUtilidad= function(centrosUtilidad){
-            
-             for (var i = 0; i < this.centrosUtilidad.length; i++) {
-
-                    if (this.centrosUtilidad[i].getCodigo() === centrosUtilidad) {
-                        this.centroUtilidadSeleccionado = this.centrosUtilidad[i];
-                        break;
-                    }
-                }
-                
-              return this;  
-        }
+      
         
-        
+        EmpresaInduccion.prototype.vaciarCentroUtilidad = function(){
+            this.centrosUtilidad = [];
+        }
         this.get = function(nombre, codigo) {
             return new EmpresaInduccion(nombre, codigo);
         };

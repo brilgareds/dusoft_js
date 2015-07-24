@@ -125,15 +125,18 @@ Induccion.prototype.listar_bodegas = function(req, res) {
  * los productos
  */
 Induccion.prototype.listar_productos = function(req, res) {
-
+    
+ 
     var args = req.body.data;
     var induccion =args.induccion;
     var empresaId = induccion.empresaId;
     var centroUtilidad = induccion.centroUtilidad;
     var bodega = induccion.bodega;
     var descripcion = induccion.descripcion;
+    var pagina = induccion.pagina;
     
-    
+  
+  
      if (args.induccion === undefined ) { 
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
@@ -164,7 +167,7 @@ Induccion.prototype.listar_productos = function(req, res) {
         return;
     }
     
-    this.m_induccion.productos(empresaId,centroUtilidad,bodega,descripcion,function(err, listar_productos) {
+    this.m_induccion.productos(empresaId,centroUtilidad,bodega,descripcion,pagina,function(err, listar_productos) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Listado de Productos Activos', 500, {listar_productos: {}}));

@@ -30,6 +30,7 @@ define(["angular", "js/models"], function(angular, models) {
         
         Empresa.prototype.setCentroUtilidadSeleccionado = function(centroUtilidad) {
             this.centroUtilidad = centroUtilidad;
+            return this;
         };
         
         Empresa.prototype.setCentrosUtilidad = function(centrosUtilidad) {

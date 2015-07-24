@@ -21,10 +21,14 @@ define(["angular", "js/models", "includes/classes/Bodega"], function(angular, mo
              return this.productosInduccion;
          };
          
+         BodegasInduccion.prototype.vaciarProductos = function(){
+            this.productosInduccion = [];
+        }
         this.get = function(nombre, codigo) {
             return new BodegasInduccion(nombre, codigo);
         };
-
+        
+        
         return this;
 
     }]);

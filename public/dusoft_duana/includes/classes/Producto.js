@@ -24,7 +24,14 @@ define(["angular", "js/models"], function(angular, models) {
         Producto.prototype.getDescripcion = function() {
             return this.descripcion;
         };
+        
+         Producto.prototype.getExistencia = function() {
+            return this.existencia;
+        };
 
+        Producto.prototype.setExistencia = function(existencia) {
+            this.descripcion = existencia;
+        };
 
         this.getClass = function() {
             return Producto;

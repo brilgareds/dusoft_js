@@ -11,8 +11,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.costo = null;
                 this.precio_venta = null;
 
-            }
-            ;
+            };
 
             ProductoInduccion.prototype = Object.create(Producto.getClass().prototype);
 

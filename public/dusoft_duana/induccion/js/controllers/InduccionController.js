@@ -5,23 +5,18 @@ define(["angular", "js/controllers",
     "models/ProductoInduccion"], function(angular, controllers) {
 
     controllers.controller('InduccionController',
-            ['$scope', 'Usuario', "Request",
+            ['$scope', '$rootScope', 'Usuario', "Request",
                 "localStorageService", "$modal",
                 "API", "EmpresaInduccion",
                 "CentroUtilidadesInduccion", "BodegasInduccion",
                 "ProductoInduccion", "AlertService",
-                function($scope, Usuario, Request,
+                function($scope, $rootScope, Usuario, Request,
                         localStorageService, $modal, API,
                         EmpresaInduccion, CentroUtilidadesInduccion, BodegasInduccion, ProductoInduccion, AlertService) {
 
-                    $scope.session = {
-                        usuario_id: Usuario.getUsuarioActual().getId(),
-                        auth_token: Usuario.getUsuarioActual().getToken()
-                    };
                     var that = this;
-                    $scope.empresaSeleccionada;
-                    $scope.centroUtilidadSeleccionado;
-                    $scope.bodegaSeleccionada;
+
+                    //se valida que el usuario tenga centro de utilidad y bodega
 
                     /*
                      * 
@@ -30,7 +25,38 @@ define(["angular", "js/controllers",
                      * +Descripcion: metodo el cual se encarga de cargar el combobox
                      * empresa con todas las empresas disponibles
                      */
-                    $scope.listarEmpresa = function() {
+                    that.init = function(empresa, centroUtilidad, bodega, callback) {
+
+                        $scope.root = {};
+                        $scope.root.empresaSeleccionada = EmpresaInduccion.get(empresa.getNombre(), empresa.getCodigo());
+
+                        $scope.session = {
+                            usuario_id: Usuario.getUsuarioActual().getId(),
+                            auth_token: Usuario.getUsuarioActual().getToken()
+                        };
+
+                        $scope.buscar = {descripcion: ''};
+                        that.paginaactual = 1;
+
+                        $scope.root.empresaSeleccionada.setCentroUtilidadSeleccionado(
+                                CentroUtilidadesInduccion.get(centroUtilidad.getNombre(), centroUtilidad.getCodigo())
+                                ).getCentroUtilidadSeleccionado().setBodegaSeleccionada(BodegasInduccion.get(bodega.getNombre(), bodega.getCodigo()));
+                        callback();
+                    }
+
+                    /*
+                     * 
+                     * @param {type} selected
+                     * @Author: Dusoft
+                     * +Descripcion: metodo el cual se encarga de cargar el combobox
+                     * empresa con todas las empresas disponibles
+                     */
+                    $scope.onListarEmpresa = function() {
+                        that.traerEmpresas(function() {
+                        });
+                    };
+
+                    that.traerEmpresas = function(callback) {
 
                         var obj = {
                             session: $scope.session,
@@ -41,27 +67,24 @@ define(["angular", "js/controllers",
                             $scope.empresas = [];
                             if (data.status === 200) {
                                 that.renderListarEmpresa(data);
+                                callback();
                             } else {
-                                  AlertService.mostrarMensaje("warning", data.msj)
+                                AlertService.mostrarMensaje("warning", data.msj)
                             }
                         });
                     };
-
                     /**
                      * 
-                     * @param {type} data
-                     * @returns {undefined}
+                     * @param {Object} data
+                     * @returns {void}
                      * +Descripcion: funcion que procesara la informacion de la 
                      * lista de empresas de formato JSON y la mapeara con la
                      * entidad EmpresaInduccion.js
                      */
                     that.renderListarEmpresa = function(data) {
-
                         for (var i in data.obj.listar_empresas) {
-
                             var _empresa = data.obj.listar_empresas[i];
                             var empresa = EmpresaInduccion.get(_empresa.razon_social, _empresa.empresa_id);
-
                             $scope.empresas.push(empresa);
                         }
                     };
@@ -70,24 +93,30 @@ define(["angular", "js/controllers",
                      * 
                      * @param {type} selected
                      * @Author: Cristian Ardila
-                     * +Descripcion: metodo el cual se encarga de cargar el combobox
-                     * con los centros de utilidades disponibles segun la empresa
+                     * +Descripcion: metodo handler el cual se comunicara con la
+                     * vista y carga el combobox con los centros de utilidades 
+                     * disponibles segun la empresa
                      */
-                    $scope.seleccionarCentroUtilidadesEmpresa = function(id_empresa) {
+                    $scope.onSeleccionarEmpresa = function() {
+                        that.traerCentroUtilidad(function() {
+                        });
+                    };
 
-                        for (var i in $scope.empresas) {
-
-                            if ($scope.empresas[i].getCodigo() === id_empresa) {
-
-                                $scope.empresaSeleccionada = $scope.empresas[i];
-                                break;
-                            }
-                        }
+                    /**
+                     * 
+                     * @param {function} callback
+                     * @returns {void}
+                     * +Descripcion: funcion encargada de ejecutar las peticiones
+                     * al servidor y traer todos los centros de utilidad disponibles
+                     * segun la empresa
+                     */
+                    that.traerCentroUtilidad = function(callback) {
+                        $scope.root.empresaSeleccionada.vaciarCentroUtilidad();
                         var obj = {
                             session: $scope.session,
                             data: {
                                 induccion: {
-                                    idempresa: $scope.empresaSeleccionada.getCodigo(),
+                                    idempresa: $scope.root.empresaSeleccionada.getCodigo(),
                                 }
                             }
                         };
@@ -95,12 +124,14 @@ define(["angular", "js/controllers",
 
                             if (data.status === 200) {
                                 that.renderCentroUtilidad(data);
+                                callback();
                             } else {
-                                 AlertService.mostrarMensaje("warning", data.msj)
+                                AlertService.mostrarMensaje("warning", data.msj)
                             }
 
                         });
-                    };
+                    }
+
                     /**
                      * 
                      * @param {type} data
@@ -115,7 +146,7 @@ define(["angular", "js/controllers",
 
                             var _centroUtilidad = data.obj.listar_centro_utilidad[i];
                             var centroUtilidad = CentroUtilidadesInduccion.get(_centroUtilidad.descripcion, _centroUtilidad.centro_utilidad);
-                            $scope.empresaSeleccionada.agregarCentroUtilidad(centroUtilidad);
+                            $scope.root.empresaSeleccionada.agregarCentroUtilidad(centroUtilidad);
 
                         }
                     };
@@ -124,19 +155,33 @@ define(["angular", "js/controllers",
                      * 
                      * @param {type} selected
                      * @Author: Cristian Ardila
-                     * +Descripcion: metodo el cual se encarga de cargar el combobox
-                     * con los centros de utilidades disponibles segun la empresa
+                     *+Descripcion: metodo handler el cual se comunicara con la
+                     * vista y carga el combobox con las bodegas disponibles
+                     * segun el centro de utilidad
                      */
-                    $scope.seleccionarBodegas = function(centros_utilidad) {
+                    $scope.onSeleccionarUtilidad = function() {
+                        $scope.root.empresaSeleccionada.getCentroUtilidadSeleccionado().vaciarBodegas()
+                        that.traerBodega(function() {
 
-                        $scope.empresaSeleccionada.seleccionarCentroUtilidad(centros_utilidad);
-                        $scope.centroUtilidadSeleccionado = $scope.empresaSeleccionada.getCentroUtilidadSeleccionado()
-                        
+                        });
+                    };
+
+                    /**
+                     * 
+                     * @param {type} callback
+                     * @returns {undefined}
+                     * +Descripcion: funcion encargada de ejecutar las peticiones
+                     * al servidor y traer todas las bodegas disponibles segun
+                     * el centro de utilidad
+                     */
+                    that.traerBodega = function(callback) {
+
+                        var centroUtilidadSeleccionado = $scope.root.empresaSeleccionada.getCentroUtilidadSeleccionado()
                         var obj = {
                             session: $scope.session,
                             data: {
                                 induccion: {
-                                    centros_utilidad: $scope.centroUtilidadSeleccionado.getCodigo()
+                                    centros_utilidad: centroUtilidadSeleccionado.getCodigo()
                                 }
                             }
                         };
@@ -144,12 +189,12 @@ define(["angular", "js/controllers",
 
                             if (data.status === 200) {
                                 that.renderListarBodega(data);
+                                callback();
                             } else {
-                                 AlertService.mostrarMensaje("warning", data.msj)
+                                AlertService.mostrarMensaje("warning", data.msj)
                             }
                         });
-                    };
-
+                    }
                     /**
                      * 
                      * @param {type} data
@@ -163,47 +208,97 @@ define(["angular", "js/controllers",
                         for (var i in data.obj.listar_bodegas) {
 
                             var _Bodega = data.obj.listar_bodegas[i];
-                            
+
                             var bodega = BodegasInduccion.get(_Bodega.descripcion, _Bodega.bodega);
-                           
-                            $scope.empresaSeleccionada.getCentroUtilidadSeleccionado().agregarBodega(bodega);
-               
+
+                            $scope.root.empresaSeleccionada.getCentroUtilidadSeleccionado().agregarBodega(bodega);
+
+
                         }
                     };
+
+                    /*
+                     * 
+                     * @param {type} selected
+                     * @Author: Cristian Ardila
+                     *+Descripcion: metodo handler el cual se comunicara con la
+                     * vista y carga el componente gridview
+                     */
+                    $scope.onListarProductos = function() {
+
+                        that.paginaactual = 1;
+                        that.traerProductos(function() {
+
+                        });
+                    }
+
                     /*
                      * 
                      * @param {type} selected
                      * @Author: Dusoft
-                     * +Descripcion: metodo el cual se encarga de cargar el combobox
-                     * empresa con todas las empresas disponibles
+                     * +Descripcion: metodo el cual se encarga ejecutar 
+                     * las peticiones al servidor y traer los productos
                      */
-                    $scope.listarProductos = function() {
-                       
-                        $scope.empresaSeleccionada.getCentroUtilidadSeleccionado().seleccionarBodega('03');
-                      
-                        var obj = {
-                            session: $scope.session,
-                            data: {induccion:
-                                        {
-                                            empresaId: $scope.empresaSeleccionada.getCodigo(),
-                                            centroUtilidad: $scope.centroUtilidadSeleccionado.getCodigo(),
-                                            bodega: $scope.empresaSeleccionada.getCentroUtilidadSeleccionado().getBodegaSeleccionado().getCodigo(),
-                                            descripcion: 'aceta'
-                                        }
-                            }
-                        };
-                        Request.realizarRequest(API.INDUCCION.LISTAR_PRODUCTOS, "POST", obj, function(data) {
+                    that.traerProductos = function(callback) {
 
-                            $scope.productos = [];
-                            if (data.status === 200) {
-                                that.renderListarProductos(data);
+                        var empresaSeleccionada = $scope.root.empresaSeleccionada;
+
+                        if (!empresaSeleccionada) {
+                            AlertService.mostrarMensaje("warning", "Debe seleccionar la empresa")
+
+                        } else {
+                            var centroUtilidadSeleccionado = empresaSeleccionada.getCentroUtilidadSeleccionado();
+
+                            if (!centroUtilidadSeleccionado) {
+
+                                AlertService.mostrarMensaje("warning", "Debe seleccionar el centro de utilidad")
+
                             } else {
-                                AlertService.mostrarMensaje("warning", data.msj)
-                            }
 
-                        });
+                                var bodegaSeleccionada = centroUtilidadSeleccionado.getBodegaSeleccionada();
 
-                    };
+                                if (!bodegaSeleccionada) {
+
+                                    AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega")
+                                } else {
+
+
+                                    var obj = {
+                                        session: $scope.session,
+                                        data: {
+                                            induccion:
+                                                    {
+                                                        empresaId: $scope.root.empresaSeleccionada.getCodigo(),
+                                                        centroUtilidad: centroUtilidadSeleccionado.getCodigo(),
+                                                        bodega: bodegaSeleccionada.getCodigo(),
+                                                        descripcion: $scope.buscar.descripcion,
+                                                        pagina: that.paginaactual
+                                                    }
+                                        }
+                                    };
+                                    Request.realizarRequest(API.INDUCCION.LISTAR_PRODUCTOS, "POST", obj, function(data) {
+                                        bodegaSeleccionada.vaciarProductos();
+                                        $scope.productos = [];
+
+                                        if (data.status === 200) {
+                                            if (data.obj.listar_productos.length === 0) {
+                                                that.paginaactual = 1;
+                                            } else {
+                                                that.renderListarProductos(data);
+                                                callback();
+                                            }
+                                        } else {
+                                            AlertService.mostrarMensaje("warning", data.msj)
+                                        }
+                                    });
+                                }//Llave que cierra el ELSE que valida la (bodegaSeleccionada)
+
+                            }//Llave que cierra el ELSE que valida el(centroUtilidadSeleccionado)
+
+                        }//Llave que cierra el ELSE que valida la (empresaSeleccionada)
+
+                    };//Llave que cierra la funcion
+
 
                     /**
                      * 
@@ -223,14 +318,116 @@ define(["angular", "js/controllers",
 
                             producto.setIva(_producto.porc_iva).setCosto(_producto.costo).setPrecioVenta(_producto.precio_venta);
 
-                            $scope.empresaSeleccionada.getCentroUtilidadSeleccionado().getBodegaSeleccionado().agregarProducto(producto);
-                              
-                           
+                            $scope.root.empresaSeleccionada.getCentroUtilidadSeleccionado().getBodegaSeleccionada().agregarProducto(producto);
+
+
                         }
                     };
-                    $scope.listarEmpresa();
-                    //  $scope.listarProductos();
+
+
+                    /**
+                     * +Descripcion: objeto ng-grid
+                     */
+                    $scope.gridListaProductos = {
+                        data: 'root.empresaSeleccionada.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getProductos()',
+                        enableColumnResize: true,
+                        enableRowSelection: false,
+                        columnDefs: [
+                            {field: 'getIva()', displayName: 'Iva', width: "35%"},
+                            {field: 'getCosto()', displayName: 'Costo', width: "25%"},
+                            {field: 'getPrecioVenta()', displayName: 'Venta', width: "10%"},
+                            {field: 'getCodigoProducto()', displayName: 'Codigo producto', width: "10%"},
+                            {field: 'getDescripcion()', displayName: 'Descripcion', width: "10%"},
+                            {field: 'getExistencia()', displayName: 'Existencia', width: "10%"},
+                            {displayName: "Opciones", cellClass: "txt-center dropdown-button",
+                                cellTemplate: '<div class="btn-group">\
+                                            <button class="btn btn-default btn-xs" ng-click="confirmar_eliminar_documento_planilla(row.entity)" ng-disabled="planilla.get_estado()==\'2\'" ><span class="glyphicon glyphicon-remove"></span></button>\
+                                        </div>'
+                            }
+                        ]
+                    };
+
+                    /**
+                     * 
+                     * @param {type} $event
+                     * +Descripcion: function que se invoca al digitar la tecla 
+                     * enter en el campo de texto (buscar producto)
+                     */
+                    $scope.onBuscarProductos = function($event) {
+
+                        if ($event.which === 13) {
+                            that.traerProductos(function() {
+
+                            });
+                        }
+                    };
+
+                    /**
+                     * 
+                     * @returns {unresolved}
+                     * +Descripcion: funcion que se invoca al presionar click
+                     * en el boton izquiero (<) del paginador del gridview
+                     * y aumentara en 1 la pagina actual, refrescando la gridview
+                     * de los productos
+                     */
+                    $scope.paginaAnterior = function() {
+                        if (that.paginaactual === 1)
+                            return;
+                        that.paginaactual--;
+                        that.traerProductos(function() {
+                        });
+                    };
+
+                    /**
+                     * 
+                     * @returns {unresolved}
+                     * +Descripcion: funcion que se invoca al presionar click
+                     * en el boton derecho (>) del paginador del gridview
+                     * y aumentara en 1 la pagina actual, refrescando la gridview
+                     * de los productos
+                     */
+                    $scope.paginaSiguiente = function() {
+                        that.paginaactual++;
+                        that.traerProductos(function() {
+                        });
+                    };
+
+
+                    /**
+                     * +Descripcion: se invocan la funciones encargadas de
+                     * cargar los combobox y la grid de la view
+                     */
+
+                    var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
+                    var centroUtilidad ;
+                    var bodega;
+                    if (!empresa) {
+                        $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una empresa valida para consultar productos", tipo: "warning"});
+                        
+                    } else if (!empresa.getCentroUtilidadSeleccionado()) {
+                        $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene un centro de utilidad valido para para consultar productos.", tipo: "warning"});
+                        
+                    } else if (!empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada()) {
+                        $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una bodega valida para consultar productos", tipo: "warning"});
+                        
+                    } else {
+                        
+                        centroUtilidad = empresa.getCentroUtilidadSeleccionado();
+                        bodega = empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada()
+                        
+                        that.init(empresa, centroUtilidad, bodega,  function(){
+                            that.traerEmpresas(function() {
+                                that.traerCentroUtilidad(function() {
+                                    that.traerBodega(function() {
+                                        that.traerProductos(function() {
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    }
 
 
                 }]);
+
 });

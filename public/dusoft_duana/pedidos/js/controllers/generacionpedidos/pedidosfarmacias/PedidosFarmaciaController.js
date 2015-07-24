@@ -16,7 +16,7 @@ define(["angular",
         'EmpresaPedidoFarmacia', 'FarmaciaVenta', 'PedidoVenta',
         'API', "socket", "AlertService",
         '$state', "Usuario", "localStorageService", "$modal",
-        function($scope, $rootScope, Request, EmpresaPedido, FarmaciaVenta, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService, $modal) {
+        function($scope, $rootScope, Request, EmpresaPedidoFarmacia, FarmaciaVenta, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService, $modal) {
             var self = this;
             
             $scope.root = {};

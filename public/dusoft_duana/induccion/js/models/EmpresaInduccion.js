@@ -7,7 +7,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
        function EmpresaInduccion(nombre, codigo) {
             Empresa.getClass().call(this, nombre, codigo);
             this.centrosUtilidad = [];
-            this.centroUtilidadSeleccionado = null;
+          //  this.centroUtilidadSeleccionado = null;
         };
 
          EmpresaInduccion.prototype =  Object.create(Empresa.getClass().prototype);
@@ -20,12 +20,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
          EmpresaInduccion.prototype.getCentrosUtilidad = function(){
              return this.centrosUtilidad;
          };
-         
-        EmpresaInduccion.prototype.getCentroUtilidadSeleccionado = function(){
-            
-            return this.centroUtilidadSeleccionado;
-        }
-    
+      
         
         EmpresaInduccion.prototype.vaciarCentroUtilidad = function(){
             this.centrosUtilidad = [];

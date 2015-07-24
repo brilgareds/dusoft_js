@@ -19,16 +19,12 @@ define(["angular", "js/controllers",
                         auth_token: Usuario.getUsuarioActual().getToken()
                     };
                     var that = this;
-                    $scope.root = {};
-                    $scope.root.empresaSeleccionada = null;
-                    $scope.bodegaSeleccionada = null;
-                    $scope.buscar = {descripcion: ''};
-                    that.paginaactual =1;
+                    var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
                     
-
+                    
                     //se valida que el usuario tenga centro de utilidad y bodega
-                    var empresa = Usuario.getUsuarioActual().getEmpresa();
-
+                    //  $scope.personAsync = {selected : empresa};
+                    // console.log(empresa.getNombre())
                     if (!empresa) {
                         $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una empresa valida para consultar productos", tipo: "warning"});
                     } else if (!empresa.getCentroUtilidadSeleccionado()) {
@@ -37,7 +33,21 @@ define(["angular", "js/controllers",
                         $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una bodega valida para consultar productos", tipo: "warning"});
                     }
 
-
+                    
+                    var centroUtilidad  = empresa.getCentroUtilidadSeleccionado();
+                    var bodega = centroUtilidad.getBodegaSeleccionada();
+                    $scope.root = {};
+                    $scope.root.empresaSeleccionada = EmpresaInduccion.get(empresa.getNombre(), empresa.getCodigo());
+                    
+                    $scope.root.empresaSeleccionada.setCentroUtilidadSeleccionado(
+                            CentroUtilidadesInduccion.get(centroUtilidad.getNombre(),centroUtilidad.getCodigo())
+                     ).getCentroUtilidadSeleccionado().setBodegaSeleccionada(BodegasInduccion.get(bodega.getNombre(),bodega.getCodigo()))
+                        
+                    $scope.bodegaSeleccionada = null;
+                    $scope.buscar = {descripcion: ''};
+                    that.paginaactual = 1;
+                  
+ 
                     /*
                      * 
                      * @param {type} selected
@@ -45,7 +55,7 @@ define(["angular", "js/controllers",
                      * +Descripcion: metodo el cual se encarga de cargar el combobox
                      * empresa con todas las empresas disponibles
                      */
-                    $scope.listarEmpresa = function() {
+                    $scope.onListarEmpresa = function() {
 
 
                         var obj = {
@@ -62,7 +72,9 @@ define(["angular", "js/controllers",
                             }
                         });
                     };
-
+                    
+                 //   that.empresas = function()
+                    
                     /**
                      * 
                      * @param {type} data
@@ -184,10 +196,10 @@ define(["angular", "js/controllers",
 
 
 
-                    $scope.onListarProductos = function(){
-                        
-                          that.paginaactual = 1;
-                           $scope.listarProductos();
+                    $scope.onListarProductos = function() {
+
+                        that.paginaactual = 1;
+                        that.listarProductos();
                     }
                     /*
                      * 
@@ -196,8 +208,8 @@ define(["angular", "js/controllers",
                      * +Descripcion: metodo el cual se encarga de cargar el el grid
                      * de productos
                      */
-                    $scope.listarProductos = function() {
-                      
+                    that.listarProductos = function() {
+
                         var empresaSeleccionada = $scope.root.empresaSeleccionada;
 
 
@@ -216,14 +228,14 @@ define(["angular", "js/controllers",
 
                             } else {
 
-                                var bodegaSeleccionada = centroUtilidadSeleccionado.getBodegaSeleccionado();
-                                
+                                var bodegaSeleccionada = centroUtilidadSeleccionado.getBodegaSeleccionada();
+
                                 if (!bodegaSeleccionada) {
 
                                     AlertService.mostrarMensaje("warning", "Debe seleccionar la bodega")
                                 } else {
 
-                                    
+
                                     var obj = {
                                         session: $scope.session,
                                         data: {
@@ -240,12 +252,12 @@ define(["angular", "js/controllers",
                                     Request.realizarRequest(API.INDUCCION.LISTAR_PRODUCTOS, "POST", obj, function(data) {
                                         bodegaSeleccionada.vaciarProductos();
                                         $scope.productos = [];
-                                        
+
                                         if (data.status === 200) {
-                                          if(data.obj.listar_productos.length === 0){
-                                              that.paginaactual =1;
-                                          }else{
-                                            that.renderListarProductos(data);
+                                            if (data.obj.listar_productos.length === 0) {
+                                                that.paginaactual = 1;
+                                            } else {
+                                                that.renderListarProductos(data);
                                             }
                                         } else {
                                             AlertService.mostrarMensaje("warning", data.msj)
@@ -271,26 +283,26 @@ define(["angular", "js/controllers",
                      * entidad BodegasInduccion.js
                      */
                     that.renderListarProductos = function(data) {
-                        
+
                         for (var i in data.obj.listar_productos) {
 
                             var _producto = data.obj.listar_productos[i];
-                            
-                            
+
+
                             var producto = ProductoInduccion.get(_producto.codigo_producto, _producto.descripcion, _producto.existencia);
 
                             producto.setIva(_producto.porc_iva).setCosto(_producto.costo).setPrecioVenta(_producto.precio_venta);
 
-                            $scope.root.empresaSeleccionada.getCentroUtilidadSeleccionado().getBodegaSeleccionado().agregarProducto(producto);
+                            $scope.root.empresaSeleccionada.getCentroUtilidadSeleccionado().getBodegaSeleccionada().agregarProducto(producto);
 
 
                         }
                     };
 
-                    $scope.listarEmpresa();
+                    $scope.onListarEmpresa();
 
                     $scope.listaProductos = {
-                        data: 'root.empresaSeleccionada.getCentroUtilidadSeleccionado().getBodegaSeleccionado().getProductos()',
+                        data: 'root.empresaSeleccionada.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getProductos()',
                         enableColumnResize: true,
                         enableRowSelection: false,
                         columnDefs: [
@@ -307,20 +319,32 @@ define(["angular", "js/controllers",
                             }
                         ]
                     };
+                    
+                    $scope.onBuscarProductos = function($event){
+                        
+                        if($event.which === 13){
+                             that.listarProductos();
+                        }
+                        
+                        
+                    }
                     //  $scope.listarProductos();
 
                     $scope.paginaAnterior = function() {
                         if (that.paginaactual === 1)
                             return;
                         that.paginaactual--;
-                        $scope.listarProductos()
+                        that.listarProductos()
                         //buscarProductos(descripcion);..
                     };
 
                     $scope.paginaSiguiente = function() {
                         that.paginaactual++;
-                       $scope.listarProductos()
+                        that.listarProductos()
                     };
+                    
+                    
+                    that.listarProductos();
                 }]);
 
 

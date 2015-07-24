@@ -9,36 +9,10 @@
             <thead>
                 <tr>
 
-                    <!--  <div class="col-xs-3"  >  
-                          <select ng-model="selected"  
-                                  ng-options="value.codigo as value.nombre  for value in empresas" 
-                                  ng-change="onSeleccionarEmpresa(selected)" 
-                                  class="form-control">
-                    <!--
-                    ng-init="selected='Angularjs'"//-->
-
-                    <!--   </select>
-       
-                   </div>
-                   <div class="col-xs-3"  >
-                       <select ng-model="empresaSeleccionada.centroUtilidadSeleccionado.codigo" 
-                               ng-options="value.codigo as value.nombre  for value in empresaSeleccionada.getCentrosUtilidad()"
-                               ng-change="seleccionarUtilidad(empresaSeleccionada.centroUtilidadSeleccionado.codigo)" 
-                               class="form-control">
-                       </select>
-                   </div>
-       
-                   <div class="col-xs-3"  >
-                       <select ng-model="empresaSeleccionada.centroUtilidadSeleccionado.bodegaSeleccionada.codigo" 
-                               ng-options="value.codigo as value.nombre  for value in empresaSeleccionada.getCentroUtilidadSeleccionado().getBodega()"
-                               ng-change="onSeleccionarBodega(empresaSeleccionada.centroUtilidadSeleccionado.bodegaSeleccionada.codigo)" 
-                               class="form-control">
-                       </select>
-                   </div>
-                   //-->
+   
             <div class="col-xs-3"  >
                 <ui-select ng-model="root.empresaSeleccionada"  theme="select2" class="form-control selectgeneral pull-left" ng-change="onSeleccionarEmpresa()">
-                    <ui-select-match  placeholder="Seleccionar empresa">{{ $select.selected.getNombre() }}</ui-select-match>
+                    <ui-select-match  placeholder="Seleccionar empresa" >{{ $select.selected.getNombre()}}</ui-select-match>
                     <ui-select-choices  refresh-delay="0" repeat="empresa in empresas | filter:$select.search">
                         {{ empresa.getNombre() }}
                     </ui-select-choices>
@@ -47,7 +21,7 @@
 
 
             <div class="col-xs-3"  >
-                <ui-select ng-model="root.empresaSeleccionada.centroUtilidadSeleccionado"  theme="select2" class="form-control selectgeneral pull-left" ng-change="onSeleccionarUtilidad()">
+                <ui-select ng-model="root.empresaSeleccionada.centroUtilidad"  theme="select2" class="form-control selectgeneral pull-left" ng-change="onSeleccionarUtilidad()">
                     <ui-select-match  placeholder="Seleccionar centro utilidad">{{ $select.selected.getNombre() }}</ui-select-match>
                     <ui-select-choices  refresh-delay="0" repeat="centroUtilidad in root.empresaSeleccionada.getCentrosUtilidad() | filter:$select.search">
                         {{ centroUtilidad.getNombre() }}
@@ -56,7 +30,7 @@
             </div>
 
             <div class="col-xs-3"  >
-                <ui-select ng-model="root.empresaSeleccionada.centroUtilidadSeleccionado.bodegaSeleccionada"  theme="select2" class="form-control selectgeneral pull-left">
+                <ui-select ng-model="root.empresaSeleccionada.centroUtilidad.bodega"  theme="select2" class="form-control selectgeneral pull-left">
                     <ui-select-match  placeholder="Seleccionar bodega">{{ $select.selected.getNombre() }}</ui-select-match>
                     <ui-select-choices  refresh-delay="0" repeat="bodega in root.empresaSeleccionada.getCentroUtilidadSeleccionado().getBodega() | filter:$select.search">
                         {{ bodega.getNombre() }}
@@ -69,7 +43,7 @@
 
                 <div class="input-group">
 
-                    <input type="text" class="form-control" placeholder="Buscare empleado" ng-model="buscar.descripcion" >
+                    <input type="text" class="form-control" placeholder="Buscare empleado" ng-model="buscar.descripcion" ng-keypress="onBuscarProductos($event)">
                     <span class="input-group-addon"><li class="glyphicon glyphicon-search" ng-click="onListarProductos()"></li></span>
                 </div>
             </div>

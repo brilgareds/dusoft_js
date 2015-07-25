@@ -9,21 +9,23 @@ define(["angular", "js/controllers",
                 "localStorageService", "$modal",
                 "API", "EmpresaInduccion",
                 "CentroUtilidadesInduccion", "BodegasInduccion",
-                "ProductoInduccion", "AlertService",
+                "ProductoInduccion", "AlertService","$state",
                 function($scope, $rootScope, Usuario, Request,
                         localStorageService, $modal, API,
-                        EmpresaInduccion, CentroUtilidadesInduccion, BodegasInduccion, ProductoInduccion, AlertService) {
+                        EmpresaInduccion, CentroUtilidadesInduccion, BodegasInduccion, ProductoInduccion, AlertService,$state) {
 
                     var that = this;
-
-                    //se valida que el usuario tenga centro de utilidad y bodega
-
+                   
+                 
                     /*
-                     * 
-                     * @param {type} selected
-                     * @Author: Dusoft
-                     * +Descripcion: metodo el cual se encarga de cargar el combobox
-                     * empresa con todas las empresas disponibles
+                     * @param 
+                     * {Object} empresa: 
+                     * {Object} centroUtilidad:
+                     * {Object} bodega:
+                     * {function} callback: 
+                     * @Author: Cristian Ardila
+                     * +Descripcion: metodo el cual se encarga de inicializar
+                     * las variables encargadas de cargar la view
                      */
                     that.init = function(empresa, centroUtilidad, bodega, callback) {
 
@@ -46,8 +48,8 @@ define(["angular", "js/controllers",
 
                     /*
                      * 
-                     * @param {type} selected
-                     * @Author: Dusoft
+                     * @param {N/N}
+                     * @Author: Cristian Ardila
                      * +Descripcion: metodo el cual se encarga de cargar el combobox
                      * empresa con todas las empresas disponibles
                      */
@@ -55,7 +57,15 @@ define(["angular", "js/controllers",
                         that.traerEmpresas(function() {
                         });
                     };
-
+                    
+                    /**
+                     * 
+                     * @param {function} callback
+                     * @Author: Cristian Ardila
+                     * @returns {void}
+                     * +Descripcion: funcion encargada de ejecutar la peticion
+                     * al servidos para consultar las empresas activas
+                     */
                     that.traerEmpresas = function(callback) {
 
                         var obj = {
@@ -73,9 +83,10 @@ define(["angular", "js/controllers",
                             }
                         });
                     };
+                    
                     /**
                      * 
-                     * @param {Object} data
+                     * @param {JSON} data
                      * @returns {void}
                      * +Descripcion: funcion que procesara la informacion de la 
                      * lista de empresas de formato JSON y la mapeara con la
@@ -91,8 +102,9 @@ define(["angular", "js/controllers",
 
                     /*
                      * 
-                     * @param {type} selected
+                     * @param {N/N} 
                      * @Author: Cristian Ardila
+                     * @returns {void}
                      * +Descripcion: metodo handler el cual se comunicara con la
                      * vista y carga el combobox con los centros de utilidades 
                      * disponibles segun la empresa
@@ -103,8 +115,8 @@ define(["angular", "js/controllers",
                     };
 
                     /**
-                     * 
                      * @param {function} callback
+                     * @Author: Cristian Ardila
                      * @returns {void}
                      * +Descripcion: funcion encargada de ejecutar las peticiones
                      * al servidor y traer todos los centros de utilidad disponibles
@@ -134,8 +146,9 @@ define(["angular", "js/controllers",
 
                     /**
                      * 
-                     * @param {type} data
-                     * @returns {undefined}
+                     * @param {JSON} data
+                     * @Author: Cristian Ardila
+                     * @returns {void}
                      * +Descripcion: funcion que procesara la informacion de la 
                      * lista de centros de utilidad de formato JSON y la mapeara con la
                      * entidad CentroUtilidadInduccion.js
@@ -153,8 +166,9 @@ define(["angular", "js/controllers",
 
                     /*
                      * 
-                     * @param {type} selected
+                     * @param {N/N} 
                      * @Author: Cristian Ardila
+                     * @returns {void}
                      *+Descripcion: metodo handler el cual se comunicara con la
                      * vista y carga el combobox con las bodegas disponibles
                      * segun el centro de utilidad
@@ -168,8 +182,9 @@ define(["angular", "js/controllers",
 
                     /**
                      * 
-                     * @param {type} callback
-                     * @returns {undefined}
+                     * @param {function} callback
+                     * @Author: Cristian Ardila
+                     * @returns {void}
                      * +Descripcion: funcion encargada de ejecutar las peticiones
                      * al servidor y traer todas las bodegas disponibles segun
                      * el centro de utilidad
@@ -197,8 +212,9 @@ define(["angular", "js/controllers",
                     }
                     /**
                      * 
-                     * @param {type} data
-                     * @returns {undefined}
+                     * @param {JSON} data:
+                     * @Author: Cristian Ardila
+                     * @returns {void}
                      * +Descripcion: funcion que procesara la informacion de la 
                      * lista de bodegas de formato JSON y la mapeara con la
                      * entidad BodegasInduccion.js
@@ -221,6 +237,7 @@ define(["angular", "js/controllers",
                      * 
                      * @param {type} selected
                      * @Author: Cristian Ardila
+                     * @returns {void}
                      *+Descripcion: metodo handler el cual se comunicara con la
                      * vista y carga el componente gridview
                      */
@@ -235,7 +252,8 @@ define(["angular", "js/controllers",
                     /*
                      * 
                      * @param {type} selected
-                     * @Author: Dusoft
+                     * @Author: Cristian Ardila
+                     * @returns {void}
                      * +Descripcion: metodo el cual se encarga ejecutar 
                      * las peticiones al servidor y traer los productos
                      */
@@ -302,8 +320,9 @@ define(["angular", "js/controllers",
 
                     /**
                      * 
-                     * @param {type} data
-                     * @returns {undefined}
+                     * @param {JSON} data
+                     * @author Cristian Ardila
+                     * @returns {void}
                      * +Descripcion: funcion que procesara la informacion de la 
                      * lista de bodegas de formato JSON y la mapeara con la
                      * entidad BodegasInduccion.js
@@ -323,9 +342,22 @@ define(["angular", "js/controllers",
 
                         }
                     };
-
-
+                    
+                    
+                    $scope.detalleProducto = function(producto){
+                       
+                       var detalladoProducto = {
+                                                codigo:producto.getCodigoProducto(),
+                                                nombre:producto.getDescripcion(),
+                                                existencia:producto.getExistencia()
+                                                };
+                                            
+                        $state.go("DetalleProductos");
+                        
+                        localStorageService.set("productoInduccion",detalladoProducto);
+                    };
                     /**
+                     * @author Cristian Ardila
                      * +Descripcion: objeto ng-grid
                      */
                     $scope.gridListaProductos = {
@@ -333,23 +365,29 @@ define(["angular", "js/controllers",
                         enableColumnResize: true,
                         enableRowSelection: false,
                         columnDefs: [
-                            {field: 'getIva()', displayName: 'Iva', width: "35%"},
+                            {field: 'getIva()', displayName: 'Iva', width: "15%"},
                             {field: 'getCosto()', displayName: 'Costo', width: "25%"},
                             {field: 'getPrecioVenta()', displayName: 'Venta', width: "10%"},
                             {field: 'getCodigoProducto()', displayName: 'Codigo producto', width: "10%"},
                             {field: 'getDescripcion()', displayName: 'Descripcion', width: "10%"},
-                            {field: 'getExistencia()', displayName: 'Existencia', width: "10%"},
-                            {displayName: "Opciones", cellClass: "txt-center dropdown-button",
+                            {field: 'getExistencia()', displayName: 'Existencia', width: "10%"},                       
+                            {field: 'getExistencia()', 
+                                displayName: "Detalle", 
+                                cellClass: "txt-center dropdown-button",
                                 cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="confirmar_eliminar_documento_planilla(row.entity)" ng-disabled="planilla.get_estado()==\'2\'" ><span class="glyphicon glyphicon-remove"></span></button>\
+                                 <button  \
+                                               ng-click="detalleProducto(row.entity)" \n\
+                                               ng-disabled="planilla.get_estado()==\'2\'" >\n\
+                                              <span class="glyphicon glyphicon-zoom-in"></span></button>\
                                         </div>'
                             }
                         ]
                     };
 
-                    /**
-                     * 
-                     * @param {type} $event
+                    /** 
+                     * @param {keypress} $event
+                     * @author Cristian Ardila
+                     * @returns {void}
                      * +Descripcion: function que se invoca al digitar la tecla 
                      * enter en el campo de texto (buscar producto)
                      */
@@ -363,8 +401,9 @@ define(["angular", "js/controllers",
                     };
 
                     /**
-                     * 
-                     * @returns {unresolved}
+                     * @param {N/N}
+                     * @author Cristian Ardila
+                     * @returns {int} paginaactual
                      * +Descripcion: funcion que se invoca al presionar click
                      * en el boton izquiero (<) del paginador del gridview
                      * y aumentara en 1 la pagina actual, refrescando la gridview
@@ -379,8 +418,9 @@ define(["angular", "js/controllers",
                     };
 
                     /**
-                     * 
-                     * @returns {unresolved}
+                     * @param {N/N}
+                     * @author Cristian Ardila
+                     * @returns {int} paginaactual
                      * +Descripcion: funcion que se invoca al presionar click
                      * en el boton derecho (>) del paginador del gridview
                      * y aumentara en 1 la pagina actual, refrescando la gridview
@@ -393,12 +433,9 @@ define(["angular", "js/controllers",
                     };
 
 
-                    /**
-                     * +Descripcion: se invocan la funciones encargadas de
-                     * cargar los combobox y la grid de la view
-                     */
-
+                   
                     var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
+                    //console.log(empresa)
                     var centroUtilidad ;
                     var bodega;
                     if (!empresa) {

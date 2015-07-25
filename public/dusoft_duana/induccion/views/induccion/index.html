@@ -1,5 +1,17 @@
 <div >
 
+    <tabset  class="">
+        
+        <tab heading="Productos" ng-controller="InduccionController">
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li><a href="#/tareas">Tareas</a></li>
+                    <li><a href="#/empleados">Empleados</a></li>
+                    <li><a href="#/inicio">Inicio</a></li>
+
+
+                </ul>
+            </div>
     <div class='panel-body'>
         <div class="col-xs-3"  >
             <ui-select ng-model="root.empresaSeleccionada"  theme="select2" class="form-control selectgeneral pull-left" ng-change="onSeleccionarEmpresa()">
@@ -51,7 +63,12 @@
             <span class="glyphicon glyphicon-chevron-right" ></span>
         </button>
     </div>
-
+    </tab>
+    
+        <tab heading="Farmacias" ng-controller="InduccionController">
+            
+        </tab>
+</tabset>
 </div>
 </div>
 

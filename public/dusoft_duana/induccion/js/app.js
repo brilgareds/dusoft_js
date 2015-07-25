@@ -23,7 +23,8 @@ define([
     "includes/helpersdirectives/visualizarReporte",
     "includes/validation/NgValidateEvents",
     "chart",
-    "controllers/InduccionController"
+    "controllers/InduccionController",
+    "controllers/InduccionDetalleController"
 ], function(angular) {
 
     /* App Module and its dependencies */
@@ -65,6 +66,16 @@ define([
                     text: "Induccion",
                     templateUrl: "views/induccion/index.html",
                     controller: "InduccionController"
+                }).state('DetalleProductos', {
+                    url: "/DetalleProductos",
+                    text: "Induccion",
+                    parent_name: "ListarProductos",
+                    templateUrl: "views/induccion/detalleProducto.html",
+                    controller: "InduccionDetalleController",
+                    /*controller: function($stateParams){
+                        console.log($stateParams)
+                   
+                 },*/
                 });
 
                 if ($location.path() === "")

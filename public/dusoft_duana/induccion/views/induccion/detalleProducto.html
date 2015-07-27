@@ -2,19 +2,7 @@
 
         <h1>DETALLE PRODUCTO</h1>
     
-       <tabset  class="">
-        
-        <tab heading="Productos" ng-controller="InduccionController">
-      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav">
-                    <li><a ng-click="retornarPaginaInicio()">Inicio</a></li>
-                   
-
-
-                </ul>
-            </div>
-            
-        </tab></tabset>
+      
          <table class="table">
             <thead>
             <th>Codigo producto</th>
@@ -40,4 +28,14 @@
             </tr>
             </tbody>
             </table>
+        
+          <div class="modal-footer col-md-12"  ng-controller="InduccionController">
+                    <button class="btn btn-default" ng-click="retornarPaginaInicio()">
+                        <span class="glyphicon glyphicon-remove" ></span> Cancelar</button>
+                    <button class="btn btn-default" ng-disabled="deshabilitar_acciones() || !recepcion.continuar_finalizacion_recepcion()" ng-click="finalizar_recepcion_mercancia()">
+                        <span class="glyphicon glyphicon-ok" ></span> Aceptar
+                    </button>
+                </div> 
+       
+     
         

@@ -69,7 +69,7 @@ define([
                     controller: "InduccionController"
                 }).state('DetalleProductos', {
                     url: "/DetalleProductos",
-                    text: "Induccion",
+                    text: "Detalle producto", 
                     parent_name: "ListarProductos",
                     templateUrl: "views/induccion/detalleProducto.html",
                     controller: "InduccionDetalleController"

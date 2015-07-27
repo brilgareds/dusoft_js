@@ -414,20 +414,16 @@ define(["angular", "js/controllers",
                         enableRowSelection: false,
                         columnDefs: [
                             {field: 'getIva()', displayName: 'Iva', width: "15%"},
-                            {field: 'getCosto()', displayName: 'Costo', width: "25%"},
+                            {field: 'getCosto()', displayName: 'Costo', width: "10%"},
                             {field: 'getPrecioVenta()', displayName: 'Venta', width: "10%"},
-                            {field: 'getCodigoProducto()', displayName: 'Codigo producto', width: "10%"},
-                            {field: 'getDescripcion()', displayName: 'Descripcion', width: "10%"},
-                            {field: 'getExistencia()', displayName: 'Existencia', width: "10%"},
+                            {field: 'getCodigoProducto()', displayName: 'Codigo producto', width: "15%"},
+                            {field: 'getDescripcion()', displayName: 'Descripcion', width: "25%"},
+                            {field: 'getExistencia()', displayName: 'Existencia', width: "15%"},
                             {field: 'getExistencia()',
                                 displayName: "Detalle",
-                                cellClass: "txt-center dropdown-button",
-                                cellTemplate: '<div class="btn-group">\
-                                 <button  \
-                                               ng-click="detalleProducto(row.entity)" \n\
-                                               ng-disabled="planilla.get_estado()==\'2\'" >\n\
-                                              <span class="glyphicon glyphicon-zoom-in"></span></button>\
-                                        </div>'
+                                cellClass: "txt-center",
+                                cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="detalleProducto(row.entity)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'
+
                             }
                         ]
                     };
@@ -479,8 +475,8 @@ define(["angular", "js/controllers",
                         that.traerProductos(function() {
                         });
                     };
-                    
-                    
+
+
                     $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                         $scope.root = {};
                         $scope.$$watchers = null;

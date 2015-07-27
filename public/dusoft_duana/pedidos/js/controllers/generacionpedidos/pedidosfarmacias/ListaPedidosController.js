@@ -12,7 +12,7 @@ define(["angular",
         'API', "socket", "AlertService",
         '$state', "Usuario", "localStorageService", "$modal",
         function($scope, $rootScope, Request,
-                EmpresaPedido, FarmaciaPedido, PedidoFarmacia,
+                EmpresaPedidoFarmacia, FarmaciaPedido, PedidoFarmacia,
                 CentroUtilidadPedidoFarmacia, BodegaPedidoFarmacia,
                 API, socket, AlertService, $state, Usuario,
                 localStorageService, $modal) {
@@ -27,12 +27,14 @@ define(["angular",
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
 
-
-            $scope.rootPedidosFarmacias.Empresa = EmpresaPedido;
+            
+            var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
+            
+            $scope.rootPedidosFarmacias.empresaSeleccionada = EmpresaPedidoFarmacia.get(empresa.getNombre(), empresa.getCodigo());
             $scope.rootPedidosFarmacias.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
 
             //selecciona la empresa del usuario
-            $scope.rootPedidosFarmacias.seleccion = Usuario.getUsuarioActual().getEmpresa().getCodigo();
+            
 
             $scope.rootPedidosFarmacias.ultima_busqueda = {};
 
@@ -59,7 +61,7 @@ define(["angular",
                 "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs"];
 
             $scope.rootPedidosFarmacias.lista_pedidos_farmacias = {
-                data: 'rootPedidosFarmacias.Empresa.obtenerPedidos()',
+                data: 'rootPedidosFarmacias.empresaSeleccionada.obtenerPedidos()',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
@@ -126,7 +128,7 @@ define(["angular",
 
                     var pedido = self.crearPedido(obj);
 
-                    $scope.rootPedidosFarmacias.Empresa.agregarPedido(pedido);
+                    $scope.rootPedidosFarmacias.empresaSeleccionada.agregarPedido(pedido);
 
                 }
             };
@@ -176,7 +178,6 @@ define(["angular",
                 farmacia.setCentroUtilidadSeleccionado(centroUtilidad).getCentroUtilidadSeleccionado().setBodegaSeleccionada(bodega);
 
                 pedido.setFarmaciaOrigen(farmacia);
-                console.log("farmacia ", farmacia, obj);
                 return pedido;
             };
 
@@ -208,15 +209,23 @@ define(["angular",
              * depende de self.consultarEncabezados() y self.renderPedidos()
              */
             self.buscarPedidos = function() {
-                $scope.rootPedidosFarmacias.Empresa.vaciarPedidos();
+                
+                //las empresas del usuario (de la session) son de tipo Empresa, por lo tanto se requiere asegurar que sean de tipo EmpresaPedidoFarmacia para acceder a los metodos 
+                //de esta ultima
+                
+                $scope.rootPedidosFarmacias.empresaSeleccionada = EmpresaPedidoFarmacia.get(
+                    $scope.rootPedidosFarmacias.empresaSeleccionada.getNombre(),
+                    $scope.rootPedidosFarmacias.empresaSeleccionada.getCodigo()
+                );
+                
+                $scope.rootPedidosFarmacias.empresaSeleccionada.vaciarPedidos();
 
                 var obj = {
                     session: $scope.rootPedidosFarmacias.session,
                     data: {
                         pedidos_farmacias: {
                             termino_busqueda: $scope.rootPedidosFarmacias.termino_busqueda,
-                            empresa_id: $scope.rootPedidosFarmacias.seleccion,
-                            //empresa_id: $scope.farmacia_seleccionada.get_farmacia_id(),
+                            empresa_id: $scope.rootPedidosFarmacias.empresaSeleccionada.getCodigo(),
                             pagina_actual: $scope.rootPedidosFarmacias.paginaactual,
                             filtro: {}
                         }
@@ -256,7 +265,7 @@ define(["angular",
              * @param {Object} event
              * +Descripcion: handler del text input para buscar pedidos por descripcion
              */
-            $scope.onTeclaBuscarPedidosFarmacias = function(event) {
+            $scope.onCampoBuscarPedidos = function(event) {
                 if (event.which === 13) {
                     self.buscarPedidos();
                 }
@@ -265,7 +274,6 @@ define(["angular",
             self.buscarPedidos();
 
             /*
-             * warning area toxica
              *   var that = this;
              
              that.pedido = PedidoVenta.get();

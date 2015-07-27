@@ -9,7 +9,8 @@ define(["angular",
     "models/generacionpedidos/pedidosfarmacias/CentroUtilidadPedidoFarmacia",
     "models/generacionpedidos/pedidosfarmacias/BodegaPedidoFarmacia",
     "controllers/generacionpedidos/pedidosfarmacias/ListaPedidosController",
-    "controllers/generacionpedidos/pedidosfarmacias/ListaPedidosTemporalesController"], function(angular, controllers) {
+    "controllers/generacionpedidos/pedidosfarmacias/ListaPedidosTemporalesController",
+    "services/generacionpedidos/pedidosfarmacias/ListaPedidosFarmaciasService"], function(angular, controllers) {
 
     controllers.controller('PedidosFarmaciaController', [
         '$scope', '$rootScope', 'Request',

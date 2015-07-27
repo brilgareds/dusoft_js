@@ -10,12 +10,12 @@ define(["angular",
         'EmpresaPedidoFarmacia', 'FarmaciaPedido', 'PedidoFarmacia',
         'CentroUtilidadPedidoFarmacia', 'BodegaPedidoFarmacia',
         'API', "socket", "AlertService",
-        '$state', "Usuario", "localStorageService", "$modal",
+        '$state', "Usuario", "localStorageService", "$modal","ListaPedidosFarmaciasService",
         function($scope, $rootScope, Request,
-                EmpresaPedido, FarmaciaPedido, PedidoFarmacia,
+                EmpresaPedidoFarmacia, FarmaciaPedido, PedidoFarmacia,
                 CentroUtilidadPedidoFarmacia, BodegaPedidoFarmacia,
                 API, socket, AlertService, $state, Usuario,
-                localStorageService, $modal) {
+                localStorageService, $modal, ListaPedidosFarmaciasService) {
 
             var self = this;
 
@@ -28,11 +28,13 @@ define(["angular",
             };
 
 
-            $scope.rootPedidosFarmacias.Empresa = EmpresaPedido;
+            var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
+
+            $scope.rootPedidosFarmacias.empresaSeleccionada = EmpresaPedidoFarmacia.get(empresa.getNombre(), empresa.getCodigo());
             $scope.rootPedidosFarmacias.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
 
             //selecciona la empresa del usuario
-            $scope.rootPedidosFarmacias.seleccion = Usuario.getUsuarioActual().getEmpresa().getCodigo();
+
 
             $scope.rootPedidosFarmacias.ultima_busqueda = {};
 
@@ -53,13 +55,15 @@ define(["angular",
                     'click': $scope.rootPedidosFarmacias.opciones.sw_consultar_pedido
                 }
             };
+            
+           // console.log(">>>>>>>>>>>>>>>>> opciones ",$scope.rootPedidosFarmacias.opcionesModulo, $scope.rootPedidosFarmacias.opciones );
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs",
                 "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs",
                 "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs"];
 
             $scope.rootPedidosFarmacias.lista_pedidos_farmacias = {
-                data: 'rootPedidosFarmacias.Empresa.obtenerPedidos()',
+                data: 'rootPedidosFarmacias.empresaSeleccionada.obtenerPedidos()',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
@@ -72,21 +76,21 @@ define(["angular",
                     {field: 'fecha_registro', displayName: 'Fecha'},
                     {field: 'estado_actual_pedido', displayName: 'EstadoId', visible: false},
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center dropdown-button", width: "8%",
-                        cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
-                                            <ul class="dropdown-menu dropdown-options">\
-                                                <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)" ng-if="rootPedidosFarmacias.opciones.sw_modificar_pedido">\n\
-                                                    <a href="javascript:void(0);" ng-click="onEditarPedidoFarmacia(row.entity)" ng-validate-events="{{rootPedidosFarmacias.opcionesModulo.btnModificarPedido}}" >Modificar</a>\
-                                                </li>\
-                                                <li><a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity)" ng-validate-events="{{rootPedidosFarmacias.opcionesModulo.btnConsultarPedido}}">Ver</a></li>\
-                                                <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)" ng-if="rootPedidosFarmacias.opciones.sw_modificacion_especial_pedidos">\
-                                                    <a href="javascript:void(0);" ng-click="onEdicionEspecialPedidoFarmacia(row.entity)" ng-validate-events="{{rootPedidosFarmacias.opcionesModulo.btnModificarEspecialPedido}}" >Modificación Especial</a>\
-                                                </li>\
-                                                <li ng-if="row.entity.getTieneDespacho()">\
-                                                    <a href="javascript:void(0);" ng-click="imprimirDespachos(row.entity.getDespachoEmpresaId(),row.entity.getDespachoNumero(),row.entity.getDespachoPrefijo())">Documento Despacho</a>\
-                                                </li>\
-                                            </ul>\n\
-                                        </div>'
+                    cellTemplate: '<div class="btn-group">\
+                                        <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
+                                        <ul class="dropdown-menu dropdown-options">\
+                                            <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)" ng-if="rootPedidosFarmacias.opciones.sw_modificar_pedido">\n\
+                                                <a href="javascript:void(0);" ng-click="onEditarPedidoFarmacia(row.entity)" ng-validate-events="{{rootPedidosFarmacias.opcionesModulo.btnModificarPedido}}" >Modificar</a>\
+                                            </li>\
+                                            <li><a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity)" ng-validate-events="{{rootPedidosFarmacias.opcionesModulo.btnConsultarPedido}}">Ver</a></li>\
+                                            <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)" ng-if="rootPedidosFarmacias.opciones.sw_modificacion_especial_pedidos">\
+                                                <a href="javascript:void(0);" ng-click="onEdicionEspecialPedidoFarmacia(row.entity)" ng-validate-events="{{rootPedidosFarmacias.opcionesModulo.btnModificarEspecialPedido}}" >Modificación Especial</a>\
+                                            </li>\
+                                            <li ng-if="row.entity.getTieneDespacho()">\
+                                                <a href="javascript:void(0);" ng-click="imprimirDespachos(row.entity.getDespachoEmpresaId(),row.entity.getDespachoNumero(),row.entity.getDespachoPrefijo())">Documento Despacho</a>\
+                                            </li>\
+                                        </ul>\n\
+                                    </div>'
                     }
 
                 ]
@@ -101,83 +105,32 @@ define(["angular",
 
             self.renderPedidos = function(pedidos) {
 
-                /* $scope.rootPedidosFarmacias.items = data.pedidos_farmacias.length;
-                 
-                 //se valida que hayan registros en una siguiente pagina
-                 if (paginando && $scope.rootPedidosFarmacias.items === 0) {
-                 if ($scope.rootPedidosFarmacias.paginaactual > 1) {
-                 $scope.rootPedidosFarmacias.paginaactual--;
-                 }
-                 AlertService.mostrarMensaje("warning", "No se encontraron más registros");
-                 return;
-                 }
-                 
-                 $scope.rootPedidosFarmacias.Empresa.vaciarPedidosFarmacia();
-                 
-                 if (data.pedidos_farmacias.length > 0)
-                 {
-                 $scope.rootPedidosFarmacias.Empresa.setCodigo(data.pedidos_farmacias[0].empresa_origen_id);
-                 }
-                 */
-
                 for (var i in pedidos) {
 
                     var obj = pedidos[i];
 
-                    var pedido = self.crearPedido(obj);
+                    var pedido = ListaPedidosFarmaciasService.crearPedido(obj);
+                    
+                     /* pedido.setDatos(datos_pedido);
 
-                    $scope.rootPedidosFarmacias.Empresa.agregarPedido(pedido);
+                       pedido.setObservacion(obj.observacion);
+
+                       pedido.setDespachoEmpresaId(obj.despacho_empresa_id);
+
+                       pedido.setDespachoPrefijo(obj.despacho_prefijo);
+
+                       pedido.setDespachoNumero(obj.despacho_numero);
+
+                       pedido.setTieneDespacho(obj.tiene_despacho);*/
+
+                      //Falta el campo del estado True o False para botón "Imprimir EFC"
+
+                      //pedido.setEnUso(obj.en_uso);
+                    
+
+                    $scope.rootPedidosFarmacias.empresaSeleccionada.agregarPedido(pedido);
 
                 }
-            };
-
-
-            /*
-             * @Author: Eduar
-             * @param {object} obj
-             * +Descripcion: metodo encargado de serializar el json de pedidos en conjunto con self.renderPedidos()
-             */
-
-            self.crearPedido = function(obj) {
-                var pedido = PedidoFarmacia.get();
-
-                var datos_pedido = {
-                    numero_pedido: obj.numero_pedido,
-                    fecha_registro: obj.fecha_registro,
-                    descripcion_estado_actual_pedido: obj.descripcion_estado_actual_pedido,
-                    estado_actual_pedido: obj.estado_actual_pedido,
-                    estado_separacion: obj.estado_separacion
-                };
-
-                pedido.setDatos(datos_pedido);
-
-                /*  pedido.setObservacion(obj.observacion);
-                 
-                 pedido.setDespachoEmpresaId(obj.despacho_empresa_id);
-                 
-                 pedido.setDespachoPrefijo(obj.despacho_prefijo);
-                 
-                 pedido.setDespachoNumero(obj.despacho_numero);
-                 
-                 pedido.setTieneDespacho(obj.tiene_despacho);*/
-
-                //Falta el campo del estado True o False para botón "Imprimir EFC"
-
-                //pedido.setEnUso(obj.en_uso);
-
-                var farmacia = FarmaciaPedido.get(
-                        obj.farmacia_id,
-                        obj.bodega_id,
-                        obj.nombre_farmacia
-                );
-
-                var centroUtilidad = CentroUtilidadPedidoFarmacia.get(obj.nombre_centro_utilidad, obj.centro_utilidad);
-                var bodega = BodegaPedidoFarmacia.get(obj.nombre_bodega, obj.bodega_id);
-                farmacia.setCentroUtilidadSeleccionado(centroUtilidad).getCentroUtilidadSeleccionado().setBodegaSeleccionada(bodega);
-
-                pedido.setFarmaciaOrigen(farmacia);
-                console.log("farmacia ", farmacia, obj);
-                return pedido;
             };
 
             /*
@@ -192,12 +145,8 @@ define(["angular",
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
-                    if (data.status === 200) {
-                        callback(data);
-                    }
-                    else {
-                        AlertService.mostrarMensaje("warning", "No se encontraron registros");
-                    }
+                     callback(data);
+
                 });
             };
 
@@ -207,16 +156,14 @@ define(["angular",
              * +Descripcion: function helper que prepara los parametros y hace el llamado para buscar los encabezados de pedidos de farmacia
              * depende de self.consultarEncabezados() y self.renderPedidos()
              */
-            self.buscarPedidos = function() {
-                $scope.rootPedidosFarmacias.Empresa.vaciarPedidos();
+            self.buscarPedidos = function(callback) {
 
                 var obj = {
                     session: $scope.rootPedidosFarmacias.session,
                     data: {
                         pedidos_farmacias: {
                             termino_busqueda: $scope.rootPedidosFarmacias.termino_busqueda,
-                            empresa_id: $scope.rootPedidosFarmacias.seleccion,
-                            //empresa_id: $scope.farmacia_seleccionada.get_farmacia_id(),
+                            empresa_id: $scope.rootPedidosFarmacias.empresaSeleccionada.getCodigo(),
                             pagina_actual: $scope.rootPedidosFarmacias.paginaactual,
                             filtro: {}
                         }
@@ -224,8 +171,33 @@ define(["angular",
                 };
 
                 self.consultarEncabezados(obj, function(data) {
+                    
+                    if(data.status === 200){
+                        if(data.obj.pedidos_farmacias.length > 0){
+                            
+                            /*las empresas del usuario (de la session) son de tipo Empresa, por lo tanto se requiere asegurar 
+                              que sean de tipo EmpresaPedidoFarmacia para acceder a los metodos 
+                              de esta ultima*/
 
-                    self.renderPedidos(data.obj.pedidos_farmacias);
+                            $scope.rootPedidosFarmacias.empresaSeleccionada = EmpresaPedidoFarmacia.get(
+                                    $scope.rootPedidosFarmacias.empresaSeleccionada.getNombre(),
+                                    $scope.rootPedidosFarmacias.empresaSeleccionada.getCodigo()
+                            );
+
+
+                            self.renderPedidos(data.obj.pedidos_farmacias);
+
+                            if(callback){
+                                callback(true);
+                            }
+                        } else {
+                            if(callback){
+                                callback(false);
+                            }
+                        }
+                    } else {
+                       AlertService.mostrarMensaje("warning", "Ha ocurrido un error");
+                    }
 
                 });
             };
@@ -247,7 +219,7 @@ define(["angular",
              */
 
             $scope.onBuscarPedidos = function() {
-
+                $scope.rootPedidosFarmacias.paginaactual = 1;
                 self.buscarPedidos();
             };
 
@@ -256,16 +228,42 @@ define(["angular",
              * @param {Object} event
              * +Descripcion: handler del text input para buscar pedidos por descripcion
              */
-            $scope.onTeclaBuscarPedidosFarmacias = function(event) {
+            $scope.onCampoBuscarPedidos = function(event) {
                 if (event.which === 13) {
+                    $scope.rootPedidosFarmacias.paginaactual = 1;
                     self.buscarPedidos();
                 }
+            };
+
+            /*
+             * @Author: Eduar
+             * +Descripcion: function helper que permite paginar
+             */
+            $scope.paginaAnterior = function() {
+                if ($scope.rootPedidosFarmacias.paginaactual === 1) {
+                    return;
+                }
+
+                $scope.rootPedidosFarmacias.paginaactual--;
+                self.buscarPedidos();
+            };
+            
+            /*
+             * @Author: Eduar
+             * +Descripcion: function helper que permite paginar
+             */
+            $scope.paginaSiguiente = function() {
+                $scope.rootPedidosFarmacias.paginaactual++;
+                self.buscarPedidos(function(resultado){
+                    if(!resultado){
+                        $scope.rootPedidosFarmacias.paginaactual--;
+                    }
+                });
             };
 
             self.buscarPedidos();
 
             /*
-             * warning area toxica
              *   var that = this;
              
              that.pedido = PedidoVenta.get();

@@ -9,21 +9,24 @@ define(["angular", "js/controllers",
                 "localStorageService", "$modal",
                 "API", "EmpresaInduccion",
                 "CentroUtilidadesInduccion", "BodegasInduccion",
-                "ProductoInduccion", "AlertService",
+                "ProductoInduccion", "AlertService", "$state", "InduccionService",
                 function($scope, $rootScope, Usuario, Request,
                         localStorageService, $modal, API,
-                        EmpresaInduccion, CentroUtilidadesInduccion, BodegasInduccion, ProductoInduccion, AlertService) {
+                        EmpresaInduccion, CentroUtilidadesInduccion, BodegasInduccion, ProductoInduccion, AlertService, $state, InduccionService) {
 
                     var that = this;
+                    //$rootScope.$emit("evento", {foo:"bar"});
 
-                    //se valida que el usuario tenga centro de utilidad y bodega
-
+                    //         console.log(InduccionService)
                     /*
-                     * 
-                     * @param {type} selected
-                     * @Author: Dusoft
-                     * +Descripcion: metodo el cual se encarga de cargar el combobox
-                     * empresa con todas las empresas disponibles
+                     * @param 
+                     * {Object} empresa: 
+                     * {Object} centroUtilidad:
+                     * {Object} bodega:
+                     * {function} callback: 
+                     * @Author: Cristian Ardila
+                     * +Descripcion: metodo el cual se encarga de inicializar
+                     * las variables encargadas de cargar la view
                      */
                     that.init = function(empresa, centroUtilidad, bodega, callback) {
 
@@ -46,8 +49,8 @@ define(["angular", "js/controllers",
 
                     /*
                      * 
-                     * @param {type} selected
-                     * @Author: Dusoft
+                     * @param {N/N}
+                     * @Author: Cristian Ardila
                      * +Descripcion: metodo el cual se encarga de cargar el combobox
                      * empresa con todas las empresas disponibles
                      */
@@ -56,6 +59,14 @@ define(["angular", "js/controllers",
                         });
                     };
 
+                    /**
+                     * 
+                     * @param {function} callback
+                     * @Author: Cristian Ardila
+                     * @returns {void}
+                     * +Descripcion: funcion encargada de ejecutar la peticion
+                     * al servidos para consultar las empresas activas
+                     */
                     that.traerEmpresas = function(callback) {
 
                         var obj = {
@@ -73,9 +84,10 @@ define(["angular", "js/controllers",
                             }
                         });
                     };
+
                     /**
                      * 
-                     * @param {Object} data
+                     * @param {JSON} data
                      * @returns {void}
                      * +Descripcion: funcion que procesara la informacion de la 
                      * lista de empresas de formato JSON y la mapeara con la
@@ -91,8 +103,9 @@ define(["angular", "js/controllers",
 
                     /*
                      * 
-                     * @param {type} selected
+                     * @param {N/N} 
                      * @Author: Cristian Ardila
+                     * @returns {void}
                      * +Descripcion: metodo handler el cual se comunicara con la
                      * vista y carga el combobox con los centros de utilidades 
                      * disponibles segun la empresa
@@ -103,8 +116,8 @@ define(["angular", "js/controllers",
                     };
 
                     /**
-                     * 
                      * @param {function} callback
+                     * @Author: Cristian Ardila
                      * @returns {void}
                      * +Descripcion: funcion encargada de ejecutar las peticiones
                      * al servidor y traer todos los centros de utilidad disponibles
@@ -134,8 +147,9 @@ define(["angular", "js/controllers",
 
                     /**
                      * 
-                     * @param {type} data
-                     * @returns {undefined}
+                     * @param {JSON} data
+                     * @Author: Cristian Ardila
+                     * @returns {void}
                      * +Descripcion: funcion que procesara la informacion de la 
                      * lista de centros de utilidad de formato JSON y la mapeara con la
                      * entidad CentroUtilidadInduccion.js
@@ -153,8 +167,9 @@ define(["angular", "js/controllers",
 
                     /*
                      * 
-                     * @param {type} selected
+                     * @param {N/N} 
                      * @Author: Cristian Ardila
+                     * @returns {void}
                      *+Descripcion: metodo handler el cual se comunicara con la
                      * vista y carga el combobox con las bodegas disponibles
                      * segun el centro de utilidad
@@ -168,8 +183,9 @@ define(["angular", "js/controllers",
 
                     /**
                      * 
-                     * @param {type} callback
-                     * @returns {undefined}
+                     * @param {function} callback
+                     * @Author: Cristian Ardila
+                     * @returns {void}
                      * +Descripcion: funcion encargada de ejecutar las peticiones
                      * al servidor y traer todas las bodegas disponibles segun
                      * el centro de utilidad
@@ -197,8 +213,9 @@ define(["angular", "js/controllers",
                     }
                     /**
                      * 
-                     * @param {type} data
-                     * @returns {undefined}
+                     * @param {JSON} data:
+                     * @Author: Cristian Ardila
+                     * @returns {void}
                      * +Descripcion: funcion que procesara la informacion de la 
                      * lista de bodegas de formato JSON y la mapeara con la
                      * entidad BodegasInduccion.js
@@ -221,6 +238,7 @@ define(["angular", "js/controllers",
                      * 
                      * @param {type} selected
                      * @Author: Cristian Ardila
+                     * @returns {void}
                      *+Descripcion: metodo handler el cual se comunicara con la
                      * vista y carga el componente gridview
                      */
@@ -235,7 +253,8 @@ define(["angular", "js/controllers",
                     /*
                      * 
                      * @param {type} selected
-                     * @Author: Dusoft
+                     * @Author: Cristian Ardila
+                     * @returns {void}
                      * +Descripcion: metodo el cual se encarga ejecutar 
                      * las peticiones al servidor y traer los productos
                      */
@@ -272,25 +291,49 @@ define(["angular", "js/controllers",
                                                         centroUtilidad: centroUtilidadSeleccionado.getCodigo(),
                                                         bodega: bodegaSeleccionada.getCodigo(),
                                                         descripcion: $scope.buscar.descripcion,
-                                                        pagina: that.paginaactual
+                                                        pagina: that.paginaactual,
+                                                        codigoProducto: ''
                                                     }
                                         }
                                     };
-                                    Request.realizarRequest(API.INDUCCION.LISTAR_PRODUCTOS, "POST", obj, function(data) {
-                                        bodegaSeleccionada.vaciarProductos();
-                                        $scope.productos = [];
 
-                                        if (data.status === 200) {
-                                            if (data.obj.listar_productos.length === 0) {
-                                                that.paginaactual = 1;
-                                            } else {
-                                                that.renderListarProductos(data);
-                                                callback();
+                                    InduccionService.consultarDetalleProducto(
+                                            API.INDUCCION.LISTAR_PRODUCTOS,
+                                            obj,
+                                            function(data) {
+                                                bodegaSeleccionada.vaciarProductos();
+                                                if (data.status === 200) {
+
+                                                    if (data.obj.listar_productos.length === 0) {
+                                                        that.paginaactual = 1;
+                                                    } else {
+                                                        that.renderListarProductos(data);
+                                                        callback();
+
+                                                    }
+                                                } else {
+                                                    AlertService.mostrarMensaje("warning", data.msj)
+                                                }
+
                                             }
-                                        } else {
-                                            AlertService.mostrarMensaje("warning", data.msj)
-                                        }
-                                    });
+                                    );
+                                    /*      Request.realizarRequest(API.INDUCCION.LISTAR_PRODUCTOS, "POST", obj, function(data) {
+                                     
+                                     bodegaSeleccionada.vaciarProductos();
+                                     $scope.productos = [];
+                                     
+                                     if (data.status === 200) {
+                                     console.log(data.obj.listar_productos.length)
+                                     if (data.obj.listar_productos.length === 0) {
+                                     that.paginaactual = 1;
+                                     } else {
+                                     that.renderListarProductos(data);
+                                     callback();
+                                     }
+                                     } else {
+                                     AlertService.mostrarMensaje("warning", data.msj)
+                                     }
+                                     });*/
                                 }//Llave que cierra el ELSE que valida la (bodegaSeleccionada)
 
                             }//Llave que cierra el ELSE que valida el(centroUtilidadSeleccionado)
@@ -302,8 +345,9 @@ define(["angular", "js/controllers",
 
                     /**
                      * 
-                     * @param {type} data
-                     * @returns {undefined}
+                     * @param {JSON} data
+                     * @author Cristian Ardila
+                     * @returns {void}
                      * +Descripcion: funcion que procesara la informacion de la 
                      * lista de bodegas de formato JSON y la mapeara con la
                      * entidad BodegasInduccion.js
@@ -325,7 +369,43 @@ define(["angular", "js/controllers",
                     };
 
 
+                    $scope.detalleProducto = function(producto) {
+
+
+                        var empresaSeleccionada = $scope.root.empresaSeleccionada;
+                        var centroUtilidadSeleccionado = empresaSeleccionada.getCentroUtilidadSeleccionado();
+                        var bodegaSeleccionada = centroUtilidadSeleccionado.getBodegaSeleccionada();
+
+                        var obj = {
+                            url: API.INDUCCION.LISTAR_PRODUCTOS,
+                            data: {
+                                induccion:
+                                        {
+                                            empresaId: $scope.root.empresaSeleccionada.getCodigo(),
+                                            centroUtilidad: centroUtilidadSeleccionado.getCodigo(),
+                                            bodega: bodegaSeleccionada.getCodigo(),
+                                            descripcion: $scope.buscar.descripcion,
+                                            pagina: 1,
+                                            codigoProducto: producto.codigo_producto
+                                        }
+                            }
+                        };
+
+                        console.log("producto ", producto.codigo_producto, " obj ", obj);
+                        localStorageService.set("productoInduccion", obj);
+                        $state.go("DetalleProductos");
+
+                    };
+
+
+                    $scope.retornarPaginaInicio = function() {
+
+                        $state.go("ListarProductos");
+                    };
+
+
                     /**
+                     * @author Cristian Ardila
                      * +Descripcion: objeto ng-grid
                      */
                     $scope.gridListaProductos = {
@@ -333,23 +413,29 @@ define(["angular", "js/controllers",
                         enableColumnResize: true,
                         enableRowSelection: false,
                         columnDefs: [
-                            {field: 'getIva()', displayName: 'Iva', width: "35%"},
+                            {field: 'getIva()', displayName: 'Iva', width: "15%"},
                             {field: 'getCosto()', displayName: 'Costo', width: "25%"},
                             {field: 'getPrecioVenta()', displayName: 'Venta', width: "10%"},
                             {field: 'getCodigoProducto()', displayName: 'Codigo producto', width: "10%"},
                             {field: 'getDescripcion()', displayName: 'Descripcion', width: "10%"},
                             {field: 'getExistencia()', displayName: 'Existencia', width: "10%"},
-                            {displayName: "Opciones", cellClass: "txt-center dropdown-button",
+                            {field: 'getExistencia()',
+                                displayName: "Detalle",
+                                cellClass: "txt-center dropdown-button",
                                 cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="confirmar_eliminar_documento_planilla(row.entity)" ng-disabled="planilla.get_estado()==\'2\'" ><span class="glyphicon glyphicon-remove"></span></button>\
+                                 <button  \
+                                               ng-click="detalleProducto(row.entity)" \n\
+                                               ng-disabled="planilla.get_estado()==\'2\'" >\n\
+                                              <span class="glyphicon glyphicon-zoom-in"></span></button>\
                                         </div>'
                             }
                         ]
                     };
 
-                    /**
-                     * 
-                     * @param {type} $event
+                    /** 
+                     * @param {keypress} $event
+                     * @author Cristian Ardila
+                     * @returns {void}
                      * +Descripcion: function que se invoca al digitar la tecla 
                      * enter en el campo de texto (buscar producto)
                      */
@@ -363,8 +449,9 @@ define(["angular", "js/controllers",
                     };
 
                     /**
-                     * 
-                     * @returns {unresolved}
+                     * @param {N/N}
+                     * @author Cristian Ardila
+                     * @returns {int} paginaactual
                      * +Descripcion: funcion que se invoca al presionar click
                      * en el boton izquiero (<) del paginador del gridview
                      * y aumentara en 1 la pagina actual, refrescando la gridview
@@ -379,8 +466,9 @@ define(["angular", "js/controllers",
                     };
 
                     /**
-                     * 
-                     * @returns {unresolved}
+                     * @param {N/N}
+                     * @author Cristian Ardila
+                     * @returns {int} paginaactual
                      * +Descripcion: funcion que se invoca al presionar click
                      * en el boton derecho (>) del paginador del gridview
                      * y aumentara en 1 la pagina actual, refrescando la gridview
@@ -391,31 +479,34 @@ define(["angular", "js/controllers",
                         that.traerProductos(function() {
                         });
                     };
+                    
+                    
+                    $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+                        $scope.root = {};
+                        $scope.$$watchers = null;
+                    });
 
-
-                    /**
-                     * +Descripcion: se invocan la funciones encargadas de
-                     * cargar los combobox y la grid de la view
-                     */
 
                     var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
-                    var centroUtilidad ;
+                    //console.log(empresa)
+                    var centroUtilidad;
                     var bodega;
                     if (!empresa) {
                         $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una empresa valida para consultar productos", tipo: "warning"});
-                        
+
                     } else if (!empresa.getCentroUtilidadSeleccionado()) {
                         $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene un centro de utilidad valido para para consultar productos.", tipo: "warning"});
-                        
+
                     } else if (!empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada()) {
                         $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una bodega valida para consultar productos", tipo: "warning"});
-                        
+
                     } else {
-                        
+
+
                         centroUtilidad = empresa.getCentroUtilidadSeleccionado();
                         bodega = empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada()
-                        
-                        that.init(empresa, centroUtilidad, bodega,  function(){
+                        console.log(bodega);
+                        that.init(empresa, centroUtilidad, bodega, function() {
                             that.traerEmpresas(function() {
                                 that.traerCentroUtilidad(function() {
                                     that.traerBodega(function() {

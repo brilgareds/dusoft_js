@@ -2,38 +2,51 @@
 define(["angular", "js/models", "includes/classes/Empresa"], function(angular, models) {
 
     models.factory('EmpresaPedidoFarmacia', ["Empresa", function(Empresa) {
+            
+        function EmpresaPedidoFarmacia(nombre, codigo){
+            Empresa.getClass().call(this, nombre, codigo);
+            this.farmacias = [];
+            this.pedidos = [];
+        }
 
-        var EmpresaPedidoFarmacia =  Object.create(Empresa.getClass().prototype);
+        EmpresaPedidoFarmacia.prototype =  Object.create(Empresa.getClass().prototype);
         
-        EmpresaPedidoFarmacia.farmacias = [];
-        EmpresaPedidoFarmacia.pedidos = [];
 
         //Agregar farmacia
-        EmpresaPedidoFarmacia.agregarFarmacias = function(farmacia){
+        EmpresaPedidoFarmacia.prototype.agregarFarmacias = function(farmacia){
             this.farmacias.push(farmacia);
         };
         
-        EmpresaPedidoFarmacia.obtenerFarmacias = function(){
+        EmpresaPedidoFarmacia.prototype.obtenerFarmacias = function(){
             return this.farmacias;
         };
         
-        EmpresaPedidoFarmacia.vaciarFarmacias = function() {
+        EmpresaPedidoFarmacia.prototype.vaciarFarmacias = function() {
             this.farmacias = [];
         };
         
-        EmpresaPedidoFarmacia.obtenerPedidos = function() {
+        EmpresaPedidoFarmacia.prototype.obtenerPedidos = function() {
             return this.pedidos;
         };
 
-        EmpresaPedidoFarmacia.agregarPedido = function(pedido) {
+        EmpresaPedidoFarmacia.prototype.agregarPedido = function(pedido) {
             this.pedidos.push(pedido);
         };
              
-        EmpresaPedidoFarmacia.vaciarPedidos = function() {
+        EmpresaPedidoFarmacia.prototype.vaciarPedidos = function() {
             this.pedidos = [];
         };
         
-        return EmpresaPedidoFarmacia;
+        EmpresaPedidoFarmacia.prototype.eliminarPedido = function(index) {
+            return this.pedidos.splice(index,1);
+        };
+        
+        this.get = function(nombre, codigo) {
+            return new EmpresaPedidoFarmacia(nombre, codigo);
+        };
+               
+        
+        return this;
 
     }]);
 });

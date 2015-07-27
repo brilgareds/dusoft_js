@@ -134,7 +134,7 @@ Induccion.prototype.listar_productos = function(req, res) {
     var bodega = induccion.bodega;
     var descripcion = induccion.descripcion;
     var pagina = induccion.pagina;
-    
+    var codigoProducto = induccion.codigoProducto;
   
   
      if (args.induccion === undefined ) { 
@@ -167,7 +167,7 @@ Induccion.prototype.listar_productos = function(req, res) {
         return;
     }
     
-    this.m_induccion.productos(empresaId,centroUtilidad,bodega,descripcion,pagina,function(err, listar_productos) {
+    this.m_induccion.productos(empresaId,centroUtilidad,bodega,descripcion,pagina,codigoProducto,function(err, listar_productos) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Listado de Productos Activos', 500, {listar_productos: {}}));

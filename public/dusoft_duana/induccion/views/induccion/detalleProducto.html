@@ -1,0 +1,41 @@
+
+
+        <h1>DETALLE PRODUCTO</h1>
+    
+      
+         <table class="table">
+            <thead>
+            <th>Codigo producto</th>
+            <th>descripcion</th>
+            <th>existencia</th>
+            <th>iva</th>
+            <th>costo</th>
+            <th>precio_venta</th>
+            </thead>
+    <tbody>
+            <tr> 
+                <td>{{detalleProductos.codigo_producto}}</td>
+            
+                <td>{{detalleProductos.descripcion}}</td>   
+           
+                <td>{{detalleProductos.existencia}}</td>         
+           
+                <td>{{detalleProductos.iva}}</td>          
+            
+                <td>{{detalleProductos.costo}}</td>          
+            
+                <td>{{detalleProductos.precio_venta}}</td>  
+            </tr>
+            </tbody>
+            </table>
+        
+          <div class="modal-footer col-md-12"  ng-controller="InduccionController">
+                    <button class="btn btn-default" ng-click="retornarPaginaInicio()">
+                        <span class="glyphicon glyphicon-remove" ></span> Cancelar</button>
+                    <button class="btn btn-default" ng-disabled="deshabilitar_acciones() || !recepcion.continuar_finalizacion_recepcion()" ng-click="finalizar_recepcion_mercancia()">
+                        <span class="glyphicon glyphicon-ok" ></span> Aceptar
+                    </button>
+                </div> 
+       
+     
+        

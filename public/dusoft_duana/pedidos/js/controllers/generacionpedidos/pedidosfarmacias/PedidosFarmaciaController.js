@@ -9,14 +9,15 @@ define(["angular",
     "models/generacionpedidos/pedidosfarmacias/CentroUtilidadPedidoFarmacia",
     "models/generacionpedidos/pedidosfarmacias/BodegaPedidoFarmacia",
     "controllers/generacionpedidos/pedidosfarmacias/ListaPedidosController",
-    "controllers/generacionpedidos/pedidosfarmacias/ListaPedidosTemporalesController"], function(angular, controllers) {
+    "controllers/generacionpedidos/pedidosfarmacias/ListaPedidosTemporalesController",
+    "services/generacionpedidos/pedidosfarmacias/ListaPedidosFarmaciasService"], function(angular, controllers) {
 
     controllers.controller('PedidosFarmaciaController', [
         '$scope', '$rootScope', 'Request',
         'EmpresaPedidoFarmacia', 'FarmaciaVenta', 'PedidoVenta',
         'API', "socket", "AlertService",
         '$state', "Usuario", "localStorageService", "$modal",
-        function($scope, $rootScope, Request, EmpresaPedido, FarmaciaVenta, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService, $modal) {
+        function($scope, $rootScope, Request, EmpresaPedidoFarmacia, FarmaciaVenta, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService, $modal) {
             var self = this;
             
             $scope.root = {};

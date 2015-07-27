@@ -5,7 +5,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             function ProductoPedidoCliente(codigo, nombre, existencia, iva, tipo_producto, estado) {
 
                 Producto.getClass().call(this, codigo, nombre, existencia);
-
+                
                 this.codigo_cum = "";
                 this.codigo_invima = "";
                 this.fecha_vencimiento_invima = "";
@@ -14,8 +14,8 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.precio_venta = 0;
                 this.cantidad_disponible = 0;
                 this.cantidad_solicitada = 0;
-                this.estado = true || estado;
-                this.tipo_producto = 0 || tipo_producto;
+                this.estado = estado || '0';
+                this.tipo_producto = tipo_producto || 0;
                 this.descripcion_tipo_producto = "";
                 this.valor_total_sin_iva = 0;
                 this.valor_total_con_iva = 0;
@@ -163,6 +163,20 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
 
             ProductoPedidoCliente.prototype.get_descripcion_tipo_producto = function() {
                 return this.descripcion_tipo_producto;
+            };
+            
+            ProductoPedidoCliente.prototype.get_abreviacion_tipo_producto = function() {
+                
+                if(this.tipo_producto === '1')
+                    return "N"; // Normales
+                if(this.tipo_producto === '2')
+                    return "A"; // Alto Costo
+                if(this.tipo_producto === '3')
+                    return "C"; // Controlados
+                if(this.tipo_producto === '4')
+                    return "I"; // Insumos
+                if(this.tipo_producto === '5')
+                    return "Ne";// Neveras                 
             };
 
             // Valor Total Sin IVA

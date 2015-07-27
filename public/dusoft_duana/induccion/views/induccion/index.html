@@ -6,7 +6,7 @@
         <div class="col-md-12 col-lg-2">
             <p class="input-group contenedorfiltrocombobox">
 
-            <ui-select ng-model="root.empresaSeleccionada"  theme="select2" class="form-control selectgeneral pull-left" ng-change="onSeleccionarEmpresa()">
+            <ui-select ng-model="root.empresaSeleccionada" style='width:200px;'   theme="select2" class="form-control selectgeneral pull-left" ng-change="onSeleccionarEmpresa()">
                 <ui-select-match  placeholder="Seleccionar empresa" >{{ $select.selected.getNombre()}}</ui-select-match>
                 <ui-select-choices  refresh-delay="0" repeat="empresa in empresas | filter:$select.search">
                     {{ empresa.getNombre() }}
@@ -16,7 +16,7 @@
 
         <div class="col-md-12 col-lg-2">
             <p class="input-group contenedorfiltrocombobox">
-            <ui-select ng-model="root.empresaSeleccionada.centroUtilidad"  theme="select2" class="form-control selectgeneral pull-left" ng-change="onSeleccionarUtilidad()">
+            <ui-select ng-model="root.empresaSeleccionada.centroUtilidad" style='width:200px;'  theme="select2" class="form-control selectgeneral pull-left" ng-change="onSeleccionarUtilidad()">
                 <ui-select-match  placeholder="Seleccionar centro utilidad">{{ $select.selected.getNombre() }}</ui-select-match>
                 <ui-select-choices  refresh-delay="0" repeat="centroUtilidad in root.empresaSeleccionada.getCentrosUtilidad() | filter:$select.search">
                     {{ centroUtilidad.getNombre() }}
@@ -27,7 +27,7 @@
 
         <div class="col-md-12 col-lg-2">
             <p class="input-group contenedorfiltrocombobox">
-            <ui-select ng-model="root.empresaSeleccionada.centroUtilidad.bodega"  theme="select2" class="form-control selectgeneral pull-left">
+            <ui-select ng-model="root.empresaSeleccionada.centroUtilidad.bodega" style='width:200px;'  theme="select2" class="form-control selectgeneral pull-left">
                 <ui-select-match  placeholder="Seleccionar bodega">{{ $select.selected.getNombre() }}</ui-select-match>
                 <ui-select-choices  refresh-delay="0" repeat="bodega in root.empresaSeleccionada.getCentroUtilidadSeleccionado().getBodega() | filter:$select.search">
                     {{ bodega.getNombre() }}

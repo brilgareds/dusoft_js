@@ -8,6 +8,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             EmpresaPedidoCliente.vendedores = [];
             EmpresaPedidoCliente.cotizaciones = [];
             EmpresaPedidoCliente.pedidos = [];
+            EmpresaPedidoCliente.productos = [];
 
 
             // Clientes
@@ -62,6 +63,19 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
 
             EmpresaPedidoCliente.limpiar_pedidos = function() {
                 this.pedidos = [];
+            };
+            
+            // Productos
+            EmpresaPedidoCliente.set_productos = function(producto) {
+                this.productos.push(producto);
+            };
+
+            EmpresaPedidoCliente.get_productos = function() {
+                return this.productos;
+            };
+
+            EmpresaPedidoCliente.limpiar_productos = function() {
+                this.productos = [];
             };
 
             return EmpresaPedidoCliente;

@@ -4,6 +4,7 @@ define(["angular", "js/controllers",
     "models/generacionpedidos/pedidosclientes/PedidoCliente",
     "models/generacionpedidos/pedidosclientes/ClientePedido",
     "models/generacionpedidos/pedidosclientes/VendedorPedidoCliente",
+    "models/generacionpedidos/pedidosclientes/ProductoPedidoCliente",
 ], function(angular, controllers) {
 
     controllers.controller('ListarPedidosClientesController', [
@@ -13,9 +14,6 @@ define(["angular", "js/controllers",
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter) {
 
             var that = this;
-
-
-
 
             $scope.gestionar_cotizacion_cliente = function() {
 

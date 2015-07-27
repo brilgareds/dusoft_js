@@ -17,7 +17,7 @@ define(["angular", "js/controllers",
                     var that = this;
                     //$rootScope.$emit("evento", {foo:"bar"});
 
-                    //         console.log(InduccionService)
+                   
                     /*
                      * @param 
                      * {Object} empresa: 
@@ -317,23 +317,7 @@ define(["angular", "js/controllers",
 
                                             }
                                     );
-                                    /*      Request.realizarRequest(API.INDUCCION.LISTAR_PRODUCTOS, "POST", obj, function(data) {
-                                     
-                                     bodegaSeleccionada.vaciarProductos();
-                                     $scope.productos = [];
-                                     
-                                     if (data.status === 200) {
-                                     console.log(data.obj.listar_productos.length)
-                                     if (data.obj.listar_productos.length === 0) {
-                                     that.paginaactual = 1;
-                                     } else {
-                                     that.renderListarProductos(data);
-                                     callback();
-                                     }
-                                     } else {
-                                     AlertService.mostrarMensaje("warning", data.msj)
-                                     }
-                                     });*/
+                                   
                                 }//Llave que cierra el ELSE que valida la (bodegaSeleccionada)
 
                             }//Llave que cierra el ELSE que valida el(centroUtilidadSeleccionado)
@@ -391,7 +375,7 @@ define(["angular", "js/controllers",
                             }
                         };
 
-                        console.log("producto ", producto.codigo_producto, " obj ", obj);
+                     
                         localStorageService.set("productoInduccion", obj);
                         $state.go("DetalleProductos");
 
@@ -484,7 +468,7 @@ define(["angular", "js/controllers",
 
 
                     var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
-                    //console.log(empresa)
+                   
                     var centroUtilidad;
                     var bodega;
                     if (!empresa) {
@@ -501,7 +485,7 @@ define(["angular", "js/controllers",
 
                         centroUtilidad = empresa.getCentroUtilidadSeleccionado();
                         bodega = empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada()
-                        console.log(bodega);
+                       
                         that.init(empresa, centroUtilidad, bodega, function() {
                             that.traerEmpresas(function() {
                                 that.traerCentroUtilidad(function() {

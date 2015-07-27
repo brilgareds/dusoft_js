@@ -1,50 +1,59 @@
 <div >
 
- 
-       
+
+
     <div class='panel-body'>
-        <div class="col-xs-3"  >
-            <ui-select ng-model="root.empresaSeleccionada"  theme="select2" class="form-control selectgeneral pull-left" ng-change="onSeleccionarEmpresa()">
+        <div class="col-md-12 col-lg-2">
+            <p class="input-group contenedorfiltrocombobox">
+
+            <ui-select ng-model="root.empresaSeleccionada" style='width:200px;'   theme="select2" class="form-control selectgeneral pull-left" ng-change="onSeleccionarEmpresa()">
                 <ui-select-match  placeholder="Seleccionar empresa" >{{ $select.selected.getNombre()}}</ui-select-match>
                 <ui-select-choices  refresh-delay="0" repeat="empresa in empresas | filter:$select.search">
                     {{ empresa.getNombre() }}
                 </ui-select-choices>
-            </ui-select>        
+            </ui-select> </p>       
         </div>
 
-        <div class="col-xs-3"  >
-            <ui-select ng-model="root.empresaSeleccionada.centroUtilidad"  theme="select2" class="form-control selectgeneral pull-left" ng-change="onSeleccionarUtilidad()">
+        <div class="col-md-12 col-lg-2">
+            <p class="input-group contenedorfiltrocombobox">
+            <ui-select ng-model="root.empresaSeleccionada.centroUtilidad" style='width:200px;'  theme="select2" class="form-control selectgeneral pull-left" ng-change="onSeleccionarUtilidad()">
                 <ui-select-match  placeholder="Seleccionar centro utilidad">{{ $select.selected.getNombre() }}</ui-select-match>
                 <ui-select-choices  refresh-delay="0" repeat="centroUtilidad in root.empresaSeleccionada.getCentrosUtilidad() | filter:$select.search">
                     {{ centroUtilidad.getNombre() }}
                 </ui-select-choices>
-            </ui-select>        
+            </ui-select>       
+            </p>
         </div>
 
-        <div class="col-xs-3"  >
-            <ui-select ng-model="root.empresaSeleccionada.centroUtilidad.bodega"  theme="select2" class="form-control selectgeneral pull-left">
+        <div class="col-md-12 col-lg-2">
+            <p class="input-group contenedorfiltrocombobox">
+            <ui-select ng-model="root.empresaSeleccionada.centroUtilidad.bodega" style='width:200px;'  theme="select2" class="form-control selectgeneral pull-left">
                 <ui-select-match  placeholder="Seleccionar bodega">{{ $select.selected.getNombre() }}</ui-select-match>
                 <ui-select-choices  refresh-delay="0" repeat="bodega in root.empresaSeleccionada.getCentroUtilidadSeleccionado().getBodega() | filter:$select.search">
                     {{ bodega.getNombre() }}
                 </ui-select-choices>
-            </ui-select>        
+            </ui-select>      
+            </p>
         </div>
 
-        <div class="col-xs-3"  >
+        <div class="col-lg-2 pull-right">
+            <p class="input-group">
 
-            <div class="input-group">
+                <input type="text" class="form-control" ng-model="buscar.descripcion" ng-keypress="onBuscarProductos($event)" placeholder="Buscar" name="srch-term" id="srch-term" />
+                <span class="input-group-btn">
 
-                <input type="text" class="form-control" placeholder="Buscar producto" ng-model="buscar.descripcion" ng-keypress="onBuscarProductos($event)">
-                <span class="input-group-addon"><li class="glyphicon glyphicon-search" ng-click="onListarProductos()"></li></span>
-            </div>
+                    <button class="btn btn-default" type="submit" ng-click="onListarProductos()"><i class="glyphicon glyphicon-search"></i></button>
+                </span>
+            </p>
         </div>
 
-</div>
+
+    </div>
 
     <div class="table-responsive" >
         <div class="defaultGrid grid-responsive" ng-grid="gridListaProductos" > </div>
     </div>
-
+    <br>
     <div class="row text-center">
         <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 0" ng-click="paginaAnterior()">
             <span class="glyphicon glyphicon-chevron-left" ></span>
@@ -53,9 +62,9 @@
             <span class="glyphicon glyphicon-chevron-right" ></span>
         </button>
     </div>
-    
-    
-      
+
+
+
 </div>
 </div>
 

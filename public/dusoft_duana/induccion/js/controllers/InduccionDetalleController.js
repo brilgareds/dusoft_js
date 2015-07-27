@@ -14,21 +14,49 @@ define(["angular", "js/controllers",
                         localStorageService, $modal, API,
                         EmpresaInduccion, CentroUtilidadesInduccion, BodegasInduccion, ProductoInduccion, AlertService,$state,InduccionService) {
                             
-                            
+                          
                         var that = this; 
-                        that.detalleProducto = [];
-                       // console.log(localStorageService.get("productoInduccion"))
+
+                        $scope.detalleProductos ;
                        
                         that.detalladoProductosInduccion = localStorageService.get("productoInduccion");
-                       // $scope.nombres = "hola mundo";
-                       // InduccionService.consultarDetalleProducto("45","555569asasasa","44444444455556","11111",1);
                         
-                      
-                    /*    console.log(that.detalladoProductosInduccion.codigoProducto)
-                        console.log(that.detalladoProductosInduccion.empresaId)
-                        console.log(that.detalladoProductosInduccion.centroUtilidad)
-                        console.log(that.detalladoProductosInduccion.bodega)
-                        */
+                     
+                        that.renderListarProductos = function(data) {
+                            
+                          
+                        for (var i in data.obj.listar_productos) {
+
+                            var _producto = data.obj.listar_productos[i];
+                           //console.log(_producto)
+                            var producto = ProductoInduccion.get(_producto.codigo_producto, _producto.descripcion, _producto.existencia);
+                            
+                            producto.setIva(_producto.porc_iva).setCosto(_producto.costo).setPrecioVenta(_producto.precio_venta);
+                            //that.detalladoProductosInduccion.agregar.agregarProducto(producto)
+                            
+                            
+                          
+                            $scope.detalleProductos = producto;
+       
+                        }
+                        
+                        
+                    };
+                    
+                       // console.log(that.detalladoProductosInduccion)
+                        $scope.detalleProducto = InduccionService.consultarDetalleProducto(
+                                that.detalladoProductosInduccion.url,
+                                that.detalladoProductosInduccion,
+                                function(data){
+                                    
+                                    
+                                   // console.log(data)
+                                    that.renderListarProductos(data);
+                                    
+                                 //   console.log(data)
+                                }
+                        );
+                     
                       
                         that.init = function(){
 

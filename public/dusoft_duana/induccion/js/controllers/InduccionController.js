@@ -9,15 +9,15 @@ define(["angular", "js/controllers",
                 "localStorageService", "$modal",
                 "API", "EmpresaInduccion",
                 "CentroUtilidadesInduccion", "BodegasInduccion",
-                "ProductoInduccion", "AlertService","$state",
+                "ProductoInduccion", "AlertService", "$state", "InduccionService",
                 function($scope, $rootScope, Usuario, Request,
                         localStorageService, $modal, API,
-                        EmpresaInduccion, CentroUtilidadesInduccion, BodegasInduccion, ProductoInduccion, AlertService,$state) {
+                        EmpresaInduccion, CentroUtilidadesInduccion, BodegasInduccion, ProductoInduccion, AlertService, $state, InduccionService) {
 
                     var that = this;
                     //$rootScope.$emit("evento", {foo:"bar"});
-                   
-          //         console.log(InduccionService)
+
+                    //         console.log(InduccionService)
                     /*
                      * @param 
                      * {Object} empresa: 
@@ -58,7 +58,7 @@ define(["angular", "js/controllers",
                         that.traerEmpresas(function() {
                         });
                     };
-                    
+
                     /**
                      * 
                      * @param {function} callback
@@ -84,7 +84,7 @@ define(["angular", "js/controllers",
                             }
                         });
                     };
-                    
+
                     /**
                      * 
                      * @param {JSON} data
@@ -291,25 +291,49 @@ define(["angular", "js/controllers",
                                                         centroUtilidad: centroUtilidadSeleccionado.getCodigo(),
                                                         bodega: bodegaSeleccionada.getCodigo(),
                                                         descripcion: $scope.buscar.descripcion,
-                                                        pagina: that.paginaactual
+                                                        pagina: that.paginaactual,
+                                                        codigoProducto: ''
                                                     }
                                         }
                                     };
-                                    Request.realizarRequest(API.INDUCCION.LISTAR_PRODUCTOS, "POST", obj, function(data) {
-                                        bodegaSeleccionada.vaciarProductos();
-                                        $scope.productos = [];
+                                    // console.log(that.detalladoProductosInduccion)
+                                    InduccionService.consultarDetalleProducto(
+                                            API.INDUCCION.LISTAR_PRODUCTOS,
+                                            obj,
+                                            function(data) {
+                                                bodegaSeleccionada.vaciarProductos();
+                                                if (data.status === 200) {
+                                                    //console.log(data.obj.listar_productos.length)
+                                                    if (data.obj.listar_productos.length === 0) {
+                                                        that.paginaactual = 1;
+                                                    } else {
+                                                        that.renderListarProductos(data);
+                                                        callback();
 
-                                        if (data.status === 200) {
-                                            if (data.obj.listar_productos.length === 0) {
-                                                that.paginaactual = 1;
-                                            } else {
-                                                that.renderListarProductos(data);
-                                                callback();
+                                                    }
+                                                } else {
+                                                    AlertService.mostrarMensaje("warning", data.msj)
+                                                }
+
                                             }
-                                        } else {
-                                            AlertService.mostrarMensaje("warning", data.msj)
-                                        }
-                                    });
+                                    );
+                                   /*      Request.realizarRequest(API.INDUCCION.LISTAR_PRODUCTOS, "POST", obj, function(data) {
+                                             
+                                    bodegaSeleccionada.vaciarProductos();
+                                     $scope.productos = [];
+                                     
+                                     if (data.status === 200) {
+                                         console.log(data.obj.listar_productos.length)
+                                     if (data.obj.listar_productos.length === 0) {
+                                     that.paginaactual = 1;
+                                     } else {
+                                     that.renderListarProductos(data);
+                                     callback();
+                                     }
+                                     } else {
+                                     AlertService.mostrarMensaje("warning", data.msj)
+                                     }
+                                     });*/
                                 }//Llave que cierra el ELSE que valida la (bodegaSeleccionada)
 
                             }//Llave que cierra el ELSE que valida el(centroUtilidadSeleccionado)
@@ -343,27 +367,36 @@ define(["angular", "js/controllers",
 
                         }
                     };
-                    
-                    
-                    $scope.detalleProducto = function(producto){
-                       
-                      // console.log(producto)
-                         var empresaSeleccionada = $scope.root.empresaSeleccionada;
-                           var centroUtilidadSeleccionado = empresaSeleccionada.getCentroUtilidadSeleccionado();
-                             var bodegaSeleccionada = centroUtilidadSeleccionado.getBodegaSeleccionada();
-                      //console.log(producto)*/
-                       var detalladoProducto = {
-                                                codigoProducto:producto.getCodigoProducto(),
-                                                empresaId: $scope.root.empresaSeleccionada.getCodigo(),
-                                                centroUtilidad: centroUtilidadSeleccionado.getCodigo(),
-                                                bodega: bodegaSeleccionada.getCodigo(),
-                                                /*nombre:producto.getDescripcion(),
-                                                existencia:producto.getExistencia()*/
-                                                };
-                                            
+
+
+                    $scope.detalleProducto = function(producto) {
+
+                      
+                        var empresaSeleccionada = $scope.root.empresaSeleccionada;
+                        var centroUtilidadSeleccionado = empresaSeleccionada.getCentroUtilidadSeleccionado();
+                        var bodegaSeleccionada = centroUtilidadSeleccionado.getBodegaSeleccionada();
+
+                        var obj = {
+                            
+                            url: API.INDUCCION.LISTAR_PRODUCTOS,
+                            session: $scope.session,
+                            data: {
+                                induccion:
+                                        {
+                                            empresaId: $scope.root.empresaSeleccionada.getCodigo(),
+                                            centroUtilidad: centroUtilidadSeleccionado.getCodigo(),
+                                            bodega: bodegaSeleccionada.getCodigo(),
+                                            descripcion: $scope.buscar.descripcion,
+                                            pagina: that.paginaactual,
+                                            codigoProducto: producto.codigo_producto
+                                        }
+                            }
+                        };
+
+
                         $state.go("DetalleProductos");
-                        
-                      localStorageService.set("productoInduccion",detalladoProducto);
+
+                        localStorageService.set("productoInduccion", obj);
                     };
                     /**
                      * @author Cristian Ardila
@@ -379,9 +412,9 @@ define(["angular", "js/controllers",
                             {field: 'getPrecioVenta()', displayName: 'Venta', width: "10%"},
                             {field: 'getCodigoProducto()', displayName: 'Codigo producto', width: "10%"},
                             {field: 'getDescripcion()', displayName: 'Descripcion', width: "10%"},
-                            {field: 'getExistencia()', displayName: 'Existencia', width: "10%"},                       
-                            {field: 'getExistencia()', 
-                                displayName: "Detalle", 
+                            {field: 'getExistencia()', displayName: 'Existencia', width: "10%"},
+                            {field: 'getExistencia()',
+                                displayName: "Detalle",
                                 cellClass: "txt-center dropdown-button",
                                 cellTemplate: '<div class="btn-group">\
                                  <button  \
@@ -442,26 +475,27 @@ define(["angular", "js/controllers",
                     };
 
 
-                   
+
                     var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
                     //console.log(empresa)
-                    var centroUtilidad ;
+                    var centroUtilidad;
                     var bodega;
                     if (!empresa) {
                         $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una empresa valida para consultar productos", tipo: "warning"});
-                        
+
                     } else if (!empresa.getCentroUtilidadSeleccionado()) {
                         $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene un centro de utilidad valido para para consultar productos.", tipo: "warning"});
-                        
+
                     } else if (!empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada()) {
                         $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una bodega valida para consultar productos", tipo: "warning"});
-                        
+
                     } else {
                         
+                       
                         centroUtilidad = empresa.getCentroUtilidadSeleccionado();
                         bodega = empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada()
-                        
-                        that.init(empresa, centroUtilidad, bodega,  function(){
+                         console.log(bodega);
+                        that.init(empresa, centroUtilidad, bodega, function() {
                             that.traerEmpresas(function() {
                                 that.traerCentroUtilidad(function() {
                                     that.traerBodega(function() {

@@ -16,6 +16,8 @@ define(["angular",
             
             $scope.rootPedidosTempFarmacias = {};
             
+            var that = this;
+            
             $scope.rootPedidosTempFarmacias.lista_pedidos_temporales_farmacias = {
                 data: 'rootPedidosTempFarmacias.Empresa.getPedidosTemporalesFarmacia()',
                 enableColumnResize: true,
@@ -41,6 +43,64 @@ define(["angular",
                 ]
 
             };
+            
+            
+            that.consultarEncabezadosPedidos = function(obj, callback) {
+
+                var url = API.PEDIDOS.LISTADO_PEDIDOS_TEMPORALES_FARMACIAS;
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        console.log("Consulta exitosa: ", data.msj);
+
+                        if (callback !== undefined && callback !== "" && callback !== 0) {
+                            callback(data);
+                        }
+                    }
+                    else {
+                        console.log("Error en la consulta: ", data.msj);
+                        
+                        if (callback !== undefined && callback !== "" && callback !== 0) {
+                            callback(data);
+                        }
+                    }
+                });
+            };
+            
+            that.renderPedidosFarmacias = function(data, paginando) {
+
+                $scope.rootPedidosTempFarmacias.items = data.pedidos_farmacias.length;
+
+                //se valida que hayan registros en una siguiente pagina
+                if (paginando && $scope.rootPedidosTempFarmacias.items === 0) {
+                    if ($scope.rootPedidosTempFarmacias.paginaactual > 1) {
+                        $scope.rootPedidosTempFarmacias.paginaactual--;
+                    }
+                    AlertService.mostrarMensaje("warning", "No se encontraron más registros");
+                    return;
+                }
+
+                $scope.rootPedidosTempFarmacias.Empresa.vaciarPedidosTemporalesFarmacia();
+
+                if (data.pedidos_farmacias.length > 0)
+                {
+                    $scope.rootPedidosTempFarmacias.Empresa.setCodigo(data.pedidos_farmacias[0].empresa_destino);
+                }
+
+                for (var i in data.pedidos_farmacias) {
+
+                    var obj = data.pedidos_farmacias[i];
+
+                    var pedido = that.crearPedido(obj);
+
+                    $scope.rootPedidosTempFarmacias.Empresa.agregarPedidoTemporalFarmacia(pedido);
+
+                }
+
+            };
+            
+            
             
             /*that.pedido = PedidoVenta.get();
 

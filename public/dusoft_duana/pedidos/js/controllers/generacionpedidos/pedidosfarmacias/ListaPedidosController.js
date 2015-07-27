@@ -27,14 +27,14 @@ define(["angular",
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
 
-            
+
             var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
-            
+
             $scope.rootPedidosFarmacias.empresaSeleccionada = EmpresaPedidoFarmacia.get(empresa.getNombre(), empresa.getCodigo());
             $scope.rootPedidosFarmacias.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
 
             //selecciona la empresa del usuario
-            
+
 
             $scope.rootPedidosFarmacias.ultima_busqueda = {};
 
@@ -171,7 +171,7 @@ define(["angular",
                         obj.farmacia_id,
                         obj.bodega_id,
                         obj.nombre_farmacia
-                );
+                        );
 
                 var centroUtilidad = CentroUtilidadPedidoFarmacia.get(obj.nombre_centro_utilidad, obj.centro_utilidad);
                 var bodega = BodegaPedidoFarmacia.get(obj.nombre_bodega, obj.bodega_id);
@@ -193,12 +193,8 @@ define(["angular",
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
 
-                    if (data.status === 200) {
-                        callback(data);
-                    }
-                    else {
-                        AlertService.mostrarMensaje("warning", "No se encontraron registros");
-                    }
+                     callback(data);
+
                 });
             };
 
@@ -208,17 +204,7 @@ define(["angular",
              * +Descripcion: function helper que prepara los parametros y hace el llamado para buscar los encabezados de pedidos de farmacia
              * depende de self.consultarEncabezados() y self.renderPedidos()
              */
-            self.buscarPedidos = function() {
-                
-                //las empresas del usuario (de la session) son de tipo Empresa, por lo tanto se requiere asegurar que sean de tipo EmpresaPedidoFarmacia para acceder a los metodos 
-                //de esta ultima
-                
-                $scope.rootPedidosFarmacias.empresaSeleccionada = EmpresaPedidoFarmacia.get(
-                    $scope.rootPedidosFarmacias.empresaSeleccionada.getNombre(),
-                    $scope.rootPedidosFarmacias.empresaSeleccionada.getCodigo()
-                );
-                
-                $scope.rootPedidosFarmacias.empresaSeleccionada.vaciarPedidos();
+            self.buscarPedidos = function(callback) {
 
                 var obj = {
                     session: $scope.rootPedidosFarmacias.session,
@@ -233,8 +219,33 @@ define(["angular",
                 };
 
                 self.consultarEncabezados(obj, function(data) {
+                    
+                    if(data.status === 200){
+                        if(data.obj.pedidos_farmacias.length > 0){
+                            
+                            /*las empresas del usuario (de la session) son de tipo Empresa, por lo tanto se requiere asegurar 
+                              que sean de tipo EmpresaPedidoFarmacia para acceder a los metodos 
+                              de esta ultima*/
 
-                    self.renderPedidos(data.obj.pedidos_farmacias);
+                            $scope.rootPedidosFarmacias.empresaSeleccionada = EmpresaPedidoFarmacia.get(
+                                    $scope.rootPedidosFarmacias.empresaSeleccionada.getNombre(),
+                                    $scope.rootPedidosFarmacias.empresaSeleccionada.getCodigo()
+                            );
+
+
+                            self.renderPedidos(data.obj.pedidos_farmacias);
+
+                            if(callback){
+                                callback(true);
+                            }
+                        } else {
+                            if(callback){
+                                callback(false);
+                            }
+                        }
+                    } else {
+                       AlertService.mostrarMensaje("warning", "Ha ocurrido un error");
+                    }
 
                 });
             };
@@ -256,7 +267,7 @@ define(["angular",
              */
 
             $scope.onBuscarPedidos = function() {
-
+                $scope.rootPedidosFarmacias.paginaactual = 1;
                 self.buscarPedidos();
             };
 
@@ -267,8 +278,35 @@ define(["angular",
              */
             $scope.onCampoBuscarPedidos = function(event) {
                 if (event.which === 13) {
+                    $scope.rootPedidosFarmacias.paginaactual = 1;
                     self.buscarPedidos();
                 }
+            };
+
+            /*
+             * @Author: Eduar
+             * +Descripcion: function helper que permite paginar
+             */
+            $scope.paginaAnterior = function() {
+                if ($scope.rootPedidosFarmacias.paginaactual === 1) {
+                    return;
+                }
+
+                $scope.rootPedidosFarmacias.paginaactual--;
+                self.buscarPedidos();
+            };
+            
+            /*
+             * @Author: Eduar
+             * +Descripcion: function helper que permite paginar
+             */
+            $scope.paginaSiguiente = function() {
+                $scope.rootPedidosFarmacias.paginaactual++;
+                self.buscarPedidos(function(resultado){
+                    if(!resultado){
+                        $scope.rootPedidosFarmacias.paginaactual--;
+                    }
+                });
             };
 
             self.buscarPedidos();

@@ -31,7 +31,8 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-3">
-                                    <p class="input-group col-md-12">                                      
+                                    <p class="input-group col-md-12">    
+                                    <h4>Laboratorio</h4>
                                     <ui-select ng-model="datos_form.laboratorio" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_laboratorio()">
                                         <ui-select-match  placeholder="Seleccionar laboratorio">{{ $select.selected.get_nombre() }}</ui-select-match>                                        
                                         <ui-select-choices repeat="laboratorio in  Empresa.get_laboratorios() | filter:$select.search">
@@ -41,7 +42,7 @@
                                     </p>
                                 </div>
 
-                                <div class="col-md-3 pull-right">
+                                <div class="col-md-3 pull-right" style="margin-top: 35px;">
                                     <p class="input-group">
                                         <input type="text" class="form-control" ng-keypress="buscador_productos($event, termino_busqueda);"  ng-model="datos_form.termino_busqueda" placeholder="Buscar" name="" id="" />
                                         <span class="input-group-btn">

@@ -27,7 +27,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     clases_tipo_producto: ["", "label label-success", "label label-danger", "label label-info", "label label-warning", "label label-default"],
                     tipo_producto: '',
                     seleccion_tipo_producto: '- Todos -',
-                    laboratorio: Laboratorio.get(),
+                    laboratorio: Laboratorio.get('',''),
                     paginando: false,
                     cantidad_items: 0,
                     termino_busqueda: "",
@@ -40,7 +40,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             });
 
             $rootScope.$on('cerrar_gestion_productos_clientesCompleto', function(e, parametros) {
-                $scope.datos_form = null;
+                //$scope.datos_form = null;
                 $scope.$$watchers = null;
             });
 

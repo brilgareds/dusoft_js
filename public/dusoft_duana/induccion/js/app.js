@@ -28,7 +28,7 @@ define([
     "services/InduccionService"
 ], function(angular) {
 
-    /* App Module and its dependencies */
+        /* App Module and its dependencies */
     var induccion = angular.module('induccion', [
         'ui.router',
         'controllers',

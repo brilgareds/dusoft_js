@@ -9,62 +9,63 @@ define(["angular", "js/controllers",
                 "localStorageService", "$modal",
                 "API", "EmpresaInduccion",
                 "CentroUtilidadesInduccion", "BodegasInduccion",
-                "ProductoInduccion", "AlertService","$state","InduccionService",
+                "ProductoInduccion", "AlertService", "$state", "InduccionService",
                 function($scope, $rootScope, Usuario, Request,
                         localStorageService, $modal, API,
-                        EmpresaInduccion, CentroUtilidadesInduccion, BodegasInduccion, ProductoInduccion, AlertService,$state,InduccionService) {
-                            
-                          
-                        var that = this; 
+                        EmpresaInduccion, CentroUtilidadesInduccion, BodegasInduccion, ProductoInduccion, AlertService, $state, InduccionService) {
 
-                        $scope.detalleProductos ;
-                       
-                        that.detalladoProductosInduccion = localStorageService.get("productoInduccion");
-                        
-                     
-                        that.renderListarProductos = function(data) {
-                            
-                          
+
+                    var that = this;
+
+                    that.renderListarProductos = function(data) {
+
+
                         for (var i in data.obj.listar_productos) {
 
                             var _producto = data.obj.listar_productos[i];
-                           //console.log(_producto)
+                  
                             var producto = ProductoInduccion.get(_producto.codigo_producto, _producto.descripcion, _producto.existencia);
-                            
+
                             producto.setIva(_producto.porc_iva).setCosto(_producto.costo).setPrecioVenta(_producto.precio_venta);
-                            //that.detalladoProductosInduccion.agregar.agregarProducto(producto)
-                            
-                            
-                          
+
                             $scope.detalleProductos = producto;
-       
+
                         }
-                        
-                        
+
+                    };
+
+
+                    that.init = function() {
+                        $scope.session = {
+                            usuario_id: Usuario.getUsuarioActual().getId(),
+                            auth_token: Usuario.getUsuarioActual().getToken()
+                        };
+
+                        $scope.detalleProductos;
+
+                        that.detalladoProductosInduccion = localStorageService.get("productoInduccion");
+                        that.detalladoProductosInduccion.session = $scope.session;
                     };
                     
-                       // console.log(that.detalladoProductosInduccion)
-                        $scope.detalleProducto = InduccionService.consultarDetalleProducto(
-                                that.detalladoProductosInduccion.url,
-                                that.detalladoProductosInduccion,
-                                function(data){
-                                    
-                                    
-                                   // console.log(data)
-                                    that.renderListarProductos(data);
-                                    
-                                 //   console.log(data)
-                                }
-                        );
-                     
-                      
-                        that.init = function(){
+                    
+                    $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+                        $scope.$$watchers = null;
+                    });
 
-                        };
-                        
-                        
-                        that.init();
-                        
+
+                    that.init();
+
+
+                    $scope.detalleProducto = InduccionService.consultarDetalleProducto(
+                            that.detalladoProductosInduccion.url,
+                            that.detalladoProductosInduccion,
+                            function(data) {
+                                
+                                that.renderListarProductos(data);
+
+                            }
+                    );
+
 
                 }]);
 

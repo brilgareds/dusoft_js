@@ -296,14 +296,14 @@ define(["angular", "js/controllers",
                                                     }
                                         }
                                     };
-                                    // console.log(that.detalladoProductosInduccion)
+
                                     InduccionService.consultarDetalleProducto(
                                             API.INDUCCION.LISTAR_PRODUCTOS,
                                             obj,
                                             function(data) {
                                                 bodegaSeleccionada.vaciarProductos();
                                                 if (data.status === 200) {
-                                                    //console.log(data.obj.listar_productos.length)
+
                                                     if (data.obj.listar_productos.length === 0) {
                                                         that.paginaactual = 1;
                                                     } else {
@@ -317,13 +317,13 @@ define(["angular", "js/controllers",
 
                                             }
                                     );
-                                   /*      Request.realizarRequest(API.INDUCCION.LISTAR_PRODUCTOS, "POST", obj, function(data) {
-                                             
-                                    bodegaSeleccionada.vaciarProductos();
+                                    /*      Request.realizarRequest(API.INDUCCION.LISTAR_PRODUCTOS, "POST", obj, function(data) {
+                                     
+                                     bodegaSeleccionada.vaciarProductos();
                                      $scope.productos = [];
                                      
                                      if (data.status === 200) {
-                                         console.log(data.obj.listar_productos.length)
+                                     console.log(data.obj.listar_productos.length)
                                      if (data.obj.listar_productos.length === 0) {
                                      that.paginaactual = 1;
                                      } else {
@@ -371,15 +371,13 @@ define(["angular", "js/controllers",
 
                     $scope.detalleProducto = function(producto) {
 
-                      
+
                         var empresaSeleccionada = $scope.root.empresaSeleccionada;
                         var centroUtilidadSeleccionado = empresaSeleccionada.getCentroUtilidadSeleccionado();
                         var bodegaSeleccionada = centroUtilidadSeleccionado.getBodegaSeleccionada();
 
                         var obj = {
-                            
                             url: API.INDUCCION.LISTAR_PRODUCTOS,
-                            session: $scope.session,
                             data: {
                                 induccion:
                                         {
@@ -387,17 +385,25 @@ define(["angular", "js/controllers",
                                             centroUtilidad: centroUtilidadSeleccionado.getCodigo(),
                                             bodega: bodegaSeleccionada.getCodigo(),
                                             descripcion: $scope.buscar.descripcion,
-                                            pagina: that.paginaactual,
+                                            pagina: 1,
                                             codigoProducto: producto.codigo_producto
                                         }
                             }
                         };
 
-
+                        console.log("producto ", producto.codigo_producto, " obj ", obj);
+                        localStorageService.set("productoInduccion", obj);
                         $state.go("DetalleProductos");
 
-                        localStorageService.set("productoInduccion", obj);
                     };
+
+
+                    $scope.retornarPaginaInicio = function() {
+
+                        $state.go("ListarProductos");
+                    };
+
+
                     /**
                      * @author Cristian Ardila
                      * +Descripcion: objeto ng-grid
@@ -473,7 +479,12 @@ define(["angular", "js/controllers",
                         that.traerProductos(function() {
                         });
                     };
-
+                    
+                    
+                    $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+                        $scope.root = {};
+                        $scope.$$watchers = null;
+                    });
 
 
                     var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
@@ -490,11 +501,11 @@ define(["angular", "js/controllers",
                         $rootScope.$emit("onIrAlHome", {mensaje: "El usuario no tiene una bodega valida para consultar productos", tipo: "warning"});
 
                     } else {
-                        
-                       
+
+
                         centroUtilidad = empresa.getCentroUtilidadSeleccionado();
                         bodega = empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada()
-                         console.log(bodega);
+                        console.log(bodega);
                         that.init(empresa, centroUtilidad, bodega, function() {
                             that.traerEmpresas(function() {
                                 that.traerCentroUtilidad(function() {

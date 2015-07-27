@@ -32,8 +32,8 @@
 }
 
 .h4MarginTopBottom {
-margin-top: 0px;
-margin-bottom: 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
 }
 
 .marginBottom5{
@@ -99,7 +99,7 @@ margin-bottom: 0px;
 }
 
 .modal .modal-dialog {
-   /*width: 800px;*/
+    /*width: 800px;*/
 }
 
 .modal-content{
@@ -115,7 +115,7 @@ margin-bottom: 0px;
 }
 
 label.lbl_editar_producto{
-      float:left;
+    float:left;
 }
 
 .panel-action{
@@ -206,27 +206,27 @@ label.lbl_editar_producto{
 /* Botón Separación Finalizada */
 
 .btn-separacionfinalizada { 
-  color: #FFFFFF; 
-  background-color: #F28EF2; 
-  border-color: #F28EF2; 
+    color: #FFFFFF; 
+    background-color: #F28EF2; 
+    border-color: #F28EF2; 
 } 
- 
+
 .btn-separacionfinalizada:hover, 
 .btn-separacionfinalizada:focus, 
 .btn-separacionfinalizada:active, 
 .btn-separacionfinalizada.active, 
 .open .dropdown-toggle.btn-separacionfinalizada { 
-  color: #FFFFFF; 
-  background-color: #D954D0; 
-  border-color: #F28EF2; 
+    color: #FFFFFF; 
+    background-color: #D954D0; 
+    border-color: #F28EF2; 
 } 
- 
+
 .btn-separacionfinalizada:active, 
 .btn-separacionfinalizada.active, 
 .open .dropdown-toggle.btn-separacionfinalizada { 
-  background-image: none; 
+    background-image: none; 
 } 
- 
+
 .btn-separacionfinalizada.disabled, 
 .btn-separacionfinalizada[disabled], 
 fieldset[disabled] .btn-separacionfinalizada, 
@@ -242,39 +242,39 @@ fieldset[disabled] .btn-separacionfinalizada:active,
 .btn-separacionfinalizada.disabled.active, 
 .btn-separacionfinalizada[disabled].active, 
 fieldset[disabled] .btn-separacionfinalizada.active { 
-  background-color: #F28EF2; 
-  border-color: #F28EF2; 
+    background-color: #F28EF2; 
+    border-color: #F28EF2; 
 } 
- 
+
 .btn-separacionfinalizada .badge { 
-  color: #F28EF2; 
-  background-color: #FFFFFF; 
+    color: #F28EF2; 
+    background-color: #FFFFFF; 
 }
 
 /* Botón En Auditoria */
 
 .btn-enauditoria { 
-  color: #FFFFFF; 
-  background-color: #CFDB78; 
-  border-color: #CFDB78; 
+    color: #FFFFFF; 
+    background-color: #CFDB78; 
+    border-color: #CFDB78; 
 } 
- 
+
 .btn-enauditoria:hover, 
 .btn-enauditoria:focus, 
 .btn-enauditoria:active, 
 .btn-enauditoria.active, 
 .open .dropdown-toggle.btn-enauditoria { 
-  color: #FFFFFF; 
-  background-color: #BCC483; 
-  border-color: #CFDB78; 
+    color: #FFFFFF; 
+    background-color: #BCC483; 
+    border-color: #CFDB78; 
 } 
- 
+
 .btn-enauditoria:active, 
 .btn-enauditoria.active, 
 .open .dropdown-toggle.btn-enauditoria { 
-  background-image: none; 
+    background-image: none; 
 } 
- 
+
 .btn-enauditoria.disabled, 
 .btn-enauditoria[disabled], 
 fieldset[disabled] .btn-enauditoria, 
@@ -290,13 +290,13 @@ fieldset[disabled] .btn-enauditoria:active,
 .btn-enauditoria.disabled.active, 
 .btn-enauditoria[disabled].active, 
 fieldset[disabled] .btn-enauditoria.active { 
-  background-color: #CFDB78; 
-  border-color: #CFDB78; 
+    background-color: #CFDB78; 
+    border-color: #CFDB78; 
 } 
- 
+
 .btn-enauditoria .badge { 
-  color: #CFDB78; 
-  background-color: #FFFFFF; 
+    color: #CFDB78; 
+    background-color: #FFFFFF; 
 }
 
 .avatarUsuario{
@@ -306,12 +306,12 @@ fieldset[disabled] .btn-enauditoria.active {
 }
 
 .app-modal-window-pdf .modal-dialog{
-  width: 350px;
+    width: 350px;
 }
 
 .background_bloqueo_precio {
 
-  background-color : #64FCAB;
+    background-color : #64FCAB;
 
 }
 
@@ -347,6 +347,30 @@ button.btnTipo{
 
 .center-y{
     vertical-align:middle;
+}
+
+.label-red {
+    background: #FF6961;
+}
+
+.btn-xxs {
+    padding: 1px 5px;
+    font-size: 75%;
+    line-height: 1.5;
+    border-radius: 3px;
+    font-weight: 700;
+}
+
+.btn-grey:hover,.btn-grey:focus,.btn-grey:active,.btn-grey.active,.open .dropdown-toggle.btn-grey{
+    color:#fff;
+    background-color: #999;
+    border-color: #999;
+}
+
+.btn-grey {
+    color: #fff;
+    background-color: #999;
+    border-color: #999;
 }
 
 

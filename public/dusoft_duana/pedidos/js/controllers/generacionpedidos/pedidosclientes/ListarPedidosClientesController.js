@@ -5,6 +5,7 @@ define(["angular", "js/controllers",
     "models/generacionpedidos/pedidosclientes/ClientePedido",
     "models/generacionpedidos/pedidosclientes/VendedorPedidoCliente",
     "models/generacionpedidos/pedidosclientes/ProductoPedidoCliente",
+    "models/generacionpedidos/pedidosclientes/Laboratorio",
 ], function(angular, controllers) {
 
     controllers.controller('ListarPedidosClientesController', [

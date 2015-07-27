@@ -323,7 +323,7 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
     var that = this;
 
     var args = req.body.data;
-    
+
     if (args.pedidos_clientes === undefined || args.pedidos_clientes.empresa_id === undefined || args.pedidos_clientes.centro_utilidad_id === undefined || args.pedidos_clientes.bodega_id === undefined) {
         res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id No Estan Definidos', 404, {}));
         return;
@@ -359,17 +359,22 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
     var centro_utilidad = args.pedidos_clientes.centro_utilidad_id;
     var bodega = args.pedidos_clientes.bodega_id;
     var contrato_cliente = args.pedidos_clientes.contrato_cliente_id;
-    var termino_busqueda = args.pedidos_clientes.termino_busqueda;
+   
+    var filtro = {
+        tipo_producto: (args.pedidos_clientes.tipo_producto === undefined) ? '' : args.pedidos_clientes.tipo_producto,
+        termino_busqueda: args.pedidos_clientes.termino_busqueda,
+        laboratorio_id : (args.pedidos_clientes.laboratorio_id === undefined) ? '' : args.pedidos_clientes.laboratorio_id
+    };
     var pagina = args.pedidos_clientes.pagina_actual;
 
-    that.m_pedidos_clientes.listar_productos(empresa_id, centro_utilidad, bodega, contrato_cliente, termino_busqueda, pagina, function(err, lista_productos) {
+    that.m_pedidos_clientes.listar_productos(empresa_id, centro_utilidad, bodega, contrato_cliente, filtro, pagina, function(err, lista_productos) {
         if (err) {
-            res.send(G.utils.r(req.url, 'Error Interno', 500, { pedidos_clientes : { lista_productos: [] } }));
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: {lista_productos: []}}));
             return;
         } else {
-            res.send(G.utils.r(req.url, 'Lista Productos', 200, {pedidos_clientes : {lista_productos: lista_productos}}));
+            res.send(G.utils.r(req.url, 'Lista Productos', 200, {pedidos_clientes: {lista_productos: lista_productos}}));
             return;
-        }       
+        }
     });
 
 

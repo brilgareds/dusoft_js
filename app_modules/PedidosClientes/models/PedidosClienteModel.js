@@ -878,8 +878,19 @@ PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(nu
  * Author : Camilo Orozco
  * Descripcion :  SQL listado de productos para la seleccion de medicamentos en una cotizacion o en un pedido de cliente.
  */
-PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pagina, callback) {
-
+PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, filtro, pagina, callback) {
+    
+    var sql_aux = "";
+    var termino_busqueda = filtro.termino_busqueda;
+    var tipo_producto = filtro.tipo_producto;
+    var laboratorio_id = filtro.laboratorio_id;
+    
+    if(tipo_producto !== '')
+        sql_aux = " and b.tipo_producto_id = '"+tipo_producto+"'";
+    
+    if(laboratorio_id !== '')
+        sql_aux += " and f.clase_id = '"+laboratorio_id+"'";
+        
     var sql = " select \
                 a.codigo_producto,\
                 fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
@@ -894,9 +905,10 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                 case when coalesce((a.existencia - h.cantidad_total_pendiente)::integer, 0) < 0 then 0 \
                         else coalesce((a.existencia - h.cantidad_total_pendiente)::integer, 0) end as cantidad_disponible,\
                 case when g.precio_pactado > 0 then true else false end as tiene_precio_pactado,\
-                split_part(fc_precio_producto_contrato_cliente($4,a.codigo_producto,$1), '@', 1) as precio_producto,\
+                split_part(coalesce(fc_precio_producto_contrato_cliente($4,a.codigo_producto,$1),'0'), '@', 1) as precio_producto,\
                 b.sw_regulado,\
-                c.precio_regulado\
+                c.precio_regulado,\
+                b.estado\
                 from existencias_bodegas a \
                 inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
                 inner join inventarios c on b.codigo_producto = c.codigo_producto and a.empresa_id = c.empresa_id\
@@ -925,14 +937,12 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                       group by 1,2,3,4\
                     ) aa group by 1,2,3,4\
                 ) h on a.empresa_id = h.empresa_id and a.centro_utilidad = h.centro_utilidad and a.bodega =h.bodega and c.codigo_producto = h.codigo_producto\
-                where a.empresa_id = $1 and a.centro_utilidad = $2 and a.bodega = $3 \
+                where a.empresa_id = $1 and a.centro_utilidad = $2 and a.bodega = $3 "+sql_aux+" \
                 and (\
                     a.codigo_producto ilike $5 or\
                     fc_descripcion_producto(a.codigo_producto) ilike $5 or\
                     e.descripcion ilike $5\
                 ) order by 2";
-    
-    console.log(sql);
 
     G.db.paginated(sql, [empresa, centro_utilidad_id, bodega_id,contrato_cliente_id, '%'+termino_busqueda+'%'], pagina, G.settings.limit, function(err, rows, result) {
         callback(err, rows);

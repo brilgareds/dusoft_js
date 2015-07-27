@@ -9,20 +9,28 @@ define(["angular", "js/controllers",
                 "localStorageService", "$modal",
                 "API", "EmpresaInduccion",
                 "CentroUtilidadesInduccion", "BodegasInduccion",
-                "ProductoInduccion", "AlertService","$state",
+                "ProductoInduccion", "AlertService","$state","InduccionService",
                 function($scope, $rootScope, Usuario, Request,
                         localStorageService, $modal, API,
-                        EmpresaInduccion, CentroUtilidadesInduccion, BodegasInduccion, ProductoInduccion, AlertService,$state) {
+                        EmpresaInduccion, CentroUtilidadesInduccion, BodegasInduccion, ProductoInduccion, AlertService,$state,InduccionService) {
                             
+                            console.log(InduccionService)
                             
-                        var that = this;    
+                        var that = this; 
+                        that.detalleProducto = [];
                        // console.log(localStorageService.get("productoInduccion"))
-                        $scope.detalladoProductosInduccion = localStorageService.get("productoInduccion");
-                        $scope.nombres = "HOLA PRUEBA";
+                       
+                        that.detalladoProductosInduccion = localStorageService.get("productoInduccion");
+                       // $scope.nombres = "hola mundo";
+                       // InduccionService.consultarDetalleProducto("45","555569asasasa","44444444455556","11111",1);
                         
-                        $rootScope.$emit("onBuscarProducto", "fdfdffddf" );
-                        
-                        
+                      
+                    /*    console.log(that.detalladoProductosInduccion.codigoProducto)
+                        console.log(that.detalladoProductosInduccion.empresaId)
+                        console.log(that.detalladoProductosInduccion.centroUtilidad)
+                        console.log(that.detalladoProductosInduccion.bodega)
+                        */
+                      
                         that.init = function(){
 
                         };

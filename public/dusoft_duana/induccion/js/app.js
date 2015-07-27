@@ -24,7 +24,8 @@ define([
     "includes/validation/NgValidateEvents",
     "chart",
     "controllers/InduccionController",
-    "controllers/InduccionDetalleController"
+    "controllers/InduccionDetalleController",
+    "services/InduccionService"
 ], function(angular) {
 
     /* App Module and its dependencies */
@@ -71,11 +72,8 @@ define([
                     text: "Induccion",
                     parent_name: "ListarProductos",
                     templateUrl: "views/induccion/detalleProducto.html",
-                    controller: "InduccionDetalleController",
-                    /*controller: function($stateParams){
-                        console.log($stateParams)
-                   
-                 },*/
+                    controller: "InduccionDetalleController"
+                    
                 });
 
                 if ($location.path() === "")

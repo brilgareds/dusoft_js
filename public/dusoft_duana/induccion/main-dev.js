@@ -10,6 +10,7 @@ requirejs.config({
         includes:"../includes/",
         models:"js/models",
         directive:"js/directive",
+        services:"js/services",
         bootstrap:"../../javascripts/bootstrap/bootstrap",
         nggrid:"../../javascripts/angular/ng-grid",
         jquery:"../../javascripts/jquery",

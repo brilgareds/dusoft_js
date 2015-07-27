@@ -16,7 +16,7 @@ define(["angular", "js/controllers",
 
                     var that = this;
                    
-                 
+          //         console.log(InduccionService)
                     /*
                      * @param 
                      * {Object} empresa: 
@@ -346,15 +346,23 @@ define(["angular", "js/controllers",
                     
                     $scope.detalleProducto = function(producto){
                        
+                      // console.log(producto)
+                         var empresaSeleccionada = $scope.root.empresaSeleccionada;
+                           var centroUtilidadSeleccionado = empresaSeleccionada.getCentroUtilidadSeleccionado();
+                             var bodegaSeleccionada = centroUtilidadSeleccionado.getBodegaSeleccionada();
+                      //console.log(producto)*/
                        var detalladoProducto = {
-                                                codigo:producto.getCodigoProducto(),
-                                                nombre:producto.getDescripcion(),
-                                                existencia:producto.getExistencia()
+                                                codigoProducto:producto.getCodigoProducto(),
+                                                empresaId: $scope.root.empresaSeleccionada.getCodigo(),
+                                                centroUtilidad: centroUtilidadSeleccionado.getCodigo(),
+                                                bodega: bodegaSeleccionada.getCodigo(),
+                                                /*nombre:producto.getDescripcion(),
+                                                existencia:producto.getExistencia()*/
                                                 };
                                             
                         $state.go("DetalleProductos");
                         
-                        localStorageService.set("productoInduccion",detalladoProducto);
+                      localStorageService.set("productoInduccion",detalladoProducto);
                     };
                     /**
                      * @author Cristian Ardila

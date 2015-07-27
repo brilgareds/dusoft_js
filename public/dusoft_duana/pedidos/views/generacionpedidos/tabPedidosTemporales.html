@@ -3,15 +3,19 @@
 </button>
 
 <div class="col-sm-4 col-md-4 col-lg-4 marginLeft">
-    <select ui-select2  class="form-control selectgeneral anchoSeleccionEmpresa" ng-model="rootPedidosTempFarmacias.seleccion" data-placeholder="Seleccionar Farmacia" ng-change="valorSeleccionadoTemp()">
-        <option ng-repeat="farmacia in  root.empresasFarmacias"  ng-value="farmacia.codigo" >{{farmacia.nombre}}</option>
-    </select>
+    
+    <ui-select ng-model="rootPedidosTempFarmacias.empresaSeleccionada"  theme="select2" class="form-control selectgeneral pull-left" ng-change="onBuscarPedidos()">
+        <ui-select-match  placeholder="Seleccionar Farmacia">{{ $select.selected.getNombre() }}</ui-select-match>
+        <ui-select-choices  refresh-delay="0" repeat="empresa in root.empresasFarmacias | filter:$select.search">
+            {{ empresa.getNombre() }}
+        </ui-select-choices>
+    </ui-select>  
 </div>
 
 <div class="input-group navbar-form buscadorgeneral">
-    <input type="text" class="form-control pull-right" ng-keypress="onTeclaBuscarPedidosFarmaciasTemp($event)" ng-model="rootPedidosFarmacias.termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
+    <input type="text" class="form-control pull-right" ng-keypress="onCampoBuscarPedidos($event)" ng-model="rootPedidosTempFarmacias.termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
     <span class="input-group-btn" >
-        <button class="btn btn-default" type="submit" ng-click="onBuscarPedidosFarmaciasTemp(obtenerParametrosTemp())"><i class="glyphicon glyphicon-search"></i></button>
+        <button class="btn btn-default" type="submit" ng-click="onBuscarPedidos()"><i class="glyphicon glyphicon-search"></i></button>
     </span>
 </div>
 
@@ -23,10 +27,10 @@
 
 <div class="row text-center">
     <br/>
-    <button type="button" class="btn btn-default btn-medium" ng-disabled="rootPedidosTempFarmacias.paginaactual == 1" ng-click="paginaAnteriorTemp()">
+    <button type="button" class="btn btn-default btn-medium" ng-disabled="rootPedidosTempFarmacias.paginaactual == 1" ng-click="paginaAnterior()">
         <span class="glyphicon glyphicon-chevron-left" ></span>
     </button>
-    <button type="button" class="btn btn-default btn-medium" ng-disabled="rootPedidosTempFarmacias.items == 0" ng-click="paginaSiguienteTemp()">
+    <button type="button" class="btn btn-default btn-medium" ng-disabled="rootPedidosTempFarmacias.items == 0" ng-click="paginaSiguiente()">
         <span class="glyphicon glyphicon-chevron-right" ></span>
     </button>
 </div>

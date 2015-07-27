@@ -223,7 +223,7 @@ ModuloModel.prototype.modificarOpcion = function(opcion, callback) {
 };
 
 ModuloModel.prototype.obtenerOpcionPorNombre = function(nombre, callback) {
-    var sql = "SELECT  nombre, alias, id FROM modulos_opciones WHERE nombre ILIKE $1";
+    var sql = "SELECT  nombre, alias, id, modulo_id FROM modulos_opciones WHERE nombre ILIKE $1";
 
     G.db.query(sql, [nombre + "%"], function(err, rows, result) {
         callback(err, rows);
@@ -571,8 +571,9 @@ function __validarCreacionOpcion(that, opcion, callback) {
 
                 var _nombre_opcion = rows[i].nombre.toLowerCase().replace(/ /g, "");
                 var _alias = rows[i].alias.toLowerCase().replace(/ /g, "");
-
-                if (nombre_opcion === _nombre_opcion) {
+                
+                
+                if (nombre_opcion === _nombre_opcion && opcion.modulo_id === rows[i].modulo_id) {
                     validacion.valido = false;
                     validacion.msj = "El nombre de la opcion no esta disponible";
                     callback(validacion);

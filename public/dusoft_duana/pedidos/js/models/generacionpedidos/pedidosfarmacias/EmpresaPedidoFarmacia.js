@@ -37,6 +37,10 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             this.pedidos = [];
         };
         
+        EmpresaPedidoFarmacia.prototype.eliminarPedido = function(index) {
+            return this.pedidos.splice(index,1);
+        };
+        
         this.get = function(nombre, codigo) {
             return new EmpresaPedidoFarmacia(nombre, codigo);
         };

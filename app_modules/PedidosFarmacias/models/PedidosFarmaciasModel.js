@@ -489,7 +489,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_temporales_farmacias = function(e
                 inner join centros_utilidad as c on b.empresa_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad \
                 inner join empresas as d ON c.empresa_id = d.empresa_id\
                 inner join system_usuarios as e ON a.usuario_id = e.usuario_id\
-                where a.empresa_destino = $1\
+                where a.farmacia_id = $1\
                 and a.usuario_id = $3\
                 and ( c.descripcion ilike $2 \
                       or b.descripcion ilike $2\

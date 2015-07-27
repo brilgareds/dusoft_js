@@ -3,8 +3,8 @@ define(["angular", "js/models", "includes/classes/Farmacia"], function(angular, 
 
     models.factory('FarmaciaPedido', ["Farmacia", function(Farmacia) {
             
-        function FarmaciaPedido() {
-            Farmacia.getClass().call(this);
+        function FarmaciaPedido(farmacia_id, bodega, nombre_farmacia) {
+            Farmacia.getClass().call(this, farmacia_id, bodega, nombre_farmacia);
             this.centrosUtilidad = [];
             this.centroUtilidadSeleccionado;            
         };
@@ -32,8 +32,8 @@ define(["angular", "js/models", "includes/classes/Farmacia"], function(angular, 
             this.centrosUtilidad = [];
         };
         
-        this.get = function() {
-            return new FarmaciaPedido();
+        this.get = function(farmacia_id, bodega, nombre_farmacia) {
+            return new FarmaciaPedido(farmacia_id, bodega, nombre_farmacia);
         };
                 
         return this;

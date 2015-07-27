@@ -1,10 +1,12 @@
 define(["angular", "js/services"], function(angular, services) {
 
 
-    services.factory('InduccionService', ['$rootScope', 'Modulo', 'Request', 'API','$scope',
-        function($rootScope, Modulo, Request, API,$scope) {
+    services.factory('InduccionService', ['$rootScope', 'Request', 'API',
+        function($rootScope, Request, API) {
 
-
+       /* $rootScope.$on("evento", function(e, data){
+            console.log("esto es un evento", data);
+        });*/
         /*    var self = this;
 
             self.consultarDetalleProducto = function(codigoProducto, 

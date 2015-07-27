@@ -14,7 +14,6 @@ define(["angular", "js/controllers",
                         localStorageService, $modal, API,
                         EmpresaInduccion, CentroUtilidadesInduccion, BodegasInduccion, ProductoInduccion, AlertService,$state,InduccionService) {
                             
-                            console.log(InduccionService)
                             
                         var that = this; 
                         that.detalleProducto = [];

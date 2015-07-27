@@ -15,6 +15,7 @@ define(["angular", "js/controllers",
                         EmpresaInduccion, CentroUtilidadesInduccion, BodegasInduccion, ProductoInduccion, AlertService,$state) {
 
                     var that = this;
+                    //$rootScope.$emit("evento", {foo:"bar"});
                    
           //         console.log(InduccionService)
                     /*

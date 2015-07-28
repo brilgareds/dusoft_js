@@ -133,11 +133,20 @@ define([
                     templateUrl: "views/generarpedidos/creapedidosfarmacias.html",
                     parent_name: "VerPedidosFarmacias"
                 })
+                
+                
                 .state('ListarPedidosFarmacias',{
                     url: "/ListarPedidosFarmacias",
                     text: "Pedidos Farmacias",
-                    templateUrl: "views/generacionpedidos/listapedidos.html"
+                    templateUrl: "views/generacionpedidos/pedidosfarmacias/listapedidos.html"
+                })
+                .state('GuardarPedido',{
+                    url: "/GuardarPedido",
+                    text: "Pedidos Farmacias",
+                    templateUrl: "views/generacionpedidos/pedidosfarmacias/guardarpedido.html",
+                    parent_name: "ListarPedidosFarmacias"
                 });
+                
 
 
                 // URL's Pedidos Clientes

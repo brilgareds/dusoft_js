@@ -6,19 +6,10 @@ define(["angular", "js/models", "includes/classes/Farmacia"], function(angular, 
         function CentroUtilidadPedidoFarmacia(nombre, codigo) {
             CentroUtilidad.getClass().call(this, nombre, codigo);
             this.bodegas = [];
-            this.bodegaSeleccionada;
         };
 
         CentroUtilidadPedidoFarmacia.prototype = Object.create(CentroUtilidad.getClass().prototype);
 
-        CentroUtilidadPedidoFarmacia.prototype.setBodegaSeleccionada = function(bodega) {
-            this.bodegaSeleccionada = bodega;
-            return this;
-        };
-
-        CentroUtilidadPedidoFarmacia.prototype.getBodegaSeleccionada = function() {
-            return this.bodegaSeleccionada;
-        };
         
         CentroUtilidadPedidoFarmacia.prototype.obtenerBodegas = function() {
             return this.bodegas;

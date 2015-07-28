@@ -322,16 +322,20 @@ define(["angular",
             
             $scope.onEditarPedidoTemporal = function(pedido) {
                 var farmacia = pedido.getFarmaciaDestino();
-                console.log("centro utiliad ", farmacia.getCentroUtilidadSeleccionado().getBodegaSeleccionada());
                 localStorageService.set("pedidotemporal", {
                     farmacia:farmacia.get_farmacia_id(),
                     centroUtilidad:farmacia.getCentroUtilidadSeleccionado().getCodigo(),
                     bodega:farmacia.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
                 });
                 
-                $state.go('GuardarPedido');
+                $state.go('GuardarPedidoTemporal');
              
              };
+             
+             
+            $scope.onIrVistaGuardarPedidoTemporal = function(){
+                $state.go('GuardarPedidoTemporal');
+            };
 
             self.buscarPedidos();
 

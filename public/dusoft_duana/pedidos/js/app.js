@@ -50,6 +50,7 @@ define([
 
     "models/generacionpedidos/pedidosfarmacias/EmpresaPedidoFarmacia",
     "controllers/generacionpedidos/pedidosfarmacias/PedidosFarmaciaController",
+    "controllers/generacionpedidos/pedidosfarmacias/GuardarPedidoBaseController",
     
     // Nuevas Urls para el proceso de pedidos clientes
     "controllers/generacionpedidos/pedidosclientes/ListarPedidosClientesController",
@@ -140,14 +141,20 @@ define([
                     text: "Pedidos Farmacias",
                     templateUrl: "views/generacionpedidos/pedidosfarmacias/listapedidos.html"
                 })
+                .state('GuardarPedidoTemporal',{
+                    url: "/GuardarPedidoTemporal",
+                    text: "Pedido Farmacia Temporal",
+                    templateUrl: "views/generacionpedidos/pedidosfarmacias/guardarpedidotemporal.html",
+                    parent_name: "ListarPedidosFarmacias",
+                    controller: "GuardarPedidoBaseController"
+                })
                 .state('GuardarPedido',{
                     url: "/GuardarPedido",
-                    text: "Pedidos Farmacias",
+                    text: "Pedido Farmacia",
                     templateUrl: "views/generacionpedidos/pedidosfarmacias/guardarpedido.html",
-                    parent_name: "ListarPedidosFarmacias"
+                    parent_name: "ListarPedidosFarmacias",
+                    controller: "GuardarPedidoBaseController"
                 });
-                
-
 
                 // URL's Pedidos Clientes
                 pedidos.stateProvider.state('ListarPedidosClientes', {

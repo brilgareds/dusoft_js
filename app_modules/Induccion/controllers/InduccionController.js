@@ -23,7 +23,7 @@ Induccion.prototype.listar_empresas = function(req, res) {
         return;
     }
     
-    this.m_induccion.empresas_activas(function(err, listar_empresas) {
+    this.m_induccion.obtenerEmpresasActivas(function(err, listar_empresas) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Listado de Empresas Activas', 500, {listar_empresas: {}}));
@@ -62,7 +62,7 @@ Induccion.prototype.listar_centro_utilidad = function(req, res) {
         return;
     }
 
-    this.m_induccion.centros_utilidades(idempresa, function(err, listar_centro_utilidad) {
+    this.m_induccion.obtenerCentrosUtilidades(idempresa, function(err, listar_centro_utilidad) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Listado de Centros de utilidad', 500, {listar_centro_utilidad: {}}));
@@ -102,7 +102,7 @@ Induccion.prototype.listar_bodegas = function(req, res) {
 
   
 
-    this.m_induccion.bodegas(centros_utilidad, function(err, listar_bodegas) {
+    this.m_induccion.obtenerBodegas(centros_utilidad, function(err, listar_bodegas) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Listado de bodegas', 500, {listar_bodegas: {}}));
@@ -167,7 +167,7 @@ Induccion.prototype.listar_productos = function(req, res) {
         return;
     }
     
-    this.m_induccion.productos(empresaId,centroUtilidad,bodega,descripcion,pagina,codigoProducto,function(err, listar_productos) {
+    this.m_induccion.obtenerProductos(empresaId,centroUtilidad,bodega,descripcion,pagina,codigoProducto,function(err, listar_productos) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Listado de Productos Activos', 500, {listar_productos: {}}));

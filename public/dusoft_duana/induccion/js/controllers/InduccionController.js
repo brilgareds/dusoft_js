@@ -397,13 +397,15 @@ define(["angular", "js/controllers",
                         enableColumnResize: true,
                         enableRowSelection: false,
                         columnDefs: [
-                            {field: 'getIva()', displayName: 'Iva', width: "15%"},
-                            {field: 'getCosto()', displayName: 'Costo', width: "10%"},
-                            {field: 'getPrecioVenta()', displayName: 'Venta', width: "10%"},
+
                             {field: 'getCodigoProducto()', displayName: 'Codigo producto', width: "15%"},
-                            {field: 'getDescripcion()', displayName: 'Descripcion', width: "25%"},
-                            {field: 'getExistencia()', displayName: 'Existencia', width: "15%"},
-                            {field: 'getExistencia()',
+                            {field: 'getDescripcion()', displayName: 'Descripcion'},
+                            {field: 'getIva()', displayName: 'Iva', width: "5%"},
+                            {field: 'getCosto()', displayName: 'Costo', width: "5%"},
+                            {field: 'getPrecioVenta()', displayName: 'Venta', width: "10%"},
+                            
+                            {field: 'getExistencia()', displayName: 'Existencia', width: "10%"},
+                            {field: 'getExistencia()',width:50,
                                 displayName: "Detalle",
                                 cellClass: "txt-center",
                                 cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="detalleProducto(row.entity)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'

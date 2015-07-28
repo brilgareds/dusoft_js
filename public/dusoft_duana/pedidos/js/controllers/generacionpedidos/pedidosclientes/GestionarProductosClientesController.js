@@ -27,7 +27,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     clases_tipo_producto: ["", "label label-success", "label label-danger", "label label-info", "label label-warning", "label label-default"],
                     tipo_producto: '',
                     seleccion_tipo_producto: '- Todos -',
-                    laboratorio: Laboratorio.get('',''),
+                    laboratorio: Laboratorio.get('', ''),
                     paginando: false,
                     cantidad_items: 0,
                     termino_busqueda: "",
@@ -43,6 +43,82 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 //$scope.datos_form = null;
                 $scope.$$watchers = null;
             });
+
+            // Gestionar Cotizaciones 
+            that.gestionar_cotizaciones = function(callback) {
+
+                if ($scope.Pedido.get_numero_cotizacion() === 0) {
+                    //Crear Cotizacion y Agregar Productos
+                    that.insertar_cabercera_cotizacion(function(continuar) {
+                        if (continuar) {
+                            that.insertar_detalle_cotizacion(function(resultado) {
+                                callback(resultado);
+                            });
+                        }
+                    });
+                } else {
+                    // Agregar Productos a la Cotizacion
+                    that.insertar_detalle_cotizacion(function(resultado) {
+                        callback(resultado);
+                    });
+                }
+            };
+
+            // Insertar Encabezado Cotizacion
+            that.insertar_cabercera_cotizacion = function(callback) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_clientes: {
+                            cotizacion: $scope.Pedido
+                        }
+                    }
+                };
+                
+                console.log(obj);
+                console.log($scope.Pedido);
+                return
+                
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.INSERTAR_COTIZACION, "POST", obj, function(data) {
+
+
+                    AlertService.mostrarMensaje("warning", data.msj);
+
+                    if (data.status === 200 && data.obj.pedidos_clientes.numero_cotizacion > 0) {
+
+                        callback(true);
+                    } else {
+                        callback(false);
+                    }
+                });
+            };
+
+            // Insertar Productos a la Cotizacion
+            that.insertar_detalle_cotizacion = function(callback) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_clientes: {
+                            cotizacion: $scope.Pedido,
+                            producto: $scope.Pedido.get_productos()
+                        }
+                    }
+                };
+
+
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.INSERTAR_DETALLE_COTIZACION, "POST", obj, function(data) {
+
+                    AlertService.mostrarMensaje("warning", data.msj);
+
+                    if (data.status === 200) {
+                        callback(true);
+                    } else {
+                        callback(false);
+                    }
+                });
+            };
 
             // Laboratorios
             that.buscar_laboratorios = function() {
@@ -121,9 +197,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     session: $scope.session,
                     data: {
                         pedidos_clientes: {
-                            empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
-                            centro_utilidad_id: Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
-                            bodega_id: Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                            empresa_id: $scope.Pedido.get_empresa_id(),
+                            centro_utilidad_id: $scope.Pedido.get_centro_utilidad_id(),
+                            bodega_id: $scope.Pedido.get_bodega_id(),
                             contrato_cliente_id: $scope.Pedido.getCliente().get_contrato(),
                             pagina_actual: $scope.datos_form.pagina_actual,
                             termino_busqueda: $scope.datos_form.termino_busqueda,
@@ -169,6 +245,14 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     $scope.Empresa.set_productos(producto);
                 });
             };
+            
+            $scope.solicitar_producto = function(producto){
+                
+                $scope.Pedido.set_productos(producto);
+                
+                that.gestionar_cotizaciones();
+            };
+            
 
             $scope.lista_productos = {
                 data: 'Empresa.get_productos()',
@@ -200,8 +284,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {width: "7%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-toolbar">\
-                                            <button ng-if="row.entity.get_estado() == 0 " class="btn btn-default btn-xs" ng-click="calcular_valores_producto(row)" ><span class="glyphicon glyphicon-lock"></span></button>\
-                                            <button ng-if="row.entity.get_estado() == 1 " class="btn btn-default btn-xs" ng-click="solicitar_producto(row)" ><span class="glyphicon glyphicon-ok"></span></button>\
+                                            <button ng-if="row.entity.get_estado() == 0 " class="btn btn-default btn-xs"><span class="glyphicon glyphicon-lock"></span></button>\
+                                            <button ng-if="row.entity.get_estado() == 1 " class="btn btn-default btn-xs" ng-click="solicitar_producto(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
                                         </div>'}
                 ]
             };

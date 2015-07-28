@@ -36,7 +36,9 @@ define(["angular"], function(angular) {
             'PEDIDOS': {
                 CLIENTES: {
                     'LISTAR_PRODUCTOS_CLIENTES': BASE_URL + '/PedidosClientes/listarProductosClientes',
-                    'LISTAR_LABORATORIOS': BASE_URL + '/Laboratorios/listarLaboratorios'
+                    'LISTAR_LABORATORIOS': BASE_URL + '/Laboratorios/listarLaboratorios',
+                    'INSERTAR_COTIZACION': BASE_URL + '/PedidosClientes/insertarCotizacion',
+                    'INSERTAR_DETALLE_COTIZACION': BASE_URL + '/PedidosClientes/insertarDetalleCotizacion',
                 },
                 FARMACIAS :{
                     
@@ -84,8 +86,8 @@ define(["angular"], function(angular) {
                 'ACTUALIZAR_ENCABEZADO_TEMPORAL_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/actualizarRegistroEncabezadoTemporal',
                 //'LISTAR_PRODUCTOS_CLIENTES': BASE_URL + '/PedidosClientes/listarProductosClientes', // ------- url clientes => Pdte remover ---
                 'BUSCAR_USUARIO_BLOQUEO': BASE_URL + '/PedidosFarmacias/buscarUsuarioBloqueo',
-                'CREAR_COTIZACION': BASE_URL + '/PedidosClientes/insertarCotizacion',
-                'INSERTAR_DETALLE_COTIZACION': BASE_URL + '/PedidosClientes/insertarDetalleCotizacion',
+                //'CREAR_COTIZACION': BASE_URL + '/PedidosClientes/insertarCotizacion',
+                //'INSERTAR_DETALLE_COTIZACION': BASE_URL + '/PedidosClientes/insertarDetalleCotizacion',
                 'LISTAR_COTIZACIONES': BASE_URL + '/PedidosClientes/listarCotizaciones',
                 'CONSULTA_ESTADO_COTIZACION': BASE_URL + '/PedidosClientes/estadoCotizacion',
                 'LISTAR_DETALLE_COTIZACION': BASE_URL + '/PedidosClientes/listarDetalleCotizacion',

@@ -393,15 +393,35 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'pedidos_clientes o cotizacion No Estan Definidos', 404, {}));
         return;
     }
+    
+    // Cliente
+    if (args.pedidos_clientes.cotizacion.cliente === undefined || args.pedidos_clientes.cotizacion.cotizacion === '') {
+        res.send(G.utils.r(req.url, 'Cliente No Estan Definidos', 404, {}));
+        return;
+    }
+    
+    // Vendedor
+    if (args.pedidos_clientes.cotizacion.vendedor === undefined || args.pedidos_clientes.cotizacion.vendedor === '') {
+        res.send(G.utils.r(req.url, 'Vendedor No Estan Definidos', 404, {}));
+        return;
+    }
 
     var cotizacion = args.pedidos_clientes.cotizacion;
 
+    // Empresa, Centro Utilidad,  Bodega
     if (cotizacion.empresa_id === undefined || cotizacion.centro_utilidad_id === undefined || cotizacion.bodega_id === undefined) {
         res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id No Estan Definidos', 404, {}));
         return;
     }
-
-    if (cotizacion.tipo_id === undefined || cotizacion.tercero_id === undefined || cotizacion.tipo_id_vendedor === undefined || cotizacion.vendedor_id === undefined) {
+    
+    // Validar Cliente
+    if (cotizacion.cliente.tipo_id_tercero === undefined || cotizacion.cliente.id === undefined || cotizacion.tipo_id_vendedor === undefined || cotizacion.vendedor_id === undefined) {
+        res.send(G.utils.r(req.url, 'tipo_id, tercero_id, tipo_id_vendedor  o vendedor_id No Estan Definidos', 404, {}));
+        return;
+    }
+    
+    // Validar Vendedor
+    if (cotizacion.vendedor.tipo_id_vendedor === undefined || cotizacion.vendedor.vendedor_id === undefined) {
         res.send(G.utils.r(req.url, 'tipo_id, tercero_id, tipo_id_vendedor  o vendedor_id No Estan Definidos', 404, {}));
         return;
     }

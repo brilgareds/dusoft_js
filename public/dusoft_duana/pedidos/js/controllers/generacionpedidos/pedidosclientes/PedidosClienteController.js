@@ -33,14 +33,19 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             // Definicion Variables            
             $scope.Empresa = Empresa;
 
-            // Inicializacion Pedido
-            $scope.Pedido = Pedido.get();
+            // Inicializacion Pedido            
+            $scope.Pedido = Pedido.get(
+                    Sesion.getUsuarioActual().getEmpresa().getCodigo(),
+                    Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
+                    Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
+                    );
             $scope.Pedido.setCliente(Cliente.get());
             $scope.Pedido.setFechaRegistro($filter('date')(new Date(), "dd/MM/yyyy"));
 
             $scope.datos_view = {
                 termino_busqueda_clientes: ''
             };
+
 
             // Clientes
             $scope.listar_clientes = function(termino_busqueda) {
@@ -61,7 +66,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     session: $scope.session,
                     data: {
                         clientes: {
-                            empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
+                            empresa_id: $scope.Pedido.get_empresa_id(),
                             termino_busqueda: $scope.datos_view.termino_busqueda_clientes,
                             paginacion: false
                         }
@@ -77,7 +82,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
             that.render_clientes = function(clientes) {
-                                
+
                 $scope.Empresa.limpiar_clientes();
 
                 clientes.forEach(function(data) {
@@ -106,7 +111,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                 });
             };
-            
+
             that.render_vendedores = function(vendedores) {
 
                 $scope.Empresa.limpiar_vendedores();
@@ -116,7 +121,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     var vendedor = Vendedor.get(data.nombre, data.tipo_id_vendedor, data.vendedor_id, data.telefono);
 
                     $scope.Empresa.set_vendedores(vendedor);
-                });                                
+                });
             };
 
 
@@ -176,9 +181,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
 
-            
+
             that.buscar_vendedores();
-            
+
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
             });

@@ -20,23 +20,20 @@
                         <div>
                             <div class="row" style="margin-bottom: 20px;">
                                 <div class="col-lg-12">
-                                    <h4>Convenciones</h4>
-                                    <div class="label label-primary" style="position: relative;">Todos</div>      
-                                    <div class="label label-success" style="position: relative;">Normales</div>      
-                                    <div class="label label-danger" style="position: relative;">Alto Costo</div>      
-                                    <div class="label label-info" style="position: relative;">Controlados</div>      
-                                    <div class="label label-warning" style="position: relative;">Insumos</div>      
-                                    <div class="label label-default" style="position: relative;">Neveras</div>      
+                                    <h4>Busqueda por {{ datos_form.seleccion_tipo_producto }}</h4>
+                                    <button ng-click="seleccionar_tipo_producto('')" class="btn btn-xxs btn-primary" style="position: relative;">Todos</button>
+                                    <button ng-click="seleccionar_tipo_producto('1')" class="btn btn-xxs btn-success" style="position: relative;">Normales</button>
+                                    <button ng-click="seleccionar_tipo_producto('2')" class="btn btn-xxs btn-danger" style="position: relative;">Alto Costo</button>
+                                    <button ng-click="seleccionar_tipo_producto('3')"class="btn btn-xxs btn-info" style="position: relative;">Controlados</button>
+                                    <button ng-click="seleccionar_tipo_producto('4')"class="btn btn-xxs btn-warning" style="position: relative;">Insumos</button>
+                                    <button ng-click="seleccionar_tipo_producto('5')"class="btn btn-xxs btn-grey" style="position: relative;">Neveras</button>                                          
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-3">
-                                    <p class="input-group col-md-12">
-                                        <!--select ui-select2=""  class="form-control selectgeneral pull-left" ng-model="$parent.laboratorio_id"  placeholder="Seleccionar laboratorio" ng-change="seleccionar_laboratorio()">
-                                            <option></option>      
-                                            <option ng-repeat="laboratorio in  Empresa.get_laboratorios()"  value="{{laboratorio.id}}">{{ laboratorio.descripcion }}</option>
-                                        </select-->
-                                    <ui-select ng-disabled="vista_previa"  ng-model="laboratorio_id" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_laboratorio(laboratorio_id)">
+                                    <p class="input-group col-md-12">    
+                                    <h4>Laboratorio</h4>
+                                    <ui-select ng-model="datos_form.laboratorio" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_laboratorio()">
                                         <ui-select-match  placeholder="Seleccionar laboratorio">{{ $select.selected.get_nombre() }}</ui-select-match>                                        
                                         <ui-select-choices repeat="laboratorio in  Empresa.get_laboratorios() | filter:$select.search">
                                             {{ laboratorio.get_nombre() }}
@@ -45,10 +42,9 @@
                                     </p>
                                 </div>
 
-                                <div class="col-md-3 pull-right">
+                                <div class="col-md-3 pull-right" style="margin-top: 35px;">
                                     <p class="input-group">
-
-                                        <input type="text" class="form-control" ng-keypress="buscador_productos($event, termino_busqueda);"  ng-model="termino_busqueda" placeholder="Buscar" name="" id="" />
+                                        <input type="text" class="form-control" ng-keypress="buscador_productos($event, termino_busqueda);"  ng-model="datos_form.termino_busqueda" placeholder="Buscar" name="" id="" />
                                         <span class="input-group-btn">
                                             <button class="btn btn-default" type="submit" ng-click=""><i class="glyphicon glyphicon-search"></i></button>
                                         </span>
@@ -56,15 +52,15 @@
                                 </div>
                             </div>
 
-                            <div class="" style="height: 700px" ng-grid="lista_productos" > </div>
+                            <div class="" style="height: 650px" ng-grid="lista_productos" > </div>
 
                             </br>
 
                             <div class="row text-center">
-                                <button type="button" class="btn btn-default btn-medium" ng-disabled="pagina_actual == 1" ng-click="pagina_anterior()" >
+                                <button type="button" class="btn btn-default btn-medium" ng-disabled="datos_form.pagina_actual == 1" ng-click="pagina_anterior()" >
                                     <span class="glyphicon glyphicon-chevron-left" ></span>
                                 </button>
-                                <button type="button" class="btn btn-default btn-medium" ng-disabled="cantidad_items == 0" ng-click="pagina_siguiente()">
+                                <button type="button" class="btn btn-default btn-medium" ng-disabled="datos_form.cantidad_items == 0" ng-click="pagina_siguiente()">
                                     <span class="glyphicon glyphicon-chevron-right" ></span>
                                 </button>
                             </div>    

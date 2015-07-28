@@ -8,6 +8,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             EmpresaPedidoCliente.vendedores = [];
             EmpresaPedidoCliente.cotizaciones = [];
             EmpresaPedidoCliente.pedidos = [];
+            EmpresaPedidoCliente.laboratorios = [];
             EmpresaPedidoCliente.productos = [];
 
 
@@ -76,6 +77,19 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
 
             EmpresaPedidoCliente.limpiar_productos = function() {
                 this.productos = [];
+            };
+
+            // Laboratorios
+            EmpresaPedidoCliente.set_laboratorios = function(laboratorio) {
+                this.laboratorios.push(laboratorio);
+            };
+
+            EmpresaPedidoCliente.get_laboratorios = function() {
+                return this.laboratorios;
+            };
+
+            EmpresaPedidoCliente.limpiar_laboratorios = function() {
+                this.laboratorios = [];
             };
 
             return EmpresaPedidoCliente;

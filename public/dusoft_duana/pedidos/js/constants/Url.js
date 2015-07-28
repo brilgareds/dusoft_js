@@ -35,7 +35,8 @@ define(["angular"], function(angular) {
             },
             'PEDIDOS': {
                 CLIENTES: {
-                    'LISTAR_PRODUCTOS_CLIENTES': BASE_URL + '/PedidosClientes/listarProductosClientes'
+                    'LISTAR_PRODUCTOS_CLIENTES': BASE_URL + '/PedidosClientes/listarProductosClientes',
+                    'LISTAR_LABORATORIOS': BASE_URL + '/Laboratorios/listarLaboratorios'
                 },
                 FARMACIAS :{
                     

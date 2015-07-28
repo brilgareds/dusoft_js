@@ -14,7 +14,6 @@ define(["angular", "js/services"], function(angular, services) {
                 
                 Request.realizarRequest(url, "POST", obj, function(data) {
                          
-                         //    console.log(obj.data.induccion)
                               callback(data);
                         
                 });

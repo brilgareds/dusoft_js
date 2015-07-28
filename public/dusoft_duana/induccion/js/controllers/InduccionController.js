@@ -17,7 +17,7 @@ define(["angular", "js/controllers",
                     var that = this;
                     //$rootScope.$emit("evento", {foo:"bar"});
 
-                    //         console.log(InduccionService)
+                   
                     /*
                      * @param 
                      * {Object} empresa: 
@@ -317,23 +317,7 @@ define(["angular", "js/controllers",
 
                                             }
                                     );
-                                    /*      Request.realizarRequest(API.INDUCCION.LISTAR_PRODUCTOS, "POST", obj, function(data) {
-                                     
-                                     bodegaSeleccionada.vaciarProductos();
-                                     $scope.productos = [];
-                                     
-                                     if (data.status === 200) {
-                                     console.log(data.obj.listar_productos.length)
-                                     if (data.obj.listar_productos.length === 0) {
-                                     that.paginaactual = 1;
-                                     } else {
-                                     that.renderListarProductos(data);
-                                     callback();
-                                     }
-                                     } else {
-                                     AlertService.mostrarMensaje("warning", data.msj)
-                                     }
-                                     });*/
+                                   
                                 }//Llave que cierra el ELSE que valida la (bodegaSeleccionada)
 
                             }//Llave que cierra el ELSE que valida el(centroUtilidadSeleccionado)
@@ -391,7 +375,7 @@ define(["angular", "js/controllers",
                             }
                         };
 
-                        console.log("producto ", producto.codigo_producto, " obj ", obj);
+                     
                         localStorageService.set("productoInduccion", obj);
                         $state.go("DetalleProductos");
 
@@ -414,20 +398,16 @@ define(["angular", "js/controllers",
                         enableRowSelection: false,
                         columnDefs: [
                             {field: 'getIva()', displayName: 'Iva', width: "15%"},
-                            {field: 'getCosto()', displayName: 'Costo', width: "25%"},
+                            {field: 'getCosto()', displayName: 'Costo', width: "10%"},
                             {field: 'getPrecioVenta()', displayName: 'Venta', width: "10%"},
-                            {field: 'getCodigoProducto()', displayName: 'Codigo producto', width: "10%"},
-                            {field: 'getDescripcion()', displayName: 'Descripcion', width: "10%"},
-                            {field: 'getExistencia()', displayName: 'Existencia', width: "10%"},
+                            {field: 'getCodigoProducto()', displayName: 'Codigo producto', width: "15%"},
+                            {field: 'getDescripcion()', displayName: 'Descripcion', width: "25%"},
+                            {field: 'getExistencia()', displayName: 'Existencia', width: "15%"},
                             {field: 'getExistencia()',
                                 displayName: "Detalle",
-                                cellClass: "txt-center dropdown-button",
-                                cellTemplate: '<div class="btn-group">\
-                                 <button  \
-                                               ng-click="detalleProducto(row.entity)" \n\
-                                               ng-disabled="planilla.get_estado()==\'2\'" >\n\
-                                              <span class="glyphicon glyphicon-zoom-in"></span></button>\
-                                        </div>'
+                                cellClass: "txt-center",
+                                cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="detalleProducto(row.entity)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'
+
                             }
                         ]
                     };
@@ -479,8 +459,8 @@ define(["angular", "js/controllers",
                         that.traerProductos(function() {
                         });
                     };
-                    
-                    
+
+
                     $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                         $scope.root = {};
                         $scope.$$watchers = null;
@@ -488,7 +468,7 @@ define(["angular", "js/controllers",
 
 
                     var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
-                    //console.log(empresa)
+                   
                     var centroUtilidad;
                     var bodega;
                     if (!empresa) {
@@ -505,7 +485,7 @@ define(["angular", "js/controllers",
 
                         centroUtilidad = empresa.getCentroUtilidadSeleccionado();
                         bodega = empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada()
-                        console.log(bodega);
+                       
                         that.init(empresa, centroUtilidad, bodega, function() {
                             that.traerEmpresas(function() {
                                 that.traerCentroUtilidad(function() {

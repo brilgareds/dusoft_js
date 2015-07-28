@@ -29,14 +29,17 @@ module.exports = function(app, di_container) {
 
 
     // ============== COTIZACIONES / PEDIDOS  ==============
-    
-    
+
+
     //Listar Productos Clientes para ingresar productos a una cotizacion
     app.post('/api/PedidosClientes/listarProductosClientes', function(req, res) {
         c_pedidos_clientes.listarProductosClientes(req, res);
     });
 
-
+    // Insertar Encabezado de Cotización
+    app.post('/api/PedidosClientes/insertarCotizacion', function(req, res) {
+        c_pedidos_clientes.insertarCotizacion(req, res);
+    });
 
     /**************************************************
      * 
@@ -55,11 +58,6 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.obtenerDetallePedido(req, res);
     });
 
-    // Insertar Encabezado de Cotización
-    //?????????????????????????????????????????????????
-    app.post('/api/PedidosClientes/insertarCotizacion', function(req, res) {
-        c_pedidos_clientes.insertarCotizacion(req, res);
-    });
 
     // Insertar Detalle de Cotización
     //??????????????????????????????????????????????????

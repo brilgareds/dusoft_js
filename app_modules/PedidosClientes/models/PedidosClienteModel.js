@@ -117,11 +117,11 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
         if (filtro.en_auditoria) {
             sql_aux = " AND a.estado_pedido = '7' ";
         }
-        
+
         if (filtro.auditados_pdtes) {
             sql_aux = " AND a.estado_pedido = '8' ";
         }
-        
+
         if (filtro.en_zona_despacho_pdtes) {
             sql_aux = " AND a.estado_pedido = '9' ";
         }
@@ -686,7 +686,7 @@ PedidosClienteModel.prototype.calcular_cantidad_total_pendiente_producto = funct
                 where a.empresa_id = $1 and b.codigo_producto = $2 and (b.numero_unidades - b.cantidad_despachada) > 0  \
                 GROUP BY 1";
 
-    G.db.query(sql, [empresa_id, codigo_producto], function(err, rows, result) {        
+    G.db.query(sql, [empresa_id, codigo_producto], function(err, rows, result) {
         callback(err, rows);
     });
 };
@@ -879,18 +879,18 @@ PedidosClienteModel.prototype.actualizar_despachos_pedidos_cliente = function(nu
  * Descripcion :  SQL listado de productos para la seleccion de medicamentos en una cotizacion o en un pedido de cliente.
  */
 PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, filtro, pagina, callback) {
-    
+
     var sql_aux = "";
     var termino_busqueda = filtro.termino_busqueda;
     var tipo_producto = filtro.tipo_producto;
     var laboratorio_id = filtro.laboratorio_id;
-    
-    if(tipo_producto !== '')
-        sql_aux = " and b.tipo_producto_id = '"+tipo_producto+"'";
-    
-    if(laboratorio_id !== '')
-        sql_aux += " and f.clase_id = '"+laboratorio_id+"'";
-        
+
+    if (tipo_producto !== '')
+        sql_aux = " and b.tipo_producto_id = '" + tipo_producto + "'";
+
+    if (laboratorio_id !== '')
+        sql_aux += " and f.clase_id = '" + laboratorio_id + "'";
+
     var sql = " select \
                 a.codigo_producto,\
                 fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
@@ -937,19 +937,89 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                       group by 1,2,3,4\
                     ) aa group by 1,2,3,4\
                 ) h on a.empresa_id = h.empresa_id and a.centro_utilidad = h.centro_utilidad and a.bodega =h.bodega and c.codigo_producto = h.codigo_producto\
-                where a.empresa_id = $1 and a.centro_utilidad = $2 and a.bodega = $3 "+sql_aux+" \
+                where a.empresa_id = $1 and a.centro_utilidad = $2 and a.bodega = $3 " + sql_aux + " \
                 and (\
                     a.codigo_producto ilike $5 or\
                     fc_descripcion_producto(a.codigo_producto) ilike $5 or\
                     e.descripcion ilike $5\
                 ) order by 2";
 
-    G.db.paginated(sql, [empresa, centro_utilidad_id, bodega_id,contrato_cliente_id, '%'+termino_busqueda+'%'], pagina, G.settings.limit, function(err, rows, result) {
+    G.db.paginated(sql, [empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, '%' + termino_busqueda + '%'], pagina, G.settings.limit, function(err, rows, result) {
         callback(err, rows);
     });
 };
 
 
+/*
+ * Author : Camilo Orozco
+ * Descripcion :  SQL Insertar Cotizacion
+ */
+PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callback) {
+
+    var sql = " INSERT INTO ventas_ordenes_pedidos_tmp (\
+                empresa_id, \
+                centro_destino, \
+                bodega_destino, \
+                tipo_id_tercero, \
+                tercero_id, \
+                tipo_id_vendedor, \
+                vendedor_id, \
+                observaciones, \
+                estado, \
+                usuario_id , \
+                fecha_registro ) \
+                VALUES( $1, $2, $3, $4, $5, $6, $7, $8, '1', $9, NOW()) \
+                RETURNING pedido_cliente_id_tmp as numero_cotizacion ;";
+
+    var params = [
+        cotizacion.empresa_id,
+        cotizacion.centro_utilidad_id,
+        cotizacion.bodega_id,
+        cotizacion.tipo_id,
+        cotizacion.tercero_id,
+        cotizacion.tipo_id_vendedor,
+        cotizacion.vendedor_id,
+        cotizacion.observaciones,
+        cotizacion.usuario_id
+    ];
+
+    G.db.query(sql, params, function(err, rows, result) {
+        callback(err, rows, result);
+    });
+
+};
+
+
+/*
+ * Author : Camilo Orozco
+ * Descripcion :  SQL Insertar Detalle Cotizacion
+ */
+PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(cotizacion, producto, callback) {
+
+    var sql = " INSERT INTO ventas_ordenes_pedidos_d_tmp(\
+                pedido_cliente_id_tmp, \
+                codigo_producto, \
+                porc_iva, \
+                numero_unidades, \
+                valor_unitario, \
+                usuario_id , \
+                fecha_registro ) \
+                VALUES($1, $2, $3, $4, $5, $6, $7, NOW() );";
+
+    var params = [
+        cotizacion.numero_cotizacion,
+        producto.codigo_producto,
+        producto.iva,
+        producto.cantidad_solicitada,
+        producto.valor_unitario,
+        cotizacion.usuario_id
+    ];
+
+    G.db.query(sql, params, function(err, rows, result) {
+        callback(err, rows, result);
+    });
+
+};
 
 
 
@@ -957,95 +1027,13 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
  * 
  *  REVISAR DESDE ACA HACIA ABAJO 
  *
-/**************************************************
-
-
-
-/**
- * @api {sql} insertar_cotizacion Pedidos clientes model
- * @apiName Pedidos Clientes
- * @apiGroup PedidosCliente (sql)
- * @apiDescription Inserta encabezado de cotización
- * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
- * @apiPermission autenticado
- * @apiParam {Number} numero_pedido Numero del pedido a asignar
- * @apiParam {Function} callback Funcion de retorno de informacion.
- */
-PedidosClienteModel.prototype.insertar_cotizacion = function(empresa_id, tipo_id_tercero, tercero_id, usuario_id, 
-                                                             tipo_id_vendedor, vendedor_id, estado, observaciones, centro_utilidad, bodega, callback) {
-    
-    var sql = "INSERT INTO ventas_ordenes_pedidos_tmp(empresa_id, tipo_id_tercero, tercero_id, fecha_registro, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones, centro_destino, bodega_destino) \
-                VALUES($1, $2, $3, CURRENT_TIMESTAMP, $4, $5, $6, $7, $8, $9, $10) \
-                RETURNING pedido_cliente_id_tmp, fecha_registro";
-
-    G.db.query(sql, [empresa_id, tipo_id_tercero, tercero_id, usuario_id, tipo_id_vendedor, vendedor_id, estado, observaciones ,centro_utilidad, bodega], function(err, rows, result) {
-        callback(err, rows, result);
-    });
-
-};
-
-
-/**
- * @api {sql} insertar_detalle_cotizacion Pedidos clientes model
- * @apiName Pedidos Clientes
- * @apiGroup PedidosCliente (sql)
- * @apiDescription Inserta detalle de cotización
- * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
- * @apiPermission autenticado
- * @apiParam {Number} numero_pedido Numero del pedido a asignar
- * @apiParam {Function} callback Funcion de retorno de informacion.
- */
-PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto, callback) {
-    
-//    var sql = "INSERT INTO ventas_ordenes_pedidos_d_tmp(pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, fecha_registro, usuario_id, tipo_producto) \
-//                VALUES($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, $6, $7)";
-//
-//    G.db.query(sql, [pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto], function(err, rows, result) {
-//        callback(err, rows, result);
-//    });
-
-    var numero_cotizacion = pedido_cliente_id_tmp;
-
-    G.db.begin(function() {
-           
-           __cambiar_estado_cotizacion(numero_cotizacion, '1', function(err, rows, result){
-               if(err){
-                    callback(err);
-                    return;
-                }
-                
-                __insertar_detalle_cotizacion(pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto, function(err, rows, result) {
-
-                    if(err){
-                        callback(err);
-                        return;
-                    }
-
-                    // Finalizar Transacción.
-                    G.db.commit(function(){
-                        callback(err, rows, result);
-                    });
-                });
-                
-           });
-           
-    });
-};
-
-
-function __insertar_detalle_cotizacion(pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto, callback){
-    
-    var sql = "INSERT INTO ventas_ordenes_pedidos_d_tmp(pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, fecha_registro, usuario_id, tipo_producto) \
-                VALUES($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, $6, $7)";
-    
-    G.db.transaction(sql, [pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto], function(err, rows, result){
-        callback(err, rows, result);
-    });
-};
-
-/**
+ /**************************************************
+ 
+ 
+ 
+ 
+ 
+ /**
  * @api {sql} listar_cotizaciones Pedidos clientes model
  * @apiName Pedidos Clientes
  * @apiGroup PedidosCliente (sql)
@@ -1057,7 +1045,7 @@ function __insertar_detalle_cotizacion(pedido_cliente_id_tmp, codigo_producto, p
  * @apiParam {Function} callback Funcion de retorno de informacion.
  */
 PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, termino_busqueda, pagina, callback) {
-    
+
     var sql = " select\
                     a.pedido_cliente_id_tmp as numero_cotizacion,\
                     a.empresa_id,\
@@ -1103,10 +1091,10 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, termino
                     c.telefono, c.nombre_tercero, d.nombre, d.telefono, e.pais, f.departamento, g.municipio\
                 order by 1 desc\
 ";
-    
+
     G.db.paginated(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
         callback(err, rows);
-    }); 
+    });
 
 };
 
@@ -1122,7 +1110,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, termino
  * @apiParam {Function} callback Funcion de retorno de informacion.
  */
 PedidosClienteModel.prototype.listado_pedidos_clientes = function(empresa_id, termino_busqueda, pagina, callback) {
-    
+
     var sql = " select\
                     a.pedido_cliente_id as numero_pedido,\
                     a.empresa_id,\
@@ -1171,19 +1159,19 @@ PedidosClienteModel.prototype.listado_pedidos_clientes = function(empresa_id, te
                     f.empresa_id, f.prefijo, f.numero \
                 order by 1 desc\
 ";
-    
+
     G.db.paginated(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result) {
         callback(err, rows);
-    }); 
-    
+    });
+
     /*G.db.query(sql, [empresa_id, "%" + termino_busqueda + "%"], function(err, rows, result) {
-        callback(err, rows, result);
-    });*/
+     callback(err, rows, result);
+     });*/
 };
 
 //************ NUEVO *******************
 PedidosClienteModel.prototype.consultar_encabezado_cotizacion = function(numero_cotizacion, callback) {
-    
+
     var sql = " select\
                     a.pedido_cliente_id_tmp as numero_cotizacion,\
                     a.empresa_id,\
@@ -1219,15 +1207,15 @@ PedidosClienteModel.prototype.consultar_encabezado_cotizacion = function(numero_
                         and g.tipo_dpto_id = f.tipo_dpto_id\
                         and g.tipo_pais_id = e.tipo_pais_id\
                 where a.pedido_cliente_id_tmp = $1";
-    
+
     G.db.query(sql, [numero_cotizacion], function(err, rows, result) {
         callback(err, rows, result);
-    }); 
+    });
 
 };
 
 PedidosClienteModel.prototype.consultar_encabezado_pedido = function(numero_pedido, callback) {
-    
+
     var sql = " select\
                     a.pedido_cliente_id as numero_pedido,\
                     a.empresa_id,\
@@ -1269,7 +1257,7 @@ PedidosClienteModel.prototype.consultar_encabezado_pedido = function(numero_pedi
                         and g.tipo_pais_id = e.tipo_pais_id\
                     left join inv_bodegas_movimiento_tmp_despachos_clientes h on a.pedido_cliente_id = h.pedido_cliente_id  \
                 where a.pedido_cliente_id = $1";
-    
+
     G.db.query(sql, [numero_pedido], function(err, rows, result) {
         callback(err, rows, result);
     });
@@ -1290,9 +1278,9 @@ PedidosClienteModel.prototype.consultar_encabezado_pedido = function(numero_pedi
  * @apiParam {Function} callback Funcion de retorno de informacion.
  */
 PedidosClienteModel.prototype.estado_cotizacion = function(numero_cotizacion, callback) {
-    
+
     var sql = "select estado from ventas_ordenes_pedidos_tmp where pedido_cliente_id_tmp = $1";
-    
+
     G.db.query(sql, [numero_cotizacion], function(err, rows, result) {
         callback(err, rows, result);
     });
@@ -1310,11 +1298,11 @@ PedidosClienteModel.prototype.estado_cotizacion = function(numero_cotizacion, ca
  * @apiParam {Function} callback Funcion de retorno de informacion.
  */
 PedidosClienteModel.prototype.estado_pedido = function(numero_pedido, callback) {
-    
+
     var sql = " select a.estado_pedido, b.estado as estado_separacion from ventas_ordenes_pedidos a\
                 left join inv_bodegas_movimiento_tmp_despachos_clientes b on a.pedido_cliente_id = b.pedido_cliente_id\
                 where a.pedido_cliente_id = $1";
-    
+
     G.db.query(sql, [numero_pedido], function(err, rows, result) {
         callback(err, rows, result);
     });
@@ -1332,7 +1320,7 @@ PedidosClienteModel.prototype.estado_pedido = function(numero_pedido, callback) 
  * @apiParam {Function} callback Funcion de retorno de informacion.
  */
 PedidosClienteModel.prototype.listar_detalle_cotizacion = function(numero_cotizacion, callback) {
-    
+
     var sql = " select\
                     codigo_producto,\
                     fc_descripcion_producto(codigo_producto) as nombre_producto,\
@@ -1346,7 +1334,7 @@ PedidosClienteModel.prototype.listar_detalle_cotizacion = function(numero_cotiza
                 from\
                     ventas_ordenes_pedidos_d_tmp\
                 where pedido_cliente_id_tmp = $1";
-    
+
     G.db.query(sql, [numero_cotizacion], function(err, rows, result) {
         callback(err, rows, result);
     });
@@ -1365,7 +1353,7 @@ PedidosClienteModel.prototype.listar_detalle_cotizacion = function(numero_cotiza
  * @apiParam {Function} callback Funcion de retorno de informacion.
  */
 PedidosClienteModel.prototype.listar_detalle_pedido = function(numero_pedido, callback) {
-    
+
     var sql = " select\
                     codigo_producto,\
                     fc_descripcion_producto(codigo_producto) as nombre_producto,\
@@ -1379,21 +1367,21 @@ PedidosClienteModel.prototype.listar_detalle_pedido = function(numero_pedido, ca
                 from\
                     ventas_ordenes_pedidos_d\
                 where pedido_cliente_id = $1";
-    
+
     /*
-    //--item_id serial NOT NULL, -- Es la llave primaria del item de un pedido
-  //--pedido_cliente_id integer NOT NULL, -- Es el Pedido (foranea)
-  codigo_producto character varying(50) NOT NULL, -- Es el Producto inscrito en el pedido de un cliente
-  porc_iva numeric(5,3) NOT NULL, -- Es el Iva del Producto
-  numero_unidades integer NOT NULL DEFAULT 0, -- Numero de Unidades Solicitadas por el Cliente
-  valor_unitario numeric(15,2) NOT NULL, -- Es el valor unitario del producto, calculado segun el contrato inscrito en el sistema
-  fecha_registro timestamp(1) without time zone NOT NULL DEFAULT now(), -- Fecha de Registro
-  //--usuario_id integer NOT NULL, -- Usuario que registra el Item
-  //--cantidad_despachada integer NOT NULL DEFAULT 0, -- CANTIDAD DESPACHADA A UN CLIENTE
-  //--cantidad_facturada integer NOT NULL DEFAULT 0, 
+     //--item_id serial NOT NULL, -- Es la llave primaria del item de un pedido
+     //--pedido_cliente_id integer NOT NULL, -- Es el Pedido (foranea)
+     codigo_producto character varying(50) NOT NULL, -- Es el Producto inscrito en el pedido de un cliente
+     porc_iva numeric(5,3) NOT NULL, -- Es el Iva del Producto
+     numero_unidades integer NOT NULL DEFAULT 0, -- Numero de Unidades Solicitadas por el Cliente
+     valor_unitario numeric(15,2) NOT NULL, -- Es el valor unitario del producto, calculado segun el contrato inscrito en el sistema
+     fecha_registro timestamp(1) without time zone NOT NULL DEFAULT now(), -- Fecha de Registro
+     //--usuario_id integer NOT NULL, -- Usuario que registra el Item
+     //--cantidad_despachada integer NOT NULL DEFAULT 0, -- CANTIDAD DESPACHADA A UN CLIENTE
+     //--cantidad_facturada integer NOT NULL DEFAULT 0, 
      */
-    
-    
+
+
     G.db.query(sql, [numero_pedido], function(err, rows, result) {
         callback(err, rows, result);
     });
@@ -1403,49 +1391,50 @@ PedidosClienteModel.prototype.listar_detalle_pedido = function(numero_pedido, ca
 PedidosClienteModel.prototype.eliminar_registro_detalle_cotizacion = function(numero_cotizacion, codigo_producto, usuario_solicitud, callback)
 {
     /*var sql = "DELETE FROM ventas_ordenes_pedidos_d_tmp WHERE pedido_cliente_id_tmp = $1 and codigo_producto = $2";
+     
+     G.db.query(sql, [numero_cotizacion, codigo_producto], function(err, rows, result) {
+     callback(err, rows);
+     });*/
 
-    G.db.query(sql, [numero_cotizacion, codigo_producto], function(err, rows, result) {
-        callback(err, rows);
-    });*/
-    
-    G.db.begin(function(){
-        
-        __log_eliminar_producto_detalle_cotizacion(numero_cotizacion, codigo_producto, usuario_solicitud, function(err, rows, result){
-            
-            if(err){
+    G.db.begin(function() {
+
+        __log_eliminar_producto_detalle_cotizacion(numero_cotizacion, codigo_producto, usuario_solicitud, function(err, rows, result) {
+
+            if (err) {
+                callback(err);
+                return;
+            }
+
+            __eliminar_registro_detalle_cotizacion(numero_cotizacion, codigo_producto, function(err, rows, result) {
+
+                if (err) {
                     callback(err);
                     return;
                 }
-            
-            __eliminar_registro_detalle_cotizacion(numero_cotizacion, codigo_producto, function(err, rows, result){
-               
-                if(err){
-                    callback(err);
-                    return;
-                }
-                
-                G.db.commit(function(){
+
+                G.db.commit(function() {
                     callback(err, rows);
                 });
             });
         });
-        
-    });  
-};
 
-function __eliminar_registro_detalle_cotizacion(numero_cotizacion, codigo_producto, callback){
-    
-    var sql = "DELETE FROM ventas_ordenes_pedidos_d_tmp WHERE pedido_cliente_id_tmp = $1 and codigo_producto = $2";
-    
-    G.db.transaction(sql, [numero_cotizacion, codigo_producto], function(err, rows, result){
-        callback(err, rows, result);
     });
 };
+
+function __eliminar_registro_detalle_cotizacion(numero_cotizacion, codigo_producto, callback) {
+
+    var sql = "DELETE FROM ventas_ordenes_pedidos_d_tmp WHERE pedido_cliente_id_tmp = $1 and codigo_producto = $2";
+
+    G.db.transaction(sql, [numero_cotizacion, codigo_producto], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+}
+;
 
 PedidosClienteModel.prototype.cambiar_estado_cotizacion = function(numero_cotizacion, nuevo_estado, callback)
 {
     var sql = "UPDATE ventas_ordenes_pedidos_tmp SET estado = $2 WHERE pedido_cliente_id_tmp = $1";
-    
+
     G.db.query(sql, [numero_cotizacion, nuevo_estado], function(err, rows, result) {
         callback(err, rows, result);
     });
@@ -1454,7 +1443,7 @@ PedidosClienteModel.prototype.cambiar_estado_cotizacion = function(numero_cotiza
 PedidosClienteModel.prototype.cambiar_estado_aprobacion_cotizacion = function(numero_cotizacion, nuevo_estado, observacion, callback)
 {
     var sql = "UPDATE ventas_ordenes_pedidos_tmp SET estado = $2, observaciones = $3 WHERE pedido_cliente_id_tmp = $1";
-    
+
     G.db.query(sql, [numero_cotizacion, nuevo_estado, observacion], function(err, rows, result) {
         callback(err, rows, result);
     });
@@ -1463,7 +1452,7 @@ PedidosClienteModel.prototype.cambiar_estado_aprobacion_cotizacion = function(nu
 PedidosClienteModel.prototype.cambiar_estado_aprobacion_pedido = function(numero_pedido, nuevo_estado, observacion, callback)
 {
     var sql = "UPDATE ventas_ordenes_pedidos SET estado = $2, observacion = $3 WHERE pedido_cliente_id = $1";
-    
+
     G.db.query(sql, [numero_pedido, nuevo_estado, observacion], function(err, rows, result) {
         callback(err, rows, result);
     });
@@ -1471,72 +1460,73 @@ PedidosClienteModel.prototype.cambiar_estado_aprobacion_pedido = function(numero
 
 function __cambiar_estado_cotizacion(numero_cotizacion, nuevo_estado, callback)
 {
-    
+
     var sql = "UPDATE ventas_ordenes_pedidos_tmp SET estado = $2 WHERE pedido_cliente_id_tmp = $1";
 
-    G.db.transaction(sql, [numero_cotizacion, nuevo_estado], function(err, rows, result){
+    G.db.transaction(sql, [numero_cotizacion, nuevo_estado], function(err, rows, result) {
         callback(err, rows, result);
     });
 
-};
+}
+;
 
 //Insert con Transacción para generación de pedidos
 PedidosClienteModel.prototype.insertar_pedido_cliente = function(numero_cotizacion, callback)
 {
     G.db.begin(function() {
-        
-       __insertar_encabezado_pedido_cliente(numero_cotizacion, function(err, rows, result) {
 
-           if(err){
-               callback(err);
-               return;
-           }
+        __insertar_encabezado_pedido_cliente(numero_cotizacion, function(err, rows, result) {
 
-           //console.log(">>>>> DATA ROWS: ", rows.rows[0].pedido_cliente_id);
-           //console.log(">>>>> DATA RESULT: ", result);
-           var numero_pedido = rows.rows[0].pedido_cliente_id;
-           var fecha_registro_encabezado = rows.rows[0].fecha_registro;
-           
-           //console.log(">>>>> DATA INSERTAR ENCABEZADO: ", rows);
-           //console.log(">>>>> Número Pedido: ", numero_pedido);
-           
-           __cambiar_estado_cotizacion(numero_cotizacion, '0', function(err, rows, result){
-               if(err){
+            if (err) {
+                callback(err);
+                return;
+            }
+
+            //console.log(">>>>> DATA ROWS: ", rows.rows[0].pedido_cliente_id);
+            //console.log(">>>>> DATA RESULT: ", result);
+            var numero_pedido = rows.rows[0].pedido_cliente_id;
+            var fecha_registro_encabezado = rows.rows[0].fecha_registro;
+
+            //console.log(">>>>> DATA INSERTAR ENCABEZADO: ", rows);
+            //console.log(">>>>> Número Pedido: ", numero_pedido);
+
+            __cambiar_estado_cotizacion(numero_cotizacion, '0', function(err, rows, result) {
+                if (err) {
                     callback(err);
                     return;
                 }
-                
+
                 /* Insertar Detalle */
                 __insertar_detalle_pedido_cliente(numero_pedido, numero_cotizacion, function(err, rows, result) {
 
-                    if(err){
+                    if (err) {
                         callback(err);
                         return;
                     }
 
                     // Finalizar Transacción.
-                    G.db.commit(function(){
+                    G.db.commit(function() {
                         callback(err, rows, fecha_registro_encabezado);
                     });
                 });
                 /* Insertar Detalle */
-           });
+            });
 
-       });
+        });
     });
 };
 
 function __insertar_encabezado_pedido_cliente(numero_cotizacion, callback)
 {
-    
+
     /*
      Los camposiguientes se usan solo para anulación:
-    
-        fecha_registro_anulacion,
-	usuario_anulador,
-	observacion_anulacion,
+     
+     fecha_registro_anulacion,
+     usuario_anulador,
+     observacion_anulacion,
      */
-    
+
     var sql = " INSERT INTO ventas_ordenes_pedidos( empresa_id, tipo_id_tercero, tercero_id, fecha_registro, usuario_id, estado, tipo_id_vendedor,\
                     vendedor_id, observacion, estado_pedido, centro_destino, bodega_destino) \
                 SELECT empresa_id, tipo_id_tercero, tercero_id, CURRENT_TIMESTAMP, usuario_id, 1, tipo_id_vendedor,\
@@ -1545,70 +1535,72 @@ function __insertar_encabezado_pedido_cliente(numero_cotizacion, callback)
                 WHERE pedido_cliente_id_tmp = $1 \
                 RETURNING pedido_cliente_id, fecha_registro";
 
-    G.db.transaction(sql, [numero_cotizacion], function(err, rows, result){
+    G.db.transaction(sql, [numero_cotizacion], function(err, rows, result) {
         callback(err, rows, result);
     });
-};
+}
+;
 
 function __insertar_detalle_pedido_cliente(numero_pedido, numero_cotizacion, callback) {
-    
+
     /*
      Los campos siguientes se usan solo para despacho y facturación:
-    
-        cantidad_despachada
-        cantidad_facturada
-    */
+     
+     cantidad_despachada
+     cantidad_facturada
+     */
     var sql = " INSERT INTO ventas_ordenes_pedidos_d(pedido_cliente_id, codigo_producto, porc_iva, numero_unidades, valor_unitario, fecha_registro, usuario_id, tipo_producto)\
                 SELECT $1, codigo_producto, porc_iva, numero_unidades, valor_unitario, CURRENT_TIMESTAMP, usuario_id, tipo_producto\
                 FROM ventas_ordenes_pedidos_d_tmp \
                 WHERE pedido_cliente_id_tmp = $2\
                 RETURNING pedido_cliente_id";
 
-    G.db.transaction(sql, [numero_pedido, numero_cotizacion], function(err, rows, result){
+    G.db.transaction(sql, [numero_pedido, numero_cotizacion], function(err, rows, result) {
         callback(err, rows, result);
     });
-};
+}
+;
 
 
 PedidosClienteModel.prototype.insertar_detalle_pedido = function(numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto, callback) {
-    
-    
+
+
     G.db.begin(function() {
-        
+
         //función por implementar - conveniente hacerlo pero se debe validar primero con Mauricio - Se debe crear tabla para ello
-        
+
 //        __log_insertar_producto_detalle_pedido(numero_pedido, codigo_producto, usuario_id, function(err, rows, result){
 //            
 //            if(err){
 //                    callback(err);
 //                    return;
 //                }
-                
-            __cambiar_estado_pedido(numero_pedido, function(err, rows, result){
-                
-                if(err){
-                        callback(err);
-                        return;
-                    }
-            
-                __insertar_detalle_pedido(numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto, function(err, rows, result){
 
-                    if(err){
-                        callback(err);
-                        return;
-                    }
+        __cambiar_estado_pedido(numero_pedido, function(err, rows, result) {
 
-                    G.db.commit(function(){
-                        callback(err, rows);
-                    });
+            if (err) {
+                callback(err);
+                return;
+            }
+
+            __insertar_detalle_pedido(numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto, function(err, rows, result) {
+
+                if (err) {
+                    callback(err);
+                    return;
+                }
+
+                G.db.commit(function() {
+                    callback(err, rows);
                 });
-            
             });
+
+        });
 //        });
     });
-    
-    
-    
+
+
+
 //    var sql = "INSERT INTO ventas_ordenes_pedidos_d(pedido_cliente_id, codigo_producto, porc_iva, numero_unidades, valor_unitario, fecha_registro, usuario_id, tipo_producto)\n\
 //                    VALUES($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, $6, $7)";
 //    
@@ -1618,41 +1610,42 @@ PedidosClienteModel.prototype.insertar_detalle_pedido = function(numero_pedido, 
 };
 
 function __insertar_detalle_pedido(numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto, callback) {
-    
+
     var sql = "INSERT INTO ventas_ordenes_pedidos_d(pedido_cliente_id, codigo_producto, porc_iva, numero_unidades, valor_unitario, fecha_registro, usuario_id, tipo_producto)\n\
                     VALUES($1, $2, $3, $4, $5, CURRENT_TIMESTAMP, $6, $7)";
-    
+
     G.db.transaction(sql, [numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto], function(err, rows, result) {
         callback(err, rows, result);
     });
-};
+}
+;
 
 //eliminar_registro_detalle_pedido
 PedidosClienteModel.prototype.eliminar_registro_detalle_pedido = function(numero_pedido, codigo_producto, usuario_solicitud, callback)
 {
     /*var sql = "DELETE FROM ventas_ordenes_pedidos_d WHERE pedido_cliente_id = $1 and codigo_producto = $2";
+     
+     G.db.query(sql, [numero_pedido, codigo_producto], function(err, rows, result) {
+     callback(err, rows);
+     });*/
 
-    G.db.query(sql, [numero_pedido, codigo_producto], function(err, rows, result) {
-        callback(err, rows);
-    });*/
-    
     G.db.begin(function() {
-        
-        __log_eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, usuario_solicitud, function(err, rows, result){
-            
-            if(err){
+
+        __log_eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, usuario_solicitud, function(err, rows, result) {
+
+            if (err) {
+                callback(err);
+                return;
+            }
+
+            __eliminar_registro_detalle_pedido(numero_pedido, codigo_producto, function(err, rows, result) {
+
+                if (err) {
                     callback(err);
                     return;
                 }
-            
-            __eliminar_registro_detalle_pedido(numero_pedido, codigo_producto, function(err, rows, result){
-               
-                if(err){
-                    callback(err);
-                    return;
-                }
-                
-                G.db.commit(function(){
+
+                G.db.commit(function() {
                     callback(err, rows);
                 });
             });
@@ -1663,15 +1656,16 @@ PedidosClienteModel.prototype.eliminar_registro_detalle_pedido = function(numero
 function __eliminar_registro_detalle_pedido(numero_cotizacion, codigo_producto, callback)
 {
     var sql = "DELETE FROM ventas_ordenes_pedidos_d WHERE pedido_cliente_id = $1 and codigo_producto = $2";
-    
-    G.db.transaction(sql, [numero_cotizacion, codigo_producto], function(err, rows, result){
+
+    G.db.transaction(sql, [numero_cotizacion, codigo_producto], function(err, rows, result) {
         callback(err, rows, result);
     });
-};
+}
+;
 
 function __log_eliminar_producto_detalle_cotizacion(numero_cotizacion, codigo_producto, usuario_solicitud, callback)
 {
-    
+
     var sql = " INSERT INTO log_eliminacion_cotizaciones_cliente(cotizacion_id,usuario_solicitud,codigo_producto,porc_iva,numero_unidades,valor_unitario,usuario_id,fecha_registro,usuario_ejecuta)\
                 SELECT a.pedido_cliente_id_tmp, b.usuario, a.codigo_producto, a.porc_iva, a.numero_unidades, a.valor_unitario, a.usuario_id,CURRENT_TIMESTAMP, b.nombre\
                 FROM ventas_ordenes_pedidos_d_tmp a\
@@ -1679,14 +1673,15 @@ function __log_eliminar_producto_detalle_cotizacion(numero_cotizacion, codigo_pr
                 WHERE a.pedido_cliente_id_tmp = $1\
                 AND a.codigo_producto = $2";
 
-    G.db.transaction(sql, [numero_cotizacion, codigo_producto, usuario_solicitud], function(err, rows, result){
+    G.db.transaction(sql, [numero_cotizacion, codigo_producto, usuario_solicitud], function(err, rows, result) {
         callback(err, rows, result);
     });
-};
+}
+;
 
 function __log_eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, usuario_solicitud, callback)
 {
-    
+
     var sql = " INSERT INTO log_eliminacion_pedidos_cliente(pedido_id,usuario_solicitud,codigo_producto,porc_iva,numero_unidades,valor_unitario,usuario_id,fecha_registro,usuario_ejecuta)\
                 SELECT a.pedido_cliente_id, b.usuario, a.codigo_producto, a.porc_iva, a.numero_unidades, a.valor_unitario, a.usuario_id,CURRENT_TIMESTAMP, b.nombre\
                 FROM ventas_ordenes_pedidos_d a\
@@ -1694,38 +1689,39 @@ function __log_eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, 
                 WHERE a.pedido_cliente_id = $1\
                 AND a.codigo_producto = $2";
 
-    G.db.transaction(sql, [numero_pedido, codigo_producto, usuario_solicitud], function(err, rows, result){
+    G.db.transaction(sql, [numero_pedido, codigo_producto, usuario_solicitud], function(err, rows, result) {
         callback(err, rows, result);
     });
-};
+}
+;
 
 //Modelo Modificar Cantidades Cotizacion
 PedidosClienteModel.prototype.modificar_cantidades_cotizacion = function(numero_cotizacion, codigo_producto, usuario_solicitud, cantidad, callback)
 {
-    
-    G.db.begin(function() {
-        
-        __log_eliminar_producto_detalle_cotizacion(numero_cotizacion, codigo_producto, usuario_solicitud, function(err, rows, result){
-            
-            if(err){
-                    callback(err);
-                    return;
-                }
-                
-            __cambiar_estado_cotizacion(numero_cotizacion, '1', function(err, rows, result){
-               if(err){
-                    callback(err);
-                    return;
-                }
-            
-                __modificar_cantidades_cotizacion(numero_cotizacion, codigo_producto, cantidad, function(err, rows, result){
 
-                    if(err){
+    G.db.begin(function() {
+
+        __log_eliminar_producto_detalle_cotizacion(numero_cotizacion, codigo_producto, usuario_solicitud, function(err, rows, result) {
+
+            if (err) {
+                callback(err);
+                return;
+            }
+
+            __cambiar_estado_cotizacion(numero_cotizacion, '1', function(err, rows, result) {
+                if (err) {
+                    callback(err);
+                    return;
+                }
+
+                __modificar_cantidades_cotizacion(numero_cotizacion, codigo_producto, cantidad, function(err, rows, result) {
+
+                    if (err) {
                         callback(err);
                         return;
                     }
 
-                    G.db.commit(function(){
+                    G.db.commit(function() {
                         callback(err, rows);
                     });
                 });
@@ -1738,35 +1734,35 @@ PedidosClienteModel.prototype.modificar_cantidades_cotizacion = function(numero_
 //Modelo Modificar Cantidades Pedido
 PedidosClienteModel.prototype.modificar_cantidades_pedido = function(numero_pedido, codigo_producto, usuario_solicitud, cantidad, callback)
 {
-    
+
     G.db.begin(function() {
-        
-        __log_eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, usuario_solicitud, function(err, rows, result){
-            
-            if(err){
+
+        __log_eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, usuario_solicitud, function(err, rows, result) {
+
+            if (err) {
+                callback(err);
+                return;
+            }
+
+            __cambiar_estado_pedido(numero_pedido, function(err, rows, result) {
+
+                if (err) {
                     callback(err);
                     return;
                 }
-                
-            __cambiar_estado_pedido(numero_pedido, function(err, rows, result){
-                
-                if(err){
-                        callback(err);
-                        return;
-                    }
-            
-                __modificar_cantidades_pedido(numero_pedido, codigo_producto, cantidad, function(err, rows, result){
 
-                    if(err){
+                __modificar_cantidades_pedido(numero_pedido, codigo_producto, cantidad, function(err, rows, result) {
+
+                    if (err) {
                         callback(err);
                         return;
                     }
 
-                    G.db.commit(function(){
+                    G.db.commit(function() {
                         callback(err, rows);
                     });
                 });
-            
+
             });
         });
     });
@@ -1776,38 +1772,41 @@ PedidosClienteModel.prototype.modificar_cantidades_pedido = function(numero_pedi
 
 function __modificar_cantidades_cotizacion(numero_cotizacion, codigo_producto, cantidad, callback)
 {
-    
+
     var sql = " UPDATE ventas_ordenes_pedidos_d_tmp SET numero_unidades = $3\
                 WHERE pedido_cliente_id_tmp = $1\
                 AND codigo_producto = $2";
 
-    G.db.transaction(sql, [numero_cotizacion, codigo_producto, cantidad], function(err, rows, result){
+    G.db.transaction(sql, [numero_cotizacion, codigo_producto, cantidad], function(err, rows, result) {
         callback(err, rows, result);
     });
-};
+}
+;
 
 function __modificar_cantidades_pedido(numero_pedido, codigo_producto, cantidad, callback)
 {
-    
+
     var sql = " UPDATE ventas_ordenes_pedidos_d SET numero_unidades = $3\
                 WHERE pedido_cliente_id = $1\
                 AND codigo_producto = $2";
 
-    G.db.transaction(sql, [numero_pedido, codigo_producto, cantidad], function(err, rows, result){
+    G.db.transaction(sql, [numero_pedido, codigo_producto, cantidad], function(err, rows, result) {
         callback(err, rows, result);
     });
-};
+}
+;
 
 function __cambiar_estado_pedido(numero_pedido, callback)
 {
-    
+
     var sql = " UPDATE ventas_ordenes_pedidos SET estado = '0'\
                 WHERE pedido_cliente_id = $1";
 
-    G.db.transaction(sql, [numero_pedido], function(err, rows, result){
+    G.db.transaction(sql, [numero_pedido], function(err, rows, result) {
         callback(err, rows, result);
     });
-};
+}
+;
 
 PedidosClienteModel.$inject = ["m_productos"];
 

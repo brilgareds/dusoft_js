@@ -884,12 +884,16 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     var termino_busqueda = filtro.termino_busqueda;
     var tipo_producto = filtro.tipo_producto;
     var laboratorio_id = filtro.laboratorio_id;
+    var numero_cotizacion = filtro.numero_cotizacion;
 
     if (tipo_producto !== '')
         sql_aux = " and b.tipo_producto_id = '" + tipo_producto + "'";
 
     if (laboratorio_id !== '')
         sql_aux += " and f.clase_id = '" + laboratorio_id + "'";
+    
+    if (numero_cotizacion !== '' && numero_cotizacion !== '0')
+        sql_aux += " and a.codigo_producto NOT IN ( select codigo_producto from ventas_ordenes_pedidos_d_tmp where pedido_cliente_id_tmp = '"+numero_cotizacion+"' ) ";
 
     var sql = " select \
                 a.codigo_producto,\

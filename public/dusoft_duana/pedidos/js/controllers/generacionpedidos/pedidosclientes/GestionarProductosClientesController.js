@@ -41,7 +41,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             });
 
             $rootScope.$on('cerrar_gestion_productos_clientesCompleto', function(e, parametros) {
-                //$scope.datos_form = null;
                 $scope.$$watchers = null;
             });
 
@@ -53,14 +52,16 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     that.insertar_cabercera_cotizacion(function(continuar) {
                         if (continuar) {
                             that.insertar_detalle_cotizacion(function(resultado) {
-                                //callback(resultado);
+                                if (resultado)
+                                    that.buscar_productos_clientes();
                             });
                         }
                     });
                 } else {
                     // Agregar Productos a la Cotizacion
                     that.insertar_detalle_cotizacion(function(resultado) {
-                        //callback(resultado);
+                        if (resultado)
+                            that.buscar_productos_clientes();
                     });
                 }
             };
@@ -84,7 +85,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     if (data.status === 200 && data.obj.pedidos_clientes.numero_cotizacion > 0) {
 
                         $scope.Pedido.set_numero_cotizacion(data.obj.pedidos_clientes.numero_cotizacion);
-
+                        localStorageService.add("numero_cotizacion", $scope.Pedido.get_numero_cotizacion());
                         callback(true);
                     } else {
                         callback(false);
@@ -105,21 +106,11 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     }
                 };
 
-                console.log('=== obj ===');
-                console.log(obj);
-                console.log('===========');
-                //return;
-
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.INSERTAR_DETALLE_COTIZACION, "POST", obj, function(data) {
 
                     $scope.datos_form.producto_seleccionado = Producto.get();
 
                     AlertService.mostrarMensaje("warning", data.msj);
-
-                    console.log('=== data ===');
-                    console.log(data);
-                    console.log('===========');
-                    //return;
 
                     if (data.status === 200) {
 
@@ -214,7 +205,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             pagina_actual: $scope.datos_form.pagina_actual,
                             termino_busqueda: $scope.datos_form.termino_busqueda,
                             tipo_producto: $scope.datos_form.tipo_producto,
-                            laboratorio_id: $scope.datos_form.laboratorio.get_id()
+                            laboratorio_id: $scope.datos_form.laboratorio.get_id(),
+                            numero_cotizacion: $scope.Pedido.get_numero_cotizacion()
                         }
                     }
                 };

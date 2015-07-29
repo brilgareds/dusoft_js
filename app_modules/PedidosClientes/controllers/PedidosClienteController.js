@@ -363,7 +363,8 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
     var filtro = {
         tipo_producto: (args.pedidos_clientes.tipo_producto === undefined) ? '' : args.pedidos_clientes.tipo_producto,
         termino_busqueda: args.pedidos_clientes.termino_busqueda,
-        laboratorio_id: (args.pedidos_clientes.laboratorio_id === undefined) ? '' : args.pedidos_clientes.laboratorio_id
+        laboratorio_id: (args.pedidos_clientes.laboratorio_id === undefined) ? '' : args.pedidos_clientes.laboratorio_id,
+        numero_cotizacion : (args.pedidos_clientes.numero_cotizacion === undefined) ? '' : args.pedidos_clientes.numero_cotizacion
     };
     var pagina = args.pedidos_clientes.pagina_actual;
 

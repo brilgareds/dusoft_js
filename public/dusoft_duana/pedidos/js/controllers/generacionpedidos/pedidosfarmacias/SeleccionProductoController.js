@@ -9,10 +9,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
         'API', "socket", "AlertService",
         '$state', 'Usuario', 'ProductoPedidoFarmacia', '$modal',
         function($scope, $rootScope, Request,
-                 EmpresaPedidoFarmacia, FarmaciaPedido, PedidoFarmacia,
-                 API, socket, AlertService, $state, Usuario, ProductoPedidoFarmacia, $modal) {
+                EmpresaPedidoFarmacia, FarmaciaPedido, PedidoFarmacia,
+                API, socket, AlertService, $state, Usuario, ProductoPedidoFarmacia, $modal) {
 
             var self = this;
+            $scope.expreg = new RegExp("^[0-9]*$");
 
             $scope.lista_productos = {
                 data: 'rootSeleccionProductoFarmacia.pedido.obtenerProductos()',
@@ -25,73 +26,73 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Código', width: "10%",
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
-                                                <span class="label label-success" ng-show="row.entity.tipo_producto_id == 1" >N</span>\
-                                                <span class="label label-danger" ng-show="row.entity.tipo_producto_id == 2">A</span>\
-                                                <span class="label label-warning" ng-show="row.entity.tipo_producto_id == 3">C</span>\
-                                                <span class="label label-primary" ng-show="row.entity.tipo_producto_id == 4">I</span>\
-                                                <span class="label label-info" ng-show="row.entity.tipo_producto_id == 5">Ne</span>\
-                                                <span ng-if="row.entity.en_farmacia_seleccionada" ng-cell-text >{{COL_FIELD}}</span>\
-                                                <span ng-if="!row.entity.en_farmacia_seleccionada" ng-cell-text class="texto-alerta" >{{COL_FIELD}}</span>\
+                                                <span class="label label-success" ng-show="row.entity.getTipoProductoId() == 1" >N</span>\
+                                                <span class="label label-danger" ng-show="row.entity.getTipoProductoId() == 2">A</span>\
+                                                <span class="label label-warning" ng-show="row.entity.getTipoProductoId() == 3">C</span>\
+                                                <span class="label label-primary" ng-show="row.entity.getTipoProductoId() == 4">I</span>\
+                                                <span class="label label-info" ng-show="row.entity.getTipoProductoId() == 5">Ne</span>\
+                                                <span ng-if="row.entity.getEnFarmaciaSeleccionada()" ng-cell-text >{{COL_FIELD}}</span>\
+                                                <span ng-if="!row.entity.getEnFarmaciaSeleccionada()" ng-cell-text class="texto-alerta" >{{COL_FIELD}}</span>\
                                             </div>'
                     },
                     {field: 'descripcion', displayName: 'Descripción', width: "37%",
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
-                                                <span ng-if="row.entity.en_farmacia_seleccionada" ng-cell-text >{{COL_FIELD}}</span>\
-                                                <span ng-if="!row.entity.en_farmacia_seleccionada" ng-cell-text class="texto-alerta" >{{COL_FIELD}}</span>\
+                                                <span ng-if="row.entity.getEnFarmaciaSeleccionada()" ng-cell-text >{{COL_FIELD}}</span>\
+                                                <span ng-if="!row.entity.getEnFarmaciaSeleccionada()" ng-cell-text class="texto-alerta" >{{COL_FIELD}}</span>\
                                             </div>'
                     },
                     //{field: 'descripcion_molecula', displayName: 'Molécula'},
                     {field: 'existenciasFarmacia', displayName: 'Exist. Farmacia', width: "8%",
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
-                                            <span ng-if="row.entity.en_farmacia_seleccionada" ng-cell-text >{{COL_FIELD}}</span>\
-                                            <span ng-if="!row.entity.en_farmacia_seleccionada" ng-cell-text class="texto-alerta" >{{COL_FIELD}}</span>\
+                                            <span ng-if="row.entity.getEnFarmaciaSeleccionada()" ng-cell-text >{{COL_FIELD}}</span>\
+                                            <span ng-if="!row.entity.getEnFarmaciaSeleccionada()" ng-cell-text class="texto-alerta" >{{COL_FIELD}}</span>\
                                         </div>'
                     },
                     {field: 'totalExistenciasFarmacias', displayName: 'Total Exist. Farmacia', width: "11%",
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
-                                            <span ng-if="row.entity.en_farmacia_seleccionada" ng-cell-text >{{COL_FIELD}}</span>\
-                                            <span ng-if="!row.entity.en_farmacia_seleccionada" ng-cell-text class="texto-alerta" >{{COL_FIELD}}</span>\
+                                            <span ng-if="row.entity.getEnFarmaciaSeleccionada()" ng-cell-text >{{COL_FIELD}}</span>\
+                                            <span ng-if="!row.entity.getEnFarmaciaSeleccionada()" ng-cell-text class="texto-alerta" >{{COL_FIELD}}</span>\
                                         </div>'
                     },
                     {field: 'existencia', displayName: 'Exist. Bodega', width: "8%",
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
-                                            <span ng-if="row.entity.en_farmacia_seleccionada" ng-cell-text >{{COL_FIELD}}</span>\
-                                            <span ng-if="!row.entity.en_farmacia_seleccionada" ng-cell-text class="texto-alerta" >{{COL_FIELD}}</span>\
+                                            <span ng-if="row.entity.getEnFarmaciaSeleccionada()" ng-cell-text >{{COL_FIELD}}</span>\
+                                            <span ng-if="!row.entity.getEnFarmaciaSeleccionada()" ng-cell-text class="texto-alerta" >{{COL_FIELD}}</span>\
                                         </div>'
                     },
                     {field: 'disponibilidadBodega', displayName: 'Disponible',
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
-                                            <span ng-if="row.entity.en_farmacia_seleccionada" ng-cell-text >{{COL_FIELD}}</span>\
-                                            <span ng-if="!row.entity.en_farmacia_seleccionada" ng-cell-text class="texto-alerta" >{{COL_FIELD}}</span>\
+                                            <span ng-if="row.entity.getEnFarmaciaSeleccionada()" ng-cell-text >{{COL_FIELD}}</span>\
+                                            <span ng-if="!row.entity.getEnFarmaciaSeleccionada()" ng-cell-text class="texto-alerta" >{{COL_FIELD}}</span>\
                                         </div>'
                     },
                     {field: 'cantidadSolicitada', displayName: 'Solicitado', enableCellEdit: false, width: "10%",
                         cellTemplate: ' <div class="col-xs-12">\n\
-                                                <input ng-if="!rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" type="text" ng-model="row.entity.cantidad_solicitada" validacion-numero-entero class="form-control grid-inline-input"' +
-                                'ng-keyup="onTeclaIngresaProducto($event, row)"/>\n\
-                                                <input ng-if="rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" type="text" ng-model="row.entity.cantidad_solicitada" validacion-numero-entero class="form-control grid-inline-input"' +
+                                                <input ng-if="!rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" type="text" ng-model="row.entity.cantidadSolicitada" validacion-numero-entero class="form-control grid-inline-input"' +
+                                'ng-keyup="onIngresarProducto($event, row.entity)"/>\n\
+                                                <input ng-if="rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" type="text" ng-model="row.entity.cantidadSolicitada" validacion-numero-entero class="form-control grid-inline-input"' +
                                 'ng-keyup="onTeclaIngresaProductoEspecial($event, row)"/>\n\
                                             </div>'
                     },
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "6%",
                         cellTemplate: ' <div class="row">\
-                                                <button ng-if="!rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial() && row.entity.en_farmacia_seleccionada && row.entity.estado==1" class="btn btn-default btn-xs" ng-click="onIncluirProducto(row)" ' +
-                                ' ng-disabled="row.entity.cantidad_solicitada<=0 || row.entity.cantidad_solicitada==null || !expreg.test(row.entity.cantidad_solicitada)">\
+                                                <button ng-if="!rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial() && row.entity.getEnFarmaciaSeleccionada() && row.entity.getEstado()==1" class="btn btn-default btn-xs" ng-click="onIngresarProducto({which:13},row.entity)" ' +
+                                ' ng-disabled="row.entity.getCantidadSolicitada()<=0 || row.entity.getCantidadSolicitada()==null || !expreg.test(row.entity.getCantidadSolicitada())">\
                                                     <span class="glyphicon glyphicon-plus-sign"> Incluir</span>\
                                                 </button>\
-                                                <button ng-if="!rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial() && !row.entity.en_farmacia_seleccionada && row.entity.estado==1" class="btn btn-default btn-xs" ng-click="" ' +
+                                                <button ng-if="!rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial() && !row.entity.getEnFarmaciaSeleccionada() && row.entity.getEstado()==1" class="btn btn-default btn-xs" ng-click="" ' +
                                 ' ng-disabled="true">\
                                                     <span class="glyphicon glyphicon-plus-sign"> Incluir</span>\
                                                 </button>\
-                                                <button ng-if="rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial() && row.entity.en_farmacia_seleccionada && row.entity.estado==1" class="btn btn-default btn-xs" ng-click="onIncluirProductoEspecial(row)" ' +
-                                ' ng-disabled="row.entity.cantidad_solicitada<=0 || row.entity.cantidad_solicitada==null || !expreg.test(row.entity.cantidad_solicitada)">\
+                                                <button ng-if="rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial() && row.entity.getEnFarmaciaSeleccionada() && row.entity.getEstado()==1" class="btn btn-default btn-xs" ng-click="onIncluirProductoEspecial(row)" ' +
+                                ' ng-disabled="row.entity.getCantidadSolicitada()<=0 || row.entity.getCantidadSolicitada()==null || !expreg.test(row.entity.getCantidadSolicitada())">\
                                                     <span class="glyphicon glyphicon-plus-sign"> Incluir</span>\
                                                 </button>\
-                                                <button ng-if="rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial() && !row.entity.en_farmacia_seleccionada && row.entity.estado==1" class="btn btn-default btn-xs" ng-click="" ' +
+                                                <button ng-if="rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial() && !row.entity.getEnFarmaciaSeleccionada() && row.entity.getEstado()==1" class="btn btn-default btn-xs" ng-click="" ' +
                                 ' ng-disabled="true">\
                                                     <span class="glyphicon glyphicon-plus-sign"> Incluir</span>\
                                                 </button>\
-                                                <button ng-if="row.entity.estado==0" class="btn btn-default btn-xs" ng-click="" ' +
+                                                <button ng-if="row.entity.getEstado()==0" class="btn btn-default btn-xs" ng-click="" ' +
                                 ' ng-disabled="true">\
                                                     <span class="glyphicon glyphicon-plus-sign"> Bloqueado</span>\
                                                 </button>\n\
@@ -100,6 +101,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 ]
             };
 
+            /*
+             * @Author: Eduar
+             * +Descripcion: Metodo de inicializacion del controlador
+             */
             self.init = function() {
                 $scope.rootSeleccionProductoFarmacia = {};
                 $scope.rootSeleccionProductoFarmacia.termino_busqueda = "";
@@ -113,22 +118,36 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 };
 
             };
-            
-            self.renderProductosFarmacia = function(_productos){
-                console.log("productos a agregar ", _productos);
-                for(var i in _productos){
+
+            /*
+             * @Author: Eduar
+             * @param {object} _productos
+             * +Descripcion: metodo que serializa el json del servidor a productos de tipo <ProductoPedidoFarmacia>
+             */
+
+            self.renderProductosFarmacia = function(_productos) {
+                for (var i in _productos) {
                     var _producto = _productos[i];
                     var producto = ProductoPedidoFarmacia.get(_producto.codigo_producto, _producto.nombre_producto, _producto.existencia).
-                                   setExistenciasFarmacia(_producto.existencias_farmacia);
-                           
+                            setExistenciasFarmacia(_producto.existencias_farmacia).
+                            setTotalExistenciasFarmacias(_producto.total_existencias_farmacias).
+                            setDisponibilidadBodega(_producto.disponibilidad_bodega).
+                            setEstado(_producto.estado).setEnFarmaciaSeleccionada(_producto.en_farmacia_seleccionada).
+                            setTipoProductoId(_producto.tipo_producto_id).
+                            setCantidadSolicitada(_producto.cantidad_solicitada);
+
                     $scope.rootSeleccionProductoFarmacia.pedido.agregarProducto(producto);
-                    
+
                 }
-                
-                console.log("productos agregados ", $scope.rootSeleccionProductoFarmacia.pedido.obtenerProductos());
+
             };
 
-            self.onBuscarSeleccionProducto = function(callback) {
+            /*
+             * @Author: Eduar
+             * @param {function} callback
+             * +Descripcion: metodo que hace la peticion para traer los productos de la empresa seleccionada en el pedido
+             */
+            self.buscarProductos = function(callback) {
 
                 var obj = {
                     session: $scope.rootSeleccionProductoFarmacia.session,
@@ -151,32 +170,92 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 var url = API.PEDIDOS.FARMACIAS.LISTAR_PRODUCTOS_FARMACIAS;
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
-                    console.log(data);
                     if (data.status === 200) {
-                         
-                         self.renderProductosFarmacia(data.obj.lista_productos);
+                        if (data.obj.lista_productos.length) {
+                            self.renderProductosFarmacia(data.obj.lista_productos);
+                        } else {
+                            $scope.rootSeleccionProductoFarmacia.paginaactual = 1;
+                        }
                     }
 
                 });
 
             };
 
+            /*
+             * @Author: Eduar
+             * @param {$event} e
+             * @param {Object} datos
+             * +Descripcion: Evento que espera que el slide termine la animacion
+             */
             $rootScope.$on("mostrarSeleccionProductoCompleto", function(e, datos) {
                 self.init();
                 $scope.rootSeleccionProductoFarmacia.pedido = datos[1];
                 console.log("pedido ", $scope.pedido);
-                self.onBuscarSeleccionProducto();
+                self.buscarProductos();
             });
 
-
+            /*
+             * @Author: Eduar
+             * +Descripcion: Handler para cerrar el slide
+             */
             $scope.cerrar = function() {
                 $scope.$emit('cerrarSeleccionProducto', {animado: true});
 
                 $scope.rootSeleccionProductoFarmacia = {};
             };
 
+            /*
+             * @Author: Eduar
+             * @param {$event} event
+             * +Descripcion: Handler para el campo de texto
+             */
+            $scope.onBuscarProductos = function(event) {
 
+                if (event.which === 13) {
+                    $scope.rootSeleccionProductoFarmacia.paginaactual = 1;
+                    self.buscarProductos();
+                }
+            };
 
+            /*
+             * @Author: Eduar
+             * +Descripcion: Handler para traer pagina anterior
+             */
+            $scope.paginaAnterior = function() {
+                if ($scope.rootSeleccionProductoFarmacia.paginaactual === 1) {
+                    return;
+                }
+                $scope.rootSeleccionProductoFarmacia.paginaactual--;
+                self.buscarProductos();
+            };
+
+            /*
+             * @Author: Eduar
+             * +Descripcion: Handler para traer pagina siguiente
+             */
+            $scope.paginaSiguiente = function() {
+                $scope.rootSeleccionProductoFarmacia.paginaactual++;
+                self.buscarProductos();
+            };
+            
+            /*
+             * @Author: Eduar
+             * @param {$event} event
+             * @param {ProductoPedidoFarmacia} producto
+             * +Descripcion: Handler del text input de cantidad solicitada ubicado en la grid
+             */
+
+            $scope.onIngresarProducto = function(event, producto) {
+                if (event.which === 13) {
+                    if (parseInt(producto.getCantidadSolicitada()) > 0) {
+                        $scope.rootSeleccionProductoFarmacia.pedido.setProductoSeleccionado(producto);
+                        var pedido = angular.copy($scope.rootSeleccionProductoFarmacia.pedido);
+                        pedido.vaciarProductos();
+                        $rootScope.$emit("insertarProductoPedidoTemporal", pedido);
+                    }
+                }
+            };
 
             /*$scope.expreg = new RegExp("^[0-9]*$");
              
@@ -1689,13 +1768,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              });
              
              //eventos de widgets
-             $scope.onTeclaBuscarSeleccionProducto = function(ev) {
              
-             if (ev.which === 13) {
-             //                    console.log("Término Búsqueda: ", $scope.rootSeleccionProductoFarmacia.termino_busqueda);
-             $scope.onBuscarSeleccionProducto($scope.obtenerParametros());
-             }
-             };
              
              $scope.paginaAnterior = function() {
              $scope.rootSeleccionProductoFarmacia.paginaactual--;

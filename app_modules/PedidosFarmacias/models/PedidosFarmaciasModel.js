@@ -93,7 +93,7 @@ PedidosFarmaciasModel.prototype.listar_farmacias_usuario = function(tipo, usuari
 
 PedidosFarmaciasModel.prototype.existe_registro_encabezado_temporal = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback)
 {
-    var sql = "SELECT COUNT(*) FROM solicitud_Bodega_principal_aux WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and usuario_id = $4";
+    var sql = "SELECT COUNT(farmacia_id) as cantidad_registros  FROM solicitud_Bodega_principal_aux WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and usuario_id = $4";
 
     G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, usuario_id], function(err, rows, result) {
         callback(err, rows);
@@ -137,12 +137,17 @@ PedidosFarmaciasModel.prototype.listar_detalle_pedido_temporal = function(empres
     });
 };
 
-PedidosFarmaciasModel.prototype.insertar_pedido_farmacia_temporal = function(empresa_id, centro_utilidad_id, bodega_id, empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id, observacion, usuario_id, callback) {
+    
 
+PedidosFarmaciasModel.prototype.insertar_pedido_farmacia_temporal = function(empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id, 
+                                                               empresa_origen_id, centro_utilidad_origen_id, bodega_origen_id, observacion, usuario_id, callback) {
+    
+    //En la base de datos la empresa destino erroneamente se asigno como la empresa origen, por eso se hace el intercambio con lo que envia el app cliente
     var sql = " INSERT INTO solicitud_Bodega_principal_aux ( farmacia_id, centro_utilidad, bodega, empresa_destino, centro_destino, bogega_destino, observacion, usuario_id )\
                 VALUES( $1,$2,$3,$4,$5,$6,$7, $8);";
 
-    G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id, observacion, usuario_id], function(err, rows, result) {
+    G.db.query(sql, [empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id, empresa_origen_id, centro_utilidad_origen_id, 
+                    bodega_origen_id, observacion, usuario_id], function(err, rows, result) {
         callback(err, rows, result);
     });
 

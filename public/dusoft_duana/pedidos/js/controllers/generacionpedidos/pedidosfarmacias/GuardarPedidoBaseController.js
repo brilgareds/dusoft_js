@@ -5,20 +5,22 @@ define(["angular", "js/controllers",
     "models/generacionpedidos/pedidosfarmacias/FarmaciaPedido",
     "models/generacionpedidos/pedidosfarmacias/CentroUtilidadPedidoFarmacia",
     "models/generacionpedidos/pedidosfarmacias/BodegaPedidoFarmacia",
+    "models/generacionpedidos/pedidosfarmacias/ProductoPedidoFarmacia",
     "controllers/generacionpedidos/pedidosfarmacias/GuardarPedidoController",
-    "controllers/generacionpedidos/pedidosfarmacias/GuardarPedidoTemporalController"], function(angular, controllers) {
+    "controllers/generacionpedidos/pedidosfarmacias/GuardarPedidoTemporalController",
+    "controllers/generacionpedidos/pedidosfarmacias/SeleccionProductoController"], function(angular, controllers) {
 
     var fo = controllers.controller('GuardarPedidoBaseController', [
         '$scope', '$rootScope', 'Request',
         'EmpresaPedidoFarmacia', 'FarmaciaPedido', 'PedidoFarmacia',
         'API', "socket", "AlertService",
         '$state', "Usuario", "localStorageService", '$modal',
-        'ProductoPedido', "$timeout",
+        'ProductoPedidoFarmacia', "$timeout",
         function($scope, $rootScope, Request, 
                  EmpresaPedidoFarmacia, FarmaciaPedido, PedidoFarmacia,
                  API, socket, AlertService,
                  $state, Usuario, localStorageService, $modal,
-                 ProductoPedido, $timeout) {
+                 ProductoPedidoFarmacia, $timeout) {
 
             var self = this;
             $scope.root = {};
@@ -26,6 +28,30 @@ define(["angular", "js/controllers",
             $scope.root.empresasOrigen = [angular.copy(Usuario.getUsuarioActual().getEmpresa())];
                         
             $scope.root.pedido = PedidoFarmacia.get();
+            
+            
+            $scope.root.lista_productos = {
+                data: 'rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().lista_productos',
+                enableColumnResize: true,
+                enableRowSelection: false,
+                multiSelect: false,
+                columnDefs: [
+                    {field: 'codigo_producto', displayName: 'Código', width: "9%",
+                        cellTemplate : '<div class="ngCellText" ng-class="col.colIndex()">\
+                                                    <span class="label label-success" ng-show="row.entity.tipo_producto_id == 1" >N</span>\
+                                                    <span class="label label-danger" ng-show="row.entity.tipo_producto_id == 2">A</span>\
+                                                    <span class="label label-warning" ng-show="row.entity.tipo_producto_id == 3">C</span>\
+                                                    <span class="label label-primary" ng-show="row.entity.tipo_producto_id == 4">I</span>\
+                                                    <span class="label label-info" ng-show="row.entity.tipo_producto_id == 5">Ne</span>\
+                                                    <span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\
+                                                </div>'
+                    },
+                    {field: 'descripcion', displayName: 'Descripción', width: "37%"},
+                    {field: 'cantidad_solicitada', displayName: 'Solicitado'},
+                    {field: 'cantidad_pendiente', displayName: 'Pendiente'}
+                ]
+            };
+            
             
             /*
              * @Author: Eduar
@@ -61,6 +87,16 @@ define(["angular", "js/controllers",
                 empresa.setCentrosUtilidad($scope.root.pedido.getFarmaciaDestino().getCentrosUtilidad());
                 $scope.root.pedido.setFarmaciaDestino(empresa);
             };
+            
+            
+            $scope.onIncluirProductos = function() {
+                $scope.slideurl = "views/generacionpedidos/pedidosfarmacias/seleccionproducto.html?time=" + new Date().getTime();
+                
+                $scope.$emit('mostrarSeleccionProducto', $scope.root.pedido);
+
+            };
+            
+            
             
             /*that.pedido = PedidoVenta.get();
 
@@ -1491,53 +1527,7 @@ define(["angular", "js/controllers",
             };
 
 
-            $scope.onIncluirProductos = function(tipo_cliente) {
-                $scope.slideurl = "views/generarpedidos/seleccionproductofarmacia.html?time=" + new Date().getTime();
 
-                var datos_de = {
-                    empresa_id: $scope.rootCreaPedidoFarmacia.de_seleccion_empresa,
-                    centro_utilidad_id: $scope.rootCreaPedidoFarmacia.de_seleccion_centro_utilidad,
-                    bodega_id: $scope.rootCreaPedidoFarmacia.de_seleccion_bodega
-                };
-
-                var datos_para = {
-                    empresa_id: $scope.rootCreaPedidoFarmacia.para_seleccion_empresa.split(",")[0],
-                    centro_utilidad_id: $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad.split(",")[0],
-                    bodega_id: $scope.rootCreaPedidoFarmacia.para_seleccion_bodega.split(",")[0]
-                };
-
-                var observacion = $scope.rootCreaPedidoFarmacia.observacion;
-                
-                var datos_pedido = {
-                        numero_pedido: "",
-                        fecha_registro: "",
-                        descripcion_estado_actual_pedido: "",
-                        estado_actual_pedido: "",
-                        estado_separacion: ""
-                    };
-
-                that.pedido.setDatos(datos_pedido);
-                that.pedido.setTipo(2);
-                that.pedido.setObservacion($scope.rootCreaPedidoFarmacia.observacion);
-                
-                //Creación objeto farmacia
-                var farmacia = FarmaciaVenta.get(
-                        parseInt($scope.rootCreaPedidoFarmacia.para_seleccion_empresa.split(",")[0]),
-                        parseInt($scope.rootCreaPedidoFarmacia.para_seleccion_bodega.split(",")[0]),
-                        $scope.rootCreaPedidoFarmacia.para_seleccion_empresa.split(",")[1],
-                        $scope.rootCreaPedidoFarmacia.para_seleccion_bodega.split(",")[1],
-                        parseInt($scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad.split(",")[0]),
-                        $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad.split(",")[1]
-                );
-
-                that.pedido.setFarmacia(farmacia);
-
-                $scope.rootCreaPedidoFarmacia.Empresa.setPedidoSeleccionado(that.pedido);
-
-                $scope.$emit('mostrarseleccionproducto', tipo_cliente, datos_de, datos_para, observacion, that.pedido);
-
-            };
-            
             $scope.onIncluirProductosEspecial = function(tipo_cliente) {
                 
                 //console.log(">> Empresa Objeto: ", $scope.rootCreaPedidoFarmacia.Empresa);

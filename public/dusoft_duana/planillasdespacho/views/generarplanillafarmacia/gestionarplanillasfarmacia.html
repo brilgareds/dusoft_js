@@ -19,7 +19,7 @@
                                     <legend>Ciudad</legend>      
 
                                     <ui-select ng-model="planilla.ciudad" ng-disabled="planilla.get_numero_guia() > 0" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_ciudad()">
-                                        <ui-select-match  placeholder="Seleccionar ciudad">{{ $select.selected.get_nombre_ciudad() }}</ui-select-match>
+                                        <ui-select-match  placeholder="Seleccionar farmacia">{{ $select.selected.get_nombre_ciudad() }}</ui-select-match>
                                         <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="ciudad in Empresa.get_ciudades() | filter:$select.search">
                                             {{ ciudad.get_nombre_ciudad() }}
                                         </ui-select-choices>

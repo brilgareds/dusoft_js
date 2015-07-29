@@ -126,7 +126,7 @@ define(["angular", "js/controllers",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li><a href="javascript:void(0);" ng-click="gestionar_planilla_despacho(row.entity,true)" >Modificar</a></li>\
+                                                <li><a href="javascript:void(0);" ng-click="gestionar_planilla_farmacias(row.entity,true)" >Modificar</a></li>\
                                                 <li><a href="javascript:void(0);" ng-click="generar_reporte(row.entity,false)" >Ver PDF</a></li>\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ validar_envio_email(row.entity) }}" ng-click="ventana_enviar_email(row.entity)" >Enviar por Email</a></li>\
                                             </ul>\
@@ -140,7 +140,7 @@ define(["angular", "js/controllers",
             };
 
 
-            $scope.gestionar_planilla_despacho = function(planilla_despacho, opcion) {
+            $scope.gestionar_planilla_farmacias = function(planilla_despacho, opcion) {
 
                 localStorageService.add("numero_guia", 0);
 
@@ -149,7 +149,7 @@ define(["angular", "js/controllers",
                     localStorageService.add("numero_guia", planilla_despacho.get_numero_guia());
                 }
 
-                $state.go('CrearPlanilla');
+                $state.go('CrearPlanillaFarmacia');
 
             };
 

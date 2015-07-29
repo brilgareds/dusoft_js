@@ -90,6 +90,10 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             return this.productos ;
         };
         
+        PedidoCliente.prototype.limpiar_productos = function(){
+            this.productos = [] ;
+        };
+        
         // Subotal
         PedidoCliente.prototype.set_subtotal = function(subtotal){
             this.subtotal = subtotal;

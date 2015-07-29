@@ -27,10 +27,23 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.listaPedidosOperariosBodega(req, res);
     });
 
+    /* Cotizaciones */
 
-    // ============== COTIZACIONES / PEDIDOS  ==============
-
-
+    // Listar Cotizaciones     
+    app.post('/api/PedidosClientes/listarCotizaciones', function(req, res) {
+        c_pedidos_clientes.listarCotizaciones(req, res);
+    });
+    
+    // Consultar Cotizacion
+    app.post('/api/PedidosClientes/consultarCotizacion', function(req, res) {
+        c_pedidos_clientes.consultarCotizacion(req, res);
+    });
+    
+    // Consultar Detalle Cotización
+    app.post('/api/PedidosClientes/consultarDetalleCotizacion', function(req, res) {
+        c_pedidos_clientes.consultarDetalleCotizacion(req, res);
+    });
+    
     //Listar Productos Clientes para ingresar productos a una cotizacion
     app.post('/api/PedidosClientes/listarProductosClientes', function(req, res) {
         c_pedidos_clientes.listarProductosClientes(req, res);
@@ -40,6 +53,14 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/insertarCotizacion', function(req, res) {
         c_pedidos_clientes.insertarCotizacion(req, res);
     });
+
+    // Insertar Detalle de Cotización
+    app.post('/api/PedidosClientes/insertarDetalleCotizacion', function(req, res) {
+        c_pedidos_clientes.insertarDetalleCotizacion(req, res);
+    });
+    
+    
+    
 
     /**************************************************
      * 
@@ -59,17 +80,9 @@ module.exports = function(app, di_container) {
     });
 
 
-    // Insertar Detalle de Cotización
-    //??????????????????????????????????????????????????
-    app.post('/api/PedidosClientes/insertarDetalleCotizacion', function(req, res) {
-        c_pedidos_clientes.insertarDetalleCotizacion(req, res);
-    });
 
-    // Insertar Detalle de Cotización
-    //??????????????????????????????????????????????????    
-    app.post('/api/PedidosClientes/listarCotizaciones', function(req, res) {
-        c_pedidos_clientes.listarCotizaciones(req, res);
-    });
+
+    
 
     // Consultar Estado de Cotización
     //??????????????????????????????????????????????????    
@@ -84,11 +97,7 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.estadoPedido(req, res);
     });
 
-    // Listar Detalle Cotización
-    // ????????????????????????????????????????
-    app.post('/api/PedidosClientes/listarDetalleCotizacion', function(req, res) {
-        c_pedidos_clientes.listarDetalleCotizacion(req, res);
-    });
+    
 
 
     //Eliminar Registro Detalle Cotizacion
@@ -176,11 +185,7 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.cambiarEstadoAprobacionPedido(req, res);
     });
 
-    //consultarEncabezadoCotizacion
-    //????????????????????????
-    app.post('/api/PedidosClientes/consultarEncabezadoCotizacion', function(req, res) {
-        c_pedidos_clientes.consultarEncabezadoCotizacion(req, res);
-    });
+   
 
 
     //consultarEncabezadoPedido

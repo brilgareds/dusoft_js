@@ -18,9 +18,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         "PedidoCliente",
         "ClientePedido",
         "VendedorPedidoCliente",
+        "ProductoPedidoCliente",
         "Usuario",
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter,
-                Empresa, Pedido, Cliente, Vendedor, Sesion) {
+                Empresa, Pedido, Cliente, Vendedor, Producto, Sesion) {
 
             var that = this;
 
@@ -39,11 +40,113 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
                     Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
                     );
+
+            $scope.Pedido.set_numero_cotizacion(parseInt(localStorageService.get("numero_cotizacion")) || 0);
             $scope.Pedido.setCliente(Cliente.get());
             $scope.Pedido.setFechaRegistro($filter('date')(new Date(), "dd/MM/yyyy"));
 
             $scope.datos_view = {
-                termino_busqueda_clientes: ''
+                termino_busqueda_clientes: '',
+                termino_busqueda_productos: ''
+            };
+
+            // Consultas 
+            that.gestionar_consultas_cotizaciones = function() {
+
+                that.buscar_clientes(function(clientes) {
+
+                    if ($scope.Pedido.get_numero_cotizacion() > 0)
+                        that.render_clientes(clientes);
+
+                    that.buscar_vendedores(function() {
+
+                        if ($scope.Pedido.get_numero_cotizacion() > 0) {
+
+                            that.buscar_cotizacion(function() {
+
+                                that.buscar_detalle_cotizacion();
+                            });
+                        }
+                    });
+                });
+            };
+
+            // Cotizacion
+            that.buscar_cotizacion = function(callback) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_clientes: {
+                            cotizacion: $scope.Pedido
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.CONSULTAR_COTIZACION, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        that.render_cotizacion(data.obj.pedidos_clientes.cotizacion[0]);
+                        callback(true);
+                    } else {
+                        callback(false);
+                    }
+                });
+            };
+
+            that.render_cotizacion = function(data) {
+
+                var cliente = Cliente.get(data.nombre_tercero, data.direccion, data.tipo_id_tercero, data.tercero_id, data.telefono);
+                cliente.setDepartamento(data.departamento);
+                cliente.setMunicipio(data.municipio);
+                //cliente.set_contrato(data.contrato_cliente_id);
+                var vendedor = Vendedor.get(data.nombre_vendendor, data.tipo_id_vendedor, data.vendedor_id, data.telefono_vendedor);
+
+                $scope.Pedido.set_vendedor(vendedor).setCliente(cliente);
+                $scope.Pedido.set_observacion(data.observaciones);
+                $scope.Pedido.setFechaRegistro(data.fecha_registro);
+            };
+            
+            // Detalle Cotizacion
+            $scope.buscador_detalle_cotizacion = function(ev) {
+                if (ev.which === 13) {
+                    that.buscar_detalle_cotizacion();
+                }
+            };
+            
+            that.buscar_detalle_cotizacion = function() {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_clientes: {
+                            cotizacion: $scope.Pedido,
+                            termino_busqueda : $scope.datos_view.termino_busqueda_productos        
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.CONSULTAR_DETALLE_COTIZACION, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        that.render_productos_cotizacion(data.obj.pedidos_clientes.lista_productos);
+                    }
+                });
+
+            };
+
+            that.render_productos_cotizacion = function(productos) {
+
+                $scope.Pedido.limpiar_productos();
+
+                productos.forEach(function(data) {
+
+                    var producto = Producto.get(data.codigo_producto, data.descripcion_producto, 0, data.iva);
+                    producto.set_cantidad_solicitada(data.cantidad_solicitada);
+                    producto.set_precio_venta(data.valor_unitario).set_valor_total_sin_iva(data.subtotal).set_valor_total_con_iva(data.total);
+
+                    $scope.Pedido.set_productos(producto);
+                });
             };
 
 
@@ -55,6 +158,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 }
 
                 $scope.datos_view.termino_busqueda_clientes = termino_busqueda;
+
                 that.buscar_clientes(function(clientes) {
                     that.render_clientes(clientes);
                 });
@@ -88,6 +192,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 clientes.forEach(function(data) {
 
                     var cliente = Cliente.get(data.nombre_tercero, data.direccion, data.tipo_id_tercero, data.tercero_id, data.telefono);
+
                     cliente.setDepartamento(data.departamento);
                     cliente.setMunicipio(data.municipio);
                     cliente.set_contrato(data.contrato_cliente_id);
@@ -97,7 +202,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
             // Vendedores
-            that.buscar_vendedores = function() {
+            that.buscar_vendedores = function(callback) {
 
                 var obj = {
                     session: $scope.session,
@@ -108,6 +213,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                     if (data.status === 200) {
                         that.render_vendedores(data.obj.listado_vendedores);
+                        callback(true);
+                    } else {
+                        callback(false);
                     }
                 });
             };
@@ -167,11 +275,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 columnDefs: [
                     {field: 'getCodigoProducto()', displayName: 'Codigo', width: "10%"},
                     {field: 'getDescripcion()', displayName: 'Descripcion', width: "35%"},
-                    {field: 'get_cantidad_solicitada()', displayName: 'Cant.', width: "10%"},
-                    {field: 'get_iva()', displayName: 'I.V.A', width: "10%"},
-                    {field: 'get_precio_venta()', displayName: 'Vlr. Unit', width: "10%"},
-                    {field: 'get_valor_total_sin_iva()', displayName: 'Subtotal', width: "10%"},
-                    {field: 'get_valor_total_con_iva()', displayName: 'Total', width: "10%"},
+                    {field: 'get_cantidad_solicitada()', displayName: 'Cant.', width: "8%"},
+                    {field: 'get_iva()', displayName: 'I.V.A', width: "8%"},
+                    {field: 'get_precio_venta()', displayName: 'Vlr. Unit', width: "10%", cellFilter:'currency : "$"'},
+                    {field: 'get_valor_total_sin_iva()', displayName: 'Subtotal', width: "10%", cellFilter:'currency : "$"'},
+                    {field: 'get_valor_total_con_iva()', displayName: 'Total', width: "10%", cellFilter:'currency : "$"'},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                         <button class="btn btn-default btn-xs" ng-click="" ng-disabled="" ><span class="glyphicon glyphicon-remove"></span></button>\
@@ -181,7 +289,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
 
-            that.buscar_vendedores();
+            that.gestionar_consultas_cotizaciones();
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;

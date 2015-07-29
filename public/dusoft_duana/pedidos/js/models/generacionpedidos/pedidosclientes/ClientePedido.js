@@ -42,7 +42,6 @@ define(["angular", "js/models", "includes/classes/Cliente"], function(angular, m
 
             // Contrato
             ClientePedido.prototype.set_contrato = function(id) {
-
                 this.contrato_id = id;
                 return this;
             };

@@ -47,12 +47,11 @@ ClientesModel.prototype.listar_clientes = function(empresa_id, termino_busqueda,
             callback(err, rows);
         });
     } else {
-        //
+        // Sin Paginación
         G.db.query(sql, [empresa_id, "%" + termino_busqueda + "%"], function(err, rows) {
             callback(err, rows);
         });
     }
-
 };
 
 ClientesModel.prototype.listar_clientes_ciudad = function(empresa_id, pais_id, departamento_id, ciudad_id, termino_busqueda, callback) {

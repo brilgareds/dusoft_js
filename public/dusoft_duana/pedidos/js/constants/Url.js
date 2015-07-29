@@ -35,6 +35,9 @@ define(["angular"], function(angular) {
             },
             'PEDIDOS': {
                 CLIENTES: {
+                    'LISTAR_COTIZACIONES': BASE_URL + '/PedidosClientes/listarCotizaciones',
+                    'CONSULTAR_COTIZACION': BASE_URL + '/PedidosClientes/consultarCotizacion',
+                    'CONSULTAR_DETALLE_COTIZACION': BASE_URL + '/PedidosClientes/consultarDetalleCotizacion',
                     'LISTAR_PRODUCTOS_CLIENTES': BASE_URL + '/PedidosClientes/listarProductosClientes',
                     'LISTAR_LABORATORIOS': BASE_URL + '/Laboratorios/listarLaboratorios',
                     'INSERTAR_COTIZACION': BASE_URL + '/PedidosClientes/insertarCotizacion',
@@ -88,9 +91,9 @@ define(["angular"], function(angular) {
                 'BUSCAR_USUARIO_BLOQUEO': BASE_URL + '/PedidosFarmacias/buscarUsuarioBloqueo',
                 //'CREAR_COTIZACION': BASE_URL + '/PedidosClientes/insertarCotizacion',
                 //'INSERTAR_DETALLE_COTIZACION': BASE_URL + '/PedidosClientes/insertarDetalleCotizacion',
-                'LISTAR_COTIZACIONES': BASE_URL + '/PedidosClientes/listarCotizaciones',
+                //'LISTAR_COTIZACIONES': BASE_URL + '/PedidosClientes/listarCotizaciones',
                 'CONSULTA_ESTADO_COTIZACION': BASE_URL + '/PedidosClientes/estadoCotizacion',
-                'LISTAR_DETALLE_COTIZACION': BASE_URL + '/PedidosClientes/listarDetalleCotizacion',
+                //'LISTAR_DETALLE_COTIZACION': BASE_URL + '/PedidosClientes/listarDetalleCotizacion',
                 'ELIMINAR_REGISTRO_DETALLE_COTIZACION': BASE_URL + '/PedidosClientes/eliminarRegistroDetalleCotizacion',
                 'CAMBIAR_ESTADO_COTIZACION': BASE_URL + '/PedidosClientes/cambiarEstadoCotizacion',
                 'CAMBIAR_ESTADO_APROBACION_COTIZACION': BASE_URL + '/PedidosClientes/cambiarEstadoAprobacionCotizacion',
@@ -108,7 +111,7 @@ define(["angular"], function(angular) {
                 'CONSULTAR_PRODUCTO_EN_FARMACIA': BASE_URL + '/PedidosFarmacias/consultarProductoEnFarmacia',
                 'ACTUALIZAR_ENCABEZADO_PEDIDO_DEFINITIVO': BASE_URL + '/PedidosFarmacias/actualizarEncabezadoPedidoDefinitivo',
                 'CAMBIAR_ESTADO_APROBACION_PEDIDO': BASE_URL + '/PedidosClientes/cambiarEstadoAprobacionPedido',
-                'CONSULTAR_ENCABEZADO_COTIZACION_CLIENTE': BASE_URL + '/PedidosClientes/consultarEncabezadoCotizacion',
+                //'CONSULTAR_ENCABEZADO_COTIZACION_CLIENTE': BASE_URL + '/PedidosClientes/consultarEncabezadoCotizacion',
                 'CONSULTAR_ENCABEZADO_PEDIDO_CLIENTE': BASE_URL + '/PedidosClientes/consultarEncabezadoPedido'
             },
             'TERCEROS': {

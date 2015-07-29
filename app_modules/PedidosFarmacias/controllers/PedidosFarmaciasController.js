@@ -806,7 +806,7 @@ PedidosFarmacias.prototype.listar_productos = function(req, res) {
     var tipo_producto = '0';
 
     if (args.productos.tipo_producto !== undefined) {
-        var tipo_producto = args.productos.tipo_producto;
+        tipo_producto = args.productos.tipo_producto;
     }
     /* Fin - Modificación para Tipo Producto */
 

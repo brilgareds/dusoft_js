@@ -179,7 +179,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                     return "Ne";// Neveras                 
             };
 
-            // Valor Total Sin IVA
+            // Valor Total Sin IVA - > Subtotal
             ProductoPedidoCliente.prototype.set_valor_total_sin_iva = function(valor_total_sin_iva) {
                 this.valor_total_sin_iva = valor_total_sin_iva;
                 return this;

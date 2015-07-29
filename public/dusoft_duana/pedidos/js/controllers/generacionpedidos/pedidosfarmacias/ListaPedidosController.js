@@ -56,7 +56,6 @@ define(["angular",
                 }
             };
             
-           // console.log(">>>>>>>>>>>>>>>>> opciones ",$scope.rootPedidosFarmacias.opcionesModulo, $scope.rootPedidosFarmacias.opciones );
 
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs",
                 "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs",
@@ -87,7 +86,7 @@ define(["angular",
                                                 <a href="javascript:void(0);" ng-click="onEdicionEspecialPedidoFarmacia(row.entity)" ng-validate-events="{{rootPedidosFarmacias.opcionesModulo.btnModificarEspecialPedido}}" >Modificación Especial</a>\
                                             </li>\
                                             <li ng-if="row.entity.getTieneDespacho()">\
-                                                <a href="javascript:void(0);" ng-click="imprimirDespachos(row.entity.getDespachoEmpresaId(),row.entity.getDespachoNumero(),row.entity.getDespachoPrefijo())">Documento Despacho</a>\
+                                                <a href="javascript:void(0);" ng-click="imprimirDespacho(row.entity)">Documento Despacho</a>\
                                             </li>\
                                         </ul>\n\
                                     </div>'
@@ -111,17 +110,10 @@ define(["angular",
 
                     var pedido = ListaPedidosFarmaciasService.crearPedido(obj);
                     
-                     /* pedido.setDatos(datos_pedido);
-
-                       pedido.setObservacion(obj.observacion);
-
-                       pedido.setDespachoEmpresaId(obj.despacho_empresa_id);
-
-                       pedido.setDespachoPrefijo(obj.despacho_prefijo);
-
-                       pedido.setDespachoNumero(obj.despacho_numero);
-
-                       pedido.setTieneDespacho(obj.tiene_despacho);*/
+                    pedido.setTieneDespacho(obj.tiene_despacho).
+                    setDespachoEmpresaId(obj.despacho_empresa_id).
+                    setDespachoPrefijo(obj.despacho_prefijo).
+                    setDespachoNumero(obj.despacho_numero);
 
                       //Falta el campo del estado True o False para botón "Imprimir EFC"
 
@@ -237,7 +229,7 @@ define(["angular",
 
             /*
              * @Author: Eduar
-             * +Descripcion: function helper que permite paginar
+             * +Descripcion: funcion helper que permite paginar
              */
             $scope.paginaAnterior = function() {
                 if ($scope.rootPedidosFarmacias.paginaactual === 1) {
@@ -250,7 +242,7 @@ define(["angular",
             
             /*
              * @Author: Eduar
-             * +Descripcion: function helper que permite paginar
+             * +Descripcion: funcion helper que permite paginar
              */
             $scope.paginaSiguiente = function() {
                 $scope.rootPedidosFarmacias.paginaactual++;
@@ -259,6 +251,33 @@ define(["angular",
                         $scope.rootPedidosFarmacias.paginaactual--;
                     }
                 });
+            };
+            
+            /*
+             * @Author: Eduar
+             * @param {PedidoFarmacia} pedido
+             * +Descripcion: handler para imprimir el despacho de un pedido
+             */
+            $scope.imprimirDespacho = function(pedido) {
+
+                var test = {
+                    session: $scope.rootPedidosFarmacias.session,
+                    data: {
+                        movimientos_bodegas: {
+                            empresa: pedido.getDespachoEmpresaId(),
+                            numero: pedido.getDespachoNumero(),
+                            prefijo: pedido.getDespachoPrefijo()
+                        }
+                    }
+                };
+                Request.realizarRequest(API.DOCUMENTOS_DESPACHO.IMPRIMIR_DOCUMENTO_DESPACHO, "POST", test, function(data) {
+                    if (data.status === 200) {
+                        var nombre = data.obj.movimientos_bodegas.nombre_pdf;
+                        $scope.visualizarReporte("/reports/" + nombre, nombre, "download");
+                    }
+
+                });
+
             };
 
             self.buscarPedidos();

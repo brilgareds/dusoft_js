@@ -60,9 +60,12 @@ define(["angular","js/directive", "includes/slide/transition"], function(angular
                     $(document.body).append($element.detach());
                   }
                   
-
-                  $scope.$parent.$on($attrs.openCallback, function($event) {
-                      console.log("argumentos de clientes ",arguments)
+                  /*$scope.$parent.$on($attrs.openCallback, function($event) {
+                      var datos = arguments;
+                     slide.mostrarslide($element, modalslide, $attrs, datos);
+                  });*/
+                  
+                  $rootScope.$on($attrs.openCallback, function($event) {
                       var datos = arguments;
                      slide.mostrarslide($element, modalslide, $attrs, datos);
                   });

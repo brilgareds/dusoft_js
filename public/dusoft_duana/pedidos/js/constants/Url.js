@@ -39,7 +39,7 @@ define(["angular"], function(angular) {
                     'LISTAR_LABORATORIOS': BASE_URL + '/Laboratorios/listarLaboratorios'
                 },
                 FARMACIAS :{
-                    
+                    'LISTAR_PRODUCTOS_FARMACIAS': BASE_URL + '/PedidosFarmacias/listarProductos'
                 },
                 // URLS PEDIDOS FARMACIAS.
                 'LISTAR_PEDIDOS': BASE_URL + '/PedidosClientes/listarPedidos',
@@ -58,7 +58,7 @@ define(["angular"], function(angular) {
                 'CENTROS_UTILIDAD_FARMACIAS': BASE_URL + '/PedidosFarmacias/listarCentrosUtilidad',
                 'BODEGAS_FARMACIAS': BASE_URL + '/PedidosFarmacias/listarBodegas',
                 'LISTAR_PRODUCTOS': BASE_URL + '/Productos/listarProductos', 
-                'LISTAR_PRODUCTOS_FARMACIAS': BASE_URL + '/PedidosFarmacias/listarProductos',
+                'LISTAR_PRODUCTOS_FARMACIAS': BASE_URL + '/PedidosFarmacias/listarProductos',//depreciada
                 'CREAR_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/crearPedidoTemporal',
                 'CREAR_DETALLE_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/ingresarDetallePedidoTemporal',
                 'EXISTE_REGISTRO_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/existeRegistroEncabezadoTemporal',

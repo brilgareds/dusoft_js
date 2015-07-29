@@ -389,17 +389,18 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
 
     var args = req.body.data;
 
+    // Cotizacion
     if (args.pedidos_clientes === undefined || args.pedidos_clientes.cotizacion === undefined || args.pedidos_clientes.cotizacion === '') {
         res.send(G.utils.r(req.url, 'pedidos_clientes o cotizacion No Estan Definidos', 404, {}));
         return;
     }
-    
+
     // Cliente
-    if (args.pedidos_clientes.cotizacion.cliente === undefined || args.pedidos_clientes.cotizacion.cotizacion === '') {
+    if (args.pedidos_clientes.cotizacion.cliente === undefined || args.pedidos_clientes.cotizacion.cliente === '') {
         res.send(G.utils.r(req.url, 'Cliente No Estan Definidos', 404, {}));
         return;
     }
-    
+
     // Vendedor
     if (args.pedidos_clientes.cotizacion.vendedor === undefined || args.pedidos_clientes.cotizacion.vendedor === '') {
         res.send(G.utils.r(req.url, 'Vendedor No Estan Definidos', 404, {}));
@@ -413,31 +414,43 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id No Estan Definidos', 404, {}));
         return;
     }
-    
+
     // Validar Cliente
-    if (cotizacion.cliente.tipo_id_tercero === undefined || cotizacion.cliente.id === undefined || cotizacion.tipo_id_vendedor === undefined || cotizacion.vendedor_id === undefined) {
+    if (cotizacion.cliente.tipo_id_tercero === undefined || cotizacion.cliente.id === undefined) {
         res.send(G.utils.r(req.url, 'tipo_id, tercero_id, tipo_id_vendedor  o vendedor_id No Estan Definidos', 404, {}));
         return;
     }
-    
+
     // Validar Vendedor
-    if (cotizacion.vendedor.tipo_id_vendedor === undefined || cotizacion.vendedor.vendedor_id === undefined) {
-        res.send(G.utils.r(req.url, 'tipo_id, tercero_id, tipo_id_vendedor  o vendedor_id No Estan Definidos', 404, {}));
+    if (cotizacion.vendedor.tipo_id_tercero === undefined || cotizacion.vendedor.id === undefined) {
+        res.send(G.utils.r(req.url, 'tipo_id_vendedor  o vendedor_id No Estan Definidos', 404, {}));
         return;
     }
 
-    if (cotizacion.observaciones === undefined) {
-        res.send(G.utils.r(req.url, 'observaciones No Estan Definidos', 404, {}));
+    if (cotizacion.observacion === undefined) {
+        res.send(G.utils.r(req.url, 'observacion No Estan Definidos', 404, {}));
         return;
     }
 
+    // Empresa, Centro Utilidad,  Bodega
     if (cotizacion.empresa_id === '' || cotizacion.centro_utilidad_id === '' || cotizacion.bodega_id === '') {
         res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacios', 404, {}));
         return;
     }
-
-    if (cotizacion.tipo_id === '' || cotizacion.tercero_id === '' || cotizacion.tipo_id_vendedor === '' || cotizacion.vendedor_id === '') {
+    // Validar Cliente
+    if (cotizacion.cliente.tipo_id_tercero === '' || cotizacion.cliente.id === '') {
         res.send(G.utils.r(req.url, 'tipo_id, tercero_id, tipo_id_vendedor  o vendedor_id estan vacios', 404, {}));
+        return;
+    }
+
+    // Validar Vendedor
+    if (cotizacion.vendedor.tipo_id_tercero === '' || cotizacion.vendedor.id === '') {
+        res.send(G.utils.r(req.url, 'tipo_id_vendedor  o vendedor_id estan vacios', 404, {}));
+        return;
+    }
+
+    if (cotizacion.observacion === '') {
+        res.send(G.utils.r(req.url, 'observacion esta vacia', 404, {}));
         return;
     }
 
@@ -450,7 +463,7 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
             return;
         } else {
 
-            var numero_cotizacion = (rows.length > 0) ? rows[0].orden_pedido_id : 0;
+            var numero_cotizacion = (rows.length > 0) ? rows[0].numero_cotizacion : 0;
 
             res.send(G.utils.r(req.url, 'Cotizacion regitrada correctamente', 200, {pedidos_clientes: {numero_cotizacion: numero_cotizacion}}));
             return;
@@ -468,11 +481,13 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
 
     var args = req.body.data;
 
+    // Cotizacion
     if (args.pedidos_clientes === undefined || args.pedidos_clientes.cotizacion === undefined || args.pedidos_clientes.cotizacion === '') {
         res.send(G.utils.r(req.url, 'pedidos_clientes o cotizacion No Estan Definidos', 404, {}));
         return;
     }
 
+    // Producto 
     if (args.pedidos_clientes.producto === undefined || args.pedidos_clientes.producto === '') {
         res.send(G.utils.r(req.url, 'productos no estan definidos o vacios', 404, {}));
         return;
@@ -500,8 +515,8 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'cantidad_solicitada no esta definido , esta vacio o es menor o igual a cero', 404, {}));
         return;
     }
-    if (producto.valor_unitario === undefined || producto.valor_unitario === '') {
-        res.send(G.utils.r(req.url, 'valor_unitario no esta definido o esta vacio', 404, {}));
+    if (producto.precio_venta === undefined || producto.precio_venta === '') {
+        res.send(G.utils.r(req.url, 'precio_venta no esta definido o esta vacio', 404, {}));
         return;
     }
 

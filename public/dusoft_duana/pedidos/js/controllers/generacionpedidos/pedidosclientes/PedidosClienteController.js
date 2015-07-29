@@ -140,7 +140,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             // Lista Productos Seleccionados
             $scope.lista_productos = {
-                data: 'planilla.get_documentos()',
+                data: 'Pedido.get_productos()',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 showFooter: true,
@@ -150,36 +150,35 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                             <tbody>\
                                                 <tr>\
                                                     <td class="left"><strong>Subtotal</strong></td>\
-                                                    <td class="right">{{ planilla.get_cantidad_cajas() }}</td>    \
+                                                    <td class="right">{{ Pedido.get_subtotal() }}</td>    \
                                                 </tr>\
                                                 <tr>\
                                                     <td class="left"><strong>I.V.A</strong></td>\
-                                                    <td class="right">{{ planilla.get_cantidad_neveras() }}</td>                                        \
+                                                    <td class="right">{{ planilla.get_valor_iva() }}</td>                                        \
                                                 </tr>\
                                                 <tr>\
                                                     <td class="left"><strong>Total</strong></td>\
-                                                    <td class="right">{{ planilla.get_cantidad_neveras() }}</td>                                        \
+                                                    <td class="right">{{ planilla.get_total() }}</td>                                        \
                                                 </tr>\
                                             </tbody>\
                                         </table>\
                                     </div>\
                                  </div>',
                 columnDefs: [
-                    {field: 'get_tercero()', displayName: 'Codigo', width: "35%"},
-                    {field: 'get_descripcion()', displayName: 'Descripcion', width: "25%"},
-                    {field: 'get_cantidad_cajas()', displayName: 'Cant.', width: "10%"},
-                    {field: 'get_cantidad_neveras()', displayName: 'I.V.A', width: "10%"},
-                    {field: 'get_temperatura_neveras()', displayName: 'Vlr. Unit', width: "10%"},
-                    {field: 'get_temperatura_neveras()', displayName: 'Subtotal', width: "10%"},
-                    {field: 'get_temperatura_neveras()', displayName: 'Total', width: "10%"},
+                    {field: 'getCodigoProducto()', displayName: 'Codigo', width: "10%"},
+                    {field: 'getDescripcion()', displayName: 'Descripcion', width: "35%"},
+                    {field: 'get_cantidad_solicitada()', displayName: 'Cant.', width: "10%"},
+                    {field: 'get_iva()', displayName: 'I.V.A', width: "10%"},
+                    {field: 'get_precio_venta()', displayName: 'Vlr. Unit', width: "10%"},
+                    {field: 'get_valor_total_sin_iva()', displayName: 'Subtotal', width: "10%"},
+                    {field: 'get_valor_total_con_iva()', displayName: 'Total', width: "10%"},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="confirmar_eliminar_documento_planilla(row.entity)" ng-disabled="planilla.get_estado()==\'2\'" ><span class="glyphicon glyphicon-remove"></span></button>\
-                                        </div>'
+                                        <button class="btn btn-default btn-xs" ng-click="" ng-disabled="" ><span class="glyphicon glyphicon-remove"></span></button>\
+                                       </div>'
                     }
                 ]
             };
-
 
 
             that.buscar_vendedores();

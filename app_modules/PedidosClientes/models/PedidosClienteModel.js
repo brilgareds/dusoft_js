@@ -975,14 +975,14 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
         cotizacion.empresa_id,
         cotizacion.centro_utilidad_id,
         cotizacion.bodega_id,
-        cotizacion.tipo_id,
-        cotizacion.tercero_id,
-        cotizacion.tipo_id_vendedor,
-        cotizacion.vendedor_id,
-        cotizacion.observaciones,
+        cotizacion.cliente.tipo_id_tercero,
+        cotizacion.cliente.id,
+        cotizacion.vendedor.tipo_id_tercero,
+        cotizacion.vendedor.id,
+        cotizacion.observacion,
         cotizacion.usuario_id
     ];
-
+    
     G.db.query(sql, params, function(err, rows, result) {
         callback(err, rows, result);
     });
@@ -1004,14 +1004,14 @@ PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(cotizacion,
                 valor_unitario, \
                 usuario_id , \
                 fecha_registro ) \
-                VALUES($1, $2, $3, $4, $5, $6, $7, NOW() );";
+                VALUES($1, $2, $3, $4, $5, $6, NOW() );";
 
     var params = [
         cotizacion.numero_cotizacion,
         producto.codigo_producto,
         producto.iva,
         producto.cantidad_solicitada,
-        producto.valor_unitario,
+        producto.precio_venta,
         cotizacion.usuario_id
     ];
 

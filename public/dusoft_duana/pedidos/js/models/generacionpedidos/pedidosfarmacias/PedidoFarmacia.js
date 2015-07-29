@@ -12,6 +12,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.despachoEmpresaId = "";
             this.despachoPrefijo = "";
             this.despachoNumero = 0;
+            this.productoSeleccionado;
             
         };
 
@@ -84,6 +85,15 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         
         PedidoFarmacia.prototype.getDespachoNumero = function() {
             return this.despachoNumero;
+        };
+        
+        PedidoFarmacia.prototype.setProductoSeleccionado = function(productoSeleccionado) {
+            this.productoSeleccionado = productoSeleccionado;
+            return this;
+        };
+        
+        PedidoFarmacia.prototype.getProductoSeleccionado = function() {
+            return this.productoSeleccionado;
         };
         
         this.get = function() {

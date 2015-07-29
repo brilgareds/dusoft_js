@@ -61,10 +61,10 @@ define(["angular"], function(angular) {
                 'CENTROS_UTILIDAD_FARMACIAS': BASE_URL + '/PedidosFarmacias/listarCentrosUtilidad',
                 'BODEGAS_FARMACIAS': BASE_URL + '/PedidosFarmacias/listarBodegas',
                 'LISTAR_PRODUCTOS': BASE_URL + '/Productos/listarProductos', 
-                'LISTAR_PRODUCTOS_FARMACIAS': BASE_URL + '/PedidosFarmacias/listarProductos',//depreciada
-                'CREAR_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/crearPedidoTemporal', //depreciada
+                'LISTAR_PRODUCTOS_FARMACIAS': BASE_URL + '/PedidosFarmacias/listarProductos',//depreciado
+                'CREAR_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/crearPedidoTemporal', //depreciado
                 'CREAR_DETALLE_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/ingresarDetallePedidoTemporal',
-                'EXISTE_REGISTRO_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/existeRegistroEncabezadoTemporal',
+                'EXISTE_REGISTRO_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/existeRegistroEncabezadoTemporal',//depreciado
                 'EXISTE_REGISTRO_DETALLE_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/existeRegistroDetalleTemporal',
                 'EXISTE_REGISTRO_DETALLE_PEDIDO': BASE_URL + '/PedidosFarmacias/existeRegistroDetallePedido',
                 'CONSULTAR_ENCABEZADO_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/consultarPedidoFarmaciaTemporal',

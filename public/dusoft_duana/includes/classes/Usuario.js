@@ -14,7 +14,7 @@ define(["angular", "js/models"], function(angular, models) {
            };
             
            function Usuario(id, usuario, nombre) {
-                this.id = id || "";
+                this.id = id || -1;
                 this.usuario = usuario || "";
                 this.nombre =  nombre || ""; 
                 this.token = "";

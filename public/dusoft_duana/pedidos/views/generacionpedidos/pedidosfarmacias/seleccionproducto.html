@@ -71,10 +71,10 @@
                             
                             <div class=" row col-sm-12 col-md-12 col-lg-12 input-group">
                             
-                                <input type="text" class="form-control" ng-keypress="onTeclaBuscarSeleccionProducto($event)" ng-model="rootSeleccionProductoFarmacia.termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">
+                                <input type="text" class="form-control" ng-keypress="onBuscarProductos($event)" ng-model="rootSeleccionProductoFarmacia.termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">
 
                                 <div class="input-group-btn" >
-                                    <button class="btn btn-default pull-right" type="submit" ng-click="onBuscarSeleccionProducto(obtenerParametros())"><i class="glyphicon glyphicon-search"></i></button>
+                                    <button class="btn btn-default pull-right" type="submit" ng-click="onBuscarProductos({which:13})"><i class="glyphicon glyphicon-search"></i></button>
                                 </div>
                             
                             </div>

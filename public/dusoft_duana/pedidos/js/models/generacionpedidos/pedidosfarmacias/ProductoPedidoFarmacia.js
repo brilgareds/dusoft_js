@@ -17,6 +17,8 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.totalExistenciasFarmacias = 0;
             this.disponibilidadBodega = 0;
             this.cantidadSolicitada = 0;
+            this.estado;
+            this.enFarmaciaSeleccionada = false;
         }
 
         ProductoPedidoFarmacia.prototype = Object.create(Producto.getClass().prototype);
@@ -119,6 +121,25 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
         ProductoPedidoFarmacia.prototype.getCantidadSolicitada = function() {
             return this.cantidadSolicitada;
         };
+        
+        ProductoPedidoFarmacia.prototype.setEstado = function(estado) {
+            this.estado = estado;
+            return this;
+        };
+        
+        ProductoPedidoFarmacia.prototype.getEstado = function() {
+            return this.estado;
+        };
+        
+        ProductoPedidoFarmacia.prototype.setEnFarmaciaSeleccionada = function(enFarmaciaSeleccionada) {
+            this.enFarmaciaSeleccionada = enFarmaciaSeleccionada;
+            return this;
+        };
+        
+        ProductoPedidoFarmacia.prototype.getEnFarmaciaSeleccionada = function() {
+            return this.enFarmaciaSeleccionada;
+        };
+        
         
         this.get = function(codigo, nombre, existencia) {
             

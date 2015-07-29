@@ -969,10 +969,11 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
                 tipo_id_vendedor, \
                 vendedor_id, \
                 observaciones, \
+                tipo_producto, \
                 estado, \
                 usuario_id , \
                 fecha_registro ) \
-                VALUES( $1, $2, $3, $4, $5, $6, $7, $8, '1', $9, NOW()) \
+                VALUES( $1, $2, $3, $4, $5, $6, $7, $8, $9, '1', $10, NOW()) \
                 RETURNING pedido_cliente_id_tmp as numero_cotizacion ;";
 
     var params = [
@@ -984,6 +985,7 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
         cotizacion.vendedor.tipo_id_tercero,
         cotizacion.vendedor.id,
         cotizacion.observacion,
+        cotizacion.tipo_producto,
         cotizacion.usuario_id
     ];
 
@@ -1050,6 +1052,8 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
                 f.nombre as nombre_vendendor,\
                 f.telefono as telefono_vendedor,\
                 a.observaciones,\
+                coalesce(a.tipo_producto,'') as tipo_producto,\
+                coalesce(g.descripcion,'') as descripcion_tipo_producto,\
                 a.fecha_registro\
                 from ventas_ordenes_pedidos_tmp a\
                 inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id\
@@ -1057,6 +1061,7 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
                 inner join tipo_dptos d on c.tipo_pais_id = d.tipo_pais_id and c.tipo_dpto_id = d.tipo_dpto_id\
                 inner join tipo_pais e on d.tipo_pais_id = e.tipo_pais_id\
                 inner join vnts_vendedores f on a.tipo_id_vendedor = f.tipo_id_vendedor and a.vendedor_id = f.vendedor_id \
+                left join inv_tipo_producto g on a.tipo_producto = g.tipo_producto_id \
                 where a.empresa_id= $1 and a.fecha_registro between $2 and $3 and\
                 (\
                     a.pedido_cliente_id_tmp ilike $4 or\
@@ -1098,6 +1103,8 @@ PedidosClienteModel.prototype.consultar_cotizacion = function(cotizacion, callba
                 f.nombre as nombre_vendendor,\
                 f.telefono as telefono_vendedor,\
                 a.observaciones,\
+                coalesce(a.tipo_producto,'') as tipo_producto,\
+                coalesce(g.descripcion,'') as descripcion_tipo_producto,\
                 a.fecha_registro\
                 from ventas_ordenes_pedidos_tmp a\
                 inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id\
@@ -1105,6 +1112,7 @@ PedidosClienteModel.prototype.consultar_cotizacion = function(cotizacion, callba
                 inner join tipo_dptos d on c.tipo_pais_id = d.tipo_pais_id and c.tipo_dpto_id = d.tipo_dpto_id\
                 inner join tipo_pais e on d.tipo_pais_id = e.tipo_pais_id\
                 inner join vnts_vendedores f on a.tipo_id_vendedor = f.tipo_id_vendedor and a.vendedor_id = f.vendedor_id \
+                left join inv_tipo_producto g on a.tipo_producto = g.tipo_producto_id \
                 where a.pedido_cliente_id_tmp = $1 ";
 
     G.db.query(sql, [cotizacion.numero_cotizacion], function(err, rows, result) {

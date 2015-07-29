@@ -104,6 +104,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 $scope.Pedido.set_vendedor(vendedor).setCliente(cliente);
                 $scope.Pedido.set_observacion(data.observaciones);
+                $scope.Pedido.set_tipo_producto(data.tipo_producto);
                 $scope.Pedido.setFechaRegistro(data.fecha_registro);
             };
             

@@ -125,6 +125,7 @@ define(["angular", "js/controllers",
                     var vendedor = Vendedor.get(data.nombre_vendendor, data.tipo_id_vendedor, data.vendedor_id, data.telefono_vendedor);
 
                     cotizacion.set_numero_cotizacion(data.numero_cotizacion).set_vendedor(vendedor).setCliente(cliente);
+                    cotizacion.set_tipo_producto(data.tipo_producto);
                     cotizacion.setFechaRegistro(data.fecha_registro);
 
                     $scope.Empresa.set_cotizaciones(cotizacion);

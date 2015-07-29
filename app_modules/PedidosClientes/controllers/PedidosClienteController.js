@@ -427,9 +427,10 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'tipo_id_vendedor  o vendedor_id No Estan Definidos', 404, {}));
         return;
     }
-
-    if (cotizacion.observacion === undefined) {
-        res.send(G.utils.r(req.url, 'observacion No Estan Definidos', 404, {}));
+    
+    // Observaciones
+    if (cotizacion.tipo_producto === undefined || cotizacion.observacion === undefined) {
+        res.send(G.utils.r(req.url, 'tipo_producto u observacion No Estan Definidos', 404, {}));
         return;
     }
 
@@ -450,8 +451,9 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
         return;
     }
 
-    if (cotizacion.observacion === '') {
-        res.send(G.utils.r(req.url, 'observacion esta vacia', 404, {}));
+    // Observaciones
+    if (cotizacion.tipo_producto === '' || cotizacion.observacion === '') {
+        res.send(G.utils.r(req.url, 'tipo_producto u observacion esta vacia', 404, {}));
         return;
     }
 

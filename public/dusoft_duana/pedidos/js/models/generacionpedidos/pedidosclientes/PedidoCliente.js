@@ -15,6 +15,8 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.subtotal = 0;
             this.valor_iva = 0;
             this.total = 0;
+            this.tipo_producto = '';
+            this.descripcion_tipo_producto = '';
         };
 
         PedidoCliente.prototype = Object.create(Pedido.getClass().prototype);  
@@ -122,6 +124,26 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         
         PedidoCliente.prototype.get_total = function(){
             return this.total ;
+        };
+        
+        // Tipo Producto
+        PedidoCliente.prototype.set_tipo_producto = function(tipo_producto){
+            this.tipo_producto = tipo_producto;
+            return this;
+        };
+        
+        PedidoCliente.prototype.get_tipo_producto = function(){
+            return this.tipo_producto;
+        };
+        
+        // Descripcion Tipo Producto
+        PedidoCliente.prototype.set_descripcion_tipo_producto = function(descripcion_tipo_producto){
+            this.descripcion_tipo_producto = descripcion_tipo_producto;
+            return this;
+        };
+        
+        PedidoCliente.prototype.get_descripcion_tipo_producto = function(){
+            return this.descripcion_tipo_producto;
         };
         
         this.get = function(empresa_id, centro_utilidad_id, bodega_id) {

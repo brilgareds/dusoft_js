@@ -86,7 +86,8 @@ define(["angular", "js/controllers",
                     data: {
                         ordenes_compras: {
                             numero_orden: $scope.orden_compra.get_numero_orden(),
-                            empresa_id: '03',
+                            //empresa_id: '03',
+                            empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
                             codigo_proveedor_id: $scope.orden_compra.get_proveedor().get_codigo_proveedor(),
                             laboratorio_id: $scope.laboratorio_id,
                             termino_busqueda: termino,
@@ -144,7 +145,8 @@ define(["angular", "js/controllers",
                         ordenes_compras: {
                             unidad_negocio: $scope.orden_compra.get_unidad_negocio().get_codigo(),
                             codigo_proveedor: $scope.orden_compra.get_proveedor().get_codigo_proveedor(),
-                            empresa_id: '03',
+                            //empresa_id: '03',
+                            empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
                             observacion: $scope.orden_compra.get_observacion()
                         }
                     }

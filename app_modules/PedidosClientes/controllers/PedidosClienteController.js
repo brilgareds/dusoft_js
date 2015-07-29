@@ -359,11 +359,11 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
     var centro_utilidad = args.pedidos_clientes.centro_utilidad_id;
     var bodega = args.pedidos_clientes.bodega_id;
     var contrato_cliente = args.pedidos_clientes.contrato_cliente_id;
-   
+
     var filtro = {
         tipo_producto: (args.pedidos_clientes.tipo_producto === undefined) ? '' : args.pedidos_clientes.tipo_producto,
         termino_busqueda: args.pedidos_clientes.termino_busqueda,
-        laboratorio_id : (args.pedidos_clientes.laboratorio_id === undefined) ? '' : args.pedidos_clientes.laboratorio_id
+        laboratorio_id: (args.pedidos_clientes.laboratorio_id === undefined) ? '' : args.pedidos_clientes.laboratorio_id
     };
     var pagina = args.pedidos_clientes.pagina_actual;
 
@@ -376,99 +376,146 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
             return;
         }
     });
+};
 
 
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : Insertar cotizacion
+ */
+PedidosCliente.prototype.insertarCotizacion = function(req, res) {
 
-    return;
-    /****************************/
     var that = this;
 
     var args = req.body.data;
 
-    if (args.productos === undefined || args.productos.termino_busqueda === undefined || args.productos.empresa_id === undefined || args.productos.centro_utilidad_id === undefined || args.productos.bodega_id === undefined) {
-        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id no estan definidos', 404, {}));
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.cotizacion === undefined || args.pedidos_clientes.cotizacion === '') {
+        res.send(G.utils.r(req.url, 'pedidos_clientes o cotizacion No Estan Definidos', 404, {}));
+        return;
+    }
+    
+    // Cliente
+    if (args.pedidos_clientes.cotizacion.cliente === undefined || args.pedidos_clientes.cotizacion.cotizacion === '') {
+        res.send(G.utils.r(req.url, 'Cliente No Estan Definidos', 404, {}));
+        return;
+    }
+    
+    // Vendedor
+    if (args.pedidos_clientes.cotizacion.vendedor === undefined || args.pedidos_clientes.cotizacion.vendedor === '') {
+        res.send(G.utils.r(req.url, 'Vendedor No Estan Definidos', 404, {}));
         return;
     }
 
-    if (args.productos.empresa_id === '' || args.productos.centro_utilidad_id === '' || args.productos.bodega_id === '') {
-        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacíos', 404, {}));
+    var cotizacion = args.pedidos_clientes.cotizacion;
+
+    // Empresa, Centro Utilidad,  Bodega
+    if (cotizacion.empresa_id === undefined || cotizacion.centro_utilidad_id === undefined || cotizacion.bodega_id === undefined) {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id No Estan Definidos', 404, {}));
+        return;
+    }
+    
+    // Validar Cliente
+    if (cotizacion.cliente.tipo_id_tercero === undefined || cotizacion.cliente.id === undefined || cotizacion.tipo_id_vendedor === undefined || cotizacion.vendedor_id === undefined) {
+        res.send(G.utils.r(req.url, 'tipo_id, tercero_id, tipo_id_vendedor  o vendedor_id No Estan Definidos', 404, {}));
+        return;
+    }
+    
+    // Validar Vendedor
+    if (cotizacion.vendedor.tipo_id_vendedor === undefined || cotizacion.vendedor.vendedor_id === undefined) {
+        res.send(G.utils.r(req.url, 'tipo_id, tercero_id, tipo_id_vendedor  o vendedor_id No Estan Definidos', 404, {}));
         return;
     }
 
-    if (args.productos.pagina_actual === '') {
-        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
+    if (cotizacion.observaciones === undefined) {
+        res.send(G.utils.r(req.url, 'observaciones No Estan Definidos', 404, {}));
         return;
     }
 
-    var empresa_id = args.productos.empresa_id;
-    var centro_utilidad_id = args.productos.centro_utilidad_id;
-    var bodega_id = args.productos.bodega_id;
-    var contrato_cliente_id = args.productos.contrato_cliente_id;
-    var termino_busqueda = args.productos.termino_busqueda;
-    var laboratorio = args.productos.laboratorio;
-    var concentracion = args.productos.concentracion;
-    var pagina_actual = args.productos.pagina_actual;
-    var pedido_cliente_id_tmp = args.productos.pedido_cliente_id_tmp;
-    var filtro = args.productos.filtro;
-
-    /* Inicio - Modificación para Tipo Producto */
-    var tipo_producto = '0';
-
-    if (args.productos.tipo_producto !== undefined) {
-        tipo_producto = args.productos.tipo_producto;
+    if (cotizacion.empresa_id === '' || cotizacion.centro_utilidad_id === '' || cotizacion.bodega_id === '') {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacios', 404, {}));
+        return;
     }
-    /* Fin - Modificación para Tipo Producto */
 
+    if (cotizacion.tipo_id === '' || cotizacion.tercero_id === '' || cotizacion.tipo_id_vendedor === '' || cotizacion.vendedor_id === '') {
+        res.send(G.utils.r(req.url, 'tipo_id, tercero_id, tipo_id_vendedor  o vendedor_id estan vacios', 404, {}));
+        return;
+    }
 
-    this.m_productos.listar_productos_clientes(empresa_id, centro_utilidad_id, bodega_id, contrato_cliente_id, termino_busqueda, pedido_cliente_id_tmp, tipo_producto, laboratorio, concentracion, pagina_actual, filtro, function(err, lista_productos) {
+    cotizacion.usuario_id = req.session.user.usuario_id;
 
-        var i = lista_productos.length;
+    that.m_pedidos_clientes.insertar_cotizacion(cotizacion, function(err, rows, result) {
 
-        if (i === 0) {
-            res.send(G.utils.r(req.url, 'Lista de productos vacía', 200, {lista_productos: []}));
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: {}}));
+            return;
+        } else {
+
+            var numero_cotizacion = (rows.length > 0) ? rows[0].orden_pedido_id : 0;
+
+            res.send(G.utils.r(req.url, 'Cotizacion regitrada correctamente', 200, {pedidos_clientes: {numero_cotizacion: numero_cotizacion}}));
             return;
         }
+    });
+};
 
-        lista_productos.forEach(function(producto) {
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : Insertar detalle cotizacion
+ */
+PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
 
-            //producto.existencia
-            that.m_pedidos_farmacias.calcular_cantidad_total_pendiente_producto(empresa_id, producto.codigo_producto, function(err, total_pendiente_farmacias) {
+    var that = this;
 
-                var cantidad_total_pendiente_farmacias = (total_pendiente_farmacias.length > 0) ? total_pendiente_farmacias[0].cantidad_total_pendiente : 0;
+    var args = req.body.data;
 
-                that.m_pedidos_clientes.calcular_cantidad_total_pendiente_producto(empresa_id, producto.codigo_producto, function(err, total_pendiente_clientes) {
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.cotizacion === undefined || args.pedidos_clientes.cotizacion === '') {
+        res.send(G.utils.r(req.url, 'pedidos_clientes o cotizacion No Estan Definidos', 404, {}));
+        return;
+    }
 
-                    var cantidad_total_pendiente_clientes = (total_pendiente_clientes.length > 0) ? total_pendiente_clientes[0].cantidad_total_pendiente : 0;
+    if (args.pedidos_clientes.producto === undefined || args.pedidos_clientes.producto === '') {
+        res.send(G.utils.r(req.url, 'productos no estan definidos o vacios', 404, {}));
+        return;
+    }
 
-                    that.m_pedidos_farmacias.calcular_cantidad_reservada_temporales_farmacias(producto.codigo_producto, function(err, total_reservado_temporales) {
+    var cotizacion = args.pedidos_clientes.cotizacion;
+    var producto = args.pedidos_clientes.producto;
 
-                        var cantidad_reservada_temporales = (total_reservado_temporales.length > 0) ? total_reservado_temporales[0].total_reservado : 0;
+    if (cotizacion.numero_cotizacion === undefined || cotizacion.numero_cotizacion === '') {
+        res.send(G.utils.r(req.url, 'numero_cotizacion no esta definido o esta vacio', 404, {}));
+        return;
+    }
 
-                        that.m_pedidos_clientes.calcular_cantidad_reservada_cotizaciones_clientes(producto.codigo_producto, function(err, total_reservado_cotizaciones) {
+    if (producto.codigo_producto === undefined || producto.codigo_producto === '') {
+        res.send(G.utils.r(req.url, 'codigo_producto no esta definido o esta vacio', 404, {}));
+        return;
+    }
 
-                            var cantidad_reservada_cotizaciones = (total_reservado_cotizaciones.length > 0) ? total_reservado_cotizaciones[0].total_reservado : 0;
+    if (producto.iva === undefined || producto.iva === '') {
+        res.send(G.utils.r(req.url, 'iva no esta definido o esta vacio', 404, {}));
+        return;
+    }
 
-                            var disponibilidad_bodega = producto.existencia - cantidad_total_pendiente_farmacias - cantidad_total_pendiente_clientes
-                                    - cantidad_reservada_temporales - cantidad_reservada_cotizaciones;
+    if (producto.cantidad_solicitada === undefined || producto.cantidad_solicitada === '' || producto.cantidad_solicitada <= '0') {
+        res.send(G.utils.r(req.url, 'cantidad_solicitada no esta definido , esta vacio o es menor o igual a cero', 404, {}));
+        return;
+    }
+    if (producto.valor_unitario === undefined || producto.valor_unitario === '') {
+        res.send(G.utils.r(req.url, 'valor_unitario no esta definido o esta vacio', 404, {}));
+        return;
+    }
 
-                            producto.disponible = (disponibilidad_bodega < 0) ? 0 : disponibilidad_bodega;
+    cotizacion.usuario_id = req.session.user.usuario_id;
 
-                            if (--i === 0) {
+    that.m_pedidos_clientes.insertar_detalle_cotizacion(cotizacion, producto, function(err, rows, result) {
 
-                                if (err) {
-                                    res.send(G.utils.r(req.url, 'Error Listado de Productos', 500, {lista_productos: {}}));
-                                    return;
-                                } else {
-                                    res.send(G.utils.r(req.url, 'Listado de Productos', 200, {lista_productos: lista_productos}));
-                                    return;
-                                }
-
-                            }
-                        });
-                    });
-                });
-            });
-        });
+        if (err || result.rowCount === 0) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Producto regitrado correctamente', 200, {pedidos_clientes: {}}));
+            return;
+        }
     });
 };
 
@@ -503,177 +550,6 @@ PedidosCliente.prototype.obtenerDetallePedido = function(req, res) {
 
 
 
-
-/**
- * @api {post} /api/PedidosClientes/insertarCotizacion Insertar Cotización
- * @apiName Insertar Cotización.
- * @apiGroup PedidosClientes
- * @apiDescription Asignar o delegar los pedidos a un operario de bodega para su correspondiente separacion.
- * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
- * @apiPermission autenticado
- * @apiParam {String} usuario_id  Identificador del Usuario.
- * @apiParam {String} auth_token  Token de Autenticación, este define si el usuario esta autenticado o no.
- * @apiParam {String[]} pedidos Lista de pedidos 
- * @apiParam {Number} estado_pedido ID del estado a asignar 
- * @apiParam {Number} responsable Operario de Bodega al que se le asigna el pedido.
- * @apiSuccessExample Ejemplo Válido del Request. 
- */
-
-// ????????????????????????????????????????
-PedidosCliente.prototype.insertarCotizacion = function(req, res) {
-
-    var that = this;
-
-    var args = req.body.data;
-
-    if (args.cotizacion_encabezado === undefined || args.cotizacion_encabezado.empresa_id === undefined
-            || args.cotizacion_encabezado.tipo_id_tercero === undefined || args.cotizacion_encabezado.tercero_id === undefined
-            || args.cotizacion_encabezado.centro_utilidad === undefined || args.cotizacion_encabezado.bodega === undefined) {
-
-        res.send(G.utils.r(req.url, 'empresa_id, tipo_tercero_id o tercero_id No Están Definidos', 404, {}));
-        return;
-    }
-
-    if (args.cotizacion_encabezado.tipo_id_vendedor === undefined || args.cotizacion_encabezado.vendedor_id === undefined
-            || args.cotizacion_encabezado.estado === undefined) {
-
-        res.send(G.utils.r(req.url, 'tipo_id_vendedor, vendedor_id o estado No Están Definidos', 404, {}));
-        return;
-    }
-
-    if (args.cotizacion_encabezado.empresa_id === '' || args.cotizacion_encabezado.tipo_id_tercero === '' || args.cotizacion_encabezado.tercero_id === ''
-            || args.cotizacion_encabezado.centro_utilidad === '' || args.cotizacion_encabezado.bodega === '') {
-        res.send(G.utils.r(req.url, 'empresa_id, tipo_id_tercero o tercero_id Están Vacios', 404, {}));
-        return;
-    }
-
-    if (args.cotizacion_encabezado.tipo_id_vendedor === '' || args.cotizacion_encabezado.vendedor_id === '' || args.cotizacion_encabezado.estado === '') {
-        res.send(G.utils.r(req.url, 'tipo_id_vendedor, vendedor_id o estado Están Vacios', 404, {}));
-        return;
-    }
-
-    //Parámetros a insertar
-    var empresa_id = args.cotizacion_encabezado.empresa_id;
-    var tipo_id_tercero = args.cotizacion_encabezado.tipo_id_tercero;
-    var tercero_id = args.cotizacion_encabezado.tercero_id;
-    var usuario_id = req.session.user.usuario_id;
-    var tipo_id_vendedor = args.cotizacion_encabezado.tipo_id_vendedor;
-    var vendedor_id = args.cotizacion_encabezado.vendedor_id;
-    var estado = args.cotizacion_encabezado.estado;
-    var observaciones = args.cotizacion_encabezado.observaciones;
-    var centro_utilidad = args.cotizacion_encabezado.centro_utilidad;
-    var bodega = args.cotizacion_encabezado.bodega;
-
-    that.m_pedidos_clientes.insertar_cotizacion(empresa_id, tipo_id_tercero, tercero_id, usuario_id,
-            tipo_id_vendedor, vendedor_id, estado, observaciones, centro_utilidad, bodega, function(err, row) {
-
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error en Inserción del Encabezado de Cotización', 500, {}));
-            return;
-        }
-
-        res.send(G.utils.r(req.url, 'Inserción del Encabezado Cotización Exitosa', 200, {resultado_consulta: row}));
-
-    });
-
-};
-
-/**
- * @api {post} /api/PedidosClientes/insertarDetalleCotizacion Insertar Detalle Cotización
- * @apiName Insertar Cotización.
- * @apiGroup PedidosClientes
- * @apiDescription Asignar o delegar los pedidos a un operario de bodega para su correspondiente separacion.
- * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
- * @apiPermission autenticado
- * @apiParam {String} usuario_id  Identificador del Usuario.
- * @apiParam {String} auth_token  Token de Autenticación, este define si el usuario esta autenticado o no.
- * @apiParam {String[]} pedidos Lista de pedidos 
- * @apiParam {Number} estado_pedido ID del estado a asignar 
- * @apiParam {Number} responsable Operario de Bodega al que se le asigna el pedido.
- * @apiSuccessExample Ejemplo Válido del Request.
- *     HTTP/1.1 200 OK
- *     {  
- *          session: {              
- *              usuario_id: 'jhon.doe',
- *              auth_token: 'asdf2hgt56hjjhgrt-mnjhbgfd-asdfgyh-ghjmnbgfd'
- *          },
- *          data : {
- *              asignacion_pedidos :  { 
- *                                      pedidos : [],
- *                                      estado_pedido: '',
- *                                      responsable : ''
- *                                  }
- *          }
- *     }
- * @apiSuccessExample Respuesta-Exitosa:
- *     HTTP/1.1 200 OK
- *     {
- *       service : '/api/PedidosClientes/insertarDetalleCotizacion',   
- *       msj : 'Asignacion de Resposables',
- *       status: '200',
- *       obj : {
- *             }
- *     }
- * @apiErrorExample Respuesta-Error:
- *     HTTP/1.1 404 Not Found
- *     {
- *       service : '/api/PedidosClientes/insertarDetalleCotizacion',   
- *       msj : 'Mensaje Error',
- *       status: 404,
- *       obj : {},
- *     }  
- */
-
-// ????????????????????????????????????????
-PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
-
-    var that = this;
-
-    var args = req.body.data;
-
-    if (args.cotizacion_detalle === undefined || args.cotizacion_detalle.pedido_cliente_id_tmp === undefined || args.cotizacion_detalle.codigo_producto === undefined || args.cotizacion_detalle.porc_iva === undefined) {
-        res.send(G.utils.r(req.url, 'pedido_cliente_id_tmp, codigo_producto o porc_iva No Están Definidos', 404, {}));
-        return;
-    }
-
-    if (args.cotizacion_detalle.numero_unidades === undefined || args.cotizacion_detalle.valor_unitario === undefined || args.cotizacion_detalle.tipo_producto === undefined) {
-        res.send(G.utils.r(req.url, 'numero_unidades, valor_unitario o tipo_producto No Están Definidos', 404, {}));
-        return;
-    }
-
-    if (args.cotizacion_detalle.pedido_cliente_id_tmp === '' || args.cotizacion_detalle.codigo_producto === '' || args.cotizacion_detalle.porc_iva === '') {
-        res.send(G.utils.r(req.url, 'pedido_cliente_id_tmp, codigo_producto o porc_iva Están Vacios', 404, {}));
-        return;
-    }
-
-    if (args.cotizacion_detalle.numero_unidades === '' || args.cotizacion_detalle.valor_unitario === '' || args.cotizacion_detalle.tipo_producto === '') {
-        res.send(G.utils.r(req.url, 'numero_unidades, valor_unitario o tipo_producto Están Vacios', 404, {}));
-        return;
-    }
-
-    //Parámetros a insertar
-    var pedido_cliente_id_tmp = args.cotizacion_detalle.pedido_cliente_id_tmp;
-    var codigo_producto = args.cotizacion_detalle.codigo_producto;
-    var porc_iva = args.cotizacion_detalle.porc_iva;
-    var numero_unidades = args.cotizacion_detalle.numero_unidades;
-    var valor_unitario = args.cotizacion_detalle.valor_unitario;
-    var tipo_producto = args.cotizacion_detalle.tipo_producto;
-    var usuario_id = req.session.user.usuario_id;
-
-    that.m_pedidos_clientes.insertar_detalle_cotizacion(pedido_cliente_id_tmp, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto, function(err, row) {
-
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error en Inserción del Detalle de Cotización', 500, {}));
-            return;
-        }
-
-        res.send(G.utils.r(req.url, 'Inserción del Detalle Cotización Exitosa', 200, {}));
-
-    });
-
-};
 
 //INSERTAR PEDIDO CLIENTES
 // ????????????????????????????????????????

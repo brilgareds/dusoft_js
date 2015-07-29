@@ -27,12 +27,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     clases_tipo_producto: ["", "label label-success", "label label-danger", "label label-info", "label label-warning", "label label-default"],
                     tipo_producto: '',
                     seleccion_tipo_producto: '- Todos -',
-                    laboratorio: Laboratorio.get('', ''),
                     paginando: false,
                     cantidad_items: 0,
                     termino_busqueda: "",
                     ultima_busqueda: "",
-                    pagina_actual: 1
+                    pagina_actual: 1,
+                    laboratorio: Laboratorio.get('', ''),
+                    producto_seleccionado: Producto.get()
                 };
 
                 that.buscar_laboratorios();
@@ -40,7 +41,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             });
 
             $rootScope.$on('cerrar_gestion_productos_clientesCompleto', function(e, parametros) {
-                //$scope.datos_form = null;
                 $scope.$$watchers = null;
             });
 
@@ -52,14 +52,16 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     that.insertar_cabercera_cotizacion(function(continuar) {
                         if (continuar) {
                             that.insertar_detalle_cotizacion(function(resultado) {
-                                callback(resultado);
+                                if (resultado)
+                                    that.buscar_productos_clientes();
                             });
                         }
                     });
                 } else {
                     // Agregar Productos a la Cotizacion
                     that.insertar_detalle_cotizacion(function(resultado) {
-                        callback(resultado);
+                        if (resultado)
+                            that.buscar_productos_clientes();
                     });
                 }
             };
@@ -75,18 +77,15 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         }
                     }
                 };
-                
-                console.log(obj);
-                console.log($scope.Pedido);
-                return
-                
-                Request.realizarRequest(API.PEDIDOS.CLIENTES.INSERTAR_COTIZACION, "POST", obj, function(data) {
 
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.INSERTAR_COTIZACION, "POST", obj, function(data) {
 
                     AlertService.mostrarMensaje("warning", data.msj);
 
                     if (data.status === 200 && data.obj.pedidos_clientes.numero_cotizacion > 0) {
 
+                        $scope.Pedido.set_numero_cotizacion(data.obj.pedidos_clientes.numero_cotizacion);
+                        localStorageService.add("numero_cotizacion", $scope.Pedido.get_numero_cotizacion());
                         callback(true);
                     } else {
                         callback(false);
@@ -102,17 +101,19 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     data: {
                         pedidos_clientes: {
                             cotizacion: $scope.Pedido,
-                            producto: $scope.Pedido.get_productos()
+                            producto: $scope.datos_form.producto_seleccionado
                         }
                     }
                 };
 
-
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.INSERTAR_DETALLE_COTIZACION, "POST", obj, function(data) {
+
+                    $scope.datos_form.producto_seleccionado = Producto.get();
 
                     AlertService.mostrarMensaje("warning", data.msj);
 
                     if (data.status === 200) {
+
                         callback(true);
                     } else {
                         callback(false);
@@ -204,7 +205,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             pagina_actual: $scope.datos_form.pagina_actual,
                             termino_busqueda: $scope.datos_form.termino_busqueda,
                             tipo_producto: $scope.datos_form.tipo_producto,
-                            laboratorio_id: $scope.datos_form.laboratorio.get_id()
+                            laboratorio_id: $scope.datos_form.laboratorio.get_id(),
+                            numero_cotizacion: $scope.Pedido.get_numero_cotizacion()
                         }
                     }
                 };
@@ -245,14 +247,16 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     $scope.Empresa.set_productos(producto);
                 });
             };
-            
-            $scope.solicitar_producto = function(producto){
-                
+
+            $scope.solicitar_producto = function(producto) {
+
+                $scope.datos_form.producto_seleccionado = producto;
+
                 $scope.Pedido.set_productos(producto);
-                
+
                 that.gestionar_cotizaciones();
             };
-            
+
 
             $scope.lista_productos = {
                 data: 'Empresa.get_productos()',
@@ -280,8 +284,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.precio_venta" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'get_existencia()', displayName: 'Stock', width: "5%"},
                     {field: 'get_cantidad_disponible()', displayName: 'Dispo.', width: "5%"},
-                    {field: 'cantidad', width: "7%", displayName: "Cantidad", cellFilter: "number",
-                        cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                    {field: 'cantidad_solicitada', width: "7%", displayName: "Cantidad", cellFilter: "number",
+                        cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_solicitada" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {width: "7%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-toolbar">\
                                             <button ng-if="row.entity.get_estado() == 0 " class="btn btn-default btn-xs"><span class="glyphicon glyphicon-lock"></span></button>\

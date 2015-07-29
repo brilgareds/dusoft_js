@@ -884,12 +884,16 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     var termino_busqueda = filtro.termino_busqueda;
     var tipo_producto = filtro.tipo_producto;
     var laboratorio_id = filtro.laboratorio_id;
+    var numero_cotizacion = filtro.numero_cotizacion;
 
     if (tipo_producto !== '')
         sql_aux = " and b.tipo_producto_id = '" + tipo_producto + "'";
 
     if (laboratorio_id !== '')
         sql_aux += " and f.clase_id = '" + laboratorio_id + "'";
+    
+    if (numero_cotizacion !== '' && numero_cotizacion !== '0')
+        sql_aux += " and a.codigo_producto NOT IN ( select codigo_producto from ventas_ordenes_pedidos_d_tmp where pedido_cliente_id_tmp = '"+numero_cotizacion+"' ) ";
 
     var sql = " select \
                 a.codigo_producto,\
@@ -975,14 +979,14 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
         cotizacion.empresa_id,
         cotizacion.centro_utilidad_id,
         cotizacion.bodega_id,
-        cotizacion.tipo_id,
-        cotizacion.tercero_id,
-        cotizacion.tipo_id_vendedor,
-        cotizacion.vendedor_id,
-        cotizacion.observaciones,
+        cotizacion.cliente.tipo_id_tercero,
+        cotizacion.cliente.id,
+        cotizacion.vendedor.tipo_id_tercero,
+        cotizacion.vendedor.id,
+        cotizacion.observacion,
         cotizacion.usuario_id
     ];
-
+    
     G.db.query(sql, params, function(err, rows, result) {
         callback(err, rows, result);
     });
@@ -1004,14 +1008,14 @@ PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(cotizacion,
                 valor_unitario, \
                 usuario_id , \
                 fecha_registro ) \
-                VALUES($1, $2, $3, $4, $5, $6, $7, NOW() );";
+                VALUES($1, $2, $3, $4, $5, $6, NOW() );";
 
     var params = [
         cotizacion.numero_cotizacion,
         producto.codigo_producto,
         producto.iva,
         producto.cantidad_solicitada,
-        producto.valor_unitario,
+        producto.precio_venta,
         cotizacion.usuario_id
     ];
 

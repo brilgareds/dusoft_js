@@ -12,6 +12,9 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.numero_cotizacion = 0;
             this.observacion = "";
             this.productos = [];
+            this.subtotal = 0;
+            this.valor_iva = 0;
+            this.total = 0;
         };
 
         PedidoCliente.prototype = Object.create(Pedido.getClass().prototype);  
@@ -85,6 +88,36 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         
         PedidoCliente.prototype.get_productos = function(){
             return this.productos ;
+        };
+        
+        // Subotal
+        PedidoCliente.prototype.set_subtotal = function(subtotal){
+            this.subtotal = subtotal;
+            return this;
+        };
+        
+        PedidoCliente.prototype.get_subtotal = function(){
+            return this.subtotal ;
+        };
+        
+        // Valor I.V.A
+        PedidoCliente.prototype.set_valor_iva = function(iva){
+            this.valor_iva = iva;
+            return this;
+        };
+        
+        PedidoCliente.prototype.get_valor_iva = function(){
+            return this.valor_iva ;
+        };
+        
+        // Valor I.V.A
+        PedidoCliente.prototype.set_total = function(total){
+            this.total = total;
+            return this;
+        };
+        
+        PedidoCliente.prototype.get_total = function(){
+            return this.total ;
         };
         
         this.get = function(empresa_id, centro_utilidad_id, bodega_id) {

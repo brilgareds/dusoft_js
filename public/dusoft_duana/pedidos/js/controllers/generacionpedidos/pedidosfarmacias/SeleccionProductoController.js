@@ -69,14 +69,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'cantidadSolicitada', displayName: 'Solicitado', enableCellEdit: false, width: "10%",
                         cellTemplate: ' <div class="col-xs-12">\n\
                                                 <input ng-if="!rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" type="text" ng-model="row.entity.cantidadSolicitada" validacion-numero-entero class="form-control grid-inline-input"' +
-                                'ng-keyup="onTeclaIngresaProducto($event, row)"/>\n\
+                                'ng-keyup="onIngresarProducto($event, row.entity)"/>\n\
                                                 <input ng-if="rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" type="text" ng-model="row.entity.cantidadSolicitada" validacion-numero-entero class="form-control grid-inline-input"' +
                                 'ng-keyup="onTeclaIngresaProductoEspecial($event, row)"/>\n\
                                             </div>'
                     },
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "6%",
                         cellTemplate: ' <div class="row">\
-                                                <button ng-if="!rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial() && row.entity.getEnFarmaciaSeleccionada() && row.entity.getEstado()==1" class="btn btn-default btn-xs" ng-click="onIncluirProducto(row)" ' +
+                                                <button ng-if="!rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial() && row.entity.getEnFarmaciaSeleccionada() && row.entity.getEstado()==1" class="btn btn-default btn-xs" ng-click="onIngresarProducto({which:13},row.entity)" ' +
                                 ' ng-disabled="row.entity.getCantidadSolicitada()<=0 || row.entity.getCantidadSolicitada()==null || !expreg.test(row.entity.getCantidadSolicitada())">\
                                                     <span class="glyphicon glyphicon-plus-sign"> Incluir</span>\
                                                 </button>\
@@ -129,12 +129,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 for (var i in _productos) {
                     var _producto = _productos[i];
                     var producto = ProductoPedidoFarmacia.get(_producto.codigo_producto, _producto.nombre_producto, _producto.existencia).
-                                   setExistenciasFarmacia(_producto.existencias_farmacia).
-                                   setTotalExistenciasFarmacias(_producto.total_existencias_farmacias).
-                                   setDisponibilidadBodega(_producto.disponibilidad_bodega).
-                                   setEstado(_producto.estado).setEnFarmaciaSeleccionada(_producto.en_farmacia_seleccionada).
-                                   setTipoProductoId(_producto.tipo_producto_id).
-                                   setCantidadSolicitada(_producto.cantidad_solicitada);
+                            setExistenciasFarmacia(_producto.existencias_farmacia).
+                            setTotalExistenciasFarmacias(_producto.total_existencias_farmacias).
+                            setDisponibilidadBodega(_producto.disponibilidad_bodega).
+                            setEstado(_producto.estado).setEnFarmaciaSeleccionada(_producto.en_farmacia_seleccionada).
+                            setTipoProductoId(_producto.tipo_producto_id).
+                            setCantidadSolicitada(_producto.cantidad_solicitada);
 
                     $scope.rootSeleccionProductoFarmacia.pedido.agregarProducto(producto);
 
@@ -229,7 +229,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $scope.rootSeleccionProductoFarmacia.paginaactual--;
                 self.buscarProductos();
             };
-            
+
             /*
              * @Author: Eduar
              * +Descripcion: Handler para traer pagina siguiente
@@ -238,7 +238,24 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $scope.rootSeleccionProductoFarmacia.paginaactual++;
                 self.buscarProductos();
             };
+            
+            /*
+             * @Author: Eduar
+             * @param {$event} event
+             * @param {ProductoPedidoFarmacia} producto
+             * +Descripcion: Handler del text input de cantidad solicitada ubicado en la grid
+             */
 
+            $scope.onIngresarProducto = function(event, producto) {
+                if (event.which === 13) {
+                    if (parseInt(producto.getCantidadSolicitada()) > 0) {
+                        $scope.rootSeleccionProductoFarmacia.pedido.setProductoSeleccionado(producto);
+                        var pedido = angular.copy($scope.rootSeleccionProductoFarmacia.pedido);
+                        pedido.vaciarProductos();
+                        $rootScope.$emit("insertarProductoPedidoTemporal", pedido);
+                    }
+                }
+            };
 
             /*$scope.expreg = new RegExp("^[0-9]*$");
              

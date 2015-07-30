@@ -4,10 +4,10 @@ var EmpresasModel = function(centros_utilidad, bodegas) {
     this.m_bodegas = bodegas;
 };
 
-
+//TEMPORALMENT SE AGREGA FD HARDCODED
 EmpresasModel.prototype.listar_empresas = function(callback) {
 
-    var sql = " SELECT  empresa_id, razon_social FROM empresas WHERE sw_tipo_empresa= '0' AND sw_activa='1' ";
+    var sql = " SELECT  empresa_id, razon_social FROM empresas WHERE (sw_tipo_empresa= '0' or empresa_id = 'FD') AND sw_activa='1' ";
 
     G.db.query(sql, function(err, empresas, result) {
         callback(err, empresas, result);

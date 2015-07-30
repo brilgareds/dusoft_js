@@ -1247,14 +1247,14 @@ ALTER TABLE "public"."solicitud_productos_a_bodega_principal"
 
 
 ALTER TABLE "public"."ventas_ordenes_pedidos_tmp"
-  ADD COLUMN "centro_destino" CHAR(2);
+  ADD COLUMN "centro_utilidad_id" CHAR(2);
 
 ALTER TABLE "public"."ventas_ordenes_pedidos_tmp"
-  ADD COLUMN "bodega_destino" CHAR(2);
+  ADD COLUMN "bodega_id" CHAR(2);
 
 
 ALTER TABLE "public"."ventas_ordenes_pedidos_tmp"
-  ADD CONSTRAINT "ventas_ordenes_pedidos_tmp_fk" FOREIGN KEY ("empresa_id", "centro_destino", "bodega_destino")
+  ADD CONSTRAINT "ventas_ordenes_pedidos_tmp_fk" FOREIGN KEY ("empresa_id", "centro_utilidad_id", "bodega_id")
     REFERENCES "public"."bodegas"("empresa_id", "centro_utilidad", "bodega")
     ON DELETE CASCADE
     ON UPDATE CASCADE
@@ -1262,15 +1262,28 @@ ALTER TABLE "public"."ventas_ordenes_pedidos_tmp"
 
 
 ALTER TABLE "public"."ventas_ordenes_pedidos"
-  ADD COLUMN "centro_destino" CHAR(2);
+  ADD COLUMN "centro_utilidad_id" CHAR(2);
 
 ALTER TABLE "public"."ventas_ordenes_pedidos"
-  ADD COLUMN "bodega_destino" CHAR(2);
+  ADD COLUMN "bodega_id" CHAR(2);
 
 
 ALTER TABLE "public"."ventas_ordenes_pedidos"
-  ADD CONSTRAINT "ventas_ordenes_pedidos_fk" FOREIGN KEY ("empresa_id", "centro_destino", "bodega_destino")
+  ADD CONSTRAINT "ventas_ordenes_pedidos_fk" FOREIGN KEY ("empresa_id", "centro_utilidad_id", "bodega_id")
     REFERENCES "public"."bodegas"("empresa_id", "centro_utilidad", "bodega")
     ON DELETE RESTRICT
     ON UPDATE RESTRICT
     NOT DEFERRABLE;
+
+
+COMMENT ON COLUMN "public"."ventas_ordenes_pedidos_tmp"."centro_utilidad_id"
+IS 'centro utilidad origen';
+
+COMMENT ON COLUMN "public"."ventas_ordenes_pedidos_tmp"."bodega_id"
+IS 'bodega origen';
+
+COMMENT ON COLUMN "public"."ventas_ordenes_pedidos"."centro_utilidad_id"
+IS 'centro utilidad origen';
+
+COMMENT ON COLUMN "public"."ventas_ordenes_pedidos"."bodega_id"
+IS 'bodega origen';

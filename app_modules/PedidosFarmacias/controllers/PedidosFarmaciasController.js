@@ -762,6 +762,71 @@ PedidosFarmacias.prototype.obtenerDetallePedido = function(req, res) {
 
 };
 
+PedidosFarmacias.prototype.listarProductos = function(req, res){
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.productos === undefined || args.productos.termino_busqueda === undefined || args.productos.pagina_actual === undefined
+            || args.productos.empresa_id === undefined || args.productos.centro_utilidad_id === undefined || args.productos.bodega_id === undefined
+            || args.productos.empresa_destino_id === undefined || args.productos.centro_utilidad_destino_id === undefined || args.productos.bodega_destino_id === undefined
+            ) {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id, bodega_id, empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id, termino_busqueda o  pagina_actual no estan definidos', 404, {}));
+        return;
+    }
+
+    if (args.productos.empresa_id === '' || args.productos.centro_utilidad_id === '' || args.productos.bodega_id === '') {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id estan vacíos', 404, {}));
+        return;
+    }
+
+    if (args.productos.empresa_destino_id === '' || args.productos.centro_utilidad_destino_id === '' || args.productos.bodega_destino_id === '') {
+        res.send(G.utils.r(req.url, 'empresa_destino_id, centro_utilidad_destino_id o bodega_destino_id estan vacíos', 404, {}));
+        return;
+    }
+
+    if (args.productos.pagina_actual === '') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
+        return;
+    }
+
+    var termino_busqueda = args.productos.termino_busqueda;
+    var pagina_actual = args.productos.pagina_actual;
+
+    var empresa_id = args.productos.empresa_id;
+    var centro_utilidad_id = args.productos.centro_utilidad_id;
+    var bodega_id = args.productos.bodega_id;
+
+    var empresa_destino_id = args.productos.empresa_destino_id;
+    var centro_utilidad_destino_id = args.productos.centro_utilidad_destino_id;
+    var bodega_destino_id = args.productos.bodega_destino_id;
+
+    var tipo_producto = '0';
+
+    if (args.productos.tipo_producto !== undefined) {
+        tipo_producto = args.productos.tipo_producto;
+    } 
+    
+    that.m_pedidos_farmacias.listarProductos(empresa_id, centro_utilidad_id, bodega_id, termino_busqueda, pagina_actual, tipo_producto, function(err, productos) {
+        console.log("respuesta de consulta ", productos);
+        if(err){
+            res.send(G.utils.r(req.url, 'Se ha generado un error', 500, {lista_productos: []}));
+            return;
+        }
+        
+        var i = productos.length;
+
+        if (i === 0) {
+            res.send(G.utils.r(req.url, 'Lista de productos vacía', 200, {lista_productos: []}));
+            return;
+        }
+        
+        res.send(G.utils.r(req.url, 'Listado de Productos', 200, {lista_productos: productos}));
+        
+        
+    });
+};
+
 PedidosFarmacias.prototype.listar_productos = function(req, res) {
 
     var that = this;
@@ -802,13 +867,11 @@ PedidosFarmacias.prototype.listar_productos = function(req, res) {
     var centro_utilidad_destino_id = args.productos.centro_utilidad_destino_id;
     var bodega_destino_id = args.productos.bodega_destino_id;
 
-    /* Inicio - Modificación para Tipo Producto */
     var tipo_producto = '0';
 
     if (args.productos.tipo_producto !== undefined) {
         tipo_producto = args.productos.tipo_producto;
     }
-    /* Fin - Modificación para Tipo Producto */
 
     that.m_productos.buscar_productos(empresa_id, centro_utilidad_id, bodega_id, termino_busqueda, pagina_actual, tipo_producto, function(err, lista_productos) {
 
@@ -851,7 +914,7 @@ PedidosFarmacias.prototype.listar_productos = function(req, res) {
                                     var disponibilidad_bodega = producto.existencia - cantidad_total_pendiente_farmacias - cantidad_total_pendiente_clientes
                                             - cantidad_reservada_temporales - cantidad_reservada_cotizaciones;
 
-                                    producto.disponibilidad_bodega = (disponibilidad_bodega < 0) ? 0 : disponibilidad_bodega; /*--*/
+                                    producto.disponibilidad_bodega = (disponibilidad_bodega < 0) ? 0 : disponibilidad_bodega; 
 
 
                                     if (--i === 0) {

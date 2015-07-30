@@ -182,6 +182,60 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             };
 
+            self.mostrarAlertaSeleccionProducto = function(titulo, mensaje) {
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">'+titulo+'</h4>\
+                                    </div>\
+                                    <div class="modal-body row">\
+                                    <div class="col-md-12">\
+                                    <h4>'+mensaje+'</h4>\
+                                    </div>\
+                                    </div>\
+                                    <div class="modal-footer">\
+                                    <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                    </div>',
+                                           scope: $scope,
+                                           controller: function($scope, $modalInstance) {
+                                               $scope.close = function() {
+                                                   $modalInstance.close();
+                                               };
+                                           }
+                                       };
+
+                  var modalInstance = $modal.open($scope.opts);
+            };
+            
+            
+            /*
+             * @Author: Eduar
+             * @param {$event} e
+             * @param {Object} datos
+             * +Descripcion: Function que valida el ingreso del producto (maximo de 25, un producto por codigo, solo un tipo por pedido  y que no este bloqueado)
+             */
+            
+            self.validarIngresoProducto = function(producto){
+                console.log("producto a agregar ", producto);
+                var pedido = $scope.rootSeleccionProductoFarmacia.pedido;
+                var validacion = {msj:"", valido:true};
+                
+                if(pedido.esProductoSeleccionado(producto)){
+                    
+                    return {msj:"El producto "+producto.getCodigoProducto()+ " ya esta seleccionado", valido:false};
+                }
+                
+                if(pedido.getProductosSeleccionados().length === 25){
+                    
+                    return {msj:"El pedido tiene 25 productos agregados", valido:false};
+                }
+                
+            };
+
             /*
              * @Author: Eduar
              * @param {$event} e
@@ -238,7 +292,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $scope.rootSeleccionProductoFarmacia.paginaactual++;
                 self.buscarProductos();
             };
-            
+
             /*
              * @Author: Eduar
              * @param {$event} event
@@ -249,10 +303,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.onIngresarProducto = function(event, producto) {
                 if (event.which === 13) {
                     if (parseInt(producto.getCantidadSolicitada()) > 0) {
-                        $scope.rootSeleccionProductoFarmacia.pedido.setProductoSeleccionado(producto);
-                        var pedido = angular.copy($scope.rootSeleccionProductoFarmacia.pedido);
-                        pedido.vaciarProductos();
-                        $rootScope.$emit("insertarProductoPedidoTemporal", pedido);
+                        var pedido = $scope.rootSeleccionProductoFarmacia.pedido;
+                        
+                        self.validarIngresoProducto(producto);
+                        /*if (agregado) {
+                            $rootScope.$emit("insertarProductoPedidoTemporal", pedido);
+                        } else {
+                            self.mostrarAlertaSeleccionProducto("Error agregando producto",
+                                                                "El producto "+producto.getDescripcion()+" ya se encuentra seleccionado.");
+                        }*/
                     }
                 }
             };

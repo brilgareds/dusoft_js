@@ -762,7 +762,7 @@ PedidosFarmacias.prototype.obtenerDetallePedido = function(req, res) {
 
 };
 
-PedidosFarmacias.prototype.listar_productos = function(req, res){
+PedidosFarmacias.prototype.listarProductos = function(req, res){
     var that = this;
 
     var args = req.body.data;
@@ -826,7 +826,7 @@ PedidosFarmacias.prototype.listar_productos = function(req, res){
         
     });
 };
-/*
+
 PedidosFarmacias.prototype.listar_productos = function(req, res) {
 
     var that = this;
@@ -941,7 +941,7 @@ PedidosFarmacias.prototype.listar_productos = function(req, res) {
             });
         });
     });
-};*/
+};
 
 PedidosFarmacias.prototype.listarProductosDetalleTemporal = function(req, res) {
 

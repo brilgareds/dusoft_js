@@ -50,7 +50,7 @@
                                 <legend>Tipo Pedido</legend> 
                                 <div class="row">
                                     <div class="col-md-7" style="margin-top: -14px">  
-                                        <h3><strong>Alto Costo</strong></h3>
+                                        <h3><strong>{{ Pedido.get_descripcion_tipo_producto() }}</strong></h3>
                                     </div>
                                 </div>
                             </fieldset>
@@ -105,7 +105,7 @@
                                                 <div class="">
                                                     <div class="col-md-3">
                                                         <p class="input-group">
-                                                            <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-click="buscar_productos()" ng-disabled="validar_btn_ingreso_documentos(planilla)" > 
+                                                            <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="validacion_buscar_productos()" ng-click="buscar_productos()" ng-disabled="validar_btn_ingreso_documentos(planilla)" > 
                                                                 <span class="glyphicon glyphicon-plus"></span> Buscar Productos
                                                             </button>
                                                         </p>

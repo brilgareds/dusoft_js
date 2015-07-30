@@ -91,6 +91,17 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             EmpresaPedidoCliente.limpiar_laboratorios = function() {
                 this.laboratorios = [];
             };
+            
+            // Set Default values
+            EmpresaPedidoCliente.set_default = function() {
+                this.limpiar_clientes();
+                this.limpiar_vendedores();
+                this.limpiar_cotizaciones();
+                this.limpiar_pedidos();
+                this.limpiar_productos();
+                this.limpiar_laboratorios();  
+            };
+            
 
             return EmpresaPedidoCliente;
         }]);

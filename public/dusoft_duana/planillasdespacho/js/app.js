@@ -35,6 +35,9 @@ define([
     "controllers/generarplanilladespacho/ListarPlanillasController",
     "controllers/generarplanilladespacho/GestionarPlanillasController",
     "controllers/generarplanilladespacho/GestionarDocumentosBodegaController",
+    
+    "controllers/generarplanillafarmacia/ListarPlanillasFarmaciaController",
+    
     "includes/helpersdirectives/visualizarReporte",
     "includes/validation/NgValidateEvents"
 ], function(angular) {
@@ -89,7 +92,22 @@ define([
                     templateUrl: "views/generarplanilladespacho/gestionarplanillas.html",
                     parent_name : "GestionarPlanillas"
                 });
-
+                
+                /**
+                 * @Author: Cristian Manuel Ardila
+                 * +Descripcion: rutas para visualizar las vistas de plantilla farmacia
+                 */
+                 planillas_despachos.stateProvider.state('GestionarPlanillasFarmacias', {
+                    url: "/GestionarPlanillasFarmacias",
+                    text: "Administración Planillas Farmacias",
+                    templateUrl: "views/generarplanillafarmacia/listarplanillasfarmacia.html"
+                }).state('CrearPlanillaFarmacia', {
+                    url: "/CrearPlanillaFarmacia",
+                    text: "Gestionar Planillas Farmacia",
+                    templateUrl: "views/generarplanillafarmacia/gestionarplanillasfarmacia.html",
+                    parent_name : "GestionarPlanillasFarmacias"
+                });
+                
                 if ($location.path() === "")
                     $state.go(vista_predeterminada);
                 else

@@ -7,7 +7,8 @@
                         <h3 class="text-center"><strong>Información Cliente</strong></h3>
                     </div>
                     <div class="pull-right">
-                        <h3 class="text-center"><strong>Cotizacion/Pedido #00{{ planilla.get_numero_guia() }}</strong></h3>
+                        <h3 class="text-center" ng-if='Pedido.get_numero_cotizacion() >0 '><strong>Cotizacion #{{ Pedido.get_numero_cotizacion() }}</strong></h3>
+                        <h3 class="text-center" ng-if='Pedido.get_numero_pedido() >0 '><strong>Pedido #{{ Pedido.get_numero_pedido() }}</strong></h3>
                     </div>
                 </div>
                 <div class="panel-body">                    
@@ -34,12 +35,22 @@
                                 </div>
                             </fieldset>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-1">
                             <fieldset>
                                 <legend>Telefono</legend> 
                                 <div class="row">  
                                     <div class="col-md-12">                                          
                                         <input type="text" ng-value="Pedido.getCliente().getTelefono()" ng-disabled="true" class="form-control" />
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <div class="col-md-3">
+                            <fieldset>
+                                <legend>Tipo Pedido</legend> 
+                                <div class="row">
+                                    <div class="col-md-7" style="margin-top: -14px">  
+                                        <h3><strong>Alto Costo</strong></h3>
                                     </div>
                                 </div>
                             </fieldset>
@@ -67,13 +78,13 @@
                                     </ui-select-choices>
                                 </ui-select>
                             </fieldset>
-                        </div>                                              
+                        </div>                        
                         <div class="col-md-4">
                             <fieldset>
                                 <legend>Fecha</legend> 
                                 <div class="row">
                                     <div class="col-md-7" style="margin-top: -14px">  
-                                        <h3><strong>{{Pedido.getFechaRegistro()}}</strong></h3>
+                                        <h3><strong>{{Pedido.getFechaRegistro() | date : 'dd-MM-yyyy'}}</strong></h3>
                                     </div>
                                 </div>
                             </fieldset>
@@ -102,7 +113,7 @@
 
                                                     <div class="col-md-3 pull-right">
                                                         <p class="input-group">
-                                                            <input type="text" class="form-control" ng-keypress="buscador_documentos_planillas($event);" ng-model="datos_view.termino_busqueda_documentos" placeholder="Buscar" name="" id="" />
+                                                            <input type="text" class="form-control" ng-keypress="buscador_detalle_cotizacion($event);" ng-model="datos_view.termino_busqueda_productos" placeholder="Buscar" name="" id="" />
                                                             <span class="input-group-btn">
                                                                 <button class="btn btn-default" type="submit" ng-click="consultar_documentos_planilla_despacho()"><i class="glyphicon glyphicon-search"></i></button>
                                                             </span>

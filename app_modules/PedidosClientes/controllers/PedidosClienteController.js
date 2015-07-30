@@ -364,7 +364,7 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
         tipo_producto: (args.pedidos_clientes.tipo_producto === undefined) ? '' : args.pedidos_clientes.tipo_producto,
         termino_busqueda: args.pedidos_clientes.termino_busqueda,
         laboratorio_id: (args.pedidos_clientes.laboratorio_id === undefined) ? '' : args.pedidos_clientes.laboratorio_id,
-        numero_cotizacion : (args.pedidos_clientes.numero_cotizacion === undefined) ? '' : args.pedidos_clientes.numero_cotizacion
+        numero_cotizacion: (args.pedidos_clientes.numero_cotizacion === undefined) ? '' : args.pedidos_clientes.numero_cotizacion
     };
     var pagina = args.pedidos_clientes.pagina_actual;
 
@@ -427,9 +427,10 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'tipo_id_vendedor  o vendedor_id No Estan Definidos', 404, {}));
         return;
     }
-
-    if (cotizacion.observacion === undefined) {
-        res.send(G.utils.r(req.url, 'observacion No Estan Definidos', 404, {}));
+    
+    // Observaciones
+    if (cotizacion.tipo_producto === undefined || cotizacion.observacion === undefined) {
+        res.send(G.utils.r(req.url, 'tipo_producto u observacion No Estan Definidos', 404, {}));
         return;
     }
 
@@ -450,8 +451,9 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
         return;
     }
 
-    if (cotizacion.observacion === '') {
-        res.send(G.utils.r(req.url, 'observacion esta vacia', 404, {}));
+    // Observaciones
+    if (cotizacion.tipo_producto === '' || cotizacion.observacion === '') {
+        res.send(G.utils.r(req.url, 'tipo_producto u observacion esta vacia', 404, {}));
         return;
     }
 
@@ -534,6 +536,140 @@ PedidosCliente.prototype.insertarDetalleCotizacion = function(req, res) {
         }
     });
 };
+
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : Listar Cotizaciones
+ */
+PedidosCliente.prototype.listarCotizaciones = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.empresa_id === undefined) {
+        res.send(G.utils.r(req.url, 'empresa_id no estan definidas', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_clientes.fecha_inicial === undefined || args.pedidos_clientes.fecha_final === undefined) {
+        res.send(G.utils.r(req.url, 'fecha_inicial, fecha_final no estan definidas', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_clientes.termino_busqueda === undefined || args.pedidos_clientes.pagina_actual === undefined) {
+        res.send(G.utils.r(req.url, 'termino_busqueda, pagina_actual no estan definidas', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_clientes.empresa_id === '') {
+        res.send(G.utils.r(req.url, 'empresa_id estan vacia', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_clientes.fecha_inicial === '' || args.pedidos_clientes.fecha_final === '') {
+        res.send(G.utils.r(req.url, 'fecha_inicial, fecha_final estan vacias', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_clientes.pagina_actual === '' || args.pedidos_clientes.pagina_actual === 0 || args.pedidos_clientes.pagina_actual === '0') {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de la Pagina actual', 404, {}));
+        return;
+    }
+
+    var empresa_id = args.pedidos_clientes.empresa_id;
+    var fecha_inicial = args.pedidos_clientes.fecha_inicial;
+    var fecha_final = args.pedidos_clientes.fecha_final;
+    var termino_busqueda = args.pedidos_clientes.termino_busqueda;
+    var pagina_actual = args.pedidos_clientes.pagina_actual;
+
+    that.m_pedidos_clientes.listar_cotizaciones(empresa_id, fecha_inicial, fecha_final, termino_busqueda, pagina_actual, function(err, lista_cotizaciones) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: {lista_cotizaciones: []}}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Lista Cotizaciones', 200, {pedidos_clientes: {lista_cotizaciones: lista_cotizaciones}}));
+            return;
+        }
+    });
+};
+
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : Consultar Cotizacion
+ */
+PedidosCliente.prototype.consultarCotizacion = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    // Cotizacion
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.cotizacion === undefined || args.pedidos_clientes.cotizacion === '') {
+        res.send(G.utils.r(req.url, 'pedidos_clientes o cotizacion No Estan Definidos', 404, {}));
+        return;
+    }
+
+    var cotizacion = args.pedidos_clientes.cotizacion;
+
+    if (cotizacion.numero_cotizacion === undefined || cotizacion.numero_cotizacion === '') {
+        res.send(G.utils.r(req.url, 'numero_cotizacion no esta definido o esta vacio', 404, {}));
+        return;
+    }
+
+    that.m_pedidos_clientes.consultar_cotizacion(cotizacion, function(err, cotizacion) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
+            return;
+        } else {
+
+            res.send(G.utils.r(req.url, 'Cotizacion', 200, {pedidos_clientes: {cotizacion: cotizacion}}));
+            return;
+        }
+    });
+};
+
+
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : Consultar Detalle Cotizacion
+ */
+PedidosCliente.prototype.consultarDetalleCotizacion = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    // Cotizacion
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.cotizacion === undefined || args.pedidos_clientes.cotizacion === '') {
+        res.send(G.utils.r(req.url, 'pedidos_clientes o cotizacion No Estan Definidos', 404, {}));
+        return;
+    }
+
+    var cotizacion = args.pedidos_clientes.cotizacion;
+
+    if (cotizacion.numero_cotizacion === undefined || cotizacion.numero_cotizacion === '') {
+        res.send(G.utils.r(req.url, 'numero_cotizacion no esta definido o esta vacio', 404, {}));
+        return;
+    }
+
+    var termino_busqueda = (args.pedidos_clientes.termino_busqueda === undefined) ? '' : args.pedidos_clientes.termino_busqueda;
+
+    that.m_pedidos_clientes.consultar_detalle_cotizacion(cotizacion, termino_busqueda, function(err, lista_productos) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
+            return;
+        } else {
+
+            res.send(G.utils.r(req.url, 'Cotizacion', 200, {pedidos_clientes: {lista_productos: lista_productos}}));
+            return;
+        }
+    });
+};
+
 
 
 /**************************************************
@@ -646,41 +782,7 @@ PedidosCliente.prototype.insertarPedidoCliente = function(req, res) {
 
 };
 
-//LISTAR COTIZACIONES CLIENTES
-// ????????????????????????????????????????
-PedidosCliente.prototype.listarCotizaciones = function(req, res) {
 
-    var that = this;
-
-    var args = req.body.data;
-
-    if (args.cotizaciones_cliente === undefined || args.cotizaciones_cliente.empresa_id === undefined) {
-        res.send(G.utils.r(req.url, 'empresa_id No Está Definido', 404, {}));
-        return;
-    }
-
-    if (args.cotizaciones_cliente.empresa_id === '') {
-        res.send(G.utils.r(req.url, 'empresa_id Está Vacio', 404, {}));
-        return;
-    }
-
-    //Parámetros de búsqueda
-    var empresa_id = args.cotizaciones_cliente.empresa_id;
-    var termino_busqueda = args.cotizaciones_cliente.termino_busqueda;
-    var pagina = args.cotizaciones_cliente.pagina_actual;
-
-    that.m_pedidos_clientes.listar_cotizaciones(empresa_id, termino_busqueda, pagina, function(err, listado_cotizaciones) {
-
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error en consulta de Cotización', 500, {}));
-            return;
-        }
-
-        res.send(G.utils.r(req.url, 'Consulta de Cotización Exitosa', 200, {resultado_consulta: listado_cotizaciones}));
-
-    });
-
-};
 
 //LISTAR PEDIDOS
 // ????????????????????????????????????????
@@ -720,38 +822,7 @@ PedidosCliente.prototype.listadoPedidosClientes = function(req, res) {
 
 };
 
-//consultarEncabezadoCotizacion
-// ????????????????????????????????????????
-PedidosCliente.prototype.consultarEncabezadoCotizacion = function(req, res) {
 
-    var that = this;
-
-    var args = req.body.data;
-
-    if (args.cotizacion_cliente === undefined || args.cotizacion_cliente.numero_cotizacion === undefined) {
-        res.send(G.utils.r(req.url, 'numero_cotizacion No está definido', 404, {}));
-        return;
-    }
-
-    if (args.cotizacion_cliente.numero_cotizacion === "") {
-        res.send(G.utils.r(req.url, 'numero_cotizacion está vacio', 404, {}));
-        return;
-    }
-
-    //Parámetro para el modelo
-    var numero_cotizacion = args.cotizacion_cliente.numero_cotizacion;
-
-    that.m_pedidos_clientes.consultar_encabezado_cotizacion(numero_cotizacion, function(err, encabezado_cotizacion) {
-
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error en consulta de Encabezado Cotización', 404, {}));
-            return;
-        }
-
-        res.send(G.utils.r(req.url, 'Consulta Encabezado Cotización Exitosa', 200, {resultado_consulta: encabezado_cotizacion}));
-    });
-
-};
 //consultarEncabezadoPedido
 // ????????????????????????????????????????
 PedidosCliente.prototype.consultarEncabezadoPedido = function(req, res) {
@@ -853,37 +924,7 @@ PedidosCliente.prototype.estadoPedido = function(req, res) {
 
 };
 
-// ????????????????????????????????????????
-PedidosCliente.prototype.listarDetalleCotizacion = function(req, res) {
 
-    var that = this;
-
-    var args = req.body.data;
-
-    if (args.detalle_cotizacion === undefined || args.detalle_cotizacion.numero_cotizacion === undefined) {
-        res.send(G.utils.r(req.url, 'numero_cotizacion No Está Definido', 404, {}));
-        return;
-    }
-
-    if (args.detalle_cotizacion.numero_cotizacion === '') {
-        res.send(G.utils.r(req.url, 'numero_cotizacion Está Vacio', 404, {}));
-        return;
-    }
-
-    var numero_cotizacion = args.detalle_cotizacion.numero_cotizacion;
-
-    that.m_pedidos_clientes.listar_detalle_cotizacion(numero_cotizacion, function(err, detalle_cotizacion) {
-
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error en Consulta Detalle Cotización', 500, {}));
-            return;
-        }
-
-        res.send(G.utils.r(req.url, 'Consulta Detalle Cotización Exitosa', 200, {resultado_consulta: detalle_cotizacion}));
-
-    });
-
-};
 
 //listarDetallePedido
 // ????????????????????????????????????????

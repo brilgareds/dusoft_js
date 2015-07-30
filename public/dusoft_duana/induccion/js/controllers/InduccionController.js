@@ -32,7 +32,7 @@ define(["angular", "js/controllers",
 
                         $scope.root = {};
                         $scope.root.empresaSeleccionada = EmpresaInduccion.get(empresa.getNombre(), empresa.getCodigo());
-
+                       
                         $scope.session = {
                             usuario_id: Usuario.getUsuarioActual().getId(),
                             auth_token: Usuario.getUsuarioActual().getToken()
@@ -40,10 +40,12 @@ define(["angular", "js/controllers",
 
                         $scope.buscar = {descripcion: ''};
                         that.paginaactual = 1;
-
+                        
+                        
                         $scope.root.empresaSeleccionada.setCentroUtilidadSeleccionado(
                                 CentroUtilidadesInduccion.get(centroUtilidad.getNombre(), centroUtilidad.getCodigo())
                                 ).getCentroUtilidadSeleccionado().setBodegaSeleccionada(BodegasInduccion.get(bodega.getNombre(), bodega.getCodigo()));
+                                console.log($scope.root.empresaSeleccionada)
                         callback();
                     }
 
@@ -75,7 +77,7 @@ define(["angular", "js/controllers",
                         };
                         Request.realizarRequest(API.INDUCCION.LISTAR_EMPRESAS, "POST", obj, function(data) {
 
-                            $scope.empresas = [];
+                            
                             if (data.status === 200) {
                                 that.renderListarEmpresa(data);
                                 callback();
@@ -94,9 +96,13 @@ define(["angular", "js/controllers",
                      * entidad EmpresaInduccion.js
                      */
                     that.renderListarEmpresa = function(data) {
+                        
+                        
+                        $scope.empresas = [];
                         for (var i in data.obj.listar_empresas) {
                             var _empresa = data.obj.listar_empresas[i];
                             var empresa = EmpresaInduccion.get(_empresa.razon_social, _empresa.empresa_id);
+                            
                             $scope.empresas.push(empresa);
                         }
                     };
@@ -176,9 +182,7 @@ define(["angular", "js/controllers",
                      */
                     $scope.onSeleccionarUtilidad = function() {
                         $scope.root.empresaSeleccionada.getCentroUtilidadSeleccionado().vaciarBodegas()
-                        that.traerBodega(function() {
-
-                        });
+                        that.traerBodega(function(){});
                     };
 
                     /**
@@ -348,8 +352,9 @@ define(["angular", "js/controllers",
 
                             $scope.root.empresaSeleccionada.getCentroUtilidadSeleccionado().getBodegaSeleccionada().agregarProducto(producto);
 
-
+                            
                         }
+                      
                     };
 
 
@@ -397,13 +402,15 @@ define(["angular", "js/controllers",
                         enableColumnResize: true,
                         enableRowSelection: false,
                         columnDefs: [
-                            {field: 'getIva()', displayName: 'Iva', width: "15%"},
-                            {field: 'getCosto()', displayName: 'Costo', width: "10%"},
-                            {field: 'getPrecioVenta()', displayName: 'Venta', width: "10%"},
+
                             {field: 'getCodigoProducto()', displayName: 'Codigo producto', width: "15%"},
-                            {field: 'getDescripcion()', displayName: 'Descripcion', width: "25%"},
-                            {field: 'getExistencia()', displayName: 'Existencia', width: "15%"},
-                            {field: 'getExistencia()',
+                            {field: 'getDescripcion()', displayName: 'Descripcion'},
+                            {field: 'getIva()', displayName: 'Iva', width: "5%"},
+                            {field: 'getCosto()', displayName: 'Costo', width: "5%"},
+                            {field: 'getPrecioVenta()', displayName: 'Venta', width: "10%"},
+                            
+                            {field: 'getExistencia()', displayName: 'Existencia', width: "10%"},
+                            {field: 'getExistencia()',width:50,
                                 displayName: "Detalle",
                                 cellClass: "txt-center",
                                 cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="detalleProducto(row.entity)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'

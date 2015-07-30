@@ -891,9 +891,9 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
 
     if (laboratorio_id !== '')
         sql_aux += " and f.clase_id = '" + laboratorio_id + "'";
-    
+
     if (numero_cotizacion !== '' && numero_cotizacion !== '0')
-        sql_aux += " and a.codigo_producto NOT IN ( select codigo_producto from ventas_ordenes_pedidos_d_tmp where pedido_cliente_id_tmp = '"+numero_cotizacion+"' ) ";
+        sql_aux += " and a.codigo_producto NOT IN ( select codigo_producto from ventas_ordenes_pedidos_d_tmp where pedido_cliente_id_tmp = '" + numero_cotizacion + "' ) ";
 
     var sql = " select \
                 a.codigo_producto,\
@@ -969,10 +969,11 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
                 tipo_id_vendedor, \
                 vendedor_id, \
                 observaciones, \
+                tipo_producto, \
                 estado, \
                 usuario_id , \
                 fecha_registro ) \
-                VALUES( $1, $2, $3, $4, $5, $6, $7, $8, '1', $9, NOW()) \
+                VALUES( $1, $2, $3, $4, $5, $6, $7, $8, $9, '1', $10, NOW()) \
                 RETURNING pedido_cliente_id_tmp as numero_cotizacion ;";
 
     var params = [
@@ -984,9 +985,10 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
         cotizacion.vendedor.tipo_id_tercero,
         cotizacion.vendedor.id,
         cotizacion.observacion,
+        cotizacion.tipo_producto,
         cotizacion.usuario_id
     ];
-    
+
     G.db.query(sql, params, function(err, rows, result) {
         callback(err, rows, result);
     });
@@ -1025,6 +1027,128 @@ PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(cotizacion,
 
 };
 
+/*
+ * Author : Camilo Orozco
+ * Descripcion :  SQL Listar Cotizaciones
+ */
+PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_inicial, fecha_final, termino_busqueda, pagina, callback) {
+
+    var sql = " select \
+                a.empresa_id,\
+                a.centro_destino as centro_utilidad_id,\
+                a.bodega_destino as bodega_id,\
+                a.pedido_cliente_id_tmp as numero_cotizacion,\
+                a.tipo_id_tercero,\
+                a.tercero_id,\
+                b.nombre_tercero,\
+                b.direccion,\
+                b.telefono,\
+                b.email,\
+                e.pais,\
+                d.departamento,\
+                c.municipio,\
+                f.tipo_id_vendedor,\
+                f.vendedor_id,\
+                f.nombre as nombre_vendendor,\
+                f.telefono as telefono_vendedor,\
+                a.observaciones,\
+                coalesce(a.tipo_producto,'') as tipo_producto,\
+                coalesce(g.descripcion,'') as descripcion_tipo_producto,\
+                a.fecha_registro\
+                from ventas_ordenes_pedidos_tmp a\
+                inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id\
+                inner join tipo_mpios c on b.tipo_pais_id = c.tipo_pais_id and b.tipo_dpto_id = c.tipo_dpto_id and b.tipo_mpio_id = c.tipo_mpio_id\
+                inner join tipo_dptos d on c.tipo_pais_id = d.tipo_pais_id and c.tipo_dpto_id = d.tipo_dpto_id\
+                inner join tipo_pais e on d.tipo_pais_id = e.tipo_pais_id\
+                inner join vnts_vendedores f on a.tipo_id_vendedor = f.tipo_id_vendedor and a.vendedor_id = f.vendedor_id \
+                left join inv_tipo_producto g on a.tipo_producto = g.tipo_producto_id \
+                where a.empresa_id= $1 and a.fecha_registro between $2 and $3 and\
+                (\
+                    a.pedido_cliente_id_tmp ilike $4 or\
+                    a.tercero_id ilike $4 or	\
+                    b.nombre_tercero ilike $4 or\
+                    f.vendedor_id ilike $4 or	\
+                    f.nombre ilike $4 \
+                )\
+                order by 4 desc ";
+
+    G.db.paginated(sql, [empresa_id, fecha_inicial, fecha_final, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
+        callback(err, rows);
+    });
+
+};
+
+/*
+ * Author : Camilo Orozco
+ * Descripcion :  SQL Consultar Cotizacion
+ */
+PedidosClienteModel.prototype.consultar_cotizacion = function(cotizacion, callback) {
+
+    var sql = " select \
+                a.empresa_id,\
+                a.centro_destino as centro_utilidad_id,\
+                a.bodega_destino as bodega_id,\
+                a.pedido_cliente_id_tmp as numero_cotizacion,\
+                a.tipo_id_tercero,\
+                a.tercero_id,\
+                b.nombre_tercero,\
+                b.direccion,\
+                b.telefono,\
+                b.email,\
+                e.pais,\
+                d.departamento,\
+                c.municipio,\
+                f.tipo_id_vendedor,\
+                f.vendedor_id,\
+                f.nombre as nombre_vendendor,\
+                f.telefono as telefono_vendedor,\
+                a.observaciones,\
+                coalesce(a.tipo_producto,'') as tipo_producto,\
+                coalesce(g.descripcion,'') as descripcion_tipo_producto,\
+                a.fecha_registro\
+                from ventas_ordenes_pedidos_tmp a\
+                inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id\
+                inner join tipo_mpios c on b.tipo_pais_id = c.tipo_pais_id and b.tipo_dpto_id = c.tipo_dpto_id and b.tipo_mpio_id = c.tipo_mpio_id\
+                inner join tipo_dptos d on c.tipo_pais_id = d.tipo_pais_id and c.tipo_dpto_id = d.tipo_dpto_id\
+                inner join tipo_pais e on d.tipo_pais_id = e.tipo_pais_id\
+                inner join vnts_vendedores f on a.tipo_id_vendedor = f.tipo_id_vendedor and a.vendedor_id = f.vendedor_id \
+                left join inv_tipo_producto g on a.tipo_producto = g.tipo_producto_id \
+                where a.pedido_cliente_id_tmp = $1 ";
+
+    G.db.query(sql, [cotizacion.numero_cotizacion], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
+
+
+/*
+ * Author : Camilo Orozco
+ * Descripcion :  SQL Consultar Detalle Cotizacion
+ */
+PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion, termino_busqueda, callback) {
+
+    var sql = " SELECT\
+                a.pedido_cliente_id_tmp as numero_cotizacion,\
+                a.codigo_producto,\
+                fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
+                a.numero_unidades as cantidad_solicitada,\
+                a.porc_iva as iva,\
+                a.valor_unitario, \
+                (a.numero_unidades * a.valor_unitario) as subtotal,\
+                ((a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))) * a.numero_unidades) as total\
+                FROM ventas_ordenes_pedidos_d_tmp AS a\
+                WHERE pedido_cliente_id_tmp = $1 and \n\
+                (\
+                    a.codigo_producto ilike $2 or\
+                    fc_descripcion_producto(a.codigo_producto) ilike $2 \
+                );";
+
+    G.db.query(sql, [cotizacion.numero_cotizacion, '%'+termino_busqueda+'%'], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+
+};
 
 
 /**************************************************
@@ -1037,72 +1161,9 @@ PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(cotizacion,
  
  
  
+ 
+ 
  /**
- * @api {sql} listar_cotizaciones Pedidos clientes model
- * @apiName Pedidos Clientes
- * @apiGroup PedidosCliente (sql)
- * @apiDescription Lista cotizaciones
- * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
- * @apiPermission autenticado
- * @apiParam {Number} numero_pedido Numero del pedido a asignar
- * @apiParam {Function} callback Funcion de retorno de informacion.
- */
-PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, termino_busqueda, pagina, callback) {
-
-    var sql = " select\
-                    a.pedido_cliente_id_tmp as numero_cotizacion,\
-                    a.empresa_id,\
-                    a.tipo_id_tercero as tipo_id_cliente,\
-                    a.tercero_id as cliente_id,\
-                    to_char(a.fecha_registro, 'dd-mm-yyyy hh:mm:ss') as fecha_registro,\
-                    a.usuario_id,\
-                    to_char(a.fecha_envio, 'dd-mm-yyyy hh:mm:ss') as fecha_envio,\
-                    a.tipo_id_vendedor,\
-                    a.vendedor_id,\
-                    round(SUM((b.valor_unitario + (b.valor_unitario * COALESCE(b.porc_iva, 0))/100) * b.numero_unidades),2) as valor_cotizacion,\
-                    a.estado,\
-                    a.observaciones,\
-                    c.tipo_pais_id as tipo_pais_cliente,\
-                    c.tipo_dpto_id as tipo_departamento_cliente,\
-                    c.tipo_mpio_id as tipo_municipio_cliente,\
-                    c.direccion as direccion_cliente,\
-                    c.telefono as telefono_cliente,\
-                    c.nombre_tercero as nombre_cliente,\
-                    d.nombre as nombre_vendedor,\
-                    d.telefono as telefono_vendedor,\
-                    e.pais,\
-                    f.departamento,\
-                    g.municipio\
-                    from ventas_ordenes_pedidos_tmp a\
-                    left join ventas_ordenes_pedidos_d_tmp b on b.pedido_cliente_id_tmp = a.pedido_cliente_id_tmp\
-                    join terceros c on c.tipo_id_tercero = a.tipo_id_tercero\
-                        and c.tercero_id = a.tercero_id\
-                    join vnts_vendedores d on d.tipo_id_vendedor = a.tipo_id_vendedor\
-                        and d.vendedor_id = a.vendedor_id\
-                    left join tipo_pais as e on e.tipo_pais_id = c.tipo_pais_id\
-                    left join tipo_dptos as f on f.tipo_dpto_id = c.tipo_dpto_id\
-                        and f.tipo_pais_id = e.tipo_pais_id \
-                    left join tipo_mpios as g on g.tipo_mpio_id = c.tipo_mpio_id\
-                        and g.tipo_dpto_id = f.tipo_dpto_id\
-                        and g.tipo_pais_id = e.tipo_pais_id\
-                where a.empresa_id = $1\
-                    and (   a.pedido_cliente_id_tmp ilike $2\
-                            or c.nombre_tercero ilike $2\
-                            or d.nombre ilike $2    )\
-                group by a.pedido_cliente_id_tmp, a.empresa_id, a.tipo_id_tercero, a.tercero_id, a.fecha_registro, a.usuario_id, a.fecha_envio,\
-                    a.tipo_id_vendedor, a.vendedor_id, a.estado, a.observaciones, c.tipo_pais_id, c.tipo_dpto_id, c.tipo_mpio_id, c.direccion,\
-                    c.telefono, c.nombre_tercero, d.nombre, d.telefono, e.pais, f.departamento, g.municipio\
-                order by 1 desc\
-";
-
-    G.db.paginated(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
-        callback(err, rows);
-    });
-
-};
-
-/**
  * @api {sql} listar_pedidos Pedidos clientes model
  * @apiName Pedidos Clientes
  * @apiGroup PedidosCliente (sql)
@@ -1171,51 +1232,6 @@ PedidosClienteModel.prototype.listado_pedidos_clientes = function(empresa_id, te
     /*G.db.query(sql, [empresa_id, "%" + termino_busqueda + "%"], function(err, rows, result) {
      callback(err, rows, result);
      });*/
-};
-
-//************ NUEVO *******************
-PedidosClienteModel.prototype.consultar_encabezado_cotizacion = function(numero_cotizacion, callback) {
-
-    var sql = " select\
-                    a.pedido_cliente_id_tmp as numero_cotizacion,\
-                    a.empresa_id,\
-                    a.tipo_id_tercero as tipo_id_cliente,\
-                    a.tercero_id as cliente_id,\
-                    to_char(a.fecha_registro, 'dd-mm-yyyy hh:mm:ss') as fecha_registro,\
-                    a.usuario_id,\
-                    to_char(a.fecha_envio, 'dd-mm-yyyy hh:mm:ss') as fecha_envio,\
-                    a.tipo_id_vendedor,\
-                    a.vendedor_id,\
-                    a.estado,\
-                    a.observaciones,\
-                    c.tipo_pais_id as tipo_pais_cliente,\
-                    c.tipo_dpto_id as tipo_departamento_cliente,\
-                    c.tipo_mpio_id as tipo_municipio_cliente,\
-                    c.direccion as direccion_cliente,\
-                    c.telefono as telefono_cliente,\
-                    c.nombre_tercero as nombre_cliente,\
-                    d.nombre as nombre_vendedor,\
-                    d.telefono as telefono_vendedor,\
-                    e.pais,\
-                    f.departamento,\
-                    g.municipio\
-                from ventas_ordenes_pedidos_tmp a\
-                    join terceros c on c.tipo_id_tercero = a.tipo_id_tercero\
-                        and c.tercero_id = a.tercero_id\
-                    join vnts_vendedores d on d.tipo_id_vendedor = a.tipo_id_vendedor\
-                        and d.vendedor_id = a.vendedor_id\
-                    left join tipo_pais as e on e.tipo_pais_id = c.tipo_pais_id\
-                    left join tipo_dptos as f on f.tipo_dpto_id = c.tipo_dpto_id\
-                        and f.tipo_pais_id = e.tipo_pais_id \
-                    left join tipo_mpios as g on g.tipo_mpio_id = c.tipo_mpio_id\
-                        and g.tipo_dpto_id = f.tipo_dpto_id\
-                        and g.tipo_pais_id = e.tipo_pais_id\
-                where a.pedido_cliente_id_tmp = $1";
-
-    G.db.query(sql, [numero_cotizacion], function(err, rows, result) {
-        callback(err, rows, result);
-    });
-
 };
 
 PedidosClienteModel.prototype.consultar_encabezado_pedido = function(numero_pedido, callback) {
@@ -1312,38 +1328,7 @@ PedidosClienteModel.prototype.estado_pedido = function(numero_pedido, callback) 
     });
 };
 
-/**
- * @api {sql} listar_detalle_cotizacion Pedidos clientes model
- * @apiName Pedidos Clientes
- * @apiGroup PedidosCliente (sql)
- * @apiDescription Lista detalle de cotización
- * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
- * @apiPermission autenticado
- * @apiParam {Number} numero_pedido Numero del pedido a asignar
- * @apiParam {Function} callback Funcion de retorno de informacion.
- */
-PedidosClienteModel.prototype.listar_detalle_cotizacion = function(numero_cotizacion, callback) {
 
-    var sql = " select\
-                    codigo_producto,\
-                    fc_descripcion_producto(codigo_producto) as nombre_producto,\
-                    porc_iva,\
-                    numero_unidades,\
-                    valor_unitario,\
-                    to_char(fecha_registro, 'dd-mm-yyyy hh:mm:ss') as fecha_registro,\
-                    valor_unitario*numero_unidades as total_sin_iva,\
-                    round((valor_unitario + (valor_unitario * COALESCE(porc_iva, 0))/100) * numero_unidades, 2) as total_con_iva,\
-                    tipo_producto\
-                from\
-                    ventas_ordenes_pedidos_d_tmp\
-                where pedido_cliente_id_tmp = $1";
-
-    G.db.query(sql, [numero_cotizacion], function(err, rows, result) {
-        callback(err, rows, result);
-    });
-
-};
 
 /**
  * @api {sql} listar_detalle_pedido Pedidos clientes model

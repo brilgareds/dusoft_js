@@ -21,12 +21,12 @@
                             <div class="row" style="margin-bottom: 20px;">
                                 <div class="col-lg-12">
                                     <h4>Busqueda por {{ datos_form.seleccion_tipo_producto }}</h4>
-                                    <button ng-click="seleccionar_tipo_producto('')" class="btn btn-xxs btn-primary" style="position: relative;">Todos</button>
-                                    <button ng-click="seleccionar_tipo_producto('1')" class="btn btn-xxs btn-success" style="position: relative;">Normales</button>
-                                    <button ng-click="seleccionar_tipo_producto('2')" class="btn btn-xxs btn-danger" style="position: relative;">Alto Costo</button>
-                                    <button ng-click="seleccionar_tipo_producto('3')"class="btn btn-xxs btn-info" style="position: relative;">Controlados</button>
-                                    <button ng-click="seleccionar_tipo_producto('4')"class="btn btn-xxs btn-warning" style="position: relative;">Insumos</button>
-                                    <button ng-click="seleccionar_tipo_producto('5')"class="btn btn-xxs btn-grey" style="position: relative;">Neveras</button>                                          
+                                    <button ng-click="seleccionar_tipo_producto('')" ng-disabled='Pedido.get_tipo_producto() !== "" ' class="btn btn-xxs btn-primary" style="position: relative;">Todos</button>
+                                    <button ng-click="seleccionar_tipo_producto('1')"  ng-disabled='Pedido.get_tipo_producto() !== "" ' class="btn btn-xxs btn-success" style="position: relative;">Normales</button>
+                                    <button ng-click="seleccionar_tipo_producto('2')" ng-disabled='Pedido.get_tipo_producto() !== "" ' class="btn btn-xxs btn-danger" style="position: relative;">Alto Costo</button>
+                                    <button ng-click="seleccionar_tipo_producto('3')" ng-disabled='Pedido.get_tipo_producto() !== "" ' class="btn btn-xxs btn-info" style="position: relative;">Controlados</button>
+                                    <button ng-click="seleccionar_tipo_producto('4')" ng-disabled='Pedido.get_tipo_producto() !== "" ' class="btn btn-xxs btn-warning" style="position: relative;">Insumos</button>
+                                    <button ng-click="seleccionar_tipo_producto('5')" ng-disabled='Pedido.get_tipo_producto() !== "" ' class="btn btn-xxs btn-grey" style="position: relative;">Neveras</button>                                          
                                 </div>
                             </div>
                             <div class="row">

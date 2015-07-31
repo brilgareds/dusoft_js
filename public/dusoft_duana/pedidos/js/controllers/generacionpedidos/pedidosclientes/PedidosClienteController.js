@@ -42,7 +42,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     );
 
             $scope.Pedido.set_numero_cotizacion(parseInt(localStorageService.get("numero_cotizacion")) || 0);
-            $scope.Pedido.setCliente(Cliente.get());
+            $scope.Pedido.set_vendedor(Vendedor.get()).setCliente(Cliente.get());
             $scope.Pedido.setFechaRegistro($filter('date')(new Date(), "dd/MM/yyyy"));
 
             $scope.datos_view = {
@@ -54,7 +54,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             that.gestionar_consultas_cotizaciones = function() {
 
                 that.buscar_clientes(function(clientes) {
-
+                    
                     if ($scope.Pedido.get_numero_cotizacion() > 0)
                         that.render_clientes(clientes);
 
@@ -97,14 +97,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             that.render_cotizacion = function(data) {
 
                 var cliente = Cliente.get(data.nombre_tercero, data.direccion, data.tipo_id_tercero, data.tercero_id, data.telefono);
+                
                 cliente.setDepartamento(data.departamento);
                 cliente.setMunicipio(data.municipio);
-                //cliente.set_contrato(data.contrato_cliente_id);
+                cliente.set_contrato(data.contrato_cliente_id);
+                
                 var vendedor = Vendedor.get(data.nombre_vendendor, data.tipo_id_vendedor, data.vendedor_id, data.telefono_vendedor);
 
                 $scope.Pedido.set_vendedor(vendedor).setCliente(cliente);
                 $scope.Pedido.set_observacion(data.observaciones);
-                $scope.Pedido.set_tipo_producto(data.tipo_producto);
+                $scope.Pedido.set_tipo_producto(data.tipo_producto).set_descripcion_tipo_producto(data.descripcion_tipo_producto);
                 $scope.Pedido.setFechaRegistro(data.fecha_registro);
             };
             
@@ -235,6 +237,21 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
 
             // Ingresar Productos
+            
+            $scope.validacion_buscar_productos = function(){
+                
+                var disabled = false;
+                
+                if($scope.Pedido.getCliente().get_descripcion() === undefined || $scope.Pedido.getCliente().get_descripcion() === '')
+                    disabled =  true;
+                if($scope.Pedido.get_vendedor().get_descripcion() === undefined || $scope.Pedido.get_vendedor().get_descripcion() === '')
+                    disabled =  true;
+                if($scope.Pedido.get_observacion() === undefined || $scope.Pedido.get_observacion() === '')
+                    disabled =  true;
+                
+                return disabled;
+            };
+            
             $scope.buscar_productos = function() {
 
                 $scope.slideurl = "views/generacionpedidos/pedidosclientes/gestionarproductosclientes.html?time=" + new Date().getTime();
@@ -245,6 +262,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             $scope.cerrar_busqueda_productos = function() {
 
                 $scope.$emit('cerrar_gestion_productos_clientes', {animado: true});
+                
+                that.gestionar_consultas_cotizaciones();
             };
 
             // Lista Productos Seleccionados
@@ -293,6 +312,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             that.gestionar_consultas_cotizaciones();
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+                
+                // Set Datas
+                $scope.Empresa.set_default();         
+                
                 $scope.$$watchers = null;
             });
         }]);

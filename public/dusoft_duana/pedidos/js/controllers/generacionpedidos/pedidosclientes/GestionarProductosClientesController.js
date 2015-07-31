@@ -77,8 +77,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         }
                     }
                 };
-                
-                console.log(obj.data.pedidos_clientes.cotizacion);
 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.INSERTAR_COTIZACION, "POST", obj, function(data) {
 
@@ -88,6 +86,10 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                         $scope.Pedido.set_numero_cotizacion(data.obj.pedidos_clientes.numero_cotizacion);
                         $scope.Pedido.set_tipo_producto($scope.datos_form.tipo_producto);
+                        
+                        console.log($scope.Pedido);
+                        console.log($scope.datos_form.tipo_producto);
+                        
                         localStorageService.add("numero_cotizacion", $scope.Pedido.get_numero_cotizacion());
                         callback(true);
                     } else {
@@ -213,6 +215,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         }
                     }
                 };
+                
+                /*console.log('== obj ==');
+                console.log(obj);*/
 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_PRODUCTOS_CLIENTES, "POST", obj, function(data) {
 
@@ -251,6 +256,13 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 });
             };
 
+            $scope.validar_seleccion_producto = function() {
+
+                if ($scope.Pedido.get_productos().length === 2)
+                    return true;
+
+            };
+
             $scope.solicitar_producto = function(producto) {
 
                 $scope.datos_form.producto_seleccionado = producto;
@@ -259,10 +271,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                 if ($scope.datos_form.tipo_producto === '') {
                     $scope.datos_form.tipo_producto = producto.get_tipo_producto();
+                    $scope.Pedido.set_tipo_producto(producto.get_tipo_producto());
                 }
-                
-                console.log($scope.datos_form.tipo_producto);
-                console.log(producto.get_tipo_producto());
 
                 that.gestionar_cotizaciones();
             };
@@ -298,8 +308,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_solicitada" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {width: "7%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-toolbar">\
-                                            <button ng-if="row.entity.get_estado() == 0 " class="btn btn-default btn-xs"><span class="glyphicon glyphicon-lock"></span></button>\
-                                            <button ng-if="row.entity.get_estado() == 1 " class="btn btn-default btn-xs" ng-click="solicitar_producto(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
+                                            <button ng-if="row.entity.get_estado() == 0 " ng-disabled="validar_seleccion_producto()" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-lock"></span></button>\
+                                            <button ng-if="row.entity.get_estado() == 1 " ng-disabled="validar_seleccion_producto()" class="btn btn-default btn-xs" ng-click="solicitar_producto(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
                                         </div>'}
                 ]
             };

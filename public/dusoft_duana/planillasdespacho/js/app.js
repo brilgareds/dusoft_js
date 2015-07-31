@@ -36,7 +36,18 @@ define([
     "controllers/generarplanilladespacho/GestionarPlanillasController",
     "controllers/generarplanilladespacho/GestionarDocumentosBodegaController",
     
+    /**
+     * 
+     * @param {type} angular
+     * @returns {unresolved}
+     * @author Cristian Ardila
+     * +Descripcion: Controladores Farmacia
+     */
     "controllers/generarplanillafarmacia/ListarPlanillasFarmaciaController",
+    "controllers/generarplanillafarmacia/GestionarPlanillasFarmaciasController",
+    "controllers/generarplanillafarmacia/GestionarDocumentosFarmaciaController",
+    "controllers/generarplanillafarmacia/PlanillasFarmaciaController",
+    
     
     "includes/helpersdirectives/visualizarReporte",
     "includes/validation/NgValidateEvents"

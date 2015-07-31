@@ -30,8 +30,32 @@ define(["angular"], function(angular) {
             },
             'CLIENTES': {
                 'LISTAR_CLIENTES': BASE_URL + '/Terceros/Clientes/listarClientesCiudad'
-            }            
+            },
+            
+            
+             /**
+             * @author Cristian Ardila
+             * +Descripcion: 
+             */
+            'PLANILLAS_FARMACIAS': {
+                'LISTAR_PLANILLAS_FARMACIAS': BASE_URL + '/PlanillasDespachos/listar',
+              /*  'CONSULTAR_PLANILLA': BASE_URL + '/PlanillasDespachos/consultarPlanillaDespacho',
+                'DOCUMENTOS_PLANILLA': BASE_URL + '/PlanillasDespachos/consultarDocumentosPlanillaDespacho',
+                'GENERAR_PLANILLA': BASE_URL + '/PlanillasDespachos/generarPlanillaDespacho',
+                'INGRESAR_DOCUMENTOS': BASE_URL + '/PlanillasDespachos/ingresarDocumentosPlanilla',
+                'ELIMINAR_DOCUMENTO': BASE_URL + '/PlanillasDespachos/eliminarDocumentoPlanilla',
+                'DESPACHAR_PLANILLA': BASE_URL + '/PlanillasDespachos/despacharPlanilla',
+                'LISTAR_DOCUMENTOS_FARMACIAS': BASE_URL + '/PlanillasDespachos/documentosDespachosPorFarmacia',
+                'LISTAR_DOCUMENTOS_CLIENTES': BASE_URL + '/PlanillasDespachos/documentosDespachosPorCliente',
+                'REPORTE_PLANILLA_DESPACHO': BASE_URL + '/PlanillasDespachos/reportePlanillaDespacho',*/
+            },
+            'FARMACIAS': {
+                'LISTAR_FARMACIAS': BASE_URL + '/Ciudades/listar'
+            },
         }
+        
+        
+         
     };
 
     angular.forEach(data, function(key, value) {

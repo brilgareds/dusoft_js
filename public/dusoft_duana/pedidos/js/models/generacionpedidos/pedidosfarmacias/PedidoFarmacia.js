@@ -135,6 +135,18 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             return false;
         };
         
+        PedidoFarmacia.prototype.validarTipoProductoAIngresar = function(producto) {
+            for(var i in this.productosSeleccionados){
+                var _producto = this.productosSeleccionados[i];
+                
+                if(_producto.getTipoProductoId() !== producto.getTipoProductoId()){
+                    return false;
+                }
+            }
+
+            return true;
+        };
+        
         PedidoFarmacia.prototype.vaciarProductosSeleccionados = function() {
             this.productosSeleccionados = [];
         };

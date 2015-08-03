@@ -894,7 +894,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
 
     if (numero_cotizacion !== '' && numero_cotizacion !== '0')
         sql_aux += " and a.codigo_producto NOT IN ( select codigo_producto from ventas_ordenes_pedidos_d_tmp where pedido_cliente_id_tmp = '" + numero_cotizacion + "' ) ";
-    
+
     // sql original
     var sql = " select \
                 a.codigo_producto,\
@@ -948,7 +948,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                     fc_descripcion_producto(a.codigo_producto) ilike $5 or\
                     e.descripcion ilike $5\
                 ) order by 2";
-    
+
     // sql pruebas
     var sql = " select \
                 a.codigo_producto,\
@@ -1002,14 +1002,14 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                     fc_descripcion_producto(a.codigo_producto) ilike $5 or\
                     e.descripcion ilike $5\
                 ) order by 1";
-    
+
     console.log([empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, '%' + termino_busqueda + '%']);
-    
+
     // Original
     /*G.db.paginated(sql, [empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, '%' + termino_busqueda + '%'], pagina, G.settings.limit, function(err, rows, result) {
-        callback(err, rows);
-    });*/
-    
+     callback(err, rows);
+     });*/
+
     // Prueba
     G.db.paginated(sql, [empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, '%' + termino_busqueda + '%'], pagina, G.settings.limit, function(err, rows, result) {
         callback(err, rows);
@@ -1201,19 +1201,36 @@ PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion
                 a.porc_iva as iva,\
                 a.valor_unitario, \
                 (a.numero_unidades * a.valor_unitario) as subtotal,\
+                (a.numero_unidades * (a.valor_unitario * (a.porc_iva/100))) as valor_iva,\
                 ((a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))) * a.numero_unidades) as total\
                 FROM ventas_ordenes_pedidos_d_tmp AS a\
-                WHERE pedido_cliente_id_tmp = $1 and \n\
+                WHERE pedido_cliente_id_tmp = $1 and \
                 (\
                     a.codigo_producto ilike $2 or\
                     fc_descripcion_producto(a.codigo_producto) ilike $2 \
                 );";
 
-    G.db.query(sql, [cotizacion.numero_cotizacion, '%'+termino_busqueda+'%'], function(err, rows, result) {
+    G.db.query(sql, [cotizacion.numero_cotizacion, '%' + termino_busqueda + '%'], function(err, rows, result) {
         callback(err, rows, result);
     });
 
 };
+
+
+/*
+ * Author : Camilo Orozco
+ * Descripcion :  SQL Consultar Eliminar producto de la Cotizacion
+ */
+PedidosClienteModel.prototype.eliminar_producto_cotizacion = function(cotizacion, producto, callback)
+{
+    var sql = "DELETE FROM ventas_ordenes_pedidos_d_tmp WHERE pedido_cliente_id_tmp = $1 and codigo_producto = $2 ; ";
+
+    G.db.query(sql, [cotizacion.numero_cotizacion, producto.codigo_producto], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
+
 
 
 /**************************************************
@@ -1442,48 +1459,7 @@ PedidosClienteModel.prototype.listar_detalle_pedido = function(numero_pedido, ca
 
 };
 
-PedidosClienteModel.prototype.eliminar_registro_detalle_cotizacion = function(numero_cotizacion, codigo_producto, usuario_solicitud, callback)
-{
-    /*var sql = "DELETE FROM ventas_ordenes_pedidos_d_tmp WHERE pedido_cliente_id_tmp = $1 and codigo_producto = $2";
-     
-     G.db.query(sql, [numero_cotizacion, codigo_producto], function(err, rows, result) {
-     callback(err, rows);
-     });*/
 
-    G.db.begin(function() {
-
-        __log_eliminar_producto_detalle_cotizacion(numero_cotizacion, codigo_producto, usuario_solicitud, function(err, rows, result) {
-
-            if (err) {
-                callback(err);
-                return;
-            }
-
-            __eliminar_registro_detalle_cotizacion(numero_cotizacion, codigo_producto, function(err, rows, result) {
-
-                if (err) {
-                    callback(err);
-                    return;
-                }
-
-                G.db.commit(function() {
-                    callback(err, rows);
-                });
-            });
-        });
-
-    });
-};
-
-function __eliminar_registro_detalle_cotizacion(numero_cotizacion, codigo_producto, callback) {
-
-    var sql = "DELETE FROM ventas_ordenes_pedidos_d_tmp WHERE pedido_cliente_id_tmp = $1 and codigo_producto = $2";
-
-    G.db.transaction(sql, [numero_cotizacion, codigo_producto], function(err, rows, result) {
-        callback(err, rows, result);
-    });
-}
-;
 
 PedidosClienteModel.prototype.cambiar_estado_cotizacion = function(numero_cotizacion, nuevo_estado, callback)
 {

@@ -17,9 +17,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         "UsuarioPlanillaDespacho",
         "PlanillaDespacho",
         "Documento",
-        "Usuario",
-        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter, Empresa, Ciudad, Transportadora, UsuarioPlanilla, PlanillaDespacho, Documento, Sesion) {
-            
+        "Usuario", "EmpresaPlanillaFarmacia",
+        function($scope, $rootScope, Request,
+                $modal, API, socket, $timeout,
+                AlertService, localStorageService, $state,
+                $filter, Empresa, Ciudad,
+                Transportadora, UsuarioPlanilla, PlanillaDespacho,
+                Documento, Sesion, EmpresaPlanillaFarmacia) {
+
             /*
              * 
              * @type variable global
@@ -28,9 +33,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             $scope.Empresa = Empresa;
             $scope.Empresa.limpiar_ciudades();
             $scope.Empresa.limpiar_transportadoras();
-            
-            
-            
+            $scope.Empresa.empresaSeleccionada;
+            var empresa = angular.copy(Sesion.getUsuarioActual().getEmpresa());
+
+
+
+            $scope.Empresa.empresaSeleccionada = EmpresaPlanillaFarmacia.get(empresa.getNombre(), empresa.getCodigo());
+            that.empresaSeleccionada = $scope.Empresa.empresaSeleccionada;
+           
+           // console.log("AQUI SE VERA EL VALOR ", CentroUtilidad.get( $scope.Empresa.empresaSeleccionada.centrosUtilidad.nombre,$scope.Empresa.empresaSeleccionada.centrosUtilidad.codigo) );
             /**
              * +Descripcion: Variables de sesion
              */
@@ -39,14 +50,76 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 auth_token: Sesion.getUsuarioActual().getToken()
             };
 
+
+            /*
+             * 
+             * @param {N/N}
+             * @Author: Cristian Ardila
+             * +Descripcion: metodo el cual se encarga de cargar el combobox
+             * empresa con todas las empresas disponibles
+             */
+
+
+
+            that.traerFarmacias = function() {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        planillasfarmacias: {
+                            codigoempresa: that.empresaSeleccionada.getCodigo()
+                        }
+                    }
+                };
+                Request.realizarRequest(API.PLANILLAS_FARMACIAS.LISTAR_FARMACIAS, "POST", obj, function(data) {
+                    
+
+                    if (data.status === 200) {
+                        that.renderListarFarmacia(data);
+                        //callback();
+                    } else {
+                        AlertService.mostrarMensaje("warning", data.msj)
+                    }
+                });
+            };
+            that.renderListarFarmacia = function(data) {
+
+                console.log(data)
+                $scope.farmacias = [];
+                for (var i in data.obj.listar_farmacias) {
+
+                    var _farmacia = data.obj.listar_farmacias[i];
+                    var farmacia = EmpresaPlanillaFarmacia.get(_farmacia.razon_social, _farmacia.empresa_id);
+
+                    $scope.farmacias.push(farmacia);
+                }
+            };
+
+
+            that.traerFarmacias();
+
+
+
+
+
+
+
+
+
+
             // Variables 
             $scope.planilla = PlanillaDespacho.get();
             $scope.planilla.set_numero_guia(parseInt(localStorageService.get("numero_guia")) || 0);
             $scope.planilla.set_fecha_registro($filter('date')(new Date(), "dd/MM/yyyy"));
+
             
-            
+              $scope.parametrosDocumentoFarmacia = {
+                    empresa: empresa.getCodigo(), 
+                    centroUtilidad: empresa.getCentroUtilidadSeleccionado().getCodigo(),
+                    bodega: empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()   
+                 };
+                 
             $scope.datos_view = {
-                
                 termino_busqueda_ciudades: '',
                 termino_busqueda_documentos: ''
             };
@@ -54,7 +127,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             $scope.datos_planilla = [];
 
             that.gestionar_consultas = function() {
-      
+
                 that.buscar_ciudades(function(ciudades) {
 
                     if ($scope.planilla.get_numero_guia() > 0)
@@ -72,15 +145,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     });
                 });
             };
-            
-              /**
+
+            /**
              * @author Cristian Ardila
              * @param {string} termino_busqueda
              * +Descripcion: Metodo metodo que se encarga de realizar la peticion al
              * servidor consultando los trnasportadores
              */
-             that.buscar_transportadoras = function(callback) {
-                 
+            that.buscar_transportadoras = function(callback) {
+
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -98,8 +171,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     }
                 });
             };
-            
-              /**
+
+            /**
              * @author Cristian Ardila
              * @param {Object} ciudades
              * +Descripcion: Metodo encargado de mapear el objecto json
@@ -107,7 +180,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              */
             that.render_transportadoras = function(transportadoras) {
 
-                
+
                 $scope.Empresa.limpiar_transportadoras();
                 transportadoras.forEach(function(data) {
 
@@ -121,8 +194,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             $scope.seleccionar_transportadora = function() {
 
             };
-            
-            
+
+
             /**
              * @author Cristian Ardila
              * @param {string} termino_busqueda
@@ -131,7 +204,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * cargara las ciudades segun la descripcion ingresada
              */
             $scope.listar_farmacias = function(termino_busqueda) {
-                
+
                 if (termino_busqueda.length < 3) {
                     return;
                 }
@@ -141,7 +214,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     that.render_ciudades(ciudades);
                 });
             };
-            
+
             /**
              * @author : Cristian Ardila
              * type(funcion)
@@ -149,7 +222,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * servidor consultando por descripcion las farmacias
              */
             that.buscar_ciudades = function(callback) {
- 
+
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -160,7 +233,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 };
 
                 Request.realizarRequest(API.FARMACIAS.LISTAR_FARMACIAS, "POST", obj, function(data) {
-                    
+
                     if (data.status === 200) {
                         callback(data.obj.ciudades);
                     }
@@ -173,7 +246,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * de las farmacias contra el modelo farmacias
              */
             that.render_ciudades = function(ciudades) {
-                
+
                 $scope.Empresa.limpiar_ciudades();
                 ciudades.forEach(function(data) {
 
@@ -186,7 +259,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             };
 
-           
+
 
             $scope.buscador_documentos_planillas = function(ev) {
                 if (ev.which === 13) {
@@ -265,10 +338,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
 
-            $scope.validar_btn_ingreso_documentos = function() {                              
-                
+            $scope.validar_btn_ingreso_documentos = function() {
+
                 var disabled = false;
-                
+
                 // Validar que todos los campos esten diligenciados
                 if ($scope.planilla.get_ciudad() === null || $scope.planilla.get_transportadora() === undefined || $scope.planilla.get_nombre_conductor() === '' || $scope.planilla.get_observacion() === '' || $scope.planilla.get_estado() === '2')
                     disabled = true;
@@ -282,7 +355,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
             $scope.gestionar_documentos_farmacia = function() {
-               
+              
                 $scope.slideurl = "views/generarplanillafarmacia/gestionardocumentosfarmacia.html?time=" + new Date().getTime();
                 $scope.$emit('gestionar_documentos_farmacia');
 
@@ -468,7 +541,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
 
             $scope.cancelar_planilla_farmacia = function() {
-               
+
                 $state.go('GestionarPlanillasFarmacias');
             };
 

@@ -1,7 +1,7 @@
 
-var PlanillasFarmaciasController = function(induccion) {
+var PlanillasFarmaciasController = function(PlanillasFarmacias) {
 
-    this.m_planillas_farmacias = induccion;
+    this.m_planillas_farmacias = PlanillasFarmacias;
 
 };
 
@@ -12,172 +12,89 @@ var PlanillasFarmaciasController = function(induccion) {
  * @returns {undefined}
  * @Author Cristian Ardila
  * +Descripcion Controlador encargado de invocar el metodo model para listar
- * las empresas activas
+ * las farmacias
  */
-PlanillasFarmaciasController.prototype.listar_empresas = function(req, res) {
+PlanillasFarmaciasController.prototype.listar_farmacias = function(req, res) {
 
     var args = req.body.data;
+    var codigoempresa = req.body.data.planillasfarmacias.codigoempresa;
 
-     if (args.induccion === undefined ) { 
-        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
-        return;
-    }
-    
-    this.m_planillas_farmacias.obtenerEmpresasActivas(function(err, listar_empresas) {
+    /*  if (args.induccion === undefined ) { 
+     res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+     return;
+     }*/
+
+    this.m_planillas_farmacias.obtenerFarmacias(codigoempresa, function(err, listar_farmacias) {
 
         if (err) {
-            res.send(G.utils.r(req.url, 'Error Listado de Empresas Activas', 500, {listar_empresas: {}}));
+            res.send(G.utils.r(req.url, 'Error Listado de Farmacias', 500, {listar_farmacias: {}}));
             return;
         } else {
-            res.send(G.utils.r(req.url, 'Listado de Empresas Activas', 200, {listar_empresas: listar_empresas}));
+            res.send(G.utils.r(req.url, 'Listado de Farmacias OK', 200, {listar_farmacias: listar_farmacias}));
             return;
         }
     });
 };
 
+
 /**
  * 
  * @param {type} req
  * @param {type} res
  * @returns {undefined}
  * @Author Cristian Ardila
- * +Descripcion Controlador encargado de invocar el metodo model para listar
- * los centros de utilidades segun la empresa
+ * +Descripcion Controlador encargado de los documentos con prefijo EDB
  */
-PlanillasFarmaciasController.prototype.listar_centro_utilidad = function(req, res) {
+PlanillasFarmaciasController.prototype.listar_documentos = function(req, res) {
 
-
-    var args = req.body.data;
-
-    var idempresa = args.induccion.idempresa;
-
-     if (args.induccion === undefined ) { 
+    var parametros = req.body.data.parametros;
+    var empresa = parametros.empresa;
+    var centroUtilidad = parametros.centroUtilidad;
+    var bodega = parametros.bodega;
+    
+    /**
+     * @type string parametros: arreglo con todos los parametros
+     * @type string empresa: contiene el id de la empresa
+     * @type string centroUtilidad: variable con el centro de utilidad
+     * @type string bodega: variable de la bodega
+     * +Descripcion: Se valida que las variables esten undefine o cadena vacia, si es el caso
+     * retornara una excepcion y terminara la ejecucion del programa
+     */
+    if (parametros === undefined) {
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
     }
-    
-
-    if (idempresa === '' || idempresa === undefined) {
+    if (empresa === '' || empresa === undefined) {
         res.send(G.utils.r(req.url, 'Se requiere el numero de empresa', 404, {}));
         return;
     }
 
-    this.m_planillas_farmacias.obtenerCentrosUtilidades(idempresa, function(err, listar_centro_utilidad) {
-
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error Listado de Centros de utilidad', 500, {listar_centro_utilidad: {}}));
-            return;
-        } else {
-            res.send(G.utils.r(req.url, 'Listado de Centros de utilidad segun la empresa', 200, {listar_centro_utilidad: listar_centro_utilidad}));
-            return;
-        }
-    });
-};
-
-/**
- * 
- * @param {type} req
- * @param {type} res
- * @returns {undefined}
- * @Author Cristian Ardila
- * +Descripcion Controlador encargado de invocar el metodo model para listar
- * los centros de utilidades segun la empresa
- */
-PlanillasFarmaciasController.prototype.listar_bodegas = function(req, res) {
-
-    var args = req.body.data;
-
-    var centros_utilidad = args.induccion.centros_utilidad;
-    
-     if (args.induccion === undefined ) { 
-        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
-        return;
-    }
-    
-
-    if (centros_utilidad === '' || centros_utilidad === undefined) {
-        res.send(G.utils.r(req.url, 'Se requiere el numero de centro de utilidad', 404, {}));
-        return;
-    }
-
-  
-
-    this.m_planillas_farmacias.obtenerBodegas(centros_utilidad, function(err, listar_bodegas) {
-
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error Listado de bodegas', 500, {listar_bodegas: {}}));
-            return;
-        } else {
-            res.send(G.utils.r(req.url, 'Listado de bodegas', 200, {listar_bodegas: listar_bodegas}));
-            return;
-        }
-    });
-};
-
-
-/**
- * 
- * @param {type} req
- * @param {type} res
- * @returns {undefined}
- * @Author Cristian Ardila
- * +Descripcion Controlador encargado de invocar el metodo model para listar
- * los productos
- */
-PlanillasFarmaciasController.prototype.listar_productos = function(req, res) {
-    
- 
-    var args = req.body.data;
-    var induccion =args.induccion;
-    var empresaId = induccion.empresaId;
-    var centroUtilidad = induccion.centroUtilidad;
-    var bodega = induccion.bodega;
-    var descripcion = induccion.descripcion;
-    var pagina = induccion.pagina;
-    var codigoProducto = induccion.codigoProducto;
-  
-  
-     if (args.induccion === undefined ) { 
-        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
-        return;
-    }
-    
-    /**
-     * +Descripcion: se valida que el identificador de la empresa este vacio
-     * ó indefinido
-     */
-    if (empresaId === '' || empresaId === undefined) {
-        res.send(G.utils.r(req.url, 'Se requiere la empresa', 404, {}));
-        return;
-    }
-     /**
-     * +Descripcion: se valida que el identificador del centro de utilidad este 
-     * vacio ó indefinido
-     */
     if (centroUtilidad === '' || centroUtilidad === undefined) {
-        res.send(G.utils.r(req.url, 'Se requiere el centro de utilidad', 404, {}));
+        res.send(G.utils.r(req.url, 'Se requiere el numero de centroUtilidad', 404, {}));
         return;
     }
-    /**
-     * +Descripcion: valida que el identificador de la bodega seleccionada este 
-     * vacio ó indefinido
-     */
-     if (bodega === '' || bodega === undefined) {
-        res.send(G.utils.r(req.url, 'Se requiere la bodega', 404, {}));
+
+    if (bodega === '' || bodega === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de bodega', 404, {}));
         return;
     }
-    
-    this.m_planillas_farmacias.obtenerProductos(empresaId,centroUtilidad,bodega,descripcion,pagina,codigoProducto,function(err, listar_productos) {
+
+
+    this.m_planillas_farmacias.obtenerTipoDocumento(empresa,centroUtilidad,bodega,function(err, listar_documentos) {
 
         if (err) {
-            res.send(G.utils.r(req.url, 'Error Listado de Productos Activos', 500, {listar_productos: {}}));
+            res.send(G.utils.r(req.url, 'Error Listado de documentos tipo EDB', 500, {listar_documentos: {}}));
             return;
         } else {
-            res.send(G.utils.r(req.url, 'Listado de Productos Activos', 200, {listar_productos: listar_productos}));
+            res.send(G.utils.r(req.url, 'Listado de documentos EDB OK', 200, {listar_documentos: listar_documentos}));
             return;
         }
     });
 };
+
+
+
+
 PlanillasFarmaciasController.$inject = ["m_planillas_farmacias"];
 
 module.exports = PlanillasFarmaciasController;

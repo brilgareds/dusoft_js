@@ -1,0 +1,481 @@
+{
+	"_type": "Project",
+	"_id": "AAAAAAFF+h6SjaM2Hec=",
+	"name": "Untitled",
+	"ownedElements": [
+		{
+			"_type": "UMLModel",
+			"_id": "AAAAAAFF+qBWK6M3Z8Y=",
+			"_parent": {
+				"$ref": "AAAAAAFF+h6SjaM2Hec="
+			},
+			"name": "Model",
+			"ownedElements": [
+				{
+					"_type": "UMLClassDiagram",
+					"_id": "AAAAAAFF+qBtyKM79qY=",
+					"_parent": {
+						"$ref": "AAAAAAFF+qBWK6M3Z8Y="
+					},
+					"name": "Main",
+					"visible": true,
+					"defaultDiagram": true,
+					"ownedViews": [
+						{
+							"_type": "UMLClassView",
+							"_id": "AAAAAAFO9QqfyRmqPy0=",
+							"_parent": {
+								"$ref": "AAAAAAFF+qBtyKM79qY="
+							},
+							"model": {
+								"$ref": "AAAAAAFO9QqfyRmoX00="
+							},
+							"subViews": [
+								{
+									"_type": "UMLNameCompartmentView",
+									"_id": "AAAAAAFO9QqfyRmrjOw=",
+									"_parent": {
+										"$ref": "AAAAAAFO9QqfyRmqPy0="
+									},
+									"model": {
+										"$ref": "AAAAAAFO9QqfyRmoX00="
+									},
+									"subViews": [
+										{
+											"_type": "LabelView",
+											"_id": "AAAAAAFO9QqfyRms6wk=",
+											"_parent": {
+												"$ref": "AAAAAAFO9QqfyRmrjOw="
+											},
+											"visible": false,
+											"enabled": true,
+											"lineColor": "#000000",
+											"fillColor": "#ffffff",
+											"fontColor": "#000000",
+											"font": "Arial;13;0",
+											"showShadow": true,
+											"containerChangeable": false,
+											"containerExtending": false,
+											"left": 0,
+											"top": 0,
+											"width": 0,
+											"height": 13,
+											"autoResize": false,
+											"underline": false,
+											"horizontalAlignment": 2,
+											"verticalAlignment": 5
+										},
+										{
+											"_type": "LabelView",
+											"_id": "AAAAAAFO9QqfyRmttLM=",
+											"_parent": {
+												"$ref": "AAAAAAFO9QqfyRmrjOw="
+											},
+											"visible": true,
+											"enabled": true,
+											"lineColor": "#000000",
+											"fillColor": "#ffffff",
+											"fontColor": "#000000",
+											"font": "Arial;13;1",
+											"showShadow": true,
+											"containerChangeable": false,
+											"containerExtending": false,
+											"left": 93,
+											"top": 159,
+											"width": 367.40869140625,
+											"height": 13,
+											"autoResize": false,
+											"underline": false,
+											"text": "EmpresaPlanillaFarmacia",
+											"horizontalAlignment": 2,
+											"verticalAlignment": 5
+										},
+										{
+											"_type": "LabelView",
+											"_id": "AAAAAAFO9QqfyRmuXls=",
+											"_parent": {
+												"$ref": "AAAAAAFO9QqfyRmrjOw="
+											},
+											"visible": false,
+											"enabled": true,
+											"lineColor": "#000000",
+											"fillColor": "#ffffff",
+											"fontColor": "#000000",
+											"font": "Arial;13;0",
+											"showShadow": true,
+											"containerChangeable": false,
+											"containerExtending": false,
+											"left": 0,
+											"top": 0,
+											"width": 73.67724609375,
+											"height": 13,
+											"autoResize": false,
+											"underline": false,
+											"text": "(from Model)",
+											"horizontalAlignment": 2,
+											"verticalAlignment": 5
+										},
+										{
+											"_type": "LabelView",
+											"_id": "AAAAAAFO9QqfyRmvL90=",
+											"_parent": {
+												"$ref": "AAAAAAFO9QqfyRmrjOw="
+											},
+											"visible": false,
+											"enabled": true,
+											"lineColor": "#000000",
+											"fillColor": "#ffffff",
+											"fontColor": "#000000",
+											"font": "Arial;13;0",
+											"showShadow": true,
+											"containerChangeable": false,
+											"containerExtending": false,
+											"left": 0,
+											"top": 0,
+											"width": 0,
+											"height": 13,
+											"autoResize": false,
+											"underline": false,
+											"horizontalAlignment": 1,
+											"verticalAlignment": 5
+										}
+									],
+									"visible": true,
+									"enabled": true,
+									"lineColor": "#000000",
+									"fillColor": "#ffffff",
+									"fontColor": "#000000",
+									"font": "Arial;13;0",
+									"showShadow": true,
+									"containerChangeable": false,
+									"containerExtending": false,
+									"left": 88,
+									"top": 152,
+									"width": 377.40869140625,
+									"height": 25,
+									"autoResize": false,
+									"stereotypeLabel": {
+										"$ref": "AAAAAAFO9QqfyRms6wk="
+									},
+									"nameLabel": {
+										"$ref": "AAAAAAFO9QqfyRmttLM="
+									},
+									"namespaceLabel": {
+										"$ref": "AAAAAAFO9QqfyRmuXls="
+									},
+									"propertyLabel": {
+										"$ref": "AAAAAAFO9QqfyRmvL90="
+									}
+								},
+								{
+									"_type": "UMLAttributeCompartmentView",
+									"_id": "AAAAAAFO9QqfyRmwiAw=",
+									"_parent": {
+										"$ref": "AAAAAAFO9QqfyRmqPy0="
+									},
+									"model": {
+										"$ref": "AAAAAAFO9QqfyRmoX00="
+									},
+									"visible": true,
+									"enabled": true,
+									"lineColor": "#000000",
+									"fillColor": "#ffffff",
+									"fontColor": "#000000",
+									"font": "Arial;13;0",
+									"showShadow": true,
+									"containerChangeable": false,
+									"containerExtending": false,
+									"left": 88,
+									"top": 177,
+									"width": 377.40869140625,
+									"height": 10,
+									"autoResize": false
+								},
+								{
+									"_type": "UMLOperationCompartmentView",
+									"_id": "AAAAAAFO9QqfyRmx7eQ=",
+									"_parent": {
+										"$ref": "AAAAAAFO9QqfyRmqPy0="
+									},
+									"model": {
+										"$ref": "AAAAAAFO9QqfyRmoX00="
+									},
+									"subViews": [
+										{
+											"_type": "UMLOperationView",
+											"_id": "AAAAAAFO9ROBHyH9a84=",
+											"_parent": {
+												"$ref": "AAAAAAFO9QqfyRmx7eQ="
+											},
+											"model": {
+												"$ref": "AAAAAAFO9ROA1SH6Rhw="
+											},
+											"visible": true,
+											"enabled": true,
+											"lineColor": "#000000",
+											"fillColor": "#ffffff",
+											"fontColor": "#000000",
+											"font": "Arial;13;0",
+											"showShadow": true,
+											"containerChangeable": false,
+											"containerExtending": false,
+											"left": 93,
+											"top": 192,
+											"width": 367.40869140625,
+											"height": 13,
+											"autoResize": false,
+											"underline": false,
+											"text": "+EmpresaPlanillaFarmacia(nombre: String, codigo: String): void",
+											"horizontalAlignment": 0,
+											"verticalAlignment": 5
+										},
+										{
+											"_type": "UMLOperationView",
+											"_id": "AAAAAAFO9RIrkRvtVL4=",
+											"_parent": {
+												"$ref": "AAAAAAFO9QqfyRmx7eQ="
+											},
+											"model": {
+												"$ref": "AAAAAAFO9RIrRRvqo14="
+											},
+											"visible": true,
+											"enabled": true,
+											"lineColor": "#000000",
+											"fillColor": "#ffffff",
+											"fontColor": "#000000",
+											"font": "Arial;13;0",
+											"showShadow": true,
+											"containerChangeable": false,
+											"containerExtending": false,
+											"left": 93,
+											"top": 207,
+											"width": 367.40869140625,
+											"height": 13,
+											"autoResize": false,
+											"underline": false,
+											"text": "+get(): return <EmpresaPlanillaFarmacia>",
+											"horizontalAlignment": 0,
+											"verticalAlignment": 5
+										}
+									],
+									"visible": true,
+									"enabled": true,
+									"lineColor": "#000000",
+									"fillColor": "#ffffff",
+									"fontColor": "#000000",
+									"font": "Arial;13;0",
+									"showShadow": true,
+									"containerChangeable": false,
+									"containerExtending": false,
+									"left": 88,
+									"top": 187,
+									"width": 377.40869140625,
+									"height": 38,
+									"autoResize": false
+								},
+								{
+									"_type": "UMLReceptionCompartmentView",
+									"_id": "AAAAAAFO9QqfyRmyhVI=",
+									"_parent": {
+										"$ref": "AAAAAAFO9QqfyRmqPy0="
+									},
+									"model": {
+										"$ref": "AAAAAAFO9QqfyRmoX00="
+									},
+									"visible": false,
+									"enabled": true,
+									"lineColor": "#000000",
+									"fillColor": "#ffffff",
+									"fontColor": "#000000",
+									"font": "Arial;13;0",
+									"showShadow": true,
+									"containerChangeable": false,
+									"containerExtending": false,
+									"left": 0,
+									"top": 0,
+									"width": 10,
+									"height": 10,
+									"autoResize": false
+								},
+								{
+									"_type": "UMLTemplateParameterCompartmentView",
+									"_id": "AAAAAAFO9QqfyRmzhGY=",
+									"_parent": {
+										"$ref": "AAAAAAFO9QqfyRmqPy0="
+									},
+									"model": {
+										"$ref": "AAAAAAFO9QqfyRmoX00="
+									},
+									"visible": false,
+									"enabled": true,
+									"lineColor": "#000000",
+									"fillColor": "#ffffff",
+									"fontColor": "#000000",
+									"font": "Arial;13;0",
+									"showShadow": true,
+									"containerChangeable": false,
+									"containerExtending": false,
+									"left": 0,
+									"top": 0,
+									"width": 10,
+									"height": 10,
+									"autoResize": false
+								}
+							],
+							"visible": true,
+							"enabled": true,
+							"lineColor": "#000000",
+							"fillColor": "#ffffff",
+							"fontColor": "#000000",
+							"font": "Arial;13;0",
+							"showShadow": true,
+							"containerChangeable": true,
+							"containerExtending": false,
+							"left": 88,
+							"top": 152,
+							"width": 377.40869140625,
+							"height": 257,
+							"autoResize": false,
+							"stereotypeDisplay": "label",
+							"showVisibility": true,
+							"showNamespace": false,
+							"showProperty": true,
+							"showType": true,
+							"nameCompartment": {
+								"$ref": "AAAAAAFO9QqfyRmrjOw="
+							},
+							"wordWrap": false,
+							"suppressAttributes": false,
+							"suppressOperations": false,
+							"suppressReceptions": true,
+							"showMultiplicity": true,
+							"showOperationSignature": true,
+							"attributeCompartment": {
+								"$ref": "AAAAAAFO9QqfyRmwiAw="
+							},
+							"operationCompartment": {
+								"$ref": "AAAAAAFO9QqfyRmx7eQ="
+							},
+							"receptionCompartment": {
+								"$ref": "AAAAAAFO9QqfyRmyhVI="
+							},
+							"templateParameterCompartment": {
+								"$ref": "AAAAAAFO9QqfyRmzhGY="
+							}
+						}
+					]
+				},
+				{
+					"_type": "UMLClass",
+					"_id": "AAAAAAFO9QqfyRmoX00=",
+					"_parent": {
+						"$ref": "AAAAAAFF+qBWK6M3Z8Y="
+					},
+					"name": "EmpresaPlanillaFarmacia",
+					"visibility": "public",
+					"operations": [
+						{
+							"_type": "UMLOperation",
+							"_id": "AAAAAAFO9ROA1SH6Rhw=",
+							"_parent": {
+								"$ref": "AAAAAAFO9QqfyRmoX00="
+							},
+							"name": "EmpresaPlanillaFarmacia",
+							"visibility": "public",
+							"isStatic": false,
+							"isLeaf": false,
+							"parameters": [
+								{
+									"_type": "UMLParameter",
+									"_id": "AAAAAAFO9RPdjiIBnvk=",
+									"_parent": {
+										"$ref": "AAAAAAFO9ROA1SH6Rhw="
+									},
+									"name": "nombre",
+									"visibility": "public",
+									"isStatic": false,
+									"isLeaf": false,
+									"type": "String",
+									"isReadOnly": false,
+									"isOrdered": false,
+									"isUnique": false,
+									"direction": "in"
+								},
+								{
+									"_type": "UMLParameter",
+									"_id": "AAAAAAFO9RPdjiICeGc=",
+									"_parent": {
+										"$ref": "AAAAAAFO9ROA1SH6Rhw="
+									},
+									"name": "codigo",
+									"visibility": "public",
+									"isStatic": false,
+									"isLeaf": false,
+									"type": "String",
+									"isReadOnly": false,
+									"isOrdered": false,
+									"isUnique": false,
+									"direction": "in"
+								},
+								{
+									"_type": "UMLParameter",
+									"_id": "AAAAAAFO9RPdjyIDXFo=",
+									"_parent": {
+										"$ref": "AAAAAAFO9ROA1SH6Rhw="
+									},
+									"visibility": "public",
+									"isStatic": false,
+									"isLeaf": false,
+									"type": "void",
+									"isReadOnly": false,
+									"isOrdered": false,
+									"isUnique": false,
+									"direction": "return"
+								}
+							],
+							"concurrency": "sequential",
+							"isQuery": false,
+							"isAbstract": false
+						},
+						{
+							"_type": "UMLOperation",
+							"_id": "AAAAAAFO9RIrRRvqo14=",
+							"_parent": {
+								"$ref": "AAAAAAFO9QqfyRmoX00="
+							},
+							"name": "get",
+							"visibility": "public",
+							"isStatic": false,
+							"isLeaf": false,
+							"parameters": [
+								{
+									"_type": "UMLParameter",
+									"_id": "AAAAAAFO9RKOKxvyaOM=",
+									"_parent": {
+										"$ref": "AAAAAAFO9RIrRRvqo14="
+									},
+									"visibility": "public",
+									"isStatic": false,
+									"isLeaf": false,
+									"type": "return <EmpresaPlanillaFarmacia>",
+									"isReadOnly": false,
+									"isOrdered": false,
+									"isUnique": false,
+									"direction": "return"
+								}
+							],
+							"concurrency": "sequential",
+							"isQuery": false,
+							"isAbstract": false
+						}
+					],
+					"isAbstract": false,
+					"isFinalSpecialization": false,
+					"isLeaf": false,
+					"isActive": false
+				}
+			],
+			"visibility": "public"
+		}
+	]
+}

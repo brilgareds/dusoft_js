@@ -39,6 +39,8 @@ define(["angular"], function(angular) {
              */
             'PLANILLAS_FARMACIAS': {
                 'LISTAR_PLANILLAS_FARMACIAS': BASE_URL + '/PlanillasDespachos/listar',
+                'LISTAR_FARMACIAS': BASE_URL + '/PlanillasFarmacias/listando/empresas',
+                'LISTAR_DOCUMENTOS': BASE_URL + '/PlanillasFarmacias/listando/documentos'
               /*  'CONSULTAR_PLANILLA': BASE_URL + '/PlanillasDespachos/consultarPlanillaDespacho',
                 'DOCUMENTOS_PLANILLA': BASE_URL + '/PlanillasDespachos/consultarDocumentosPlanillaDespacho',
                 'GENERAR_PLANILLA': BASE_URL + '/PlanillasDespachos/generarPlanillaDespacho',

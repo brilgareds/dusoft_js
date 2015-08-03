@@ -31,6 +31,8 @@ define([
     "models/ClientePlanillaDespacho",
     "models/FarmaciaPlanillaDespacho",
     "models/PlanillaDespacho",
+    "models/modelsPlanillaFarmacia/EmpresaPlanillaFarmacia",
+    "models/modelsPlanillaFarmacia/DocumentoPlanillaFarmacia",
     "controllers/generarplanilladespacho/PlanillasController",
     "controllers/generarplanilladespacho/ListarPlanillasController",
     "controllers/generarplanilladespacho/GestionarPlanillasController",

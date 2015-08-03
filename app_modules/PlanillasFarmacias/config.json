@@ -9,11 +9,11 @@
                 }
             }],
         "models": [{
-                "induccion_model": {
+                "planillas_farmacias_model": {
                     "module": "PlanillasFarmacias",
                     "model": "PlanillasFarmaciasModel",
                     "alias": "m_planillas_farmacias"
-                },
+                }
               
             }],
         "events": [],

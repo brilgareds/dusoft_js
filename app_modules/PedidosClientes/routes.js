@@ -59,7 +59,11 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.insertarDetalleCotizacion(req, res);
     });
     
-    
+    // Eliminar producto de la Cotización
+    app.post('/api/PedidosClientes/eliminarProductoCotizacion', function(req, res) {
+        c_pedidos_clientes.eliminarProductoCotizacion(req, res);
+    });
+
     
 
     /**************************************************
@@ -98,14 +102,6 @@ module.exports = function(app, di_container) {
     });
 
     
-
-
-    //Eliminar Registro Detalle Cotizacion
-    //???????????????????????????????
-    app.post('/api/PedidosClientes/eliminarRegistroDetalleCotizacion', function(req, res) {
-        c_pedidos_clientes.eliminarRegistroDetalleCotizacion(req, res);
-    });
-
     // Cambiar Estado Cotización
     //??????????????????????
     app.post('/api/PedidosClientes/cambiarEstadoCotizacion', function(req, res) {

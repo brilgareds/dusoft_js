@@ -18,6 +18,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.tipo_producto = tipo_producto || 0;
                 this.descripcion_tipo_producto = "";
                 this.valor_total_sin_iva = 0;
+                this.valor_iva = 0;
                 this.valor_total_con_iva = 0;
             }
 
@@ -187,6 +188,17 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
 
             ProductoPedidoCliente.prototype.get_valor_total_sin_iva = function() {
                 return this.valor_total_sin_iva;
+            };
+            
+            
+            // Valor IVA 
+            ProductoPedidoCliente.prototype.set_valor_iva = function(valor_iva) {
+                this.valor_iva = valor_iva;
+                return this;
+            };
+
+            ProductoPedidoCliente.prototype.get_valor_iva = function() {
+                return this.valor_iva;
             };
 
             // Valor Total Con IVA

@@ -47,14 +47,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             $scope.datos_view = {
                 termino_busqueda_clientes: '',
-                termino_busqueda_productos: ''
+                termino_busqueda_productos: '',
+                producto_seleccionado: Producto.get()
             };
 
             // Consultas 
             that.gestionar_consultas_cotizaciones = function() {
 
                 that.buscar_clientes(function(clientes) {
-                    
+
                     if ($scope.Pedido.get_numero_cotizacion() > 0)
                         that.render_clientes(clientes);
 
@@ -97,11 +98,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             that.render_cotizacion = function(data) {
 
                 var cliente = Cliente.get(data.nombre_tercero, data.direccion, data.tipo_id_tercero, data.tercero_id, data.telefono);
-                
+
                 cliente.setDepartamento(data.departamento);
                 cliente.setMunicipio(data.municipio);
                 cliente.set_contrato(data.contrato_cliente_id);
-                
+
                 var vendedor = Vendedor.get(data.nombre_vendendor, data.tipo_id_vendedor, data.vendedor_id, data.telefono_vendedor);
 
                 $scope.Pedido.set_vendedor(vendedor).setCliente(cliente);
@@ -109,14 +110,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.Pedido.set_tipo_producto(data.tipo_producto).set_descripcion_tipo_producto(data.descripcion_tipo_producto);
                 $scope.Pedido.setFechaRegistro(data.fecha_registro);
             };
-            
+
             // Detalle Cotizacion
             $scope.buscador_detalle_cotizacion = function(ev) {
                 if (ev.which === 13) {
                     that.buscar_detalle_cotizacion();
                 }
             };
-            
+
             that.buscar_detalle_cotizacion = function() {
 
                 var obj = {
@@ -124,7 +125,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     data: {
                         pedidos_clientes: {
                             cotizacion: $scope.Pedido,
-                            termino_busqueda : $scope.datos_view.termino_busqueda_productos        
+                            termino_busqueda: $scope.datos_view.termino_busqueda_productos
                         }
                     }
                 };
@@ -146,7 +147,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                     var producto = Producto.get(data.codigo_producto, data.descripcion_producto, 0, data.iva);
                     producto.set_cantidad_solicitada(data.cantidad_solicitada);
-                    producto.set_precio_venta(data.valor_unitario).set_valor_total_sin_iva(data.subtotal).set_valor_total_con_iva(data.total);
+                    producto.set_precio_venta(data.valor_unitario).set_valor_total_sin_iva(data.subtotal).set_valor_iva(data.valor_iva).set_valor_total_con_iva(data.total);
 
                     $scope.Pedido.set_productos(producto);
                 });
@@ -236,22 +237,22 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
 
-            // Ingresar Productos
-            
-            $scope.validacion_buscar_productos = function(){
-                
+            // Productos
+
+            $scope.validacion_buscar_productos = function() {
+
                 var disabled = false;
-                
-                if($scope.Pedido.getCliente().get_descripcion() === undefined || $scope.Pedido.getCliente().get_descripcion() === '')
-                    disabled =  true;
-                if($scope.Pedido.get_vendedor().get_descripcion() === undefined || $scope.Pedido.get_vendedor().get_descripcion() === '')
-                    disabled =  true;
-                if($scope.Pedido.get_observacion() === undefined || $scope.Pedido.get_observacion() === '')
-                    disabled =  true;
-                
+
+                if ($scope.Pedido.getCliente().get_descripcion() === undefined || $scope.Pedido.getCliente().get_descripcion() === '')
+                    disabled = true;
+                if ($scope.Pedido.get_vendedor().get_descripcion() === undefined || $scope.Pedido.get_vendedor().get_descripcion() === '')
+                    disabled = true;
+                if ($scope.Pedido.get_observacion() === undefined || $scope.Pedido.get_observacion() === '')
+                    disabled = true;
+
                 return disabled;
             };
-            
+
             $scope.buscar_productos = function() {
 
                 $scope.slideurl = "views/generacionpedidos/pedidosclientes/gestionarproductosclientes.html?time=" + new Date().getTime();
@@ -262,8 +263,71 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             $scope.cerrar_busqueda_productos = function() {
 
                 $scope.$emit('cerrar_gestion_productos_clientes', {animado: true});
-                
+
                 that.gestionar_consultas_cotizaciones();
+            };
+
+            $scope.eliminar_producto_cotizacion = function(producto) {
+
+                $scope.datos_view.producto_seleccionado = producto;
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Desea eliminar el producto?</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <h4>Codigo.</h4>\
+                                    <h5> {{ datos_view.producto_seleccionado.getCodigoProducto() }}</h5>\
+                                    <h4>Descripcion.</h4>\
+                                    <h5> {{ datos_view.producto_seleccionado.getDescripcion() }} </h5>\
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-warning" ng-click="close()">No</button>\
+                                    <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
+                                </div>',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.confirmar = function() {
+                            $scope.eliminar_producto();
+                            $modalInstance.close();
+                        };
+
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+            };
+
+            $scope.eliminar_producto = function() {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_clientes: {
+                            cotizacion: $scope.Pedido,
+                            producto: $scope.datos_view.producto_seleccionado
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.ELIMINAR_PRODUCTO_COTIZACION, "POST", obj, function(data) {
+
+                    AlertService.mostrarMensaje("warning", data.msj);
+                    $scope.datos_view.producto_seleccionado = Producto.get();
+
+                    if (data.status === 200) {
+                        that.buscar_detalle_cotizacion();
+                    }
+                });
             };
 
             // Lista Productos Seleccionados
@@ -278,15 +342,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                             <tbody>\
                                                 <tr>\
                                                     <td class="left"><strong>Subtotal</strong></td>\
-                                                    <td class="right">{{ Pedido.get_subtotal() }}</td>    \
+                                                    <td class="right">{{ Pedido.get_subtotal() | currency : "$" }}</td>    \
                                                 </tr>\
                                                 <tr>\
                                                     <td class="left"><strong>I.V.A</strong></td>\
-                                                    <td class="right">{{ planilla.get_valor_iva() }}</td>                                        \
+                                                    <td class="right">{{ Pedido.get_valor_iva() | currency : "$" }}</td>                                        \
                                                 </tr>\
                                                 <tr>\
                                                     <td class="left"><strong>Total</strong></td>\
-                                                    <td class="right">{{ planilla.get_total() }}</td>                                        \
+                                                    <td class="right">{{ Pedido.get_total() | currency : "$" }}</td>                                        \
                                                 </tr>\
                                             </tbody>\
                                         </table>\
@@ -297,12 +361,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     {field: 'getDescripcion()', displayName: 'Descripcion', width: "35%"},
                     {field: 'get_cantidad_solicitada()', displayName: 'Cant.', width: "8%"},
                     {field: 'get_iva()', displayName: 'I.V.A', width: "8%"},
-                    {field: 'get_precio_venta()', displayName: 'Vlr. Unit', width: "10%", cellFilter:'currency : "$"'},
-                    {field: 'get_valor_total_sin_iva()', displayName: 'Subtotal', width: "10%", cellFilter:'currency : "$"'},
-                    {field: 'get_valor_total_con_iva()', displayName: 'Total', width: "10%", cellFilter:'currency : "$"'},
+                    {field: 'get_precio_venta()', displayName: 'Vlr. Unit', width: "10%", cellFilter: 'currency : "$"'},
+                    {field: 'get_valor_total_sin_iva()', displayName: 'Subtotal', width: "10%", cellFilter: 'currency : "$"'},
+                    {field: 'get_valor_total_con_iva()', displayName: 'Total', width: "10%", cellFilter: 'currency : "$"'},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
-                                        <button class="btn btn-default btn-xs" ng-click="" ng-disabled="" ><span class="glyphicon glyphicon-remove"></span></button>\
+                                        <button class="btn btn-default btn-xs" ng-click="eliminar_producto_cotizacion(row.entity)" ng-disabled="" ><span class="glyphicon glyphicon-remove"></span></button>\
                                        </div>'
                     }
                 ]
@@ -312,10 +376,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             that.gestionar_consultas_cotizaciones();
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
-                
+
                 // Set Datas
-                $scope.Empresa.set_default();         
-                
+                $scope.Empresa.set_default();
+
                 $scope.$$watchers = null;
             });
         }]);

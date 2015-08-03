@@ -26,6 +26,8 @@ define(["angular", "js/controllers",
             $scope.root = {};
             $scope.root.empresasDestino = angular.copy(Usuario.getUsuarioActual().getEmpresasFarmacias());
             $scope.root.empresasOrigen = [angular.copy(Usuario.getUsuarioActual().getEmpresa())];
+            //handler slide
+            $scope.root.mostrarSeleccionProductoCompleto;
                         
             $scope.root.pedido = PedidoFarmacia.get();
             
@@ -53,12 +55,17 @@ define(["angular", "js/controllers",
             };
             
             
+            self.incluirProductos = function(){
+                
+            };
+            
             /*
              * @Author: Eduar
              * +Descripcion: handler para la seleccion de la empresa origen
              */
             
             $scope.onEmpresaOrigenSeleccionada = function(){
+                console.log("empresa seleccionada >>>");
                 //aseguramos que el tipo de empresa sea EmpresaPedidoFarmacia
                 var empresa = EmpresaPedidoFarmacia.get(
                         $scope.root.pedido.getFarmaciaOrigen().getNombre(),
@@ -89,13 +96,111 @@ define(["angular", "js/controllers",
             };
             
             
-            $scope.onIncluirProductos = function() {
-                $scope.slideurl = "views/generacionpedidos/pedidosfarmacias/seleccionproducto.html?time=" + new Date().getTime();
+            /*
+             * @Author: Eduar
+             * @param {boolean} esDestino
+             * @param {string} empresaId
+             * @param {string} centroUtilidad
+             * @param {string} bodega
+             * +Descripcion: permite seleccionar la empresa, centro utilidad y bodega de un pedido existente
+             */  
+            $scope.seleccionarEmpresaPedido = function(esDestino, empresaId, centroUtilidad, bodega){
                 
-                $scope.$emit('mostrarSeleccionProducto', $scope.root.pedido);
-
+                var empresa = $scope.obtenerEmpresa(esDestino, empresaId, centroUtilidad);
+                var centro  = $scope.obtenerCentroUtilidad(esDestino, empresaId, centroUtilidad);
+                var bodega  = $scope.obtenerBodega(esDestino, empresaId, centroUtilidad, bodega);
+                
+                console.log(bodega);
+                if(esDestino){
+                    $scope.root.pedido.setFarmaciaDestino(empresa);
+                    $scope.root.pedido.getFarmaciaDestino().setCentroUtilidadSeleccionado(centro).getCentroUtilidadSeleccionado().
+                    setBodegaSeleccionada(bodega);
+                } else {
+                    $scope.root.pedido.setFarmaciaOrigen(empresa);
+                    $scope.root.pedido.getFarmaciaOrigen().setCentroUtilidadSeleccionado(centro).getCentroUtilidadSeleccionado().
+                    setBodegaSeleccionada(bodega);
+                }
             };
             
+             /*
+             * @Author: Eduar
+             * @param {boolean} esDestino
+             * @param {string} empresaId
+             * return {EmpresaPedidoFarmacia} empresa
+             * +Descripcion: Retorna la empresa del pedido consultado
+             */   
+            $scope.obtenerEmpresa = function(esDestino, empresaId){
+                var empresas = (esDestino) ? $scope.root.empresasDestino :$scope.root.empresasOrigen;
+                
+                for(var i in empresas){
+                    if(empresas[i].getCodigo() === empresaId ){
+                        return empresas[i];
+                    }
+                }
+                
+            };
+            
+            /*
+             * @Author: Eduar
+             * @param {boolean} esDestino
+             * @param {string} empresaId
+             * @param {string} centroId
+             * return {CentroUtilidadPedidoFarmacia} empresa
+             * +Descripcion: Retorna el centro  de utilidad del pedido consultado
+             */
+            $scope.obtenerCentroUtilidad = function(esDestino, empresaId, centroId){
+               
+                var empresa = $scope.obtenerEmpresa(esDestino, empresaId);
+                var centros  = empresa.getCentrosUtilidad();
+                for(var i in centros){
+                    var centro = centros[i];
+                    if(centro.getCodigo() === centroId ){
+                        return centro;
+                    }
+                }
+                
+            };
+            
+            /*
+             * @Author: Eduar
+             * @param {boolean} esDestino
+             * @param {string} empresaId
+             * @param {string} centroId
+             * @param {string} bodegaId
+             * return {BodegaPedidoFarmacia} bodega
+             * +Descripcion: Retorna la bodega  de utilidad del pedido consultado
+             */
+            $scope.obtenerBodega = function(esDestino, empresaId, centroId, bodegaId){
+               
+                var centro = $scope.obtenerCentroUtilidad(esDestino, empresaId, centroId);
+                var bodegas  = centro.getBodegas();
+                for(var i in bodegas){
+                    var bodega = bodegas[i];
+                    if(bodega.getCodigo() === bodegaId ){
+                        return bodega;
+                    }
+                }
+                
+            };
+            
+            
+            $scope.onIncluirProductos = function(event) {
+                event.stopPropagation();
+                $scope.slideurl = "views/generacionpedidos/pedidosfarmacias/seleccionproducto.html?time=" + new Date().getTime();
+                $scope.$emit('mostrarSeleccionProducto', $scope.root.pedido);
+                
+            };
+            
+            
+           $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+
+                $scope.root.mostrarSeleccionProductoCompleto();
+                $scope.$$watchers = null;
+                $scope.root = {};
+                console.log("eliminando base");
+
+            });
+
             
             
             /*that.pedido = PedidoVenta.get();

@@ -138,7 +138,7 @@ PedidosFarmaciasModel.prototype.listar_detalle_pedido_temporal = function(empres
 };
 
     
-
+/// nuevo Eduar Garcia *********************
 PedidosFarmaciasModel.prototype.insertar_pedido_farmacia_temporal = function(empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id, 
                                                                empresa_origen_id, centro_utilidad_origen_id, bodega_origen_id, observacion, usuario_id, callback) {
     
@@ -187,6 +187,8 @@ PedidosFarmaciasModel.prototype.consultar_pedido_farmacia_temporal = function(em
         callback(err, rows);
     });
 };
+
+// ********************
 
 PedidosFarmaciasModel.prototype.eliminar_registro_encabezado_temporal = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback)
 {

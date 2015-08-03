@@ -70,19 +70,18 @@ module.exports = function(app, di_container) {
     });
     
     // -- depreciado
-   
     app.post('/api/PedidosFarmacias/listarProductos', function(req, res) {
         c_pedidos_farmacias.listar_productos(req, res);
     });
     
     //
     
-    // Retorna 1 si el registro existe y 0 si no existe en el encabezado del pedido. Se filtra pedido por empresa, centro de utilidad, bodega y usuario
+    // deprecido Retorna 1 si el registro existe y 0 si no existe en el encabezado del pedido. Se filtra pedido por empresa, centro de utilidad, bodega y usuario
     app.post('/api/PedidosFarmacias/existeRegistroEncabezadoTemporal', function(req, res) {
         c_pedidos_farmacias.existeRegistroEncabezadoTemporal(req, res);
     });
     
-    // Retorna 1 si el registro existe y 0 si no existe en el detalle del pedido. Se filtra por empresa, centro de utilidad, bodega, codigo de producto y usuario
+    // depreciado Retorna 1 si el registro existe y 0 si no existe en el detalle del pedido. Se filtra por empresa, centro de utilidad, bodega, codigo de producto y usuario
     app.post('/api/PedidosFarmacias/existeRegistroDetalleTemporal', function(req, res) {
         c_pedidos_farmacias.existeRegistroDetalleTemporal(req, res);
     });    

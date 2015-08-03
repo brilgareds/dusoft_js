@@ -4,11 +4,11 @@ define(["angular", "js/controllers",
     var fo = controllers.controller('GuardarPedidoTemporalController', [
         '$scope', '$rootScope', 'Request',
         'API', "socket", "AlertService",
-        '$state', "Usuario", "localStorageService", '$modal', "$timeout",
+        '$state', "Usuario", "localStorageService", '$modal', "$timeout", "EmpresaPedidoFarmacia",
         function($scope, $rootScope, Request,
                 API, socket, AlertService,
                 $state, Usuario, localStorageService, $modal,
-                ProductoPedido, $timeout) {
+                $timeout, EmpresaPedidoFarmacia) {
 
             var self = this;
 
@@ -20,6 +20,60 @@ define(["angular", "js/controllers",
                     usuario_id: Usuario.getUsuarioActual().getId(),
                     auth_token: Usuario.getUsuarioActual().getToken()
                 };
+                
+                var pedidoTemporal = localStorageService.get("pedidotemporal");
+                
+                if(pedidoTemporal){
+                    self.consultarEncabezadoPedidoTemporal(pedidoTemporal, function(){
+                        
+                    });
+                }
+            };
+            
+            
+            /*
+             * @Author: Eduar
+             * @param {function} callback
+             * +Descripcion: Consulta encabezado del pedido temporal
+             */
+            self.consultarEncabezadoPedidoTemporal = function(pedidoTemporal, callback){
+                
+                var pedido = $scope.rootPedidoFarmaciaTemporal.pedido;
+                var obj = {
+                    session: $scope.rootPedidoFarmaciaTemporal.session,
+                    data: {
+                        pedidos_farmacias: {
+                            empresa_id: pedidoTemporal.farmacia,
+                            centro_utilidad_id: pedidoTemporal.centroUtilidad,
+                            bodega_id: pedidoTemporal.bodega
+                        }
+                    }
+                };
+
+
+                var url = API.PEDIDOS.FARMACIAS.CONSULTAR_ENCABEZADO_PEDIDO_TEMPORAL;
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        
+                        if(data.obj.encabezado_pedido.length > 0){
+                            
+                            self.renderEncabezado(data.obj.encabezado_pedido[0]);
+                        }
+                        callback(true);
+
+                    } else {
+                        callback(false);
+                    }
+                });
+            };
+            
+            
+            self.renderEncabezado = function(data){
+                
+                $scope.seleccionarEmpresaPedido(false, data.empresa_destino, data.centro_destino, data.bogega_destino);
+                $scope.seleccionarEmpresaPedido(true, data.farmacia_id, data.centro_utilidad, data.bodega);
+                
             };
 
             /*

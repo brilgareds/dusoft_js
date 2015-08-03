@@ -331,10 +331,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              * @param {Object} datos
              * +Descripcion: Evento que espera que el slide termine la animacion
              */
-            $rootScope.$on("mostrarSeleccionProductoCompleto", function(e, datos) {
+            $scope.root.mostrarSeleccionProductoCompleto = $rootScope.$on("mostrarSeleccionProductoCompleto", function(e, datos) {
                 self.init();
                 $scope.rootSeleccionProductoFarmacia.pedido = datos[1];
-                console.log("pedido ", $scope.pedido);
                 self.listarTiposProductos();
                 self.buscarProductos();
             });
@@ -345,8 +344,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              */
             $scope.cerrar = function() {
                 $scope.$emit('cerrarSeleccionProducto', {animado: true});
-
+                $scope.$$watchers = null;
                 $scope.rootSeleccionProductoFarmacia = {};
+                console.log("slide de productos cerrado", $scope);
             };
 
             /*

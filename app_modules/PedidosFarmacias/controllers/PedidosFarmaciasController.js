@@ -1010,6 +1010,7 @@ PedidosFarmacias.prototype.listarProductosDetalleTemporal = function(req, res) {
 
 };
 
+//depreciado
 PedidosFarmacias.prototype.existeRegistroEncabezadoTemporal = function(req, res) {
 
     var that = this;
@@ -1047,6 +1048,7 @@ PedidosFarmacias.prototype.existeRegistroEncabezadoTemporal = function(req, res)
     });
 };
 
+//depreciado
 PedidosFarmacias.prototype.existeRegistroDetalleTemporal = function(req, res) {
 
     var that = this;
@@ -1088,6 +1090,7 @@ PedidosFarmacias.prototype.existeRegistroDetalleTemporal = function(req, res) {
 
 }
 
+// depreciado
 PedidosFarmacias.prototype.existeRegistroDetallePedido = function(req, res) {
 
     var that = this;
@@ -1216,6 +1219,44 @@ PedidosFarmacias.prototype.crearPedidoTemporal = function(req, res) {
 };
 //
 
+// *******************nuevo Eduar Garcia temporal farmacias  *************
+
+PedidosFarmacias.prototype.consultarPedidoFarmaciaTemporal = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.pedidos_farmacias === undefined || args.pedidos_farmacias.empresa_id === undefined || args.pedidos_farmacias.centro_utilidad_id === undefined || args.pedidos_farmacias.bodega_id === undefined) {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id no estan definidos', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_farmacias.empresa_id === '' || args.pedidos_farmacias.centro_utilidad_id === '' || args.pedidos_farmacias.bodega_id === '') {
+        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id no estan vacios', 404, {}));
+        return;
+    }
+
+    var empresa_id = args.pedidos_farmacias.empresa_id;
+    var centro_utilidad_id = args.pedidos_farmacias.centro_utilidad_id;
+    var bodega_id = args.pedidos_farmacias.bodega_id;
+
+    var usuario_id = req.session.user.usuario_id;
+
+    that.m_pedidos_farmacias.consultar_pedido_farmacia_temporal(empresa_id, centro_utilidad_id, bodega_id, usuario_id, function(err, rows) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Se ha Generado un Error en la consulta', 500, {error: err}));
+            return;
+        }
+        else
+        {
+            res.send(G.utils.r(req.url, 'Consulta Exitosa!', 200, {encabezado_pedido: rows}));
+            return;
+        }
+
+    });
+};
 
 PedidosFarmacias.prototype.guardarPedidoTemporal = function(req, res) {
 
@@ -1289,7 +1330,6 @@ PedidosFarmacias.prototype.guardarPedidoTemporal = function(req, res) {
 };
 
 
-// depreciado
 PedidosFarmacias.prototype.ingresarDetallePedidoTemporal = function(req, res) {
 
     var that = this;
@@ -1367,7 +1407,6 @@ PedidosFarmacias.prototype.ingresarDetallePedidoTemporal = function(req, res) {
     });
 
 };
-//
 
 PedidosFarmacias.prototype.buscarUsuarioBloqueo = function(req, res) {
 
@@ -1404,42 +1443,8 @@ PedidosFarmacias.prototype.buscarUsuarioBloqueo = function(req, res) {
 
 };
 
-PedidosFarmacias.prototype.consultarPedidoFarmaciaTemporal = function(req, res) {
 
-    var that = this;
-
-    var args = req.body.data;
-
-    if (args.pedidos_farmacias === undefined || args.pedidos_farmacias.empresa_id === undefined || args.pedidos_farmacias.centro_utilidad_id === undefined || args.pedidos_farmacias.bodega_id === undefined) {
-        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id no estan definidos', 404, {}));
-        return;
-    }
-
-    if (args.pedidos_farmacias.empresa_id === '' || args.pedidos_farmacias.centro_utilidad_id === '' || args.pedidos_farmacias.bodega_id === '') {
-        res.send(G.utils.r(req.url, 'empresa_id, centro_utilidad_id o bodega_id no estan vacios', 404, {}));
-        return;
-    }
-
-    var empresa_id = args.pedidos_farmacias.empresa_id;
-    var centro_utilidad_id = args.pedidos_farmacias.centro_utilidad_id;
-    var bodega_id = args.pedidos_farmacias.bodega_id;
-
-    var usuario_id = req.session.user.usuario_id;
-
-    that.m_pedidos_farmacias.consultar_pedido_farmacia_temporal(empresa_id, centro_utilidad_id, bodega_id, usuario_id, function(err, rows) {
-
-        if (err) {
-            res.send(G.utils.r(req.url, 'Se ha Generado un Error en la consulta', 500, {error: err}));
-            return;
-        }
-        else
-        {
-            res.send(G.utils.r(req.url, 'Consulta Exitosa!', 200, {encabezado_pedido: rows}));
-            return;
-        }
-
-    });
-};
+//**************
 
 PedidosFarmacias.prototype.eliminarRegistroEncabezadoTemporal = function(req, res) {
 

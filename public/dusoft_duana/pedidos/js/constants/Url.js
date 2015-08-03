@@ -46,7 +46,10 @@ define(["angular"], function(angular) {
                 },
                 FARMACIAS :{
                     'LISTAR_PRODUCTOS_FARMACIAS': BASE_URL + '/PedidosFarmacias/buscarProductos',
-                    'CREAR_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/guardarPedidoTemporal'
+                    'GUARDAR_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/guardarPedidoTemporal',
+                    'BUSCAR_USUARIO_BLOQUEO': BASE_URL + '/PedidosFarmacias/buscarUsuarioBloqueo',
+                    'GUARDAR_DETALLE_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/guardarDetallePedidoTemporal',
+                    'CREAR_DETALLE_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/ingresarDetallePedidoTemporal',
                 },
                 // URLS PEDIDOS FARMACIAS.
                 'LISTAR_PEDIDOS': BASE_URL + '/PedidosClientes/listarPedidos',
@@ -67,7 +70,7 @@ define(["angular"], function(angular) {
                 'LISTAR_PRODUCTOS': BASE_URL + '/Productos/listarProductos', 
                 'LISTAR_PRODUCTOS_FARMACIAS': BASE_URL + '/PedidosFarmacias/listarProductos',//depreciado
                 'CREAR_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/crearPedidoTemporal', //depreciado
-                'CREAR_DETALLE_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/ingresarDetallePedidoTemporal',
+                'CREAR_DETALLE_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/ingresarDetallePedidoTemporal',//depreciado
                 'EXISTE_REGISTRO_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/existeRegistroEncabezadoTemporal',//depreciado
                 'EXISTE_REGISTRO_DETALLE_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/existeRegistroDetalleTemporal',
                 'EXISTE_REGISTRO_DETALLE_PEDIDO': BASE_URL + '/PedidosFarmacias/existeRegistroDetallePedido',
@@ -90,7 +93,7 @@ define(["angular"], function(angular) {
                 'LISTADO_PEDIDOS_TEMPORALES_FARMACIAS': BASE_URL + '/PedidosFarmacias/listarPedidosTemporalesFarmacias',
                 'ACTUALIZAR_ENCABEZADO_TEMPORAL_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/actualizarRegistroEncabezadoTemporal',
                 //'LISTAR_PRODUCTOS_CLIENTES': BASE_URL + '/PedidosClientes/listarProductosClientes', // ------- url clientes => Pdte remover ---
-                'BUSCAR_USUARIO_BLOQUEO': BASE_URL + '/PedidosFarmacias/buscarUsuarioBloqueo',
+                'BUSCAR_USUARIO_BLOQUEO': BASE_URL + '/PedidosFarmacias/buscarUsuarioBloqueo', //depreciado
                 //'CREAR_COTIZACION': BASE_URL + '/PedidosClientes/insertarCotizacion',
                 //'INSERTAR_DETALLE_COTIZACION': BASE_URL + '/PedidosClientes/insertarDetalleCotizacion',
                 //'LISTAR_COTIZACIONES': BASE_URL + '/PedidosClientes/listarCotizaciones',

@@ -111,6 +111,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $scope.rootSeleccionProductoFarmacia.paginaactual = 1;
                 $scope.rootSeleccionProductoFarmacia.tipoProducto = "0";
                 $scope.rootSeleccionProductoFarmacia.pedido;
+                $scope.rootSeleccionProductoFarmacia.listaTiposProductos  = [];
 
                 $scope.rootSeleccionProductoFarmacia.session = {
                     usuario_id: Usuario.getUsuarioActual().getId(),
@@ -172,6 +173,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
                         if (data.obj.lista_productos.length) {
+                            
+                            if(callback){
+                                callback();
+                            }
+                            
                             self.renderProductosFarmacia(data.obj.lista_productos);
                         } else {
                             $scope.rootSeleccionProductoFarmacia.paginaactual = 1;
@@ -181,6 +187,30 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 });
 
             };
+            
+            /*
+             * @Author: Eduar
+             * +Descripcion: Lista los tipos de productos (Normales, Alto costo, Controlados, Insumos y Neveras)
+             */
+            
+            self.listarTiposProductos = function(){
+                var obj_tipo_producto = {
+                    session: $scope.rootSeleccionProductoFarmacia.session,
+                    data: {
+                        tipo_producto: {}
+                    }
+                };
+
+                var url_tipo_producto = API.PEDIDOS.LISTADO_TIPO_PRODUCTOS;
+
+                Request.realizarRequest(url_tipo_producto, "POST", obj_tipo_producto, function(data) {
+
+                    if (data.status === 200) {
+                         $scope.rootSeleccionProductoFarmacia.listaTiposProductos = data.obj.lista_tipo_productos;
+                    }
+                
+                });
+            }; 
 
             self.mostrarAlertaSeleccionProducto = function(titulo, mensaje) {
                 $scope.opts = {
@@ -214,26 +244,85 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             /*
              * @Author: Eduar
-             * @param {$event} e
-             * @param {Object} datos
+             * @param {ProductoPedidoFarmacia} producto
+             * @return Object
              * +Descripcion: Function que valida el ingreso del producto (maximo de 25, un producto por codigo, solo un tipo por pedido  y que no este bloqueado)
              */
             
-            self.validarIngresoProducto = function(producto){
+            self.validarIngresoProducto = function(producto, callback){
                 console.log("producto a agregar ", producto);
                 var pedido = $scope.rootSeleccionProductoFarmacia.pedido;
-                var validacion = {msj:"", valido:true};
                 
                 if(pedido.esProductoSeleccionado(producto)){
                     
-                    return {msj:"El producto "+producto.getCodigoProducto()+ " ya esta seleccionado", valido:false};
+                    callback({msj:"El producto "+producto.getCodigoProducto()+ " ya esta seleccionado", valido:false});
                 }
                 
                 if(pedido.getProductosSeleccionados().length === 25){
                     
-                    return {msj:"El pedido tiene 25 productos agregados", valido:false};
+                    callback({msj:"El pedido tiene 25 productos agregados", valido:false});
                 }
                 
+                if(!pedido.validarTipoProductoAIngresar(producto)){
+                    //var tipo = self.obtenerTipoProducto(producto);
+                    
+                    callback({msj:"El pedido solo puede contener productos del mismo tipo.", valido:false});
+                }
+                
+                self.verificarBloqueoProducto(function(validacion){
+                    callback(validacion);
+                });
+
+                
+            };
+            
+            /*
+             * @Author: Eduar
+             * @param {function} callback
+             * +Descripcion: Verifica si el producto no esta bloqueado por otro usuario
+             */
+            
+            self.verificarBloqueoProducto = function(callback){
+                var obj = {
+                    session: $scope.rootSeleccionProductoFarmacia.session,
+                    data: {
+                        usuario_bloqueo: {                            
+                            farmacia_id: $scope.rootSeleccionProductoFarmacia.pedido.getFarmaciaDestino().getCodigo(),
+                            centro_utilidad_id: $scope.rootSeleccionProductoFarmacia.pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getCodigo(),
+                            codigo_producto: $scope.rootSeleccionProductoFarmacia.pedido.getProductoSeleccionado().getCodigoProducto()
+                        }
+                    }
+                 };
+             
+                var url = API.PEDIDOS.FARMACIAS.BUSCAR_USUARIO_BLOQUEO;
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+
+                    if(data.status === 200){
+                        
+                        if(data.obj.datos_usuario.length > 0){
+                            callback({msj:"El producto se encuentra bloqueado por el usuario "+ data.obj.datos_usuario[0].nombre, valido:false});
+                        } else {
+                            callback({msj:"", valido:true});
+                        }
+                    }
+
+                });
+            };
+            
+            /*
+             * @Author: Eduar
+             * @param {ProductoPedidoFarmacia} producto
+             * @return Object
+             * +Descripcion: Obtiene la descripcion del tipo de producto pasado como argumento
+             */
+            self.obtenerTipoProducto = function(producto){
+                var tipos =  $scope.rootSeleccionProductoFarmacia.listaTiposProductos;
+                for(var i in tipos){
+                    if(tipos[i].tipo_producto_id === producto.getTipoProductoId()){
+                        return tipos[i];
+                    }
+                }
             };
 
             /*
@@ -246,6 +335,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 self.init();
                 $scope.rootSeleccionProductoFarmacia.pedido = datos[1];
                 console.log("pedido ", $scope.pedido);
+                self.listarTiposProductos();
                 self.buscarProductos();
             });
 
@@ -267,8 +357,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.onBuscarProductos = function(event) {
 
                 if (event.which === 13) {
+                    
                     $scope.rootSeleccionProductoFarmacia.paginaactual = 1;
-                    self.buscarProductos();
+                    self.buscarProductos(function(){
+                        $scope.rootSeleccionProductoFarmacia.pedido.vaciarProductos();
+                    });
                 }
             };
 
@@ -305,13 +398,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     if (parseInt(producto.getCantidadSolicitada()) > 0) {
                         var pedido = $scope.rootSeleccionProductoFarmacia.pedido;
                         
-                        self.validarIngresoProducto(producto);
-                        /*if (agregado) {
-                            $rootScope.$emit("insertarProductoPedidoTemporal", pedido);
-                        } else {
-                            self.mostrarAlertaSeleccionProducto("Error agregando producto",
-                                                                "El producto "+producto.getDescripcion()+" ya se encuentra seleccionado.");
-                        }*/
+                        pedido.setProductoSeleccionado(angular.copy(producto));
+                        
+                        self.validarIngresoProducto(producto, function(validacion){
+                            
+                            if(validacion.valido){
+                                $rootScope.$emit("insertarProductoPedidoTemporal", pedido);
+                            } else {
+                                self.mostrarAlertaSeleccionProducto("Error agregando producto",validacion.msj);
+                            }
+                        });
+                        
+ 
                     }
                 }
             };

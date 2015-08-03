@@ -27,9 +27,13 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.listarBodegasUsuarios(req, res);
     });
     
-    // Crear Pre-orden o Pedido Temporal
+    // depreciado Crear Pre-orden o Pedido Temporal
     app.post('/api/PedidosFarmacias/crearPedidoTemporal', function(req, res) {
         c_pedidos_farmacias.crearPedidoTemporal(req, res);
+    });
+    
+    app.post('/api/PedidosFarmacias/guardarPedidoTemporal', function(req, res) {
+        c_pedidos_farmacias.guardarPedidoTemporal(req, res);
     });
     
     // Insertar productos en Pre-orden o Pedido Temporal
@@ -61,17 +65,23 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.obtenerDetallePedido(req, res);
     });
     
-    // Listar productos
+    app.post('/api/PedidosFarmacias/buscarProductos', function(req, res) {
+        c_pedidos_farmacias.buscarProductos(req, res);
+    });
+    
+    // -- depreciado
     app.post('/api/PedidosFarmacias/listarProductos', function(req, res) {
         c_pedidos_farmacias.listar_productos(req, res);
     });
     
-    // Retorna 1 si el registro existe y 0 si no existe en el encabezado del pedido. Se filtra pedido por empresa, centro de utilidad, bodega y usuario
+    //
+    
+    // deprecido Retorna 1 si el registro existe y 0 si no existe en el encabezado del pedido. Se filtra pedido por empresa, centro de utilidad, bodega y usuario
     app.post('/api/PedidosFarmacias/existeRegistroEncabezadoTemporal', function(req, res) {
         c_pedidos_farmacias.existeRegistroEncabezadoTemporal(req, res);
     });
     
-    // Retorna 1 si el registro existe y 0 si no existe en el detalle del pedido. Se filtra por empresa, centro de utilidad, bodega, codigo de producto y usuario
+    // depreciado Retorna 1 si el registro existe y 0 si no existe en el detalle del pedido. Se filtra por empresa, centro de utilidad, bodega, codigo de producto y usuario
     app.post('/api/PedidosFarmacias/existeRegistroDetalleTemporal', function(req, res) {
         c_pedidos_farmacias.existeRegistroDetalleTemporal(req, res);
     });    

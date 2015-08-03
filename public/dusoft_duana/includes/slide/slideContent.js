@@ -67,7 +67,7 @@ define(["angular","js/directive", "includes/slide/transition"], function(angular
                   
                   $rootScope.$on($attrs.openCallback, function($event) {
                       var datos = arguments;
-                     slide.mostrarslide($element, modalslide, $attrs, datos);
+                     slide.mostrarslide($element, modalslide, $attrs, datos, $scope);
                   });
 
                   $rootScope.$on($attrs.closeCallback, function($event, datos) {
@@ -90,13 +90,13 @@ define(["angular","js/directive", "includes/slide/transition"], function(angular
               console.log("slide height >>>>>>>>>>> ", document.body.scrollHeight);
           },
 
-          mostrarslide: function($element, contenedor, $attrs, datos){
+          mostrarslide: function($element, contenedor, $attrs, datos, scope){
             console.log("on mostrar slide");
             $element.css({"display":"block"});
             contenedor.show();
             $element.transition({ x: '0px', duration:1000}, function(){
                // console.log("emit event "+$attrs.openCallback)
-                $rootScope.$emit($attrs.openCallback+"Completo", datos);
+                scope.$emit($attrs.openCallback+"Completo", datos);
             });
            
           },

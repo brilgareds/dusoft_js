@@ -3,7 +3,6 @@
         <div class="col-md-12">
             <div class="panel panel-default">
                 <div class="panel-heading clearfix">
-                    <!--                <h4 class="panel-title pull-left" style="padding-top: 7.5px;">Imagen</h4>-->
                     <div class="pull-left">
                         <h3 class="text-center"><strong>Logo</strong></h3>
                     </div>
@@ -19,11 +18,7 @@
                                 <legend>Unidad de Negocio</legend>      
 
                                 <div class="row">
-                                    <div class="col-md-7">  
-                                        <!--select ui-select2=""  class="form-control selectgeneral pull-left" ng-model="unidad_negocio_id"  ng-disabled="vista_previa" placeholder="Seleccionar unidad de negocio" ng-change="seleccionar_unidad_negocio()">
-                                            <option></option>    
-                                            <option ng-repeat="unidad_negocio in  Empresa.get_unidades_negocios()"  value="{{unidad_negocio.codigo}}">{{ unidad_negocio.get_nombre() }}</option>
-                                        </select-->
+                                    <div class="col-md-7"> 
                                         <ui-select ng-disabled="vista_previa"  ng-model="unidad_negocio_id" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_unidad_negocio(unidad_negocio_id)">
                                             <ui-select-match  placeholder="Seleccionar unidad">{{ $select.selected.get_nombre() }}</ui-select-match>
                                             <ui-select-choices repeat="unidad_negocio in  Empresa.get_unidades_negocios() | filter:$select.search">
@@ -38,11 +33,7 @@
                             <fieldset>
                                 <legend>Proveedor</legend> 
                                 <div class="row">
-                                    <div class="col-md-7">  
-                                        <!--select ui-select2="{minimumInputLength: 3}"  ng-disabled="numero_orden > 0" class="form-control selectgeneral pull-left" ng-model="codigo_proveedor_id"  placeholder="Seleccionar proveedor" ng-change="seleccionar_proveedor()">
-                                            <option></option> 
-                                            <option ng-repeat="proveedor in  Empresa.get_proveedores()"  value="{{proveedor.codigo_proveedor_id}}">{{ proveedor.get_nombre() }}</option>
-                                        </select-->
+                                    <div class="col-md-7"> 
                                         <ui-select ng-disabled="numero_orden > 0"  ng-model="codigo_proveedor_id" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_proveedor(codigo_proveedor_id)">
                                             <ui-select-match  placeholder="Seleccionar proveedor">{{ $select.selected.get_nombre() }}</ui-select-match>
                                             <ui-select-choices refresh="listar_proveedores($select.search)" refresh-delay="0" repeat="proveedor in Empresa.get_proveedores() | filter:$select.search">

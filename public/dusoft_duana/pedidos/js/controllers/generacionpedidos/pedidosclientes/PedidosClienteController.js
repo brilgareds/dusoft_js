@@ -372,6 +372,111 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 ]
             };
 
+            // Upload Archivo Plano
+
+            $scope.opciones_archivo = new Flow();
+            $scope.opciones_archivo.target = API.PEDIDOS.CLIENTES.SUBIR_ARCHIVO_PLANO;
+            $scope.opciones_archivo.testChunks = false;
+            $scope.opciones_archivo.singleFile = true;
+            $scope.opciones_archivo.query = {
+                session: JSON.stringify($scope.session)
+            };
+
+            $scope.cargar_archivo_plano = function($flow) {
+
+                $scope.opciones_archivo = $flow;
+            };
+
+            $scope.subir_archivo_plano = function() {
+
+                if ($scope.Pedido.get_numero_cotizacion() > 0) {
+                    // Solo subir plano
+
+                    $scope.opciones_archivo.opts.query.data = JSON.stringify({
+                        pedidos_clientes: {
+                            cotizacion: $scope.Pedido
+                        }
+                    });
+
+                    $scope.opciones_archivo.upload();
+                } else {
+                    // Crear Cotizacion y subir plano
+                    $scope.insertar_cabercera_cotizacion(function(continuar) {
+                        
+                        if (continuar) {
+
+                            $scope.opciones_archivo.opts.query.data = JSON.stringify({
+                                pedidos_clientes: {
+                                    cotizacion: $scope.Pedido
+                                }
+                            });
+
+                            $scope.opciones_archivo.upload();
+                        }
+                    });
+
+                    $scope.opciones_archivo.upload();
+                }
+            };
+
+            $scope.respuesta_archivo_plano = function(file, message) {
+
+                var data = (message !== undefined) ? JSON.parse(message) : {};
+
+                
+                console.log('======= Response server ===');
+                console.log(data);
+                //return;
+                
+                if (data.status === 200) {
+
+                    $scope.opciones_archivo.cancel();
+
+                    //$scope.buscar_detalle_orden_compra();
+
+                    //$scope.activar_tab.tab_productos = true;
+
+                    $scope.productos_validos = data.obj.pedidos_clientes.productos_validos;
+                    $scope.productos_invalidos = data.obj.pedidos_clientes.productos_invalidos;
+
+
+                    $scope.opts = {
+                        backdrop: true,
+                        backdropClick: true,
+                        dialogFade: false,
+                        keyboard: true,
+                        template: ' <div class="modal-header">\
+                                        <button type="button" class="close" ng-click="close()">&times;</button>\
+                                        <h4 class="modal-title">Listado Productos </h4>\
+                                    </div>\
+                                    <div class="modal-body row">\
+                                        <div class="col-md-12">\
+                                            <h4 >Lista Productos INVALIDOS.</h4>\
+                                            <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
+                                                <div class="list-group">\
+                                                    <a ng-repeat="producto in productos_invalidos" class="list-group-item defaultcursor" href="javascript:void(0)">\
+                                                        {{ producto.codigo_producto}}\
+                                                    </a>\
+                                                </div>\
+                                            </div>\
+                                        </div>\
+                                    </div>\
+                                    <div class="modal-footer">\
+                                        <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                    </div>',
+                        scope: $scope,
+                        controller: function($scope, $modalInstance) {
+                            $scope.close = function() {
+                                $modalInstance.close();
+                            };
+                        }
+                    };
+                    var modalInstance = $modal.open($scope.opts);
+
+                } else {
+                    AlertService.mostrarMensaje("warning", data.msj);
+                }
+            };
 
             that.gestionar_consultas_cotizaciones();
 

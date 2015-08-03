@@ -43,6 +43,7 @@ define(["angular"], function(angular) {
                     'INSERTAR_COTIZACION': BASE_URL + '/PedidosClientes/insertarCotizacion',
                     'INSERTAR_DETALLE_COTIZACION': BASE_URL + '/PedidosClientes/insertarDetalleCotizacion',
                     'ELIMINAR_PRODUCTO_COTIZACION': BASE_URL + '/PedidosClientes/eliminarProductoCotizacion',
+                    'SUBIR_ARCHIVO_PLANO': BASE_URL + '/PedidosClientes/subirPlano',
                 },
                 FARMACIAS :{
                     'LISTAR_PRODUCTOS_FARMACIAS': BASE_URL + '/PedidosFarmacias/listarProductos',
@@ -99,7 +100,7 @@ define(["angular"], function(angular) {
                 //'ELIMINAR_REGISTRO_DETALLE_COTIZACION': BASE_URL + '/PedidosClientes/eliminarRegistroDetalleCotizacion',
                 'CAMBIAR_ESTADO_COTIZACION': BASE_URL + '/PedidosClientes/cambiarEstadoCotizacion',
                 'CAMBIAR_ESTADO_APROBACION_COTIZACION': BASE_URL + '/PedidosClientes/cambiarEstadoAprobacionCotizacion',
-                'ARCHIVO_PLANO_PEDIDO_CLIENTE': BASE_URL + '/PedidosClientes/pedidoClienteArchivoPlano',
+                //'ARCHIVO_PLANO_PEDIDO_CLIENTE': BASE_URL + '/PedidosClientes/pedidoClienteArchivoPlano',
                 'IMPRIMIR_COTIZACION_CLIENTE': BASE_URL + '/PedidosClientes/imprimirCotizacionCliente',
                 'LISTADO_PEDIDOS_CLIENTES': BASE_URL + '/PedidosClientes/listadoPedidosClientes',
                 'INSERTAR_PEDIDO_CLIENTE': BASE_URL + '/PedidosClientes/insertarPedidoCliente',

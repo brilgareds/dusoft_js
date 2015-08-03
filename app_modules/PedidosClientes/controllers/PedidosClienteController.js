@@ -427,7 +427,7 @@ PedidosCliente.prototype.insertarCotizacion = function(req, res) {
         res.send(G.utils.r(req.url, 'tipo_id_vendedor  o vendedor_id No Estan Definidos', 404, {}));
         return;
     }
-    
+
     // Observaciones
     if (cotizacion.tipo_producto === undefined || cotizacion.observacion === undefined) {
         res.send(G.utils.r(req.url, 'tipo_producto u observacion No Estan Definidos', 404, {}));
@@ -665,6 +665,54 @@ PedidosCliente.prototype.consultarDetalleCotizacion = function(req, res) {
         } else {
 
             res.send(G.utils.r(req.url, 'Cotizacion', 200, {pedidos_clientes: {lista_productos: lista_productos}}));
+            return;
+        }
+    });
+};
+
+
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : Eliminar Producto Cotizacion
+ */
+PedidosCliente.prototype.eliminarProductoCotizacion = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    // Cotizacion
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.cotizacion === undefined || args.pedidos_clientes.cotizacion === '') {
+        res.send(G.utils.r(req.url, 'pedidos_clientes o cotizacion No Estan Definidos', 404, {}));
+        return;
+    }
+
+    // Producto 
+    if (args.pedidos_clientes.producto === undefined || args.pedidos_clientes.producto === '') {
+        res.send(G.utils.r(req.url, 'productos no estan definidos o vacios', 404, {}));
+        return;
+    }
+
+    var cotizacion = args.pedidos_clientes.cotizacion;
+    var producto = args.pedidos_clientes.producto;
+
+    if (cotizacion.numero_cotizacion === undefined || cotizacion.numero_cotizacion === '') {
+        res.send(G.utils.r(req.url, 'numero_cotizacion no esta definido o esta vacio', 404, {}));
+        return;
+    }
+
+    if (producto.codigo_producto === undefined || producto.codigo_producto === '') {
+        res.send(G.utils.r(req.url, 'codigo_producto no esta definido o esta vacio', 404, {}));
+        return;
+    }
+    
+    that.m_pedidos_clientes.eliminar_producto_cotizacion(cotizacion, producto, function(err, rows, result) {
+
+        if (err || result.rowCount === 0) {
+            res.send(G.utils.r(req.url, 'Error Eliminando el producto', 500, {pedidos_clientes: []}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Producto eliminado correctamente', 200, {pedidos_clientes: []}));
             return;
         }
     });
@@ -959,41 +1007,7 @@ PedidosCliente.prototype.listarDetallePedido = function(req, res) {
 
 };
 
-//eliminar_registro_detalle_cotizacion
-// ????????????????????????????????????????
-PedidosCliente.prototype.eliminarRegistroDetalleCotizacion = function(req, res) {
 
-    var that = this;
-
-    var args = req.body.data;
-
-    if (args.eliminar_detalle_cotizacion === undefined || args.eliminar_detalle_cotizacion.numero_cotizacion === undefined || args.eliminar_detalle_cotizacion.codigo_producto === undefined) {
-        res.send(G.utils.r(req.url, 'numero_cotizacion o codigo_producto no están definidos', 404, {}));
-        return;
-    }
-
-    if (args.eliminar_detalle_cotizacion.numero_cotizacion === '' || args.eliminar_detalle_cotizacion.codigo_producto === '') {
-        res.send(G.utils.r(req.url, 'numero_cotizacion o codigo_producto están vacios', 404, {}));
-        return;
-    }
-
-    //Parámetro de búsqueda
-    var numero_cotizacion = args.eliminar_detalle_cotizacion.numero_cotizacion;
-    var codigo_producto = args.eliminar_detalle_cotizacion.codigo_producto;
-    var usuario_solicitud = req.session.user.usuario_id;
-
-    that.m_pedidos_clientes.eliminar_registro_detalle_cotizacion(numero_cotizacion, codigo_producto, usuario_solicitud, function(err, rows) {
-
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error en Eliminación Registro Detalle Cotización', 500, {}));
-            return;
-        }
-
-        res.send(G.utils.r(req.url, 'Eliminación Registro Detalle Cotización Exitoso', 200, {}));
-
-    });
-
-};
 
 //cotizacionEsPedido
 // ????????????????????????????????????????

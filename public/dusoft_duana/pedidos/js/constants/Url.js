@@ -42,6 +42,7 @@ define(["angular"], function(angular) {
                     'LISTAR_LABORATORIOS': BASE_URL + '/Laboratorios/listarLaboratorios',
                     'INSERTAR_COTIZACION': BASE_URL + '/PedidosClientes/insertarCotizacion',
                     'INSERTAR_DETALLE_COTIZACION': BASE_URL + '/PedidosClientes/insertarDetalleCotizacion',
+                    'ELIMINAR_PRODUCTO_COTIZACION': BASE_URL + '/PedidosClientes/eliminarProductoCotizacion',
                 },
                 FARMACIAS :{
                     'LISTAR_PRODUCTOS_FARMACIAS': BASE_URL + '/PedidosFarmacias/listarProductos',
@@ -95,7 +96,7 @@ define(["angular"], function(angular) {
                 //'LISTAR_COTIZACIONES': BASE_URL + '/PedidosClientes/listarCotizaciones',
                 'CONSULTA_ESTADO_COTIZACION': BASE_URL + '/PedidosClientes/estadoCotizacion',
                 //'LISTAR_DETALLE_COTIZACION': BASE_URL + '/PedidosClientes/listarDetalleCotizacion',
-                'ELIMINAR_REGISTRO_DETALLE_COTIZACION': BASE_URL + '/PedidosClientes/eliminarRegistroDetalleCotizacion',
+                //'ELIMINAR_REGISTRO_DETALLE_COTIZACION': BASE_URL + '/PedidosClientes/eliminarRegistroDetalleCotizacion',
                 'CAMBIAR_ESTADO_COTIZACION': BASE_URL + '/PedidosClientes/cambiarEstadoCotizacion',
                 'CAMBIAR_ESTADO_APROBACION_COTIZACION': BASE_URL + '/PedidosClientes/cambiarEstadoAprobacionCotizacion',
                 'ARCHIVO_PLANO_PEDIDO_CLIENTE': BASE_URL + '/PedidosClientes/pedidoClienteArchivoPlano',

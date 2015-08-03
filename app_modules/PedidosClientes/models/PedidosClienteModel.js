@@ -1201,9 +1201,10 @@ PedidosClienteModel.prototype.consultar_detalle_cotizacion = function(cotizacion
                 a.porc_iva as iva,\
                 a.valor_unitario, \
                 (a.numero_unidades * a.valor_unitario) as subtotal,\
+                (a.numero_unidades * (a.valor_unitario * (a.porc_iva/100))) as valor_iva,\
                 ((a.valor_unitario+(a.valor_unitario*(a.porc_iva/100))) * a.numero_unidades) as total\
                 FROM ventas_ordenes_pedidos_d_tmp AS a\
-                WHERE pedido_cliente_id_tmp = $1 and \n\
+                WHERE pedido_cliente_id_tmp = $1 and \
                 (\
                     a.codigo_producto ilike $2 or\
                     fc_descripcion_producto(a.codigo_producto) ilike $2 \

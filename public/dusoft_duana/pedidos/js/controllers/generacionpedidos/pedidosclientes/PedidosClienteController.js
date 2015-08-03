@@ -146,7 +146,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                     var producto = Producto.get(data.codigo_producto, data.descripcion_producto, 0, data.iva);
                     producto.set_cantidad_solicitada(data.cantidad_solicitada);
-                    producto.set_precio_venta(data.valor_unitario).set_valor_total_sin_iva(data.subtotal).set_valor_total_con_iva(data.total);
+                    producto.set_precio_venta(data.valor_unitario).set_valor_total_sin_iva(data.subtotal).set_valor_iva(data.valor_iva).set_valor_total_con_iva(data.total);
 
                     $scope.Pedido.set_productos(producto);
                 });
@@ -278,15 +278,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                             <tbody>\
                                                 <tr>\
                                                     <td class="left"><strong>Subtotal</strong></td>\
-                                                    <td class="right">{{ Pedido.get_subtotal() }}</td>    \
+                                                    <td class="right">{{ Pedido.get_subtotal() | currency : "$" }}</td>    \
                                                 </tr>\
                                                 <tr>\
                                                     <td class="left"><strong>I.V.A</strong></td>\
-                                                    <td class="right">{{ planilla.get_valor_iva() }}</td>                                        \
+                                                    <td class="right">{{ Pedido.get_valor_iva() | currency : "$" }}</td>                                        \
                                                 </tr>\
                                                 <tr>\
                                                     <td class="left"><strong>Total</strong></td>\
-                                                    <td class="right">{{ planilla.get_total() }}</td>                                        \
+                                                    <td class="right">{{ Pedido.get_total() | currency : "$" }}</td>                                        \
                                                 </tr>\
                                             </tbody>\
                                         </table>\

@@ -886,10 +886,10 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     var laboratorio_id = filtro.laboratorio_id;
     var numero_cotizacion = filtro.numero_cotizacion;
 
-    if (tipo_producto !== '')
+    if (tipo_producto !== undefined && tipo_producto !== '')
         sql_aux = " and b.tipo_producto_id = '" + tipo_producto + "'";
 
-    if (laboratorio_id !== '')
+    if (laboratorio_id !== undefined && laboratorio_id !== '')
         sql_aux += " and f.clase_id = '" + laboratorio_id + "'";
 
     if (numero_cotizacion !== '' && numero_cotizacion !== '0')
@@ -1001,9 +1001,12 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                     a.codigo_producto ilike $5 or\
                     fc_descripcion_producto(a.codigo_producto) ilike $5 or\
                     e.descripcion ilike $5\
-                ) order by 1";
+                ) order by 1 ";
+    
+    
 
     console.log([empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, '%' + termino_busqueda + '%']);
+    //console.log(sql_aux);
 
     // Original
     /*G.db.paginated(sql, [empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, '%' + termino_busqueda + '%'], pagina, G.settings.limit, function(err, rows, result) {

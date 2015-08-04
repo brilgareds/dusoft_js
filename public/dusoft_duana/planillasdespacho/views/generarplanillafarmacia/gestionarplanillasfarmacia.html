@@ -14,29 +14,18 @@
                     <div class="panel-body">                    
                         <div class="row">
                             <div class="col-md-4">
-
-                                <!-- <fieldset>
-                                     <legend>Farmacia</legend>      
- 
-                                     <ui-select ng-model="planilla.ciudad" ng-disabled="planilla.get_numero_guia() > 0" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_ciudad()">
-                                         <ui-select-match  placeholder="Seleccionar farmacia">{{ $select.selected.get_nombre_ciudad() }}</ui-select-match>
-                                         <ui-select-choices refresh="listar_farmacias($select.search)" refresh-delay="0" repeat="farmacia in Empresa.get_ciudades() | filter:$select.search">
-                                             {{ farmacia.get_nombre_ciudad() }}
-                                         </ui-select-choices>
-                                     </ui-select>                                   
-                                 </fieldset>//-->
-
                                 <fieldset>
-                                    <legend>Farmacia</legend>  
+                                    <legend>Empresas</legend>  
                                     <p class="input-group contenedorfiltrocombobox">
 
-                                    <ui-select ng-model="Empresa.empresaSeleccionada"  theme="select2" class="form-control selectgeneral pull-left" >
-                                        <ui-select-match  placeholder="Seleccionar farmacia" >{{ $select.selected.getNombre()}}</ui-select-match>
-                                        <ui-select-choices  refresh-delay="0" repeat="farmacia in farmacias | filter:$select.search">
-                                            {{ farmacia.getNombre() }}
+                                    <ui-select ng-model="planilla.empresa"  theme="select2" class="form-control selectgeneral pull-left" >
+                                        <ui-select-match  placeholder="Seleccionar empresas" >{{ $select.selected.getNombre()}}</ui-select-match>
+                                        <ui-select-choices  refresh-delay="0" repeat="empresa in Empresa.get_empresas() | filter:$select.search">
+                                            {{ empresa.getNombre() }}
                                         </ui-select-choices>
                                     </ui-select> </p>       
-                                </fieldset>
+                                </fieldset>                                                           
+                                  
                             </div>                        
                             <div class="col-md-4">
                                 <div class="col-md-6">
@@ -164,7 +153,7 @@
             </div>
         </div>
         <div  class="slide" slide-content open-callback="gestionar_documentos_farmacia" close-callback="cerrar_gestion_documentos_bodega"   >
-            <div ng-include src="slideurl"  ng-controller="GestionarPlanillasFarmaciasController"></div>
+            <div ng-include src="slideurl"  ng-controller="GestionarDocumentosFarmaciaController"></div>
         </div>
     </div>
     <visualizar-reporte></visualizar-reporte>

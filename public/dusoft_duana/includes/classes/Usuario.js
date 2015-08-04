@@ -31,6 +31,7 @@ define(["angular", "js/models"], function(angular, models) {
                 this.moduloActual;
                 this.objetoModulos = {};
                 this.empresasFarmacias = [];
+                this.empresasUsuario = [];
             }
             
                                  
@@ -179,7 +180,29 @@ define(["angular", "js/models"], function(angular, models) {
                 this.empresasFarmacias.push(empresaFarmacia);
                 
             };
+            
+            Usuario.prototype.setEmpresasUsuario = function(empresasUsuario){
+                this.empresasUsuario = empresasUsuario;
+                return this;
+            };
 
+            Usuario.prototype.getEmpresasUsuario = function(){
+                return this.empresasUsuario;
+            };
+            
+            Usuario.prototype.agregarEmpresaUsuario = function(empresa){
+                for(var i in this.empresasUsuario){
+                    var _empresa = this.empresasUsuario[i];
+                    
+                    if(_empresa.getCodigo() === empresa.getCodigo()){
+                        return false;
+                    }
+                }  
+                
+                this.empresasUsuario.push(empresa);
+                
+            };
+            
             this.get = function(id, usuario, nombre) {
                 return new Usuario(id, usuario, nombre);
             };

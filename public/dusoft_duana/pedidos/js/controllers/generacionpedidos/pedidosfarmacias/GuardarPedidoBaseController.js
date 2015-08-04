@@ -33,29 +33,66 @@ define(["angular", "js/controllers",
             
             
             $scope.root.lista_productos = {
-                data: 'rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().lista_productos',
+                data: 'root.pedido.getProductosSeleccionados()',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 multiSelect: false,
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Código', width: "9%",
                         cellTemplate : '<div class="ngCellText" ng-class="col.colIndex()">\
-                                                    <span class="label label-success" ng-show="row.entity.tipo_producto_id == 1" >N</span>\
-                                                    <span class="label label-danger" ng-show="row.entity.tipo_producto_id == 2">A</span>\
-                                                    <span class="label label-warning" ng-show="row.entity.tipo_producto_id == 3">C</span>\
-                                                    <span class="label label-primary" ng-show="row.entity.tipo_producto_id == 4">I</span>\
-                                                    <span class="label label-info" ng-show="row.entity.tipo_producto_id == 5">Ne</span>\
+                                                    <span class="label label-success" ng-show="row.entity.getTipoProductoId() == 1" >N</span>\
+                                                    <span class="label label-danger" ng-show="row.entity.getTipoProductoId() == 2">A</span>\
+                                                    <span class="label label-warning" ng-show="row.entity.getTipoProductoId() == 3">C</span>\
+                                                    <span class="label label-primary" ng-show="row.entity.getTipoProductoId() == 4">I</span>\
+                                                    <span class="label label-info" ng-show="row.entity.getTipoProductoId() == 5">Ne</span>\
                                                     <span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\
                                                 </div>'
                     },
                     {field: 'descripcion', displayName: 'Descripción', width: "37%"},
-                    {field: 'cantidad_solicitada', displayName: 'Solicitado'},
-                    {field: 'cantidad_pendiente', displayName: 'Pendiente'}
+                    {field: 'getCantidadSolicitada()', displayName: 'Solicitado'},
+                    {field: 'getCantidadPendiente()', displayName: 'Pendiente'},
+                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "5%",
+                            cellTemplate: ' <div class="row">\
+                                                <button class="btn btn-default btn-xs" ng-click="onEliminarProducto(row.entity)">\
+                                                    <span class="glyphicon glyphicon-remove"></span>\n\
+                                                </button>\
+                                            </div>'
+                        }
                 ]
             };
             
+          
             
-            self.incluirProductos = function(){
+            /*
+             * @Author: Eduar
+             * @param {function} callback
+             * +Descripcion: Permite hacer render en los dropdown de las empreas destino y origen
+             */
+            $scope.renderEncabezado = function(data){
+                $scope.seleccionarEmpresaPedido(false, data.empresa_destino, data.centro_destino, data.bogega_destino);
+                $scope.seleccionarEmpresaPedido(true, data.farmacia_id, data.centro_utilidad, data.bodega);
+                $scope.root.pedido.setEsTemporal(true).setValido(true).setDescripcion(data.observacion);
+            };
+            
+            
+            /*
+             * @Author: Eduar
+             * @param {Object} data
+             * +Descripcion: Permite hacer render en los dropdown de las empreas destino y origen
+             */
+            $scope.renderDetalle = function(data){
+                var _productos = data.obj.listado_productos;
+                
+                for (var i in _productos) {
+                    var _producto = _productos[i];
+                    var producto = ProductoPedidoFarmacia.get(_producto.codigo_producto, _producto.descripcion).
+                            setCantidadPendiente(_producto.cantidad_pendiente).
+                            setTipoProductoId(_producto.tipo_producto_id).
+                            setCantidadSolicitada(_producto.cantidad_solicitada);
+
+                    $scope.root.pedido.agregarProductoSeleccionado(producto);
+
+                }
                 
             };
             
@@ -65,7 +102,6 @@ define(["angular", "js/controllers",
              */
             
             $scope.onEmpresaOrigenSeleccionada = function(){
-                console.log("empresa seleccionada >>>");
                 //aseguramos que el tipo de empresa sea EmpresaPedidoFarmacia
                 var empresa = EmpresaPedidoFarmacia.get(
                         $scope.root.pedido.getFarmaciaOrigen().getNombre(),
@@ -95,6 +131,20 @@ define(["angular", "js/controllers",
                 $scope.root.pedido.setFarmaciaDestino(empresa);
             };
             
+            /*
+             * @Author: Eduar
+             * +Descripcion: handler para la seleccion de la bodega
+             */
+            
+            $scope.onBodegaSeleccionada = function(){
+                console.log("bodega seleccionada ");
+                $scope.root.pedido.setValido($scope.habilitarIncluirProductos());
+                
+                //El evento que se dispara es escuchado por el controlador de pedido temporal
+                if($scope.root.pedido.getValido()){
+                    $scope.$broadcast("onBodegaSeleccionada");
+                }
+            };
             
             /*
              * @Author: Eduar
@@ -110,7 +160,6 @@ define(["angular", "js/controllers",
                 var centro  = $scope.obtenerCentroUtilidad(esDestino, empresaId, centroUtilidad);
                 var bodega  = $scope.obtenerBodega(esDestino, empresaId, centroUtilidad, bodega);
                 
-                console.log(bodega);
                 if(esDestino){
                     $scope.root.pedido.setFarmaciaDestino(empresa);
                     $scope.root.pedido.getFarmaciaDestino().setCentroUtilidadSeleccionado(centro).getCentroUtilidadSeleccionado().
@@ -183,11 +232,32 @@ define(["angular", "js/controllers",
                 
             };
             
+            /*
+             * @Author: Eduar
+             * return {boolean} 
+             * +Descripcion: Valida si la empresa origen/destino tiene centro utilidad y bodega seleccionados
+             */
+            
+            $scope.habilitarIncluirProductos = function(){
+                
+                if(!$scope.root.pedido.getFarmaciaDestino() || !$scope.root.pedido.getFarmaciaOrigen()){
+                    return false;
+                }
+                
+                var centroDestino = $scope.root.pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado();
+                var centroOrigen  = $scope.root.pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado();
+                
+                if((centroDestino && centroDestino.getBodegaSeleccionada()) && (centroOrigen && centroOrigen.getBodegaSeleccionada()) ){
+                    return true;
+                } else {
+                    return false;
+                }
+            };
+            
             
             $scope.onIncluirProductos = function(event) {
-                event.stopPropagation();
                 $scope.slideurl = "views/generacionpedidos/pedidosfarmacias/seleccionproducto.html?time=" + new Date().getTime();
-                $scope.$emit('mostrarSeleccionProducto', $scope.root.pedido);
+                $scope.$emit('mostrarSeleccionProducto');
                 
             };
             
@@ -201,7 +271,9 @@ define(["angular", "js/controllers",
 
             });
 
-            
+            $scope.onEliminarProducto = function(producto){
+                $scope.$emit('onEliminarProducto', producto);
+            };
             
             /*that.pedido = PedidoVenta.get();
 

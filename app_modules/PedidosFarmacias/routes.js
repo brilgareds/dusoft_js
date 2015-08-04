@@ -69,12 +69,18 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.buscarProductos(req, res);
     });
     
+    app.post('/api/PedidosFarmacias/generarPedidoFarmacia', function(req, res) {
+        c_pedidos_farmacias.generarPedidoFarmacia(req, res);
+    });
+    
     // -- depreciado
     app.post('/api/PedidosFarmacias/listarProductos', function(req, res) {
         c_pedidos_farmacias.listar_productos(req, res);
     });
     
     //
+    
+    
     
     // deprecido Retorna 1 si el registro existe y 0 si no existe en el encabezado del pedido. Se filtra pedido por empresa, centro de utilidad, bodega y usuario
     app.post('/api/PedidosFarmacias/existeRegistroEncabezadoTemporal', function(req, res) {
@@ -111,14 +117,14 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.eliminarDetalleTemporalCompleto(req, res);
     }); 
     
-    // Inserta el encabezado del pedido definitivo
-    app.post('/api/PedidosFarmacias/insertarPedidoFarmaciaDefinitivo', function(req, res) {
-        c_pedidos_farmacias.insertarPedidoFarmaciaDefinitivo(req, res);
+    //depreciado Inserta el encabezado del pedido definitivo
+    app.post('/api/PedidosFarmacias/insertarPedidoFarmacia', function(req, res) {
+        c_pedidos_farmacias.insertarPedidoFarmacia(req, res);
     });
     
-    // Inserta el detalle del pedido definitivo
-    app.post('/api/PedidosFarmacias/insertarDetallePedidoFarmaciaDefinitivo', function(req, res) {
-        c_pedidos_farmacias.insertarDetallePedidoFarmaciaDefinitivo(req, res);
+    //depreciado Inserta el detalle del pedido definitivo
+    app.post('/api/PedidosFarmacias/insertarDetallePedidoFarmacia', function(req, res) {
+        c_pedidos_farmacias.insertarDetallePedidoFarmacia(req, res);
     });    
     
     //Consultar Encabezado del Pedido

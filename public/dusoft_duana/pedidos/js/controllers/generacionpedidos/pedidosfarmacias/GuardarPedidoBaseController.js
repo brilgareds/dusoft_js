@@ -261,6 +261,13 @@ define(["angular", "js/controllers",
                 
             };
             
+            $scope.onEliminarProducto = function(producto){
+                $scope.$emit('onEliminarProducto', producto);
+            };
+            
+            $scope.onVolverListadoPedidos = function(){
+                $state.go("ListarPedidosFarmacias");
+            };
             
            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 
@@ -271,9 +278,6 @@ define(["angular", "js/controllers",
 
             });
 
-            $scope.onEliminarProducto = function(producto){
-                $scope.$emit('onEliminarProducto', producto);
-            };
             
             /*that.pedido = PedidoVenta.get();
 

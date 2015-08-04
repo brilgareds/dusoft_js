@@ -120,6 +120,7 @@ PedidosFarmaciasModel.prototype.existe_registro_detalle_pedido = function(numero
 
 PedidosFarmaciasModel.prototype.actualizar_registro_encabezado_temporal = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion, callback)
 {
+    console.log("modificando pedido temporal ", empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion);
     var sql = "UPDATE solicitud_Bodega_principal_aux SET observacion = $5 WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and usuario_id = $4";
 
     G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion], function(err, rows, result) {

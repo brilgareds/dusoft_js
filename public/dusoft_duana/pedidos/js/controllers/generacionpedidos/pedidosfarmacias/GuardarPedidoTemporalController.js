@@ -117,7 +117,6 @@ define(["angular", "js/controllers",
 
             self.guardarEncabezadoPedidoTemporal = function(callback) {
                 var pedido = $scope.root.pedido;
-                console.log("pedidos ", $scope.rootPedidoFarmaciaTemporal);
                 var obj = {
                     session: $scope.rootPedidoFarmaciaTemporal.session,
                     data: {
@@ -139,7 +138,6 @@ define(["angular", "js/controllers",
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
                         callback(true);
-                        
                         //se guarda para traer los datos cuando el usuario recargue la pagina
                         var farmacia = pedido.getFarmaciaDestino();
                         localStorageService.set("pedidotemporal", {
@@ -198,7 +196,10 @@ define(["angular", "js/controllers",
 
             };
             
-            
+            /*
+             * @Author: Eduar
+             * +Descripcion: Realiza la peticion al API para generar un pedido dsde el temporal.
+             */
             self.generarPedido = function(){
                 var pedido = $scope.root.pedido;
                 var farmacia = pedido.getFarmaciaDestino();
@@ -229,6 +230,28 @@ define(["angular", "js/controllers",
             
             /*
              * @Author: Eduar
+             * +Descripcion: Handler del boton generar pedido
+             */
+            $scope.onGenerarPedido = function(){
+                self.generarPedido();
+            };
+            
+            /*
+             * @Author: Eduar
+             * +Descripcion: Handler del boton guardar pedido temporal
+             */
+            $scope.onGuardarEncabezadoPedidoTemporal = function(){
+                self.guardarEncabezadoPedidoTemporal(function(respuestaValida){
+                    if(respuestaValida){
+                        AlertService.mostrarMensaje("success", "Pedido modificado correctamente");
+                    } else {
+                        AlertService.mostrarMensaje("warning", "Error al modificar el pedido");
+                    }
+                });
+            };
+            
+            /*
+             * @Author: Eduar
              * @param {function} callback
              * +Descripcion: Metodo que se dispara desde el slide de seleccion de productos
              */
@@ -252,16 +275,10 @@ define(["angular", "js/controllers",
                 }
             });
             
-            $scope.onGenerarPedido = function(){
-                //INSERTAR_PEDIDO_FARMACIA
-                self.generarPedido();
-                console.log("on generar pedido farmaci");
-            };
-            
             /*
              * @Author: Eduar
              * @param {function} callback
-             * +Descripcion: Despues que se selecciona correctamente los dropdown en el parent se trata de buscar la seleccion
+             * +Descripcion: Despues que se selecciona correctamente los dropdown en el parent, se busca si el pedido ya fue guardado anteriormente
              */
 
             $scope.onBodegaSeleccionada = $scope.$on("onBodegaSeleccionada", function() {
@@ -279,9 +296,9 @@ define(["angular", "js/controllers",
                 });
             });
             
-            $scope.onEliminarProducto = $scope.$on("onEliminarProducto",function(e, producto){
+            /*$scope.onEliminarProducto = $scope.$on("onEliminarProducto",function(e, producto){
                 console.log("producto a eliminar ", producto);
-            });
+            });*/
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.onBodegaSeleccionada();

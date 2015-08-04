@@ -167,7 +167,7 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.listarPedidosTemporalesFarmacias(req, res);
     });
     
-    //Actualizar Encabezado Pedido Temporal
+    // depreciado Actualizar Encabezado Pedido Temporal
     app.post('/api/PedidosFarmacias/actualizarRegistroEncabezadoTemporal', function(req, res) {
         c_pedidos_farmacias.actualizarRegistroEncabezadoTemporal(req, res);
     });

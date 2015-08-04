@@ -43,7 +43,7 @@ define(["angular",
                     {field: 'farmaciaDestino.nombre_farmacia', displayName: 'Farmacia', width: "15%"},
                     {field: 'farmaciaDestino.getCentroUtilidadSeleccionado().getNombre()', displayName: 'Centro Utilidad', width: "15%"},
                     {field: 'farmaciaDestino.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getNombre()', displayName: 'Bodega', width: "15%"},
-                    {field: 'observacion', displayName: 'Observación'},
+                    {field: 'getDescripcion()', displayName: 'Observación'},
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center dropdown-button", width: "8%",
                         cellTemplate: '<div class="btn-group">\
                                         <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
@@ -91,7 +91,7 @@ define(["angular",
                             $scope.rootPedidosTempFarmacias.empresaSeleccionada = EmpresaPedidoFarmacia.get(
                                     $scope.rootPedidosTempFarmacias.empresaSeleccionada.getNombre(),
                                     $scope.rootPedidosTempFarmacias.empresaSeleccionada.getCodigo()
-                                    );
+                            );
 
 
                             self.renderPedidos(data.obj.pedidos_farmacias);

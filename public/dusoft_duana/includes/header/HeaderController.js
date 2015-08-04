@@ -29,8 +29,6 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                 window.location = "../login";
             };
             
-
-
             $scope.mostarLock = false;
             $scope.unlockform = {};
 
@@ -47,8 +45,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
             };
             
             $scope.enHome = false;
-
-            $scope.empresas = [];
+            //$scope.empresas = [];
 
             self.setUsuarioActual = function(obj) {
                 var usuario = Usuario.get(obj.usuario_id, obj.usuario, obj.nombre);
@@ -110,7 +107,7 @@ define(["angular", "js/controllers", "includes/classes/Usuario", "includes/Const
                                 $scope.Usuario.setEmpresa(empresa);
                             }
 
-                            $scope.empresas.push(empresa);
+                            $scope.Usuario.agregarEmpresaUsuario(empresa);
 
 
                         }

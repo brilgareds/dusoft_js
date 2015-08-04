@@ -76,7 +76,7 @@
                                             <option></option>
                                             <option ng-repeat="bodega in  rootCreaPedidoFarmacia.de_lista_bodegas"  ng-value="bodega.bodega_id" >{{bodega.descripcion}}</option>
                                         </select -->
-                                        <ui-select ng-change="_empresaOrigenSeleccionada()" ng-model="root.pedido.farmaciaOrigen.centroUtilidad.bodega" theme="select2" class="form-control selectgeneral pull-left" >
+                                        <ui-select ng-change="onBodegaSeleccionada()" ng-model="root.pedido.farmaciaOrigen.centroUtilidad.bodega" theme="select2" class="form-control selectgeneral pull-left" >
                                             <ui-select-match  placeholder="Seleccionar Centro Utilidad">{{$select.selected.getNombre()}}</ui-select-match>
                                             <ui-select-choices repeat="bodega in root.pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getBodegas() | filter:$select.search">
                                                 {{bodega.getNombre()}}
@@ -153,7 +153,7 @@
                                         </br>
                                         <h4 class="h4MarginTopBottom">Bodega: </h4>
 
-                                        <ui-select  ng-model="root.pedido.farmaciaDestino.centroUtilidad.bodega" theme="select2" class="form-control selectgeneral pull-left" >
+                                        <ui-select  ng-model="root.pedido.farmaciaDestino.centroUtilidad.bodega" theme="select2" class="form-control selectgeneral pull-left" ng-change="onBodegaSeleccionada()">
                                             <ui-select-match  placeholder="Seleccionar Centro Utilidad">{{$select.selected.getNombre()}}</ui-select-match>
                                             <ui-select-choices repeat="bodega in root.pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getBodegas() | filter:$select.search">
                                                 {{bodega.getNombre()}}
@@ -203,7 +203,7 @@
                     <div class="input-group navbar-form ">
 
                         <div >
-                            <button type="button" class="btn btn-default btn-medium ng-scope"  ng-click="onIncluirProductos($event)">
+                            <button type="button" ng-disabled="!root.pedido.getValido()" class="btn btn-default btn-medium ng-scope"  ng-click="onIncluirProductos($event)">
                                 <span class="glyphicon glyphicon-plus"></span> Incluir Productos
                             </button>
                         </div>   
@@ -287,18 +287,18 @@
     </div>
 
     <div class="col-sm-12 btn-toolbar">
-        <button type="submit" ng-disabled="rootCreaPedidoFarmacia.bloqueo_generar_pedido" class="btn btn-default pull-right" ng-click="generarPedidoFarmacia()"
-                ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible == false" ng-validate-events="{{rootCreaPedidoFarmacia.opcionesModulo.btnGenerarPedido}}">
+        <button type="submit" ng-disabled="rootCreaPedidoFarmacia.bloqueo_generar_pedido" class="btn btn-default pull-right" ng-click="onGenerarPedido()"
+                 ng-validate-events="{{rootCreaPedidoFarmacia.opcionesModulo.btnGenerarPedido}}">
             <span class="glyphicon glyphicon-cog"></span> Generar Pedido
         </button>
         <button type="submit" ng-disabled="rootCreaPedidoFarmacia.bloqueo_generar_pedido" class="btn btn-default pull-right" ng-click="abrirViewVerPedidosFarmacias()"
-                ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible == false" ng-validate-events="{{rootCreaPedidoFarmacia.opcionesModulo.btnGuardarTemporal}}">
+         ng-validate-events="{{rootCreaPedidoFarmacia.opcionesModulo.btnGuardarTemporal}}">
             <span class="glyphicon glyphicon-ok"></span> Guardar Temporal
         </button>
         <!--<button type="submit" ng-disabled="rootCreaPedidoFarmacia.bloqueo_generar_pedido" class="btn btn-dedault pull-right" ng-click="abrirViewVerPedidosFarmacias()" ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible == false"><span class="glyphicon glyphicon-ok"></span> Guardar Temporal</button>-->
-        <button type="submit" class="btn btn-default pull-right" ng-click="onEliminarPedidoTemporal()" ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible === false"><span class="glyphicon glyphicon-remove"></span> Cancelar Pedido</button>
-        <button type="submit" class="btn btn-default pull-right" ng-click="abrirViewVerPedidosFarmacias()" ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible === true"><span class="glyphicon glyphicon-off"></span> Finalizar</button>
-        <button type="submit" class="btn btn-default pull-right" ng-click="generarPdfPedidoFarmacia()" ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible === true"><span class="glyphicon glyphicon-file"></span> Generar PDF</button>
+        <button type="submit" class="btn btn-default pull-right" ng-click="onEliminarPedidoTemporal()"><span class="glyphicon glyphicon-remove"></span> Cancelar Pedido</button>
+        <button type="submit" class="btn btn-default pull-right" ng-click="abrirViewVerPedidosFarmacias()"><span class="glyphicon glyphicon-off"></span> Finalizar</button>
+        <button type="submit" class="btn btn-default pull-right" ng-click="generarPdfPedidoFarmacia()"><span class="glyphicon glyphicon-file"></span> Generar PDF</button>
     </div>
 
     <br/><br/><br/><br/><br/>

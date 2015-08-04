@@ -16,7 +16,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.expreg = new RegExp("^[0-9]*$");
 
             $scope.lista_productos = {
-                data: 'rootSeleccionProductoFarmacia.pedido.obtenerProductos()',
+                data: 'root.pedido.obtenerProductos()',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 enableCellSelection: false,
@@ -110,7 +110,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $scope.rootSeleccionProductoFarmacia.termino_busqueda = "";
                 $scope.rootSeleccionProductoFarmacia.paginaactual = 1;
                 $scope.rootSeleccionProductoFarmacia.tipoProducto = "0";
-                $scope.rootSeleccionProductoFarmacia.pedido;
+                $scope.root.pedido;
                 $scope.rootSeleccionProductoFarmacia.listaTiposProductos  = [];
 
                 $scope.rootSeleccionProductoFarmacia.session = {
@@ -137,7 +137,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             setTipoProductoId(_producto.tipo_producto_id).
                             setCantidadSolicitada(_producto.cantidad_solicitada);
 
-                    $scope.rootSeleccionProductoFarmacia.pedido.agregarProducto(producto);
+                    $scope.root.pedido.agregarProducto(producto);
 
                 }
 
@@ -156,12 +156,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         productos: {
                             termino_busqueda: $scope.rootSeleccionProductoFarmacia.termino_busqueda,
                             pagina_actual: $scope.rootSeleccionProductoFarmacia.paginaactual,
-                            empresa_id: $scope.rootSeleccionProductoFarmacia.pedido.getFarmaciaOrigen().getCodigo(),
-                            centro_utilidad_id: $scope.rootSeleccionProductoFarmacia.pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getCodigo(),
-                            bodega_id: $scope.rootSeleccionProductoFarmacia.pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
-                            empresa_destino_id: $scope.rootSeleccionProductoFarmacia.pedido.getFarmaciaDestino().getCodigo(),
-                            centro_utilidad_destino_id: $scope.rootSeleccionProductoFarmacia.pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getCodigo(),
-                            bodega_destino_id: $scope.rootSeleccionProductoFarmacia.pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                            empresa_id: $scope.root.pedido.getFarmaciaOrigen().getCodigo(),
+                            centro_utilidad_id: $scope.root.pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getCodigo(),
+                            bodega_id: $scope.root.pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                            empresa_destino_id: $scope.root.pedido.getFarmaciaDestino().getCodigo(),
+                            centro_utilidad_destino_id: $scope.root.pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getCodigo(),
+                            bodega_destino_id: $scope.root.pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
                             tipo_producto: $scope.rootSeleccionProductoFarmacia.tipoProducto,
                             filtro: {}
                         }
@@ -177,7 +177,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             if(callback){
                                 callback();
                             }
-                            
+                            $scope.root.pedido.vaciarProductos();
                             self.renderProductosFarmacia(data.obj.lista_productos);
                         } else {
                             $scope.rootSeleccionProductoFarmacia.paginaactual = 1;
@@ -250,23 +250,25 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              */
             
             self.validarIngresoProducto = function(producto, callback){
-                console.log("producto a agregar ", producto);
-                var pedido = $scope.rootSeleccionProductoFarmacia.pedido;
+                var pedido = $scope.root.pedido;
                 
                 if(pedido.esProductoSeleccionado(producto)){
                     
                     callback({msj:"El producto "+producto.getCodigoProducto()+ " ya esta seleccionado", valido:false});
+                    return;
                 }
                 
                 if(pedido.getProductosSeleccionados().length === 25){
                     
                     callback({msj:"El pedido tiene 25 productos agregados", valido:false});
+                    return;
                 }
                 
                 if(!pedido.validarTipoProductoAIngresar(producto)){
                     //var tipo = self.obtenerTipoProducto(producto);
                     
                     callback({msj:"El pedido solo puede contener productos del mismo tipo.", valido:false});
+                    return;
                 }
                 
                 self.verificarBloqueoProducto(function(validacion){
@@ -287,9 +289,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     session: $scope.rootSeleccionProductoFarmacia.session,
                     data: {
                         usuario_bloqueo: {                            
-                            farmacia_id: $scope.rootSeleccionProductoFarmacia.pedido.getFarmaciaDestino().getCodigo(),
-                            centro_utilidad_id: $scope.rootSeleccionProductoFarmacia.pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getCodigo(),
-                            codigo_producto: $scope.rootSeleccionProductoFarmacia.pedido.getProductoSeleccionado().getCodigoProducto()
+                            farmacia_id: $scope.root.pedido.getFarmaciaDestino().getCodigo(),
+                            centro_utilidad_id: $scope.root.pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getCodigo(),
+                            codigo_producto: $scope.root.pedido.getProductoSeleccionado().getCodigoProducto()
                         }
                     }
                  };
@@ -333,7 +335,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              */
             $scope.root.mostrarSeleccionProductoCompleto = $rootScope.$on("mostrarSeleccionProductoCompleto", function(e, datos) {
                 self.init();
-                $scope.rootSeleccionProductoFarmacia.pedido = datos[1];
                 self.listarTiposProductos();
                 self.buscarProductos();
             });
@@ -360,7 +361,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     
                     $scope.rootSeleccionProductoFarmacia.paginaactual = 1;
                     self.buscarProductos(function(){
-                        $scope.rootSeleccionProductoFarmacia.pedido.vaciarProductos();
                     });
                 }
             };
@@ -396,7 +396,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.onIngresarProducto = function(event, producto) {
                 if (event.which === 13) {
                     if (parseInt(producto.getCantidadSolicitada()) > 0) {
-                        var pedido = $scope.rootSeleccionProductoFarmacia.pedido;
+                        var pedido = $scope.root.pedido;
                         
                         pedido.setProductoSeleccionado(angular.copy(producto));
                         
@@ -491,7 +491,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              //$scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().lista_productos
              
              $scope.rootSeleccionProductoFarmacia.observacion_encabezado = observacion;
-             $scope.rootSeleccionProductoFarmacia.pedido = pedido;
+             $scope.root.pedido = pedido;
              
              that.actualizarEncabezadoPedidoTemporal();
              
@@ -569,7 +569,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              //$scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().lista_productos
              
              //--$scope.rootSeleccionProductoFarmacia.observacion_encabezado = observacion;
-             //--$scope.rootSeleccionProductoFarmacia.pedido = pedido;
+             //--$scope.root.pedido = pedido;
              
              //--that.actualizarEncabezadoPedidoTemporal();
              
@@ -1646,7 +1646,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              $scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().eliminarProducto(row.rowIndex);
              //$scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados.splice(row.rowIndex, 1);
              
-             //$scope.rootSeleccionProductoFarmacia.pedido.eliminarProducto(row.rowIndex);
+             //$scope.root.pedido.eliminarProducto(row.rowIndex);
              
              $scope.rootSeleccionProductoFarmacia.listado_productos_seleccionados = $scope.rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().lista_productos;
              //

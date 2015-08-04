@@ -218,7 +218,7 @@ PedidosFarmaciasModel.prototype.eliminar_detalle_temporal_completo = function(em
     });
 };
 
-PedidosFarmaciasModel.prototype.insertar_pedido_farmacia_definitivo = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion, tipo_pedido, callback) {
+PedidosFarmaciasModel.prototype.insertarPedidoFarmacia = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion, tipo_pedido, callback) {
     
     var sql = "INSERT INTO solicitud_productos_a_bodega_principal(farmacia_id, centro_utilidad, bodega, observacion, usuario_id, fecha_registro, empresa_destino, centro_destino,\
                 bodega_destino, sw_despacho, estado, tipo_pedido) \
@@ -232,7 +232,7 @@ PedidosFarmaciasModel.prototype.insertar_pedido_farmacia_definitivo = function(e
 
 };
 
-PedidosFarmaciasModel.prototype.insertar_detalle_pedido_farmacia_definitivo = function(numero_pedido, empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback) {
+PedidosFarmaciasModel.prototype.insertarDetallePedidoFarmacia = function(numero_pedido, empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback) {
     
     var sql = "INSERT INTO solicitud_productos_a_bodega_principal_detalle(solicitud_prod_a_bod_ppal_id, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, usuario_id, fecha_registro, sw_pendiente, cantidad_pendiente) \
                 SELECT $1, farmacia_id, centro_utilidad, bodega, codigo_producto, cantidad_solic, tipo_producto, usuario_id, CURRENT_TIMESTAMP, 0, cantidad_solic from solicitud_pro_a_bod_prpal_tmp \

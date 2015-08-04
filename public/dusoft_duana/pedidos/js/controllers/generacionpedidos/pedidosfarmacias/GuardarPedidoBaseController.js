@@ -50,7 +50,14 @@ define(["angular", "js/controllers",
                     },
                     {field: 'descripcion', displayName: 'Descripción', width: "37%"},
                     {field: 'getCantidadSolicitada()', displayName: 'Solicitado'},
-                    {field: 'getCantidadPendiente()', displayName: 'Pendiente'}
+                    {field: 'getCantidadPendiente()', displayName: 'Pendiente'},
+                    {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "5%",
+                            cellTemplate: ' <div class="row">\
+                                                <button class="btn btn-default btn-xs" ng-click="onEliminarProducto(row.entity)">\
+                                                    <span class="glyphicon glyphicon-remove"></span>\n\
+                                                </button>\
+                                            </div>'
+                        }
                 ]
             };
             
@@ -264,7 +271,9 @@ define(["angular", "js/controllers",
 
             });
 
-            
+            $scope.onEliminarProducto = function(producto){
+                $scope.$emit('onEliminarProducto', producto);
+            };
             
             /*that.pedido = PedidoVenta.get();
 

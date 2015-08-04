@@ -28,6 +28,7 @@ define(["angular", "js/models"], function(angular, models) {
 
         Pedido.prototype.setNumeroPedido = function(numero_pedido){
             this.numero_pedido = numero_pedido;
+            return this;
         };
 
         Pedido.prototype.get_numero_pedido = function() {

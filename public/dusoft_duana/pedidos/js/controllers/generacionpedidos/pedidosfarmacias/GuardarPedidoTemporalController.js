@@ -197,7 +197,36 @@ define(["angular", "js/controllers",
                 });
 
             };
+            
+            
+            self.generarPedido = function(){
+                var pedido = $scope.root.pedido;
+                var farmacia = pedido.getFarmaciaDestino();
+                var url = API.PEDIDOS.FARMACIAS.GENERAR_PEDIDO_FARMACIA;
+                
+                 var obj = {
+                    session: $scope.rootPedidoFarmaciaTemporal.session,
+                    data: {
+                        pedidos_farmacias: {
+                            empresa_id: farmacia.getCodigo(),
+                            centro_utilidad_id: farmacia.getCentroUtilidadSeleccionado().getCodigo(),
+                            bodega_id: farmacia.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                            tipo_pedido: pedido.getProductosSeleccionados()[0].getTipoProductoId(),
+                            observacion:pedido.getDescripcion()
+                        }
+                    }
+                };
 
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                       pedido.setNumeroPedido(data.obj.numero_pedido);
+                       pedido.setEsTemporal(false);
+                    } else {
+                        AlertService.mostrarMensaje("warning", "Se genero un error al crear el pedido");
+                    }
+                });
+            };
+            
             /*
              * @Author: Eduar
              * @param {function} callback
@@ -222,22 +251,20 @@ define(["angular", "js/controllers",
                     });
                 }
             });
-
-            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
-
-                $scope.rootPedidoFarmaciaTemporal = {};
-                $scope.$$watchers = null;
-                localStorageService.set("pedidotemporal", null);
-
-            });
-
+            
+            $scope.onGenerarPedido = function(){
+                //INSERTAR_PEDIDO_FARMACIA
+                self.generarPedido();
+                console.log("on generar pedido farmaci");
+            };
+            
             /*
              * @Author: Eduar
              * @param {function} callback
              * +Descripcion: Despues que se selecciona correctamente los dropdown en el parent se trata de buscar la seleccion
              */
 
-            $scope.$on("onBodegaSeleccionada", function() {
+            $scope.onBodegaSeleccionada = $scope.$on("onBodegaSeleccionada", function() {
 
                 var farmacia = $scope.root.pedido.getFarmaciaDestino();
 
@@ -251,7 +278,23 @@ define(["angular", "js/controllers",
 
                 });
             });
+            
+            $scope.onEliminarProducto = $scope.$on("onEliminarProducto",function(e, producto){
+                console.log("producto a eliminar ", producto);
+            });
 
+            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+                $scope.onBodegaSeleccionada();
+                $scope.onEliminarProducto();
+                $scope.rootPedidoFarmaciaTemporal = {};
+                $scope.$$watchers = null;
+                localStorageService.set("pedidotemporal", null);
+                
+
+            });
+
+
+            
 
             self.init();
 

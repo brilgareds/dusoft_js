@@ -64,6 +64,7 @@ define(["angular", "js/controllers",
             $scope.renderEncabezado = function(data){
                 $scope.seleccionarEmpresaPedido(false, data.empresa_destino, data.centro_destino, data.bogega_destino);
                 $scope.seleccionarEmpresaPedido(true, data.farmacia_id, data.centro_utilidad, data.bodega);
+                $scope.root.pedido.setEsTemporal(true).setValido(true).setDescripcion(data.observacion);
             };
             
             
@@ -94,7 +95,6 @@ define(["angular", "js/controllers",
              */
             
             $scope.onEmpresaOrigenSeleccionada = function(){
-                console.log("empresa seleccionada >>>");
                 //aseguramos que el tipo de empresa sea EmpresaPedidoFarmacia
                 var empresa = EmpresaPedidoFarmacia.get(
                         $scope.root.pedido.getFarmaciaOrigen().getNombre(),
@@ -124,6 +124,20 @@ define(["angular", "js/controllers",
                 $scope.root.pedido.setFarmaciaDestino(empresa);
             };
             
+            /*
+             * @Author: Eduar
+             * +Descripcion: handler para la seleccion de la bodega
+             */
+            
+            $scope.onBodegaSeleccionada = function(){
+                console.log("bodega seleccionada ");
+                $scope.root.pedido.setValido($scope.habilitarIncluirProductos());
+                
+                //El evento que se dispara es escuchado por el controlador de pedido temporal
+                if($scope.root.pedido.getValido()){
+                    $scope.$broadcast("onBodegaSeleccionada");
+                }
+            };
             
             /*
              * @Author: Eduar
@@ -209,6 +223,28 @@ define(["angular", "js/controllers",
                     }
                 }
                 
+            };
+            
+            /*
+             * @Author: Eduar
+             * return {boolean} 
+             * +Descripcion: Valida si la empresa origen/destino tiene centro utilidad y bodega seleccionados
+             */
+            
+            $scope.habilitarIncluirProductos = function(){
+                
+                if(!$scope.root.pedido.getFarmaciaDestino() || !$scope.root.pedido.getFarmaciaOrigen()){
+                    return false;
+                }
+                
+                var centroDestino = $scope.root.pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado();
+                var centroOrigen  = $scope.root.pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado();
+                
+                if((centroDestino && centroDestino.getBodegaSeleccionada()) && (centroOrigen && centroOrigen.getBodegaSeleccionada()) ){
+                    return true;
+                } else {
+                    return false;
+                }
             };
             
             

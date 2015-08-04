@@ -21,25 +21,28 @@ define(["angular", "js/controllers",
                     usuario_id: Usuario.getUsuarioActual().getId(),
                     auth_token: Usuario.getUsuarioActual().getToken()
                 };
-                
+
                 var pedidoTemporal = localStorageService.get("pedidotemporal");
-                
-                if(pedidoTemporal){
-                    self.consultarEncabezadoPedidoTemporal(pedidoTemporal, function(){
-                        
+
+                if (pedidoTemporal) {
+                    self.consultarEncabezadoPedidoTemporal(pedidoTemporal, function(consultaEncabezado) {
+                        if (!consultaEncabezado) {
+                            AlertService.mostrarMensaje("warning", "No se ha consultado el pedido temporal");
+                        }
                     });
                 }
             };
-            
-            
+
+
             /*
              * @Author: Eduar
+             * @param {Object} pedidoTemporal
              * @param {function} callback
              * +Descripcion: Consulta encabezado del pedido temporal
              */
-            self.consultarEncabezadoPedidoTemporal = function(pedidoTemporal, callback){
-                
-                
+            self.consultarEncabezadoPedidoTemporal = function(pedidoTemporal, callback) {
+
+
                 var obj = {
                     session: $scope.rootPedidoFarmaciaTemporal.session,
                     data: {
@@ -56,26 +59,29 @@ define(["angular", "js/controllers",
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
-                        
-                        if(data.obj.encabezado_pedido.length > 0){
+
+                        if (data.obj.encabezado_pedido.length > 0) {
                             $scope.renderEncabezado(data.obj.encabezado_pedido[0]);
-                            //$scope.rootPedidoFarmaciaTemporal.pedido.setEsTemporal(true);
-                            self.consultarDetallePedidoTemporal(function(){
-                                
+
+                            self.consultarDetallePedidoTemporal(function(consultaDetalle) {
+                                callback(consultaDetalle);
                             });
-                            
+
                         }
-                        callback(true);
 
                     } else {
                         callback(false);
                     }
                 });
             };
-            
-            
-            self.consultarDetallePedidoTemporal = function(callback){
-                
+
+            /*
+             * @Author: Eduar
+             * @param {function} callback
+             * +Descripcion: Consulta detalle del pedido temporal
+             */
+            self.consultarDetallePedidoTemporal = function(callback) {
+
                 var pedido = $scope.root.pedido;
                 var obj = {
                     session: $scope.rootPedidoFarmaciaTemporal.session,
@@ -88,26 +94,20 @@ define(["angular", "js/controllers",
                     }
                 };
 
-
                 var url = API.PEDIDOS.FARMACIAS.LISTAR_DETALLE_PEDIDO_TEMPORAL;
-
                 Request.realizarRequest(url, "POST", obj, function(data) {
-                    console.log("detalle ", data);
-                    $scope.renderDetalle(data);
-                    /*if (data.status === 200) {
-                        
-                        if(data.obj.encabezado_pedido.length > 0){
-                            pedido.setEsTemporal(true);
-                            self.renderEncabezado(data.obj.encabezado_pedido[0]);
-                        }
+                    if (data.status === 200) {
+
+                        $scope.renderDetalle(data);
+
                         callback(true);
 
                     } else {
                         callback(false);
-                    }*/
+                    }
                 });
             };
-            
+
 
             /*
              * @Author: Eduar
@@ -116,7 +116,7 @@ define(["angular", "js/controllers",
              */
 
             self.guardarEncabezadoPedidoTemporal = function(callback) {
-                var pedido = $scope.rootPedidoFarmaciaTemporal.pedido;
+                var pedido = $scope.root.pedido;
                 console.log("pedidos ", $scope.rootPedidoFarmaciaTemporal);
                 var obj = {
                     session: $scope.rootPedidoFarmaciaTemporal.session,
@@ -139,7 +139,15 @@ define(["angular", "js/controllers",
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
                         callback(true);
-
+                        
+                        //se guarda para traer los datos cuando el usuario recargue la pagina
+                        var farmacia = pedido.getFarmaciaDestino();
+                        localStorageService.set("pedidotemporal", {
+                            farmacia: farmacia.getCodigo(),
+                            centroUtilidad: farmacia.getCentroUtilidadSeleccionado().getCodigo(),
+                            bodega: farmacia.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
+                        });
+                        
                     } else {
                         callback(false);
                     }
@@ -153,13 +161,14 @@ define(["angular", "js/controllers",
              * +Descripcion: Metodo que realiza el request para crear el pedido temporal
              */
             self.guardarDetallePedidoTemporal = function(callback) {
-                
-                
-                var pedido = $scope.rootPedidoFarmaciaTemporal.pedido;
+
+
+                var pedido = $scope.root.pedido;
                 var producto = pedido.getProductoSeleccionado();
                 var farmacia = pedido.getFarmaciaDestino();
                 var cantidadPendiente = producto.getCantidadSolicitada() - producto.getDisponibilidadBodega();
-                var url  = API.PEDIDOS.FARMACIAS.CREAR_DETALLE_PEDIDO_TEMPORAL;
+                producto.setCantidadPendiente(cantidadPendiente);
+                var url = API.PEDIDOS.FARMACIAS.CREAR_DETALLE_PEDIDO_TEMPORAL;
 
                 var obj = {
                     session: $scope.rootPedidoFarmaciaTemporal.session,
@@ -176,8 +185,8 @@ define(["angular", "js/controllers",
                         }
                     }
                 };
-                
-               Request.realizarRequest(url, "POST", obj, function(data) {
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
                         pedido.agregarProductoSeleccionado(producto);
                         callback(true);
@@ -188,33 +197,62 @@ define(["angular", "js/controllers",
                 });
 
             };
-            
+
             /*
              * @Author: Eduar
              * @param {function} callback
              * +Descripcion: Metodo que se dispara desde el slide de seleccion de productos
              */
-            $rootScope.$on("insertarProductoPedidoTemporal", function(event, pedido) {
+            $rootScope.$on("insertarProductoPedidoTemporal", function(event) {
+                var pedido = $scope.root.pedido;
                 var producto = pedido.getProductoSeleccionado();
-                $scope.rootPedidoFarmaciaTemporal.pedido = pedido;
-                console.log("pedido actual ", pedido);
-                if(!pedido.getEsTemporal()){
+                if (!pedido.getEsTemporal()) {
                     self.guardarEncabezadoPedidoTemporal(function(creacionCompleta) {
                         if (creacionCompleta) {
                             pedido.setEsTemporal(true);
-                            self.guardarDetallePedidoTemporal(function(agregado){
-                                
+                            self.guardarDetallePedidoTemporal(function(agregado) {
+
                             });
-                            
+
                         }
                     });
                 } else {
-                    self.guardarDetallePedidoTemporal(function(agregado){
+                    self.guardarDetallePedidoTemporal(function(agregado) {
                         console.log("agregado al temporal ", pedido);
                     });
                 }
             });
-            
+
+            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+
+                $scope.rootPedidoFarmaciaTemporal = {};
+                $scope.$$watchers = null;
+                localStorageService.set("pedidotemporal", null);
+
+            });
+
+            /*
+             * @Author: Eduar
+             * @param {function} callback
+             * +Descripcion: Despues que se selecciona correctamente los dropdown en el parent se trata de buscar la seleccion
+             */
+
+            $scope.$on("onBodegaSeleccionada", function() {
+
+                var farmacia = $scope.root.pedido.getFarmaciaDestino();
+
+                var pedidoTemporal = {
+                    farmacia: farmacia.getCodigo(),
+                    centroUtilidad: farmacia.getCentroUtilidadSeleccionado().getCodigo(),
+                    bodega: farmacia.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
+                };
+
+                self.consultarEncabezadoPedidoTemporal(pedidoTemporal, function(consultaEncabezado) {
+
+                });
+            });
+
+
             self.init();
 
         }]);

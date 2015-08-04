@@ -15,6 +15,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.productoSeleccionado;
             this.productosSeleccionados = [];
             this.esTemporal = false;
+            this.valido = false;
             
         };
 
@@ -149,6 +150,15 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         
         PedidoFarmacia.prototype.vaciarProductosSeleccionados = function() {
             this.productosSeleccionados = [];
+        };
+        
+       PedidoFarmacia.prototype.setValido = function(valido) {
+            this.valido = valido;
+            return this;
+        };
+        
+        PedidoFarmacia.prototype.getValido = function() {
+            return this.valido;
         };
         
         this.get = function() {

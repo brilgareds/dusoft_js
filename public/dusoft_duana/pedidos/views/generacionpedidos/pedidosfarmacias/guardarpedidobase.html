@@ -76,7 +76,7 @@
                                             <option></option>
                                             <option ng-repeat="bodega in  rootCreaPedidoFarmacia.de_lista_bodegas"  ng-value="bodega.bodega_id" >{{bodega.descripcion}}</option>
                                         </select -->
-                                        <ui-select ng-change="_empresaOrigenSeleccionada()" ng-model="root.pedido.farmaciaOrigen.centroUtilidad.bodega" theme="select2" class="form-control selectgeneral pull-left" >
+                                        <ui-select ng-change="onBodegaSeleccionada()" ng-model="root.pedido.farmaciaOrigen.centroUtilidad.bodega" theme="select2" class="form-control selectgeneral pull-left" >
                                             <ui-select-match  placeholder="Seleccionar Centro Utilidad">{{$select.selected.getNombre()}}</ui-select-match>
                                             <ui-select-choices repeat="bodega in root.pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getBodegas() | filter:$select.search">
                                                 {{bodega.getNombre()}}
@@ -153,7 +153,7 @@
                                         </br>
                                         <h4 class="h4MarginTopBottom">Bodega: </h4>
 
-                                        <ui-select  ng-model="root.pedido.farmaciaDestino.centroUtilidad.bodega" theme="select2" class="form-control selectgeneral pull-left" >
+                                        <ui-select  ng-model="root.pedido.farmaciaDestino.centroUtilidad.bodega" theme="select2" class="form-control selectgeneral pull-left" ng-change="onBodegaSeleccionada()">
                                             <ui-select-match  placeholder="Seleccionar Centro Utilidad">{{$select.selected.getNombre()}}</ui-select-match>
                                             <ui-select-choices repeat="bodega in root.pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getBodegas() | filter:$select.search">
                                                 {{bodega.getNombre()}}
@@ -203,7 +203,7 @@
                     <div class="input-group navbar-form ">
 
                         <div >
-                            <button type="button" class="btn btn-default btn-medium ng-scope"  ng-click="onIncluirProductos($event)">
+                            <button type="button" ng-disabled="!root.pedido.getValido()" class="btn btn-default btn-medium ng-scope"  ng-click="onIncluirProductos($event)">
                                 <span class="glyphicon glyphicon-plus"></span> Incluir Productos
                             </button>
                         </div>   

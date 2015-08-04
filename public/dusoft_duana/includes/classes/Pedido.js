@@ -60,6 +60,7 @@ define(["angular", "js/models"], function(angular, models) {
         
         Pedido.prototype.setDescripcion = function(descripcion){
             this.descripcion = descripcion;
+            return this;
         };
 
         Pedido.prototype.getDescripcion = function() {

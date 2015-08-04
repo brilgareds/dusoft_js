@@ -10,7 +10,12 @@ define(["angular", "js/models"], function(angular, models) {
             this.fecha_registro = fecha_registro || "";
         }
         ;
-
+        
+        Documento.prototype.set_fecha_registro = function(fecha_registro) {
+            this.fecha_registro = fecha_registro;
+            return this;
+        };
+        
         Documento.prototype.set_empresa = function(empresa) {
             this.empresa = empresa;
             return this;
@@ -57,7 +62,12 @@ define(["angular", "js/models"], function(angular, models) {
             this.observaciones = observaciones;
             return this;
         };
-
+        
+        
+         Documento.prototype.get_fecha_registro = function() {
+            return this.fecha_registro;
+        };
+        
         Documento.prototype.get_prefijo = function() {
             return this.prefijo;
         };

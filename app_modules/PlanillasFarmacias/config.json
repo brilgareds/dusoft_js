@@ -1,0 +1,22 @@
+{
+    "module": "PlanillasFarmacias",
+    "dependency": {
+        "controllers": [{
+                "planillas_farmacias_controller": {
+                    "module": "PlanillasFarmacias",
+                    "controller": "PlanillasFarmaciasController",
+                    "alias": "c_planillas_farmacias"
+                }
+            }],
+        "models": [{
+                "planillas_farmacias_model": {
+                    "module": "PlanillasFarmacias",
+                    "model": "PlanillasFarmaciasModel",
+                    "alias": "m_planillas_farmacias"
+                }
+              
+            }],
+        "events": [],
+        "cronJobs": []
+    }
+}

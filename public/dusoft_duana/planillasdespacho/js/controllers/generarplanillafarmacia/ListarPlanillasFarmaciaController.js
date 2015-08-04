@@ -44,14 +44,26 @@ define(["angular", "js/controllers",
             $scope.ultima_busqueda = "";
             $scope.pagina_actual = 1;
 
-
+            /**
+             * @author Cristian Ardila
+             * @param {evento} ng-keypress
+             * +Descripcion: metodo que buscara la planilla de devolucion
+             * y la filtrara por conductor cuando se ejecute enter dentro del
+             * campo de texto
+             */
             $scope.buscador_planillas_despacho = function(ev) {
-
+                
                 if (ev.which == 13) {
                     $scope.buscar_planillas_despacho();
                 }
             };
-
+            
+            /**
+             * @author Cristian Ardila
+             * @param {N/N}
+             * +Descripcion: Funcion que se encarga de hacer la peticion al
+             * servidor y consulta el detallado de la planilla de devolucion
+             */
             $scope.buscar_planillas_despacho = function() {
 
                 var obj = {
@@ -65,18 +77,25 @@ define(["angular", "js/controllers",
                     }
                 };
 
-                Request.realizarRequest(API.PLANILLAS.LISTAR_PLANILLAS, "POST", obj, function(data) {
+                Request.realizarRequest(API.PLANILLAS_FARMACIAS.LISTAR_PLANILLAS_FARMACIAS, "POST", obj, function(data) {
 
                     if (data.status === 200) {
                         that.render_planillas(data.obj.planillas_despachos);
                     }
                 });
             };
-
+            
+            /**
+             * 
+             * @param {Object} detallado de planillas de devolucion
+             * @returns {void}
+             * +Descripcion: funcion encargada de aplicar el mapeo objeto-relacional
+             * del detallado de planillas de devolucion
+             */
             that.render_planillas = function(planillas) {
-
+                
                 $scope.Empresa.limpiar_planillas();
-
+                
                 planillas.forEach(function(data) {
 
                     var ciudad = Ciudad.get(data.pais_id, data.nombre_pais, data.departamento_id, data.nombre_departamento, data.ciudad_id, data.nombre_ciudad);
@@ -88,9 +107,15 @@ define(["angular", "js/controllers",
                     $scope.Empresa.set_planillas(planilla);
                 });
             };
-
+            
+            /**
+             * @author Cristian Ardila
+             * @param {evento} ng-click
+             * +Descripcion: funcion encargada de ejecutar al momento de
+             * desplegar el date picker para la fecha inicial
+             */
             $scope.abrir_fecha_inicial = function($event) {
-
+                
                 $event.preventDefault();
                 $event.stopPropagation();
 
@@ -98,7 +123,13 @@ define(["angular", "js/controllers",
                 $scope.datos_view.datepicker_fecha_final = false;
 
             };
-
+            
+            /**
+             * @author Cristian Ardila
+             * @param {evento} ng-click
+             * +Descripcion: funcion encargada de ejecutar al momento de
+             * desplegar el date picker para la fecha final
+             */
             $scope.abrir_fecha_final = function($event) {
 
                 $event.preventDefault();
@@ -108,8 +139,14 @@ define(["angular", "js/controllers",
                 $scope.datos_view.datepicker_fecha_final = true;
 
             };
-
-            $scope.lista_planillas_despachos = {
+            
+            /**
+            * @author Cristian Ardila
+            * +Descripcion: variable $scope la cual dibujara en la view 
+            * (listarplanillasfarmacia.html)la gridview con el detalle de 
+            * las devoluciones
+            */
+            $scope.lista_planillas_farmacia = {
                 data: 'Empresa.get_planillas()',
                 enableColumnResize: true,
                 enableRowSelection: false,
@@ -134,37 +171,68 @@ define(["angular", "js/controllers",
                     }
                 ]
             };
- 
+            
             $scope.validar_envio_email = function(planilla){
                 return {'click': planilla.get_estado() == '2'};
             };
 
-
+               
+               /**
+                * @author Cristian Ardila
+                * @param {string} planilla_despacho
+                * @param {string} opcion
+                * +Descripcion: metodo encargado de cambiar de vista
+                * para generar las planillas farmacias (origen)vista listarplanillasfarmacia.html
+                * (destino) vista gestionarplanillasfarmacia
+                */
             $scope.gestionar_planilla_farmacias = function(planilla_despacho, opcion) {
-
+                
+                
                 localStorageService.add("numero_guia", 0);
-
+                
                 if (opcion) {
+                 
                     // Modificar Planilla
                     localStorageService.add("numero_guia", planilla_despacho.get_numero_guia());
                 }
-
+             
                 $state.go('CrearPlanillaFarmacia');
 
             };
-
+            
+           /**
+            * @param {N/N}
+            * @author Cristian Ardila
+            * @returns {int} paginaactual
+            * +Descripcion: funcion que se invoca al presionar click
+            * en el boton izquiero (<) del paginador del gridview
+            * y aumentara en 1 la pagina actual, refrescando la gridview
+            * del detalle de devolucion
+            */
             $scope.pagina_anterior = function() {
                 $scope.pagina_actual--;
                 $scope.buscar_planillas_despacho($scope.termino_busqueda, true);
             };
-
+            
+            /**
+            * @param {N/N}
+            * @author Cristian Ardila
+            * @returns {int} paginaactual
+            * +Descripcion: funcion que se invoca al presionar click
+            * en el boton derecho (>) del paginador del gridview
+            * y aumentara en 1 la pagina actual, refrescando la gridview
+            * del detalle de devolucion
+            */
             $scope.pagina_siguiente = function() {
                 $scope.pagina_actual++;
                 $scope.buscar_planillas_despacho($scope.termino_busqueda, true);
             };
 
             $scope.buscar_planillas_despacho();
-
+            
+            /**
+             * +Descripcion: evento encargado de limpiar las variables de la clase
+             */
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
             });

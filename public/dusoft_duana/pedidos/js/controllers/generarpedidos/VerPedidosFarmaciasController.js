@@ -652,7 +652,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             that.reemplazarPedidoEstado = function(pedido) {
                 
                 if($scope.rootVerPedidosFarmacias.Empresa !== undefined){
-                
+                    
+                    console.log($scope.rootVerPedidosFarmacias.Empresa.getPedidosFarmacia())
                     for (var i in $scope.rootVerPedidosFarmacias.Empresa.getPedidosFarmacia()) {
                         var _pedido = $scope.rootVerPedidosFarmacias.Empresa.getPedidosFarmacia()[i];
 

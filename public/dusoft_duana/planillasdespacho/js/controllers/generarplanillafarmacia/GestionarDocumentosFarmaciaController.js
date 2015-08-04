@@ -2,7 +2,7 @@
 define(["angular", "js/controllers",
 ], function(angular, controllers) {
 
-    controllers.controller('GestionarDocumentosBodegaController', [
+    controllers.controller('GestionarDocumentosFarmaciaController', [
         '$scope',
         '$rootScope',
         'Request',
@@ -17,15 +17,21 @@ define(["angular", "js/controllers",
         "ClientePlanillaDespacho",
         "FarmaciaPlanillaDespacho",
         "Documento",
-        "Usuario",
-        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, Empresa, ClientePlanilla, FarmaciaPlanilla, Documento, Sesion) {
+        "Usuario","DocumentoPlanillaFarmacia",
+        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, Empresa, ClientePlanilla, FarmaciaPlanilla, Documento, Sesion,DocumentoPlanillaFarmacia) {
 
             var that = this;
-
-
-
-            $rootScope.$on('gestionar_documentos_bodegaCompleto', function(e, parametros) {
-
+           
+      
+            /**
+             * +Descripcion: Evento que se ejecuta en el momento que se 
+             * visualiza la plantilla al cargar el slider
+             */
+            $rootScope.$on('gestionar_documentos_farmaciaCompleto', function(e, parametros) {
+                
+                
+             
+                 
                 $scope.datos_view = {
                     opcion_predeterminada: "0", // 0 = farmacias 1 = clientes 2 = Otras Empresas
                     termino_busqueda: '',
@@ -34,10 +40,8 @@ define(["angular", "js/controllers",
                     documento_seleccionado: Documento.get()
                 };
 
-                $scope.datos_clientes_farmacias = [];
-
                 $scope.seleccionar_cliente_farmacia();
-
+                
             });
 
             $rootScope.$on('cerrar_gestion_documentos_bodegaCompleto', function(e, parametros) {
@@ -47,35 +51,30 @@ define(["angular", "js/controllers",
 
             });
 
-
-            $scope.buscador_cliente_farmacia = function(ev) {
-
-                if (ev.which == 13) {
-                    $scope.seleccionar_cliente_farmacia();
-                }
-            };
+ 
 
             $scope.buscador_documentos = function(ev) {
-
+                console.log("OK")
                 if (ev.which == 13) {
                     $scope.buscar_documentos_bodega($scope.datos_view.tercero_seleccionado);
                 }
             };
 
             $scope.seleccionar_cliente_farmacia = function() {
-
-                $scope.datos_view.tercero_seleccionado.limpiar_documentos();
+                
+                console.log("SEleccionar valor")
+              $scope.datos_view.tercero_seleccionado.limpiar_documentos();
                 //$scope.datos_view.termino_busqueda = '';
                 $scope.datos_view.termino_busqueda_documentos = '';
                 $scope.datos_view.documento_seleccionado = Documento.get();
-
-                if ($scope.datos_view.opcion_predeterminada === "0") {
+                console.log( $scope.datos_view.documento_seleccionado )
+                /*  if ($scope.datos_view.opcion_predeterminada === "0") {
                     that.buscar_farmacias();
                 }
 
                 if ($scope.datos_view.opcion_predeterminada === "1") {
                     that.buscar_clientes();
-                }
+                }*/
 
             };
 
@@ -105,7 +104,8 @@ define(["angular", "js/controllers",
             };
 
             that.render_clientes = function(clientes) {
-
+                
+                
                 $scope.Empresa.limpiar_clientes();
 
                 clientes.forEach(function(data) {
@@ -113,9 +113,7 @@ define(["angular", "js/controllers",
                     var cliente = ClientePlanilla.get(data.nombre_tercero, data.direccion, data.tipo_id_tercero, data.tercero_id, data.telefono);
                     $scope.Empresa.set_clientes(cliente);
                 });
-
-                $scope.datos_clientes_farmacias = $scope.Empresa.get_clientes();
-
+              
             };
 
             that.buscar_farmacias = function() {
@@ -151,14 +149,13 @@ define(["angular", "js/controllers",
                     $scope.Empresa.set_farmacias(farmacia);
                 });
 
-                $scope.datos_clientes_farmacias = $scope.Empresa.get_farmacias();
             };
 
 
             $scope.buscar_documentos_bodega = function(tercero) {
 
                 $scope.datos_view.tercero_seleccionado = tercero;
-                //$scope.datos_view.termino_busqueda_documentos = '';
+                
 
                 if ($scope.datos_view.opcion_predeterminada === "0") {
                     that.documentos_bodega_farmacias();
@@ -230,56 +227,7 @@ define(["angular", "js/controllers",
 
             };
 
-            $scope.validar_ingreso_documento = function(documento) {
-
-                var disabled = false;
-
-                // Validar que el prefijo y el numero del documento esten presentes
-                if (documento.get_prefijo() === undefined || documento.get_numero() === undefined) {
-                    return true;
-                }
-
-                if (documento.get_prefijo() == '' || documento.get_numero() == '' || documento.get_numero() === 0) {
-                    return true;
-                }
-
-                // Validar que las cantidad de cajas no sean 0 o vacias                                
-                if (documento.get_cantidad_cajas() === '' || documento.get_cantidad_cajas() === 0) {
-                    disabled = true;
-                }
-
-                // Validar que si ingresar neveras, obligatoriamente ingresen la temperatura de la nevera
-                if (documento.get_cantidad_neveras() !== '' && documento.get_cantidad_neveras() !== 0) {
-                    disabled = false;
-                    if (documento.get_temperatura_neveras() === '') {
-                        disabled = true;
-                    }
-                }
-
-                return disabled;
-            };
-
-            $scope.seleccionar_documento_planilla = function(documento) {
-                
-                // Validar que la cantidad de cajas y neveras sean iguales a las cantidades auditadas
-                if (documento.get_cantidad_cajas() == documento.get_cantidad_cajas_auditadas() && documento.get_cantidad_neveras() == documento.get_cantidad_neveras_auditadas()) {
-
-                    $scope.datos_view.documento_seleccionado = documento;
-
-                    that.gestionar_planilla_despacho();
-                }else{
-                    AlertService.mostrarMensaje("warning", "Las cantidades de cajas y/o neveras NO coinciden con las cantidades auditadas");
-                }
-            };
-
-            $scope.seleccionar_documento_otras_empresas = function() {
-
-                $scope.datos_view.documento_seleccionado.set_empresa_id(Sesion.getUsuarioActual().getEmpresa().getCodigo());
-
-                that.gestionar_planilla_despacho();
-
-            };
-
+         
             $scope.aceptar_documentos_bodegas = function() {
 
                 if ($scope.datos_view.opcion_predeterminada === "2") {
@@ -324,26 +272,68 @@ define(["angular", "js/controllers",
                 }
             };
 
-            $scope.lista_clientes_farmacias = {
-                data: 'datos_clientes_farmacias',
-                enableColumnResize: true,
-                enableRowSelection: false,
-                columnDefs: [
-                    {field: 'getNombre()', displayName: 'Nombre', width: "85%"},
-                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",
-                        cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="buscar_documentos_bodega(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
-                                        </div>'
-                    }
-                ]
-            };
+         
+             /*
+             * 
+             * @param {type} selected
+             * @Author: Cristian Ardila
+             * @returns {void}
+             * +Descripcion: metodo el cual se encarga ejecutar 
+             * las peticiones al servidor y traer los documentos de farmacias
+             */
+            $scope.traerDocumentosFarmacias = function() {
+                
+                    var obj = {
+                        session: $scope.session,
+                        data: {
+                            parametros:
+                                    {
+                                         empresa: $scope.parametrosDocumentoFarmacia.empresa,
+                                         centroUtilidad: $scope.parametrosDocumentoFarmacia.centroUtilidad,
+                                         bodega: $scope.parametrosDocumentoFarmacia.bodega,
+                                         
+                                    }
+                        }
+                    };
 
+                    Request.realizarRequest(API.PLANILLAS_FARMACIAS.LISTAR_DOCUMENTOS, "POST", obj, function(data) {
+                        
+                        console.log(data)
+                        if (data.status === 200) {
+                           that.renderDocumentoFarmacia(data);
+                          
+                        } else {
+                            AlertService.mostrarMensaje("warning", data.msj)
+                        }
+                    });
+               
+            }
+            
+            that.renderDocumentoFarmacia = function(data){
+               
+               $scope.arregloDocumentos = [];
+                        for (var i in data.obj.listar_documentos) {
+                            var _documentos = data.obj.listar_documentos[i];
+                           
+                             var documento = DocumentoPlanillaFarmacia.get(_documentos.bodegas_doc_id,_documentos.prefijo, _documentos.numero,_documentos.fecha_registro);
+                            
+                             $scope.arregloDocumentos.push(documento)
+                         
+                        }
+                     
+            }
+
+          $scope.traerDocumentosFarmacias ();
+            
             $scope.lista_remisiones_bodega = {
-                data: 'datos_view.tercero_seleccionado.get_documentos()',
+                data: 'arregloDocumentos',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
-                    {field: 'get_descripcion()', displayName: 'Documento Bodega', width: "30%"},
+                      {field: 'get_prefijo()', displayName: 'Prefijo', width: "35%"},
+                    {field: 'get_bodegas_doc_id()', displayName: 'bodega documento id', width: "25%"},
+                    {field: 'get_numero()', displayName: 'numero', width: "10%"},
+                    {field: 'get_fecha_registro()', displayName: 'Fecha registro', width: "10%"},
                     {field: 'cantidad_cajas', displayName: 'Cajas', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'cantidad_neveras', displayName: 'Nevera', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_neveras" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'temperatura_neveras', displayName: '°C Nevera', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.temperatura_neveras" validacion-numero class="form-control grid-inline-input" name="" id="" /> </div>'},

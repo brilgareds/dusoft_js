@@ -33,17 +33,17 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/listarCotizaciones', function(req, res) {
         c_pedidos_clientes.listarCotizaciones(req, res);
     });
-    
+
     // Consultar Cotizacion
     app.post('/api/PedidosClientes/consultarCotizacion', function(req, res) {
         c_pedidos_clientes.consultarCotizacion(req, res);
     });
-    
+
     // Consultar Detalle Cotización
     app.post('/api/PedidosClientes/consultarDetalleCotizacion', function(req, res) {
         c_pedidos_clientes.consultarDetalleCotizacion(req, res);
     });
-    
+
     //Listar Productos Clientes para ingresar productos a una cotizacion
     app.post('/api/PedidosClientes/listarProductosClientes', function(req, res) {
         c_pedidos_clientes.listarProductosClientes(req, res);
@@ -58,13 +58,16 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/insertarDetalleCotizacion', function(req, res) {
         c_pedidos_clientes.insertarDetalleCotizacion(req, res);
     });
-    
+
     // Eliminar producto de la Cotización
     app.post('/api/PedidosClientes/eliminarProductoCotizacion', function(req, res) {
         c_pedidos_clientes.eliminarProductoCotizacion(req, res);
     });
 
-    
+    // Subir Archivo Plano
+    app.post('/api/PedidosClientes/subirPlano', function(req, res) {
+        c_pedidos_clientes.cotizacionArchivoPlano(req, res);
+    });
 
     /**************************************************
      * 
@@ -86,7 +89,7 @@ module.exports = function(app, di_container) {
 
 
 
-    
+
 
     // Consultar Estado de Cotización
     //??????????????????????????????????????????????????    
@@ -101,18 +104,14 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.estadoPedido(req, res);
     });
 
-    
+
     // Cambiar Estado Cotización
     //??????????????????????
     app.post('/api/PedidosClientes/cambiarEstadoCotizacion', function(req, res) {
         c_pedidos_clientes.cambiarEstadoCotizacion(req, res);
     });
 
-    // Carga Archivo Plano
-    //??????????????????
-    app.post('/api/PedidosClientes/pedidoClienteArchivoPlano', function(req, res) {
-        c_pedidos_clientes.pedidoClienteArchivoPlano(req, res);
-    });
+
 
 
     // Generar PDF Cotización
@@ -181,7 +180,7 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.cambiarEstadoAprobacionPedido(req, res);
     });
 
-   
+
 
 
     //consultarEncabezadoPedido

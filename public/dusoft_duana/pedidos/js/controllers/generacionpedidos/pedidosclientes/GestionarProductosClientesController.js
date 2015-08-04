@@ -49,7 +49,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                 if ($scope.Pedido.get_numero_cotizacion() === 0) {
                     //Crear Cotizacion y Agregar Productos
-                    that.insertar_cabercera_cotizacion(function(continuar) {
+                    $scope.insertar_cabercera_cotizacion(function(continuar) {
                         if (continuar) {
                             that.insertar_detalle_cotizacion(function(resultado) {
                                 if (resultado)
@@ -67,7 +67,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             };
 
             // Insertar Encabezado Cotizacion
-            that.insertar_cabercera_cotizacion = function(callback) {
+            $scope.insertar_cabercera_cotizacion = function(callback) {
 
                 var obj = {
                     session: $scope.session,
@@ -85,10 +85,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     if (data.status === 200 && data.obj.pedidos_clientes.numero_cotizacion > 0) {
 
                         $scope.Pedido.set_numero_cotizacion(data.obj.pedidos_clientes.numero_cotizacion);
-                        $scope.Pedido.set_tipo_producto($scope.datos_form.tipo_producto);
-                        
-                        console.log($scope.Pedido);
-                        console.log($scope.datos_form.tipo_producto);
+                        $scope.Pedido.set_tipo_producto($scope.datos_form.tipo_producto);                                               
                         
                         localStorageService.add("numero_cotizacion", $scope.Pedido.get_numero_cotizacion());
                         callback(true);

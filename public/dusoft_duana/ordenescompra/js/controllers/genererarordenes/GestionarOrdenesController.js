@@ -611,7 +611,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                             $scope.opciones_archivo.opts.query.data = JSON.stringify({
                                 ordenes_compras: {
-                                    empresa_id: '03',
+                                    //empresa_id: '03',
+                                    empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
                                     numero_orden: $scope.numero_orden,
                                     codigo_proveedor_id: $scope.codigo_proveedor_id
                                 }

@@ -1,5 +1,5 @@
-<div ng-controller="PlanillasController">
-    <div ng-controller="GestionarPlanillasController">
+<div ng-controller="PlanillasFarmaciaController">
+    <div ng-controller="GestionarPlanillasFarmaciasController">
         <div class="row">
             <div class="col-md-12">
                 <div class="panel panel-default">
@@ -15,15 +15,27 @@
                         <div class="row">
                             <div class="col-md-4">
 
-                                <fieldset>
-                                    <legend>Ciudad</legend>      
+                                <!-- <fieldset>
+                                     <legend>Farmacia</legend>      
+ 
+                                     <ui-select ng-model="planilla.ciudad" ng-disabled="planilla.get_numero_guia() > 0" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_ciudad()">
+                                         <ui-select-match  placeholder="Seleccionar farmacia">{{ $select.selected.get_nombre_ciudad() }}</ui-select-match>
+                                         <ui-select-choices refresh="listar_farmacias($select.search)" refresh-delay="0" repeat="farmacia in Empresa.get_ciudades() | filter:$select.search">
+                                             {{ farmacia.get_nombre_ciudad() }}
+                                         </ui-select-choices>
+                                     </ui-select>                                   
+                                 </fieldset>//-->
 
-                                    <ui-select ng-model="planilla.ciudad" ng-disabled="planilla.get_numero_guia() > 0" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionar_ciudad()">
-                                        <ui-select-match  placeholder="Seleccionar farmacia">{{ $select.selected.get_nombre_ciudad() }}</ui-select-match>
-                                        <ui-select-choices refresh="listar_ciudades($select.search)" refresh-delay="0" repeat="ciudad in Empresa.get_ciudades() | filter:$select.search">
-                                            {{ ciudad.get_nombre_ciudad() }}
+                                <fieldset>
+                                    <legend>Farmacia</legend>  
+                                    <p class="input-group contenedorfiltrocombobox">
+
+                                    <ui-select ng-model="Empresa.empresaSeleccionada"  theme="select2" class="form-control selectgeneral pull-left" >
+                                        <ui-select-match  placeholder="Seleccionar farmacia" >{{ $select.selected.getNombre()}}</ui-select-match>
+                                        <ui-select-choices  refresh-delay="0" repeat="farmacia in farmacias | filter:$select.search">
+                                            {{ farmacia.getNombre() }}
                                         </ui-select-choices>
-                                    </ui-select>                                   
+                                    </ui-select> </p>       
                                 </fieldset>
                             </div>                        
                             <div class="col-md-4">
@@ -106,7 +118,7 @@
                                     <div class="">
                                         <div class="col-md-3">
                                             <p class="input-group">
-                                                <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-click="gestionar_documentos_bodega()" ng-disabled="validar_btn_ingreso_documentos(planilla)" > 
+                                                <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-click="gestionar_documentos_farmacia()" ng-disabled="validar_btn_ingreso_documentos(planilla)" > 
                                                     <span class="glyphicon glyphicon-plus"></span> Buscar Remisiones
                                                 </button>
                                             </p>
@@ -135,7 +147,7 @@
                                 </div>  
 
                                 <div class="modal-footer col-md-12">
-                                    <button class="btn btn-default" ng-click="cancelar_planilla_despacho()">
+                                    <button class="btn btn-default" ng-click="cancelar_planilla_farmacia()">
                                         <span class="glyphicon glyphicon-remove" ></span> Cancelar
                                     </button>
                                     <button class="btn btn-default" ng-disabled="planilla.get_estado()=='0' || planilla.get_estado()=='1' || planilla.get_documentos().length === 0" ng-click="descargar_enviar_reporte()">
@@ -151,8 +163,8 @@
                 </div>       
             </div>
         </div>
-        <div  class="slide" slide-content open-callback="gestionar_documentos_bodega" close-callback="cerrar_gestion_documentos_bodega"   >
-            <div ng-include src="slideurl"  ng-controller="GestionarDocumentosBodegaController"></div>
+        <div  class="slide" slide-content open-callback="gestionar_documentos_farmacia" close-callback="cerrar_gestion_documentos_bodega"   >
+            <div ng-include src="slideurl"  ng-controller="GestionarPlanillasFarmaciasController"></div>
         </div>
     </div>
     <visualizar-reporte></visualizar-reporte>

@@ -799,18 +799,41 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
 
     __subir_archivo_plano(req.files, function(continuar, contenido) {
 
-        console.log('====== Datos Archivo Plano ====');
-        console.log(continuar, contenido);
-        //return;
-
         if (continuar) {
 
             __validar_productos_archivo_plano(that, contenido, function(productos_validos, productos_invalidos) {
 
-                if (productos_validos.length === 0) {
-                    res.send(G.utils.r(req.url, 'Lista de Productos', 200, {pedidos_clientes: {productos_validos: productos_validos, productos_invalidos: productos_invalidos}}));
+                __validar_datos_productos_archivo_plano(that, cotizacion, productos_validos, function(_productos_validos, _productos_invalidos) {
+                    
+                    
+                    
+                    if (_productos_validos.length === 0) {
+                        res.send(G.utils.r(req.url, 'Lista de Productos', 200, {ordenes_compras: {productos_validos: _productos_validos, productos_invalidos: _productos_invalidos.concat(productos_invalidos)}}));
+                        return;
+                    }
+                    
+                    console.log('== Validos ==');
+                    console.log(_productos_validos);
+                    console.log('== Invalidos ==');
+                    console.log(_productos_invalidos.concat(productos_invalidos));
                     return;
-                }
+
+                    var i = _productos_validos.length;
+
+                    _productos_validos.forEach(function(producto) {
+
+                        that.m_pedidos_clientes.insertar_detalle_cotizacion(cotizacion, producto, function(err, rows, result) {
+                            if (err) {
+                                _productos_invalidos.push(producto);
+                            }
+                            if (--i === 0) {
+                                res.send(G.utils.r(req.url, 'Lista de Productos', 200, {ordenes_compras: {productos_validos: _productos_validos, productos_invalidos: _productos_invalidos.concat(productos_invalidos)}}));
+                                return;
+                            }
+                        });
+                    });
+                });
+
             });
         } else {
             res.send(G.utils.r(req.url, 'Error subiendo el archivo plano', 404, {}));
@@ -890,18 +913,60 @@ function __validar_productos_archivo_plano(contexto, contenido_archivo_plano, ca
     var i = rows.length;
 
     rows.forEach(function(row) {
-        var codigo_producto = row[0] || '';
+        var codigo_producto = row[0].trim() || '';
         var cantidad_solicitada = row[1] || 0;
-        var costo = row[2] || '';
 
         that.m_productos.validar_producto(codigo_producto, function(err, existe_producto) {
 
-            var producto = {codigo_producto: codigo_producto, cantidad_solicitada: cantidad_solicitada, costo: costo};
+            var producto = {codigo_producto: codigo_producto, cantidad_solicitada: cantidad_solicitada};
 
             if (existe_producto.length > 0 && cantidad_solicitada > 0) {
                 productos_validos.push(producto);
             } else {
                 productos_invalidos.push(producto);
+            }
+
+            if (--i === 0) {
+                callback(productos_validos, productos_invalidos);
+            }
+        });
+    });
+}
+;
+
+
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : Validar que los datos de los productos
+ */
+function __validar_datos_productos_archivo_plano(contexto, cotizacion, productos, callback) {
+
+    var that = contexto;
+    var productos_validos = [];
+    var productos_invalidos = [];
+
+    var i = productos.length;
+
+    if (productos.length === 0) {
+        callback(productos_validos, productos_invalidos);
+        return;
+    }
+
+    productos.forEach(function(row) {
+
+        var codigo_producto = row.codigo_producto;
+
+        var filtro = {numero_cotizacion : cotizacion.numero_cotizacion, termino_busqueda: codigo_producto} ;
+        
+        that.m_pedidos_clientes.listar_productos(cotizacion.empresa_id, cotizacion.centro_utilidad_id, cotizacion.bodega_id, cotizacion.cliente.contrato_id, filtro, 1, function(err, lista_productos) {
+
+            if (err || lista_productos.length === 0) {
+                productos_invalidos.push(row);
+            } else {
+                var producto = lista_productos[0];
+                row.iva = producto.iva;
+                row.precio_producto = (row.length > 2 && !isNaN(row.precio_producto)) ? row.precio_producto : producto.precio_producto;
+                productos_validos.push(row);
             }
 
             if (--i === 0) {

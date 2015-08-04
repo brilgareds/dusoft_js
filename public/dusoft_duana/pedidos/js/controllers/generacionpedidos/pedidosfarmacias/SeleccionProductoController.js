@@ -256,17 +256,20 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 if(pedido.esProductoSeleccionado(producto)){
                     
                     callback({msj:"El producto "+producto.getCodigoProducto()+ " ya esta seleccionado", valido:false});
+                    return;
                 }
                 
                 if(pedido.getProductosSeleccionados().length === 25){
                     
                     callback({msj:"El pedido tiene 25 productos agregados", valido:false});
+                    return;
                 }
                 
                 if(!pedido.validarTipoProductoAIngresar(producto)){
                     //var tipo = self.obtenerTipoProducto(producto);
                     
                     callback({msj:"El pedido solo puede contener productos del mismo tipo.", valido:false});
+                    return;
                 }
                 
                 self.verificarBloqueoProducto(function(validacion){
@@ -333,7 +336,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
              */
             $scope.root.mostrarSeleccionProductoCompleto = $rootScope.$on("mostrarSeleccionProductoCompleto", function(e, datos) {
                 self.init();
-                $scope.rootSeleccionProductoFarmacia.pedido = datos[1];
+                $scope.rootSeleccionProductoFarmacia.pedido = $scope.root.pedido;
                 self.listarTiposProductos();
                 self.buscarProductos();
             });

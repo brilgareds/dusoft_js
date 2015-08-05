@@ -73,6 +73,10 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.generarPedidoFarmacia(req, res);
     });
     
+    app.post('/api/PedidosFarmacias/eliminarPedidoTemporal', function(req, res) {
+        c_pedidos_farmacias.eliminarPedidoTemporal(req, res);
+    }); 
+    
     // -- depreciado
     app.post('/api/PedidosFarmacias/listarProductos', function(req, res) {
         c_pedidos_farmacias.listar_productos(req, res);
@@ -112,7 +116,7 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.eliminarRegistroDetalleTemporal(req, res);
     }); 
     
-    // Elimina el detalle completo del pedido por empresa, centro de utilidad, bodega y usuario
+    //depreciado Elimina el detalle completo del pedido por empresa, centro de utilidad, bodega y usuario
     app.post('/api/PedidosFarmacias/eliminarDetalleTemporalCompleto', function(req, res) {
         c_pedidos_farmacias.eliminarDetalleTemporalCompleto(req, res);
     }); 

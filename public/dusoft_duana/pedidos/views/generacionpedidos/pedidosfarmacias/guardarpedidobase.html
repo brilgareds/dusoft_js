@@ -296,7 +296,7 @@
             <span class="glyphicon glyphicon-ok"></span> Guardar Temporal
         </button>
 
-        <button type="submit" ng-show="!root.pedido.get_numero_pedido()" class="btn btn-default pull-right" ng-click="onEliminarPedidoTemporal()">
+        <button type="submit" ng-show="!root.pedido.get_numero_pedido() && root.pedido.getEsTemporal()" class="btn btn-default pull-right" ng-click="onEliminarPedidoTemporal()">
             <span class="glyphicon glyphicon-remove"></span> Cancelar Pedido
         </button>
         

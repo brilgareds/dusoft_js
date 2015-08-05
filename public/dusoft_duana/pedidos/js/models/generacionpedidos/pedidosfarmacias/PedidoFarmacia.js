@@ -105,7 +105,11 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         };
         
         PedidoFarmacia.prototype.eliminarProducto = function(index) {
-            return this.productos.splice(index,1);
+            this.productos.splice(index,1);
+        };
+        
+        PedidoFarmacia.prototype.eliminarProductoSeleccionado = function(index) {
+            this.productosSeleccionados.splice(index,1);
         };
         
         PedidoFarmacia.prototype.vaciarProductos = function() {

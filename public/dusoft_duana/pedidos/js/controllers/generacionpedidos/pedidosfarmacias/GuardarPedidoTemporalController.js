@@ -15,7 +15,6 @@ define(["angular", "js/controllers",
 
 
             self.init = function() {
-                console.log("on controller init");
                 $scope.rootPedidoFarmaciaTemporal = {};
                 $scope.rootPedidoFarmaciaTemporal.session = {
                     usuario_id: Usuario.getUsuarioActual().getId(),
@@ -33,7 +32,6 @@ define(["angular", "js/controllers",
                 }
             };
 
-
             /*
              * @Author: Eduar
              * @param {Object} pedidoTemporal
@@ -41,7 +39,6 @@ define(["angular", "js/controllers",
              * +Descripcion: Consulta encabezado del pedido temporal
              */
             self.consultarEncabezadoPedidoTemporal = function(pedidoTemporal, callback) {
-
 
                 var obj = {
                     session: $scope.rootPedidoFarmaciaTemporal.session,
@@ -108,7 +105,6 @@ define(["angular", "js/controllers",
                 });
             };
 
-
             /*
              * @Author: Eduar
              * @param {function} callback
@@ -131,7 +127,6 @@ define(["angular", "js/controllers",
                         }
                     }
                 };
-
 
                 var url = API.PEDIDOS.FARMACIAS.GUARDAR_PEDIDO_TEMPORAL;
 
@@ -159,12 +154,11 @@ define(["angular", "js/controllers",
              * +Descripcion: Metodo que realiza el request para crear el pedido temporal
              */
             self.guardarDetallePedidoTemporal = function(callback) {
-
-
                 var pedido = $scope.root.pedido;
                 var producto = pedido.getProductoSeleccionado();
                 var farmacia = pedido.getFarmaciaDestino();
                 var cantidadPendiente = producto.getCantidadSolicitada() - producto.getDisponibilidadBodega();
+                cantidadPendiente = (cantidadPendiente > 0) ? cantidadPendiente : 0;
                 producto.setCantidadPendiente(cantidadPendiente);
                 var url = API.PEDIDOS.FARMACIAS.CREAR_DETALLE_PEDIDO_TEMPORAL;
 
@@ -179,7 +173,7 @@ define(["angular", "js/controllers",
                             codigo_producto: producto.getCodigoProducto(),
                             cantidad_solic: parseInt(producto.getCantidadSolicitada()),
                             tipo_producto_id: producto.getTipoProductoId(),
-                            cantidad_pendiente: (cantidadPendiente < 0) ? 0 : cantidadPendiente
+                            cantidad_pendiente: cantidadPendiente
                         }
                     }
                 };
@@ -230,6 +224,71 @@ define(["angular", "js/controllers",
             
             /*
              * @Author: Eduar
+             * @param {ProductoPedidoFarmacia} producto
+             * +Descripcion: Realiza la peticion al API para eliminar un producto del temporal.
+             */
+            self.eliminarProductoTemporal = function(producto, index){
+                var pedido = $scope.root.pedido;
+                var farmacia = pedido.getFarmaciaDestino();
+                var url = API.PEDIDOS.FARMACIAS.ELIMINAR_REGISTRO_DETALLE_PEDIDO_TEMPORAL;
+                
+                 var obj = {
+                    session: $scope.rootPedidoFarmaciaTemporal.session,
+                    data: {
+                        detalle_pedidos_farmacias: {
+                            empresa_id: farmacia.getCodigo(),
+                            centro_utilidad_id: farmacia.getCentroUtilidadSeleccionado().getCodigo(),
+                            bodega_id: farmacia.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                            codigo_producto: producto.getCodigoProducto()
+                        }
+                    }
+                };
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                       pedido.eliminarProductoSeleccionado(index);
+                       
+                       if(pedido.getProductosSeleccionados().length === 0){
+                           self.eliminarPedidoTemporal();
+                       }
+                       
+                    } else {
+                        AlertService.mostrarMensaje("warning", "Se genero un error al eliminar el producto");
+                    }
+                });
+            };
+            
+             /*
+             * @Author: Eduar
+             * +Descripcion: Realiza la peticion al API para eliminar el encabezado y detalle de un pedido temporal
+             */
+            self.eliminarPedidoTemporal = function(){
+                var pedido = $scope.root.pedido;
+                var farmacia = pedido.getFarmaciaDestino();
+                var url = API.PEDIDOS.FARMACIAS.ELIMINAR_PEDIDO_TEMPORAL;
+                
+                 var obj = {
+                    session: $scope.rootPedidoFarmaciaTemporal.session,
+                    data: {
+                        detalle_pedidos_farmacias: {
+                            empresa_id: farmacia.getCodigo(),
+                            centro_utilidad_id: farmacia.getCentroUtilidadSeleccionado().getCodigo(),
+                            bodega_id: farmacia.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
+                        }
+                    }
+                };
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                       $state.go("ListarPedidosFarmacias");
+                    } else {
+                        AlertService.mostrarMensaje("warning", "Se genero un error al eliminar el pedido");
+                    }
+                });
+            };
+            
+            /*
+             * @Author: Eduar
              * +Descripcion: Handler del boton generar pedido
              */
             $scope.onGenerarPedido = function(){
@@ -252,11 +311,54 @@ define(["angular", "js/controllers",
             
             /*
              * @Author: Eduar
+             * +Descripcion: Handler del boton cancelar pedido
+             */
+            $scope.onEliminarPedidoTemporal = function(){
+                var template = ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <h4>Desea eliminar el pedido temporal? </h4> \
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-success" ng-click="close()">No</button>\
+                                    <button class="btn btn-warning" ng-click="onConfirmarEliminarPedido()">Si</button>\
+                                </div>';
+
+                controller = function($scope, $modalInstance) {
+
+                    $scope.close = function() {
+                        $modalInstance.close();
+                    };
+                    
+                    $scope.onConfirmarEliminarPedido = function(){
+                        $modalInstance.close();
+                        self.eliminarPedidoTemporal();
+                    };
+                };
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: template,
+                    scope: $scope,
+                    controller: controller
+                };
+
+                var modalInstance = $modal.open($scope.opts);
+            };
+            
+            /*
+             * @Author: Eduar
              * @param {function} callback
              * +Descripcion: Metodo que se dispara desde el slide de seleccion de productos
              */
             $rootScope.$on("insertarProductoPedidoTemporal", function(event) {
                 var pedido = $scope.root.pedido;
+                console.log("pedido >>>>>>>>>>>> ", $scope.root.pedido);
                 var producto = pedido.getProductoSeleccionado();
                 if (!pedido.getEsTemporal()) {
                     self.guardarEncabezadoPedidoTemporal(function(creacionCompleta) {
@@ -277,11 +379,9 @@ define(["angular", "js/controllers",
             
             /*
              * @Author: Eduar
-             * @param {function} callback
              * +Descripcion: Despues que se selecciona correctamente los dropdown en el parent, se busca si el pedido ya fue guardado anteriormente
              */
-
-            $scope.onBodegaSeleccionada = $scope.$on("onBodegaSeleccionada", function() {
+            $scope.onBodegaPedidoSeleccionada = $scope.$on("onBodegaSeleccionada", function() {
 
                 var farmacia = $scope.root.pedido.getFarmaciaDestino();
 
@@ -296,22 +396,26 @@ define(["angular", "js/controllers",
                 });
             });
             
-            /*$scope.onEliminarProducto = $scope.$on("onEliminarProducto",function(e, producto){
-                console.log("producto a eliminar ", producto);
-            });*/
+            /*
+             * @Author: Eduar
+             * @param {$event} e
+             * @param {ProductoPedidoFarmacia} producto
+             * @param {int} index
+             * +Descripcion: Evento que se dispara desde el controlador base para eliminar un producto
+             */
+            $scope.onEliminarProductoTemporal = $scope.$on("onEliminarProductoTemporal",function(e, producto, index){
+                self.eliminarProductoTemporal(producto, index);
+            });
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
-                $scope.onBodegaSeleccionada();
-                $scope.onEliminarProducto();
+                $scope.onBodegaPedidoSeleccionada();
+                $scope.onEliminarProductoTemporal();
                 $scope.rootPedidoFarmaciaTemporal = {};
                 $scope.$$watchers = null;
                 localStorageService.set("pedidotemporal", null);
                 
 
             });
-
-
-            
 
             self.init();
 

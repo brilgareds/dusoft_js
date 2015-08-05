@@ -43,7 +43,7 @@ define(["angular",
                     {field: 'farmaciaDestino.nombre_farmacia', displayName: 'Farmacia', width: "15%"},
                     {field: 'farmaciaDestino.getCentroUtilidadSeleccionado().getNombre()', displayName: 'Centro Utilidad', width: "15%"},
                     {field: 'farmaciaDestino.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getNombre()', displayName: 'Bodega', width: "15%"},
-                    {field: 'observacion', displayName: 'Observación'},
+                    {field: 'getDescripcion()', displayName: 'Observación'},
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center dropdown-button", width: "8%",
                         cellTemplate: '<div class="btn-group">\
                                         <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
@@ -91,7 +91,7 @@ define(["angular",
                             $scope.rootPedidosTempFarmacias.empresaSeleccionada = EmpresaPedidoFarmacia.get(
                                     $scope.rootPedidosTempFarmacias.empresaSeleccionada.getNombre(),
                                     $scope.rootPedidosTempFarmacias.empresaSeleccionada.getCodigo()
-                                    );
+                            );
 
 
                             self.renderPedidos(data.obj.pedidos_farmacias);
@@ -167,14 +167,14 @@ define(["angular",
                     }
                 };
 
-                var url_eliminar_detalle = API.PEDIDOS.ELIMINAR_DETALLE_PEDIDO_FARMACIA_TEMPORAL_COMPLETO;
+                var url_eliminar_detalle = API.PEDIDOS.FARMACIAS.ELIMINAR_PEDIDO_TEMPORAL;
 
                 Request.realizarRequest(url_eliminar_detalle, "POST", obj_detalle, function(data) {
 
                     if (data.status === 200) {
                         console.log("Eliminación del detalle Exitosa: ", data.msj);
                         //Eliminación encabezado temporal
-                       self.eliminarEncabezado(farmacia, index);
+                       self.buscarPedidos();
 
                     }
                     else
@@ -182,38 +182,6 @@ define(["angular",
                         console.log("Eliminación del detalle Fallida: ", data.msj);
                     }
                 });
-            };
-            
-            /*
-             * @Author: Eduar
-             * @param {PedidoFarmacia} pedido
-             * @param {index} index
-             * +Descripcion: eliminar encabezado de pedido de temporales
-             */
-            
-            self.eliminarEncabezado = function(farmacia, index){
-                  var obj_encabezado = {
-                        session: $scope.rootPedidosTempFarmacias.session,
-                        data: {
-                            pedidos_farmacias: {
-                               empresa_id: farmacia.get_farmacia_id(),
-                               centro_utilidad_id: farmacia.getCentroUtilidadSeleccionado().getCodigo(),
-                               bodega_id: farmacia.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
-                            }
-                        }
-                    };
-
-                    var url_eliminar_encabezado = API.PEDIDOS.ELIMINAR_REGISTRO_PEDIDO_TEMPORAL;
-
-                    Request.realizarRequest(url_eliminar_encabezado, "POST", obj_encabezado, function(data) {
-
-                        if (data.status === 200) {
-                           self.buscarPedidos();
-                        }
-                        else {
-                            console.log("Eliminación de encabezado Fallida: ", data.msj);
-                        }
-                    });
             };
 
             /*

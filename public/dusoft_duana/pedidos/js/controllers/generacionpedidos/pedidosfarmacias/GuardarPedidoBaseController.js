@@ -53,7 +53,7 @@ define(["angular", "js/controllers",
                     {field: 'getCantidadPendiente()', displayName: 'Pendiente'},
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "5%",
                             cellTemplate: ' <div class="row">\
-                                                <button class="btn btn-default btn-xs" ng-click="onEliminarProducto(row.entity)">\
+                                                <button class="btn btn-default btn-xs" ng-click="onEliminarProducto(row.entity, row.rowIndex)">\
                                                     <span class="glyphicon glyphicon-remove"></span>\n\
                                                 </button>\
                                             </div>'
@@ -254,13 +254,81 @@ define(["angular", "js/controllers",
                 }
             };
             
-            
+             /*
+             * @Author: Eduar
+             * +Descripcion: Handler del boton de finalizar
+             */
             $scope.onIncluirProductos = function(event) {
                 $scope.slideurl = "views/generacionpedidos/pedidosfarmacias/seleccionproducto.html?time=" + new Date().getTime();
                 $scope.$emit('mostrarSeleccionProducto');
                 
             };
             
+            /*
+             * @Author: Eduar
+             * @param {ProductoPedidoFarmacia} producto
+             * @param {int} index
+             * +Descripcion: Handler del grid para eliminar un producto de un pedido o pedido temporal
+             */
+            $scope.onEliminarProducto = function(producto, index){
+                
+               var template = ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <h4>Desea eliminar el producto '+producto.getDescripcion()+'? </h4> \
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-success" ng-click="close()">No</button>\
+                                    <button class="btn btn-warning" ng-click="onConfirmarEliminarProducto()">Si</button>\
+                                </div>';
+
+                controller = function($scope, $modalInstance) {
+
+                    $scope.close = function() {
+                        $modalInstance.close();
+                    };
+                    
+                    $scope.onConfirmarEliminarProducto = function(){
+                        $modalInstance.close();
+                        //se crea esta funcion debido a que se requiere enviar un broadcast en el scope del base mas no del scope del modal
+                        self.onConfirmarEliminarProducto(producto, index);
+                    };
+                };
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: template,
+                    scope: $scope,
+                    controller: controller
+                };
+
+                var modalInstance = $modal.open($scope.opts);
+                
+            };
+            
+            /*
+             * @Author: Eduar
+             * @param {ProductoPedidoFarmacia} producto
+             * @param {int} index
+             * +Descripcion: Funcion que emite el evento para eliminar un producto
+             */
+            self.onConfirmarEliminarProducto = function(producto, index){
+                if($scope.root.pedido.getEsTemporal()){
+                    $scope.$broadcast('onEliminarProductoTemporal', producto, index);
+                }
+            };
+            /*
+             * @Author: Eduar
+             * +Descripcion: Handler del boton de finalizar
+             */
+            $scope.onVolverListadoPedidos = function(){
+                $state.go("ListarPedidosFarmacias");
+            };
             
            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 
@@ -271,9 +339,6 @@ define(["angular", "js/controllers",
 
             });
 
-            $scope.onEliminarProducto = function(producto){
-                $scope.$emit('onEliminarProducto', producto);
-            };
             
             /*that.pedido = PedidoVenta.get();
 

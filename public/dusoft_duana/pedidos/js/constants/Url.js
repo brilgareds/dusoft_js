@@ -54,7 +54,9 @@ define(["angular"], function(angular) {
                     'CONSULTAR_ENCABEZADO_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/consultarPedidoFarmaciaTemporal',
                     'LISTAR_DETALLE_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/listarProductosDetalleTemporal',
                     'GENERAR_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/generarPedidoFarmacia',
-                    'INSERTAR_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/insertarDetallePedidoFarmacia'
+                    'INSERTAR_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/insertarDetallePedidoFarmacia',
+                    'ELIMINAR_REGISTRO_DETALLE_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/eliminarRegistroDetalleTemporal',
+                    'ELIMINAR_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/eliminarPedidoTemporal'
                 },
                 // URLS PEDIDOS FARMACIAS.
                 'LISTAR_PEDIDOS': BASE_URL + '/PedidosClientes/listarPedidos',
@@ -82,8 +84,8 @@ define(["angular"], function(angular) {
                 'CONSULTAR_ENCABEZADO_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/consultarPedidoFarmaciaTemporal',//depreciado
                 'LISTAR_DETALLE_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/listarProductosDetalleTemporal',//depreciado
                 'ELIMINAR_REGISTRO_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/eliminarRegistroEncabezadoTemporal',
-                'ELIMINAR_REGISTRO_DETALLE_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/eliminarRegistroDetalleTemporal',
-                'ELIMINAR_DETALLE_PEDIDO_FARMACIA_TEMPORAL_COMPLETO': BASE_URL + '/PedidosFarmacias/eliminarDetalleTemporalCompleto',
+                'ELIMINAR_REGISTRO_DETALLE_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/eliminarRegistroDetalleTemporal',//depreciado
+                'ELIMINAR_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/eliminarPedidoTemporal',//depreciado
                 'INSERTAR_PEDIDO_FARMACIA_DEFINITIVO': BASE_URL + '/PedidosFarmacias/insertarPedidoFarmacia',//depreciado
                 'INSERTAR_DETALLE_PEDIDO_FARMACIA_DEFINITIVO': BASE_URL + '/PedidosFarmacias/insertarDetallePedidoFarmacia',//depreciado
                 'INSERTAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/insertarProductoDetallePedidoFarmacia',

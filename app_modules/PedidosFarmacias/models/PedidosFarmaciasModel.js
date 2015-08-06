@@ -91,6 +91,51 @@ PedidosFarmaciasModel.prototype.listar_farmacias_usuario = function(tipo, usuari
 
 };
 
+PedidosFarmaciasModel.prototype.guardarEncabezadoTemporal = function(empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id, 
+                                                                     empresa_origen_id, centro_utilidad_origen_id, bodega_origen_id, observacion, usuario_id, callback){
+    var that = this;
+    
+    that.existe_registro_encabezado_temporal(empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id, usuario_id, function(err, resultado) {
+        
+        if (resultado.length > 0 && parseInt(resultado[0].cantidad_registros) === 0) {
+            that.insertar_pedido_farmacia_temporal(empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id,
+                    empresa_origen_id, centro_utilidad_origen_id, bodega_origen_id, observacion, usuario_id, function(err, rows, result) {
+                        
+                  callback(err, rows);
+             });
+        } else {
+             that.actualizar_registro_encabezado_temporal(empresa_destino_id, centro_utilidad_destino_id,
+                    bodega_destino_id, usuario_id, observacion, function(err, rows) {
+
+                callback(err, rows);
+
+            });
+        }
+    });
+};
+
+
+PedidosFarmaciasModel.prototype.guardarDetalleTemporal = function(numeroPedido, empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id, codigo_producto,
+                                                                  cantidad_solicitada, tipoProductoId, cantidadPendiente, usuario_id, callback) {
+                                                                      
+      var that = this;
+      
+      that.existe_registro_detalle_temporal(empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id, codigo_producto, usuario_id, function(err, resultado){
+          if (resultado.length > 0 && parseInt(resultado[0].cantidad_registros) === 0) {
+              
+              that.insertar_detalle_pedido_farmacia_temporal( numeroPedido, empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id, codigo_producto,
+                                                         cantidad_solicitada, tipoProductoId, cantidadPendiente, usuario_id, function(err, rows, result) {
+                   
+                   callback(err, rows);
+              });
+              
+          } else {
+              callback(false);
+          }
+      });
+
+};
+
 PedidosFarmaciasModel.prototype.existe_registro_encabezado_temporal = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback)
 {
     var sql = "SELECT COUNT(farmacia_id) as cantidad_registros  FROM solicitud_Bodega_principal_aux WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and usuario_id = $4";
@@ -102,7 +147,7 @@ PedidosFarmaciasModel.prototype.existe_registro_encabezado_temporal = function(e
 
 PedidosFarmaciasModel.prototype.existe_registro_detalle_temporal = function(empresa_id, centro_utilidad_id, bodega_id, codigo_producto, usuario_id, callback)
 {
-    var sql = "SELECT COUNT(*) FROM solicitud_pro_a_bod_prpal_tmp WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and codigo_producto = $4 and usuario_id = $5";
+    var sql = "SELECT COUNT(farmacia_id) as cantidad_registros FROM solicitud_pro_a_bod_prpal_tmp WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and codigo_producto = $4 and usuario_id = $5";
 
     G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, codigo_producto, usuario_id], function(err, rows, result) {
         callback(err, rows);
@@ -1022,6 +1067,8 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
         sql_aux = " and b.tipo_producto_id = $8 ";
         array_parametros.push(tipo_producto);
     }
+    
+    console.log("argumentos >>>>>>>>>> ", array_parametros);
     
     /*var sql = " select\
                 a.empresa_id, \

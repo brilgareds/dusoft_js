@@ -430,7 +430,7 @@ define(["angular", "js/controllers",
                         pedido.setEsTemporal(true);
                         
                          $scope.rootPedidoFarmaciaTemporal.opcionesArchivo.opts.query.data = JSON.stringify({
-                                pedido_farmacia: {
+                                pedidos_farmacias: {
                                     empresa_origen_id: pedido.getFarmaciaOrigen().getCodigo(),
                                     centro_utilidad_origen_id: pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getCodigo(),
                                     bodega_origen_id: pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
@@ -440,13 +440,18 @@ define(["angular", "js/controllers",
                                 }
                          });
                          
-                         $scope.rootCreaPedidoFarmacia.opciones_archivo.upload();
+                         $scope.rootPedidoFarmaciaTemporal.opcionesArchivo.upload();
                     }
                  });
             };
             
             $scope.respuestaArchivoPlano = function(file, message) {
+                console.log("respuesta archivo plano ", message);
                 $scope.rootPedidoFarmaciaTemporal.opcionesArchivo.cancel();
+                
+                self.consultarDetallePedidoTemporal(function(){
+                    
+                });
                 /*var para_seleccion_empresa = [];
                 var para_seleccion_centro_utilidad = [];
                 var para_seleccion_bodega = [];

@@ -225,7 +225,7 @@
 
                 </tab>
                 
-                <tab disabled="(root.pedido.getEsTemporal() ||  root.pedido.get_numero_pedido()) || !root.pedido.getValido()" active="rootCreaPedidoFarmacia.tab_estados.tab2"  name="cargarPlano">
+                <tab disabled="(!root.pedido.getValido() ||  root.pedido.get_numero_pedido())" active="rootCreaPedidoFarmacia.tab_estados.tab2"  name="cargarPlano">
                     <tab-heading>
                         <b> Archivo Plano </b>
                     </tab-heading>

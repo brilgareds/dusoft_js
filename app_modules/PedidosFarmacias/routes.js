@@ -77,6 +77,11 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.eliminarPedidoTemporal(req, res);
     }); 
     
+    app.post('/api/PedidosFarmacias/subirArchivoPlano', function(req, res) {
+        c_pedidos_farmacias.subirArchivoPlano(req, res);
+    }); 
+    
+    
     // -- depreciado
     app.post('/api/PedidosFarmacias/listarProductos', function(req, res) {
         c_pedidos_farmacias.listar_productos(req, res);

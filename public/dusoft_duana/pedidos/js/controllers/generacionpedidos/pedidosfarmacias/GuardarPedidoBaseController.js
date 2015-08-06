@@ -72,6 +72,7 @@ define(["angular", "js/controllers",
                 $scope.seleccionarEmpresaPedido(false, data.empresa_destino, data.centro_destino, data.bogega_destino);
                 $scope.seleccionarEmpresaPedido(true, data.farmacia_id, data.centro_utilidad, data.bodega);
                 $scope.root.pedido.setEsTemporal(true).setValido(true).setDescripcion(data.observacion);
+                console.log("es temporal ", $scope.root.pedido.getEsTemporal())
             };
             
             

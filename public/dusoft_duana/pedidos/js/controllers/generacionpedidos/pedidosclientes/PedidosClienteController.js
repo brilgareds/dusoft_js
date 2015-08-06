@@ -48,6 +48,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             $scope.datos_view = {
                 termino_busqueda_clientes: '',
                 termino_busqueda_productos: '',
+                activar_tab: {tab_productos: true, tab_cargar_archivo: false},
                 producto_seleccionado: Producto.get()
             };
 
@@ -341,6 +342,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                         <table class="table table-clear">\
                                             <tbody>\
                                                 <tr>\
+                                                    <td class="left"><strong>Cnt. Productos</strong></td>\
+                                                    <td class="right">{{ Pedido.get_productos().length  }}</td>    \
+                                                </tr>\
+                                                <tr>\
                                                     <td class="left"><strong>Subtotal</strong></td>\
                                                     <td class="right">{{ Pedido.get_subtotal() | currency : "$" }}</td>    \
                                                 </tr>\
@@ -389,89 +394,73 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             $scope.subir_archivo_plano = function() {
 
-                if ($scope.Pedido.get_numero_cotizacion() > 0) {
-                    // Solo subir plano
 
-                    $scope.opciones_archivo.opts.query.data = JSON.stringify({
-                        pedidos_clientes: {
-                            cotizacion: $scope.Pedido
-                        }
-                    });
+                $scope.opciones_archivo.opts.query.data = JSON.stringify({
+                    pedidos_clientes: {
+                        cotizacion: $scope.Pedido
+                    }
+                });
 
-                    $scope.opciones_archivo.upload();
-                } else {
-                    // Crear Cotizacion y subir plano
-                    $scope.insertar_cabercera_cotizacion(function(continuar) {
-                        
-                        if (continuar) {
-
-                            $scope.opciones_archivo.opts.query.data = JSON.stringify({
-                                pedidos_clientes: {
-                                    cotizacion: $scope.Pedido
-                                }
-                            });
-
-                            $scope.opciones_archivo.upload();
-                        }
-                    });
-
-                    $scope.opciones_archivo.upload();
-                }
+                $scope.opciones_archivo.upload();
             };
 
             $scope.respuesta_archivo_plano = function(file, message) {
 
                 var data = (message !== undefined) ? JSON.parse(message) : {};
 
-                
-                console.log('======= Response server ===');
-                console.log(data);
-                //return;
-                
                 if (data.status === 200) {
 
+                    var numero_cotizacion = data.obj.pedidos_clientes.numero_cotizacion;                    
+
+                    if (numero_cotizacion > 0) {
+                        $scope.Pedido.set_numero_cotizacion(numero_cotizacion);
+                        localStorageService.add("numero_cotizacion", $scope.Pedido.get_numero_cotizacion());
+                    }
+
+                    AlertService.mostrarMensaje("warning", data.msj);
+                    that.gestionar_consultas_cotizaciones();
+                    
+                    $scope.datos_view.activar_tab.tab_productos = true;
+                    $scope.datos_view.productos_validos = data.obj.pedidos_clientes.productos_validos;
+                    $scope.datos_view.productos_invalidos = data.obj.pedidos_clientes.productos_invalidos;
+                    
                     $scope.opciones_archivo.cancel();
 
-                    //$scope.buscar_detalle_orden_compra();
+                    if ($scope.datos_view.productos_invalidos.length > 0) {
 
-                    //$scope.activar_tab.tab_productos = true;
-
-                    $scope.productos_validos = data.obj.pedidos_clientes.productos_validos;
-                    $scope.productos_invalidos = data.obj.pedidos_clientes.productos_invalidos;
-
-
-                    $scope.opts = {
-                        backdrop: true,
-                        backdropClick: true,
-                        dialogFade: false,
-                        keyboard: true,
-                        template: ' <div class="modal-header">\
-                                        <button type="button" class="close" ng-click="close()">&times;</button>\
-                                        <h4 class="modal-title">Listado Productos </h4>\
-                                    </div>\
-                                    <div class="modal-body row">\
-                                        <div class="col-md-12">\
-                                            <h4 >Lista Productos INVALIDOS.</h4>\
-                                            <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
-                                                <div class="list-group">\
-                                                    <a ng-repeat="producto in productos_invalidos" class="list-group-item defaultcursor" href="javascript:void(0)">\
-                                                        {{ producto.codigo_producto}}\
-                                                    </a>\
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: ' <div class="modal-header">\
+                                            <button type="button" class="close" ng-click="close()">&times;</button>\
+                                            <h4 class="modal-title">Listado Productos </h4>\
+                                        </div>\
+                                        <div class="modal-body row">\
+                                            <div class="col-md-12">\
+                                                <h4 >Lista Productos NO validos.</h4>\
+                                                <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
+                                                    <div class="list-group">\
+                                                        <a ng-repeat="producto in datos_view.productos_invalidos" class="list-group-item defaultcursor" href="javascript:void(0)">\
+                                                            {{ producto.codigo_producto}}\
+                                                        </a>\
+                                                    </div>\
                                                 </div>\
                                             </div>\
                                         </div>\
-                                    </div>\
-                                    <div class="modal-footer">\
-                                        <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
-                                    </div>',
-                        scope: $scope,
-                        controller: function($scope, $modalInstance) {
-                            $scope.close = function() {
-                                $modalInstance.close();
-                            };
-                        }
-                    };
-                    var modalInstance = $modal.open($scope.opts);
+                                        <div class="modal-footer">\
+                                            <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                        </div>',
+                            scope: $scope,
+                            controller: function($scope, $modalInstance) {
+                                $scope.close = function() {
+                                    $modalInstance.close();
+                                };
+                            }
+                        };
+                        var modalInstance = $modal.open($scope.opts);
+                    }
 
                 } else {
                     AlertService.mostrarMensaje("warning", data.msj);

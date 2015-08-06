@@ -1006,7 +1006,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     
 
     console.log([empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, '%' + termino_busqueda + '%']);
-    //console.log(sql_aux);
+    console.log(sql_aux);
 
     // Original
     /*G.db.paginated(sql, [empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, '%' + termino_busqueda + '%'], pagina, G.settings.limit, function(err, rows, result) {

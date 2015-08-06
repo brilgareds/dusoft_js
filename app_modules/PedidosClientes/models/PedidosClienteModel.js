@@ -1067,6 +1067,8 @@ PedidosClienteModel.prototype.insertar_cotizacion = function(cotizacion, callbac
  * Descripcion :  SQL Insertar Detalle Cotizacion
  */
 PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(cotizacion, producto, callback) {
+    
+    console.log(producto);
 
     var sql = " INSERT INTO ventas_ordenes_pedidos_d_tmp(\
                 pedido_cliente_id_tmp, \

@@ -56,7 +56,8 @@ define(["angular"], function(angular) {
                     'GENERAR_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/generarPedidoFarmacia',
                     'INSERTAR_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/insertarDetallePedidoFarmacia',
                     'ELIMINAR_REGISTRO_DETALLE_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/eliminarRegistroDetalleTemporal',
-                    'ELIMINAR_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/eliminarPedidoTemporal'
+                    'ELIMINAR_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/eliminarPedidoTemporal',
+                    'SUBIR_ARCHIVO_PLANO': BASE_URL + '/PedidosFarmacias/subirArchivoPlano'
                 },
                 // URLS PEDIDOS FARMACIAS.
                 'LISTAR_PEDIDOS': BASE_URL + '/PedidosClientes/listarPedidos',
@@ -93,8 +94,8 @@ define(["angular"], function(angular) {
                 'CONSULTAR_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/consultarDetallePedidoFinal',
                 'ACTUALIZAR_CANTIDADES_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/actualizarCantidadesDetallePedidoFinal',
                 'ELIMINAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/eliminarProductoDetallePedidoFinal',
-                'LISTADO_TIPO_PRODUCTOS': BASE_URL + '/Productos/listarTipoProductos',
-                'ARCHIVO_PLANO_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/pedidoFarmaciaArchivoPlano',
+                'LISTADO_TIPO_PRODUCTOS': BASE_URL + '/Productos/listarTipoProductos',//deprecido
+                'ARCHIVO_PLANO_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/pedidoFarmaciaArchivoPlano',//depreciado
                 'IMPRIMIR_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/imprimirPedidoFarmacia',
                 'ACTUALIZAR_ESTADO_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/actualizarEstadoActualPedido',
                 'LISTADO_PEDIDOS_TEMPORALES_FARMACIAS': BASE_URL + '/PedidosFarmacias/listarPedidosTemporalesFarmacias',

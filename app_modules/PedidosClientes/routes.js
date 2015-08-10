@@ -63,11 +63,28 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/eliminarProductoCotizacion', function(req, res) {
         c_pedidos_clientes.eliminarProductoCotizacion(req, res);
     });
+    
+    // Observacion Cartera
+    app.post('/api/PedidosClientes/observacionCartera', function(req, res) {
+        c_pedidos_clientes.observacionCartera(req, res);
+    });
 
     // Subir Archivo Plano
     app.post('/api/PedidosClientes/subirPlano', function(req, res) {
         c_pedidos_clientes.cotizacionArchivoPlano(req, res);
     });
+    
+    /* Generacion Pedidos */
+    
+    // Generar Pedido
+    app.post('/api/PedidosClientes/generarPedido', function(req, res) {
+        c_pedidos_clientes.generarPedido(req, res);
+    });
+    
+    
+    
+    
+    
 
     /**************************************************
      * 

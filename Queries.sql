@@ -1287,3 +1287,54 @@ IS 'centro utilidad origen';
 
 COMMENT ON COLUMN "public"."ventas_ordenes_pedidos"."bodega_id"
 IS 'bodega origen';
+
+
+/*==== Agregar observacion cartera a tabala de  ventas_ordenes_pedidos_tmp =========*/
+
+/* tmp */
+ALTER TABLE "public"."ventas_ordenes_pedidos_tmp"
+  ADD COLUMN "observacion_cartera" TEXT;
+
+COMMENT ON COLUMN "public"."ventas_ordenes_pedidos_tmp"."observacion_cartera"
+IS 'Observacion ingresada por cartera';
+
+/* real */
+ALTER TABLE "public"."ventas_ordenes_pedidos"
+  ADD COLUMN "observacion_cartera" TEXT;
+
+COMMENT ON COLUMN "public"."ventas_ordenes_pedidos"."observacion_cartera"
+IS 'Observacion ingresada por cartera';
+
+
+
+/*==== Agregar sw_aprobado_cartera a tabala de  ventas_ordenes_pedidos_tmp =========*/
+
+/* tmp */
+ALTER TABLE "public"."ventas_ordenes_pedidos_tmp"
+  ADD COLUMN "sw_aprobado_cartera" CHAR(1);
+
+ALTER TABLE "public"."ventas_ordenes_pedidos_tmp"
+  ALTER COLUMN "sw_aprobado_cartera" SET DEFAULT '0';
+
+COMMENT ON COLUMN "public"."ventas_ordenes_pedidos_tmp"."sw_aprobado_cartera"
+IS 'Indica si esta o no aprobado por cartera
+0=> false => NO aprobado ; 1=> true=> Aprobado';
+
+/* real */
+ALTER TABLE "public"."ventas_ordenes_pedidos"
+  ADD COLUMN "sw_aprobado_cartera" CHAR(1);
+
+ALTER TABLE "public"."ventas_ordenes_pedidos"
+  ALTER COLUMN "sw_aprobado_cartera" SET DEFAULT '0';
+
+COMMENT ON COLUMN "public"."ventas_ordenes_pedidos"."sw_aprobado_cartera"
+IS 'Indica si esta o no aprobado por cartera
+0=> false => NO aprobado ; 1=> true=> Aprobado';
+
+/* Eliminar campo tipo_producto de tablas ventas_ordenes_pedidos_d_tmp y ventas_ordenes_pedidos_d*/ 
+ALTER TABLE "public"."ventas_ordenes_pedidos_d_tmp"
+  DROP COLUMN "tipo_producto";
+
+ALTER TABLE "public"."ventas_ordenes_pedidos_d"
+  DROP COLUMN "tipo_producto";
+

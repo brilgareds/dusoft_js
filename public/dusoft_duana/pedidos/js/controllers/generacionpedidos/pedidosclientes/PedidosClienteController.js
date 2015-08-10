@@ -471,11 +471,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 }
             };
 
-            // Aciones Botones            
+            // Aciones Botones       
+
+            // Cancelar la cotizacion
             $scope.cancelar_cotizacion = function() {
                 $state.go('ListarPedidosClientes');
             };
 
+            //Aceptar la cotizacion
             $scope.aceptar_cotizacion = function() {
                 $state.go('ListarPedidosClientes');
             };
@@ -496,6 +499,63 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.OBSERVACION_CARTERA, "POST", obj, function(data) {
 
+                    AlertService.mostrarMensaje("warning", data.msj);
+
+                    if (data.status === 200) {
+                        $scope.cancelar_cotizacion();
+                    }
+                });
+            };
+
+            // Gestionar la creacion del pedido
+            $scope.gestionar_pedido = function() {
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Desea Generar el Pedido ?</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <h4>Desea Generar el Pedido para el Cliente.</h4>\
+                                    <h4> {{ Pedido.getCliente().get_descripcion() }}?.</h4>\
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-warning" ng-click="close()">No</button>\
+                                    <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
+                                </div>',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.confirmar = function() {
+                            $scope.generar_pedido_cliente();
+                            $modalInstance.close();
+                        };
+
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+            };
+
+            $scope.generar_pedido_cliente = function() {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_clientes: {
+                            cotizacion: $scope.Pedido
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.GENERAR_PEDIDO, "POST", obj, function(data) {
+                    
                     AlertService.mostrarMensaje("warning", data.msj);
 
                     if (data.status === 200) {

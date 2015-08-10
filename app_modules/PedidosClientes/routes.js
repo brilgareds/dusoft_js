@@ -74,7 +74,12 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.cotizacionArchivoPlano(req, res);
     });
     
+    /* Generacion Pedidos */
     
+    // Generar Pedido
+    app.post('/api/PedidosClientes/generarPedido', function(req, res) {
+        c_pedidos_clientes.generarPedido(req, res);
+    });
     
     
     

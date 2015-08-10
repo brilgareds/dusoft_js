@@ -1189,6 +1189,177 @@ PedidosClienteModel.prototype.observacion_cartera = function(cotizacion, callbac
 };
 
 
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : Transaccion para la generación del pedido
+ */
+PedidosClienteModel.prototype.generar_pedido_cliente = function(cotizacion, callback)
+{
+    G.db.begin(function() {
+
+        // Ingresar encabezado pedido
+        __insertar_encabezado_pedido_cliente(cotizacion, function(err, rows, result) {
+
+            console.log('== resultado encabezado ==');
+            console.log(err, rows, result);
+
+            if (err) {
+                callback(err);
+                return;
+            }
+
+            var pedido = {numero_pedido: (rows.rows.length > 0) ? rows.rows[0].numero_pedido : 0, estado: 0};
+          
+            // ingresar detalle del pedido, a partir de la cotizacion
+            __generar_detalle_pedido_cliente(cotizacion, pedido, function(err, rows, result) {
+
+                console.log('== resultado detalle ==');
+                console.log(err, rows, result);
+
+                if (err) {
+                    callback(err);
+                    return;
+                }
+
+                // Inactivar cotizacion
+                cotizacion.estado = '0';
+
+                __actualizar_estado_cotizacion(cotizacion, function(err, rows, result) {
+
+                    console.log('== resultado actualizar ==');
+                    console.log(err, rows, result);
+
+                    // Finalizar Transacción.
+                    G.db.commit(function() {
+                        callback(err, rows, pedido);
+                    });
+
+                });
+            });
+        });
+    });
+};
+
+/**************************
+ * 
+ *  FUNCIONES PRIVADAS 
+ * 
+ **************************/
+
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : SQL para ingresar encabezado pedido cliente
+ */
+function __insertar_encabezado_pedido_cliente(cotizacion, callback) {
+
+    var sql = " INSERT INTO ventas_ordenes_pedidos(\
+                    empresa_id,\
+                    centro_destino,\
+                    bodega_destino,\
+                    tipo_id_tercero,\
+                    tercero_id,\
+                    tipo_id_vendedor,\
+                    vendedor_id,\
+                    observacion,    \
+                    observacion_cartera,\
+                    sw_aprobado_cartera,\
+                    estado,\
+                    estado_pedido,\
+                    usuario_id,\
+                    fecha_registro\
+                ) (\
+                  select\
+                  a.empresa_id,\
+                  a.centro_destino,\
+                  a.bodega_destino,\
+                  a.tipo_id_tercero,\
+                  a.tercero_id,\
+                  a.tipo_id_vendedor,\
+                  a.vendedor_id,\
+                  a.observaciones,\
+                  a.observacion_cartera,\
+                  a.sw_aprobado_cartera,\
+                  '1' as estado,\
+                  '0' as estado_pedido,\
+                  $2 as usuario_id,\
+                  now() as fecha_registro\
+                  from ventas_ordenes_pedidos_tmp a\
+                  where a.pedido_cliente_id_tmp = $1 \
+                ) returning pedido_cliente_id as numero_pedido ";
+
+    var params = [cotizacion.numero_cotizacion, cotizacion.usuario_id];
+
+    G.db.transaction(sql, params, function(err, rows, result) {
+        callback(err, rows, result);
+    });
+}
+;
+
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : SQL para generar el detalle del pedido cliente, a partir de una cotizacion
+ */
+function __generar_detalle_pedido_cliente(cotizacion, pedido, callback) {
+
+    var sql = " INSERT INTO ventas_ordenes_pedidos_d(\
+                    pedido_cliente_id, \
+                    codigo_producto, \
+                    porc_iva, \
+                    numero_unidades, \
+                    valor_unitario, \
+                    usuario_id,    \
+                    fecha_registro\
+                )(\
+                    SELECT \
+                    $1 as numero_pedido, \
+                    codigo_producto, \
+                    porc_iva, \
+                    numero_unidades, \
+                    valor_unitario, \
+                    $3 as usuario_id,    \
+                    NOW() as fecha_registro\
+                    FROM ventas_ordenes_pedidos_d_tmp \
+                    WHERE pedido_cliente_id_tmp = $2\
+                ) ;";
+
+    var params = [pedido.numero_pedido, cotizacion.numero_cotizacion, cotizacion.usuario_id];
+
+    G.db.transaction(sql, params, function(err, rows, result) {
+        callback(err, rows, result);
+    });
+}
+;
+
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : SQL para actualizar estados de la cotizacion
+ */
+function __actualizar_estado_cotizacion(cotizacion, callback) {
+
+    // Estados Cotizacion
+    // 0 => Inactiva
+    // 1 => Activo        
+
+    var sql = "UPDATE ventas_ordenes_pedidos_tmp SET estado = $2 WHERE pedido_cliente_id_tmp = $1";
+
+    var params = [cotizacion.numero_cotizacion, cotizacion.estado];
+
+    G.db.query(sql, params, function(err, rows, result) {
+        callback(err, rows, result);
+    });
+}
+;
+
+
+
+
+
+
+
+
+
+
+
 /**************************************************
  * 
  *  REVISAR DESDE ACA HACIA ABAJO 
@@ -1437,108 +1608,12 @@ PedidosClienteModel.prototype.cambiar_estado_aprobacion_cotizacion = function(nu
 
 
 
-function __cambiar_estado_cotizacion(numero_cotizacion, nuevo_estado, callback)
-{
 
-    var sql = "UPDATE ventas_ordenes_pedidos_tmp SET estado = $2 WHERE pedido_cliente_id_tmp = $1";
 
-    G.db.transaction(sql, [numero_cotizacion, nuevo_estado], function(err, rows, result) {
-        callback(err, rows, result);
-    });
 
-}
-;
 
-//Insert con Transacción para generación de pedidos
-PedidosClienteModel.prototype.insertar_pedido_cliente = function(numero_cotizacion, callback)
-{
-    G.db.begin(function() {
 
-        __insertar_encabezado_pedido_cliente(numero_cotizacion, function(err, rows, result) {
 
-            if (err) {
-                callback(err);
-                return;
-            }
-
-            //console.log(">>>>> DATA ROWS: ", rows.rows[0].pedido_cliente_id);
-            //console.log(">>>>> DATA RESULT: ", result);
-            var numero_pedido = rows.rows[0].pedido_cliente_id;
-            var fecha_registro_encabezado = rows.rows[0].fecha_registro;
-
-            //console.log(">>>>> DATA INSERTAR ENCABEZADO: ", rows);
-            //console.log(">>>>> Número Pedido: ", numero_pedido);
-
-            __cambiar_estado_cotizacion(numero_cotizacion, '0', function(err, rows, result) {
-                if (err) {
-                    callback(err);
-                    return;
-                }
-
-                /* Insertar Detalle */
-                __insertar_detalle_pedido_cliente(numero_pedido, numero_cotizacion, function(err, rows, result) {
-
-                    if (err) {
-                        callback(err);
-                        return;
-                    }
-
-                    // Finalizar Transacción.
-                    G.db.commit(function() {
-                        callback(err, rows, fecha_registro_encabezado);
-                    });
-                });
-                /* Insertar Detalle */
-            });
-
-        });
-    });
-};
-
-function __insertar_encabezado_pedido_cliente(numero_cotizacion, callback)
-{
-
-    /*
-     Los camposiguientes se usan solo para anulación:
-     
-     fecha_registro_anulacion,
-     usuario_anulador,
-     observacion_anulacion,
-     */
-
-    var sql = " INSERT INTO ventas_ordenes_pedidos( empresa_id, tipo_id_tercero, tercero_id, fecha_registro, usuario_id, estado, tipo_id_vendedor,\
-                    vendedor_id, observacion, estado_pedido, centro_utilidad_id, bodega_id) \
-                SELECT empresa_id, tipo_id_tercero, tercero_id, CURRENT_TIMESTAMP, usuario_id, 1, tipo_id_vendedor,\
-                    vendedor_id, observaciones, 0, centro_utilidad_id, bodega_id\
-                FROM ventas_ordenes_pedidos_tmp \
-                WHERE pedido_cliente_id_tmp = $1 \
-                RETURNING pedido_cliente_id, fecha_registro";
-
-    G.db.transaction(sql, [numero_cotizacion], function(err, rows, result) {
-        callback(err, rows, result);
-    });
-}
-;
-
-function __insertar_detalle_pedido_cliente(numero_pedido, numero_cotizacion, callback) {
-
-    /*
-     Los campos siguientes se usan solo para despacho y facturación:
-     
-     cantidad_despachada
-     cantidad_facturada
-     */
-    var sql = " INSERT INTO ventas_ordenes_pedidos_d(pedido_cliente_id, codigo_producto, porc_iva, numero_unidades, valor_unitario, fecha_registro, usuario_id, tipo_producto)\
-                SELECT $1, codigo_producto, porc_iva, numero_unidades, valor_unitario, CURRENT_TIMESTAMP, usuario_id, tipo_producto\
-                FROM ventas_ordenes_pedidos_d_tmp \
-                WHERE pedido_cliente_id_tmp = $2\
-                RETURNING pedido_cliente_id";
-
-    G.db.transaction(sql, [numero_pedido, numero_cotizacion], function(err, rows, result) {
-        callback(err, rows, result);
-    });
-}
-;
 
 
 PedidosClienteModel.prototype.insertar_detalle_pedido = function(numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto, callback) {

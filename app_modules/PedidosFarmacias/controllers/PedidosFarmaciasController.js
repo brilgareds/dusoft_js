@@ -1623,8 +1623,23 @@ PedidosFarmacias.prototype.generarPedidoFarmacia = function(req, res) {
                     that.m_pedidos_farmacias.insertarDetallePedidoFarmacia(numero_pedido, empresa_id, centro_utilidad_id,
                             bodega_id, usuario_id, function(err, row) {
 
-                        res.send(G.utils.r(req.url, 'Encabezado del pedido almacenado exitosamente', 200, {numero_pedido: numero_pedido}));
-                        return;
+                        that.m_pedidos_farmacias.eliminar_detalle_temporal_completo(empresa_id, centro_utilidad_id, bodega_id, usuario_id, function(err) {
+                            if (err) {
+                                res.send(G.utils.r(req.url, 'Error Finalizando el Documento Temporal Farmacias', 500, {documento_temporal: {}}));
+                                return;
+                            }
+                            
+                            that.m_pedidos_farmacias.eliminar_registro_encabezado_temporal(empresa_id, centro_utilidad_id, bodega_id, usuario_id, function(err){
+                                if (err) {
+                                    res.send(G.utils.r(req.url, 'Error Finalizando el Documento Temporal Farmacias', 500, {documento_temporal: {}}));
+                                    return;
+                                }
+                                
+                                res.send(G.utils.r(req.url, 'Encabezado del pedido almacenado exitosamente', 200, {numero_pedido: numero_pedido}));
+                                return;
+                            });
+                        });
+
                     });
 
 
@@ -1726,7 +1741,10 @@ PedidosFarmacias.prototype.eliminarPedidoTemporal = function(req, res) {
 
 };
 
-
+/*
+ * @Author: Eduar
+ * +Descripcion: Se encarga de procesar el archivo plano
+ */
 PedidosFarmacias.prototype.subirArchivoPlano = function(req, res) {
     console.log("subir archivo plano");
     var that = this;
@@ -1787,31 +1805,41 @@ PedidosFarmacias.prototype.subirArchivoPlano = function(req, res) {
                 __agruparProductosPorTipo(that, productosValidadosArchivo, function(productosAgrupados) {
                     console.log("productosAgrupados ", productosAgrupados);
 
-                    //Si hay un pedido temporal existente se toma el tipo de producto, de lo contrario se toma la primera agrupacion de tipos de productos del archivo
-                    var _productosAgrupados = (!tipoProducto) ? productosAgrupados[Object.keys(productosAgrupados)[0]] : productosAgrupados[tipoProducto];
-
-                   // _productosAgrupados.forEach(function(productoAgrupado) {
-
-                        __validarProductoArchivoPlano(that, args.pedidos_farmacias, _productosAgrupados,
-                                [], [], 0,
-                                function(err, productosValidados, productosInvalidos) {
 
 
-                            if (err) {
-                                res.send(G.utils.r(req.url, 'Listado de Productos', 500, {}));
-                                return;
-                            }
-                            
-                            productosInvalidos = productosInvalidos.concat(productosInvalidosArchivo);
-                            
-                            res.send(G.utils.r(req.url, 'Listado de Productos', 200, {
-                                productosValidos: productosValidados, productosInvalidos: productosInvalidos
-                            }));
+                    that.m_pedidos_farmacias.obtenerCantidadProductosEnTemporal(empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id,
+                            req.session.user.usuario_id, function(err, resultado) {
+                        var cantidad = (resultado.length > 0) ? parseInt(resultado[0].cantidad_registros) : 0;
+                        //Si hay un pedido temporal existente se toma el tipo de producto, de lo contrario se toma la primera agrupacion de tipos de productos del archivo
+                        var _productosAgrupados = (!tipoProducto) ? productosAgrupados[Object.keys(productosAgrupados)[0]] : productosAgrupados[tipoProducto];
+
+                        if ((cantidad + _productosAgrupados.length) > 25) {
+                            res.send(G.utils.r(req.url, 'La cantidad de productos no puede ser mayor a 25', 401, {}));
+
+                        } else {
+
+
+                            __validarProductoArchivoPlano(that, args.pedidos_farmacias, _productosAgrupados, [], [], 0, function(err, productosValidados, productosInvalidos) {
+
+                                if (err) {
+                                    res.send(G.utils.r(req.url, 'Error validando el archivo plano', 500, {}));
+                                    return;
+                                }
+
+                                productosInvalidos = productosInvalidos.concat(productosInvalidosArchivo);
+
+                                res.send(G.utils.r(req.url, 'Listado de Productos', 200, {
+                                    productosValidos: productosValidados, productosInvalidos: productosInvalidos
+                                }));
 
 
 
-                        });
-                   // });
+                            });
+                        }
+                    });
+
+
+
 
                 });
             });
@@ -1825,11 +1853,15 @@ PedidosFarmacias.prototype.subirArchivoPlano = function(req, res) {
 
 //************** fin nuevo eduar garcia temporal farmacias ***************
 
+/*
+ * @Author: Eduar
+ * +Descripcion: Funcion recursiva que valida cada producto filtrado del archivo plano (Valida existencia en la farmacia destino) y guarda el temporal
+ */
 function __validarProductoArchivoPlano(that, datos, productosAgrupados, productosValidadosArchivo, productosInvalidosArchivo, index, callback) {
-    
+
     var productoAgrupado = productosAgrupados[index];
-    
-    if(!productoAgrupado){
+
+    if (!productoAgrupado) {
         callback(false, productosValidadosArchivo, productosInvalidosArchivo);
         return;
     }
@@ -1876,23 +1908,23 @@ function __validarProductoArchivoPlano(that, datos, productosAgrupados, producto
                         var cantidadPendiente = productoAgrupado.cantidad_solicitada - _producto.disponibilidad_bodega;
                         cantidadPendiente = (cantidadPendiente > 0) ? cantidadPendiente : 0;
                         productoAgrupado.cantidadPendiente = cantidadPendiente;
-                        productoAgrupado.disponible =  _producto.disponibilidad_bodega;
+                        productoAgrupado.disponible = _producto.disponibilidad_bodega;
                         //Inserta el producto validado en el detalle del pedido
                         that.m_pedidos_farmacias.guardarDetalleTemporal(
                                 numeroPedido, datos.empresa_destino_id, datos.centro_utilidad_destino_id, datos.bodega_destino_id, productoAgrupado.codigo_producto,
                                 productoAgrupado.cantidad_solicitada, productoAgrupado.tipoProductoId, cantidadPendiente, datos.usuario_id,
                                 function(err, rows, result) {
 
-                            if (err) {
-                                callback(err);
-                                return;
-                            }
+                                    if (err) {
+                                        callback(err);
+                                        return;
+                                    }
 
-                            productosValidadosArchivo.push(productoAgrupado);
-                            index++;
-                             __validarProductoArchivoPlano(that, datos, productosAgrupados, productosValidadosArchivo, productosInvalidosArchivo, index, callback);
+                                    productosValidadosArchivo.push(productoAgrupado);
+                                    index++;
+                                    __validarProductoArchivoPlano(that, datos, productosAgrupados, productosValidadosArchivo, productosInvalidosArchivo, index, callback);
 
-                        });
+                                });
                     }
 
                 });
@@ -2554,7 +2586,10 @@ PedidosFarmacias.prototype.actualizarEncabezadoPedidoDefinitivo = function(req, 
 
 };
 
-
+/*
+ * @Author: Eduar
+ * +Descripcion: Agrupa los productos por su tipo, Normales, insumos, alto costo etc
+ */
 function __agruparProductosPorTipo(that, productos, callback) {
 
     var productosAgrupados = {};
@@ -2575,6 +2610,11 @@ function __agruparProductosPorTipo(that, productos, callback) {
     callback(productosAgrupados);
 }
 ;
+
+/*
+ * @Author: Eduar
+ * +Descripcion: Lee el contenido del archivo plano
+ */
 
 function __subir_archivo_plano(files, callback) {
 
@@ -2613,6 +2653,11 @@ function __subir_archivo_plano(files, callback) {
 }
 ;
 
+/*
+ * @Author: Eduar
+ * +Descripcion: Busca que los productos que se leen del archivo plano existan en el inventario
+ */
+
 function __validar_productos_archivo_plano(contexto, contenido_archivo_plano, callback) {
 
     var that = contexto;
@@ -2650,7 +2695,8 @@ function __validar_productos_archivo_plano(contexto, contenido_archivo_plano, ca
             }
         });
     });
-};
+}
+;
 
 function _generarDocumentoPedido(obj, callback) {
 

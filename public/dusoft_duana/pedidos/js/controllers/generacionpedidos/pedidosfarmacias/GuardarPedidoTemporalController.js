@@ -298,6 +298,61 @@ define(["angular", "js/controllers",
             
             /*
              * @Author: Eduar
+             * @param {Array<Object>} productos
+             * @param {function} callback
+             * +Descripcion: Permite mostrar los productos que no se guardaron del archivo plano
+             */
+            self.mostrarProductosNoValidos = function(productos, callback){
+                $scope.productosInvalidos = [];
+                
+                for (var i in productos) {
+                    var _producto = productos[i];
+                    var producto = ProductoPedidoFarmacia.get(_producto.codigo_producto, _producto.descripcion).
+                                                              setCantidadSolicitada(_producto.cantidad_solicitada);
+
+                     $scope.productosInvalidos.push(producto);                                   
+                }
+                
+                
+                $scope.productos = productos;   
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Listado Productos </h4>\
+                                </div>\
+                                <div class="modal-body row">\
+                                    <div class="col-md-12">\
+                                        <h4 >Lista Productos INVALIDOS.</h4>\
+                                        <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
+                                            <div class="list-group">\
+                                                <a ng-repeat="producto in productosInvalidos" class="list-group-item defaultcursor" href="javascript:void(0)">\
+                                                    {{ producto.getCodigoProducto()}}\
+                                                </a>\
+                                            </div>\
+                                        </div>\
+                                    </div>\
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                </div>',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+                    }
+                };
+                
+                var modalInstance = $modal.open($scope.opts);  
+                
+            };
+            
+            /*
+             * @Author: Eduar
              * +Descripcion: Handler del boton generar pedido
              */
             $scope.onGenerarPedido = function(){
@@ -417,11 +472,19 @@ define(["angular", "js/controllers",
             });
             
             
+            /*
+             * @Author: Eduar
+             * @param {$flow} $flow
+             * +Descripcion: Helper que asigna el objeto flow debido a que la referencia se pierde
+             */
             $scope.cargarArchivoPlano = function($flow) {
-
                 $scope.rootPedidoFarmaciaTemporal.opcionesArchivo = $flow;
             };
             
+            /*
+             * @Author: Eduar
+             * +Descripcion: Handler del boton subir archivo plano
+             */
             $scope.subirArchivoPlano = function() {
                  var pedido = $scope.root.pedido;
                  
@@ -436,7 +499,8 @@ define(["angular", "js/controllers",
                                     bodega_origen_id: pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
                                     empresa_destino_id: pedido.getFarmaciaDestino().getCodigo(),
                                     centro_utilidad_destino_id: pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getCodigo(),
-                                    bodega_destino_id: pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
+                                    bodega_destino_id: pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                                    tipo_producto:pedido.getTipoPedido()
                                 }
                          });
                          
@@ -445,6 +509,12 @@ define(["angular", "js/controllers",
                  });
             };
             
+            /*
+             * @Author: Eduar
+             * @param {File} file
+             * @param {String} message
+             * +Descripcion: Handler de la respuesta del servidor al subir el archivo
+             */
             $scope.respuestaArchivoPlano = function(file, message) {
                 console.log("respuesta archivo plano ", message);
                 $scope.rootPedidoFarmaciaTemporal.opcionesArchivo.cancel();
@@ -452,49 +522,12 @@ define(["angular", "js/controllers",
                 
                 if(datos.status === 200){
                     self.consultarDetallePedidoTemporal(function(){
-
+                        self.mostrarProductosNoValidos(datos.obj.productosInvalidos);
                     });
+                } else {
+                    AlertService.mostrarMensaje("warning", datos.msj);
                 }
                 
-                /*var para_seleccion_empresa = [];
-                var para_seleccion_centro_utilidad = [];
-                var para_seleccion_bodega = [];
-
-                var data = (message !== undefined) ? JSON.parse(message) : {};
-
-
-                if (data.status === 200) {
-
-                    $scope.rootCreaPedidoFarmacia.opciones_archivo.cancel();
-                    
-                    if ($scope.rootCreaPedidoFarmacia.para_seleccion_empresa)
-                    {
-                        para_seleccion_empresa = $scope.rootCreaPedidoFarmacia.para_seleccion_empresa.split(',');
-                    }
-
-                    if ($scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad)
-                    {
-                        para_seleccion_centro_utilidad = $scope.rootCreaPedidoFarmacia.para_seleccion_centro_utilidad.split(',');
-                    }
-
-                    if ($scope.rootCreaPedidoFarmacia.para_seleccion_bodega)
-                    {
-                        para_seleccion_bodega = $scope.rootCreaPedidoFarmacia.para_seleccion_bodega.split(',');
-                    }
-                    
-                    
-                    that.ventana_modal_no_validos(data, function(){
-                        $scope.setTabActivo(1, function(){
-                        
-                            //Trae detalle de productos cargados del archivo
-                            that.consultarDetallePedidoTemporal(para_seleccion_empresa, para_seleccion_centro_utilidad, para_seleccion_bodega);
-                        });
-                    });
-                    
-
-                } else {
-                    AlertService.mostrarMensaje("warning", data.msj);
-                }*/
             };
             
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {

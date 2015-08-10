@@ -145,6 +145,16 @@ PedidosFarmaciasModel.prototype.existe_registro_encabezado_temporal = function(e
     });
 };
 
+PedidosFarmaciasModel.prototype.obtenerCantidadProductosEnTemporal = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback)
+{
+    var sql = "SELECT COUNT(farmacia_id) as cantidad_registros  FROM solicitud_pro_a_bod_prpal_tmp WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and usuario_id = $4";
+
+    G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, usuario_id], function(err, rows, result) {
+        callback(err, rows);
+    });
+};
+
+
 PedidosFarmaciasModel.prototype.existe_registro_detalle_temporal = function(empresa_id, centro_utilidad_id, bodega_id, codigo_producto, usuario_id, callback)
 {
     var sql = "SELECT COUNT(farmacia_id) as cantidad_registros FROM solicitud_pro_a_bod_prpal_tmp WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and codigo_producto = $4 and usuario_id = $5";
@@ -165,7 +175,7 @@ PedidosFarmaciasModel.prototype.existe_registro_detalle_pedido = function(numero
 
 PedidosFarmaciasModel.prototype.actualizar_registro_encabezado_temporal = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion, callback)
 {
-    console.log("modificando pedido temporal ", empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion);
+   // console.log("modificando pedido temporal ", empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion);
     var sql = "UPDATE solicitud_Bodega_principal_aux SET observacion = $5 WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and usuario_id = $4";
 
     G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, usuario_id, observacion], function(err, rows, result) {
@@ -229,7 +239,7 @@ PedidosFarmaciasModel.prototype.consultar_pedido_farmacia_temporal = function(em
 PedidosFarmaciasModel.prototype.listar_detalle_pedido_temporal = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback)
 {
     var sql = "SELECT codigo_producto, fc_descripcion_producto(codigo_producto) as descripcion, cantidad_solic::integer as cantidad_solicitada, cantidad_pendiente, tipo_producto as tipo_producto_id\
-                FROM solicitud_pro_a_bod_prpal_tmp WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and usuario_id = $4";
+                FROM solicitud_pro_a_bod_prpal_tmp WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and usuario_id = $4 order by cantidad_pendiente asc";
 
     G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, usuario_id], function(err, rows, result) {
         callback(err, rows);

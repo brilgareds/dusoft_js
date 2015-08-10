@@ -90,7 +90,8 @@ define(["angular", "js/controllers",
                             setCantidadPendiente(_producto.cantidad_pendiente).
                             setTipoProductoId(_producto.tipo_producto_id).
                             setCantidadSolicitada(_producto.cantidad_solicitada);
-
+                    
+                    $scope.root.pedido.setTipoPedido(_producto.tipo_producto_id);
                     $scope.root.pedido.agregarProductoSeleccionado(producto);
 
                 }

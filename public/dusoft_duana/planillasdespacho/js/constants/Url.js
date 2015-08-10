@@ -40,9 +40,12 @@ define(["angular"], function(angular) {
             'PLANILLAS_FARMACIAS': {
                 'LISTAR_PLANILLAS_FARMACIAS': BASE_URL + '/PlanillasDespachos/listar',
                 'LISTAR_FARMACIAS': BASE_URL + '/PlanillasFarmacias/listando/empresas',
-                'LISTAR_DOCUMENTOS': BASE_URL + '/PlanillasFarmacias/listando/documentos'
-              /*  'CONSULTAR_PLANILLA': BASE_URL + '/PlanillasDespachos/consultarPlanillaDespacho',
-                'DOCUMENTOS_PLANILLA': BASE_URL + '/PlanillasDespachos/consultarDocumentosPlanillaDespacho',
+                'LISTAR_DOCUMENTOS': BASE_URL + '/PlanillasFarmacias/listando/documentos',
+                'GENERAR_PLANILLA_FARMACIA':BASE_URL + '/PlanillasFarmacias/generar/planilla/farmacia',
+                'INGRESAR_DOCUMENTO_FARMACIA':BASE_URL + '/PlanillasFarmacias/ingresar/documento/farmacia'
+                
+              
+                /*'DOCUMENTOS_PLANILLA': BASE_URL + '/PlanillasDespachos/consultarDocumentosPlanillaDespacho',
                 'GENERAR_PLANILLA': BASE_URL + '/PlanillasDespachos/generarPlanillaDespacho',
                 'INGRESAR_DOCUMENTOS': BASE_URL + '/PlanillasDespachos/ingresarDocumentosPlanilla',
                 'ELIMINAR_DOCUMENTO': BASE_URL + '/PlanillasDespachos/eliminarDocumentoPlanilla',

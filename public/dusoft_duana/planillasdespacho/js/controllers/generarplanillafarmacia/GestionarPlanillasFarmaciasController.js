@@ -32,9 +32,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             $scope.Empresa.limpiar_ciudades();
             $scope.Empresa.limpiar_transportadoras();
 
-
-            that.empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
-
             $scope.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
@@ -54,7 +51,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             that.obtenerEmpresas = function() {
 
-                var empresas = Usuario.getUsuarioActual().getEmpresasFarmacias();
+                var empresas = Usuario.getUsuarioActual().getEmpresasUsuario();
 
                 $scope.Empresa.limpiar_empresas();
 
@@ -253,7 +250,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                     $scope.slideurl = "views/generarplanillafarmacia/gestionardocumentosfarmacia.html?time=" + new Date().getTime();
                     $scope.$emit('gestionar_documentos_farmacia');
-                    $scope.datos_planillas = $scope.planilla;
+                   
             };
 
             $scope.confirmar_eliminar_documento_planilla = function(documento) {

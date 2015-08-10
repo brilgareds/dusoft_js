@@ -28,5 +28,28 @@ module.exports = function(app, di_container) {
     
     
     
+     /**
+     * @author Cristian Ardila
+     * +Descripcion: path del servicio que ejecutara la funcion para registrar
+     * los documentos
+     */
+     app.post('/api/PlanillasFarmacias/generar/planilla/farmacia', function(req, res) {
+        
+    
+        c_planillas_farmacias.generarPlanillaFarmacia(req, res);
+    });
+    
+    
+     /**
+     * @author Cristian Ardila
+     * +Descripcion: path del servicio que ejecutara la funcion para registrar
+     * los documentos
+     */
+     app.post('/api/PlanillasFarmacias/ingresar/documento/farmacia', function(req, res) {
+        
+    
+        c_planillas_farmacias.generarDocumentoPlanillaFarmacia(req, res);
+    });
+    
     
 };

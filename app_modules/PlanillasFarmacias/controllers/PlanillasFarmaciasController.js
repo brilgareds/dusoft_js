@@ -94,6 +94,110 @@ PlanillasFarmaciasController.prototype.listar_documentos = function(req, res) {
 
 
 
+PlanillasFarmaciasController.prototype.generarPlanillaFarmacia = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    /*if (args.planillas_despachos === undefined || args.planillas_despachos.pais_id === undefined || args.planillas_despachos.departamento_id === undefined || args.planillas_despachos.ciudad_id === undefined) {
+        res.send(G.utils.r(req.url, 'pais_id, departamento_id o ciudad_id no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.transportador_id === undefined || args.planillas_despachos.nombre_conductor === undefined || args.planillas_despachos.observacion === undefined) {
+        res.send(G.utils.r(req.url, 'transportador_id, nombre_conductor u observacion no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.numero_guia_externo === undefined) {
+        res.send(G.utils.r(req.url, 'numero_guia_externo no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.pais_id === '' || args.planillas_despachos.departamento_id === '' || args.planillas_despachos.ciudad_id === '') {
+        res.send(G.utils.r(req.url, 'pais_id, departamento_id o ciudad_id  estan vacias', 404, {}));
+        return;
+    }
+
+    if (args.planillas_despachos.transportador_id === '' || args.planillas_despachos.nombre_conductor === '' || args.planillas_despachos.observacion === '') {
+        res.send(G.utils.r(req.url, 'transportador_id, nombre_conductor u observacion esta vacia', 404, {}));
+        return;
+    }*/
+
+
+    var empresa_id = args.planillas_farmacia.empresa_id;
+    var centro_utilidad = args.planillas_farmacia.centro_utilidad;
+    var bodega = args.planillas_farmacia.bodega;
+    var id_empresa_destino = args.planillas_farmacia.id_empresa_destino;
+    var inv_transportador_id = args.planillas_farmacia.transportador_id;
+    var nombre_conductor = args.planillas_farmacia.nombre_conductor;
+    var observacion = args.planillas_farmacia.observacion;
+    var numero_guia_externo = args.planillas_farmacia.numero_guia_externo;
+    var usuario_id = req.session.user.usuario_id;
+
+  that.m_planillas_farmacias.ingresar_planilla_farmacia(empresa_id,centro_utilidad,bodega,id_empresa_destino,
+                                                        inv_transportador_id, 
+                                                        nombre_conductor, 
+                                                        observacion, 
+                                                        numero_guia_externo, 
+                                                        usuario_id, function(err, rows, result) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {ingresar_planilla_farmacia: []}));
+            return;
+        } else {
+
+            var numero_guia = (rows.length > 0) ? rows[0].id : 0;
+
+            res.send(G.utils.r(req.url, 'Planilla farmacia regitrada correctamente', 200, {ingresar_planilla_farmacia: numero_guia}));
+            return;
+        }
+    });
+
+};
+
+
+
+
+
+
+PlanillasFarmaciasController.prototype.generarDocumentoPlanillaFarmacia = function(req, res) {
+    
+    console.log("<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    console.log("generarDocumentoPlanillaFarmacia");
+    var that = this;
+    var args = req.body.data;
+
+    var empresa_id = args.planillas_farmacia.empresa_id;
+    var prefijo = args.planillas_farmacia.prefijo;
+    var numero = args.planillas_farmacia.numero;
+    var cantidad_cajas = args.planillas_farmacia.cantidad_cajas;
+    var cantidad_neveras = args.planillas_farmacia.cantidad_neveras;
+    var temperatura_neveras = args.planillas_farmacia.temperatura_neveras;
+    var observacion = args.planillas_farmacia.observacion;
+    
+    
+    var usuario_id = req.session.user.usuario_id;
+
+    that.m_planillas_farmacias.ingresar_documentos_planilla_farmacia(empresa_id, prefijo, numero, cantidad_cajas, 
+                                                                     cantidad_neveras, temperatura_neveras, observacion, 
+                                                                     usuario_id, function(err, rows, result) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {ingresar_documentos_planilla_farmacia: []}));
+            return;
+        } else {
+
+            var numero_guia = (rows.length > 0) ? rows[0].id : 0;
+
+            res.send(G.utils.r(req.url, 'documento farmacia regitrado correctamente', 200, {ingresar_documentos_planilla_farmacia: numero_guia}));
+            return;
+        }
+    });
+
+};
+
 
 PlanillasFarmaciasController.$inject = ["m_planillas_farmacias"];
 

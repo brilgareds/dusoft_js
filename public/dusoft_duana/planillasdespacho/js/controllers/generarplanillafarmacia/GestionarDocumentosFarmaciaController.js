@@ -31,6 +31,7 @@ define(["angular", "js/controllers",
             $rootScope.$on('gestionar_documentos_farmaciaCompleto', function(e, parametros) {
 
 
+                //  console.log($scope.planilla);
 
 
                 $scope.datos_view = {
@@ -44,6 +45,7 @@ define(["angular", "js/controllers",
                 //  $scope.seleccionar_cliente_farmacia();
 
             });
+            //  console.log("AQUI")
 
             $rootScope.$on('cerrar_gestion_documentos_bodegaCompleto', function(e, parametros) {
 
@@ -250,74 +252,7 @@ define(["angular", "js/controllers",
             };
 
 
-            that.gestionar_planilla_farmacia = function(callback) {
-                /* console.log("gestionar_planilla_despacho")
-                 console.log($scope.datos_planillas);
-                 console.log($scope.planilla);*/
-                // $scope.planilla.set_documento($scope.datos_view.documento_seleccionado);
 
-                if ($scope.datos_planillas.get_numero_guia() === 0) {
-
-                    that.generar_planilla_farmacia(function(continuar) {
-
-                        if (continuar) {
-
-                            that.ingresar_documentos_planilla(function(continuar) {
-
-                                if (callback)
-                                    callback(continuar);
-                            });
-                        } else {
-                            if (callback)
-                                callback(continuar);
-                        }
-                    });
-                } else {
-                    that.ingresar_documentos_planilla(function(continuar) {
-                        if (callback)
-                            callback(continuar);
-                    });
-                }
-            };
-            /**
-             * @author Cristian Manuel Ardila
-             * @param {type} callback
-             * @returns {undefined}
-             * +Descripcion: funcion encargada de registrar el detallado de la persona
-             * encargada de transportar la devolucion,el origen y el destino 
-             * 
-             */
-            that.generar_planilla_farmacia = function(callback) {
-
-                console.log($scope.planilla)
-                /* var obj = {
-                 session: $scope.session,
-                 data: {
-                 planillas_farmacia: {
-                 pais_id: $scope.datos_planillas.get_ciudad().get_pais_id(),
-                 departamento_id: $scope.datos_planillas.get_ciudad().get_departamento_id(),
-                 ciudad_id: $scope.datos_planillas.get_ciudad().get_ciudad_id(),
-                 transportador_id: $scope.datos_planillas.get_transportadora().get_id(),
-                 nombre_conductor: $scope.datos_planillas.get_nombre_conductor(),
-                 observacion: $scope.datos_planillas.get_observacion(),
-                 numero_guia_externo: $scope.datos_planillas.get_numero_guia_externo()
-                 }
-                 }
-                 };
-                 
-                 console.log(obj)*/
-                /*  Request.realizarRequest(API.PLANILLAS.GENERAR_PLANILLA_FARMACIA, "POST", obj, function(data) {
-                 
-                 AlertService.mostrarMensaje("warning", data.msj);
-                 
-                 if (data.status === 200) {
-                 $scope.planilla.set_numero_guia(data.obj.numero_guia);
-                 callback(true);
-                 } else {
-                 callback(false);
-                 }
-                 });*/
-            };
 
             /**
              * @author Cristian Manuel Ardila
@@ -328,45 +263,54 @@ define(["angular", "js/controllers",
              * 
              */
             that.ingresar_documentos_planilla = function(callback) {
+                console.log("ingresar_documentos_planilla")
+               //console.log($scope.planilla)
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        planillas_farmacia: {
+                           
+                            /*empresa_id: $scope.planilla.get_documento().get_empresa_id(),
+                            prefijo: $scope.planilla.get_documento().get_prefijo(),
+                            numero: $scope.planilla.get_documento().get_numero(),
+                            cantidad_cajas: $scope.planilla.get_documento().get_cantidad_cajas(),
+                            cantidad_neveras: $scope.planilla.get_documento().get_cantidad_neveras(),
+                            temperatura_neveras: $scope.planilla.get_documento().get_temperatura_neveras(),
+                            observacion: $scope.planilla.get_documento().get_observacion(),
+                            tipo: $scope.datos_view.opcion_predeterminada*/
+                            empresa_id: '03',
+                            prefijo: 'IDF',
+                            numero: 1,
+                            cantidad_cajas: 1,
+                            cantidad_neveras: 2,
+                            temperatura_neveras: 22,
+                            observacion: 'Delicado'
+                           
+                        }
+                    }
+                };
 
-                console.log($scope.planilla)
-                /*  var obj = {
-                 session: $scope.session,
-                 data: {
-                 planillas_despachos: {
-                 planilla_id: $scope.planilla.get_numero_guia(),
-                 empresa_id: $scope.planilla.get_documento().get_empresa_id(),
-                 prefijo: $scope.planilla.get_documento().get_prefijo(),
-                 numero: $scope.planilla.get_documento().get_numero(),
-                 cantidad_cajas: $scope.planilla.get_documento().get_cantidad_cajas(),
-                 cantidad_neveras: $scope.planilla.get_documento().get_cantidad_neveras(),
-                 temperatura_neveras: $scope.planilla.get_documento().get_temperatura_neveras(),
-                 observacion: $scope.planilla.get_documento().get_observacion(),
-                 tipo: $scope.datos_view.opcion_predeterminada
-                 }
-                 }
-                 };
-                 
-                 Request.realizarRequest(API.PLANILLAS.INGRESAR_DOCUMENTOS, "POST", obj, function(data) {
-                 
-                 AlertService.mostrarMensaje("warning", data.msj);
-                 
-                 if (data.status === 200) {
-                 $scope.planilla.set_documentos($scope.datos_view.documento_seleccionado);
-                 $scope.datos_view.documento_seleccionado = Documento.get();
-                 
-                 $scope.buscar_documentos_bodega($scope.datos_view.tercero_seleccionado);
-                 
-                 callback(true);
-                 } else {
-                 callback(false);
-                 }
-                 });*/
+                Request.realizarRequest(API.PLANILLAS_FARMACIAS.INGRESAR_DOCUMENTO_FARMACIA, "POST", obj, function(data) {
+
+                    
+
+                    if (data.status === 200) {
+                        
+                        AlertService.mostrarMensaje("warning", data.msj);
+                       // $scope.planilla.set_documentos($scope.datos_view.documento_seleccionado);
+                      //  $scope.datos_view.documento_seleccionado = Documento.get();
+
+                      //  $scope.buscar_documentos_bodega($scope.datos_view.tercero_seleccionado);
+
+                        callback(true);
+                    } else {
+                        callback(false);
+                    }
+                });
 
             };
 
             $scope.confirmRegistroDocumentoDevolucion = function(documento) {
-                console.log("pedido >>>>>>>>>>>>>> ", documento);
 
                 $scope.opts = {
                     backdrop: true,
@@ -403,25 +347,91 @@ define(["angular", "js/controllers",
 
                 var modalInstance = $modal.open($scope.opts);
             };
+            /**
+             * +Descripcion: function que invocara funcion encargada de ejecutar dos servicios
+             * generar planillas e ingresar documentos planilla
+             * @param {type} documento
+             * @returns {undefined}
+             */
             that.registrarDocumentoFarmacia = function(documento) {
 
-                // console.log("LLEGA LA SEGUNDA-----------------------");
-                // console.log(documento)
                 that.gestionar_planilla_farmacia(function() {
 
                 });
 
-                // Validar que la cantidad de cajas y neveras sean iguales a las cantidades auditadas
-                /* if (documento.get_cantidad_cajas() == documento.get_cantidad_cajas_auditadas() && documento.get_cantidad_neveras() == documento.get_cantidad_neveras_auditadas()) {
-                 
-                 $scope.datos_view.documento_seleccionado = documento;
-                 
-                 that.gestionar_planilla_despacho();
-                 }else{
-                 AlertService.mostrarMensaje("warning", "Las cantidades de cajas y/o neveras NO coinciden con las cantidades auditadas");
-                 }*/
             };
 
+            /**
+             * @author Cristian Manuel Ardila
+             * @param {type} callback
+             * @returns {undefined}
+             * +Descripcion: funcion encargada de registrar el detallado de la persona
+             * encargada de transportar la devolucion,el origen y el destino 
+             * 
+             */
+            that.generar_planilla_farmacia = function(callback) {
+
+                var empresa = Sesion.getUsuarioActual().getEmpresa();
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        planillas_farmacia: {
+                            empresa_id: empresa.getCodigo(),
+                            centro_utilidad: empresa.getCentroUtilidadSeleccionado().getCodigo(),
+                            bodega: empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                            id_empresa_destino: $scope.planilla.get_empresa().getCodigo(),
+                            transportador_id: $scope.planilla.get_transportadora().get_id(),
+                            nombre_conductor: $scope.planilla.get_nombre_conductor(),
+                            observacion: $scope.planilla.get_observacion(),
+                            numero_guia_externo: $scope.planilla.get_numero_guia_externo()
+
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PLANILLAS_FARMACIAS.GENERAR_PLANILLA_FARMACIA, "POST", obj, function(data) {
+
+                    AlertService.mostrarMensaje("warning", data.msj);
+
+                    if (data.status === 200) {
+                        $scope.planilla.set_numero_guia(data.obj.numero_guia);
+                        callback(true);
+                    } else {
+                        callback(false);
+                    }
+                });
+            };
+            that.gestionar_planilla_farmacia = function(callback) {
+                /* console.log("gestionar_planilla_despacho")
+                 console.log($scope.datos_planillas);
+                 console.log($scope.planilla);*/
+                // $scope.planilla.set_documento($scope.datos_view.documento_seleccionado);
+
+                if ($scope.planilla.get_numero_guia() === 0) {
+
+                    that.generar_planilla_farmacia(function(continuar) {
+
+
+                        if (continuar) {
+
+                            that.ingresar_documentos_planilla(function(continuar) {
+
+                                if (callback)
+                                    callback(continuar);
+                            });
+                        } else {
+                            if (callback)
+                                callback(continuar);
+                        }
+                    });
+                } else {
+                    that.ingresar_documentos_planilla(function(continuar) {
+                        if (callback)
+                            callback(continuar);
+                    });
+                }
+            };
             /*
              * 
              * @param {type} selected
@@ -432,17 +442,19 @@ define(["angular", "js/controllers",
              */
             $scope.traerDocumentosFarmacias = function() {
 
+
+                var empresa = Sesion.getUsuarioActual().getEmpresa();
+
                 var obj = {
                     session: $scope.session,
                     data: {
                         parametros:
                                 {
-                                    empresa: $scope.parametrosDocumentoFarmacia.empresa,
-                                    centroUtilidad: $scope.parametrosDocumentoFarmacia.centroUtilidad,
-                                    bodega: $scope.parametrosDocumentoFarmacia.bodega,
+                                    empresa: empresa.getCodigo(),
+                                    centroUtilidad: empresa.getCentroUtilidadSeleccionado().getCodigo(),
+                                    bodega: empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
                                 }
                     }
-
                 };
 
 
@@ -458,24 +470,37 @@ define(["angular", "js/controllers",
 
             }
 
-            that.renderDocumentoFarmacia = function(data) {
+            that.renderDocumentoFarmacia = function(documentos) {
 
-                $scope.arregloDocumentos = [];
-                for (var i in data.obj.listar_documentos) {
-                    var _documentos = data.obj.listar_documentos[i];
+                $scope.Empresa.limpiar_empresas();
+                var empresas = Sesion.getUsuarioActual().getEmpresasUsuario();
 
-                    var documento = DocumentoPlanillaFarmacia.get(_documentos.bodegas_doc_id, _documentos.prefijo, _documentos.numero, _documentos.fecha_registro);
+                $scope.Empresa.limpiar_empresas();
 
-                    $scope.arregloDocumentos.push(documento)
+                empresas.forEach(function(empresa) {
+                    $scope.Empresa.set_empresas(empresa);
+                });
 
+                that.obtenerListaDocumentos(documentos);
+
+            }
+
+
+            that.obtenerListaDocumentos = function(documentos) {
+
+                for (var i in documentos.obj.listar_documentos) {
+
+                    var _documentos = documentos.obj.listar_documentos[i];
+                    var documento = Documento.get(_documentos.bodegas_doc_id, "", _documentos.prefijo, _documentos.numero, "", "", "", "", "", "");
+                    documento.set_fecha_registro(_documentos.fecha_registro);
+                    $scope.Empresa.set_lista_documentos(documento);
                 }
-
             }
 
             $scope.traerDocumentosFarmacias();
 
             $scope.lista_remisiones_bodega = {
-                data: 'arregloDocumentos',
+                data: 'Empresa.get_lista_documentos()',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [

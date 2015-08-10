@@ -1192,7 +1192,12 @@ PedidosClienteModel.prototype.eliminar_producto_cotizacion = function(cotizacion
  */
 PedidosClienteModel.prototype.observacion_cartera = function(cotizacion, callback)
 {
-    var sql = "UPDATE ventas_ordenes_pedidos_tmp SET observacion_cartera = $2, sw_aprobado_cartera = $3 WHERE pedido_cliente_id_tmp = $1";
+    var sql_aux = " ,estado = '1'";
+
+    if (cotizacion.aprobado_cartera === 1)
+        sql_aux = " ,estado = '3'"; // Estado Aprobado Cartera
+    
+    var sql = "UPDATE ventas_ordenes_pedidos_tmp SET observacion_cartera = $2, sw_aprobado_cartera = $3 "+sql_aux+" WHERE pedido_cliente_id_tmp = $1";
 
     var params = [cotizacion.numero_cotizacion, cotizacion.observacion_cartera, cotizacion.aprobado_cartera];
 
@@ -1213,21 +1218,15 @@ PedidosClienteModel.prototype.generar_pedido_cliente = function(cotizacion, call
         // Ingresar encabezado pedido
         __insertar_encabezado_pedido_cliente(cotizacion, function(err, rows, result) {
 
-            console.log('== resultado encabezado ==');
-            console.log(err, rows, result);
-
             if (err) {
                 callback(err);
                 return;
             }
 
             var pedido = {numero_pedido: (rows.rows.length > 0) ? rows.rows[0].numero_pedido : 0, estado: 0};
-          
+
             // ingresar detalle del pedido, a partir de la cotizacion
             __generar_detalle_pedido_cliente(cotizacion, pedido, function(err, rows, result) {
-
-                console.log('== resultado detalle ==');
-                console.log(err, rows, result);
 
                 if (err) {
                     callback(err);
@@ -1238,10 +1237,7 @@ PedidosClienteModel.prototype.generar_pedido_cliente = function(cotizacion, call
                 cotizacion.estado = '0';
 
                 __actualizar_estado_cotizacion(cotizacion, function(err, rows, result) {
-
-                    console.log('== resultado actualizar ==');
-                    console.log(err, rows, result);
-
+                   
                     // Finalizar Transacción.
                     G.db.commit(function() {
                         callback(err, rows, pedido);
@@ -1351,7 +1347,9 @@ function __actualizar_estado_cotizacion(cotizacion, callback) {
 
     // Estados Cotizacion
     // 0 => Inactiva
-    // 1 => Activo        
+    // 1 => Activo     
+    // 2 => Anulado
+    // 3 => Aprobado Cartera
 
     var sql = "UPDATE ventas_ordenes_pedidos_tmp SET estado = $2 WHERE pedido_cliente_id_tmp = $1";
 

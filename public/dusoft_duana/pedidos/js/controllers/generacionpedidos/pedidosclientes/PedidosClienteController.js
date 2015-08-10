@@ -111,6 +111,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.Pedido.set_observacion(data.observaciones);
                 $scope.Pedido.set_tipo_producto(data.tipo_producto).set_descripcion_tipo_producto(data.descripcion_tipo_producto);
                 $scope.Pedido.set_aprobado_cartera(data.sw_aprobado_cartera).set_observacion_cartera(data.observacion_cartera);
+                $scope.Pedido.set_estado_cotizacion(data.estado).set_descripcion_estado_cotizacion(data.descripcion_estado);
                 $scope.Pedido.setFechaRegistro(data.fecha_registro);
             };
 

@@ -152,8 +152,8 @@ module.exports = function(app, di_container) {
     });
     
     //Eliminar Producto Detalle Pedido Final
-    app.post('/api/PedidosFarmacias/eliminarProductoDetallePedidoFinal', function(req, res) {
-        c_pedidos_farmacias.eliminarProductoDetallePedidoFinal(req, res);
+    app.post('/api/PedidosFarmacias/eliminarProductoDetallePedido', function(req, res) {
+        c_pedidos_farmacias.eliminarProductoDetallePedido(req, res);
     });
     
     // Pedido Farmacia por archivo plano

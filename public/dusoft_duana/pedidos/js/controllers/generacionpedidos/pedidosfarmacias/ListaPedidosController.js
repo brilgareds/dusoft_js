@@ -79,11 +79,11 @@ define(["angular",
                                         <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
                                         <ul class="dropdown-menu dropdown-options">\
                                             <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)" ng-if="rootPedidosFarmacias.opciones.sw_modificar_pedido">\n\
-                                                <a href="javascript:void(0);" ng-click="onEditarPedido(row.entity)" ng-validate-events="{{rootPedidosFarmacias.opcionesModulo.btnModificarPedido}}" >Modificar</a>\
+                                                <a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity, 1)" ng-validate-events="{{rootPedidosFarmacias.opcionesModulo.btnModificarPedido}}" >Modificar</a>\
                                             </li>\
-                                            <li><a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity)" ng-validate-events="{{rootPedidosFarmacias.opcionesModulo.btnConsultarPedido}}">Ver</a></li>\
+                                            <li><a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity, 0)" ng-validate-events="{{rootPedidosFarmacias.opcionesModulo.btnConsultarPedido}}">Ver</a></li>\
                                             <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)" ng-if="rootPedidosFarmacias.opciones.sw_modificacion_especial_pedidos">\
-                                                <a href="javascript:void(0);" ng-click="onEdicionEspecialPedidoFarmacia(row.entity)" ng-validate-events="{{rootPedidosFarmacias.opcionesModulo.btnModificarEspecialPedido}}" >Modificación Especial</a>\
+                                                <a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity, 3)" ng-validate-events="{{rootPedidosFarmacias.opcionesModulo.btnModificarEspecialPedido}}" >Modificación Especial</a>\
                                             </li>\
                                             <li ng-if="row.entity.getTieneDespacho()">\
                                                 <a href="javascript:void(0);" ng-click="imprimirDespacho(row.entity)">Documento Despacho</a>\
@@ -286,10 +286,10 @@ define(["angular",
              * +Descripcion: handler de la opcion modificar pedido 
              */
             
-            $scope.onEditarPedido = function(pedido) {
+            $scope.onVerPedidoFarmacia = function(pedido, tipo) {
                 localStorageService.set("pedidoFarmacia", {
                    numero_pedido: pedido.get_numero_pedido(),
-                   tipoModificacion: '1'
+                   tipoModificacion: tipo
                 });
                 
                 $state.go('GuardarPedido');

@@ -365,7 +365,7 @@ PedidosFarmaciasModel.prototype.actualizar_cantidades_detalle_pedido = function(
      });
 };
 
-PedidosFarmaciasModel.prototype.eliminar_producto_detalle_pedido_final = function(numero_pedido, codigo_producto, usuario, callback)
+PedidosFarmaciasModel.prototype.eliminar_producto_detalle_pedido = function(numero_pedido, codigo_producto, usuario, callback)
 {
     G.db.begin(function() {
         
@@ -376,7 +376,7 @@ PedidosFarmaciasModel.prototype.eliminar_producto_detalle_pedido_final = functio
                return;
            }
 
-           __eliminar_producto_detalle_pedido_final(numero_pedido, codigo_producto, function(err, rows) {
+           __eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, function(err, rows) {
 
                if(err){
                    callback(err);
@@ -402,7 +402,7 @@ function __actualizar_cantidades_detalle_pedido(numero_pedido, codigo_producto, 
     G.db.transaction(sql, [numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente], callback);
 };
 
-function __eliminar_producto_detalle_pedido_final(numero_pedido, codigo_producto, callback) {
+function __eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, callback) {
 
     var sql = "DELETE FROM solicitud_productos_a_bodega_principal_detalle\
                 WHERE solicitud_prod_a_bod_ppal_id = $1 and codigo_producto = $2";

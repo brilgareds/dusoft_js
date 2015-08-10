@@ -62,7 +62,8 @@ define(["angular"], function(angular) {
                     'SUBIR_ARCHIVO_PLANO': BASE_URL + '/PedidosFarmacias/subirArchivoPlano',
                     'CONSULTAR_ENCABEZADO_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/consultarEncabezadoPedido',
                     'CONSULTAR_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/consultarDetallePedido',
-                    'ACTUALIZAR_CANTIDADES_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/actualizarCantidadesDetallePedido'
+                    'ACTUALIZAR_CANTIDADES_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/actualizarCantidadesDetallePedido',
+                    'ELIMINAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/eliminarProductoDetallePedido'
                 },
                 // URLS PEDIDOS FARMACIAS.
                 'LISTAR_PEDIDOS': BASE_URL + '/PedidosClientes/listarPedidos',
@@ -98,7 +99,7 @@ define(["angular"], function(angular) {
                 'CONSULTAR_ENCABEZADO_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/consultarEncabezadoPedido',//depreciado
                 'CONSULTAR_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/consultarDetallePedido',//depreciado
                 'ACTUALIZAR_CANTIDADES_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/actualizarCantidadesDetallePedido',//depreciado
-                'ELIMINAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/eliminarProductoDetallePedidoFinal',
+                'ELIMINAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/eliminarProductoDetallePedidoFinal',//depreciado
                 'LISTADO_TIPO_PRODUCTOS': BASE_URL + '/Productos/listarTipoProductos',//deprecido
                 'ARCHIVO_PLANO_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/pedidoFarmaciaArchivoPlano',//depreciado
                 'IMPRIMIR_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/imprimirPedidoFarmacia',

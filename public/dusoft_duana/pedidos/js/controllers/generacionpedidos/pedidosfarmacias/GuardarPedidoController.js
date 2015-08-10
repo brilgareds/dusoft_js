@@ -23,7 +23,7 @@ define(["angular", "js/controllers",
                 if (pedido) {
                     $scope.root.pedido.setTipoModificacion(pedido.tipoModificacion);
                     
-                    $scope.root.lista_productos.columnDefs[4].visible = self.visualizarColumnaModifarCantidad();
+                    $scope.root.lista_productos.columnDefs[4].visible = self.visualizarColumnaModificarCantidad();
                     
                     self.consultarEncabezadoPedido(pedido, function(consultaEncabezado) {
                         if (!consultaEncabezado) {
@@ -33,8 +33,12 @@ define(["angular", "js/controllers",
                 }
             };
             
-            
-            self.visualizarColumnaModifarCantidad = function(){
+            /*
+             * @Author: Eduar
+             * return  {boolean} visualizar
+             * +Descripcion: Determina si se muestra la columna de modificar cantidad
+             */
+            self.visualizarColumnaModificarCantidad = function(){
                 if( $scope.root.pedido.getTipoModificacion() === '1' ){
                     return true;
                 }
@@ -116,6 +120,49 @@ define(["angular", "js/controllers",
                 });
             };
             
+            /*
+             * @Author: Eduar
+             * @param {ProductoPedidoFarmacia} producto
+             * +Descripcion: Realiza la peticion al API para eliminar un producto del temporal.
+             */
+            self.eliminarProducto = function(producto, index){
+                var pedido = $scope.root.pedido;
+                
+                if(pedido.getProductosSeleccionados().length <= 1){
+                   AlertService.mostrarMensaje("warning", "Debe exisitir por lo menos un producto en el pedido");
+                   return;
+                }
+                
+                var pedido = $scope.root.pedido;
+                var url = API.PEDIDOS.FARMACIAS.ELIMINAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA;
+                
+                 var obj = {
+                    session: $scope.rootPedidoFarmacia.session,
+                    data: {
+                        pedidos_farmacias: {
+                            numero_pedido: pedido.get_numero_pedido(),
+                            codigo_producto: producto.getCodigoProducto()
+                        }
+                    }
+                };
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                       pedido.eliminarProductoSeleccionado(index);
+                       
+                    } else {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+                });
+            };
+            
+            /*
+             * @Author: Eduar
+             * @param {String} titulo
+             * @param {String} mensaje
+             * @param {function} callback
+             * +Descripcion: Permite mostrar un alert, prevee un callback donde envia si se dio click en aceptar o cancelar
+             */
             self.mostrarAlerta = function(titulo, mensaje, callback) {
                 $scope.opts = {
                     backdrop: true,
@@ -147,46 +194,11 @@ define(["angular", "js/controllers",
                   var modalInstance = $modal.open($scope.opts);
             };
             
-            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
-                $scope.eventoEditarCantidad();
-                $scope.rootPedidoFarmacia = {};
-                $scope.$$watchers = null;
-                localStorageService.set("pedidoFarmacia", null);
-            });
-            
-            $scope.eventoEditarCantidad = $scope.$on("onEditarCantidad", function(e, producto){
-                
-                console.log($scope.root.pedido.getEstadoActualPedido());
-                var mensaje;
-                
-                if($scope.root.pedido.getEstadoActualPedido() === '0'){
-                    
-                    if(producto.getCantidadIngresada() >= producto.getCantidadSolicitada()){
-                        mensaje = "La cantidad ingresada debe ser menor a la solicitada";
-                        
-                        self.mostrarAlerta("Alerta del sistema", mensaje, function(acepto){
-                            
-                        });
-                        
-                    } else {
-                        mensaje = "Seguro desea cambiar la cantidad solicitada "+ producto.getCantidadSolicitada() + " a "+producto.getCantidadIngresada() + " ?";
-                        
-                        self.mostrarAlerta("Alerta del sistema", mensaje, function(acepto){
-                            if(acepto){
-                                self.modificarCantidadSolicitada(producto);
-                            }
-                        });
-                    }
-                } else {
-                    mensaje = "El estado actual del pedido no permite modificarlo";
-                    
-                    self.mostrarAlerta("Alerta del sistema", mensaje, function(acepto){
-
-                    });
-                }
-                
-
-            });
+            /*
+             * @Author: Eduar
+             * @param {ProductoPedidoFarmacia} _producto
+             * +Descripcion: Realiza la peticion al api para cambiar la cantidad solicitada y la pendiente 
+             */
             
             self.modificarCantidadSolicitada = function(_producto){
                                 
@@ -235,132 +247,66 @@ define(["angular", "js/controllers",
                 });            
             };
             
-            /*$scope.onModificarCantidad = function(row){
+            /*
+             * @Author: Eduar
+             * @param {$event} e
+             * @param {ProductoPedidoFarmacia} producto
+             * +Descripcion: Evento que se escucha de GuardarPedidoBaseController, valida el cambio de cantidad del producto
+             */
+            $scope.eventoEditarCantidad = $scope.$on("onEditarCantidad", function(e, producto){
                 
-                var numero_pedido = $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().numero_pedido;
+                var mensaje;
                 
-                that.consultarEncabezadoPedidoFinal(numero_pedido, function(data){
-
-                    //$scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().setEnUso(data.obj.encabezado_pedido[0].en_uso);
-                    $scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido = data.obj.encabezado_pedido[0].estado;
-                    //console.log(">>>> Modificar - Estado del Pedido: ", data.obj.encabezado_pedido[0].estado);
-                    //console.log(">>>> Scope Modificar - Estado del Pedido: ",$scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido);
+                if($scope.root.pedido.getEstadoActualPedido() === '0'){
                     
-                    if($scope.rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().estado_actual_pedido === '0'){
-                    
-                        if(row.entity.nueva_cantidad >= row.entity.cantidad_solicitada){
-
-                            var template = ' <div class="modal-header">\
-                                                <button type="button" class="close" ng-click="close()">&times;</button>\
-                                                <h4 class="modal-title">Mensaje del Sistema</h4>\
-                                            </div>\
-                                            <div class="modal-body">\
-                                                <h4>La Nueva Cantidad debe ser Menor a la Actual ! </h4> \
-                                            </div>\
-                                            <div class="modal-footer">\
-                                                <button class="btn btn-warning" ng-click="close()">Aceptar</button>\
-                                            </div>';
-
-                            controller = function($scope, $modalInstance) {
-
-                                $scope.close = function() {
-                                    $modalInstance.close();
-                                };
-                            };
-
-                            $scope.opts = {
-                                backdrop: true,
-                                backdropClick: true,
-                                dialogFade: false,
-                                keyboard: true,
-                                template: template,
-                                scope: $scope,
-                                controller: controller
-                            };
-
-                            var modalInstance = $modal.open($scope.opts);
-
-
-                        }
-                        else{
-
-                                var template = ' <div class="modal-header">\
-                                                    <button type="button" class="close" ng-click="close()">&times;</button>\
-                                                    <h4 class="modal-title">Mensaje del Sistema</h4>\
-                                                </div>\
-                                                <div class="modal-body">\
-                                                    <h4>Seguro desea bajar la cantidad de '+row.entity.cantidad_solicitada+' a '+row.entity.nueva_cantidad+' ? </h4> \
-                                                </div>\
-                                                <div class="modal-footer">\
-                                                    <button class="btn btn-warning" ng-click="close()">No</button>\
-                                                    <button class="btn btn-primary" ng-click="modificarCantidad()" ng-disabled="" >Si</button>\
-                                                </div>';
-
-                            controller = function($scope, $modalInstance) {
-
-                                $scope.modificarCantidad = function() {
-                                    //that.verificarEstadoPedido(function(){
-
-                                        that.modificarValoresCantidad(
-                                            $scope.rootCreaPedidoFarmacia.pedido.numero_pedido,
-                                            row.entity
-                                        );
-                                    //}    
-                                    //);
-
-                                    $modalInstance.close();
-                                };
-
-                                $scope.close = function() {
-                                    $modalInstance.close();
-                                };
-                            };
-
-                            $scope.opts = {
-                                backdrop: true,
-                                backdropClick: true,
-                                dialogFade: false,
-                                keyboard: true,
-                                template: template,
-                                scope: $scope,
-                                controller: controller
-                            };
-
-                            var modalInstance = $modal.open($scope.opts);
-                        }
-                    }
-                    else{
-                        //Avisar la no posibilidad de modiificar porque el pedido está abierto en una tablet
-                        $scope.opts = {
-                            backdrop: true,
-                            backdropClick: true,
-                            dialogFade: false,
-                            keyboard: true,
-                            template: ' <div class="modal-header">\
-                                            <button type="button" class="close" ng-click="close()">&times;</button>\
-                                            <h4 class="modal-title">Aviso: </h4>\
-                                        </div>\
-                                        <div class="modal-body row">\
-                                            <div class="col-md-12">\
-                                                <h4 >El Pedido '+numero_pedido+' ha sido asignado. No puede modificarse!</h4>\
-                                            </div>\
-                                        </div>\
-                                        <div class="modal-footer">\
-                                            <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
-                                        </div>',
-                            scope: $scope,
-                            controller: function($scope, $modalInstance) {
-                                $scope.close = function() {
-                                    $modalInstance.close();
-                                };
+                    if(producto.getCantidadIngresada() >= producto.getCantidadSolicitada()){
+                        mensaje = "La cantidad ingresada debe ser menor a la solicitada";
+                        
+                        self.mostrarAlerta("Alerta del sistema", mensaje, function(acepto){
+                            
+                        });
+                        
+                    } else {
+                        mensaje = "Seguro desea cambiar la cantidad solicitada "+ producto.getCantidadSolicitada() + " a "+producto.getCantidadIngresada() + " ?";
+                        
+                        self.mostrarAlerta("Alerta del sistema", mensaje, function(acepto){
+                            if(acepto){
+                                self.modificarCantidadSolicitada(producto);
                             }
-                        };
-
-                        var modalInstance = $modal.open($scope.opts); 
+                        });
                     }
-                });
-            };*/
+                } else {
+                    mensaje = "El estado actual del pedido no permite modificarlo";
+                    
+                    self.mostrarAlerta("Alerta del sistema", mensaje, function(acepto){
+
+                    });
+                }
+                
+
+            });
             
+            /*
+             * @Author: Eduar
+             * @param {$event} e
+             * @param {ProductoPedidoFarmacia} producto
+             * @param {int} index
+             * +Descripcion: Evento que se dispara desde el controlador base para eliminar un producto
+             */
+            $scope.onEliminarProductoPedido = $scope.$on("onEliminarProducto",function(e, producto, index){
+                self.eliminarProducto(producto, index);
+            });
+            
+                        
+            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+                $scope.eventoEditarCantidad();
+                $scope.onEliminarProductoPedido();
+                $scope.rootPedidoFarmacia = {};
+                $scope.$$watchers = null;
+                localStorageService.set("pedidoFarmacia", null);
+            });
+            
+           
             self.init();
 
 

@@ -60,7 +60,8 @@ define(["angular", "js/controllers",
                     },
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "5%",
                             cellTemplate: ' <div class="row">\
-                                                <button class="btn btn-default btn-xs" ng-click="onEliminarProducto(row.entity, row.rowIndex)">\
+                                                <button class="btn btn-default btn-xs" ng-click="onEliminarProducto\n\
+(row.entity, row.rowIndex)">\
                                                     <span class="glyphicon glyphicon-remove"></span>\n\
                                                 </button>\
                                             </div>'
@@ -187,7 +188,6 @@ define(["angular", "js/controllers",
              */   
             $scope.obtenerEmpresa = function(esDestino, empresaId){
                 var empresas = (esDestino) ? $scope.root.empresasDestino :$scope.root.empresasOrigen;
-                
                 for(var i in empresas){
                     if(empresas[i].getCodigo() === empresaId ){
                         return empresas[i];
@@ -335,6 +335,8 @@ define(["angular", "js/controllers",
             self.onConfirmarEliminarProducto = function(producto, index){
                 if($scope.root.pedido.getEsTemporal()){
                     $scope.$broadcast('onEliminarProductoTemporal', producto, index);
+                } else if($scope.root.pedido.get_numero_pedido()) {
+                    $scope.$broadcast('onEliminarProducto', producto, index);
                 }
             };
             

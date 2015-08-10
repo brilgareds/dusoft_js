@@ -421,10 +421,10 @@ define(["angular", "js/controllers",
              * @param {function} callback
              * +Descripcion: Metodo que se dispara desde el slide de seleccion de productos
              */
-            $rootScope.$on("insertarProductoPedidoTemporal", function(event) {
+            $scope.eventoInsertarProductoPedidoTemporal = $scope.$on("insertarProductoPedidoTemporal", function(event) {
                 var pedido = $scope.root.pedido;
-                console.log("pedido >>>>>>>>>>>> ", $scope.root.pedido);
                 var producto = pedido.getProductoSeleccionado();
+                
                 if (!pedido.getEsTemporal()) {
                     self.guardarEncabezadoPedidoTemporal(function(creacionCompleta) {
                         if (creacionCompleta) {
@@ -534,9 +534,10 @@ define(["angular", "js/controllers",
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.onBodegaPedidoSeleccionada();
                 $scope.onEliminarProductoTemporal();
+                $scope.eventoInsertarProductoPedidoTemporal();
                 $scope.rootPedidoFarmaciaTemporal = {};
                 $scope.$$watchers = null;
-                localStorageService.set("pedidotemporal", null);
+                localStorageService.remove("pedidotemporal");
                 
 
             });

@@ -39,7 +39,8 @@ define(["angular", "js/controllers",
              * +Descripcion: Determina si se muestra la columna de modificar cantidad
              */
             self.visualizarColumnaModificarCantidad = function(){
-                if( $scope.root.pedido.getTipoModificacion() === '1' ){
+                console.log("modificacion ", $scope.root.pedido.getTipoModificacion());
+                if( $scope.root.pedido.getTipoModificacion() === '1' || $scope.root.pedido.getTipoModificacion() === '3' ){
                     return true;
                 }
                 
@@ -154,6 +155,48 @@ define(["angular", "js/controllers",
                         AlertService.mostrarMensaje("warning", data.msj);
                     }
                 });
+            };
+            
+            /*
+             * @Author: Eduar
+             * @param {function} callback
+             * +Descripcion: Metodo que realiza el request para ingresar un producto al pedido
+             */
+            self.guardarDetallePedido = function(callback) {
+                var pedido = $scope.root.pedido;
+                var producto = pedido.getProductoSeleccionado();
+                var farmacia = pedido.getFarmaciaDestino();
+                var cantidadPendiente = producto.getCantidadSolicitada();
+                producto.setCantidadPendiente(cantidadPendiente);
+                
+                var url = API.PEDIDOS.FARMACIAS.INSERTAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA;
+
+                var obj = {
+                    session: $scope.rootPedidoFarmacia.session,
+                    data: {
+                        detalle_pedidos_farmacias: {
+                            numero_pedido: pedido.get_numero_pedido(),
+                            empresa_id: farmacia.getCodigo(),
+                            centro_utilidad_id: farmacia.getCentroUtilidadSeleccionado().getCodigo(),
+                            bodega_id: farmacia.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                            codigo_producto: producto.getCodigoProducto(),
+                            cantidad_solic: parseInt(producto.getCantidadSolicitada()),
+                            tipo_producto_id: producto.getTipoProductoId(),
+                            cantidad_pendiente: cantidadPendiente
+                        }
+                    }
+                };
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        pedido.agregarProductoSeleccionado(producto);
+                        callback(true);
+
+                    } else {
+                        callback(false, data.msj);
+                    }
+                });
+
             };
             
             /*
@@ -297,13 +340,22 @@ define(["angular", "js/controllers",
                 self.eliminarProducto(producto, index);
             });
             
+            
+            $scope.eventoInsertarProductoPedido = $scope.$on("insertarProductoPedido", function(){
+                self.guardarDetallePedido(function(agregado, msj) {
+                    if(!agregado){
+                        AlertService.mostrarMensaje("warning", msj);
+                    }
+                });
+            });
                         
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.eventoEditarCantidad();
                 $scope.onEliminarProductoPedido();
+                $scope.eventoInsertarProductoPedido();
                 $scope.rootPedidoFarmacia = {};
                 $scope.$$watchers = null;
-                localStorageService.set("pedidoFarmacia", null);
+                localStorageService.remove("pedidoFarmacia");
             });
             
            

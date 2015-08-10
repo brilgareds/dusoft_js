@@ -1144,7 +1144,6 @@ PedidosFarmacias.prototype.insertarPedidoFarmacia = function(req, res) {
 };
 //
 
-//depreciado
 PedidosFarmacias.prototype.insertarDetallePedidoFarmacia = function(req, res) {
 
     var that = this;
@@ -1945,16 +1944,16 @@ function __validarProductoArchivoPlano(that, datos, productosAgrupados, producto
                                 productoAgrupado.cantidad_solicitada, productoAgrupado.tipoProductoId, cantidadPendiente, datos.usuario_id,
                                 function(err, rows, result) {
 
-                                    if (err) {
-                                        callback(err);
-                                        return;
-                                    }
+                            if (err) {
+                                callback(err);
+                                return;
+                            }
 
-                                    productosValidadosArchivo.push(productoAgrupado);
-                                    index++;
-                                    __validarProductoArchivoPlano(that, datos, productosAgrupados, productosValidadosArchivo, productosInvalidosArchivo, index, callback);
+                            productosValidadosArchivo.push(productoAgrupado);
+                            index++;
+                            __validarProductoArchivoPlano(that, datos, productosAgrupados, productosValidadosArchivo, productosInvalidosArchivo, index, callback);
 
-                                });
+                        });
                     }
 
                 });
@@ -2005,7 +2004,7 @@ PedidosFarmacias.prototype.eliminarRegistroEncabezadoTemporal = function(req, re
     });
 };
 
-PedidosFarmacias.prototype.insertarProductoDetallePedidoFarmacia = function(req, res) {
+PedidosFarmacias.prototype.insertarProductoDetallePedidoFarmacia = function(req, res) { 
 
     var that = this;
 
@@ -2057,19 +2056,40 @@ PedidosFarmacias.prototype.insertarProductoDetallePedidoFarmacia = function(req,
     var cantidad_pendiente = args.detalle_pedidos_farmacias.cantidad_pendiente;
 
     var usuario_id = req.session.user.usuario_id;
-
-    that.m_pedidos_farmacias.insertar_producto_detalle_pedido_farmacia(numero_pedido, empresa_id, centro_utilidad_id, bodega_id, codigo_producto, cantidad_solic, tipo_producto_id, usuario_id, cantidad_pendiente, function(err, row) {
+    
+    
+    that.m_pedidos_farmacias.consultar_pedido(numero_pedido, function(err, cabecera_pedido) {
 
         if (err) {
-            res.send(G.utils.r(req.url, 'Se ha Generado un Error en el almacenamiento del Detalle', 500, {error: err}));
-            return;
+            res.send(G.utils.r(req.url, 'Error en consulta de pedido', 500, {encabezado_pedido: {}}));
+        } else {
+            
+            if(cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null ){
+                
+                 that.m_pedidos_farmacias.insertar_producto_detalle_pedido_farmacia(numero_pedido, empresa_id, centro_utilidad_id, bodega_id, codigo_producto, 
+                                                                                    cantidad_solic, tipo_producto_id, usuario_id, cantidad_pendiente, function(err, row) {
+
+                    if (err) {
+                        res.send(G.utils.r(req.url, 'Se ha Generado un Error en el almacenamiento del Detalle', 500, {error: err}));
+                        return;
+                    } else {
+                        res.send(G.utils.r(req.url, 'Detalle del pedido almacenado exitosamente', 200, {}));
+                        return;
+                    }
+                });
+            } else {
+                res.send(G.utils.r(req.url, 'El estado actual del pedido no permite modificarlo', 403, {}));
+                return;
+            }
+
         }
-        else
-        {
-            res.send(G.utils.r(req.url, 'Detalle del pedido almacenado exitosamente', 200, {}));
-            return;
-        }
+
     });
+    
+    
+    
+
+
 };
 
 

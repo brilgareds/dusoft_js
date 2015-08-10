@@ -131,7 +131,7 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.insertarPedidoFarmacia(req, res);
     });
     
-    //depreciado Inserta el detalle del pedido definitivo
+    //Inserta el detalle del pedido definitivo
     app.post('/api/PedidosFarmacias/insertarDetallePedidoFarmacia', function(req, res) {
         c_pedidos_farmacias.insertarDetallePedidoFarmacia(req, res);
     });    

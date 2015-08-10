@@ -403,7 +403,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         self.validarIngresoProducto(producto, function(validacion){
                             
                             if(validacion.valido){
-                                $rootScope.$emit("insertarProductoPedidoTemporal", pedido);
+                                if(pedido.get_numero_pedido()){
+                                    $scope.$emit("insertarProductoPedido", pedido);
+                                } else  {
+                                     $scope.$emit("insertarProductoPedidoTemporal", pedido);
+                                }
+                               
                             } else {
                                 self.mostrarAlertaSeleccionProducto("Error agregando producto",validacion.msj);
                             }

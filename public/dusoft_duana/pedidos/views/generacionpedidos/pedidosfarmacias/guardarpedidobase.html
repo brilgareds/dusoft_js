@@ -188,7 +188,7 @@
                     <div class="input-group navbar-form ">
 
                         <div >
-                            <button type="button" ng-disabled="!root.pedido.getValido() || root.pedido.get_numero_pedido()" class="btn btn-default btn-medium ng-scope"  ng-click="onIncluirProductos($event)">
+                            <button type="button" ng-disabled="!root.pedido.getValido() || (root.pedido.get_numero_pedido() && root.pedido.getTipoModificacion() != '3')" class="btn btn-default btn-medium ng-scope"  ng-click="onIncluirProductos($event)">
                                 <span class="glyphicon glyphicon-plus"></span> Incluir Productos
                             </button>
                         </div>   

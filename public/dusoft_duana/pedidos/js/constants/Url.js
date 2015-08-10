@@ -63,7 +63,8 @@ define(["angular"], function(angular) {
                     'CONSULTAR_ENCABEZADO_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/consultarEncabezadoPedido',
                     'CONSULTAR_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/consultarDetallePedido',
                     'ACTUALIZAR_CANTIDADES_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/actualizarCantidadesDetallePedido',
-                    'ELIMINAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/eliminarProductoDetallePedido'
+                    'ELIMINAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/eliminarProductoDetallePedido',
+                    'INSERTAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/insertarProductoDetallePedidoFarmacia'
                 },
                 // URLS PEDIDOS FARMACIAS.
                 'LISTAR_PEDIDOS': BASE_URL + '/PedidosClientes/listarPedidos',
@@ -95,7 +96,7 @@ define(["angular"], function(angular) {
                 'ELIMINAR_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/eliminarPedidoTemporal',//depreciado
                 'INSERTAR_PEDIDO_FARMACIA_DEFINITIVO': BASE_URL + '/PedidosFarmacias/insertarPedidoFarmacia',//depreciado
                 'INSERTAR_DETALLE_PEDIDO_FARMACIA_DEFINITIVO': BASE_URL + '/PedidosFarmacias/insertarDetallePedidoFarmacia',//depreciado
-                'INSERTAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/insertarProductoDetallePedidoFarmacia',
+                'INSERTAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/insertarProductoDetallePedidoFarmacia',//depreciado
                 'CONSULTAR_ENCABEZADO_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/consultarEncabezadoPedido',//depreciado
                 'CONSULTAR_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/consultarDetallePedido',//depreciado
                 'ACTUALIZAR_CANTIDADES_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/actualizarCantidadesDetallePedido',//depreciado

@@ -67,6 +67,17 @@ define(["angular", "js/models"], function(angular, models) {
         Pedido.prototype.getDescripcion = function() {
             return this.descripcion;
         };
+        
+        
+        Pedido.prototype.setEstadoActualPedido = function(estadoActualPedido){
+            this.estado_actual_pedido = estadoActualPedido;
+            return this;
+        };
+
+        Pedido.prototype.getEstadoActualPedido = function() {
+            return this.estado_actual_pedido;
+        };
+        
 
         this.getClass = function(){
             return Pedido;

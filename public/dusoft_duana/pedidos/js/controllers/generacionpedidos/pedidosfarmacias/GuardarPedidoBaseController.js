@@ -36,6 +36,7 @@ define(["angular", "js/controllers",
                 data: 'root.pedido.getProductosSeleccionados()',
                 enableColumnResize: true,
                 enableRowSelection: false,
+                enableHighlighting:true,
                 multiSelect: false,
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Código', width: "9%",
@@ -51,6 +52,12 @@ define(["angular", "js/controllers",
                     {field: 'descripcion', displayName: 'Descripción', width: "37%"},
                     {field: 'getCantidadSolicitada()', displayName: 'Solicitado'},
                     {field: 'getCantidadPendiente()', displayName: 'Pendiente'},
+                    {field: 'nueva_cantidad', displayName: 'Modificar Cantidad',visible:false,
+                                cellTemplate: ' <div class="col-xs-12">\n\
+                                                    <input type="text" validacion-numero-entero class="form-control grid-inline-input"'+
+                                                    'ng-keyup="onModificarCantidad($event, row)" ng-model="row.entity.cantidadIngresada" />\n\
+                                                </div>'
+                    },
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "5%",
                             cellTemplate: ' <div class="row">\
                                                 <button class="btn btn-default btn-xs" ng-click="onEliminarProducto(row.entity, row.rowIndex)">\
@@ -70,7 +77,7 @@ define(["angular", "js/controllers",
              */
             $scope.renderEncabezado = function(data){
                 $scope.seleccionarEmpresaPedido(false, data.empresa_destino, data.centro_destino, data.bodega_destino);
-                $scope.seleccionarEmpresaPedido(true, data.farmacia_id, data.centro_utilidad, data.bodega);
+                $scope.seleccionarEmpresaPedido(true, data.farmacia_id, data.centro_utilidad, data.bodega || data.bodega_id);
                 $scope.root.pedido.setValido(true).setDescripcion(data.observacion);
             };
             
@@ -311,6 +318,14 @@ define(["angular", "js/controllers",
                 
             };
             
+            $scope.deshabilitarSeleccionEmpresa = function(){
+                if($scope.root.pedido && $scope.root.pedido.get_numero_pedido()){
+                    return true;
+                }
+                
+                return false;
+            };
+            
             /*
              * @Author: Eduar
              * @param {ProductoPedidoFarmacia} producto
@@ -322,12 +337,28 @@ define(["angular", "js/controllers",
                     $scope.$broadcast('onEliminarProductoTemporal', producto, index);
                 }
             };
+            
             /*
              * @Author: Eduar
              * +Descripcion: Handler del boton de finalizar
              */
             $scope.onVolverListadoPedidos = function(){
                 $state.go("ListarPedidosFarmacias");
+            };
+            
+            /*
+             * @Author: Eduar
+             * @param {$event} ev
+             * @param {Row} row 
+             * +Descripcion: Handler del text input para modificar cantidad
+             */
+            $scope.onModificarCantidad = function(ev, row) {
+                if (ev.which === 13) {
+                    if (parseInt(row.entity.getCantidadIngresada()) > 0) {
+                        //Emite el evento al controlador GuardarPedidoController
+                        $scope.$broadcast("onEditarCantidad", row.entity);
+                    }
+                }
             };
             
            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {

@@ -34,12 +34,7 @@
                                         </br>
                                         <h4 class="h4MarginTopBottom">Empresa: </h4>
 
-                                        <!-- select ui-select2="deseleccionempresa"  class="form-control selectgeneral pull-left" ng-disabled="rootCreaPedidoFarmacia.bloqueo_producto_incluido" ng-model="rootCreaPedidoFarmacia.de_seleccion_empresa"  placeholder="Seleccionar Empresa" ng-change="valorSeleccionado(1)">
-                                            <option></option>
-                                            <option ng-repeat="empresa in  rootCreaPedidoFarmacia.de_lista_empresas"  ng-value="empresa.empresa_id" >{{empresa.razon_social}}</option>
-                                        </select -->
-
-                                        <ui-select ng-change="onEmpresaOrigenSeleccionada()" ng-model="root.pedido.farmaciaOrigen" theme="select2" class="form-control selectgeneral pull-left" >
+                                        <ui-select ng-change="onEmpresaOrigenSeleccionada()" ng-model="root.pedido.farmaciaOrigen" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="deshabilitarSeleccionEmpresa()" >
                                             <ui-select-match  placeholder="Seleccionar Farmacia">{{$select.selected.getNombre()}}</ui-select-match>
                                             <ui-select-choices repeat="empresa in root.empresasOrigen | filter:$select.search">
                                                 {{empresa.getNombre()}}
@@ -58,7 +53,7 @@
                                             <option ng-repeat="centro_utilidad in  rootCreaPedidoFarmacia.de_lista_centro_utilidad"  ng-value="centro_utilidad.centro_utilidad_id" >{{centro_utilidad.descripcion}}</option>
                                         </select -->
 
-                                        <ui-select ng-change="_empresaOrigenSeleccionada()" ng-model="root.pedido.farmaciaOrigen.centroUtilidad" theme="select2" class="form-control selectgeneral pull-left" >
+                                        <ui-select ng-change="_empresaOrigenSeleccionada()" ng-model="root.pedido.farmaciaOrigen.centroUtilidad" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="deshabilitarSeleccionEmpresa()" >
                                             <ui-select-match  placeholder="Seleccionar Centro Utilidad">{{$select.selected.getNombre()}}</ui-select-match>
                                             <ui-select-choices repeat="centro in root.pedido.getFarmaciaOrigen().getCentrosUtilidad() | filter:$select.search">
                                                 {{centro.getNombre()}}
@@ -72,11 +67,7 @@
                                         </br>
                                         <h4 class="h4MarginTopBottom">Bodega: </h4>
 
-                                        <!-- select ui-select2="deseleccionbodega"  class="form-control selectgeneral pull-left" ng-disabled="rootCreaPedidoFarmacia.bloqueo_producto_incluido || rootCreaPedidoFarmacia.bloqueo_bodega_de" ng-model="rootCreaPedidoFarmacia.de_seleccion_bodega"  placeholder="Seleccionar Bodega" ng-change="valorSeleccionado(3)">
-                                            <option></option>
-                                            <option ng-repeat="bodega in  rootCreaPedidoFarmacia.de_lista_bodegas"  ng-value="bodega.bodega_id" >{{bodega.descripcion}}</option>
-                                        </select -->
-                                        <ui-select ng-change="onBodegaSeleccionada()" ng-model="root.pedido.farmaciaOrigen.centroUtilidad.bodega" theme="select2" class="form-control selectgeneral pull-left" >
+                                        <ui-select ng-change="onBodegaSeleccionada()" ng-model="root.pedido.farmaciaOrigen.centroUtilidad.bodega" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="deshabilitarSeleccionEmpresa()" >
                                             <ui-select-match  placeholder="Seleccionar Centro Utilidad">{{$select.selected.getNombre()}}</ui-select-match>
                                             <ui-select-choices repeat="bodega in root.pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getBodegas() | filter:$select.search">
                                                 {{bodega.getNombre()}}
@@ -108,14 +99,8 @@
                                         </br>
                                         <h4 class="h4MarginTopBottom">Farmacia: </h4>
 
-                                        <!-- ng-if normal Farmacia -->
-                                        <!-- select ui-select2="paraseleccionempresa" ng-if="!rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" class="form-control selectgeneral pull-left" ng-disabled="rootCreaPedidoFarmacia.bloqueo_producto_incluido" ng-model="rootCreaPedidoFarmacia.para_seleccion_empresa"  data-placeholder="Seleccionar Farmacia" ng-change="valorSeleccionado(4)">
-                                            <option value=""></option>
-                                            <option ng-repeat="empresa in  rootCreaPedidoFarmacia.para_lista_empresas"  value="{{empresa.empresa_id}},{{empresa.nombre_empresa}}" >{{empresa.nombre_empresa}}</option>
-                                        </select -->
 
-
-                                        <ui-select  ng-if="!rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" ng-model="root.pedido.farmaciaDestino" theme="select2" class="form-control selectgeneral pull-left" ng-change="onEmpresaDestinoSeleccionada()" >
+                                        <ui-select  ng-if="!rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" ng-model="root.pedido.farmaciaDestino" theme="select2" class="form-control selectgeneral pull-left" ng-change="onEmpresaDestinoSeleccionada()" ng-disabled="deshabilitarSeleccionEmpresa()" >
                                             <ui-select-match  placeholder="Seleccionar Farmacia">{{$select.selected.getNombre()}}</ui-select-match>
                                             <ui-select-choices repeat="empresa in root.empresasDestino | filter:$select.search">
                                                 {{empresa.getNombre()}}
@@ -138,7 +123,7 @@
                                         </br>
                                         <h4 class="h4MarginTopBottom">Centro Utilidad: </h4>
 
-                                        <ui-select  ng-model="root.pedido.farmaciaDestino.centroUtilidad" theme="select2" class="form-control selectgeneral pull-left" >
+                                        <ui-select  ng-model="root.pedido.farmaciaDestino.centroUtilidad" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="deshabilitarSeleccionEmpresa()" >
                                             <ui-select-match  placeholder="Seleccionar Centro Utilidad">{{$select.selected.getNombre()}}</ui-select-match>
                                             <ui-select-choices repeat="centro in root.pedido.getFarmaciaDestino().getCentrosUtilidad() | filter:$select.search">
                                                 {{centro.getNombre()}}
@@ -153,7 +138,7 @@
                                         </br>
                                         <h4 class="h4MarginTopBottom">Bodega: </h4>
 
-                                        <ui-select  ng-model="root.pedido.farmaciaDestino.centroUtilidad.bodega" theme="select2" class="form-control selectgeneral pull-left" ng-change="onBodegaSeleccionada()">
+                                        <ui-select  ng-model="root.pedido.farmaciaDestino.centroUtilidad.bodega" theme="select2" class="form-control selectgeneral pull-left" ng-change="onBodegaSeleccionada()" ng-disabled="deshabilitarSeleccionEmpresa()">
                                             <ui-select-match  placeholder="Seleccionar Centro Utilidad">{{$select.selected.getNombre()}}</ui-select-match>
                                             <ui-select-choices repeat="bodega in root.pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getBodegas() | filter:$select.search">
                                                 {{bodega.getNombre()}}

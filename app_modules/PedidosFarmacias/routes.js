@@ -147,8 +147,8 @@ module.exports = function(app, di_container) {
     });  
     
     //Actualizar Cantidades Detalle Pedido Final
-    app.post('/api/PedidosFarmacias/actualizarCantidadesDetallePedidoFinal', function(req, res) {
-        c_pedidos_farmacias.actualizarCantidadesDetallePedidoFinal(req, res);
+    app.post('/api/PedidosFarmacias/actualizarCantidadesDetallePedido', function(req, res) {
+        c_pedidos_farmacias.actualizarCantidadesDetallePedido(req, res);
     });
     
     //Eliminar Producto Detalle Pedido Final

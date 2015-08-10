@@ -289,7 +289,7 @@ define(["angular",
             $scope.onEditarPedido = function(pedido) {
                 localStorageService.set("pedidoFarmacia", {
                    numero_pedido: pedido.get_numero_pedido(),
-                   modificacion: 1 // => true
+                   tipoModificacion: '1'
                 });
                 
                 $state.go('GuardarPedido');

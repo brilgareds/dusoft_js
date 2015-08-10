@@ -18,6 +18,9 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.valido = false;
             this.tipoPedido;
             
+            //0 = ver , 1 = modificacion y 2 = modificacion especial
+            this.tipoModificacion = '0';
+            
         };
 
         PedidoFarmacia.prototype = Object.create(Pedido.getClass().prototype);
@@ -113,6 +116,17 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         PedidoFarmacia.prototype.getTipoPedido = function() {
             return this.tipoPedido;
         };
+        
+        
+        PedidoFarmacia.prototype.setTipoModificacion = function(tipoModificacion) {
+            this.tipoModificacion = tipoModificacion;
+            return this;
+        };
+        
+        PedidoFarmacia.prototype.getTipoModificacion = function() {
+            return this.tipoModificacion;
+        };
+        
         
         PedidoFarmacia.prototype.eliminarProducto = function(index) {
             this.productos.splice(index,1);

@@ -16,6 +16,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.productosSeleccionados = [];
             this.esTemporal = false;
             this.valido = false;
+            this.tipoPedido;
             
         };
 
@@ -102,6 +103,15 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
         
         PedidoFarmacia.prototype.getEsTemporal = function() {
             return this.esTemporal;
+        };
+        
+        PedidoFarmacia.prototype.setTipoPedido = function(tipoPedido) {
+            this.tipoPedido = tipoPedido;
+            return this;
+        };
+        
+        PedidoFarmacia.prototype.getTipoPedido = function() {
+            return this.tipoPedido;
         };
         
         PedidoFarmacia.prototype.eliminarProducto = function(index) {

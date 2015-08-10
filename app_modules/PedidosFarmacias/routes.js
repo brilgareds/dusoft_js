@@ -137,13 +137,13 @@ module.exports = function(app, di_container) {
     });    
     
     //Consultar Encabezado del Pedido
-    app.post('/api/PedidosFarmacias/consultarEncabezadoPedidoFinal', function(req, res) {
-        c_pedidos_farmacias.consultarEncabezadoPedidoFinal(req, res);
+    app.post('/api/PedidosFarmacias/consultarEncabezadoPedido', function(req, res) {
+        c_pedidos_farmacias.consultarEncabezadoPedido(req, res);
     });
     
     //Consultar Detalle del Pedido
-    app.post('/api/PedidosFarmacias/consultarDetallePedidoFinal', function(req, res) {
-        c_pedidos_farmacias.consultarDetallePedidoFinal(req, res);
+    app.post('/api/PedidosFarmacias/consultarDetallePedido', function(req, res) {
+        c_pedidos_farmacias.consultarDetallePedido(req, res);
     });  
     
     //Actualizar Cantidades Detalle Pedido Final

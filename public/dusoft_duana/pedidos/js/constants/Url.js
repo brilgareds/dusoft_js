@@ -57,7 +57,9 @@ define(["angular"], function(angular) {
                     'INSERTAR_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/insertarDetallePedidoFarmacia',
                     'ELIMINAR_REGISTRO_DETALLE_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/eliminarRegistroDetalleTemporal',
                     'ELIMINAR_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/eliminarPedidoTemporal',
-                    'SUBIR_ARCHIVO_PLANO': BASE_URL + '/PedidosFarmacias/subirArchivoPlano'
+                    'SUBIR_ARCHIVO_PLANO': BASE_URL + '/PedidosFarmacias/subirArchivoPlano',
+                    'CONSULTAR_ENCABEZADO_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/consultarEncabezadoPedido',
+                    'CONSULTAR_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/consultarDetallePedido'
                 },
                 // URLS PEDIDOS FARMACIAS.
                 'LISTAR_PEDIDOS': BASE_URL + '/PedidosClientes/listarPedidos',
@@ -90,8 +92,8 @@ define(["angular"], function(angular) {
                 'INSERTAR_PEDIDO_FARMACIA_DEFINITIVO': BASE_URL + '/PedidosFarmacias/insertarPedidoFarmacia',//depreciado
                 'INSERTAR_DETALLE_PEDIDO_FARMACIA_DEFINITIVO': BASE_URL + '/PedidosFarmacias/insertarDetallePedidoFarmacia',//depreciado
                 'INSERTAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/insertarProductoDetallePedidoFarmacia',
-                'CONSULTAR_ENCABEZADO_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/consultarEncabezadoPedidoFinal',
-                'CONSULTAR_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/consultarDetallePedidoFinal',
+                'CONSULTAR_ENCABEZADO_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/consultarEncabezadoPedido',//depreciado
+                'CONSULTAR_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/consultarDetallePedido',//depreciado
                 'ACTUALIZAR_CANTIDADES_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/actualizarCantidadesDetallePedidoFinal',
                 'ELIMINAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/eliminarProductoDetallePedidoFinal',
                 'LISTADO_TIPO_PRODUCTOS': BASE_URL + '/Productos/listarTipoProductos',//deprecido

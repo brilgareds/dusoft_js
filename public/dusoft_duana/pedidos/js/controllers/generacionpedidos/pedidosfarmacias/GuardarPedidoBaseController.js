@@ -69,10 +69,9 @@ define(["angular", "js/controllers",
              * +Descripcion: Permite hacer render en los dropdown de las empreas destino y origen
              */
             $scope.renderEncabezado = function(data){
-                $scope.seleccionarEmpresaPedido(false, data.empresa_destino, data.centro_destino, data.bogega_destino);
+                $scope.seleccionarEmpresaPedido(false, data.empresa_destino, data.centro_destino, data.bodega_destino);
                 $scope.seleccionarEmpresaPedido(true, data.farmacia_id, data.centro_utilidad, data.bodega);
-                $scope.root.pedido.setEsTemporal(true).setValido(true).setDescripcion(data.observacion);
-                console.log("es temporal ", $scope.root.pedido.getEsTemporal())
+                $scope.root.pedido.setValido(true).setDescripcion(data.observacion);
             };
             
             
@@ -81,12 +80,11 @@ define(["angular", "js/controllers",
              * @param {Object} data
              * +Descripcion: Permite hacer render en los dropdown de las empreas destino y origen
              */
-            $scope.renderDetalle = function(data){
-                var _productos = data.obj.listado_productos;
+            $scope.renderDetalle = function(_productos){
                 
                 for (var i in _productos) {
                     var _producto = _productos[i];
-                    var producto = ProductoPedidoFarmacia.get(_producto.codigo_producto, _producto.descripcion).
+                    var producto = ProductoPedidoFarmacia.get(_producto.codigo_producto, _producto.descripcion_producto).
                             setCantidadPendiente(_producto.cantidad_pendiente).
                             setTipoProductoId(_producto.tipo_producto_id).
                             setCantidadSolicitada(_producto.cantidad_solicitada);

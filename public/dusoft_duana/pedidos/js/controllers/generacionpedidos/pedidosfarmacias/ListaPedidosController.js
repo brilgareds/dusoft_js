@@ -79,7 +79,7 @@ define(["angular",
                                         <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
                                         <ul class="dropdown-menu dropdown-options">\
                                             <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)" ng-if="rootPedidosFarmacias.opciones.sw_modificar_pedido">\n\
-                                                <a href="javascript:void(0);" ng-click="onEditarPedidoFarmacia(row.entity)" ng-validate-events="{{rootPedidosFarmacias.opcionesModulo.btnModificarPedido}}" >Modificar</a>\
+                                                <a href="javascript:void(0);" ng-click="onEditarPedido(row.entity)" ng-validate-events="{{rootPedidosFarmacias.opcionesModulo.btnModificarPedido}}" >Modificar</a>\
                                             </li>\
                                             <li><a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity)" ng-validate-events="{{rootPedidosFarmacias.opcionesModulo.btnConsultarPedido}}">Ver</a></li>\
                                             <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)" ng-if="rootPedidosFarmacias.opciones.sw_modificacion_especial_pedidos">\
@@ -279,6 +279,22 @@ define(["angular",
                 });
 
             };
+            
+            /*
+             * @Author: Eduar
+             * @param {PedidoFarmacia} pedido
+             * +Descripcion: handler de la opcion modificar pedido 
+             */
+            
+            $scope.onEditarPedido = function(pedido) {
+                localStorageService.set("pedidoFarmacia", {
+                   numero_pedido: pedido.get_numero_pedido(),
+                   modificacion: 1 // => true
+                });
+                
+                $state.go('GuardarPedido');
+             
+             };
 
             self.buscarPedidos();
 

@@ -68,6 +68,7 @@ define(["angular", "js/controllers",
 
                         if (data.obj.encabezado_pedido.length > 0) {
                             $scope.renderEncabezado(data.obj.encabezado_pedido[0]);
+                            $scope.root.pedido.setEsTemporal(true);
 
                             self.consultarDetallePedidoTemporal(function(consultaDetalle) {
                                 callback(consultaDetalle);
@@ -103,8 +104,8 @@ define(["angular", "js/controllers",
                 var url = API.PEDIDOS.FARMACIAS.LISTAR_DETALLE_PEDIDO_TEMPORAL;
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
-
-                        $scope.renderDetalle(data);
+                        
+                        $scope.renderDetalle(data.obj.listado_productos);
 
                         callback(true);
 

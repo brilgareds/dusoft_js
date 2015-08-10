@@ -227,7 +227,7 @@ PedidosFarmaciasModel.prototype.buscar_usuario_bloqueo = function(codigo_tempora
 
 PedidosFarmaciasModel.prototype.consultar_pedido_farmacia_temporal = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback) {
 
-    var sql = " SELECT farmacia_id, centro_utilidad, bodega, empresa_destino, centro_destino, bogega_destino, observacion, usuario_id\
+    var sql = " SELECT farmacia_id, centro_utilidad, bodega, empresa_destino, centro_destino, bogega_destino as bodega_destino, observacion, usuario_id\
                 FROM solicitud_Bodega_principal_aux\
                 WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and usuario_id = $4";
 
@@ -238,7 +238,7 @@ PedidosFarmaciasModel.prototype.consultar_pedido_farmacia_temporal = function(em
 
 PedidosFarmaciasModel.prototype.listar_detalle_pedido_temporal = function(empresa_id, centro_utilidad_id, bodega_id, usuario_id, callback)
 {
-    var sql = "SELECT codigo_producto, fc_descripcion_producto(codigo_producto) as descripcion, cantidad_solic::integer as cantidad_solicitada, cantidad_pendiente, tipo_producto as tipo_producto_id\
+    var sql = "SELECT codigo_producto, fc_descripcion_producto(codigo_producto) as descripcion_producto, cantidad_solic::integer as cantidad_solicitada, cantidad_pendiente, tipo_producto as tipo_producto_id\
                 FROM solicitud_pro_a_bod_prpal_tmp WHERE farmacia_id = $1 and centro_utilidad = $2 and bodega = $3 and usuario_id = $4 order by cantidad_pendiente asc";
 
     G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, usuario_id], function(err, rows, result) {
@@ -312,9 +312,9 @@ PedidosFarmaciasModel.prototype.insertar_producto_detalle_pedido_farmacia = func
     });    
 };
 
-PedidosFarmaciasModel.prototype.consultar_encabezado_pedido_final = function(numero_pedido, callback)
-{
-    var sql = "SELECT farmacia_id, centro_utilidad, bodega, observacion, usuario_id, fecha_registro, empresa_destino, sw_despacho, estado, tipo_pedido, centro_destino, bodega_destino\
+PedidosFarmaciasModel.prototype.consultar_encabezado_pedido = function(numero_pedido, callback) {
+    var sql = "SELECT farmacia_id, centro_utilidad, bodega, observacion, usuario_id, fecha_registro, empresa_destino, sw_despacho, estado, \
+                tipo_pedido, centro_destino, bodega_destino, solicitud_prod_a_bod_ppal_id as numero_pedido\
                 FROM solicitud_productos_a_bodega_principal\
                 WHERE solicitud_prod_a_bod_ppal_id = $1";
 
@@ -323,7 +323,8 @@ PedidosFarmaciasModel.prototype.consultar_encabezado_pedido_final = function(num
     });
 };
 
-PedidosFarmaciasModel.prototype.consultar_detalle_pedido_final = function(numero_pedido, callback)
+//depreciado
+/*PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedido, callback)
 {
     	
     var sql = "SELECT solicitud_prod_a_bod_ppal_det_id as numero_detalle_pedido, farmacia_id, centro_utilidad, bodega, codigo_producto, fc_descripcion_producto(codigo_producto) as descripcion, cantidad_solic::integer as cantidad_solicitada, tipo_producto as tipo_producto_id, usuario_id, fecha_registro, sw_pendiente, cantidad_pendiente\
@@ -333,7 +334,7 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido_final = function(numero
     G.db.query(sql, [numero_pedido], function(err, rows, result) {
         callback(err, rows);
     });
-};
+};*/
 
 PedidosFarmaciasModel.prototype.actualizar_cantidades_detalle_pedido_final = function(numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente, usuario, callback)
 {    
@@ -630,7 +631,8 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
                 b.item_id,\
                 b.tipo_estado_auditoria,\
                 b.cantidad_ingresada,\
-                COALESCE(b.auditado, '0') as auditado\
+                COALESCE(b.auditado, '0') as auditado,\
+                a.tipo_producto as tipo_producto_id\
                 from solicitud_productos_a_bodega_principal_detalle a\
                 inner join solicitud_productos_a_bodega_principal g on a.solicitud_prod_a_bod_ppal_id = g.solicitud_prod_a_bod_ppal_id\
                 inner join inventarios f on a.codigo_producto = f.codigo_producto and g.empresa_destino = f.empresa_id\

@@ -312,6 +312,7 @@ PedidosFarmaciasModel.prototype.insertar_producto_detalle_pedido_farmacia = func
     });    
 };
 
+//depreciado
 PedidosFarmaciasModel.prototype.consultar_encabezado_pedido = function(numero_pedido, callback) {
     var sql = "SELECT farmacia_id, centro_utilidad, bodega, observacion, usuario_id, fecha_registro, empresa_destino, sw_despacho, estado, \
                 tipo_pedido, centro_destino, bodega_destino, solicitud_prod_a_bod_ppal_id as numero_pedido\
@@ -336,19 +337,19 @@ PedidosFarmaciasModel.prototype.consultar_encabezado_pedido = function(numero_pe
     });
 };*/
 
-PedidosFarmaciasModel.prototype.actualizar_cantidades_detalle_pedido_final = function(numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente, usuario, callback)
+PedidosFarmaciasModel.prototype.actualizar_cantidades_detalle_pedido = function(numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente, usuario, callback)
 {    
     G.db.begin(function() {
         
         //Los logs de modificaciones se registran en la misma tabla de registro de los eliminados
-        __log_eliminar_producto_detalle_pedido_final(numero_pedido, codigo_producto, usuario, function(err, result) {
+        __log_eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, usuario, function(err, result) {
 
             if(err){
                 callback(err);
                 return;
             }
 
-            __actualizar_cantidades_detalle_pedido_final(numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente, function(err, rows) {
+            __actualizar_cantidades_detalle_pedido(numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente, function(err, rows) {
 
                 if(err){
                     callback(err);
@@ -364,18 +365,18 @@ PedidosFarmaciasModel.prototype.actualizar_cantidades_detalle_pedido_final = fun
      });
 };
 
-PedidosFarmaciasModel.prototype.eliminar_producto_detalle_pedido_final = function(numero_pedido, codigo_producto, usuario, callback)
+PedidosFarmaciasModel.prototype.eliminar_producto_detalle_pedido = function(numero_pedido, codigo_producto, usuario, callback)
 {
     G.db.begin(function() {
         
-       __log_eliminar_producto_detalle_pedido_final(numero_pedido, codigo_producto, usuario, function(err, result) {
+       __log_eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, usuario, function(err, result) {
 
            if(err){
                callback(err);
                return;
            }
 
-           __eliminar_producto_detalle_pedido_final(numero_pedido, codigo_producto, function(err, rows) {
+           __eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, function(err, rows) {
 
                if(err){
                    callback(err);
@@ -391,7 +392,7 @@ PedidosFarmaciasModel.prototype.eliminar_producto_detalle_pedido_final = functio
     });
 };
 
-function __actualizar_cantidades_detalle_pedido_final(numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente, callback)
+function __actualizar_cantidades_detalle_pedido(numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente, callback)
 {
     
     var sql = "UPDATE solicitud_productos_a_bodega_principal_detalle\
@@ -401,7 +402,7 @@ function __actualizar_cantidades_detalle_pedido_final(numero_pedido, codigo_prod
     G.db.transaction(sql, [numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente], callback);
 };
 
-function __eliminar_producto_detalle_pedido_final(numero_pedido, codigo_producto, callback) {
+function __eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, callback) {
 
     var sql = "DELETE FROM solicitud_productos_a_bodega_principal_detalle\
                 WHERE solicitud_prod_a_bod_ppal_id = $1 and codigo_producto = $2";
@@ -409,7 +410,7 @@ function __eliminar_producto_detalle_pedido_final(numero_pedido, codigo_producto
     G.db.transaction(sql, [numero_pedido, codigo_producto], callback);
 };
 
-function __log_eliminar_producto_detalle_pedido_final(numero_pedido, codigo_producto, usuario, callback)
+function __log_eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, usuario, callback)
 {
     
     var sql = "INSERT INTO log_eliminacion_pedidos_farmacia(pedido_id,farmacia,usuario_solicitud,codigo_producto,cant_solicita,cant_pendiente,usuario_id,fecha_registro,usuario_ejecuta)\
@@ -531,7 +532,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
     G.db.paginated(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result) {
         callback(err, rows);
     });
-};
+}
 
 // Lista todos los pedidos temorales de farmacias
 PedidosFarmaciasModel.prototype.listar_pedidos_temporales_farmacias = function(empresa_id, termino_busqueda, pagina, usuario, callback) {
@@ -593,7 +594,10 @@ PedidosFarmaciasModel.prototype.consultar_pedido = function(numero_pedido, callb
                      when a.estado = 9 then 'En zona con pdtes' end as descripcion_estado_actual_pedido, \
                 f.estado as estado_separacion, \
                 to_char(a.fecha_registro, 'dd-mm-yyyy HH24:MI:SS.MS') as fecha_registro, \
-                a.fecha_registro as fecha_registro_pedido\
+                a.fecha_registro as fecha_registro_pedido,\
+                a.empresa_destino,\
+                a.centro_destino,\
+                a.bodega_destino\
                 from solicitud_productos_a_bodega_principal as a \
                 inner join bodegas as b on a.farmacia_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega \
                 inner join centros_utilidad as c on b.empresa_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad \

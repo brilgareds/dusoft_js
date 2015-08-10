@@ -20,6 +20,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.estado;
             this.enFarmaciaSeleccionada = false;
             this.cantidadPendiente = 0;
+            this.cantidadIngresada = 0;
         }
 
         ProductoPedidoFarmacia.prototype = Object.create(Producto.getClass().prototype);
@@ -130,6 +131,15 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
         
         ProductoPedidoFarmacia.prototype.getCantidadPendiente = function() {
             return this.cantidadPendiente;
+        };
+        
+        ProductoPedidoFarmacia.prototype.setCantidadIngresada = function(cantidadIngresada) {
+            this.cantidadIngresada = parseInt(cantidadIngresada);
+            return this;
+        };
+        
+        ProductoPedidoFarmacia.prototype.getCantidadIngresada = function() {
+            return this.cantidadIngresada;
         };
         
         ProductoPedidoFarmacia.prototype.setEstado = function(estado) {

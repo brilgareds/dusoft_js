@@ -21,7 +21,11 @@ define(["angular", "js/controllers",
                 var pedido = localStorageService.get("pedidoFarmacia");
 
                 if (pedido) {
-                    self.consultarEncabezadoPedidoTemporal(pedido, function(consultaEncabezado) {
+                    $scope.root.pedido.setTipoModificacion(pedido.tipoModificacion);
+                    
+                    $scope.root.lista_productos.columnDefs[4].visible = self.visualizarColumnaModificarCantidad();
+                    
+                    self.consultarEncabezadoPedido(pedido, function(consultaEncabezado) {
                         if (!consultaEncabezado) {
                             AlertService.mostrarMensaje("warning", "No se ha consultado el pedido temporal");
                         }
@@ -31,11 +35,24 @@ define(["angular", "js/controllers",
             
             /*
              * @Author: Eduar
+             * return  {boolean} visualizar
+             * +Descripcion: Determina si se muestra la columna de modificar cantidad
+             */
+            self.visualizarColumnaModificarCantidad = function(){
+                if( $scope.root.pedido.getTipoModificacion() === '1' ){
+                    return true;
+                }
+                
+                return false;
+            };
+            
+            /*
+             * @Author: Eduar
              * @param {Object} pedido
              * @param {function} callback
              * +Descripcion: Consulta encabezado del pedido
              */
-            self.consultarEncabezadoPedidoTemporal = function(pedido, callback) {
+            self.consultarEncabezadoPedido = function(pedido, callback) {
 
                 var obj = {
                     session: $scope.rootPedidoFarmacia.session,
@@ -57,7 +74,8 @@ define(["angular", "js/controllers",
                             $scope.renderEncabezado(_pedido);
                             $scope.root.pedido.setEsTemporal(false);
                             $scope.root.pedido.setNumeroPedido(_pedido.numero_pedido);
-                            console.log("detalle pedido")
+                            $scope.root.pedido.setEstadoActualPedido(_pedido.estado_actual_pedido);
+                            
                             self.consultarDetallePedido(function(consultaDetalle) {
                                 callback(consultaDetalle);
                             });
@@ -91,7 +109,7 @@ define(["angular", "js/controllers",
                 var url = API.PEDIDOS.FARMACIAS.CONSULTAR_DETALLE_PEDIDO_FARMACIA;
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
-
+                        pedido.vaciarProductosSeleccionados();
                         $scope.renderDetalle(data.obj.detalle_pedido);
 
                         callback(true);
@@ -102,6 +120,193 @@ define(["angular", "js/controllers",
                 });
             };
             
+            /*
+             * @Author: Eduar
+             * @param {ProductoPedidoFarmacia} producto
+             * +Descripcion: Realiza la peticion al API para eliminar un producto del temporal.
+             */
+            self.eliminarProducto = function(producto, index){
+                var pedido = $scope.root.pedido;
+                
+                if(pedido.getProductosSeleccionados().length <= 1){
+                   AlertService.mostrarMensaje("warning", "Debe exisitir por lo menos un producto en el pedido");
+                   return;
+                }
+                
+                var pedido = $scope.root.pedido;
+                var url = API.PEDIDOS.FARMACIAS.ELIMINAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA;
+                
+                 var obj = {
+                    session: $scope.rootPedidoFarmacia.session,
+                    data: {
+                        pedidos_farmacias: {
+                            numero_pedido: pedido.get_numero_pedido(),
+                            codigo_producto: producto.getCodigoProducto()
+                        }
+                    }
+                };
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                       pedido.eliminarProductoSeleccionado(index);
+                       
+                    } else {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+                });
+            };
+            
+            /*
+             * @Author: Eduar
+             * @param {String} titulo
+             * @param {String} mensaje
+             * @param {function} callback
+             * +Descripcion: Permite mostrar un alert, prevee un callback donde envia si se dio click en aceptar o cancelar
+             */
+            self.mostrarAlerta = function(titulo, mensaje, callback) {
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">'+titulo+'</h4>\
+                                    </div>\
+                                    <div class="modal-body row">\
+                                    <div class="col-md-12">\
+                                    <h4>'+mensaje+'</h4>\
+                                    </div>\
+                                    </div>\
+                                    <div class="modal-footer">\
+                                    <button class="btn btn-warning" ng-click="cerrar(false)" ng-disabled="" >Cerrar</button>\
+                                    <button class="btn btn-primary" ng-click="cerrar(true)" ng-disabled="" >Aceptar</button>\
+                                    </div>',
+                                           scope: $scope,
+                                           controller: function($scope, $modalInstance) {
+                                               $scope.cerrar = function(acepto) {
+                                                   callback(acepto);
+                                                   $modalInstance.close();
+                                               };
+                                           }
+                                       };
+
+                  var modalInstance = $modal.open($scope.opts);
+            };
+            
+            /*
+             * @Author: Eduar
+             * @param {ProductoPedidoFarmacia} _producto
+             * +Descripcion: Realiza la peticion al api para cambiar la cantidad solicitada y la pendiente 
+             */
+            
+            self.modificarCantidadSolicitada = function(_producto){
+                                
+                var diferencia_cantidad = 0;
+                var nuevo_pendiente = 0;
+                var producto = angular.copy(_producto);
+
+                diferencia_cantidad =  producto.getCantidadSolicitada() - producto.getCantidadIngresada();
+
+                producto.setCantidadSolicitada(producto.getCantidadIngresada());
+                
+                nuevo_pendiente = producto.getCantidadPendiente() - diferencia_cantidad;
+
+                if(nuevo_pendiente >= 0){
+                    producto.setCantidadPendiente(nuevo_pendiente);
+                    
+                } else {
+                    producto.setCantidadPendiente(0);
+                }
+                
+                var obj = {
+                    session:$scope.rootPedidoFarmacia.session,
+                    data:{
+                        pedidos_farmacias:{
+                            numero_pedido: $scope.root.pedido.get_numero_pedido(),
+                            codigo_producto: producto.getCodigoProducto(),
+                            cantidad_solicitada: parseInt(producto.getCantidadSolicitada()),
+                            cantidad_pendiente: parseInt(producto.getCantidadPendiente())
+                        }
+                    }
+                };
+
+                var url = API.PEDIDOS.FARMACIAS.ACTUALIZAR_CANTIDADES_DETALLE_PEDIDO_FARMACIA;
+                
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    console.log("resultado cambiar cantidad ", data);
+                    if(data.status !== 200){
+                        AlertService.mostrarMensaje("warning", data.msj);
+                        
+                    }
+                    
+                     self.consultarDetallePedido(function(consultaDetalle) {
+                         
+                     });
+                    
+                });            
+            };
+            
+            /*
+             * @Author: Eduar
+             * @param {$event} e
+             * @param {ProductoPedidoFarmacia} producto
+             * +Descripcion: Evento que se escucha de GuardarPedidoBaseController, valida el cambio de cantidad del producto
+             */
+            $scope.eventoEditarCantidad = $scope.$on("onEditarCantidad", function(e, producto){
+                
+                var mensaje;
+                
+                if($scope.root.pedido.getEstadoActualPedido() === '0'){
+                    
+                    if(producto.getCantidadIngresada() >= producto.getCantidadSolicitada()){
+                        mensaje = "La cantidad ingresada debe ser menor a la solicitada";
+                        
+                        self.mostrarAlerta("Alerta del sistema", mensaje, function(acepto){
+                            
+                        });
+                        
+                    } else {
+                        mensaje = "Seguro desea cambiar la cantidad solicitada "+ producto.getCantidadSolicitada() + " a "+producto.getCantidadIngresada() + " ?";
+                        
+                        self.mostrarAlerta("Alerta del sistema", mensaje, function(acepto){
+                            if(acepto){
+                                self.modificarCantidadSolicitada(producto);
+                            }
+                        });
+                    }
+                } else {
+                    mensaje = "El estado actual del pedido no permite modificarlo";
+                    
+                    self.mostrarAlerta("Alerta del sistema", mensaje, function(acepto){
+
+                    });
+                }
+                
+
+            });
+            
+            /*
+             * @Author: Eduar
+             * @param {$event} e
+             * @param {ProductoPedidoFarmacia} producto
+             * @param {int} index
+             * +Descripcion: Evento que se dispara desde el controlador base para eliminar un producto
+             */
+            $scope.onEliminarProductoPedido = $scope.$on("onEliminarProducto",function(e, producto, index){
+                self.eliminarProducto(producto, index);
+            });
+            
+                        
+            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+                $scope.eventoEditarCantidad();
+                $scope.onEliminarProductoPedido();
+                $scope.rootPedidoFarmacia = {};
+                $scope.$$watchers = null;
+                localStorageService.set("pedidoFarmacia", null);
+            });
+            
+           
             self.init();
 
 

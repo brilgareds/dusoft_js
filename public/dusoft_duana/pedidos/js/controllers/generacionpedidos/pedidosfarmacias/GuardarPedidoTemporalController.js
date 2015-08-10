@@ -448,10 +448,14 @@ define(["angular", "js/controllers",
             $scope.respuestaArchivoPlano = function(file, message) {
                 console.log("respuesta archivo plano ", message);
                 $scope.rootPedidoFarmaciaTemporal.opcionesArchivo.cancel();
+                var datos = JSON.parse(message);
                 
-                self.consultarDetallePedidoTemporal(function(){
-                    
-                });
+                if(datos.status === 200){
+                    self.consultarDetallePedidoTemporal(function(){
+
+                    });
+                }
+                
                 /*var para_seleccion_empresa = [];
                 var para_seleccion_centro_utilidad = [];
                 var para_seleccion_bodega = [];

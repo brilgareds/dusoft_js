@@ -77,6 +77,10 @@ define(["angular", "js/controllers",
                 $state.go('Cotizaciones');
             };
 
+            $scope.habilitar_observacion_cartera = function(cotizacion){
+                return {'click': cotizacion.get_estado_cotizacion() != '0'};
+            };
+            
             $scope.modificar_cotizacion_cliente = function(cotizacion) {
 
                 localStorageService.add("numero_cotizacion", cotizacion.get_numero_cotizacion());
@@ -177,7 +181,7 @@ define(["angular", "js/controllers",
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
                                                 <li><a href="javascript:void(0);" ng-click="modificar_cotizacion_cliente(row.entity)" >Modificar</a></li>\
-                                                <li><a href="javascript:void(0);" ng-click="generar_observacion_cartera(row.entity)" >Cartera</a></li>\
+                                                <li><a href="javascript:void(0);" ng-validate-events="{{ habilitar_observacion_cartera(row.entity) }}" ng-click="generar_observacion_cartera(row.entity)" >Cartera</a></li>\
                                                 <li><a href="javascript:void(0);" ng-click="" >Ver PDF</a></li>\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ validar_envio_email(row.entity) }}" ng-click="ventana_enviar_email(row.entity)" >Enviar por Email</a></li>\
                                             </ul>\

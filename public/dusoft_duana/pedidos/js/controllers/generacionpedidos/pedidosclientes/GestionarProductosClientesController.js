@@ -76,7 +76,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             cotizacion: $scope.Pedido
                         }
                     }
-                };
+                };              
 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.INSERTAR_COTIZACION, "POST", obj, function(data) {
 
@@ -85,8 +85,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     if (data.status === 200 && data.obj.pedidos_clientes.numero_cotizacion > 0) {
 
                         $scope.Pedido.set_numero_cotizacion(data.obj.pedidos_clientes.numero_cotizacion);
-                        $scope.Pedido.set_tipo_producto($scope.datos_form.tipo_producto);                                               
-                        
+                        $scope.Pedido.set_tipo_producto($scope.datos_form.tipo_producto);
+
                         localStorageService.add("numero_cotizacion", $scope.Pedido.get_numero_cotizacion());
                         callback(true);
                     } else {
@@ -162,6 +162,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             $scope.seleccionar_tipo_producto = function(tipo_producto) {
                 $scope.datos_form.tipo_producto = tipo_producto;
                 $scope.datos_form.pagina_actual = 1;
+                
                 that.obtener_seleccion_tipo_producto();
                 that.buscar_productos_clientes();
             };
@@ -211,10 +212,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             numero_cotizacion: $scope.Pedido.get_numero_cotizacion()
                         }
                     }
-                };
-                
-                /*console.log('== obj ==');
-                console.log(obj);*/
+                };              
 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_PRODUCTOS_CLIENTES, "POST", obj, function(data) {
 
@@ -265,12 +263,14 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 $scope.datos_form.producto_seleccionado = producto;
 
                 $scope.Pedido.set_productos(producto);
-
+                
+                $scope.Pedido.set_tipo_producto($scope.datos_form.tipo_producto);
+                
                 if ($scope.datos_form.tipo_producto === '') {
                     $scope.datos_form.tipo_producto = producto.get_tipo_producto();
                     $scope.Pedido.set_tipo_producto(producto.get_tipo_producto());
                 }
-
+                
                 that.gestionar_cotizaciones();
             };
 

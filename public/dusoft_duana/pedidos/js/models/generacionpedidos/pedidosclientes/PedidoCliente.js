@@ -19,6 +19,8 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                 this.descripcion_tipo_producto = '';
                 this.observacion_cartera = '';
                 this.aprobado_cartera = false;
+                this.estado_cotizacion = '';
+                this.descripcion_estado_cotizacion = '';
             }
             ;
 
@@ -189,6 +191,37 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             PedidoCliente.prototype.get_aprobado_cartera = function() {
                 return this.aprobado_cartera;
             };
+            
+            // Descripcion estado actual pedido
+            PedidoCliente.prototype.set_descripcion_estado_actual_pedido = function(descripcion_estado) {
+                this.descripcion_estado_actual_pedido = descripcion_estado;
+                return this;
+            };
+
+            PedidoCliente.prototype.get_descripcion_estado_actual_pedido = function() {
+                return this.descripcion_estado_actual_pedido;
+            };
+            
+            // Estado cotizacion
+            PedidoCliente.prototype.set_estado_cotizacion = function(estado_cotizacion) {
+                this.estado_cotizacion = estado_cotizacion;
+                return this;
+            };
+
+            PedidoCliente.prototype.get_estado_cotizacion = function() {
+                return this.estado_cotizacion;
+            };
+            
+            // Descripcion estado cotizacion
+            PedidoCliente.prototype.set_descripcion_estado_cotizacion = function(descripcion_estado) {
+                this.descripcion_estado_cotizacion = descripcion_estado;
+                return this;
+            };
+
+            PedidoCliente.prototype.get_descripcion_estado_cotizacion = function() {
+                return this.descripcion_estado_cotizacion;
+            };
+            
 
             this.get = function(empresa_id, centro_utilidad_id, bodega_id) {
                 return new PedidoCliente(empresa_id, centro_utilidad_id, bodega_id);

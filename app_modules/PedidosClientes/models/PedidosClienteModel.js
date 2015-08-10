@@ -128,6 +128,9 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
     }
 
     var sql = " select \
+                a.empresa_id, \
+                a.centro_destino as centro_utilidad_id, \
+                a.bodega_destino as bodega_id, \
                 a.pedido_cliente_id as numero_pedido, \
                 b.tipo_id_tercero as tipo_id_cliente, \
                 b.tercero_id as identificacion_cliente, \
@@ -167,7 +170,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
                         or b.telefono ilike $2   \
                         or c.vendedor_id ilike $2 \
                         or c.nombre ilike $2) \
-                /*AND (a.estado IN ('0','1','2','3'))*/  order by 1 desc ";
+                /*AND (a.estado IN ('0','1','2','3'))*/  order by 4 desc ";
 
     G.db.paginated(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
         callback(err, rows);
@@ -1057,6 +1060,11 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
                 a.sw_aprobado_cartera,\
                 coalesce(a.tipo_producto,'') as tipo_producto,\
                 coalesce(g.descripcion,'') as descripcion_tipo_producto,\
+                a.estado,\
+                case when a.estado = 0 then 'Inactivo'\
+                     when a.estado = 1 then 'Activo'\
+                     when a.estado = 2 then 'Anulado'\
+                     when a.estado = 3 then 'Aprobado cartera' end as descripcion_estado ,\
                 a.fecha_registro\
                 from ventas_ordenes_pedidos_tmp a\
                 inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id\
@@ -1111,6 +1119,11 @@ PedidosClienteModel.prototype.consultar_cotizacion = function(cotizacion, callba
                 a.sw_aprobado_cartera,\
                 coalesce(a.tipo_producto,'') as tipo_producto,\
                 coalesce(g.descripcion,'') as descripcion_tipo_producto,\
+                a.estado,\
+                case when a.estado = 0 then 'Inactivo'\
+                     when a.estado = 1 then 'Activo'\
+                     when a.estado = 2 then 'Anulado'\
+                     when a.estado = 3 then 'Aprobado cartera' end as descripcion_estado ,\
                 a.fecha_registro\
                 from ventas_ordenes_pedidos_tmp a\
                 inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id\

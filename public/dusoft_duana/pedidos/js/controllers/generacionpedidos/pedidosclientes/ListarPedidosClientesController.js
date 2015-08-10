@@ -48,38 +48,56 @@ define(["angular", "js/controllers",
                 fecha_final_cotizaciones: $filter('date')(fecha_actual, "yyyy-MM-dd"),
                 pagina_actual_cotizaciones: 1,
                 cantidad_items_cotizaciones: 0,
-                paginando_cotizaciones: false
+                paginando_cotizaciones: false,
+                estados_cotizaciones: [
+                    "btn btn-danger btn-xs",
+                    "btn btn-primary btn-xs",
+                    "btn btn-danger btn-xs",
+                    "btn btn-success btn-xs"
+                ],
+                estados_pedidos: [
+                    "btn btn-danger btn-xs",
+                    "btn btn-warning btn-xs",
+                    "btn btn-primary btn-xs",
+                    "btn btn-info btn-xs",
+                    "btn btn-success btn-xs",
+                    "btn btn-danger btn-xs",
+                    "btn btn-warning btn-xs",
+                    "btn btn-primary btn-xs",
+                    "btn btn-primary btn-xs",
+                    "btn btn-info btn-xs"
+                ]
             };
 
             // Acciones Botones 
             $scope.gestionar_cotizacion_cliente = function() {
-                
+
                 localStorageService.add("numero_cotizacion", 0);
                 localStorageService.add("cartera", '0');
                 $state.go('Cotizaciones');
             };
-            
+
             $scope.modificar_cotizacion_cliente = function(cotizacion) {
-                
+
                 localStorageService.add("numero_cotizacion", cotizacion.get_numero_cotizacion());
                 localStorageService.add("cartera", '0');
                 $state.go('Cotizaciones');
             };
-            
+
             $scope.generar_observacion_cartera = function(cotizacion) {
-                
+
                 localStorageService.add("numero_cotizacion", cotizacion.get_numero_cotizacion());
                 localStorageService.add("cartera", '1');
                 $state.go('Cotizaciones');
             };
-            
+
             // Cotizaciones 
             $scope.buscador_cotizaciones = function(ev) {
                 if (ev.which === 13) {
                     that.buscar_cotizaciones();
                 }
             };
-            
+
             that.buscar_cotizaciones = function() {
 
                 if ($scope.datos_view.ultima_busqueda_cotizaciones !== $scope.datos_view.termino_busqueda_cotizaciones) {
@@ -97,7 +115,7 @@ define(["angular", "js/controllers",
                             pagina_actual: $scope.datos_view.pagina_actual_cotizaciones
                         }
                     }
-                };                
+                };
 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_COTIZACIONES, "POST", obj, function(data) {
 
@@ -135,6 +153,7 @@ define(["angular", "js/controllers",
                     var vendedor = Vendedor.get(data.nombre_vendendor, data.tipo_id_vendedor, data.vendedor_id, data.telefono_vendedor);
 
                     cotizacion.set_numero_cotizacion(data.numero_cotizacion).set_vendedor(vendedor).setCliente(cliente);
+                    cotizacion.set_estado_cotizacion(data.estado).set_descripcion_estado_cotizacion(data.descripcion_estado);
                     cotizacion.set_tipo_producto(data.tipo_producto);
                     cotizacion.setFechaRegistro(data.fecha_registro);
 
@@ -142,40 +161,16 @@ define(["angular", "js/controllers",
                 });
             };
 
-            $scope.lista_pedidos_clientes = {
-                data: 'Empresa.get_planillas()',
-                enableColumnResize: true,
-                enableRowSelection: false,
-                columnDefs: [
-                    {field: 'get_numero_guia()', displayName: 'Estado', width: "10%"},
-                    {field: 'get_transportadora().get_descripcion()', displayName: 'No. Pedido', width: "10%"},
-                    {field: 'get_ciudad().get_nombre_ciudad()', displayName: 'Cliente', width: "30%"},
-                    {field: 'get_cantidad_cajas()', displayName: 'Vendedor', width: "25%"},
-                    {field: 'get_cantidad_neveras()', displayName: 'Valor', width: "10%"},
-                    {field: 'getFechaRegistro()', displayName: "F. Registro", width: "9%"},
-                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",
-                        cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
-                                            <ul class="dropdown-menu dropdown-options">\
-                                                <li><a href="javascript:void(0);" ng-click="gestionar_planilla_despacho(row.entity,true)" >Modificar</a></li>\
-                                                <li><a href="javascript:void(0);" ng-click="generar_reporte(row.entity,false)" >Ver PDF</a></li>\
-                                                <li><a href="javascript:void(0);" ng-validate-events="{{ validar_envio_email(row.entity) }}" ng-click="ventana_enviar_email(row.entity)" >Enviar por Email</a></li>\
-                                            </ul>\
-                                       </div>'
-                    }
-                ]
-            };
-
             $scope.lista_cotizaciones_clientes = {
                 data: 'Empresa.get_cotizaciones()',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
-                    {field: 'get_numero_guia()', displayName: 'Estado', width: "10%"},
+                    {field: 'get_descripcion_estado_cotizacion()', displayName: "Estado Actual", cellClass: "txt-center", width: "10%",
+                        cellTemplate: "<button type='button' ng-class='agregar_clase_cotizacion(row.entity.get_estado_cotizacion())'> <span ng-class=''></span> {{ row.entity.get_descripcion_estado_cotizacion() }} </button>"},
                     {field: 'get_numero_cotizacion()', displayName: 'No. Cotización', width: "10%"},
                     {field: 'getCliente().get_descripcion()', displayName: 'Cliente', width: "30%"},
                     {field: 'get_vendedor().get_descripcion()', displayName: 'Vendedor', width: "25%"},
-                    {field: 'get_cantidad_neveras()', displayName: 'Valor', width: "10%"},
                     {field: 'getFechaRegistro()', displayName: "F. Registro", width: "9%", cellFilter: 'date : "dd-MM-yyyy" '},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
@@ -191,6 +186,11 @@ define(["angular", "js/controllers",
                 ]
             };
 
+            // Agregar Clase de acuerdo al estado del pedido
+            $scope.agregar_clase_cotizacion = function(estado) {
+                return $scope.datos_view.estados_cotizaciones[estado];
+            };
+
             $scope.pagina_anterior_cotizaciones = function() {
                 $scope.datos_view.paginando_cotizaciones = true;
                 $scope.datos_view.pagina_actual_cotizaciones--;
@@ -203,7 +203,97 @@ define(["angular", "js/controllers",
                 that.buscar_cotizaciones();
             };
 
+            // Pedidos
+            that.buscar_pedidos = function() {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_clientes: {
+                            empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
+                            fecha_inicial: $filter('date')($scope.datos_view.fecha_inicial_cotizaciones, "yyyy-MM-dd") + " 00:00:00",
+                            fecha_final: $filter('date')($scope.datos_view.fecha_final_cotizaciones, "yyyy-MM-dd") + " 23:59:00",
+                            termino_busqueda: $scope.datos_view.termino_busqueda_cotizaciones,
+                            pagina_actual: $scope.datos_view.pagina_actual_cotizaciones
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PEDIDOS.LISTAR_PEDIDOS, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        that.render_pedidos(data.obj.pedidos_clientes);
+                    }
+                });
+            };
+
+            that.render_pedidos = function(pedidos) {
+
+                $scope.Empresa.limpiar_pedidos();
+
+                pedidos.forEach(function(data) {
+
+                    var pedido = Pedido.get(data.empresa_id, data.centro_utilidad_id, data.bodega_id);
+
+                    var cliente = Cliente.get(data.nombre_cliente, data.direccion_cliente, data.tipo_id_cliente, data.identificacion_cliente, data.telefono_cliente);
+
+                    var vendedor = Vendedor.get(data.nombre_vendedor, data.tipo_id_vendedor, data.idetificacion_vendedor, '');
+
+                    pedido.setDatos(data);
+                    pedido.setNumeroPedido(data.numero_pedido).set_vendedor(vendedor).setCliente(cliente);
+                    pedido.set_descripcion_estado_actual_pedido(data.descripcion_estado_actual_pedido);
+                    pedido.setFechaRegistro(data.fecha_registro);
+
+                    $scope.Empresa.set_pedidos(pedido);
+                });
+            };
+
+            $scope.lista_pedidos_clientes = {
+                data: 'Empresa.get_pedidos()',
+                enableColumnResize: true,
+                enableRowSelection: false,
+                columnDefs: [
+                    {field: 'get_descripcion_estado_actual_pedido()', displayName: "Estado Actual", cellClass: "txt-center", width: "10%",
+                        cellTemplate: "<button type='button' ng-class='agregar_clase_pedido(row.entity.estado_actual_pedido)'> <span ng-class='agregar_restricion_pedido(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
+                    {field: 'get_numero_pedido()', displayName: 'No. Pedido', width: "10%"},
+                    {field: 'getCliente().get_descripcion()', displayName: 'Cliente', width: "30%"},
+                    {field: 'get_vendedor().get_descripcion()', displayName: 'Vendedor', width: "25%"},
+                    {field: 'getFechaRegistro()', displayName: "F. Registro", width: "9%"},
+                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",
+                        cellTemplate: '<div class="btn-group">\
+                                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
+                                            <ul class="dropdown-menu dropdown-options">\
+                                                <li><a href="javascript:void(0);" ng-click="gestionar_planilla_despacho(row.entity,true)" >Modificar</a></li>\
+                                                <li><a href="javascript:void(0);" ng-click="generar_reporte(row.entity,false)" >Ver PDF</a></li>\
+                                                <li><a href="javascript:void(0);" ng-validate-events="{{ validar_envio_email(row.entity) }}" ng-click="ventana_enviar_email(row.entity)" >Enviar por Email</a></li>\
+                                            </ul>\
+                                       </div>'
+                    }
+                ]
+            };
+
+            // Agregar Clase de acuerdo al estado del pedido
+            $scope.agregar_clase_pedido = function(estado) {
+
+                if (estado === 6) {
+                    return $scope.datos_view.estados_pedidos[1];
+                }
+
+                return $scope.datos_view.estados_pedidos[estado];
+            };
+
+            // Agregar Restriccion de acuerdo al estado de asigancion del pedido
+            $scope.agregar_restricion_pedido = function(estado_separacion) {
+
+                var clase = "";
+                if (estado_separacion)
+                    clase = "glyphicon glyphicon-lock";
+
+                return clase;
+            };
+
             that.buscar_cotizaciones();
+            that.buscar_pedidos();
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;

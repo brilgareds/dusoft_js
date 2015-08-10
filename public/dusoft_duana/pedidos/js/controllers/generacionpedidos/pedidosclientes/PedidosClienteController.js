@@ -49,7 +49,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 termino_busqueda_clientes: '',
                 termino_busqueda_productos: '',
                 activar_tab: {tab_productos: true, tab_cargar_archivo: false},
-                producto_seleccionado: Producto.get()
+                producto_seleccionado: Producto.get(),
+                cartera: (localStorageService.get("cartera") === '1') ? true : false
             };
 
             // Consultas 
@@ -109,6 +110,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.Pedido.set_vendedor(vendedor).setCliente(cliente);
                 $scope.Pedido.set_observacion(data.observaciones);
                 $scope.Pedido.set_tipo_producto(data.tipo_producto).set_descripcion_tipo_producto(data.descripcion_tipo_producto);
+                $scope.Pedido.set_aprobado_cartera(data.sw_aprobado_cartera).set_observacion_cartera(data.observacion_cartera);
                 $scope.Pedido.setFechaRegistro(data.fecha_registro);
             };
 
@@ -250,6 +252,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     disabled = true;
                 if ($scope.Pedido.get_observacion() === undefined || $scope.Pedido.get_observacion() === '')
                     disabled = true;
+                if ($scope.Pedido.get_aprobado_cartera() === '1')
+                    disabled = true;
 
                 return disabled;
             };
@@ -371,7 +375,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     {field: 'get_valor_total_con_iva()', displayName: 'Total', width: "10%", cellFilter: 'currency : "$"'},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
-                                        <button class="btn btn-default btn-xs" ng-click="eliminar_producto_cotizacion(row.entity)" ng-disabled="" ><span class="glyphicon glyphicon-remove"></span></button>\
+                                        <button class="btn btn-default btn-xs" ng-click="eliminar_producto_cotizacion(row.entity)" ng-disabled="datos_view.cartera || Pedido.get_aprobado_cartera() === \'1\' " ><span class="glyphicon glyphicon-remove"></span></button>\
                                        </div>'
                     }
                 ]
@@ -410,7 +414,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 if (data.status === 200) {
 
-                    var numero_cotizacion = data.obj.pedidos_clientes.numero_cotizacion;                    
+                    var numero_cotizacion = data.obj.pedidos_clientes.numero_cotizacion;
 
                     if (numero_cotizacion > 0) {
                         $scope.Pedido.set_numero_cotizacion(numero_cotizacion);
@@ -419,11 +423,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                     AlertService.mostrarMensaje("warning", data.msj);
                     that.gestionar_consultas_cotizaciones();
-                    
+
                     $scope.datos_view.activar_tab.tab_productos = true;
                     $scope.datos_view.productos_validos = data.obj.pedidos_clientes.productos_validos;
                     $scope.datos_view.productos_invalidos = data.obj.pedidos_clientes.productos_invalidos;
-                    
+
                     $scope.opciones_archivo.cancel();
 
                     if ($scope.datos_view.productos_invalidos.length > 0) {
@@ -466,6 +470,41 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     AlertService.mostrarMensaje("warning", data.msj);
                 }
             };
+
+            // Aciones Botones            
+            $scope.cancelar_cotizacion = function() {
+                $state.go('ListarPedidosClientes');
+            };
+
+            $scope.aceptar_cotizacion = function() {
+                $state.go('ListarPedidosClientes');
+            };
+
+            // Gestiona la aprobacion o no del departamento de cartera
+            $scope.gestion_cartera = function(aprobado) {
+
+                $scope.Pedido.set_aprobado_cartera(aprobado);
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_clientes: {
+                            cotizacion: $scope.Pedido
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.OBSERVACION_CARTERA, "POST", obj, function(data) {
+
+                    AlertService.mostrarMensaje("warning", data.msj);
+
+                    if (data.status === 200) {
+                        $scope.cancelar_cotizacion();
+                    }
+                });
+            };
+
+
 
             that.gestionar_consultas_cotizaciones();
 

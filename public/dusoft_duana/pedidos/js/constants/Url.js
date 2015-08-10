@@ -44,6 +44,7 @@ define(["angular"], function(angular) {
                     'INSERTAR_DETALLE_COTIZACION': BASE_URL + '/PedidosClientes/insertarDetalleCotizacion',
                     'ELIMINAR_PRODUCTO_COTIZACION': BASE_URL + '/PedidosClientes/eliminarProductoCotizacion',
                     'SUBIR_ARCHIVO_PLANO': BASE_URL + '/PedidosClientes/subirPlano',
+                    'OBSERVACION_CARTERA': BASE_URL + '/PedidosClientes/observacionCartera'
                 },
                 FARMACIAS :{
                     'LISTAR_PRODUCTOS_FARMACIAS': BASE_URL + '/PedidosFarmacias/buscarProductos',

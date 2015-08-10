@@ -17,6 +17,8 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                 this.total = 0;
                 this.tipo_producto = '';
                 this.descripcion_tipo_producto = '';
+                this.observacion_cartera = '';
+                this.aprobado_cartera = false;
             }
             ;
 
@@ -166,6 +168,26 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
 
             PedidoCliente.prototype.get_descripcion_tipo_producto = function() {
                 return this.descripcion_tipo_producto;
+            };            
+            
+            // Observacion Cartera
+            PedidoCliente.prototype.set_observacion_cartera = function(observacion) {
+                this.observacion_cartera = observacion;
+                return this;
+            };
+
+            PedidoCliente.prototype.get_observacion_cartera = function() {
+                return this.observacion_cartera;
+            };
+            
+            // Aprobado Cartera
+            PedidoCliente.prototype.set_aprobado_cartera = function(aprobacion) {
+                this.aprobado_cartera = aprobacion;
+                return this;
+            };
+
+            PedidoCliente.prototype.get_aprobado_cartera = function() {
+                return this.aprobado_cartera;
             };
 
             this.get = function(empresa_id, centro_utilidad_id, bodega_id) {

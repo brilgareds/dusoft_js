@@ -44,8 +44,13 @@ define(["angular"], function(angular) {
                     'INSERTAR_DETALLE_COTIZACION': BASE_URL + '/PedidosClientes/insertarDetalleCotizacion',
                     'ELIMINAR_PRODUCTO_COTIZACION': BASE_URL + '/PedidosClientes/eliminarProductoCotizacion',
                     'SUBIR_ARCHIVO_PLANO': BASE_URL + '/PedidosClientes/subirPlano',
-                    'OBSERVACION_CARTERA': BASE_URL + '/PedidosClientes/observacionCartera',
-                    'GENERAR_PEDIDO': BASE_URL + '/PedidosClientes/generarPedido'
+                    'OBSERVACION_CARTERA_COTIZACION': BASE_URL + '/PedidosClientes/observacionCarteraCotizacion',
+                    'GENERAR_PEDIDO': BASE_URL + '/PedidosClientes/generarPedido',
+                    'CONSULTAR_PEDIDO': BASE_URL + '/PedidosClientes/consultarPedido',
+                    'CONSULTAR_DETALLE_PEDIDO': BASE_URL + '/PedidosClientes/consultarDetallePedido',
+                    'ELIMINAR_PRODUCTO_PEDIDO': BASE_URL + '/PedidosClientes/eliminarProductoPedido',
+                    'OBSERVACION_CARTERA_PEDIDO': BASE_URL + '/PedidosClientes/observacionCarteraPedido',
+                    
                 },
                 FARMACIAS :{
                     'LISTAR_PRODUCTOS_FARMACIAS': BASE_URL + '/PedidosFarmacias/buscarProductos',
@@ -132,7 +137,7 @@ define(["angular"], function(angular) {
                 'ACTUALIZAR_ENCABEZADO_PEDIDO_DEFINITIVO': BASE_URL + '/PedidosFarmacias/actualizarEncabezadoPedidoDefinitivo',
                 'CAMBIAR_ESTADO_APROBACION_PEDIDO': BASE_URL + '/PedidosClientes/cambiarEstadoAprobacionPedido',
                 //'CONSULTAR_ENCABEZADO_COTIZACION_CLIENTE': BASE_URL + '/PedidosClientes/consultarEncabezadoCotizacion',
-                'CONSULTAR_ENCABEZADO_PEDIDO_CLIENTE': BASE_URL + '/PedidosClientes/consultarEncabezadoPedido'
+                //'CONSULTAR_ENCABEZADO_PEDIDO_CLIENTE': BASE_URL + '/PedidosClientes/consultarEncabezadoPedido'
             },
             'TERCEROS': {
                 'LISTAR_OPERARIOS': BASE_URL + "/Terceros/operariosBodega/listar",

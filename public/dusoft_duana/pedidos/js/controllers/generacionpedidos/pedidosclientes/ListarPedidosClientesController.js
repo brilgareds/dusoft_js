@@ -82,9 +82,11 @@ define(["angular", "js/controllers",
             // Acciones Botones 
             $scope.gestionar_cotizacion_cliente = function() {
 
-                localStorageService.add("numero_cotizacion", 0);
-                localStorageService.add("cartera", '0');
+                localStorageService.add("cotizacion", {numero_cotizacion: 0, cartera: '0'});
                 $state.go('Cotizaciones');
+
+                /*localStorageService.add("numero_cotizacion", 0);
+                 localStorageService.add("cartera", '0');*/
             };
 
             $scope.habilitar_observacion_cartera = function(cotizacion) {
@@ -93,16 +95,26 @@ define(["angular", "js/controllers",
 
             $scope.modificar_cotizacion_cliente = function(cotizacion) {
 
-                localStorageService.add("numero_cotizacion", cotizacion.get_numero_cotizacion());
-                localStorageService.add("cartera", '0');
+                localStorageService.add("cotizacion", {numero_cotizacion: cotizacion.get_numero_cotizacion(), cartera: '0'});
                 $state.go('Cotizaciones');
+
+                /*localStorageService.add("numero_cotizacion", cotizacion.get_numero_cotizacion());
+                 localStorageService.add("cartera", '0');*/
+            };
+
+            $scope.modificar_pedido_cliente = function(pedido) {
+
+                localStorageService.add("pedido", {numero_pedido: pedido.get_numero_pedido()});
+                $state.go('PedidoCliente');
             };
 
             $scope.generar_observacion_cartera = function(cotizacion) {
-
-                localStorageService.add("numero_cotizacion", cotizacion.get_numero_cotizacion());
-                localStorageService.add("cartera", '1');
+                
+                localStorageService.add("cotizacion", {numero_cotizacion: cotizacion.get_numero_cotizacion(), cartera: '1'});
                 $state.go('Cotizaciones');
+                
+                /*localStorageService.add("numero_cotizacion", cotizacion.get_numero_cotizacion());
+                localStorageService.add("cartera", '1');*/
             };
 
             // Cotizaciones 
@@ -242,7 +254,7 @@ define(["angular", "js/controllers",
                         }
                     }
                 };
-             
+
                 Request.realizarRequest(API.PEDIDOS.LISTAR_PEDIDOS, "POST", obj, function(data) {
 
                     $scope.datos_view.ultima_busqueda_pedidos = $scope.datos_view.termino_busqueda_pedidos;
@@ -300,7 +312,7 @@ define(["angular", "js/controllers",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li><a href="javascript:void(0);" ng-click="gestionar_planilla_despacho(row.entity,true)" >Modificar</a></li>\
+                                                <li><a href="javascript:void(0);" ng-click="modificar_pedido_cliente(row.entity)" >Modificar</a></li>\
                                                 <li><a href="javascript:void(0);" ng-click="generar_reporte(row.entity,false)" >Ver PDF</a></li>\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ validar_envio_email(row.entity) }}" ng-click="ventana_enviar_email(row.entity)" >Enviar por Email</a></li>\
                                             </ul>\

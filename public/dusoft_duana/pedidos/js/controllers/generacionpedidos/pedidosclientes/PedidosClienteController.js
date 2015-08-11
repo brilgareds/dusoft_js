@@ -31,20 +31,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 auth_token: Sesion.getUsuarioActual().getToken()
             };
 
-            // Definicion Variables            
+            // Definicion Variables Contenedora           
             $scope.Empresa = Empresa;
 
-            // Inicializacion Pedido            
-            $scope.Pedido = Pedido.get(
-                    Sesion.getUsuarioActual().getEmpresa().getCodigo(),
-                    Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
-                    Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
-                    );
-
-            $scope.Pedido.set_numero_cotizacion(parseInt(localStorageService.get("numero_cotizacion")) || 0);
-            $scope.Pedido.set_vendedor(Vendedor.get()).setCliente(Cliente.get());
-            $scope.Pedido.setFechaRegistro($filter('date')(new Date(), "dd/MM/yyyy"));
-
+            // Definicion variables del View
             $scope.datos_view = {
                 termino_busqueda_clientes: '',
                 termino_busqueda_productos: '',
@@ -52,6 +42,25 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 producto_seleccionado: Producto.get(),
                 cartera: (localStorageService.get("cartera") === '1') ? true : false
             };
+
+            // Inicializacion Pedido o cotizacion           
+            $scope.Pedido = Pedido.get(
+                    Sesion.getUsuarioActual().getEmpresa().getCodigo(),
+                    Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
+                    Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
+                    );
+
+            $scope.Pedido.set_vendedor(Vendedor.get()).setCliente(Cliente.get());
+            $scope.Pedido.setFechaRegistro($filter('date')(new Date(), "dd/MM/yyyy"));
+
+            if (localStorageService.get("cotizacion")) {
+                var cotizacion = localStorageService.get("cotizacion");
+                $scope.Pedido.set_numero_cotizacion(parseInt(cotizacion.numero_cotizacion) || 0);
+                $scope.datos_view.cartera = (cotizacion.cartera === '1') ? true : false;
+            } else {
+                var pedido = localStorageService.get("pedido");
+                $scope.Pedido.setNumeroPedido(parseInt(pedido.numero_pedido) || 0);
+            }
 
             // Consultas 
             that.gestionar_consultas_cotizaciones = function() {
@@ -68,6 +77,25 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             that.buscar_cotizacion(function() {
 
                                 that.buscar_detalle_cotizacion();
+                            });
+                        }
+                    });
+                });
+            };
+
+            that.gestionar_consultas_pedidos = function() {
+
+                that.buscar_clientes(function(clientes) {
+
+                    if ($scope.Pedido.get_numero_pedido() > 0)
+                        that.render_clientes(clientes);
+
+                    that.buscar_vendedores(function() {
+
+                        if ($scope.Pedido.get_numero_pedido() > 0) {
+
+                            that.buscar_pedido(function() {
+                                that.buscar_detalle_pedido();
                             });
                         }
                     });
@@ -157,6 +185,84 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 });
             };
 
+
+            // Pedidos 
+
+            that.buscar_pedido = function(callback) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_clientes: {
+                            pedido: $scope.Pedido
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.CONSULTAR_PEDIDO, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        that.render_pedido(data.obj.pedidos_clientes.pedido[0]);
+                        callback(true);
+                    } else {
+                        callback(false);
+                    }
+                });
+            };
+
+            that.render_pedido = function(data) {
+
+                var cliente = Cliente.get(data.nombre_cliente, data.direccion_cliente, data.tipo_id_cliente, data.identificacion_cliente, data.telefono_cliente);
+
+                /*cliente.setDepartamento(data.departamento);
+                 cliente.setMunicipio(data.municipio);
+                 cliente.set_contrato(data.contrato_cliente_id);*/
+
+                var vendedor = Vendedor.get(data.nombre_vendedor, data.tipo_id_vendedor, data.idetificacion_vendedor/*, data.telefono_vendedor*/);
+
+                $scope.Pedido.set_vendedor(vendedor).setCliente(cliente);
+                $scope.Pedido.set_observacion(data.observacion);
+                //$scope.Pedido.set_tipo_producto(data.tipo_producto).set_descripcion_tipo_producto(data.descripcion_tipo_producto);
+                $scope.Pedido.set_aprobado_cartera(data.sw_aprobado_cartera).set_observacion_cartera(data.observacion_cartera);
+                //$scope.Pedido.set_estado_cotizacion(data.estado).set_descripcion_estado_cotizacion(data.descripcion_estado);
+                $scope.Pedido.setFechaRegistro(data.fecha_registro);
+            };
+
+            that.buscar_detalle_pedido = function() {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_clientes: {
+                            pedido: $scope.Pedido,
+                            termino_busqueda: $scope.datos_view.termino_busqueda_productos
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.CONSULTAR_DETALLE_PEDIDO, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        that.render_productos_pedidos(data.obj.pedidos_clientes.lista_productos);
+                    }
+                });
+
+            };
+
+            that.render_productos_pedidos = function(productos) {
+
+                $scope.Pedido.limpiar_productos();
+
+                productos.forEach(function(data) {
+
+                    var producto = Producto.get(data.codigo_producto, data.descripcion_producto, 0, data.porcentaje_iva);
+                    producto.set_cantidad_solicitada(data.cantidad_solicitada);
+                    producto.set_precio_venta(data.valor_unitario).set_valor_total_sin_iva(data.valor_unitario * data.cantidad_solicitada);
+                    producto.set_valor_iva(data.valor_iva).set_valor_total_con_iva(data.valor_unitario_con_iva * data.cantidad_solicitada);
+
+                    $scope.Pedido.set_productos(producto);
+                });
+            };
 
             // Clientes
             $scope.listar_clientes = function(termino_busqueda) {
@@ -273,7 +379,26 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 that.gestionar_consultas_cotizaciones();
             };
 
-            $scope.eliminar_producto_cotizacion = function(producto) {
+            $scope.habilitar_eliminacion_producto = function() {
+                
+                var disabled = false;
+
+                // Validaciones Cotizacion
+                if ($scope.Pedido.get_numero_cotizacion() > 0) {
+
+                    if ($scope.datos_view.cartera || $scope.Pedido.get_aprobado_cartera() === '1')
+                        disabled = true;
+                }
+
+                // Validaciones Pedido
+                if ($scope.Pedido.get_numero_pedido() > 0) {
+
+                }
+
+                return disabled;
+            };
+
+            $scope.confirmar_eliminar_producto = function(producto) {
 
                 $scope.datos_view.producto_seleccionado = producto;
 
@@ -315,23 +440,49 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             $scope.eliminar_producto = function() {
 
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        pedidos_clientes: {
-                            cotizacion: $scope.Pedido,
-                            producto: $scope.datos_view.producto_seleccionado
-                        }
-                    }
-                };
+                var obj = {};
+                var url = '';
 
-                Request.realizarRequest(API.PEDIDOS.CLIENTES.ELIMINAR_PRODUCTO_COTIZACION, "POST", obj, function(data) {
+                // Cotizacion
+                if ($scope.Pedido.get_numero_cotizacion() > 0) {
+
+                    url = API.PEDIDOS.CLIENTES.ELIMINAR_PRODUCTO_COTIZACION;
+                    obj = {
+                        session: $scope.session,
+                        data: {
+                            pedidos_clientes: {
+                                cotizacion: $scope.Pedido,
+                                producto: $scope.datos_view.producto_seleccionado
+                            }
+                        }
+                    };
+                }
+
+                // Pedido
+                if ($scope.Pedido.get_numero_pedido() > 0) {
+
+                    url = API.PEDIDOS.CLIENTES.ELIMINAR_PRODUCTO_PEDIDO;
+                    obj = {
+                        session: $scope.session,
+                        data: {
+                            pedidos_clientes: {
+                                pedido: $scope.Pedido,
+                                producto: $scope.datos_view.producto_seleccionado
+                            }
+                        }
+                    };
+                }
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
 
                     AlertService.mostrarMensaje("warning", data.msj);
                     $scope.datos_view.producto_seleccionado = Producto.get();
 
                     if (data.status === 200) {
-                        that.buscar_detalle_cotizacion();
+                        if ($scope.Pedido.get_numero_cotizacion() > 0)
+                            that.buscar_detalle_cotizacion();
+                        if ($scope.Pedido.get_numero_pedido() > 0)
+                            that.gestionar_consultas_pedidos();
                     }
                 });
             };
@@ -376,7 +527,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     {field: 'get_valor_total_con_iva()', displayName: 'Total', width: "10%", cellFilter: 'currency : "$"'},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
-                                        <button class="btn btn-default btn-xs" ng-click="eliminar_producto_cotizacion(row.entity)" ng-disabled="datos_view.cartera || Pedido.get_aprobado_cartera() === \'1\' " ><span class="glyphicon glyphicon-remove"></span></button>\
+                                        <button class="btn btn-default btn-xs" ng-click="confirmar_eliminar_producto(row.entity)" ng-disabled="habilitar_eliminacion_producto()" ><span class="glyphicon glyphicon-remove"></span></button>\
                                        </div>'
                     }
                 ]
@@ -556,7 +707,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 };
 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.GENERAR_PEDIDO, "POST", obj, function(data) {
-                    
+
                     AlertService.mostrarMensaje("warning", data.msj);
 
                     if (data.status === 200) {
@@ -566,13 +717,26 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
 
+            that.init = function() {
 
-            that.gestionar_consultas_cotizaciones();
+                if ($scope.Pedido.get_numero_cotizacion() > 0)
+                    that.gestionar_consultas_cotizaciones();
+
+                if ($scope.Pedido.get_numero_pedido() > 0)
+                    that.gestionar_consultas_pedidos();
+            };
+
+
+            that.init();
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 
                 // Set Datas
                 $scope.Empresa.set_default();
+
+                // set localstorage
+                localStorageService.add("cotizacion", null);
+                localStorageService.add("pedido", null);
 
                 $scope.$$watchers = null;
             });

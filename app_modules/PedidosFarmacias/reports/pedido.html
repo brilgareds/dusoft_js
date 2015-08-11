@@ -83,15 +83,15 @@
                     </tr>
                     <tr>
                         <th style='border-style:solid'>Origen</th>
-                        <td><center>{{:encabezado_pedido_farmacia.empresa_origen}}</center></td>
-                        <td><center>{{:encabezado_pedido_farmacia.centro_utilidad_origen}}</center></td>
-                        <td><center>{{:encabezado_pedido_farmacia.bodega_origen}}</center></td>
+                        <td><center>{{:descripcionPedido.empresa_origen}}</center></td>
+                        <td><center>{{:descripcionPedido.centro_utilidad_origen}}</center></td>
+                        <td><center>{{:descripcionPedido.bodega_origen}}</center></td>
                     </tr>
                     <tr>
                         <th style='border-style:solid'>Destino</th>
-                        <td><center>{{:encabezado_pedido_farmacia.empresa_destino}}</center></td>
-                        <td><center>{{:encabezado_pedido_farmacia.centro_utilidad_destino}}</center></td>
-                        <td><center>{{:encabezado_pedido_farmacia.bodega_destino}}</center></td>
+                        <td><center>{{:descripcionPedido.empresa_destino}}</center></td>
+                        <td><center>{{:descripcionPedido.centro_utilidad_destino}}</center></td>
+                        <td><center>{{:descripcionPedido.bodega_destino}}</center></td>
                     </tr>
                 </table>
             </div>
@@ -122,9 +122,9 @@
                             {{for detalle_pedido_farmacia}}
                                 <tr>
                                     <td>{{:codigo_producto}}</td>
-                                    <td>{{:descripcion}}</td>
+                                    <td>{{:descripcion_producto}}</td>
                                     <td>{{:cantidad_solicitada}}</td>
-                                    <td>{{:disponibilidad_bodega}}</td>
+                                    <td>{{:disponible}}</td>
                                 </tr>
                             {{/for}}
                         </tbody>
@@ -146,10 +146,10 @@
                         <strong>Realiza : </strong>  {{:encabezado_pedido_farmacia.nombre_usuario}} 
                     </span>
                     <span>
-                        <strong>Imprime : </strong>  {{:encabezado_pedido_farmacia.usuario_imprime}} 
+                        <strong>Imprime : </strong>  {{:descripcionPedido.usuario_imprime}} 
                     </span>                    
                     <span>
-                        <strong>Fecha Impresión : </strong>{{:encabezado_pedido_farmacia.fecha_actual}}                        
+                        <strong>Fecha Impresión : </strong>{{:descripcionPedido.fecha_actual}}                        
                     </span>
                 </div>
             </div> 

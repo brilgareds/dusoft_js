@@ -126,7 +126,7 @@
                                         </br>
                                         <h4 class="h4MarginTopBottom">Bodega: </h4>
 
-                                        <ui-select  ng-model="root.pedido.farmaciaDestino.centroUtilidad.bodega" theme="select2" class="form-control selectgeneral pull-left" ng-change="onBodegaSeleccionada()" ng-disabled="deshabilitarSeleccionEmpresa() && root.pedido.getTipoModificacion() !== '3'">
+                                        <ui-select  ng-model="root.pedido.farmaciaDestino.centroUtilidad.bodega" theme="select2" class="form-control selectgeneral pull-left" ng-change="onBodegaSeleccionada()" ng-disabled="(deshabilitarSeleccionEmpresa() && root.pedido.getTipoModificacion() !== '3') || (!root.pedido.farmaciaOrigen.centroUtilidad.bodega)">
                                             <ui-select-match  placeholder="Seleccionar Centro Utilidad">{{$select.selected.getNombre()}}</ui-select-match>
                                             <ui-select-choices repeat="bodega in root.pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getBodegas() | filter:$select.search">
                                                 {{bodega.getNombre()}}
@@ -261,11 +261,11 @@
 
     <div class="col-sm-12 btn-toolbar">
         <button type="submit" ng-show="!root.pedido.get_numero_pedido()" class="btn btn-default pull-right" ng-click="onGenerarPedido()"
-                 ng-validate-events="{{rootCreaPedidoFarmacia.opcionesModulo.btnGenerarPedido}}">
+                 ng-validate-events="{{rootCreaPedidoFarmacia.opcionesModulo.btnGenerarPedido}}" ng-disabled="!root.pedido.getEsTemporal()" >
             <span class="glyphicon glyphicon-cog"></span> Generar Pedido
         </button>
         <button type="submit" ng-show="!root.pedido.get_numero_pedido()" class="btn btn-default pull-right" ng-click="onGuardarEncabezadoPedidoTemporal()"
-         ng-validate-events="{{rootCreaPedidoFarmacia.opcionesModulo.btnGuardarTemporal}}">
+         ng-validate-events="{{rootCreaPedidoFarmacia.opcionesModulo.btnGuardarTemporal}}" ng-disabled="!root.pedido.getEsTemporal()">
             <span class="glyphicon glyphicon-ok"></span> Guardar Temporal
         </button>
 
@@ -278,7 +278,7 @@
              <span class="glyphicon glyphicon-ok"></span> Guardar
         </button>
         
-        <button type="submit" ng-show="root.pedido.get_numero_pedido()" class="btn btn-default pull-right" ng-click="generarPdfPedidoFarmacia()">
+        <button type="submit" ng-show="root.pedido.get_numero_pedido()" class="btn btn-default pull-right" ng-click="onGenerarPdfPedido()">
             <span class="glyphicon glyphicon-file"></span> Generar PDF
         </button>
         
@@ -297,7 +297,6 @@
         <div ng-include src="slideurl"  ng-controller="SeleccionProductoController" ></div>
     </div -->
 
-    <visualizar-reporte></visualizar-reporte>
 </div>
 
 <!--</div>-->

@@ -67,6 +67,7 @@ define(["angular",
              */
 
             self.buscarPedidos = function(callback) {
+                
                 var obj = {
                     session: $scope.rootPedidosTempFarmacias.session,
                     data: {
@@ -93,7 +94,7 @@ define(["angular",
                                     $scope.rootPedidosTempFarmacias.empresaSeleccionada.getCodigo()
                             );
 
-
+                            $scope.rootPedidosTempFarmacias.empresaSeleccionada.vaciarPedidos();
                             self.renderPedidos(data.obj.pedidos_farmacias);
 
                             if (callback) {

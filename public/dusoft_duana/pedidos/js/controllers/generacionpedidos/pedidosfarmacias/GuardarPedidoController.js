@@ -331,6 +331,43 @@ define(["angular", "js/controllers",
             
             /*
              * @Author: Eduar
+             * +Descripcion: Handler del boton generar pdf
+             */
+            $scope.onGenerarPdfPedido = function(){
+                
+                var pedido = $scope.root.pedido;
+                var farmaciaDestino = pedido.getFarmaciaDestino();
+                var farmaciaOrigen  = pedido.getFarmaciaOrigen();
+                
+                var url = API.PEDIDOS.FARMACIAS.GENERAR_PDF_PEDIDO;
+
+                var obj = {
+                    session: $scope.rootPedidoFarmacia.session,
+                    data: {
+                        pedidos_farmacias: {
+                            numero_pedido: pedido.get_numero_pedido(),
+                            empresa_origen: farmaciaOrigen.getNombre(),
+                            centro_utilidad_origen: farmaciaOrigen.getCentroUtilidadSeleccionado().getNombre(),
+                            bodega_origen: farmaciaOrigen.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getNombre(),
+                            empresa_destino: farmaciaDestino.getNombre(),
+                            centro_utilidad_destino: farmaciaDestino.getCentroUtilidadSeleccionado().getNombre(),
+                            bodega_destino: farmaciaDestino.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getNombre()
+                        }
+                    }
+                };
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        var nombre = data.obj.reporte_pedido.nombre_reporte;
+                        $scope.visualizarReporte("/reports/" + nombre, nombre, "download");
+                    }  else {
+                        AlertService.mostrarMensaje("warning", "Error generando el pdf");
+                    }
+                });
+            };
+            
+            /*
+             * @Author: Eduar
              * @param {$event} e
              * @param {ProductoPedidoFarmacia} producto
              * +Descripcion: Evento que se escucha de GuardarPedidoBaseController, valida el cambio de cantidad del producto

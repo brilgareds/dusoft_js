@@ -323,6 +323,10 @@ define(["angular", "js/controllers",
                 if(!$scope.root.pedido){
                     return true;
                 }
+                
+                if($scope.root.pedido.getEsTemporal()){
+                    return true;
+                }
                                 
                 if($scope.root.pedido.get_numero_pedido()){
                     return true;

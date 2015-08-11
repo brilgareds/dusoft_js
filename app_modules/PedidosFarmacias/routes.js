@@ -161,7 +161,11 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.pedidoFarmaciaArchivoPlano(req, res);
     });    
     
-    // Generar PDF del pedido
+    app.post('/api/PedidosFarmacias/generarPdfPedido', function(req, res) {
+        c_pedidos_farmacias.generarPdfPedido(req, res);
+    }); 
+    
+    //depreciado Generar PDF del pedido
     app.post('/api/PedidosFarmacias/imprimirPedidoFarmacia', function(req, res) {
         c_pedidos_farmacias.imprimirPedidoFarmacia(req, res);
     });

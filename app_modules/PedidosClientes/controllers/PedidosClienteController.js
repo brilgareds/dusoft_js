@@ -899,7 +899,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
  * Autor : Camilo Orozco
  * Descripcion : Generar las observaciones ingresadas por el area de cartera
  */
-PedidosCliente.prototype.observacionCartera = function(req, res) {
+PedidosCliente.prototype.observacionCarteraCotizacion = function(req, res) {
 
     var that = this;
 
@@ -928,7 +928,7 @@ PedidosCliente.prototype.observacionCartera = function(req, res) {
         return;
     }
 
-    that.m_pedidos_clientes.observacion_cartera(cotizacion, function(err, rows, result) {
+    that.m_pedidos_clientes.observacion_cartera_cotizacion(cotizacion, function(err, rows, result) {
 
         if (err || result.rowCount === 0) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
@@ -940,6 +940,79 @@ PedidosCliente.prototype.observacionCartera = function(req, res) {
     });
 };
 
+
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : Consultar Pedido
+ */
+PedidosCliente.prototype.consultarPedido = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    // Pedido
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.pedido === undefined || args.pedidos_clientes.pedido === '') {
+        res.send(G.utils.r(req.url, 'pedidos_clientes o pedido No Estan Definidos', 404, {}));
+        return;
+    }
+
+    var pedido = args.pedidos_clientes.pedido;
+
+    if (pedido.numero_pedido === undefined || pedido.numero_pedido === '') {
+        res.send(G.utils.r(req.url, 'numero_pedido no esta definido o esta vacio', 404, {}));
+        return;
+    }
+
+    that.m_pedidos_clientes.consultar_pedido(pedido.numero_pedido, function(err, datos_pedido) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
+            return;
+        } else {
+
+            res.send(G.utils.r(req.url, 'Pedido', 200, {pedidos_clientes: {pedido: datos_pedido}}));
+            return;
+        }
+    });
+};
+
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : Consultar Detalle Pedido
+ */
+PedidosCliente.prototype.consultarDetallePedido = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    // Pedido
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.pedido === undefined || args.pedidos_clientes.pedido === '') {
+        res.send(G.utils.r(req.url, 'pedidos_clientes o pedido No Estan Definidos', 404, {}));
+        return;
+    }
+
+    var pedido = args.pedidos_clientes.pedido;
+
+    if (pedido.numero_pedido === undefined || pedido.numero_pedido === '') {
+        res.send(G.utils.r(req.url, 'numero_pedido no esta definido o esta vacio', 404, {}));
+        return;
+    }
+
+    var termino_busqueda = (args.pedidos_clientes.termino_busqueda === undefined) ? '' : args.pedidos_clientes.termino_busqueda;
+
+    that.m_pedidos_clientes.consultar_detalle_pedido(pedido.numero_pedido, function(err, lista_productos) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Lista Productos', 200, {pedidos_clientes: {lista_productos: lista_productos}}));
+            return;
+        }
+    });
+};
 
 /*
  * Autor : Camilo Orozco
@@ -973,26 +1046,86 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
             res.send(G.utils.r(req.url, 'Error Interno al generar el pedido', 500, {pedidos_clientes: []}));
             return;
         } else {
-             // Asignar responsables
+            // Asignar responsables
             that.m_pedidos_clientes.asignar_responsables_pedidos(pedido.numero_pedido, pedido.estado, null, cotizacion.usuario_id, function(err, rows, responsable_estado_pedido) {
 
                 if (err) {
-                    res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Asignacion de Responsables', 500, {pedidos_clientes:[]}));
+                    res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Asignacion de Responsables', 500, {pedidos_clientes: []}));
                     return;
                 }
-                
+
                 // Actualizar estado del nuevo pedido
-                that.m_pedidos_clientes.terminar_estado_pedido(pedido.numero_pedido, [ pedido.estado ], '1', function(err, rows, results) {
+                that.m_pedidos_clientes.terminar_estado_pedido(pedido.numero_pedido, [pedido.estado], '1', function(err, rows, results) {
 
                     if (err) {
-                        res.send(G.utils.r(req.url, 'Error finalizando el estado del pedido', 500, {pedidos_clientes:[]}));
+                        res.send(G.utils.r(req.url, 'Error finalizando el estado del pedido', 500, {pedidos_clientes: []}));
                         return;
                     }
 
-                    res.send(G.utils.r(req.url, 'Pedido Generado Correctamente No. '+pedido.numero_pedido, 200, { pedidos_clientes : pedido }));
+                    res.send(G.utils.r(req.url, 'Pedido Generado Correctamente No. ' + pedido.numero_pedido, 200, {pedidos_clientes: pedido}));
                     return;
                 });
-            });            
+            });
+        }
+    });
+};
+
+
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : Eliminar Producto Pedido
+ */
+PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    // Cotizacion
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.pedido === undefined || args.pedidos_clientes.pedido === '') {
+        res.send(G.utils.r(req.url, 'pedidos_clientes o pedido No Estan Definidos', 404, {}));
+        return;
+    }
+
+    // Producto 
+    if (args.pedidos_clientes.producto === undefined || args.pedidos_clientes.producto === '') {
+        res.send(G.utils.r(req.url, 'productos no estan definidos o vacios', 404, {}));
+        return;
+    }
+
+    var pedido = args.pedidos_clientes.pedido;
+    var producto = args.pedidos_clientes.producto;
+
+    if (pedido.numero_cotizacion === undefined || pedido.numero_cotizacion === '') {
+        res.send(G.utils.r(req.url, 'numero_cotizacion no esta definido o esta vacio', 404, {}));
+        return;
+    }
+
+    if (producto.codigo_producto === undefined || producto.codigo_producto === '') {
+        res.send(G.utils.r(req.url, 'codigo_producto no esta definido o esta vacio', 404, {}));
+        return;
+    }
+
+    that.m_pedidos_clientes.eliminar_producto_pedido(pedido, producto, function(err, rows, result) {
+
+        if (err || result.rowCount === 0) {
+            res.send(G.utils.r(req.url, 'Error Eliminando el producto', 500, {pedidos_clientes: []}));
+            return;
+        } else {
+            
+            pedido.aprobado_cartera = '0';
+            pedido.observacion_cartera = '';
+            
+            that.m_pedidos_clientes.observacion_cartera_pedido(pedido, function(err, rows, result) {
+
+                if (err || result.rowCount === 0) {
+                    res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
+                    return;
+                } else {
+                    res.send(G.utils.r(req.url, 'Producto eliminado correctamente', 200, {pedidos_clientes: []}));
+                    return;
+                }
+            });
         }
     });
 };
@@ -1193,81 +1326,6 @@ PedidosCliente.prototype.obtenerDetallePedido = function(req, res) {
 
 
 
-
-
-
-
-
-//LISTAR PEDIDOS
-// ????????????????????????????????????????
-PedidosCliente.prototype.listadoPedidosClientes = function(req, res) {
-
-    var that = this;
-
-    var args = req.body.data;
-
-    if (args.pedidos_cliente === undefined || args.pedidos_cliente.empresa_id === undefined) {
-        res.send(G.utils.r(req.url, 'empresa_id No Está Definido', 404, {}));
-        return;
-    }
-
-    if (args.pedidos_cliente.empresa_id === '') {
-        res.send(G.utils.r(req.url, 'empresa_id Está Vacio', 404, {}));
-        return;
-    }
-
-    //Parámetros de búsqueda
-    var empresa_id = args.pedidos_cliente.empresa_id;
-    var termino_busqueda = args.pedidos_cliente.termino_busqueda;
-    var pagina = args.pedidos_cliente.pagina_actual;
-
-    that.m_pedidos_clientes.listado_pedidos_clientes(empresa_id, termino_busqueda, pagina, function(err, listado_pedidos) {
-
-        //console.log(">>>>>>>>>>>>> LISTADO PEDIDOS ............", listado_pedidos);
-
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error en consulta de Pedidos', 500, {}));
-            return;
-        }
-
-        res.send(G.utils.r(req.url, 'Consulta de Pedidos Exitosa', 200, {resultado_consulta: listado_pedidos}));
-
-    });
-
-};
-
-
-//consultarEncabezadoPedido
-// ????????????????????????????????????????
-PedidosCliente.prototype.consultarEncabezadoPedido = function(req, res) {
-
-    var that = this;
-
-    var args = req.body.data;
-
-    if (args.pedido_cliente === undefined || args.pedido_cliente.numero_pedido === undefined) {
-        res.send(G.utils.r(req.url, 'numero_pedido No está definido', 404, {}));
-        return;
-    }
-
-    if (args.pedido_cliente.numero_pedido === "") {
-        res.send(G.utils.r(req.url, 'numero_depido está vacio', 404, {}));
-        return;
-    }
-
-    //Parámetro para el modelo
-    var numero_pedido = args.pedido_cliente.numero_pedido;
-
-    that.m_pedidos_clientes.consultar_encabezado_pedido(numero_pedido, function(err, encabezado_pedido) {
-
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error en consulta de Encabezado Pedido', 404, {}));
-            return;
-        }
-
-        res.send(G.utils.r(req.url, 'Consulta Encabezado Pedido Exitosa', 200, {resultado_consulta: encabezado_pedido}));
-    });
-};
 
 //ESTADO COTIZACIÓN DEL CLIENTE
 // ????????????????????????????????????????

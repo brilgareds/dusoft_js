@@ -292,6 +292,45 @@ define(["angular", "js/controllers",
             
             /*
              * @Author: Eduar
+             * +Descripcion: Realiza la peticion al api para cambiar la empresa, centro y bodega destino
+             */
+            self.guardarPedido = function(){
+                
+                var pedido = $scope.root.pedido;
+                var farmacia = pedido.getFarmaciaDestino();
+                
+                var url = API.PEDIDOS.FARMACIAS.ACTUALIZAR_PEDIDO;
+
+                var obj = {
+                    session: $scope.rootPedidoFarmacia.session,
+                    data: {
+                        pedidos_farmacias: {
+                            numero_pedido: pedido.get_numero_pedido(),
+                            empresa_destino: farmacia.getCodigo(),
+                            centro_utilidad_destino: farmacia.getCentroUtilidadSeleccionado().getCodigo(),
+                            bodega_destino: farmacia.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
+                            observacion:pedido.getDescripcion()
+                        }
+                    }
+                };
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    if (data.status !== 200) {
+                        AlertService.mostrarMensaje("warning", "Ha ocurrido un error actualizando el pedido");
+                    } 
+                });
+            };
+            
+            /*
+             * @Author: Eduar
+             * +Descripcion: Handler del boton guarda pedido
+             */
+            $scope.onGuardarPedido = function(){
+                self.guardarPedido();
+            };
+            
+            /*
+             * @Author: Eduar
              * @param {$event} e
              * @param {ProductoPedidoFarmacia} producto
              * +Descripcion: Evento que se escucha de GuardarPedidoBaseController, valida el cambio de cantidad del producto

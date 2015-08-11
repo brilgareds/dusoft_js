@@ -319,7 +319,12 @@ define(["angular", "js/controllers",
             };
             
             $scope.deshabilitarSeleccionEmpresa = function(){
-                if($scope.root.pedido && $scope.root.pedido.get_numero_pedido()){
+                
+                if(!$scope.root.pedido){
+                    return true;
+                }
+                                
+                if($scope.root.pedido.get_numero_pedido()){
                     return true;
                 }
                 

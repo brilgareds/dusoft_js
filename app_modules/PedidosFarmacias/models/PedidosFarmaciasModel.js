@@ -1090,86 +1090,10 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
 
     // Se realiza este cambio para permitir buscar productos de un determiando tipo.
     if (tipo_producto !== '0') {
-        sql_aux = " and b.tipo_producto_id = $8 ";
-        array_parametros.push(tipo_producto);
+        sql_aux = " and b.tipo_producto_id = '"+tipo_producto+"' ";
     }
     
-    console.log("argumentos >>>>>>>>>> ", array_parametros);
-    
-    /*var sql = " select\
-                a.empresa_id, \
-                a.centro_utilidad,\
-                a.bodega,\
-                f.descripcion as descripcion_laboratorio,\
-                e.descripcion as descripcion_molecula,\
-                b.codigo_producto, \
-                fc_descripcion_producto(b.codigo_producto) as nombre_producto,\
-                b.unidad_id,\
-                b.estado, \
-                b.codigo_invima,\
-                b.contenido_unidad_venta,\
-                b.sw_control_fecha_vencimiento,\
-                a.existencia_minima,\
-                a.existencia_maxima,\
-                a.existencia::integer as existencia,\
-                c.existencia as existencia_total,\
-                c.costo_anterior,\
-                c.costo,\
-                CASE WHEN c.costo > 0 THEN ROUND(((c.precio_venta/c.costo)-1) * 100) ELSE NULL END as porcentaje_utilidad,\
-                c.costo_penultima_compra,\
-                c.costo_ultima_compra,\
-                c.precio_venta_anterior,\
-                c.precio_venta,\
-                c.precio_minimo,\
-                c.precio_maximo,\
-                c.sw_vende,\
-                c.grupo_contratacion_id,\
-                c.nivel_autorizacion_id,\
-                b.grupo_id,\
-                b.clase_id,\
-                b.subclase_id,\
-                b.porc_iva,\
-                b.tipo_producto_id,\
-                case when coalesce((a.existencia - h.cantidad_total_pendiente - i.total_solicitado)::integer, 0) < 0 then 0 \
-                        else coalesce((a.existencia - h.cantidad_total_pendiente - i.total_solicitado)::integer, 0) end as disponibilidad_bodega\
-                from existencias_bodegas a \
-                inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
-                inner join inventarios c on b.codigo_producto = c.codigo_producto and a.empresa_id = c.empresa_id\
-                inner join inv_tipo_producto d ON b.tipo_producto_id = d.tipo_producto_id\
-                inner join inv_subclases_inventarios e ON b.grupo_id = e.grupo_id and b.clase_id = e.clase_id and b.subclase_id = e.subclase_id\
-                inner join inv_clases_inventarios f ON e.grupo_id = f.grupo_id and e.clase_id = f.clase_id\
-                left join (\
-                    select aa.empresa_id, aa.centro_utilidad, aa.bodega, aa.codigo_producto, sum(aa.cantidad_total_pendiente) as cantidad_total_pendiente\
-                     from(\
-                           select a.empresa_destino as empresa_id, a.centro_destino as centro_utilidad, a.bodega_destino as bodega, b.codigo_producto, SUM( b.cantidad_pendiente) AS cantidad_total_pendiente\
-                           from solicitud_productos_a_bodega_principal a \
-                           inner join solicitud_productos_a_bodega_principal_detalle b ON a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id \
-                           where b.cantidad_pendiente > 0 \
-                           group by 1, 2, 3, 4\
-                           union\
-                           select\
-                           a.empresa_id, a.centro_utilidad_id as centro_utilidad, a.bodega_id as bodega, b.codigo_producto, SUM((b.numero_unidades - b.cantidad_despachada)) as cantidad_total_pendiente\
-                           FROM ventas_ordenes_pedidos a\
-                           inner join ventas_ordenes_pedidos_d b ON a.pedido_cliente_id = b.pedido_cliente_id\
-                           where (b.numero_unidades - b.cantidad_despachada) > 0  \
-                           GROUP BY 1, 2, 3, 4\
-                        ) aa group by 1,2,3,4\
-		) h on a.empresa_id = h.empresa_id  and a.centro_utilidad = h.centro_utilidad and a.bodega =h.bodega  and c.codigo_producto = h.codigo_producto\
-                    left join(\
-                	SELECT codigo_producto, SUM(aa.total_reservado) as total_solicitado FROM(\
-                            select codigo_producto, SUM(cantidad_solic)::integer as total_reservado from solicitud_pro_a_bod_prpal_tmp\
-                            group by codigo_producto\
-                            union    \
-                            SELECT b.codigo_producto, sum(b.numero_unidades)::integer as total_reservado from ventas_ordenes_pedidos_tmp a\
-                            INNER JOIN ventas_ordenes_pedidos_d_tmp b on b.pedido_cliente_id_tmp = a.pedido_cliente_id_tmp\
-                            WHERE a.estado = '1'\
-                            GROUP BY b.codigo_producto\
-                  ) aa group by 1\
-                ) i on i.codigo_producto = c.codigo_producto\
-                where a.empresa_id= $1 and a.centro_utilidad = $2 and a.bodega = $3 " + sql_aux + "\
-                and ( b.codigo_producto ILIKE $4 or b.descripcion ILIKE  $4)\
-               ORDER BY 7 ASC";*/
-    
+    console.log("sql aux ", sql_aux, pagina);
     
     var sql = " select\
                 b.codigo_producto,\
@@ -1246,17 +1170,13 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
                 left join (\
                     select\
                     a.codigo_producto,\
-                    a.existencia::integer as existencias_farmacia,\
-                    b.tipo_producto_id\
+                    a.existencia::integer as existencias_farmacia\
                     from existencias_bodegas a\
-                    inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
-                    inner join inventarios c on b.codigo_producto = c.codigo_producto and a.empresa_id = c.empresa_id\
-                    inner join inv_tipo_producto d ON b.tipo_producto_id = d.tipo_producto_id\
                     where a.empresa_id= $4 and a.centro_utilidad = $5 and a.bodega = $6\
                     ORDER BY 1 ASC \
-                ) j on j.codigo_producto = c.codigo_producto and j.tipo_producto_id =  b.tipo_producto_id\
+                ) j on j.codigo_producto = c.codigo_producto\
                 where a.empresa_id= $1 and a.centro_utilidad = $2 and a.bodega = $3 " + sql_aux + "\
-                and ( b.codigo_producto ILIKE $7 or b.descripcion ILIKE  $7)\
+                and ( a.codigo_producto ILIKE $7 or fc_descripcion_producto(a.codigo_producto) ILIKE  $7)\
                ORDER BY 1 ASC ";
     
     G.db.paginated(sql, array_parametros, pagina, G.settings.limit, function(err, rows, result) {

@@ -135,7 +135,7 @@
                                     <div class="row col-md-8 col-md-offset-2" style="margin-top: 25px">    
 
                                         <div flow-init="opciones_archivo"  flow-file-success="respuesta_archivo_plano($file, $message);" flow-file-added="!!{xls:1,xlsx:1}[$file.getExtension()]" flow-files-submitted="cargar_archivo_plano($flow)" class="ng-scope" flow-prevent-drop=""  flow-drag-enter="dropClass='drag-over'" flow-drag-leave="dropClass=''" >
-                                            <div class="drop txt-center" flow-drop="" flow-drop-enabled="!validacion_buscar_productos()" ng-class="dropClass" >
+                                            <div class="drop txt-center" flow-drop="" flow-drop-enabled="!validacion_buscar_productos()  && !(Pedido.get_numero_pedido() > 0)" ng-class="dropClass" >
 
                                                 <div class="col-md-12">
                                                     <img  ng-hide="$flow.files.length" src="../../../images/Cloud-Upload-Blue.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
@@ -152,14 +152,14 @@
                                             <br>
 
                                             <div class="well txt-center">
-                                                <span class="btn btn-default" flow-btn="" ng-hide="$flow.files.length" ng-disabled="validacion_buscar_productos()">
+                                                <span class="btn btn-default" flow-btn="" ng-hide="$flow.files.length" ng-disabled="validacion_buscar_productos() || Pedido.get_numero_pedido() > 0">
                                                     <span class="glyphicon glyphicon-folder-open" style="margin-right: 5px;"></span> Seleccionar Archivo
                                                     <input type="file" style="visibility: hidden; position: absolute;">
                                                 </span>                                                
                                                 <button class="btn btn-default" ng-click="$flow.cancel()" ng-disabled="" ng-show="$flow.files.length">
                                                     <span class="glyphicon glyphicon-minus" ></span> Remover
                                                 </button>
-                                                <button class="btn btn-default" ng-click="subir_archivo_plano()" ng-disabled="validacion_buscar_productos()" ng-show="$flow.files.length">
+                                                <button class="btn btn-default" ng-click="subir_archivo_plano()" ng-disabled="validacion_buscar_productos() || Pedido.get_numero_pedido() > 0 " ng-show="$flow.files.length">
                                                     <span class="glyphicon glyphicon-cloud-upload" ></span> Subir
                                                 </button>
                                             </div>

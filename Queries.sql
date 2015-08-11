@@ -274,6 +274,7 @@ IS 'Estado Orden de Compra 0 => Recibida (Ingresada en Bodega), 1 => Activa, 2 =
 ---- ==================================================================================== ----
 ---- Agregar columna tipo_producto a la tabla ventas_ordenes_pedidos_tmp para poder controlar que cotizaciones a clientes vayan por un solo tipo de producto
 
+
 ALTER TABLE ventas_ordenes_pedidos_tmp ADD COLUMN tipo_producto varchar(1);
 
 COMMENT ON COLUMN "public"."ventas_ordenes_pedidos_tmp"."tipo_producto"
@@ -1337,4 +1338,14 @@ ALTER TABLE "public"."ventas_ordenes_pedidos_d_tmp"
 
 ALTER TABLE "public"."ventas_ordenes_pedidos_d"
   DROP COLUMN "tipo_producto";
+
+---- ==================================================================================== ----
+---- Agregar columna tipo_producto a la tabla ventas_ordenes_pedidos_tmp para poder controlar que cotizaciones a clientes vayan por un solo tipo de producto
+
+-- tabla real 
+
+ALTER TABLE ventas_ordenes_pedidos ADD COLUMN tipo_producto varchar(1);
+
+COMMENT ON COLUMN "public"."ventas_ordenes_pedidos_tmp"."tipo_producto"
+IS ' Indica que el pedido se hara solamente de ese tipo de producto inv_tipo_productos ';
 

@@ -84,22 +84,12 @@ define(["angular", "js/controllers",
 
                 localStorageService.add("cotizacion", {numero_cotizacion: 0, cartera: '0'});
                 $state.go('Cotizaciones');
-
-                /*localStorageService.add("numero_cotizacion", 0);
-                 localStorageService.add("cartera", '0');*/
-            };
-
-            $scope.habilitar_observacion_cartera = function(cotizacion) {
-                return {'click': cotizacion.get_estado_cotizacion() != '0'};
             };
 
             $scope.modificar_cotizacion_cliente = function(cotizacion) {
 
                 localStorageService.add("cotizacion", {numero_cotizacion: cotizacion.get_numero_cotizacion(), cartera: '0'});
                 $state.go('Cotizaciones');
-
-                /*localStorageService.add("numero_cotizacion", cotizacion.get_numero_cotizacion());
-                 localStorageService.add("cartera", '0');*/
             };
 
             $scope.modificar_pedido_cliente = function(pedido) {
@@ -108,19 +98,42 @@ define(["angular", "js/controllers",
                 $state.go('PedidoCliente');
             };
 
-            $scope.generar_observacion_cartera = function(objeto) {
+
+            $scope.habilitar_observacion_cartera = function(obj) {
+
+                if (obj.get_numero_cotizacion() > 0)
+                    return {'click': obj.get_estado_cotizacion() != '0'};
+                if (obj.get_numero_pedido() > 0)
+                    return {'click': obj.getEstadoActualPedido() === '0'};
+            };
+
+            $scope.generar_observacion_cartera = function(obj) {
 
                 // Observacion cartera para la cotizacion
-                if (objeto.get_numero_cotizacion() > 0) {
-                    localStorageService.add("cotizacion", {numero_cotizacion: objeto.get_numero_cotizacion(), cartera: '1'});
+                if (obj.get_numero_cotizacion() > 0) {
+                    localStorageService.add("cotizacion", {numero_cotizacion: obj.get_numero_cotizacion(), cartera: '1'});
                     $state.go('Cotizaciones');
                 }
 
                 // Observacion cartera para el pedido
-                if (objeto.get_numero_pedido() > 0) {
-                    localStorageService.add("pedido", {numero_pedido: objeto.get_numero_pedido(), cartera: '1'});
+                if (obj.get_numero_pedido() > 0) {
+                    localStorageService.add("pedido", {numero_pedido: obj.get_numero_pedido(), cartera: '1'});
                     $state.go('PedidoCliente');
-                }                
+                }
+            };
+
+            $scope.visualizar = function(obj) {
+                // Visualizar cotizacion
+                if (obj.get_numero_cotizacion() > 0) {
+                    localStorageService.add("cotizacion", {numero_cotizacion: obj.get_numero_cotizacion(), visualizar: '1'});
+                    $state.go('Cotizaciones');
+                }
+
+                // Visualizar pedido
+                if (obj.get_numero_pedido() > 0) {
+                    localStorageService.add("pedido", {numero_pedido: obj.get_numero_pedido(), visualizar: '1'});
+                    $state.go('PedidoCliente');
+                }
             };
 
             // Cotizaciones 
@@ -208,7 +221,8 @@ define(["angular", "js/controllers",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li><a href="javascript:void(0);" ng-click="modificar_cotizacion_cliente(row.entity)" >Modificar</a></li>\
+                                                <li ng-if="row.entity.get_estado_cotizacion() == \'0\' " ><a href="javascript:void(0);" ng-click="visualizar(row.entity)" >Visualizar</a></li>\
+                                                <li ng-if="row.entity.get_estado_cotizacion() != \'0\' " ><a href="javascript:void(0);" ng-click="modificar_cotizacion_cliente(row.entity)" >Modificar</a></li>\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ habilitar_observacion_cartera(row.entity) }}" ng-click="generar_observacion_cartera(row.entity)" >Cartera</a></li>\
                                                 <li><a href="javascript:void(0);" ng-click="" >Ver PDF</a></li>\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ validar_envio_email(row.entity) }}" ng-click="ventana_enviar_email(row.entity)" >Enviar por Email</a></li>\
@@ -318,7 +332,8 @@ define(["angular", "js/controllers",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li><a href="javascript:void(0);" ng-click="modificar_pedido_cliente(row.entity)" >Modificar</a></li>\
+                                                <li ng-if="row.entity.getEstadoActualPedido() != \'0\' "  ><a href="javascript:void(0);" ng-click="visualizar(row.entity)" >Visualizar</a></li>\
+                                                <li ng-if="row.entity.getEstadoActualPedido() == \'0\' " ><a href="javascript:void(0);" ng-click="modificar_pedido_cliente(row.entity)" >Modificar</a></li>\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ habilitar_observacion_cartera(row.entity) }}" ng-click="generar_observacion_cartera(row.entity)" >Cartera</a></li>\
                                                 <li><a href="javascript:void(0);" ng-click="generar_reporte(row.entity,false)" >Ver PDF</a></li>\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ validar_envio_email(row.entity) }}" ng-click="ventana_enviar_email(row.entity)" >Enviar por Email</a></li>\

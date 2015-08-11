@@ -105,7 +105,7 @@
                                                 <div class="">
                                                     <div class="col-md-3">
                                                         <p class="input-group">
-                                                            <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="validacion_buscar_productos()" ng-click="buscar_productos()" ng-disabled="validar_btn_ingreso_documentos(planilla)" > 
+                                                            <button type="button" class="btn btn-default btn-medium pull-right ng-scope" ng-disabled="validacion_buscar_productos()" ng-click="buscar_productos()" > 
                                                                 <span class="glyphicon glyphicon-plus"></span> Buscar Productos
                                                             </button>
                                                         </p>
@@ -123,7 +123,7 @@
 
                                             </div>
                                             <div class="" style="height: 240px" ng-grid="lista_productos" > </div>
-                                                                        
+
                                         </div>
                                     </div>   
                                 </tab>                        
@@ -168,6 +168,22 @@
                                 </tab>                                
                             </tabset>
                             <!--Acciones Cotizacion-->    
+                            <!--div class="modal-footer col-md-12" ng-if="!datos_view.cartera">
+                                <button class="btn btn-default" ng-click="cancelar_cotizacion()">
+                                    <span class="glyphicon glyphicon-remove" ></span> Cancelar
+                                </button>
+                                <button class="btn btn-default"  ng-click="descargar_enviar_reporte()" ng-if="Pedido.get_numero_cotizacion() > 0 || Pedido.get_numero_pedido() >0">
+                                    <span class="glyphicon glyphicon-cog" ></span> Generar reporte
+                                </button>
+                                <button class="btn btn-default" ng-click="aceptar_cotizacion()" ng-if="Pedido.get_numero_cotizacion() > 0 || Pedido.get_aprobado_cartera() === '0' || Pedido.get_numero_pedido() >0 ">
+                                    <span class="glyphicon glyphicon-ok" ></span> Aceptar
+                                </button>                                
+                                <button class="btn btn-default" ng-click="gestionar_pedido()" ng-if="Pedido.get_numero_cotizacion() > 0 && Pedido.get_aprobado_cartera() === '1'" ng-disabled="Pedido.get_estado_cotizacion() == '0'">
+                                    <span class="glyphicon glyphicon-ok" ></span> Generar Pedido
+                                </button>                                
+                            </div--> 
+
+                            <!--Acciones Cotizacion/ Pedido -->    
                             <div class="modal-footer col-md-12" ng-if="!datos_view.cartera">
                                 <button class="btn btn-default" ng-click="cancelar_cotizacion()">
                                     <span class="glyphicon glyphicon-remove" ></span> Cancelar
@@ -175,10 +191,10 @@
                                 <button class="btn btn-default"  ng-click="descargar_enviar_reporte()" ng-if="Pedido.get_numero_cotizacion() > 0 || Pedido.get_numero_pedido() >0">
                                     <span class="glyphicon glyphicon-cog" ></span> Generar reporte
                                 </button>
-                                <button class="btn btn-default" ng-click="aceptar_cotizacion()" ng-if="Pedido.get_aprobado_cartera() === '0'">
-                                    <span class="glyphicon glyphicon-ok" ></span> Aceptar
+                                <button class="btn btn-default" ng-click="aceptar_cotizacion()" ng-if="Pedido.get_aprobado_cartera() == '' || Pedido.get_aprobado_cartera() === '0' || Pedido.get_numero_pedido() >0 ">
+                                    <span class="glyphicon glyphicon-ok" ></span> Aceptar 
                                 </button>                                
-                                <button class="btn btn-default" ng-click="gestionar_pedido()" ng-if="Pedido.get_aprobado_cartera() === '1'" ng-disabled="Pedido.get_estado_cotizacion() == '0'">
+                                <button class="btn btn-default" ng-click="gestionar_pedido()" ng-if="Pedido.get_numero_cotizacion() > 0 && Pedido.get_aprobado_cartera() === '1'" ng-disabled="Pedido.get_estado_cotizacion() == '0'">
                                     <span class="glyphicon glyphicon-ok" ></span> Generar Pedido
                                 </button>                                
                             </div> 
@@ -190,10 +206,9 @@
                                 <button class="btn btn-default" ng-click="gestion_cartera(1)">
                                     <span class="glyphicon glyphicon-ok" ></span> Aprobado Cartera
                                 </button>
-                            </div> 
+                            </div>                              
                         </div>
                     </div>
-                    <!-- -->                    
                 </div>
             </div>       
         </div>

@@ -18,7 +18,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                 this.tipo_producto = '';
                 this.descripcion_tipo_producto = '';
                 this.observacion_cartera = '';
-                this.aprobado_cartera = false;
+                this.aprobado_cartera = '0';
                 this.estado_cotizacion = '';
                 this.descripcion_estado_cotizacion = '';
             }

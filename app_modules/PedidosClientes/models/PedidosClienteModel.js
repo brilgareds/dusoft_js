@@ -1068,8 +1068,8 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
                 f.nombre as nombre_vendendor,\
                 f.telefono as telefono_vendedor,\
                 a.observaciones,\
-                a.observacion_cartera,\
-                a.sw_aprobado_cartera,\
+                coalesce(a.observacion_cartera, '') as observacion_cartera,\
+                coalesce(a.sw_aprobado_cartera, '') as sw_aprobado_cartera,\
                 coalesce(a.tipo_producto,'') as tipo_producto,\
                 coalesce(g.descripcion,'') as descripcion_tipo_producto,\
                 a.estado,\
@@ -1127,8 +1127,8 @@ PedidosClienteModel.prototype.consultar_cotizacion = function(cotizacion, callba
                 f.nombre as nombre_vendendor,\
                 f.telefono as telefono_vendedor,\
                 a.observaciones,\
-                a.observacion_cartera,\
-                a.sw_aprobado_cartera,\
+                coalesce(a.observacion_cartera, '') as observacion_cartera,\
+                coalesce(a.sw_aprobado_cartera, '') as sw_aprobado_cartera,\
                 coalesce(a.tipo_producto,'') as tipo_producto,\
                 coalesce(g.descripcion,'') as descripcion_tipo_producto,\
                 a.estado,\

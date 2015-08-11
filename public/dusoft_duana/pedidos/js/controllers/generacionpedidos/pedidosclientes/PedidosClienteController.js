@@ -40,7 +40,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 termino_busqueda_productos: '',
                 activar_tab: {tab_productos: true, tab_cargar_archivo: false},
                 producto_seleccionado: Producto.get(),
-                cartera: (localStorageService.get("cartera") === '1') ? true : false
+                cartera: false,
+                visualizar: false
             };
 
             // Inicializacion Pedido o cotizacion           
@@ -53,15 +54,22 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             $scope.Pedido.set_vendedor(Vendedor.get()).setCliente(Cliente.get());
             $scope.Pedido.setFechaRegistro($filter('date')(new Date(), "dd/MM/yyyy"));
 
+            //Cotizacion
             if (localStorageService.get("cotizacion")) {
                 var cotizacion = localStorageService.get("cotizacion");
                 $scope.Pedido.set_numero_cotizacion(parseInt(cotizacion.numero_cotizacion) || 0);
                 $scope.datos_view.cartera = (cotizacion.cartera === '1') ? true : false;
+                $scope.datos_view.visualizar = (cotizacion.visualizar === '1') ? true : false;
             } else {
+                //Pedido
                 var pedido = localStorageService.get("pedido");
                 $scope.Pedido.setNumeroPedido(parseInt(pedido.numero_pedido) || 0);
                 $scope.datos_view.cartera = (pedido.cartera === '1') ? true : false;
+                $scope.datos_view.visualizar = (pedido.visualizar === '1') ? true : false;
             }
+
+            console.log('== datos view ==');
+            console.log($scope.datos_view);
 
             // Consultas Cotizaciones
             that.gestionar_consultas_cotizaciones = function() {
@@ -143,6 +151,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.Pedido.set_aprobado_cartera(data.sw_aprobado_cartera).set_observacion_cartera(data.observacion_cartera);
                 $scope.Pedido.set_estado_cotizacion(data.estado).set_descripcion_estado_cotizacion(data.descripcion_estado);
                 $scope.Pedido.setFechaRegistro(data.fecha_registro);
+                               
             };
 
             // Detalle Cotizacion
@@ -227,6 +236,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.Pedido.set_tipo_producto(data.tipo_producto).set_descripcion_tipo_producto(data.descripcion_tipo_producto);
                 $scope.Pedido.set_aprobado_cartera(data.sw_aprobado_cartera).set_observacion_cartera(data.observacion_cartera);
                 $scope.Pedido.setFechaRegistro(data.fecha_registro);
+                               
             };
 
             that.buscar_detalle_pedido = function() {
@@ -362,12 +372,19 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 if ($scope.Pedido.get_observacion() === undefined || $scope.Pedido.get_observacion() === '')
                     disabled = true;
 
+                // Cartera
+                if ($scope.datos_view.cartera)
+                    disabled = true;
+
                 // Validaciones para la cotizacion
                 if ($scope.Pedido.get_numero_cotizacion() > 0) {
-
                     if ($scope.Pedido.get_aprobado_cartera() === '1')
                         disabled = true;
                 }
+
+                // Solo visualizar
+                if ($scope.datos_view.visualizar)
+                    disabled = true;
 
                 return disabled;
             };
@@ -402,6 +419,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 if ($scope.Pedido.get_numero_pedido() > 0) {
 
                 }
+
+                // Solo visualizar
+                if ($scope.datos_view.visualizar)
+                    disabled = true;
 
                 return disabled;
             };
@@ -653,7 +674,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 // Observacion cartera para cotizacion
                 if ($scope.Pedido.get_numero_cotizacion() > 0) {
-                    
+
                     url = API.PEDIDOS.CLIENTES.OBSERVACION_CARTERA_COTIZACION;
                     obj = {
                         session: $scope.session,
@@ -667,9 +688,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 // Observacion cartera para pedido
                 if ($scope.Pedido.get_numero_pedido() > 0) {
-                    
+
                     url = API.PEDIDOS.CLIENTES.OBSERVACION_CARTERA_PEDIDO;
-                    
+
                     obj = {
                         session: $scope.session,
                         data: {
@@ -762,6 +783,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
 
+                $scope.$$watchers = null;
+
                 // Set Datas
                 $scope.Empresa.set_default();
 
@@ -769,7 +792,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 localStorageService.add("cotizacion", null);
                 localStorageService.add("pedido", null);
 
-                $scope.$$watchers = null;
+                // datos view
+                $scope.datos_view = null;
+
             });
         }]);
 });

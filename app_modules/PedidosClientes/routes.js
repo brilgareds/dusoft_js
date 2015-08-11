@@ -81,6 +81,11 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.generarPedido(req, res);
     });
 
+    // Insertar Detalle Pedido
+    app.post('/api/PedidosClientes/insertarDetallePedido', function(req, res) {
+        c_pedidos_clientes.insertarDetallePedido(req, res);
+    });
+
     // Consultar Pedido
     app.post('/api/PedidosClientes/consultarPedido', function(req, res) {
         c_pedidos_clientes.consultarPedido(req, res);
@@ -91,11 +96,11 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.consultarDetallePedido(req, res);
     });
 
-    // Elimiar Producto Pedido
+    // Eliminar Producto Pedido
     app.post('/api/PedidosClientes/eliminarProductoPedido', function(req, res) {
         c_pedidos_clientes.eliminarProductoPedido(req, res);
     });
-    
+
     // Observacion Cartera Pedido
     app.post('/api/PedidosClientes/observacionCarteraPedido', function(req, res) {
         c_pedidos_clientes.observacionCarteraPedido(req, res);
@@ -160,16 +165,6 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/insertarPedidoCliente', function(req, res) {
         c_pedidos_clientes.insertarPedidoCliente(req, res);
     });
-
-
-
-    //Insertar Detalle Pedido Cliente. Usado solo para modificación de pedido ya creado por Cotización.
-    //????????????????????????????????
-    app.post('/api/PedidosClientes/insertarDetallePedido', function(req, res) {
-        c_pedidos_clientes.insertarDetallePedido(req, res);
-    });
-
-
 
 
     //Modificar Detalle de Cotización

@@ -108,13 +108,19 @@ define(["angular", "js/controllers",
                 $state.go('PedidoCliente');
             };
 
-            $scope.generar_observacion_cartera = function(cotizacion) {
-                
-                localStorageService.add("cotizacion", {numero_cotizacion: cotizacion.get_numero_cotizacion(), cartera: '1'});
-                $state.go('Cotizaciones');
-                
-                /*localStorageService.add("numero_cotizacion", cotizacion.get_numero_cotizacion());
-                localStorageService.add("cartera", '1');*/
+            $scope.generar_observacion_cartera = function(objeto) {
+
+                // Observacion cartera para la cotizacion
+                if (objeto.get_numero_cotizacion() > 0) {
+                    localStorageService.add("cotizacion", {numero_cotizacion: objeto.get_numero_cotizacion(), cartera: '1'});
+                    $state.go('Cotizaciones');
+                }
+
+                // Observacion cartera para el pedido
+                if (objeto.get_numero_pedido() > 0) {
+                    localStorageService.add("pedido", {numero_pedido: objeto.get_numero_pedido(), cartera: '1'});
+                    $state.go('PedidoCliente');
+                }                
             };
 
             // Cotizaciones 
@@ -313,6 +319,7 @@ define(["angular", "js/controllers",
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
                                                 <li><a href="javascript:void(0);" ng-click="modificar_pedido_cliente(row.entity)" >Modificar</a></li>\
+                                                <li><a href="javascript:void(0);" ng-validate-events="{{ habilitar_observacion_cartera(row.entity) }}" ng-click="generar_observacion_cartera(row.entity)" >Cartera</a></li>\
                                                 <li><a href="javascript:void(0);" ng-click="generar_reporte(row.entity,false)" >Ver PDF</a></li>\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ validar_envio_email(row.entity) }}" ng-click="ventana_enviar_email(row.entity)" >Enviar por Email</a></li>\
                                             </ul>\

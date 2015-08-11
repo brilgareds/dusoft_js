@@ -364,7 +364,8 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
         tipo_producto: (args.pedidos_clientes.tipo_producto === undefined) ? '' : args.pedidos_clientes.tipo_producto,
         termino_busqueda: args.pedidos_clientes.termino_busqueda,
         laboratorio_id: (args.pedidos_clientes.laboratorio_id === undefined) ? '' : args.pedidos_clientes.laboratorio_id,
-        numero_cotizacion: (args.pedidos_clientes.numero_cotizacion === undefined) ? '' : args.pedidos_clientes.numero_cotizacion
+        numero_cotizacion: (args.pedidos_clientes.numero_cotizacion === undefined) ? '' : args.pedidos_clientes.numero_cotizacion,
+        numero_pedido: (args.pedidos_clientes.numero_pedido === undefined) ? '' : args.pedidos_clientes.numero_pedido
     };
     var pagina = args.pedidos_clientes.pagina_actual;
 
@@ -1073,6 +1074,82 @@ PedidosCliente.prototype.generarPedido = function(req, res) {
 
 /*
  * Autor : Camilo Orozco
+ * Descripcion : Insertar detalle pedido
+ */
+PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    // Pedido
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.pedido === undefined || args.pedidos_clientes.pedido === '') {
+        res.send(G.utils.r(req.url, 'pedidos_clientes o pedido No Estan Definidos', 404, {}));
+        return;
+    }
+
+    // Producto 
+    if (args.pedidos_clientes.producto === undefined || args.pedidos_clientes.producto === '') {
+        res.send(G.utils.r(req.url, 'productos no estan definidos o vacios', 404, {}));
+        return;
+    }
+
+    var pedido = args.pedidos_clientes.pedido;
+    var producto = args.pedidos_clientes.producto;
+
+    if (pedido.numero_cotizacion === undefined || pedido.numero_cotizacion === '') {
+        res.send(G.utils.r(req.url, 'numero_cotizacion no esta definido o esta vacio', 404, {}));
+        return;
+    }
+
+    if (producto.codigo_producto === undefined || producto.codigo_producto === '') {
+        res.send(G.utils.r(req.url, 'codigo_producto no esta definido o esta vacio', 404, {}));
+        return;
+    }
+
+    if (producto.iva === undefined || producto.iva === '') {
+        res.send(G.utils.r(req.url, 'iva no esta definido o esta vacio', 404, {}));
+        return;
+    }
+
+    if (producto.cantidad_solicitada === undefined || producto.cantidad_solicitada === '' || producto.cantidad_solicitada <= '0') {
+        res.send(G.utils.r(req.url, 'cantidad_solicitada no esta definido , esta vacio o es menor o igual a cero', 404, {}));
+        return;
+    }
+    if (producto.precio_venta === undefined || producto.precio_venta === '') {
+        res.send(G.utils.r(req.url, 'precio_venta no esta definido o esta vacio', 404, {}));
+        return;
+    }
+
+    pedido.usuario_id = req.session.user.usuario_id;
+
+    that.m_pedidos_clientes.insertar_detalle_pedido(pedido, producto, function(err, rows, result) {
+
+        if (err || result.rowCount === 0) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
+            return;
+        } else {
+
+            pedido.aprobado_cartera = '0';
+            pedido.observacion_cartera = '';
+
+            that.m_pedidos_clientes.observacion_cartera_pedido(pedido, function(err, rows, result) {
+
+                if (err || result.rowCount === 0) {
+                    res.send(G.utils.r(req.url, 'Error actualizando la observacion de cartera', 500, {pedidos_clientes: []}));
+                    return;
+                } else {
+                    res.send(G.utils.r(req.url, 'Producto regitrado correctamente', 200, {pedidos_clientes: {}}));
+                    return;
+                }
+            });
+
+        }
+    });
+};
+
+/*
+ * Autor : Camilo Orozco
  * Descripcion : Eliminar Producto Pedido
  */
 PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
@@ -1112,10 +1189,10 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
             res.send(G.utils.r(req.url, 'Error Eliminando el producto', 500, {pedidos_clientes: []}));
             return;
         } else {
-            
+
             pedido.aprobado_cartera = '0';
             pedido.observacion_cartera = '';
-            
+
             that.m_pedidos_clientes.observacion_cartera_pedido(pedido, function(err, rows, result) {
 
                 if (err || result.rowCount === 0) {
@@ -1129,6 +1206,53 @@ PedidosCliente.prototype.eliminarProductoPedido = function(req, res) {
         }
     });
 };
+
+
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : Generar las observaciones ingresadas por el area de cartera
+ */
+PedidosCliente.prototype.observacionCarteraPedido = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    // Pedido
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.pedido === undefined || args.pedidos_clientes.pedido === '') {
+        res.send(G.utils.r(req.url, 'pedidos_clientes o pedido No Estan Definidos', 404, {}));
+        return;
+    }
+
+    var pedido = args.pedidos_clientes.pedido;
+
+    if (pedido.numero_pedido === undefined || pedido.numero_pedido === '') {
+        res.send(G.utils.r(req.url, 'numero_pedido no esta definido o esta vacio', 404, {}));
+        return;
+    }
+
+    if (pedido.aprobado_cartera === undefined || pedido.aprobado_cartera === '') {
+        res.send(G.utils.r(req.url, 'aprobado_cartera no esta definido o esta vacio', 404, {}));
+        return;
+    }
+
+    if (pedido.observacion_cartera === undefined || pedido.observacion_cartera === '') {
+        res.send(G.utils.r(req.url, 'observacion_cartera no esta definido o esta vacio', 404, {}));
+        return;
+    }
+
+    that.m_pedidos_clientes.observacion_cartera_pedido(pedido, function(err, rows, result) {
+
+        if (err || result.rowCount === 0) {
+            res.send(G.utils.r(req.url, 'Error Interno', 500, {pedidos_clientes: []}));
+            return;
+        } else {
+            res.send(G.utils.r(req.url, 'Observacion regitrada correctamente', 200, {pedidos_clientes: {}}));
+            return;
+        }
+    });
+};
+
 
 
 /*
@@ -1981,56 +2105,7 @@ function __emailDocumento(that, destinatario, ruta_archivo, nombre_archivo, subj
 }
 ;
 
-//Insertar Detalle Pedido
-// ????????????????????????????????????????
-PedidosCliente.prototype.insertarDetallePedido = function(req, res) {
 
-    var that = this;
-
-    var args = req.body.data;
-
-    if (args.detalle_pedido === undefined || args.detalle_pedido.numero_pedido === undefined || args.detalle_pedido.codigo_producto === undefined || args.detalle_pedido.porc_iva === undefined) {
-        res.send(G.utils.r(req.url, 'numero_pedido, codigo_producto o porc_iva No Están Definidos', 404, {}));
-        return;
-    }
-
-    if (args.detalle_pedido.numero_unidades === undefined || args.detalle_pedido.valor_unitario === undefined || args.detalle_pedido.tipo_producto === undefined) {
-        res.send(G.utils.r(req.url, 'numero_unidades, valor_unitario o tipo_producto No Están Definidos', 404, {}));
-        return;
-    }
-
-    if (args.detalle_pedido.numero_pedido === '' || args.detalle_pedido.codigo_producto === '' || args.detalle_pedido.porc_iva === '') {
-        res.send(G.utils.r(req.url, 'numero_pedido, codigo_producto o porc_iva Están Vacios', 404, {}));
-        return;
-    }
-
-    if (args.detalle_pedido.numero_unidades === '' || args.detalle_pedido.valor_unitario === '' || args.detalle_pedido.tipo_producto === '') {
-        res.send(G.utils.r(req.url, 'numero_unidades, valor_unitario o tipo_producto Están Vacios', 404, {}));
-        return;
-    }
-
-    //Parámetros a insertar
-    var numero_pedido = args.detalle_pedido.numero_pedido;
-    var codigo_producto = args.detalle_pedido.codigo_producto;
-    var porc_iva = args.detalle_pedido.porc_iva;
-    var numero_unidades = args.detalle_pedido.numero_unidades;
-    var valor_unitario = args.detalle_pedido.valor_unitario;
-    var tipo_producto = args.detalle_pedido.tipo_producto;
-    var usuario_id = req.session.user.usuario_id;
-
-    //insertar_detalle_pedido = function(numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, callback)
-
-    that.m_pedidos_clientes.insertar_detalle_pedido(numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto, function(err, row) {
-
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error en Inserción del Detalle de Pedido', 500, {}));
-            return;
-        }
-
-        res.send(G.utils.r(req.url, 'Inserción del Detalle Pedido Exitosa', 200, {}));
-
-    });
-};
 
 //eliminarRegistroDetallePedido}
 // ????????????????????????????????????????

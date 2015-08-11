@@ -42,6 +42,7 @@ define(["angular", "js/controllers",
             var fecha_actual = new Date();
 
             $scope.datos_view = {
+                // Paginacion Cotizaciones
                 termino_busqueda_cotizaciones: '',
                 ultima_busqueda_cotizaciones: '',
                 fecha_inicial_cotizaciones: $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"),
@@ -49,6 +50,15 @@ define(["angular", "js/controllers",
                 pagina_actual_cotizaciones: 1,
                 cantidad_items_cotizaciones: 0,
                 paginando_cotizaciones: false,
+                //Paginacion Pedidos
+                termino_busqueda_pedidos: '',
+                ultima_busqueda_pedidos: '',
+                fecha_inicial_pedidos: $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"),
+                fecha_final_pedidos: $filter('date')(fecha_actual, "yyyy-MM-dd"),
+                pagina_actual_pedidos: 1,
+                cantidad_items_pedidos: 0,
+                paginando_pedidos: false,
+                // Estados Botones n-grid
                 estados_cotizaciones: [
                     "btn btn-danger btn-xs",
                     "btn btn-primary btn-xs",
@@ -77,10 +87,10 @@ define(["angular", "js/controllers",
                 $state.go('Cotizaciones');
             };
 
-            $scope.habilitar_observacion_cartera = function(cotizacion){
+            $scope.habilitar_observacion_cartera = function(cotizacion) {
                 return {'click': cotizacion.get_estado_cotizacion() != '0'};
             };
-            
+
             $scope.modificar_cotizacion_cliente = function(cotizacion) {
 
                 localStorageService.add("numero_cotizacion", cotizacion.get_numero_cotizacion());
@@ -208,24 +218,47 @@ define(["angular", "js/controllers",
             };
 
             // Pedidos
+            $scope.buscador_pedidos = function(ev) {
+                if (ev.which === 13) {
+                    that.buscar_pedidos();
+                }
+            };
+
             that.buscar_pedidos = function() {
+
+                if ($scope.datos_view.ultima_busqueda_pedidos !== $scope.datos_view.termino_busqueda_pedidos) {
+                    $scope.datos_view.pagina_actual_pedidos = 1;
+                }
 
                 var obj = {
                     session: $scope.session,
                     data: {
                         pedidos_clientes: {
                             empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
-                            fecha_inicial: $filter('date')($scope.datos_view.fecha_inicial_cotizaciones, "yyyy-MM-dd") + " 00:00:00",
-                            fecha_final: $filter('date')($scope.datos_view.fecha_final_cotizaciones, "yyyy-MM-dd") + " 23:59:00",
-                            termino_busqueda: $scope.datos_view.termino_busqueda_cotizaciones,
-                            pagina_actual: $scope.datos_view.pagina_actual_cotizaciones
+                            fecha_inicial: $filter('date')($scope.datos_view.fecha_inicial_pedidos, "yyyy-MM-dd") + " 00:00:00",
+                            fecha_final: $filter('date')($scope.datos_view.fecha_final_pedidos, "yyyy-MM-dd") + " 23:59:00",
+                            termino_busqueda: $scope.datos_view.termino_busqueda_pedidos,
+                            pagina_actual: $scope.datos_view.pagina_actual_pedidos
                         }
                     }
                 };
-
+             
                 Request.realizarRequest(API.PEDIDOS.LISTAR_PEDIDOS, "POST", obj, function(data) {
 
+                    $scope.datos_view.ultima_busqueda_pedidos = $scope.datos_view.termino_busqueda_pedidos;
+
                     if (data.status === 200) {
+
+                        $scope.datos_view.cantidad_items_pedidos = data.obj.pedidos_clientes.length;
+
+                        if ($scope.datos_view.paginando_pedidos && $scope.datos_view.cantidad_items_pedidos === 0) {
+                            if ($scope.datos_view.pagina_actual_pedidos > 0) {
+                                $scope.datos_view.pagina_actual_pedidos--;
+                            }
+                            AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
+                            return;
+                        }
+
                         that.render_pedidos(data.obj.pedidos_clientes);
                     }
                 });
@@ -295,6 +328,19 @@ define(["angular", "js/controllers",
 
                 return clase;
             };
+
+            $scope.pagina_anterior_pedidos = function() {
+                $scope.datos_view.paginando_pedidos = true;
+                $scope.datos_view.pagina_actual_pedidos--;
+                that.buscar_pedidos();
+            };
+
+            $scope.pagina_siguiente_pedidos = function() {
+                $scope.datos_view.paginando_pedidos = true;
+                $scope.datos_view.pagina_actual_pedidos++;
+                that.buscar_pedidos();
+            };
+
 
             that.buscar_cotizaciones();
             that.buscar_pedidos();

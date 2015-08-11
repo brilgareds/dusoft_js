@@ -5,9 +5,11 @@ define(["angular", "js/controllers",
         '$scope', '$rootScope', 'Request',
         'API', "socket", "AlertService",
         '$state', "Usuario", "localStorageService", '$modal', "$timeout",
+        "ProductoPedidoFarmacia",
         function($scope, $rootScope, Request,
                 API, socket, AlertService,
-                $state, Usuario, localStorageService, $modal, $timeout) {
+                $state, Usuario, localStorageService, $modal, $timeout,
+                ProductoPedidoFarmacia) {
 
             var self = this;
 
@@ -290,6 +292,54 @@ define(["angular", "js/controllers",
                 });            
             };
             
+            self.mostrarAlertaProductosNoEncontrados = function(productos){
+                $scope.productosInvalidos = [];
+                
+                for (var i in productos) {
+                    var _producto = productos[i];
+                    var producto = ProductoPedidoFarmacia.get(_producto.codigo_producto, _producto.descripcion_producto).
+                                                              setCantidadSolicitada(_producto.cantidad_solicitada);
+
+                     $scope.productosInvalidos.push(producto);                                   
+                }
+                
+                
+                $scope.productos = productos;   
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Alerta del sistema </h4>\
+                                </div>\
+                                <div class="modal-body row">\
+                                    <div class="col-md-12">\
+                                        <h4 >Productos no encontrados en la farmacia seleccionada .</h4>\
+                                        <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
+                                            <div class="list-group">\
+                                                <a ng-repeat="producto in productosInvalidos" class="list-group-item defaultcursor" href="javascript:void(0)">\
+                                                    {{ producto.getCodigoProducto()}} - {{producto.getDescripcion()}}\
+                                                </a>\
+                                            </div>\
+                                        </div>\
+                                    </div>\
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                </div>',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+                    }
+                };
+                
+                var modalInstance = $modal.open($scope.opts);  
+            };
+            
             /*
              * @Author: Eduar
              * +Descripcion: Realiza la peticion al api para cambiar la empresa, centro y bodega destino
@@ -317,7 +367,13 @@ define(["angular", "js/controllers",
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status !== 200) {
                         AlertService.mostrarMensaje("warning", "Ha ocurrido un error actualizando el pedido");
-                    } 
+                    } else {
+                        if(data.obj.productosNoEncontrados.length > 0){
+                            self.mostrarAlertaProductosNoEncontrados(data.obj.productosNoEncontrados);
+                        } else {
+                            AlertService.mostrarMensaje("success", "Se ha modificado correctamente el pedido");
+                        }
+                    }
                 });
             };
             

@@ -1070,10 +1070,10 @@ PedidosFarmaciasModel.prototype.actualizar_encabezado_pedido = function(numero_p
 
 
 PedidosFarmaciasModel.prototype.actualizarDestinoDeProductos = function(numero_pedido, farmacia_id, centro_utilidad, bodega, callback) {
-        
+    
     var sql = " update solicitud_productos_a_bodega_principal_detalle\
                 set farmacia_id = $2, centro_utilidad = $3, bodega = $4\
-                where solicitud_prod_a_bod_ppal_id = $1";
+                where solicitud_prod_a_bod_ppal_id = $1";  
     
     G.db.query(sql, [numero_pedido, farmacia_id, centro_utilidad, bodega], function(err, rows, result) {
         callback(err, rows);

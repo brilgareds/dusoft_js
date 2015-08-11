@@ -157,6 +157,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                 var _producto = this.productosSeleccionados[i];
                 
                 if(_producto.getCodigoProducto() === producto.getCodigoProducto()){
+                    _producto.setCantidadPendiente(_producto.getCantidadPendiente() + producto.getCantidadPendiente());
                     return true;
                 }
             }

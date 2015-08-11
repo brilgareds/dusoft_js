@@ -1910,26 +1910,74 @@ PedidosFarmacias.prototype.actualizarPedido = function(req, res) {
         if (err) {
             res.send(G.utils.r(req.url, 'Error en consulta de pedido', 500, {encabezado_pedido: {}}));
         } else {
-            
-            if(cabecera_pedido[0].estado_actual_pedido === '0' || cabecera_pedido[0].estado_actual_pedido === null ){
-                
-                that.m_pedidos_farmacias.actualizar_encabezado_pedido(numero_pedido, farmacia_id, centro_utilidad, bodega, observacion, function(err, rows) {
+            cabecera_pedido = cabecera_pedido[0];
 
-                    if (err) {
-                        res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Actualización', 500, {error: err}));
-                        return;
-                    } else {
-                        that.m_pedidos_farmacias.actualizarDestinoDeProductos(numero_pedido, farmacia_id, centro_utilidad, bodega, function(err, rows) {
-                            if (err) {
-                                res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Actualización', 500, {error: err}));
-                                return;
-                            }
+            if(cabecera_pedido.estado_actual_pedido === '0' || cabecera_pedido.estado_actual_pedido === null ){
+                // se valida si la empresa destino del request es diferente a la almacenada en el pedido
+                if(cabecera_pedido.empresa_id !== farmacia_id || cabecera_pedido.centro_utilidad !== centro_utilidad || cabecera_pedido.bodega_id !== bodega ){
 
-                            res.send(G.utils.r(req.url, 'Actualización exitosa!', 200, {resultado_consulta: rows}));
+                    that.m_pedidos_farmacias.consultar_detalle_pedido(numero_pedido, function(err, detalle){
+
+                        if(err){
+                            callback(err);
                             return;
+                        }
+
+                        var i = detalle.length;
+                        var productosNoEncontrados = [];
+
+                        //Antes de realizar la modificacion especial se debe validar que cada producto este en la empresa destino
+                        detalle.forEach(function(detalle){
+                           __consultarStockProducto(that, farmacia_id, detalle, function(err, producto){
+                                if(!producto.en_farmacia_seleccionada){
+                                   productosNoEncontrados.push(detalle);
+                                }
+
+                                if(--i === 0){
+                                    if(productosNoEncontrados.length > 0){
+                                        res.send(G.utils.r(req.url, 'Algunos productos no estan presentes en la farmacia seleccionada', 200, {productosNoEncontrados: productosNoEncontrados}));
+                                    } else {
+                                         that.m_pedidos_farmacias.actualizar_encabezado_pedido(numero_pedido, farmacia_id, centro_utilidad, bodega, observacion, function(err, rows) {
+
+                                               if (err) {
+                                                  res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Actualización', 500, {error: err}));
+                                                  return;
+                                               } else {
+                                                  that.m_pedidos_farmacias.actualizarDestinoDeProductos(numero_pedido, farmacia_id, centro_utilidad, bodega, function(err, rows) {
+                                                      if (err) {
+                                                          res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Actualización', 500, {error: err}));
+                                                          return;
+                                                      }
+
+                                                      res.send(G.utils.r(req.url, 'Actualización exitosa!', 200, {productosNoEncontrados: []}));
+                                                      return;
+                                                  });
+
+                                               }
+                                         });
+                                    }
+                                }
+
+                           });
+
                         });
-                    }
-                });
+
+                    });
+                } else {
+                    that.m_pedidos_farmacias.actualizar_encabezado_pedido(numero_pedido, cabecera_pedido.empresa_id, cabecera_pedido.centro_utilidad, 
+                                                                          cabecera_pedido.bodega_id, observacion, function(err, rows) {
+
+                        if (err) {
+                           res.send(G.utils.r(req.url, 'Se ha Generado un Error en la Actualización', 500, {error: err}));
+                           return;
+                        } else {
+                           res.send(G.utils.r(req.url, 'Actualización exitosa, se ha cambiado la observacion!', 200, {productosNoEncontrados: []}));
+                        }
+                  });
+                }
+                
+                
+
             } else {
                 res.send(G.utils.r(req.url, 'El estado actual del pedido no permite modificarlo', 403, {}));
                 return;
@@ -2038,9 +2086,21 @@ PedidosFarmacias.prototype.generarPdfPedido = function(req, res) {
                     res.send(G.utils.r(req.url, 'Error en consulta detalle del pedido', 500, {detalle_pedido: {}}));
                 } else {
                     
-                    var i = productos.length;
                     
-                    productos.forEach(function(producto){
+                    var obj = {
+                        encabezado_pedido_farmacia: cabecera_pedido, 
+                        detalle_pedido_farmacia: productos,
+                        serverUrl:req.protocol + '://' + req.get('host') + "/",
+                        descripcionPedido:descripcionPedido
+                    };
+
+                    //console.log("pedido ", obj);
+                    _generarDocumentoPedido(obj, function(nombreTmp){
+                        console.log("pdf generado ", nombreTmp);
+                        res.send(G.utils.r(req.url, 'Url reporte pedido', 200, {reporte_pedido: {nombre_reporte: nombreTmp}}));
+                    });
+                    
+                    /*productos.forEach(function(producto){
                         
                         that.m_pedidos_farmacias.listarProductos(cabecera_pedido.empresa_destino, cabecera_pedido.centro_destino, cabecera_pedido.bodega_destino,
                                                                  cabecera_pedido.empresa_id, cabecera_pedido.centro_utilidad, cabecera_pedido.bodega_id,
@@ -2071,7 +2131,7 @@ PedidosFarmacias.prototype.generarPdfPedido = function(req, res) {
                                                                
                         });
                         
-                    });
+                    });*/
                     //res.send(G.utils.r(req.url, 'Consulta detalle del pedido satisfactoria', 200, {detalle_pedido: filas_pedido}));
 
                 }

@@ -152,7 +152,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
         };
         
         ProductoPedidoFarmacia.prototype.setEnFarmaciaSeleccionada = function(enFarmaciaSeleccionada) {
-            this.enFarmaciaSeleccionada = enFarmaciaSeleccionada;
+            this.enFarmaciaSeleccionada = Boolean(Number(enFarmaciaSeleccionada));
             return this;
         };
         

@@ -1211,7 +1211,8 @@ PedidosFarmacias.prototype.buscarProductos = function(req, res) {
             res.send(G.utils.r(req.url, 'Lista de productos vacía', 200, {lista_productos: []}));
             return;
         }
-
+        /*res.send(G.utils.r(req.url, 'Listado de Productos', 200, {lista_productos: productos}));
+        return;*/
         productos.forEach(function(producto) {
             __consultarStockProducto(that, empresa_destino_id, producto, function(err, _producto) {
 

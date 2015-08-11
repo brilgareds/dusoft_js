@@ -192,8 +192,8 @@ module.exports = function(app, di_container) {
     });
     
     //actualizarEncabezadoPedidoDefinitivo
-    app.post('/api/PedidosFarmacias/actualizarEncabezadoPedidoDefinitivo', function(req, res) {
-        c_pedidos_farmacias.actualizarEncabezadoPedidoDefinitivo(req, res);
+    app.post('/api/PedidosFarmacias/actualizarPedido', function(req, res) {
+        c_pedidos_farmacias.actualizarPedido(req, res);
     });
     
     //existeRegistroDetallePedido

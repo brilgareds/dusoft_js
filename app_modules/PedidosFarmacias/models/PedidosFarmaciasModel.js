@@ -597,7 +597,8 @@ PedidosFarmaciasModel.prototype.consultar_pedido = function(numero_pedido, callb
                 a.fecha_registro as fecha_registro_pedido,\
                 a.empresa_destino,\
                 a.centro_destino,\
-                a.bodega_destino\
+                a.bodega_destino,\
+                a.observacion\
                 from solicitud_productos_a_bodega_principal as a \
                 inner join bodegas as b on a.farmacia_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega \
                 inner join centros_utilidad as c on b.empresa_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad \
@@ -1055,12 +1056,22 @@ PedidosFarmaciasModel.prototype.consultar_producto_en_farmacia = function(empres
     
 };
 
-PedidosFarmaciasModel.prototype.actualizar_encabezado_pedido_definitivo = function(numero_pedido, farmacia_id, centro_utilidad, bodega, callback) {
-    
-    //console.log(">>>>---Datos Recibidos---<<<<");
-    console.log(numero_pedido, farmacia_id, centro_utilidad, bodega);
-    
+PedidosFarmaciasModel.prototype.actualizar_encabezado_pedido = function(numero_pedido, farmacia_id, centro_utilidad, bodega, observacion, callback) {
+        
     var sql = " update solicitud_productos_a_bodega_principal\
+                set farmacia_id = $2, centro_utilidad = $3, bodega = $4, observacion = $5\
+                where solicitud_prod_a_bod_ppal_id = $1";
+    
+    G.db.query(sql, [numero_pedido, farmacia_id, centro_utilidad, bodega, observacion], function(err, rows, result) {
+        callback(err, rows);
+    });
+    
+};
+
+
+PedidosFarmaciasModel.prototype.actualizarDestinoDeProductos = function(numero_pedido, farmacia_id, centro_utilidad, bodega, callback) {
+        
+    var sql = " update solicitud_productos_a_bodega_principal_detalle\
                 set farmacia_id = $2, centro_utilidad = $3, bodega = $4\
                 where solicitud_prod_a_bod_ppal_id = $1";
     
@@ -1069,7 +1080,6 @@ PedidosFarmaciasModel.prototype.actualizar_encabezado_pedido_definitivo = functi
     });
     
 };
-
 
 PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_utilidad_id, bodega_id, empresa_destino, centro_destino, bodega_destino,
                                                            termino_busqueda, pagina, tipo_producto, callback) {

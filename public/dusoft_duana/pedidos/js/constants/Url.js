@@ -64,7 +64,8 @@ define(["angular"], function(angular) {
                     'CONSULTAR_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/consultarDetallePedido',
                     'ACTUALIZAR_CANTIDADES_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/actualizarCantidadesDetallePedido',
                     'ELIMINAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/eliminarProductoDetallePedido',
-                    'INSERTAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/insertarProductoDetallePedidoFarmacia'
+                    'INSERTAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/insertarProductoDetallePedidoFarmacia',
+                    'ACTUALIZAR_PEDIDO': BASE_URL + '/PedidosFarmacias/actualizarPedido'
                 },
                 // URLS PEDIDOS FARMACIAS.
                 'LISTAR_PEDIDOS': BASE_URL + '/PedidosClientes/listarPedidos',
@@ -129,7 +130,7 @@ define(["angular"], function(angular) {
                 'MODIFICAR_CANTIDADES_COTIZACION': BASE_URL + '/PedidosClientes/modificarCantidadesCotizacion',
                 'MODIFICAR_CANTIDADES_PEDIDO': BASE_URL + '/PedidosClientes/modificarCantidadesPedido',
                 'CONSULTAR_PRODUCTO_EN_FARMACIA': BASE_URL + '/PedidosFarmacias/consultarProductoEnFarmacia',
-                'ACTUALIZAR_ENCABEZADO_PEDIDO_DEFINITIVO': BASE_URL + '/PedidosFarmacias/actualizarEncabezadoPedidoDefinitivo',
+                'ACTUALIZAR_ENCABEZADO_PEDIDO_DEFINITIVO': BASE_URL + '/PedidosFarmacias/actualizarEncabezadoPedidoDefinitivo',//depreciado
                 'CAMBIAR_ESTADO_APROBACION_PEDIDO': BASE_URL + '/PedidosClientes/cambiarEstadoAprobacionPedido',
                 //'CONSULTAR_ENCABEZADO_COTIZACION_CLIENTE': BASE_URL + '/PedidosClientes/consultarEncabezadoCotizacion',
                 'CONSULTAR_ENCABEZADO_PEDIDO_CLIENTE': BASE_URL + '/PedidosClientes/consultarEncabezadoPedido'

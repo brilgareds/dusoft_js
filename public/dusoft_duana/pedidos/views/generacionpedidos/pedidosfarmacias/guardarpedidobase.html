@@ -48,10 +48,6 @@
                                         </br>
                                         <h4 class="h4MarginTopBottom">Centro Utilidad: </h4>
 
-                                        <!-- select ui-select2="deseleccioncentroutilidad"  class="form-control selectgeneral pull-left" ng-disabled="rootCreaPedidoFarmacia.bloqueo_producto_incluido || rootCreaPedidoFarmacia.bloqueo_centro_utilidad_de" ng-model="rootCreaPedidoFarmacia.de_seleccion_centro_utilidad"  placeholder="Seleccionar Centro" ng-change="valorSeleccionado(2)">
-                                            <option></option>
-                                            <option ng-repeat="centro_utilidad in  rootCreaPedidoFarmacia.de_lista_centro_utilidad"  ng-value="centro_utilidad.centro_utilidad_id" >{{centro_utilidad.descripcion}}</option>
-                                        </select -->
 
                                         <ui-select ng-change="_empresaOrigenSeleccionada()" ng-model="root.pedido.farmaciaOrigen.centroUtilidad" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="deshabilitarSeleccionEmpresa()" >
                                             <ui-select-match  placeholder="Seleccionar Centro Utilidad">{{$select.selected.getNombre()}}</ui-select-match>
@@ -100,20 +96,12 @@
                                         <h4 class="h4MarginTopBottom">Farmacia: </h4>
 
 
-                                        <ui-select  ng-if="!rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" ng-model="root.pedido.farmaciaDestino" theme="select2" class="form-control selectgeneral pull-left" ng-change="onEmpresaDestinoSeleccionada()" ng-disabled="deshabilitarSeleccionEmpresa()" >
+                                        <ui-select  ng-if="!rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" ng-model="root.pedido.farmaciaDestino" theme="select2" class="form-control selectgeneral pull-left" ng-change="onEmpresaDestinoSeleccionada()" ng-disabled="deshabilitarSeleccionEmpresa() && root.pedido.getTipoModificacion() !== '3'" >
                                             <ui-select-match  placeholder="Seleccionar Farmacia">{{$select.selected.getNombre()}}</ui-select-match>
                                             <ui-select-choices repeat="empresa in root.empresasDestino | filter:$select.search">
                                                 {{empresa.getNombre()}}
                                             </ui-select-choices>
                                         </ui-select>
-
-                                        <!-- ng-if Modificación Especial -->
-                                        <select ui-select2="paraseleccionempresa" ng-if="rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" class="form-control selectgeneral pull-left" ng-model="rootCreaPedidoFarmacia.para_seleccion_empresa_aux"  data-placeholder="Seleccionar Farmacia" ng-change="valorSeleccionadoEspecial(4)">
-                                            <option value=""></option>
-                                            <option ng-repeat="empresa in  rootCreaPedidoFarmacia.para_lista_empresas"  value="{{empresa.empresa_id}},{{empresa.nombre_empresa}}" >{{empresa.nombre_empresa}}</option>
-                                        </select>
-
-
 
                                     </div>
                                 </div>
@@ -123,7 +111,7 @@
                                         </br>
                                         <h4 class="h4MarginTopBottom">Centro Utilidad: </h4>
 
-                                        <ui-select  ng-model="root.pedido.farmaciaDestino.centroUtilidad" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="deshabilitarSeleccionEmpresa()" >
+                                        <ui-select  ng-model="root.pedido.farmaciaDestino.centroUtilidad" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="deshabilitarSeleccionEmpresa() && root.pedido.getTipoModificacion() !== '3'" >
                                             <ui-select-match  placeholder="Seleccionar Centro Utilidad">{{$select.selected.getNombre()}}</ui-select-match>
                                             <ui-select-choices repeat="centro in root.pedido.getFarmaciaDestino().getCentrosUtilidad() | filter:$select.search">
                                                 {{centro.getNombre()}}
@@ -138,7 +126,7 @@
                                         </br>
                                         <h4 class="h4MarginTopBottom">Bodega: </h4>
 
-                                        <ui-select  ng-model="root.pedido.farmaciaDestino.centroUtilidad.bodega" theme="select2" class="form-control selectgeneral pull-left" ng-change="onBodegaSeleccionada()" ng-disabled="deshabilitarSeleccionEmpresa()">
+                                        <ui-select  ng-model="root.pedido.farmaciaDestino.centroUtilidad.bodega" theme="select2" class="form-control selectgeneral pull-left" ng-change="onBodegaSeleccionada()" ng-disabled="deshabilitarSeleccionEmpresa() && root.pedido.getTipoModificacion() !== '3'">
                                             <ui-select-match  placeholder="Seleccionar Centro Utilidad">{{$select.selected.getNombre()}}</ui-select-match>
                                             <ui-select-choices repeat="bodega in root.pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getBodegas() | filter:$select.search">
                                                 {{bodega.getNombre()}}
@@ -284,12 +272,18 @@
         <button type="submit" ng-show="!root.pedido.get_numero_pedido() && root.pedido.getEsTemporal()" class="btn btn-default pull-right" ng-click="onEliminarPedidoTemporal()">
             <span class="glyphicon glyphicon-remove"></span> Cancelar Pedido
         </button>
+       
+        
+        <button type="submit" class="btn btn-default pull-right" ng-click="onGuardarPedido()" ng-show="root.pedido.getTipoModificacion() === '3'">
+             <span class="glyphicon glyphicon-ok"></span> Guardar
+        </button>
+        
+        <button type="submit" ng-show="root.pedido.get_numero_pedido()" class="btn btn-default pull-right" ng-click="generarPdfPedidoFarmacia()">
+            <span class="glyphicon glyphicon-file"></span> Generar PDF
+        </button>
         
         <button type="submit" class="btn btn-default pull-right" ng-click="onVolverListadoPedidos()">
              Finalizar
-        </button>
-        <button type="submit" ng-show="root.pedido.get_numero_pedido()" class="btn btn-default pull-right" ng-click="generarPdfPedidoFarmacia()">
-            <span class="glyphicon glyphicon-file"></span> Generar PDF
         </button>
     </div>
 

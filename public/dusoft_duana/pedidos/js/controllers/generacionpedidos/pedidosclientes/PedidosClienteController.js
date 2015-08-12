@@ -743,7 +743,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 }
             };
 
-            // Aciones Botones       
+            // Acciones Botones       
 
             // Cancelar la cotizacion
             $scope.cancelar_cotizacion = function() {
@@ -859,6 +859,47 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 });
             };
 
+            $scope.descargar_enviar_reporte = function() {
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                        <button type="button" class="close" ng-click="cancelar_generacion_reporte()">&times;</button>\
+                                        <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                    </div>\
+                                    <div class="modal-body">\
+                                        <div class="btn-group btn-group-justified" role="group" aria-label="...">\
+                                            <div class="btn-group" role="group">\
+                                              <button type="button" class="btn btn-success" ng-click="descargar_reporte_pdf()" ><span class="glyphicon glyphicon-cloud-download"></span> Descargar PDF</button>\
+                                            </div>\
+                                            <div class="btn-group" role="group">\
+                                              <button type="button" class="btn btn-primary" ng-click="enviar_reporte_pdf_email()" ><span class="glyphicon glyphicon-send"></span> Enviar por Email</button>\
+                                            </div>\
+                                        </div>\
+                                    </div>',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.descargar_reporte_pdf = function() {
+                            $scope.generar_reporte($scope.Pedido, true);
+                            $modalInstance.close();
+                        };
+
+                        $scope.enviar_reporte_pdf_email = function() {
+                            $scope.ventana_enviar_email($scope.Pedido);
+                            $modalInstance.close();
+                        };
+
+                        $scope.cancelar_generacion_reporte = function() {
+                            $modalInstance.close();
+                        };
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+            };
 
             that.init = function() {
 

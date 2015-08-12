@@ -59,15 +59,76 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.insertarDetalleCotizacion(req, res);
     });
 
+    // Modificar Detalle de Cotización
+    app.post('/api/PedidosClientes/modificarDetalleCotizacion', function(req, res) {
+        c_pedidos_clientes.modificarDetalleCotizacion(req, res);
+    });
+
     // Eliminar producto de la Cotización
     app.post('/api/PedidosClientes/eliminarProductoCotizacion', function(req, res) {
         c_pedidos_clientes.eliminarProductoCotizacion(req, res);
+    });
+
+    // Observacion Cartera Cotizacion
+    app.post('/api/PedidosClientes/observacionCarteraCotizacion', function(req, res) {
+        c_pedidos_clientes.observacionCarteraCotizacion(req, res);
     });
 
     // Subir Archivo Plano
     app.post('/api/PedidosClientes/subirPlano', function(req, res) {
         c_pedidos_clientes.cotizacionArchivoPlano(req, res);
     });
+    
+    // Reporte Cotización    
+    app.post('/api/PedidosClientes/reporteCotizacion', function(req, res) {
+        c_pedidos_clientes.reporteCotizacion(req, res);
+    });
+
+    /* Generacion Pedidos */
+
+    // Generar Pedido
+    app.post('/api/PedidosClientes/generarPedido', function(req, res) {
+        c_pedidos_clientes.generarPedido(req, res);
+    });
+
+    // Insertar Detalle Pedido
+    app.post('/api/PedidosClientes/insertarDetallePedido', function(req, res) {
+        c_pedidos_clientes.insertarDetallePedido(req, res);
+    });
+
+    // Modificar Detalle Pedido
+    app.post('/api/PedidosClientes/modificarDetallePedido', function(req, res) {
+        c_pedidos_clientes.modificarDetallePedido(req, res);
+    });
+
+    // Consultar Pedido
+    app.post('/api/PedidosClientes/consultarPedido', function(req, res) {
+        c_pedidos_clientes.consultarPedido(req, res);
+    });
+
+    // Consultar Detalle Pedido
+    app.post('/api/PedidosClientes/consultarDetallePedido', function(req, res) {
+        c_pedidos_clientes.consultarDetallePedido(req, res);
+    });
+
+    // Eliminar Producto Pedido
+    app.post('/api/PedidosClientes/eliminarProductoPedido', function(req, res) {
+        c_pedidos_clientes.eliminarProductoPedido(req, res);
+    });
+
+    // Observacion Cartera Pedido
+    app.post('/api/PedidosClientes/observacionCarteraPedido', function(req, res) {
+        c_pedidos_clientes.observacionCarteraPedido(req, res);
+    });
+
+    // Reporte Cotización    
+    app.post('/api/PedidosClientes/reportePedido', function(req, res) {
+        c_pedidos_clientes.reportePedido(req, res);
+    });
+
+
+
+
 
     /**************************************************
      * 
@@ -75,18 +136,17 @@ module.exports = function(app, di_container) {
      *
      /**************************************************/
 
-    // Obtiene la informacion especifica del pedido seleccionado, busca por numero de pedido.
-    //??????????????????????????????????????????????????
-    app.post('/api/PedidosClientes/obtenerPedido', function(req, res) {
-        c_pedidos_clientes.obtenerPedido(req, res);
-    });
 
     //?????????????????????????????????????????????????
     app.post('/api/PedidosClientes/obtenerDetallePedido', function(req, res) {
         c_pedidos_clientes.obtenerDetallePedido(req, res);
     });
 
-
+    //Listar Detalle Pedido
+    //?????????????????????????
+    app.post('/api/PedidosClientes/listarDetallePedido', function(req, res) {
+        c_pedidos_clientes.listarDetallePedido(req, res);
+    });
 
 
 
@@ -97,6 +157,12 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.estadoCotizacion(req, res);
     });
 
+// Cambiar Estado Cotización
+    //??????????????????????
+    app.post('/api/PedidosClientes/cambiarEstadoCotizacion', function(req, res) {
+        c_pedidos_clientes.cambiarEstadoCotizacion(req, res);
+    });
+
 
     // Consultar Estado de Pedido
     // ??????????????????????????????????????
@@ -104,33 +170,18 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.estadoPedido(req, res);
     });
 
-
-    // Cambiar Estado Cotización
-    //??????????????????????
-    app.post('/api/PedidosClientes/cambiarEstadoCotizacion', function(req, res) {
-        c_pedidos_clientes.cambiarEstadoCotizacion(req, res);
+//Cambiar el Estado de Aprobacion de la Cotizacion
+    //????????????????????????????????
+    app.post('/api/PedidosClientes/cambiarEstadoAprobacionCotizacion', function(req, res) {
+        c_pedidos_clientes.cambiarEstadoAprobacionCotizacion(req, res);
     });
 
-
-
-
-    // Generar PDF Cotización
-    //????????????????????????
-    app.post('/api/PedidosClientes/imprimirCotizacionCliente', function(req, res) {
-        c_pedidos_clientes.imprimirCotizacionCliente(req, res);
+    //cambiarEstadoAprobacionPedido
+    //?????????????????????????????
+    app.post('/api/PedidosClientes/cambiarEstadoAprobacionPedido', function(req, res) {
+        c_pedidos_clientes.cambiarEstadoAprobacionPedido(req, res);
     });
 
-    //Generar PDF Pedido
-    //???????????????????????????????
-    app.post('/api/PedidosClientes/imprimirPedidoCliente', function(req, res) {
-        c_pedidos_clientes.imprimirPedidoCliente(req, res);
-    });
-
-    // Listado Pedidos Clientes
-    //??????????????????????
-    app.post('/api/PedidosClientes/listadoPedidosClientes', function(req, res) {
-        c_pedidos_clientes.listadoPedidosClientes(req, res);
-    });
 
     // Insertar Pedidos Clientes
     // ??????????????????????????????
@@ -138,23 +189,6 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.insertarPedidoCliente(req, res);
     });
 
-    //Listar Detalle Pedido
-    //?????????????????????????
-    app.post('/api/PedidosClientes/listarDetallePedido', function(req, res) {
-        c_pedidos_clientes.listarDetallePedido(req, res);
-    });
-
-    //Insertar Detalle Pedido Cliente. Usado solo para modificación de pedido ya creado por Cotización.
-    //????????????????????????????????
-    app.post('/api/PedidosClientes/insertarDetallePedido', function(req, res) {
-        c_pedidos_clientes.insertarDetallePedido(req, res);
-    });
-
-    //Eliminar Registro del Detalle Pedido Cliente. Usado solo para modificación de pedido ya creado por Cotización.
-    //????????????????????????
-    app.post('/api/PedidosClientes/eliminarRegistroDetallePedido', function(req, res) {
-        c_pedidos_clientes.eliminarRegistroDetallePedido(req, res);
-    });
 
     //Modificar Detalle de Cotización
     //????????????????????????????
@@ -168,25 +202,10 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.modificarCantidadesPedido(req, res);
     });
 
-    //Cambiar el Estado de Aprobacion de la Cotizacion
-    //????????????????????????????????
-    app.post('/api/PedidosClientes/cambiarEstadoAprobacionCotizacion', function(req, res) {
-        c_pedidos_clientes.cambiarEstadoAprobacionCotizacion(req, res);
-    });
-
-    //cambiarEstadoAprobacionPedido
-    //?????????????????????????????
-    app.post('/api/PedidosClientes/cambiarEstadoAprobacionPedido', function(req, res) {
-        c_pedidos_clientes.cambiarEstadoAprobacionPedido(req, res);
-    });
 
 
 
 
-    //consultarEncabezadoPedido
-    //??????????????????????
-    app.post('/api/PedidosClientes/consultarEncabezadoPedido', function(req, res) {
-        c_pedidos_clientes.consultarEncabezadoPedido(req, res);
-    });
+
 
 };

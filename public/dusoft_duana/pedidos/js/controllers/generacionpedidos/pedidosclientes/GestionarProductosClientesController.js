@@ -36,8 +36,9 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     producto_seleccionado: Producto.get()
                 };
 
+                $scope.seleccionar_tipo_producto($scope.datos_form.tipo_producto);
                 that.buscar_laboratorios();
-                that.buscar_productos_clientes();
+                //that.buscar_productos_clientes();
             });
 
             $rootScope.$on('cerrar_gestion_productos_clientesCompleto', function(e, parametros) {
@@ -66,6 +67,15 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 }
             };
 
+            // Gestionar Pedidos 
+            that.gestionar_pedidos = function(callback) {
+
+                that.insertar_detalle_pedido(function(resultado) {
+                    if (resultado)
+                        that.buscar_productos_clientes();
+                });
+            };
+
             // Insertar Encabezado Cotizacion
             $scope.insertar_cabercera_cotizacion = function(callback) {
 
@@ -85,8 +95,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     if (data.status === 200 && data.obj.pedidos_clientes.numero_cotizacion > 0) {
 
                         $scope.Pedido.set_numero_cotizacion(data.obj.pedidos_clientes.numero_cotizacion);
-                        $scope.Pedido.set_tipo_producto($scope.datos_form.tipo_producto);                                               
-                        
+                        $scope.Pedido.set_tipo_producto($scope.datos_form.tipo_producto);
+
                         localStorageService.add("numero_cotizacion", $scope.Pedido.get_numero_cotizacion());
                         callback(true);
                     } else {
@@ -115,7 +125,34 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     AlertService.mostrarMensaje("warning", data.msj);
 
                     if (data.status === 200) {
+                        callback(true);
+                    } else {
+                        callback(false);
+                    }
+                });
+            };
+            
+            
+            // Insertar Productos al pedido
+            that.insertar_detalle_pedido = function(callback) {
 
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_clientes: {
+                            pedido: $scope.Pedido,
+                            producto: $scope.datos_form.producto_seleccionado
+                        }
+                    }
+                };                               
+                
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.INSERTAR_DETALLE_PEDIDO, "POST", obj, function(data) {
+
+                    $scope.datos_form.producto_seleccionado = Producto.get();
+
+                    AlertService.mostrarMensaje("warning", data.msj);
+
+                    if (data.status === 200) {
                         callback(true);
                     } else {
                         callback(false);
@@ -162,6 +199,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             $scope.seleccionar_tipo_producto = function(tipo_producto) {
                 $scope.datos_form.tipo_producto = tipo_producto;
                 $scope.datos_form.pagina_actual = 1;
+
                 that.obtener_seleccion_tipo_producto();
                 that.buscar_productos_clientes();
             };
@@ -208,13 +246,14 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             termino_busqueda: $scope.datos_form.termino_busqueda,
                             tipo_producto: $scope.datos_form.tipo_producto,
                             laboratorio_id: $scope.datos_form.laboratorio.get_id(),
-                            numero_cotizacion: $scope.Pedido.get_numero_cotizacion()
+                            numero_cotizacion: $scope.Pedido.get_numero_cotizacion(),
+                            numero_pedido: $scope.Pedido.get_numero_pedido()
                         }
                     }
                 };
                 
-                /*console.log('== obj ==');
-                console.log(obj);*/
+                console.log('== obj ==');
+                console.log(obj.data.pedidos_clientes);
 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_PRODUCTOS_CLIENTES, "POST", obj, function(data) {
 
@@ -255,7 +294,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
             $scope.validar_seleccion_producto = function() {
 
-                if ($scope.Pedido.get_productos().length === 2)
+                if ($scope.Pedido.get_productos().length >= 25)
                     return true;
 
             };
@@ -266,12 +305,20 @@ define(["angular", "js/controllers"], function(angular, controllers) {
 
                 $scope.Pedido.set_productos(producto);
 
+                $scope.Pedido.set_tipo_producto($scope.datos_form.tipo_producto);
+
                 if ($scope.datos_form.tipo_producto === '') {
                     $scope.datos_form.tipo_producto = producto.get_tipo_producto();
                     $scope.Pedido.set_tipo_producto(producto.get_tipo_producto());
                 }
 
-                that.gestionar_cotizaciones();
+                if ($scope.Pedido.get_numero_pedido() > 0) {
+                    console.log('== por aca ===');
+                    that.gestionar_pedidos();
+                } else {
+                    console.log('== o por por qui ===');
+                    that.gestionar_cotizaciones();
+                }
             };
 
 

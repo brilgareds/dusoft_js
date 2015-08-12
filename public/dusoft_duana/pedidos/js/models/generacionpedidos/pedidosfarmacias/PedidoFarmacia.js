@@ -16,6 +16,10 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.productosSeleccionados = [];
             this.esTemporal = false;
             this.valido = false;
+            this.tipoPedido;
+            
+            //0 = ver , 1 = modificacion y 2 = modificacion especial
+            this.tipoModificacion = '0';
             
         };
 
@@ -104,8 +108,32 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             return this.esTemporal;
         };
         
+        PedidoFarmacia.prototype.setTipoPedido = function(tipoPedido) {
+            this.tipoPedido = tipoPedido;
+            return this;
+        };
+        
+        PedidoFarmacia.prototype.getTipoPedido = function() {
+            return this.tipoPedido;
+        };
+        
+        
+        PedidoFarmacia.prototype.setTipoModificacion = function(tipoModificacion) {
+            this.tipoModificacion = tipoModificacion;
+            return this;
+        };
+        
+        PedidoFarmacia.prototype.getTipoModificacion = function() {
+            return this.tipoModificacion;
+        };
+        
+        
         PedidoFarmacia.prototype.eliminarProducto = function(index) {
-            return this.productos.splice(index,1);
+            this.productos.splice(index,1);
+        };
+        
+        PedidoFarmacia.prototype.eliminarProductoSeleccionado = function(index) {
+            this.productosSeleccionados.splice(index,1);
         };
         
         PedidoFarmacia.prototype.vaciarProductos = function() {
@@ -129,6 +157,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                 var _producto = this.productosSeleccionados[i];
                 
                 if(_producto.getCodigoProducto() === producto.getCodigoProducto()){
+                    _producto.setCantidadPendiente(_producto.getCantidadPendiente() + producto.getCantidadPendiente());
                     return true;
                 }
             }

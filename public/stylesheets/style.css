@@ -531,3 +531,7 @@ filter: none!important;
 .input-check{
       padding: 0px 3px 0px 3px!important;
 }
+
+div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control .select2{
+    background-color: transparent;
+}

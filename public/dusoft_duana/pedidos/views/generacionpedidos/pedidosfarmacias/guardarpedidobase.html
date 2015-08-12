@@ -14,7 +14,7 @@
                     </div>
 
                     <div class="col-sm-6 col-md-6 col-lg-6">
-                        <h3 class="h4MarginTopBottom">Pedido N°: {{rootCreaPedidoFarmacia.pedido.numero_pedido}}</h3>
+                        <h3 class="h4MarginTopBottom">Pedido N°: {{root.pedido.get_numero_pedido()}}</h3>
                     </div>
                 </div>
 
@@ -34,12 +34,7 @@
                                         </br>
                                         <h4 class="h4MarginTopBottom">Empresa: </h4>
 
-                                        <!-- select ui-select2="deseleccionempresa"  class="form-control selectgeneral pull-left" ng-disabled="rootCreaPedidoFarmacia.bloqueo_producto_incluido" ng-model="rootCreaPedidoFarmacia.de_seleccion_empresa"  placeholder="Seleccionar Empresa" ng-change="valorSeleccionado(1)">
-                                            <option></option>
-                                            <option ng-repeat="empresa in  rootCreaPedidoFarmacia.de_lista_empresas"  ng-value="empresa.empresa_id" >{{empresa.razon_social}}</option>
-                                        </select -->
-
-                                        <ui-select ng-change="onEmpresaOrigenSeleccionada()" ng-model="root.pedido.farmaciaOrigen" theme="select2" class="form-control selectgeneral pull-left" >
+                                        <ui-select ng-change="onEmpresaOrigenSeleccionada()" ng-model="root.pedido.farmaciaOrigen" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="deshabilitarSeleccionEmpresa()" >
                                             <ui-select-match  placeholder="Seleccionar Farmacia">{{$select.selected.getNombre()}}</ui-select-match>
                                             <ui-select-choices repeat="empresa in root.empresasOrigen | filter:$select.search">
                                                 {{empresa.getNombre()}}
@@ -53,12 +48,8 @@
                                         </br>
                                         <h4 class="h4MarginTopBottom">Centro Utilidad: </h4>
 
-                                        <!-- select ui-select2="deseleccioncentroutilidad"  class="form-control selectgeneral pull-left" ng-disabled="rootCreaPedidoFarmacia.bloqueo_producto_incluido || rootCreaPedidoFarmacia.bloqueo_centro_utilidad_de" ng-model="rootCreaPedidoFarmacia.de_seleccion_centro_utilidad"  placeholder="Seleccionar Centro" ng-change="valorSeleccionado(2)">
-                                            <option></option>
-                                            <option ng-repeat="centro_utilidad in  rootCreaPedidoFarmacia.de_lista_centro_utilidad"  ng-value="centro_utilidad.centro_utilidad_id" >{{centro_utilidad.descripcion}}</option>
-                                        </select -->
 
-                                        <ui-select ng-change="_empresaOrigenSeleccionada()" ng-model="root.pedido.farmaciaOrigen.centroUtilidad" theme="select2" class="form-control selectgeneral pull-left" >
+                                        <ui-select ng-change="_empresaOrigenSeleccionada()" ng-model="root.pedido.farmaciaOrigen.centroUtilidad" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="deshabilitarSeleccionEmpresa()" >
                                             <ui-select-match  placeholder="Seleccionar Centro Utilidad">{{$select.selected.getNombre()}}</ui-select-match>
                                             <ui-select-choices repeat="centro in root.pedido.getFarmaciaOrigen().getCentrosUtilidad() | filter:$select.search">
                                                 {{centro.getNombre()}}
@@ -72,11 +63,7 @@
                                         </br>
                                         <h4 class="h4MarginTopBottom">Bodega: </h4>
 
-                                        <!-- select ui-select2="deseleccionbodega"  class="form-control selectgeneral pull-left" ng-disabled="rootCreaPedidoFarmacia.bloqueo_producto_incluido || rootCreaPedidoFarmacia.bloqueo_bodega_de" ng-model="rootCreaPedidoFarmacia.de_seleccion_bodega"  placeholder="Seleccionar Bodega" ng-change="valorSeleccionado(3)">
-                                            <option></option>
-                                            <option ng-repeat="bodega in  rootCreaPedidoFarmacia.de_lista_bodegas"  ng-value="bodega.bodega_id" >{{bodega.descripcion}}</option>
-                                        </select -->
-                                        <ui-select ng-change="onBodegaSeleccionada()" ng-model="root.pedido.farmaciaOrigen.centroUtilidad.bodega" theme="select2" class="form-control selectgeneral pull-left" >
+                                        <ui-select ng-change="onBodegaSeleccionada()" ng-model="root.pedido.farmaciaOrigen.centroUtilidad.bodega" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="deshabilitarSeleccionEmpresa()" >
                                             <ui-select-match  placeholder="Seleccionar Centro Utilidad">{{$select.selected.getNombre()}}</ui-select-match>
                                             <ui-select-choices repeat="bodega in root.pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getBodegas() | filter:$select.search">
                                                 {{bodega.getNombre()}}
@@ -108,27 +95,13 @@
                                         </br>
                                         <h4 class="h4MarginTopBottom">Farmacia: </h4>
 
-                                        <!-- ng-if normal Farmacia -->
-                                        <!-- select ui-select2="paraseleccionempresa" ng-if="!rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" class="form-control selectgeneral pull-left" ng-disabled="rootCreaPedidoFarmacia.bloqueo_producto_incluido" ng-model="rootCreaPedidoFarmacia.para_seleccion_empresa"  data-placeholder="Seleccionar Farmacia" ng-change="valorSeleccionado(4)">
-                                            <option value=""></option>
-                                            <option ng-repeat="empresa in  rootCreaPedidoFarmacia.para_lista_empresas"  value="{{empresa.empresa_id}},{{empresa.nombre_empresa}}" >{{empresa.nombre_empresa}}</option>
-                                        </select -->
 
-
-                                        <ui-select  ng-if="!rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" ng-model="root.pedido.farmaciaDestino" theme="select2" class="form-control selectgeneral pull-left" ng-change="onEmpresaDestinoSeleccionada()" >
+                                        <ui-select  ng-if="!rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" ng-model="root.pedido.farmaciaDestino" theme="select2" class="form-control selectgeneral pull-left" ng-change="onEmpresaDestinoSeleccionada()" ng-disabled="deshabilitarSeleccionEmpresa() && root.pedido.getTipoModificacion() !== '3'" >
                                             <ui-select-match  placeholder="Seleccionar Farmacia">{{$select.selected.getNombre()}}</ui-select-match>
                                             <ui-select-choices repeat="empresa in root.empresasDestino | filter:$select.search">
                                                 {{empresa.getNombre()}}
                                             </ui-select-choices>
                                         </ui-select>
-
-                                        <!-- ng-if Modificación Especial -->
-                                        <select ui-select2="paraseleccionempresa" ng-if="rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" class="form-control selectgeneral pull-left" ng-model="rootCreaPedidoFarmacia.para_seleccion_empresa_aux"  data-placeholder="Seleccionar Farmacia" ng-change="valorSeleccionadoEspecial(4)">
-                                            <option value=""></option>
-                                            <option ng-repeat="empresa in  rootCreaPedidoFarmacia.para_lista_empresas"  value="{{empresa.empresa_id}},{{empresa.nombre_empresa}}" >{{empresa.nombre_empresa}}</option>
-                                        </select>
-
-
 
                                     </div>
                                 </div>
@@ -138,7 +111,7 @@
                                         </br>
                                         <h4 class="h4MarginTopBottom">Centro Utilidad: </h4>
 
-                                        <ui-select  ng-model="root.pedido.farmaciaDestino.centroUtilidad" theme="select2" class="form-control selectgeneral pull-left" >
+                                        <ui-select  ng-model="root.pedido.farmaciaDestino.centroUtilidad" theme="select2" class="form-control selectgeneral pull-left" ng-disabled="deshabilitarSeleccionEmpresa() && root.pedido.getTipoModificacion() !== '3'" >
                                             <ui-select-match  placeholder="Seleccionar Centro Utilidad">{{$select.selected.getNombre()}}</ui-select-match>
                                             <ui-select-choices repeat="centro in root.pedido.getFarmaciaDestino().getCentrosUtilidad() | filter:$select.search">
                                                 {{centro.getNombre()}}
@@ -153,7 +126,7 @@
                                         </br>
                                         <h4 class="h4MarginTopBottom">Bodega: </h4>
 
-                                        <ui-select  ng-model="root.pedido.farmaciaDestino.centroUtilidad.bodega" theme="select2" class="form-control selectgeneral pull-left" ng-change="onBodegaSeleccionada()">
+                                        <ui-select  ng-model="root.pedido.farmaciaDestino.centroUtilidad.bodega" theme="select2" class="form-control selectgeneral pull-left" ng-change="onBodegaSeleccionada()" ng-disabled="(deshabilitarSeleccionEmpresa() && root.pedido.getTipoModificacion() !== '3') || (!root.pedido.farmaciaOrigen.centroUtilidad.bodega)">
                                             <ui-select-match  placeholder="Seleccionar Centro Utilidad">{{$select.selected.getNombre()}}</ui-select-match>
                                             <ui-select-choices repeat="bodega in root.pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getBodegas() | filter:$select.search">
                                                 {{bodega.getNombre()}}
@@ -194,16 +167,16 @@
 
             <tabset> <!--Grupo de Tabs-->
 
-                <tab >
+                <tab active="rootPedidoFarmaciaTemporal.tabListaPedidos">
 
                     <tab-heading>
-                        <span ng-if="rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().en_uso===1" class="glyphicon glyphicon-eye-open"></span> <b>Incluir Producto </b>
+                        <span></span> <b>Incluir Producto </b>
                     </tab-heading>
 
                     <div class="input-group navbar-form ">
 
                         <div >
-                            <button type="button" ng-disabled="!root.pedido.getValido()" class="btn btn-default btn-medium ng-scope"  ng-click="onIncluirProductos($event)">
+                             <button type="button" ng-disabled="!root.pedido.getValido() || (root.pedido.get_numero_pedido() && root.pedido.getTipoModificacion() != '3')" class="btn btn-default btn-medium ng-scope"  ng-click="onIncluirProductos($event)">
                                 <span class="glyphicon glyphicon-plus"></span> Incluir Productos
                             </button>
                         </div>   
@@ -224,19 +197,19 @@
                     </div>
 
                 </tab>
-
-                <tab disabled="rootCreaPedidoFarmacia.bloqueo_upload" active="rootCreaPedidoFarmacia.tab_estados.tab2"  name="cargarPlano">
+                
+                <tab disabled="(!root.pedido.getValido() ||  root.pedido.get_numero_pedido())"   name="cargarPlano">
                     <tab-heading>
-                        <b> Archivo Plano </b>
+                        <i class="glyphicon glyphicon-cloud-upload"></i> <b> Cargar Archivo Plano </b>
                     </tab-heading>
 
-                    <div>
+                    <div ng-if="(root.pedido.getValido() ||  !root.pedido.get_numero_pedido())">
 
                         <br/>
 
                         <div class="row col-md-8 col-md-offset-2" style="margin-top: 25px">    
 
-                            <div flow-init="rootCreaPedidoFarmacia.opciones_archivo"  flow-file-success="respuesta_archivo_plano($file, $message);" flow-file-added="!!{xlsx:1,xls:1}[$file.getExtension()]" flow-files-submitted="cargar_archivo_plano($flow)" class="ng-scope" flow-prevent-drop=""  flow-drag-enter="dropClass='drag-over'" flow-drag-leave="dropClass=''" >
+                            <div flow-init="rootPedidoFarmaciaTemporal.opcionesArchivo"  flow-file-success="respuestaArchivoPlano($file, $message);" flow-file-added="!!{xlsx:1,xls:1}[$file.getExtension()]" flow-files-submitted="cargarArchivoPlano($flow)" class="ng-scope" flow-prevent-drop=""  flow-drag-enter="dropClass='drag-over'" flow-drag-leave="dropClass=''" >
                                 <div class="drop txt-center" flow-drop="" flow-drop-enabled="!(vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '')" ng-class="dropClass" >
 
                                     <div class="col-md-12">
@@ -244,7 +217,7 @@
                                         <img ng-show="$flow.files.length" src="../../../images/xls.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
                                     </div>
                                     <div ng-hide="$flow.files.length">
-                                        <b>OR</b> Arrastrar y Soltar el archivo AQUI!!..                                                    
+                                         Arrastrar y Soltar el archivo AQUI!!                                                   
                                     </div>
                                     <div class="" ng-repeat="file in $flow.files" ng-show="$flow.files.length">
                                         Nombre Archivo : <label>{{file.name}}</label>    
@@ -264,15 +237,14 @@
                                 <br>
 
                                 <div class="well txt-center">
-                                    <span class="btn btn-default" flow-btn="" ng-disabled="rootCreaPedidoFarmacia.bloqueo_upload" ng-hide="$flow.files.length" >
-                                        <!--ng-disabled="vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '' "-->
+                                    <span class="btn btn-default" flow-btn=""  ng-hide="$flow.files.length" >
                                         <span class="glyphicon glyphicon-folder-open" style="margin-right: 5px;"></span> Seleccionar Archivo
                                         <input type="file" style="visibility: hidden; position: absolute;">
                                     </span>                                                
-                                    <button class="btn btn-default" ng-click="$flow.cancel()" ng-disabled="rootCreaPedidoFarmacia.bloqueo_upload" ng-show="$flow.files.length">
+                                    <button class="btn btn-default" ng-click="$flow.cancel()" ng-show="$flow.files.length">
                                         <span class="glyphicon glyphicon-minus" ></span> Remover
                                     </button>
-                                    <button class="btn btn-default" ng-click="subir_archivo_plano()" ng-disabled="rootCreaPedidoFarmacia.bloqueo_upload" ng-show="$flow.files.length">
+                                    <button class="btn btn-default" ng-click="subirArchivoPlano()" ng-show="$flow.files.length">
                                         <!--ng-disabled="vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '' "-->
                                         <span class="glyphicon glyphicon-cloud-upload" ></span> Subir
                                     </button>
@@ -287,18 +259,31 @@
     </div>
 
     <div class="col-sm-12 btn-toolbar">
-        <button type="submit" ng-disabled="rootCreaPedidoFarmacia.bloqueo_generar_pedido" class="btn btn-default pull-right" ng-click="onGenerarPedido()"
-                 ng-validate-events="{{rootCreaPedidoFarmacia.opcionesModulo.btnGenerarPedido}}">
+        <button type="submit" ng-show="!root.pedido.get_numero_pedido()" class="btn btn-default pull-right" ng-click="onGenerarPedido()"
+                 ng-validate-events="{{rootCreaPedidoFarmacia.opcionesModulo.btnGenerarPedido}}" ng-disabled="!root.pedido.getEsTemporal()" >
             <span class="glyphicon glyphicon-cog"></span> Generar Pedido
         </button>
-        <button type="submit" ng-disabled="rootCreaPedidoFarmacia.bloqueo_generar_pedido" class="btn btn-default pull-right" ng-click="abrirViewVerPedidosFarmacias()"
-         ng-validate-events="{{rootCreaPedidoFarmacia.opcionesModulo.btnGuardarTemporal}}">
+        <button type="submit" ng-show="!root.pedido.get_numero_pedido()" class="btn btn-default pull-right" ng-click="onGuardarEncabezadoPedidoTemporal()"
+         ng-validate-events="{{rootCreaPedidoFarmacia.opcionesModulo.btnGuardarTemporal}}" ng-disabled="!root.pedido.getEsTemporal()">
             <span class="glyphicon glyphicon-ok"></span> Guardar Temporal
         </button>
-        <!--<button type="submit" ng-disabled="rootCreaPedidoFarmacia.bloqueo_generar_pedido" class="btn btn-dedault pull-right" ng-click="abrirViewVerPedidosFarmacias()" ng-show="rootCreaPedidoFarmacia.grid_pedido_generado_visible == false"><span class="glyphicon glyphicon-ok"></span> Guardar Temporal</button>-->
-        <button type="submit" class="btn btn-default pull-right" ng-click="onEliminarPedidoTemporal()"><span class="glyphicon glyphicon-remove"></span> Cancelar Pedido</button>
-        <button type="submit" class="btn btn-default pull-right" ng-click="abrirViewVerPedidosFarmacias()"><span class="glyphicon glyphicon-off"></span> Finalizar</button>
-        <button type="submit" class="btn btn-default pull-right" ng-click="generarPdfPedidoFarmacia()"><span class="glyphicon glyphicon-file"></span> Generar PDF</button>
+
+        <button type="submit" ng-show="!root.pedido.get_numero_pedido() && root.pedido.getEsTemporal()" class="btn btn-default pull-right" ng-click="onEliminarPedidoTemporal()">
+            <span class="glyphicon glyphicon-remove"></span> Cancelar Pedido
+        </button>
+       
+        
+        <button type="submit" class="btn btn-default pull-right" ng-click="onGuardarPedido()" ng-show="root.pedido.getTipoModificacion() === '3'">
+             <span class="glyphicon glyphicon-ok"></span> Guardar
+        </button>
+        
+        <button type="submit" ng-show="root.pedido.get_numero_pedido()" class="btn btn-default pull-right" ng-click="onGenerarPdfPedido()">
+            <span class="glyphicon glyphicon-file"></span> Generar PDF
+        </button>
+        
+        <button type="submit" class="btn btn-default pull-right" ng-click="onVolverListadoPedidos()">
+             Finalizar
+        </button>
     </div>
 
     <br/><br/><br/><br/><br/>
@@ -306,12 +291,5 @@
     <div slide-content open-callback="mostrarSeleccionProducto" close-callback="cerrarSeleccionProducto"  class="slide" >
         <div ng-include src="slideurl"  ng-controller="SeleccionProductoController" ></div>
     </div>
-
-    <!-- div slide-content open-callback="mostrarseleccionproductoEspecial" close-callback="cerrarseleccionproducto"  class="slide" >
-        <div ng-include src="slideurl"  ng-controller="SeleccionProductoController" ></div>
-    </div -->
-
-    <visualizar-reporte></visualizar-reporte>
+    
 </div>
-
-<!--</div>-->

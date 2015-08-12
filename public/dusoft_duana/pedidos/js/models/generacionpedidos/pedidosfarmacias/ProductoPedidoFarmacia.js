@@ -20,6 +20,8 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.estado;
             this.enFarmaciaSeleccionada = false;
             this.cantidadPendiente = 0;
+            this.cantidadIngresada = 0;
+            this.mensajeError = "";
         }
 
         ProductoPedidoFarmacia.prototype = Object.create(Producto.getClass().prototype);
@@ -132,6 +134,15 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             return this.cantidadPendiente;
         };
         
+        ProductoPedidoFarmacia.prototype.setCantidadIngresada = function(cantidadIngresada) {
+            this.cantidadIngresada = parseInt(cantidadIngresada);
+            return this;
+        };
+        
+        ProductoPedidoFarmacia.prototype.getCantidadIngresada = function() {
+            return this.cantidadIngresada;
+        };
+        
         ProductoPedidoFarmacia.prototype.setEstado = function(estado) {
             this.estado = estado;
             return this;
@@ -141,8 +152,18 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             return this.estado;
         };
         
+        
+        ProductoPedidoFarmacia.prototype.setMensajeError = function(mensajeError) {
+            this.mensajeError = mensajeError;
+            return this;
+        };
+        
+        ProductoPedidoFarmacia.prototype.getMensajeError = function() {
+            return this.mensajeError;
+        };
+        
         ProductoPedidoFarmacia.prototype.setEnFarmaciaSeleccionada = function(enFarmaciaSeleccionada) {
-            this.enFarmaciaSeleccionada = enFarmaciaSeleccionada;
+            this.enFarmaciaSeleccionada = Boolean(Number(enFarmaciaSeleccionada));
             return this;
         };
         

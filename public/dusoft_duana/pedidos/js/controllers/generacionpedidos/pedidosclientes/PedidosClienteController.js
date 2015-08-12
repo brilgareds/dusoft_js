@@ -31,27 +31,45 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 auth_token: Sesion.getUsuarioActual().getToken()
             };
 
-            // Definicion Variables            
+            // Definicion Variables Contenedora           
             $scope.Empresa = Empresa;
 
-            // Inicializacion Pedido            
+            // Definicion variables del View
+            $scope.datos_view = {
+                termino_busqueda_clientes: '',
+                termino_busqueda_productos: '',
+                activar_tab: {tab_productos: true, tab_cargar_archivo: false},
+                producto_seleccionado: Producto.get(),
+                cartera: false,
+                visualizar: false
+            };
+
+            // Inicializacion Pedido o cotizacion           
             $scope.Pedido = Pedido.get(
                     Sesion.getUsuarioActual().getEmpresa().getCodigo(),
                     Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getCodigo(),
                     Sesion.getUsuarioActual().getEmpresa().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
                     );
 
-            $scope.Pedido.set_numero_cotizacion(parseInt(localStorageService.get("numero_cotizacion")) || 0);
             $scope.Pedido.set_vendedor(Vendedor.get()).setCliente(Cliente.get());
             $scope.Pedido.setFechaRegistro($filter('date')(new Date(), "dd/MM/yyyy"));
 
-            $scope.datos_view = {
-                termino_busqueda_clientes: '',
-                termino_busqueda_productos: '',
-                producto_seleccionado: Producto.get()
-            };
+            //Cotizacion
+            if (localStorageService.get("cotizacion")) {
+                var cotizacion = localStorageService.get("cotizacion");
+                $scope.Pedido.set_numero_cotizacion(parseInt(cotizacion.numero_cotizacion) || 0);
+                $scope.datos_view.cartera = (cotizacion.cartera === '1') ? true : false;
+                $scope.datos_view.visualizar = (cotizacion.visualizar === '1') ? true : false;
+            } else {
+                //Pedido
+                var pedido = localStorageService.get("pedido");
+                $scope.Pedido.setNumeroPedido(parseInt(pedido.numero_pedido) || 0);
+                $scope.datos_view.cartera = (pedido.cartera === '1') ? true : false;
+                $scope.datos_view.visualizar = (pedido.visualizar === '1') ? true : false;
+            }
 
-            // Consultas 
+
+            // Consultas Cotizaciones
             that.gestionar_consultas_cotizaciones = function() {
 
                 that.buscar_clientes(function(clientes) {
@@ -66,6 +84,26 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             that.buscar_cotizacion(function() {
 
                                 that.buscar_detalle_cotizacion();
+                            });
+                        }
+                    });
+                });
+            };
+
+            // Consultas Pedidos
+            that.gestionar_consultas_pedidos = function() {
+
+                that.buscar_clientes(function(clientes) {
+
+                    if ($scope.Pedido.get_numero_pedido() > 0)
+                        that.render_clientes(clientes);
+
+                    that.buscar_vendedores(function() {
+
+                        if ($scope.Pedido.get_numero_pedido() > 0) {
+
+                            that.buscar_pedido(function() {
+                                that.buscar_detalle_pedido();
                             });
                         }
                     });
@@ -108,7 +146,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.Pedido.set_vendedor(vendedor).setCliente(cliente);
                 $scope.Pedido.set_observacion(data.observaciones);
                 $scope.Pedido.set_tipo_producto(data.tipo_producto).set_descripcion_tipo_producto(data.descripcion_tipo_producto);
+                $scope.Pedido.set_aprobado_cartera(data.sw_aprobado_cartera).set_observacion_cartera(data.observacion_cartera);
+                $scope.Pedido.set_estado_cotizacion(data.estado).set_descripcion_estado_cotizacion(data.descripcion_estado);
                 $scope.Pedido.setFechaRegistro(data.fecha_registro);
+
             };
 
             // Detalle Cotizacion
@@ -153,6 +194,84 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 });
             };
 
+
+            // Pedidos 
+
+            that.buscar_pedido = function(callback) {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_clientes: {
+                            pedido: $scope.Pedido
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.CONSULTAR_PEDIDO, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        that.render_pedido(data.obj.pedidos_clientes.pedido[0]);
+                        callback(true);
+                    } else {
+                        callback(false);
+                    }
+                });
+            };
+
+            that.render_pedido = function(data) {
+
+                var cliente = Cliente.get(data.nombre_cliente, data.direccion_cliente, data.tipo_id_cliente, data.identificacion_cliente, data.telefono_cliente);
+                cliente.set_contrato(data.contrato_cliente_id);
+                /*cliente.setDepartamento(data.departamento);
+                 cliente.setMunicipio(data.municipio);
+                 */
+
+                var vendedor = Vendedor.get(data.nombre_vendedor, data.tipo_id_vendedor, data.idetificacion_vendedor/*, data.telefono_vendedor*/);
+
+                $scope.Pedido.set_vendedor(vendedor).setCliente(cliente);
+                $scope.Pedido.set_observacion(data.observacion);
+                $scope.Pedido.set_tipo_producto(data.tipo_producto).set_descripcion_tipo_producto(data.descripcion_tipo_producto);
+                $scope.Pedido.set_aprobado_cartera(data.sw_aprobado_cartera).set_observacion_cartera(data.observacion_cartera);
+                $scope.Pedido.setFechaRegistro(data.fecha_registro);
+
+            };
+
+            that.buscar_detalle_pedido = function() {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_clientes: {
+                            pedido: $scope.Pedido,
+                            termino_busqueda: $scope.datos_view.termino_busqueda_productos
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.CONSULTAR_DETALLE_PEDIDO, "POST", obj, function(data) {
+
+                    if (data.status === 200) {
+                        that.render_productos_pedidos(data.obj.pedidos_clientes.lista_productos);
+                    }
+                });
+
+            };
+
+            that.render_productos_pedidos = function(productos) {
+
+                $scope.Pedido.limpiar_productos();
+
+                productos.forEach(function(data) {
+
+                    var producto = Producto.get(data.codigo_producto, data.descripcion_producto, 0, data.porcentaje_iva);
+                    producto.set_cantidad_solicitada(data.cantidad_solicitada);
+                    producto.set_precio_venta(data.valor_unitario).set_valor_total_sin_iva(data.valor_unitario * data.cantidad_solicitada);
+                    producto.set_valor_iva(data.valor_iva).set_valor_total_con_iva(data.valor_unitario_con_iva * data.cantidad_solicitada);
+
+                    $scope.Pedido.set_productos(producto);
+                });
+            };
 
             // Clientes
             $scope.listar_clientes = function(termino_busqueda) {
@@ -243,11 +362,26 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 var disabled = false;
 
+                // Validaciones Generales
                 if ($scope.Pedido.getCliente().get_descripcion() === undefined || $scope.Pedido.getCliente().get_descripcion() === '')
                     disabled = true;
                 if ($scope.Pedido.get_vendedor().get_descripcion() === undefined || $scope.Pedido.get_vendedor().get_descripcion() === '')
                     disabled = true;
                 if ($scope.Pedido.get_observacion() === undefined || $scope.Pedido.get_observacion() === '')
+                    disabled = true;
+
+                // Cartera
+                if ($scope.datos_view.cartera)
+                    disabled = true;
+
+                // Validaciones para la cotizacion
+                if ($scope.Pedido.get_numero_cotizacion() > 0) {
+                    if ($scope.Pedido.get_aprobado_cartera() === '1')
+                        disabled = true;
+                }
+
+                // Solo visualizar
+                if ($scope.datos_view.visualizar)
                     disabled = true;
 
                 return disabled;
@@ -264,10 +398,34 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 $scope.$emit('cerrar_gestion_productos_clientes', {animado: true});
 
-                that.gestionar_consultas_cotizaciones();
+                //that.gestionar_consultas_cotizaciones();
+                that.init();
             };
 
-            $scope.eliminar_producto_cotizacion = function(producto) {
+            $scope.habilitar_eliminacion_producto = function() {
+
+                var disabled = false;
+
+                // Validaciones Cotizacion
+                if ($scope.Pedido.get_numero_cotizacion() > 0) {
+
+                    if ($scope.datos_view.cartera || $scope.Pedido.get_aprobado_cartera() === '1')
+                        disabled = true;
+                }
+
+                // Validaciones Pedido
+                if ($scope.Pedido.get_numero_pedido() > 0) {
+
+                }
+
+                // Solo visualizar
+                if ($scope.datos_view.visualizar)
+                    disabled = true;
+
+                return disabled;
+            };
+
+            $scope.confirmar_eliminar_producto = function(producto) {
 
                 $scope.datos_view.producto_seleccionado = producto;
 
@@ -309,23 +467,140 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             $scope.eliminar_producto = function() {
 
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        pedidos_clientes: {
-                            cotizacion: $scope.Pedido,
-                            producto: $scope.datos_view.producto_seleccionado
-                        }
-                    }
-                };
+                var obj = {};
+                var url = '';
 
-                Request.realizarRequest(API.PEDIDOS.CLIENTES.ELIMINAR_PRODUCTO_COTIZACION, "POST", obj, function(data) {
+                // Cotizacion
+                if ($scope.Pedido.get_numero_cotizacion() > 0) {
+
+                    url = API.PEDIDOS.CLIENTES.ELIMINAR_PRODUCTO_COTIZACION;
+                    obj = {
+                        session: $scope.session,
+                        data: {
+                            pedidos_clientes: {
+                                cotizacion: $scope.Pedido,
+                                producto: $scope.datos_view.producto_seleccionado
+                            }
+                        }
+                    };
+                }
+
+                // Pedido
+                if ($scope.Pedido.get_numero_pedido() > 0) {
+
+                    url = API.PEDIDOS.CLIENTES.ELIMINAR_PRODUCTO_PEDIDO;
+                    obj = {
+                        session: $scope.session,
+                        data: {
+                            pedidos_clientes: {
+                                pedido: $scope.Pedido,
+                                producto: $scope.datos_view.producto_seleccionado
+                            }
+                        }
+                    };
+                }
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
 
                     AlertService.mostrarMensaje("warning", data.msj);
                     $scope.datos_view.producto_seleccionado = Producto.get();
 
                     if (data.status === 200) {
-                        that.buscar_detalle_cotizacion();
+                        if ($scope.Pedido.get_numero_cotizacion() > 0)
+                            that.buscar_detalle_cotizacion();
+                        if ($scope.Pedido.get_numero_pedido() > 0)
+                            that.gestionar_consultas_pedidos();
+                    }
+                });
+            };
+
+            $scope.confirmar_modificar_producto = function(producto) {
+
+                $scope.datos_view.producto_seleccionado = producto;
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Desea modificar el producto?</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <h4>Codigo.</h4>\
+                                    <h5> {{ datos_view.producto_seleccionado.getCodigoProducto() }}</h5>\
+                                    <h4>Descripcion.</h4>\
+                                    <h5> {{ datos_view.producto_seleccionado.getDescripcion() }} </h5>\
+                                    <h4>Cantidad.</h4>\
+                                    <h5> {{ datos_view.producto_seleccionado.get_cantidad_solicitada() }} </h5>\
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-warning" ng-click="close()">No</button>\
+                                    <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
+                                </div>',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.confirmar = function() {
+                            $scope.modificar_producto();
+                            $modalInstance.close();
+                        };
+
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+            };
+
+            $scope.modificar_producto = function() {
+
+                var obj = {};
+                var url = '';
+
+                // Cotizacion
+                if ($scope.Pedido.get_numero_cotizacion() > 0) {
+
+                    url = API.PEDIDOS.CLIENTES.MODIFICAR_DETALLE_COTIZACION;
+                    obj = {
+                        session: $scope.session,
+                        data: {
+                            pedidos_clientes: {
+                                cotizacion: $scope.Pedido,
+                                producto: $scope.datos_view.producto_seleccionado
+                            }
+                        }
+                    };
+                }
+
+                // Pedido
+                if ($scope.Pedido.get_numero_pedido() > 0) {
+
+                    url = API.PEDIDOS.CLIENTES.MODIFICAR_DETALLE_PEDIDO;
+                    obj = {
+                        session: $scope.session,
+                        data: {
+                            pedidos_clientes: {
+                                pedido: $scope.Pedido,
+                                producto: $scope.datos_view.producto_seleccionado
+                            }
+                        }
+                    };
+                }
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+
+                    AlertService.mostrarMensaje("warning", data.msj);
+                    $scope.datos_view.producto_seleccionado = Producto.get();
+
+                    if (data.status === 200) {
+                        if ($scope.Pedido.get_numero_cotizacion() > 0)
+                            that.buscar_detalle_cotizacion();
+                        if ($scope.Pedido.get_numero_pedido() > 0)
+                            that.gestionar_consultas_pedidos();
                     }
                 });
             };
@@ -340,6 +615,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                     <div class="col-md-3 pull-right">\
                                         <table class="table table-clear">\
                                             <tbody>\
+                                                <tr>\
+                                                    <td class="left"><strong>Cnt. Productos</strong></td>\
+                                                    <td class="right">{{ Pedido.get_productos().length  }}</td>    \
+                                                </tr>\
                                                 <tr>\
                                                     <td class="left"><strong>Subtotal</strong></td>\
                                                     <td class="right">{{ Pedido.get_subtotal() | currency : "$" }}</td>    \
@@ -359,14 +638,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 columnDefs: [
                     {field: 'getCodigoProducto()', displayName: 'Codigo', width: "10%"},
                     {field: 'getDescripcion()', displayName: 'Descripcion', width: "35%"},
-                    {field: 'get_cantidad_solicitada()', displayName: 'Cant.', width: "8%"},
+                    {field: 'get_cantidad_solicitada()', width: "8%", displayName: "Cantidad", cellFilter: "number",
+                        cellTemplate: '<div class="col-xs-12"> <input type="text" ng-disabled="habilitar_eliminacion_producto()" ng-model="row.entity.cantidad_solicitada" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'get_iva()', displayName: 'I.V.A', width: "8%"},
                     {field: 'get_precio_venta()', displayName: 'Vlr. Unit', width: "10%", cellFilter: 'currency : "$"'},
                     {field: 'get_valor_total_sin_iva()', displayName: 'Subtotal', width: "10%", cellFilter: 'currency : "$"'},
                     {field: 'get_valor_total_con_iva()', displayName: 'Total', width: "10%", cellFilter: 'currency : "$"'},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
-                        cellTemplate: '<div class="btn-group">\
-                                        <button class="btn btn-default btn-xs" ng-click="eliminar_producto_cotizacion(row.entity)" ng-disabled="" ><span class="glyphicon glyphicon-remove"></span></button>\
+                        cellTemplate: '<div class="btn-toolbar">\
+                                        <button class="btn btn-default btn-xs" ng-click="confirmar_modificar_producto(row.entity)" ng-disabled="habilitar_eliminacion_producto()" ><span class="glyphicon glyphicon-ok"></span></button>\
+                                        <button class="btn btn-default btn-xs" ng-click="confirmar_eliminar_producto(row.entity)" ng-disabled="habilitar_eliminacion_producto()" ><span class="glyphicon glyphicon-remove"></span></button>\
                                        </div>'
                     }
                 ]
@@ -389,103 +670,222 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             $scope.subir_archivo_plano = function() {
 
-                if ($scope.Pedido.get_numero_cotizacion() > 0) {
-                    // Solo subir plano
 
-                    $scope.opciones_archivo.opts.query.data = JSON.stringify({
-                        pedidos_clientes: {
-                            cotizacion: $scope.Pedido
-                        }
-                    });
+                $scope.opciones_archivo.opts.query.data = JSON.stringify({
+                    pedidos_clientes: {
+                        cotizacion: $scope.Pedido
+                    }
+                });
 
-                    $scope.opciones_archivo.upload();
-                } else {
-                    // Crear Cotizacion y subir plano
-                    $scope.insertar_cabercera_cotizacion(function(continuar) {
-                        
-                        if (continuar) {
-
-                            $scope.opciones_archivo.opts.query.data = JSON.stringify({
-                                pedidos_clientes: {
-                                    cotizacion: $scope.Pedido
-                                }
-                            });
-
-                            $scope.opciones_archivo.upload();
-                        }
-                    });
-
-                    $scope.opciones_archivo.upload();
-                }
+                $scope.opciones_archivo.upload();
             };
 
             $scope.respuesta_archivo_plano = function(file, message) {
 
                 var data = (message !== undefined) ? JSON.parse(message) : {};
 
-                
-                console.log('======= Response server ===');
-                console.log(data);
-                //return;
-                
                 if (data.status === 200) {
+
+                    var numero_cotizacion = data.obj.pedidos_clientes.numero_cotizacion;
+
+                    if (numero_cotizacion > 0) {
+                        $scope.Pedido.set_numero_cotizacion(numero_cotizacion);
+                        localStorageService.add("numero_cotizacion", $scope.Pedido.get_numero_cotizacion());
+                    }
+
+                    AlertService.mostrarMensaje("warning", data.msj);
+                    that.gestionar_consultas_cotizaciones();
+
+                    $scope.datos_view.activar_tab.tab_productos = true;
+                    $scope.datos_view.productos_validos = data.obj.pedidos_clientes.productos_validos;
+                    $scope.datos_view.productos_invalidos = data.obj.pedidos_clientes.productos_invalidos;
 
                     $scope.opciones_archivo.cancel();
 
-                    //$scope.buscar_detalle_orden_compra();
+                    if ($scope.datos_view.productos_invalidos.length > 0) {
 
-                    //$scope.activar_tab.tab_productos = true;
-
-                    $scope.productos_validos = data.obj.pedidos_clientes.productos_validos;
-                    $scope.productos_invalidos = data.obj.pedidos_clientes.productos_invalidos;
-
-
-                    $scope.opts = {
-                        backdrop: true,
-                        backdropClick: true,
-                        dialogFade: false,
-                        keyboard: true,
-                        template: ' <div class="modal-header">\
-                                        <button type="button" class="close" ng-click="close()">&times;</button>\
-                                        <h4 class="modal-title">Listado Productos </h4>\
-                                    </div>\
-                                    <div class="modal-body row">\
-                                        <div class="col-md-12">\
-                                            <h4 >Lista Productos INVALIDOS.</h4>\
-                                            <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
-                                                <div class="list-group">\
-                                                    <a ng-repeat="producto in productos_invalidos" class="list-group-item defaultcursor" href="javascript:void(0)">\
-                                                        {{ producto.codigo_producto}}\
-                                                    </a>\
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: ' <div class="modal-header">\
+                                            <button type="button" class="close" ng-click="close()">&times;</button>\
+                                            <h4 class="modal-title">Listado Productos </h4>\
+                                        </div>\
+                                        <div class="modal-body row">\
+                                            <div class="col-md-12">\
+                                                <h4 >Lista Productos NO validos.</h4>\
+                                                <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
+                                                    <div class="list-group">\
+                                                        <a ng-repeat="producto in datos_view.productos_invalidos" class="list-group-item defaultcursor" href="javascript:void(0)">\
+                                                            {{ producto.codigo_producto}}\
+                                                        </a>\
+                                                    </div>\
                                                 </div>\
                                             </div>\
                                         </div>\
-                                    </div>\
-                                    <div class="modal-footer">\
-                                        <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
-                                    </div>',
-                        scope: $scope,
-                        controller: function($scope, $modalInstance) {
-                            $scope.close = function() {
-                                $modalInstance.close();
-                            };
-                        }
-                    };
-                    var modalInstance = $modal.open($scope.opts);
+                                        <div class="modal-footer">\
+                                            <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                        </div>',
+                            scope: $scope,
+                            controller: function($scope, $modalInstance) {
+                                $scope.close = function() {
+                                    $modalInstance.close();
+                                };
+                            }
+                        };
+                        var modalInstance = $modal.open($scope.opts);
+                    }
 
                 } else {
                     AlertService.mostrarMensaje("warning", data.msj);
                 }
             };
 
-            that.gestionar_consultas_cotizaciones();
+            // Aciones Botones       
+
+            // Cancelar la cotizacion
+            $scope.cancelar_cotizacion = function() {
+                $state.go('ListarPedidosClientes');
+            };
+
+            //Aceptar la cotizacion
+            $scope.aceptar_cotizacion = function() {
+                $state.go('ListarPedidosClientes');
+            };
+
+            // Gestiona la aprobacion o no del departamento de cartera
+            $scope.gestion_cartera = function(aprobado) {
+
+                var obj = {};
+                var url = '';
+
+                $scope.Pedido.set_aprobado_cartera(aprobado);
+
+                // Observacion cartera para cotizacion
+                if ($scope.Pedido.get_numero_cotizacion() > 0) {
+
+                    url = API.PEDIDOS.CLIENTES.OBSERVACION_CARTERA_COTIZACION;
+                    obj = {
+                        session: $scope.session,
+                        data: {
+                            pedidos_clientes: {
+                                cotizacion: $scope.Pedido
+                            }
+                        }
+                    };
+                }
+
+                // Observacion cartera para pedido
+                if ($scope.Pedido.get_numero_pedido() > 0) {
+
+                    url = API.PEDIDOS.CLIENTES.OBSERVACION_CARTERA_PEDIDO;
+
+                    obj = {
+                        session: $scope.session,
+                        data: {
+                            pedidos_clientes: {
+                                pedido: $scope.Pedido
+                            }
+                        }
+                    };
+                }
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+
+                    AlertService.mostrarMensaje("warning", data.msj);
+
+                    if (data.status === 200) {
+                        $scope.cancelar_cotizacion();
+                    }
+                });
+            };
+
+            // Gestionar la creacion del pedido
+            $scope.gestionar_pedido = function() {
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Desea Generar el Pedido ?</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <h4>Desea Generar el Pedido para el Cliente.</h4>\
+                                    <h4> {{ Pedido.getCliente().get_descripcion() }}?.</h4>\
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-warning" ng-click="close()">No</button>\
+                                    <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
+                                </div>',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.confirmar = function() {
+                            $scope.generar_pedido_cliente();
+                            $modalInstance.close();
+                        };
+
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+            };
+
+            $scope.generar_pedido_cliente = function() {
+
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        pedidos_clientes: {
+                            cotizacion: $scope.Pedido
+                        }
+                    }
+                };
+
+                Request.realizarRequest(API.PEDIDOS.CLIENTES.GENERAR_PEDIDO, "POST", obj, function(data) {
+
+                    AlertService.mostrarMensaje("warning", data.msj);
+
+                    if (data.status === 200) {
+                        $scope.cancelar_cotizacion();
+                    }
+                });
+            };
+
+
+            that.init = function() {
+
+                if ($scope.Pedido.get_numero_cotizacion() > 0)
+                    that.gestionar_consultas_cotizaciones();
+
+                if ($scope.Pedido.get_numero_pedido() > 0)
+                    that.gestionar_consultas_pedidos();
+            };
+
+
+            that.init();
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+
+                $scope.$$watchers = null;
 
                 // Set Datas
                 $scope.Empresa.set_default();
 
-                $scope.$$watchers = null;
+                // set localstorage
+                localStorageService.add("cotizacion", null);
+                localStorageService.add("pedido", null);
+
+                // datos view
+                $scope.datos_view = null;
+
             });
         }]);
 });

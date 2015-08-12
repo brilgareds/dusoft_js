@@ -73,6 +73,15 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.generarPedidoFarmacia(req, res);
     });
     
+    app.post('/api/PedidosFarmacias/eliminarPedidoTemporal', function(req, res) {
+        c_pedidos_farmacias.eliminarPedidoTemporal(req, res);
+    }); 
+    
+    app.post('/api/PedidosFarmacias/subirArchivoPlano', function(req, res) {
+        c_pedidos_farmacias.subirArchivoPlano(req, res);
+    }); 
+    
+    
     // -- depreciado
     app.post('/api/PedidosFarmacias/listarProductos', function(req, res) {
         c_pedidos_farmacias.listar_productos(req, res);
@@ -112,7 +121,7 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.eliminarRegistroDetalleTemporal(req, res);
     }); 
     
-    // Elimina el detalle completo del pedido por empresa, centro de utilidad, bodega y usuario
+    //depreciado Elimina el detalle completo del pedido por empresa, centro de utilidad, bodega y usuario
     app.post('/api/PedidosFarmacias/eliminarDetalleTemporalCompleto', function(req, res) {
         c_pedidos_farmacias.eliminarDetalleTemporalCompleto(req, res);
     }); 
@@ -122,29 +131,29 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.insertarPedidoFarmacia(req, res);
     });
     
-    //depreciado Inserta el detalle del pedido definitivo
+    //Inserta el detalle del pedido definitivo
     app.post('/api/PedidosFarmacias/insertarDetallePedidoFarmacia', function(req, res) {
         c_pedidos_farmacias.insertarDetallePedidoFarmacia(req, res);
     });    
     
     //Consultar Encabezado del Pedido
-    app.post('/api/PedidosFarmacias/consultarEncabezadoPedidoFinal', function(req, res) {
-        c_pedidos_farmacias.consultarEncabezadoPedidoFinal(req, res);
+    app.post('/api/PedidosFarmacias/consultarEncabezadoPedido', function(req, res) {
+        c_pedidos_farmacias.consultarEncabezadoPedido(req, res);
     });
     
     //Consultar Detalle del Pedido
-    app.post('/api/PedidosFarmacias/consultarDetallePedidoFinal', function(req, res) {
-        c_pedidos_farmacias.consultarDetallePedidoFinal(req, res);
+    app.post('/api/PedidosFarmacias/consultarDetallePedido', function(req, res) {
+        c_pedidos_farmacias.consultarDetallePedido(req, res);
     });  
     
     //Actualizar Cantidades Detalle Pedido Final
-    app.post('/api/PedidosFarmacias/actualizarCantidadesDetallePedidoFinal', function(req, res) {
-        c_pedidos_farmacias.actualizarCantidadesDetallePedidoFinal(req, res);
+    app.post('/api/PedidosFarmacias/actualizarCantidadesDetallePedido', function(req, res) {
+        c_pedidos_farmacias.actualizarCantidadesDetallePedido(req, res);
     });
     
     //Eliminar Producto Detalle Pedido Final
-    app.post('/api/PedidosFarmacias/eliminarProductoDetallePedidoFinal', function(req, res) {
-        c_pedidos_farmacias.eliminarProductoDetallePedidoFinal(req, res);
+    app.post('/api/PedidosFarmacias/eliminarProductoDetallePedido', function(req, res) {
+        c_pedidos_farmacias.eliminarProductoDetallePedido(req, res);
     });
     
     // Pedido Farmacia por archivo plano
@@ -152,7 +161,11 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.pedidoFarmaciaArchivoPlano(req, res);
     });    
     
-    // Generar PDF del pedido
+    app.post('/api/PedidosFarmacias/generarPdfPedido', function(req, res) {
+        c_pedidos_farmacias.generarPdfPedido(req, res);
+    }); 
+    
+    //depreciado Generar PDF del pedido
     app.post('/api/PedidosFarmacias/imprimirPedidoFarmacia', function(req, res) {
         c_pedidos_farmacias.imprimirPedidoFarmacia(req, res);
     });
@@ -167,7 +180,7 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.listarPedidosTemporalesFarmacias(req, res);
     });
     
-    //Actualizar Encabezado Pedido Temporal
+    // depreciado Actualizar Encabezado Pedido Temporal
     app.post('/api/PedidosFarmacias/actualizarRegistroEncabezadoTemporal', function(req, res) {
         c_pedidos_farmacias.actualizarRegistroEncabezadoTemporal(req, res);
     });
@@ -183,8 +196,8 @@ module.exports = function(app, di_container) {
     });
     
     //actualizarEncabezadoPedidoDefinitivo
-    app.post('/api/PedidosFarmacias/actualizarEncabezadoPedidoDefinitivo', function(req, res) {
-        c_pedidos_farmacias.actualizarEncabezadoPedidoDefinitivo(req, res);
+    app.post('/api/PedidosFarmacias/actualizarPedido', function(req, res) {
+        c_pedidos_farmacias.actualizarPedido(req, res);
     });
     
     //existeRegistroDetallePedido

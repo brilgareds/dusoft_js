@@ -55,7 +55,7 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             
             // Pedidos
             EmpresaPedidoCliente.set_pedidos = function(pedido) {
-                this.cotizaciones.push(pedido);
+                this.pedidos.push(pedido);
             };
 
             EmpresaPedidoCliente.get_pedidos = function() {

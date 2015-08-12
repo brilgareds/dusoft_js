@@ -23,7 +23,9 @@ define(["angular",
             $scope.root = {};
             $scope.root.empresasFarmacias = Usuario.getUsuarioActual().getEmpresasFarmacias();
                         
-
+            $scope.onIrVistaGuardarPedidoTemporal = function(){
+                $state.go('GuardarPedidoTemporal');
+            };
 
         }]);
         

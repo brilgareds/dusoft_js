@@ -128,6 +128,9 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
     }
 
     var sql = " select \
+                a.empresa_id, \
+                a.centro_destino as centro_utilidad_id, \
+                a.bodega_destino as bodega_id, \
                 a.pedido_cliente_id as numero_pedido, \
                 b.tipo_id_tercero as tipo_id_cliente, \
                 b.tercero_id as identificacion_cliente, \
@@ -167,7 +170,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
                         or b.telefono ilike $2   \
                         or c.vendedor_id ilike $2 \
                         or c.nombre ilike $2) \
-                /*AND (a.estado IN ('0','1','2','3'))*/  order by 1 desc ";
+                /*AND (a.estado IN ('0','1','2','3'))*/  order by 4 desc ";
 
     G.db.paginated(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
         callback(err, rows);
@@ -231,6 +234,7 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
                 b.nombre_tercero as nombre_cliente, \
                 b.direccion as direccion_cliente, \
                 b.telefono as telefono_cliente, \
+                coalesce(f.contrato_cliente_id, (SELECT contrato_cliente_id FROM vnts_contratos_clientes WHERE estado = '1' and contrato_generico = '1')) as contrato_cliente_id,\
                 c.tipo_id_vendedor, \
                 c.vendedor_id as idetificacion_vendedor, \
                 c.nombre as nombre_vendedor, \
@@ -251,13 +255,20 @@ PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callbac
                      when a.estado_pedido = 8 then 'Auditado con pdtes' \
                      when a.estado_pedido = 9 then 'En zona con pdtes' end as descripcion_estado_actual_pedido,\
                 d.estado as estado_separacion, \
+                a.observacion, \
+                a.observacion_cartera,\
+                a.sw_aprobado_cartera,\
+                coalesce(a.tipo_producto,'') as tipo_producto,\
+                coalesce(e.descripcion,'') as descripcion_tipo_producto,\
                 a.fecha_registro \
                 from ventas_ordenes_pedidos a \
                 inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id \
                 inner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id \
                 left join inv_bodegas_movimiento_tmp_despachos_clientes d on a.pedido_cliente_id = d.pedido_cliente_id\
+                left join inv_tipo_producto e on a.tipo_producto = e.tipo_producto_id\
+                left join vnts_contratos_clientes f ON b.tipo_id_tercero = f.tipo_id_tercero AND b.tercero_id = f.tercero_id and a.empresa_id = f.empresa_id and f.estado = '1' \
                 where a.pedido_cliente_id = $1  \
-                /*AND (a.estado IN ('0','1','2','3'))*/ order by 1 desc; ";
+                order by 1 desc; ";
 
     G.db.query(sql, [numero_pedido], function(err, rows, result) {
         callback(err, rows);
@@ -885,71 +896,20 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
     var tipo_producto = filtro.tipo_producto;
     var laboratorio_id = filtro.laboratorio_id;
     var numero_cotizacion = filtro.numero_cotizacion;
+    var numero_pedido = filtro.numero_pedido;
 
-    if (tipo_producto !== '')
+    if (tipo_producto !== undefined && tipo_producto !== '')
         sql_aux = " and b.tipo_producto_id = '" + tipo_producto + "'";
 
-    if (laboratorio_id !== '')
+    if (laboratorio_id !== undefined && laboratorio_id !== '')
         sql_aux += " and f.clase_id = '" + laboratorio_id + "'";
 
     if (numero_cotizacion !== '' && numero_cotizacion !== '0')
         sql_aux += " and a.codigo_producto NOT IN ( select codigo_producto from ventas_ordenes_pedidos_d_tmp where pedido_cliente_id_tmp = '" + numero_cotizacion + "' ) ";
+    
+    if (numero_pedido !== '' && numero_pedido !== '0')
+        sql_aux += " and a.codigo_producto NOT IN ( select codigo_producto from ventas_ordenes_pedidos_d where pedido_cliente_id = '" + numero_pedido + "' ) ";
 
-    // sql original
-    var sql = " select \
-                a.codigo_producto,\
-                fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
-                b.tipo_producto_id,\
-                d.descripcion as descripcion_tipo_producto,\
-                b.codigo_cum,\
-                b.codigo_invima,\
-                b.vencimiento_codigo_invima,\
-                b.porc_iva as iva,\
-                a.existencia::integer as existencia,\
-                coalesce(h.cantidad_total_pendiente, 0)::integer as cantidad_total_pendiente,\
-                case when coalesce((a.existencia - h.cantidad_total_pendiente)::integer, 0) < 0 then 0 \
-                        else coalesce((a.existencia - h.cantidad_total_pendiente)::integer, 0) end as cantidad_disponible,\
-                case when g.precio_pactado > 0 then true else false end as tiene_precio_pactado,\
-                split_part(coalesce(fc_precio_producto_contrato_cliente($4,a.codigo_producto,$1),'0'), '@', 1) as precio_producto,\
-                b.sw_regulado,\
-                c.precio_regulado,\
-                b.estado\
-                from existencias_bodegas a \
-                inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
-                inner join inventarios c on b.codigo_producto = c.codigo_producto and a.empresa_id = c.empresa_id\
-                inner join inv_tipo_producto d ON b.tipo_producto_id = d.tipo_producto_id\
-                inner join inv_subclases_inventarios e ON b.grupo_id = e.grupo_id and b.clase_id = e.clase_id and b.subclase_id = e.subclase_id\
-                inner join inv_clases_inventarios f ON e.grupo_id = f.grupo_id and e.clase_id = f.clase_id\
-                left join (\
-                    select b.codigo_producto, coalesce(b.precio_pactado,0) as precio_pactado\
-                    from vnts_contratos_clientes a\
-                    inner join vnts_contratos_clientes_productos b on a.contrato_cliente_id = b.contrato_cliente_id\
-                    where a.contrato_cliente_id = $4\
-                ) g on c.codigo_producto = g.codigo_producto\
-                left join (\
-                    select aa.empresa_id, aa.centro_utilidad, aa.bodega, aa.codigo_producto, sum(aa.cantidad_total_pendiente) as cantidad_total_pendiente\
-                    from (\
-                      select a.empresa_id, a.centro_destino as centro_utilidad, a.bodega_destino as bodega, b.codigo_producto, SUM((b.numero_unidades - b.cantidad_despachada)) as cantidad_total_pendiente, 1\
-                      from ventas_ordenes_pedidos a\
-                      inner join ventas_ordenes_pedidos_d b ON a.pedido_cliente_id = b.pedido_cliente_id\
-                      where (b.numero_unidades - b.cantidad_despachada) > 0  \
-                      group by 1,2,3,4\
-                      UNION\
-                      select a.empresa_destino as empresa_id, a.centro_destino as centro_utilidad, a.bodega_destino as bodega, b.codigo_producto, SUM( b.cantidad_pendiente) AS cantidad_total_pendiente, 2\
-                      from solicitud_productos_a_bodega_principal a \
-                      inner join solicitud_productos_a_bodega_principal_detalle b ON a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id    \
-                      where b.cantidad_pendiente > 0 \
-                      group by 1,2,3,4\
-                    ) aa group by 1,2,3,4\
-                ) h on a.empresa_id = h.empresa_id and a.centro_utilidad = h.centro_utilidad and a.bodega =h.bodega and c.codigo_producto = h.codigo_producto\
-                where a.empresa_id = $1 and a.centro_utilidad = $2 and a.bodega = $3 " + sql_aux + " \
-                and (\
-                    a.codigo_producto ilike $5 or\
-                    fc_descripcion_producto(a.codigo_producto) ilike $5 or\
-                    e.descripcion ilike $5\
-                ) order by 2";
-
-    // sql pruebas
     var sql = " select \
                 a.codigo_producto,\
                 fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
@@ -1001,14 +961,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                     a.codigo_producto ilike $5 or\
                     fc_descripcion_producto(a.codigo_producto) ilike $5 or\
                     e.descripcion ilike $5\
-                ) order by 1";
-
-    console.log([empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, '%' + termino_busqueda + '%']);
-
-    // Original
-    /*G.db.paginated(sql, [empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, '%' + termino_busqueda + '%'], pagina, G.settings.limit, function(err, rows, result) {
-     callback(err, rows);
-     });*/
+                ) order by 1 ";
 
     // Prueba
     G.db.paginated(sql, [empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, '%' + termino_busqueda + '%'], pagina, G.settings.limit, function(err, rows, result) {
@@ -1090,6 +1043,31 @@ PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(cotizacion,
 
 };
 
+
+/*
+ * Author : Camilo Orozco
+ * Descripcion :  SQL Modificar Detalle Cotizacion
+ */
+PedidosClienteModel.prototype.modificar_detalle_cotizacion = function(cotizacion, producto, callback) {
+
+    var sql = " UPDATE ventas_ordenes_pedidos_d_tmp SET porc_iva = $3, numero_unidades = $4, valor_unitario = $5, usuario_id = $6, fecha_registro = NOW() \n\
+                WHERE pedido_cliente_id_tmp = $1 and codigo_producto = $2 ;";
+
+    var params = [
+        cotizacion.numero_cotizacion,
+        producto.codigo_producto,
+        producto.iva,
+        producto.cantidad_solicitada,
+        producto.precio_venta,
+        cotizacion.usuario_id
+    ];
+
+    G.db.query(sql, params, function(err, rows, result) {
+        callback(err, rows, result);
+    });
+
+};
+
 /*
  * Author : Camilo Orozco
  * Descripcion :  SQL Listar Cotizaciones
@@ -1115,8 +1093,15 @@ PedidosClienteModel.prototype.listar_cotizaciones = function(empresa_id, fecha_i
                 f.nombre as nombre_vendendor,\
                 f.telefono as telefono_vendedor,\
                 a.observaciones,\
+                coalesce(a.observacion_cartera, '') as observacion_cartera,\
+                coalesce(a.sw_aprobado_cartera, '') as sw_aprobado_cartera,\
                 coalesce(a.tipo_producto,'') as tipo_producto,\
                 coalesce(g.descripcion,'') as descripcion_tipo_producto,\
+                a.estado,\
+                case when a.estado = 0 then 'Inactivo'\
+                     when a.estado = 1 then 'Activo'\
+                     when a.estado = 2 then 'Anulado'\
+                     when a.estado = 3 then 'Aprobado cartera' end as descripcion_estado ,\
                 a.fecha_registro\
                 from ventas_ordenes_pedidos_tmp a\
                 inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id\
@@ -1167,8 +1152,15 @@ PedidosClienteModel.prototype.consultar_cotizacion = function(cotizacion, callba
                 f.nombre as nombre_vendendor,\
                 f.telefono as telefono_vendedor,\
                 a.observaciones,\
+                coalesce(a.observacion_cartera, '') as observacion_cartera,\
+                coalesce(a.sw_aprobado_cartera, '') as sw_aprobado_cartera,\
                 coalesce(a.tipo_producto,'') as tipo_producto,\
                 coalesce(g.descripcion,'') as descripcion_tipo_producto,\
+                a.estado,\
+                case when a.estado = 0 then 'Inactivo'\
+                     when a.estado = 1 then 'Activo'\
+                     when a.estado = 2 then 'Anulado'\
+                     when a.estado = 3 then 'Aprobado cartera' end as descripcion_estado ,\
                 a.fecha_registro\
                 from ventas_ordenes_pedidos_tmp a\
                 inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id\
@@ -1231,139 +1223,289 @@ PedidosClienteModel.prototype.eliminar_producto_cotizacion = function(cotizacion
 };
 
 
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : Generar las observaciones ingresadas por el area de cartera
+ */
+PedidosClienteModel.prototype.observacion_cartera_cotizacion = function(cotizacion, callback)
+{
+    var sql_aux = " ,estado = '1'"; // Estado Activo
+
+    if (cotizacion.aprobado_cartera === 1)
+        sql_aux = " ,estado = '3'"; // Estado Aprobado Cartera
+
+    var sql = "UPDATE ventas_ordenes_pedidos_tmp SET observacion_cartera = $2, sw_aprobado_cartera = $3 " + sql_aux + " WHERE pedido_cliente_id_tmp = $1";
+
+    var params = [cotizacion.numero_cotizacion, cotizacion.observacion_cartera, cotizacion.aprobado_cartera];
+
+    G.db.query(sql, params, function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : Generar las observaciones ingresadas por el area de cartera
+ */
+PedidosClienteModel.prototype.observacion_cartera_pedido = function(pedido, callback)
+{   
+    /*if(pedido.aprobado_cartera === 0)
+        pedido.observacion_cartera = 'NO APROBADO --'+ pedido.observacion_cartera;*/
+
+    var sql = "UPDATE ventas_ordenes_pedidos SET observacion_cartera = $2, sw_aprobado_cartera = $3 WHERE pedido_cliente_id = $1";
+
+    var params = [pedido.numero_pedido, pedido.observacion_cartera, pedido.aprobado_cartera];
+
+    G.db.query(sql, params, function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
+
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : Transaccion para la generación del pedido
+ */
+PedidosClienteModel.prototype.generar_pedido_cliente = function(cotizacion, callback)
+{
+    G.db.begin(function() {
+
+        // Ingresar encabezado pedido
+        __insertar_encabezado_pedido_cliente(cotizacion, function(err, rows, result) {
+
+            if (err) {
+                callback(err);
+                return;
+            }
+
+            var pedido = {numero_pedido: (rows.rows.length > 0) ? rows.rows[0].numero_pedido : 0, estado: 0};
+
+            // ingresar detalle del pedido, a partir de la cotizacion
+            __generar_detalle_pedido_cliente(cotizacion, pedido, function(err, rows, result) {
+
+                if (err) {
+                    callback(err);
+                    return;
+                }
+
+                // Inactivar cotizacion
+                cotizacion.estado = '0';
+
+                __actualizar_estado_cotizacion(cotizacion, function(err, rows, result) {
+
+                    // Finalizar Transacción.
+                    G.db.commit(function() {
+                        callback(err, rows, pedido);
+                    });
+
+                });
+            });
+        });
+    });
+};
+
+
+/*
+ * Author : Camilo Orozco
+ * Descripcion :  SQL Insertar Detalle Pedido
+ */
+PedidosClienteModel.prototype.insertar_detalle_pedido = function(pedido, producto, callback) {
+
+    var sql = " INSERT INTO ventas_ordenes_pedidos_d(\
+                    pedido_cliente_id, \
+                    codigo_producto, \
+                    porc_iva, \
+                    numero_unidades, \
+                    valor_unitario, \
+                    usuario_id,    \
+                    fecha_registro\
+                ) VALUES ( $1, $2, $3, $4, $5, $6, NOW() ) ;";
+
+    var params = [
+        pedido.numero_pedido,
+        producto.codigo_producto,
+        producto.iva,
+        producto.cantidad_solicitada,
+        producto.precio_venta,
+        pedido.usuario_id
+    ];
+
+    G.db.query(sql, params, function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
+
+/*
+ * Author : Camilo Orozco
+ * Descripcion :  SQL Modificar Detalle Pedido
+ */
+PedidosClienteModel.prototype.modificar_detalle_pedido = function(pedido, producto, callback) {
+
+    var sql = " UPDATE ventas_ordenes_pedidos_d SET porc_iva = $3, numero_unidades = $4, valor_unitario = $5, usuario_id = $6 , fecha_registro = NOW() \
+                WHERE  pedido_cliente_id = $1 AND codigo_producto = $2 ;";
+
+    var params = [
+        pedido.numero_pedido,
+        producto.codigo_producto,
+        producto.iva,
+        producto.cantidad_solicitada,
+        producto.precio_venta,
+        pedido.usuario_id
+    ];
+
+    G.db.query(sql, params, function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
+
+/*
+ * Author : Camilo Orozco
+ * Descripcion :  SQL Eliminar producto del pedido
+ */
+PedidosClienteModel.prototype.eliminar_producto_pedido = function(pedido, producto, callback)
+{
+    var sql = "DELETE FROM ventas_ordenes_pedidos_d WHERE pedido_cliente_id = $1 and codigo_producto = $2 ; ";
+
+    G.db.query(sql, [pedido.numero_pedido, producto.codigo_producto], function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
+
+/*************************************************
+ * 
+ *  FUNCIONES PRIVADAS 
+ * 
+ *************************************************/
+
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : SQL para ingresar encabezado pedido cliente
+ */
+function __insertar_encabezado_pedido_cliente(cotizacion, callback) {
+
+    var sql = " INSERT INTO ventas_ordenes_pedidos(\
+                    empresa_id,\
+                    centro_destino,\
+                    bodega_destino,\
+                    tipo_id_tercero,\
+                    tercero_id,\
+                    tipo_id_vendedor,\
+                    vendedor_id,\
+                    observacion,    \
+                    observacion_cartera,\
+                    sw_aprobado_cartera,\
+                    estado,\
+                    estado_pedido,\
+                    tipo_producto,\
+                    usuario_id,\
+                    fecha_registro\
+                ) (\
+                  select\
+                  a.empresa_id,\
+                  a.centro_destino,\
+                  a.bodega_destino,\
+                  a.tipo_id_tercero,\
+                  a.tercero_id,\
+                  a.tipo_id_vendedor,\
+                  a.vendedor_id,\
+                  a.observaciones,\
+                  a.observacion_cartera,\
+                  a.sw_aprobado_cartera,\
+                  '1' as estado,\
+                  '0' as estado_pedido,\
+                  a.tipo_producto,\
+                  $2 as usuario_id,\
+                  now() as fecha_registro\
+                  from ventas_ordenes_pedidos_tmp a\
+                  where a.pedido_cliente_id_tmp = $1 \
+                ) returning pedido_cliente_id as numero_pedido ";
+
+    var params = [cotizacion.numero_cotizacion, cotizacion.usuario_id];
+
+    G.db.transaction(sql, params, function(err, rows, result) {
+        callback(err, rows, result);
+    });
+}
+;
+
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : SQL para generar el detalle del pedido cliente, a partir de una cotizacion
+ */
+function __generar_detalle_pedido_cliente(cotizacion, pedido, callback) {
+
+    var sql = " INSERT INTO ventas_ordenes_pedidos_d(\
+                    pedido_cliente_id, \
+                    codigo_producto, \
+                    porc_iva, \
+                    numero_unidades, \
+                    valor_unitario, \
+                    usuario_id,    \
+                    fecha_registro\
+                )(\
+                    SELECT \
+                    $1 as numero_pedido, \
+                    codigo_producto, \
+                    porc_iva, \
+                    numero_unidades, \
+                    valor_unitario, \
+                    $3 as usuario_id,    \
+                    NOW() as fecha_registro\
+                    FROM ventas_ordenes_pedidos_d_tmp \
+                    WHERE pedido_cliente_id_tmp = $2\
+                ) ;";
+
+    var params = [pedido.numero_pedido, cotizacion.numero_cotizacion, cotizacion.usuario_id];
+
+    G.db.transaction(sql, params, function(err, rows, result) {
+        callback(err, rows, result);
+    });
+}
+;
+
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : SQL para actualizar estados de la cotizacion
+ */
+function __actualizar_estado_cotizacion(cotizacion, callback) {
+
+    // Estados Cotizacion
+    // 0 => Inactiva
+    // 1 => Activo     
+    // 2 => Anulado
+    // 3 => Aprobado Cartera
+
+    var sql = "UPDATE ventas_ordenes_pedidos_tmp SET estado = $2 WHERE pedido_cliente_id_tmp = $1";
+
+    var params = [cotizacion.numero_cotizacion, cotizacion.estado];
+
+    G.db.query(sql, params, function(err, rows, result) {
+        callback(err, rows, result);
+    });
+}
+;
+
+
+
+
+
+
+
+
+
 
 
 /**************************************************
  * 
  *  REVISAR DESDE ACA HACIA ABAJO 
  *
- /**************************************************
- 
- 
- 
- 
- 
- 
- 
- /**
- * @api {sql} listar_pedidos Pedidos clientes model
- * @apiName Pedidos Clientes
- * @apiGroup PedidosCliente (sql)
- * @apiDescription Lista pedidos
- * @apiDefinePermission autenticado Requiere Autenticacion
- * Requiere que el usuario esté autenticado.
- * @apiPermission autenticado
- * @apiParam {Number} numero_pedido Numero del pedido a asignar
- * @apiParam {Function} callback Funcion de retorno de informacion.
- */
-PedidosClienteModel.prototype.listado_pedidos_clientes = function(empresa_id, termino_busqueda, pagina, callback) {
+ /***************************************************/
 
-    var sql = " select\
-                    a.pedido_cliente_id as numero_pedido,\
-                    a.empresa_id,\
-                    a.tipo_id_tercero as tipo_id_cliente,\
-                    a.tercero_id as cliente_id,\
-                    to_char(a.fecha_registro, 'dd-mm-yyyy hh:mm:ss') as fecha_registro,\
-                    a.usuario_id,\
-                    to_char(a.fecha_envio, 'dd-mm-yyyy hh:mm:ss') as fecha_envio,\
-                    a.tipo_id_vendedor,\
-                    a.vendedor_id,\
-                    round(SUM((b.valor_unitario + (b.valor_unitario * COALESCE(b.porc_iva, 0))/100) * b.numero_unidades),2) as valor_pedido,\
-                    a.estado,\
-                    a.estado_pedido,\
-                    a.fecha_registro_anulacion,\
-                    a.usuario_anulador,\
-                    a.observacion_anulacion,\
-                    a.observacion,\
-                    c.tipo_pais_id as tipo_pais_cliente,\
-                    c.tipo_dpto_id as tipo_departamento_cliente,\
-                    c.tipo_mpio_id as tipo_municipio_cliente,\
-                    c.direccion as direccion_cliente,\
-                    c.telefono as telefono_cliente,\
-                    c.nombre_tercero as nombre_cliente,\
-                    d.nombre as nombre_vendedor,\
-                    d.telefono as telefono_vendedor,\
-                    e.estado as estado_separacion,\
-                    f.empresa_id as despacho_empresa_id,\
-                    f.prefijo as despacho_prefijo, \
-                    f.numero as despacho_numero, \
-                    CASE WHEN f.numero IS NOT NULL THEN true ELSE false END as tiene_despacho \
-                from ventas_ordenes_pedidos a\
-                    left join ventas_ordenes_pedidos_d b on b.pedido_cliente_id = a.pedido_cliente_id\
-                    join terceros c on c.tipo_id_tercero = a.tipo_id_tercero\
-                        and c.tercero_id = a.tercero_id\
-                    join vnts_vendedores d on d.tipo_id_vendedor = a.tipo_id_vendedor\
-                        and d.vendedor_id = a.vendedor_id\
-                    left join inv_bodegas_movimiento_tmp_despachos_clientes e on a.pedido_cliente_id = e.pedido_cliente_id  \
-                    left join inv_bodegas_movimiento_despachos_clientes f on a.pedido_cliente_id = f.pedido_cliente_id \
-                where a.empresa_id = $1\
-                    and (   a.pedido_cliente_id ilike $2\
-                            or c.nombre_tercero ilike $2\
-                            or d.nombre ilike $2 )\
-                group by a.pedido_cliente_id, a.empresa_id, a.tipo_id_tercero, a.tercero_id, a.fecha_registro, a.usuario_id, a.fecha_envio,\
-                    a.tipo_id_vendedor, a.vendedor_id, a.estado, a.estado_pedido, a.fecha_registro_anulacion, a.usuario_anulador, a.observacion_anulacion,\
-                    a.observacion, c.tipo_pais_id, c.tipo_dpto_id, c.tipo_mpio_id, c.direccion, c.telefono, c.nombre_tercero, d.nombre, d.telefono, e.estado,\
-                    f.empresa_id, f.prefijo, f.numero \
-                order by 1 desc\
-";
 
-    G.db.paginated(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result) {
-        callback(err, rows);
-    });
 
-    /*G.db.query(sql, [empresa_id, "%" + termino_busqueda + "%"], function(err, rows, result) {
-     callback(err, rows, result);
-     });*/
-};
-
-PedidosClienteModel.prototype.consultar_encabezado_pedido = function(numero_pedido, callback) {
-
-    var sql = " select\
-                    a.pedido_cliente_id as numero_pedido,\
-                    a.empresa_id,\
-                    a.tipo_id_tercero as tipo_id_cliente,\
-                    a.tercero_id as cliente_id,\
-                    to_char(a.fecha_registro, 'dd-mm-yyyy hh:mm:ss') as fecha_registro,\
-                    a.usuario_id,\
-                    to_char(a.fecha_envio, 'dd-mm-yyyy hh:mm:ss') as fecha_envio,\
-                    a.tipo_id_vendedor,\
-                    a.vendedor_id,\
-                    a.estado,\
-                    a.estado_pedido,\
-                    a.fecha_registro_anulacion,\
-                    a.usuario_anulador,\
-                    a.observacion_anulacion,\
-                    a.observacion,\
-                    c.tipo_pais_id as tipo_pais_cliente,\
-                    c.tipo_dpto_id as tipo_departamento_cliente,\
-                    c.tipo_mpio_id as tipo_municipio_cliente,\
-                    c.direccion as direccion_cliente,\
-                    c.telefono as telefono_cliente,\
-                    c.nombre_tercero as nombre_cliente,\
-                    d.nombre as nombre_vendedor,\
-                    d.telefono as telefono_vendedor,\
-                    e.pais,\
-                    f.departamento,\
-                    g.municipio,\
-                    h.estado as estado_separacion\
-                from ventas_ordenes_pedidos a\
-                    join terceros c on c.tipo_id_tercero = a.tipo_id_tercero\
-                        and c.tercero_id = a.tercero_id\
-                    join vnts_vendedores d on d.tipo_id_vendedor = a.tipo_id_vendedor\
-                        and d.vendedor_id = a.vendedor_id\
-                    left join tipo_pais as e on e.tipo_pais_id = c.tipo_pais_id\
-                    left join tipo_dptos as f on f.tipo_dpto_id = c.tipo_dpto_id\
-                        and f.tipo_pais_id = e.tipo_pais_id \
-                    left join tipo_mpios as g on g.tipo_mpio_id = c.tipo_mpio_id\
-                        and g.tipo_dpto_id = f.tipo_dpto_id\
-                        and g.tipo_pais_id = e.tipo_pais_id\
-                    left join inv_bodegas_movimiento_tmp_despachos_clientes h on a.pedido_cliente_id = h.pedido_cliente_id  \
-                where a.pedido_cliente_id = $1";
-
-    G.db.query(sql, [numero_pedido], function(err, rows, result) {
-        callback(err, rows, result);
-    });
-};
 
 //************ NUEVO END ******************
 
@@ -1479,120 +1621,17 @@ PedidosClienteModel.prototype.cambiar_estado_aprobacion_cotizacion = function(nu
     });
 };
 
-PedidosClienteModel.prototype.cambiar_estado_aprobacion_pedido = function(numero_pedido, nuevo_estado, observacion, callback)
-{
-    var sql = "UPDATE ventas_ordenes_pedidos SET estado = $2, observacion = $3 WHERE pedido_cliente_id = $1";
-
-    G.db.query(sql, [numero_pedido, nuevo_estado, observacion], function(err, rows, result) {
-        callback(err, rows, result);
-    });
-};
-
-function __cambiar_estado_cotizacion(numero_cotizacion, nuevo_estado, callback)
-{
-
-    var sql = "UPDATE ventas_ordenes_pedidos_tmp SET estado = $2 WHERE pedido_cliente_id_tmp = $1";
-
-    G.db.transaction(sql, [numero_cotizacion, nuevo_estado], function(err, rows, result) {
-        callback(err, rows, result);
-    });
-
-}
-;
-
-//Insert con Transacción para generación de pedidos
-PedidosClienteModel.prototype.insertar_pedido_cliente = function(numero_cotizacion, callback)
-{
-    G.db.begin(function() {
-
-        __insertar_encabezado_pedido_cliente(numero_cotizacion, function(err, rows, result) {
-
-            if (err) {
-                callback(err);
-                return;
-            }
-
-            //console.log(">>>>> DATA ROWS: ", rows.rows[0].pedido_cliente_id);
-            //console.log(">>>>> DATA RESULT: ", result);
-            var numero_pedido = rows.rows[0].pedido_cliente_id;
-            var fecha_registro_encabezado = rows.rows[0].fecha_registro;
-
-            //console.log(">>>>> DATA INSERTAR ENCABEZADO: ", rows);
-            //console.log(">>>>> Número Pedido: ", numero_pedido);
-
-            __cambiar_estado_cotizacion(numero_cotizacion, '0', function(err, rows, result) {
-                if (err) {
-                    callback(err);
-                    return;
-                }
-
-                /* Insertar Detalle */
-                __insertar_detalle_pedido_cliente(numero_pedido, numero_cotizacion, function(err, rows, result) {
-
-                    if (err) {
-                        callback(err);
-                        return;
-                    }
-
-                    // Finalizar Transacción.
-                    G.db.commit(function() {
-                        callback(err, rows, fecha_registro_encabezado);
-                    });
-                });
-                /* Insertar Detalle */
-            });
-
-        });
-    });
-};
-
-function __insertar_encabezado_pedido_cliente(numero_cotizacion, callback)
-{
-
-    /*
-     Los camposiguientes se usan solo para anulación:
-     
-     fecha_registro_anulacion,
-     usuario_anulador,
-     observacion_anulacion,
-     */
-
-    var sql = " INSERT INTO ventas_ordenes_pedidos( empresa_id, tipo_id_tercero, tercero_id, fecha_registro, usuario_id, estado, tipo_id_vendedor,\
-                    vendedor_id, observacion, estado_pedido, centro_utilidad_id, bodega_id) \
-                SELECT empresa_id, tipo_id_tercero, tercero_id, CURRENT_TIMESTAMP, usuario_id, 1, tipo_id_vendedor,\
-                    vendedor_id, observaciones, 0, centro_utilidad_id, bodega_id\
-                FROM ventas_ordenes_pedidos_tmp \
-                WHERE pedido_cliente_id_tmp = $1 \
-                RETURNING pedido_cliente_id, fecha_registro";
-
-    G.db.transaction(sql, [numero_cotizacion], function(err, rows, result) {
-        callback(err, rows, result);
-    });
-}
-;
-
-function __insertar_detalle_pedido_cliente(numero_pedido, numero_cotizacion, callback) {
-
-    /*
-     Los campos siguientes se usan solo para despacho y facturación:
-     
-     cantidad_despachada
-     cantidad_facturada
-     */
-    var sql = " INSERT INTO ventas_ordenes_pedidos_d(pedido_cliente_id, codigo_producto, porc_iva, numero_unidades, valor_unitario, fecha_registro, usuario_id, tipo_producto)\
-                SELECT $1, codigo_producto, porc_iva, numero_unidades, valor_unitario, CURRENT_TIMESTAMP, usuario_id, tipo_producto\
-                FROM ventas_ordenes_pedidos_d_tmp \
-                WHERE pedido_cliente_id_tmp = $2\
-                RETURNING pedido_cliente_id";
-
-    G.db.transaction(sql, [numero_pedido, numero_cotizacion], function(err, rows, result) {
-        callback(err, rows, result);
-    });
-}
-;
 
 
-PedidosClienteModel.prototype.insertar_detalle_pedido = function(numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto, callback) {
+
+
+
+
+
+
+
+
+PedidosClienteModel.prototype.insertar_detalle_pedido__ = function(numero_pedido, codigo_producto, porc_iva, numero_unidades, valor_unitario, usuario_id, tipo_producto, callback) {
 
 
     G.db.begin(function() {

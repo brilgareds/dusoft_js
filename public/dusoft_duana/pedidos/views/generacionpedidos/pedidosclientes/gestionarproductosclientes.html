@@ -42,7 +42,7 @@
                                     </p>
                                 </div>
 
-                                <div ng-if="Pedido.get_productos().length === 2" class="col-md-6 text-center" style="margin-top: 35px;">
+                                <div ng-if="validar_seleccion_producto()" class="col-md-6 text-center" style="margin-top: 35px;">
                                     <p class="input-group">
                                         <h4>No se pueden agregar mas productos, el pedido ya contiene el limite de productos</h4>                                                                            
                                     </p>

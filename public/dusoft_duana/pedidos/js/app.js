@@ -53,6 +53,7 @@ define([
     "controllers/generacionpedidos/pedidosfarmacias/GuardarPedidoBaseController",
     
     // Nuevas Urls para el proceso de pedidos clientes
+    "controllers/generacionpedidos/pedidosclientes/ReportePedidosClientesController",
     "controllers/generacionpedidos/pedidosclientes/ListarPedidosClientesController",
     "controllers/generacionpedidos/pedidosclientes/PedidosClienteController",
     "controllers/generacionpedidos/pedidosclientes/GestionarProductosClientesController"

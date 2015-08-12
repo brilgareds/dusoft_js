@@ -1030,24 +1030,23 @@ PedidosCliente.prototype.reporteCotizacion = function(req, res) {
         return;
     }
 
-    /*if (args.pedidos_clientes.enviar_email !== undefined) {
-     
-     if (args.pedidos_clientes.emails === undefined || args.pedidos_clientes.subject === undefined || args.pedidos_clientes.message === undefined) {
-     res.send(G.utils.r(req.url, 'emails, subject o message no esta definidas', 404, {}));
-     return;
-     }
-     
-     if (args.pedidos_clientes.emails.length === 0 || args.pedidos_clientes.subject === '') {
-     res.send(G.utils.r(req.url, 'emails, subject o message estan vacios', 404, {}));
-     return;
-     }
-     
-     var emails = args.pedidos_clientes.emails;
-     var subject = args.pedidos_clientes.subject;
-     var message = args.pedidos_clientes.message;
-     }*/
+    if (args.pedidos_clientes.enviar_email !== undefined) {
 
-    var numero_orden = args.pedidos_clientes.numero_orden;
+        if (args.pedidos_clientes.emails === undefined || args.pedidos_clientes.subject === undefined || args.pedidos_clientes.message === undefined) {
+            res.send(G.utils.r(req.url, 'emails, subject o message no esta definidas', 404, {}));
+            return;
+        }
+
+        if (args.pedidos_clientes.emails.length === 0 || args.pedidos_clientes.subject === '') {
+            res.send(G.utils.r(req.url, 'emails, subject o message estan vacios', 404, {}));
+            return;
+        }
+
+        var emails = args.pedidos_clientes.emails;
+        var subject = args.pedidos_clientes.subject;
+        var message = args.pedidos_clientes.message;
+    }
+
     var enviar_email = args.pedidos_clientes.enviar_email;
 
     that.m_pedidos_clientes.consultar_cotizacion(cotizacion, function(err, datos_cotizacion) {
@@ -1071,7 +1070,7 @@ PedidosCliente.prototype.reporteCotizacion = function(req, res) {
                     usuario_imprime: req.session.user.nombre_usuario,
                     serverUrl: req.protocol + '://' + req.get('host') + "/"
                 };
-                
+
                 _generar_reporte_cotizacion(datos_reporte, function(nombre_reporte) {
 
                     if (enviar_email) {
@@ -1079,16 +1078,16 @@ PedidosCliente.prototype.reporteCotizacion = function(req, res) {
                         var path = G.dirname + "/public/reports/" + nombre_reporte;
                         var filename = "CotizacionNo-" + cotizacion.numero_cotizacion + '.pdf';
 
-                        /*__enviar_correo_electronico(that, emails, path, filename, subject, message, function(enviado) {
+                        __enviar_correo_electronico(that, emails, path, filename, subject, message, function(enviado) {
 
                             if (!enviado) {
-                                res.send(G.utils.r(req.url, 'Se genero un error al enviar el reporte', 500, {ordenes_compras: {nombre_reporte: nombre_reporte}}));
+                                res.send(G.utils.r(req.url, 'Se genero un error al enviar el reporte', 500, {pedidos_clientes: {nombre_reporte: nombre_reporte}}));
                                 return;
                             } else {
-                                res.send(G.utils.r(req.url, 'Reporte enviado correctamente', 200, {ordenes_compras: {nombre_reporte: nombre_reporte}}));
+                                res.send(G.utils.r(req.url, 'Reporte enviado correctamente', 200, {pedidos_clientes: {nombre_reporte: nombre_reporte}}));
                                 return;
                             }
-                        });*/
+                        });
                     } else {
                         res.send(G.utils.r(req.url, 'Nombre Reporte', 200, {pedidos_clientes: {nombre_reporte: nombre_reporte}}));
                         return;
@@ -1490,6 +1489,99 @@ PedidosCliente.prototype.observacionCarteraPedido = function(req, res) {
 };
 
 
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : Generar Reporte PDF de Pedido y enviar por email
+ */
+PedidosCliente.prototype.reportePedido = function(req, res) {
+
+
+    var that = this;
+
+    var args = req.body.data;
+
+    // Pedido
+    if (args.pedidos_clientes === undefined || args.pedidos_clientes.pedido === undefined || args.pedidos_clientes.pedido === '') {
+        res.send(G.utils.r(req.url, 'pedidos_clientes o pedido No Estan Definidos', 404, {}));
+        return;
+    }
+
+    var pedido = args.pedidos_clientes.pedido;
+
+    if (pedido.numero_cotizacion === undefined || pedido.numero_cotizacion === '') {
+        res.send(G.utils.r(req.url, 'numero_pedido no esta definido o esta vacio', 404, {}));
+        return;
+    }
+
+    if (args.pedidos_clientes.enviar_email !== undefined) {
+
+        if (args.pedidos_clientes.emails === undefined || args.pedidos_clientes.subject === undefined || args.pedidos_clientes.message === undefined) {
+            res.send(G.utils.r(req.url, 'emails, subject o message no esta definidas', 404, {}));
+            return;
+        }
+
+        if (args.pedidos_clientes.emails.length === 0 || args.pedidos_clientes.subject === '') {
+            res.send(G.utils.r(req.url, 'emails, subject o message estan vacios', 404, {}));
+            return;
+        }
+
+        var emails = args.pedidos_clientes.emails;
+        var subject = args.pedidos_clientes.subject;
+        var message = args.pedidos_clientes.message;
+    }
+    
+    var enviar_email = args.pedidos_clientes.enviar_email;
+
+    that.m_pedidos_clientes.consultar_pedido(pedido.numero_pedido, function(err, datos_pedido) {
+
+        if (err || datos_pedido.length === 0) {
+            res.send(G.utils.r(req.url, 'Error Interno consultado la cotizacion', 500, {pedidos_clientes: []}));
+            return;
+        } else {
+            that.m_pedidos_clientes.consultar_detalle_pedido(pedido.numero_pedido, function(err, lista_productos) {
+
+                if (err || lista_productos.length === 0) {
+                    res.send(G.utils.r(req.url, 'Error Interno consultado el detalle del pedido', 500, {pedidos_clientes: []}));
+                    return;
+                }
+
+                datos_pedido = datos_pedido[0];
+
+                var datos_reporte = {
+                    pedido: datos_pedido,
+                    lista_productos: lista_productos,
+                    usuario_imprime: req.session.user.nombre_usuario,
+                    serverUrl: req.protocol + '://' + req.get('host') + "/"
+                };
+
+                _generar_reporte_pedido(datos_reporte, function(nombre_reporte) {
+
+                    if (enviar_email) {
+
+                        var path = G.dirname + "/public/reports/" + nombre_reporte;
+                        var filename = "PedidoNo-" + pedido.numero_cotizacion + '.pdf';
+
+                        __enviar_correo_electronico(that, emails, path, filename, subject, message, function(enviado) {
+
+                            if (!enviado) {
+                                res.send(G.utils.r(req.url, 'Se genero un error al enviar el reporte', 500, {pedidos_clientes: {nombre_reporte: nombre_reporte}}));
+                                return;
+                            } else {
+                                res.send(G.utils.r(req.url, 'Reporte enviado correctamente', 200, {pedidos_clientes: {nombre_reporte: nombre_reporte}}));
+                                return;
+                            }
+                        });
+                    } else {
+                        res.send(G.utils.r(req.url, 'Nombre Reporte', 200, {pedidos_clientes: {nombre_reporte: nombre_reporte}}));
+                        return;
+                    }
+                });
+
+            });
+        }
+    });
+};
+
 
 /*
  * ==============================================================
@@ -1678,7 +1770,7 @@ function _generar_reporte_cotizacion(rows, callback) {
             serverUrl: rows.serverUrl
         }
     }, function(err, response) {
-        
+
         response.body(function(body) {
 
             var fecha_actual = new Date();
@@ -1697,6 +1789,77 @@ function _generar_reporte_cotizacion(rows, callback) {
     });
 }
 
+
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : Generar reporte decotizaciones
+ */
+function _generar_reporte_pedido(rows, callback) {
+
+    G.jsreport.render({
+        template: {
+            content: G.fs.readFileSync('app_modules/PedidosClientes/reports/pedido.html', 'utf8'),
+            helpers: G.fs.readFileSync('app_modules/PedidosClientes/reports/javascripts/helpers.js', 'utf8'),
+            recipe: "phantom-pdf",
+            engine: 'jsrender'
+        },
+        data: {
+            style: G.dirname + "/public/stylesheets/bootstrap.min.css",
+            pedido: rows.pedido,
+            lista_productos: rows.lista_productos,
+            fecha_actual: new Date().toFormat('DD/MM/YYYY HH24:MI:SS'),
+            usuario_imprime: rows.usuario_imprime,
+            serverUrl: rows.serverUrl
+        }
+    }, function(err, response) {
+
+        response.body(function(body) {
+
+            var fecha_actual = new Date();
+            var nombre_reporte = G.random.randomKey(2, 5) + "_" + fecha_actual.toFormat('DD-MM-YYYY') + ".pdf";
+
+            G.fs.writeFile(G.dirname + "/public/reports/" + nombre_reporte, body, "binary", function(err) {
+
+                if (err) {
+                    console.log('=== Se ha generado un error generando el reporte de cotizaciones ====');
+                } else {
+                    callback(nombre_reporte);
+                }
+            });
+
+        });
+    });
+}
+
+/*
+ * Autor : Camilo Orozco
+ * Descripcion : Enviar correos electronicos
+ */
+function __enviar_correo_electronico(that, to, ruta_archivo, nombre_archivo, subject, message, callback) {
+
+    var smtpTransport = that.emails.createTransport('direct', {debug: true});
+
+    var settings = {
+        from: G.settings.email_sender,
+        to: to,
+        subject: subject,
+        html: message,
+        attachments: [{'filename': nombre_archivo, 'contents': G.fs.readFileSync(ruta_archivo)}]
+    };
+
+    smtpTransport.sendMail(settings, function(error, response) {
+
+        if (error) {
+            callback(false);
+            return;
+        } else {
+            smtpTransport.close();
+            callback(true);
+            return;
+        }
+    });
+}
+;
 
 /**************************************************
  * 

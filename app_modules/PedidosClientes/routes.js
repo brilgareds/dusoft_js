@@ -78,6 +78,11 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/subirPlano', function(req, res) {
         c_pedidos_clientes.cotizacionArchivoPlano(req, res);
     });
+    
+    // Reporte Cotización    
+    app.post('/api/PedidosClientes/reporteCotizacion', function(req, res) {
+        c_pedidos_clientes.reporteCotizacion(req, res);
+    });
 
     /* Generacion Pedidos */
 
@@ -117,15 +122,12 @@ module.exports = function(app, di_container) {
     });
 
     // Reporte Cotización    
-    app.post('/api/PedidosClientes/reporteCotizacion', function(req, res) {
-        c_pedidos_clientes.reporteCotizacion(req, res);
+    app.post('/api/PedidosClientes/reportePedido', function(req, res) {
+        c_pedidos_clientes.reportePedido(req, res);
     });
 
-    //Generar PDF Pedido
-    //???????????????????????????????
-    app.post('/api/PedidosClientes/imprimirPedidoCliente', function(req, res) {
-        c_pedidos_clientes.imprimirPedidoCliente(req, res);
-    });
+
+
 
 
     /**************************************************

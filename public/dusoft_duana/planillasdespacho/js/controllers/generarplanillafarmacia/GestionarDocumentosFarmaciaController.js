@@ -31,15 +31,12 @@ define(["angular", "js/controllers",
             $rootScope.$on('gestionar_documentos_farmaciaCompleto', function(e, parametros) {
 
 
-                //  console.log($scope.planilla);
-
-
                 $scope.datos_view = {
                     // opcion_predeterminada: "0", // 0 = farmacias 1 = clientes 2 = Otras Empresas
                     //  termino_busqueda: '',
                     //  termino_busqueda_documentos: '',
                     // tercero_seleccionado: FarmaciaPlanilla.get(), // tercero_seleccionado es una Farmacia por ser la opcion_predeterminada = 0
-                    // documento_seleccionado: Documento.get()
+                     documento_seleccionado: Documento.get()
                 };
 
                 //  $scope.seleccionar_cliente_farmacia();
@@ -48,10 +45,7 @@ define(["angular", "js/controllers",
             //  console.log("AQUI")
 
             $rootScope.$on('cerrar_gestion_documentos_bodegaCompleto', function(e, parametros) {
-
-                //    $scope.datos_view = null;
                 $scope.$$watchers = null;
-
             });
 
 
@@ -262,29 +256,24 @@ define(["angular", "js/controllers",
              * devolucion
              * 
              */
-            that.ingresar_documentos_planilla = function(callback) {
-                console.log("ingresar_documentos_planilla")
-               //console.log($scope.planilla)
+            that.ingresar_documentos_planilla = function(id,callback) {
+                
+              $scope.planilla.set_documento($scope.datos_view.documento_seleccionado);
+              $scope.planilla.get_documento().set_empresa_id($scope.planilla.get_empresa().getCodigo());
+              //$scope.planilla.get_documento().set_observacion($scope.planilla.get_observacion());
                 var obj = {
                     session: $scope.session,
                     data: {
                         planillas_farmacia: {
-                           
-                            /*empresa_id: $scope.planilla.get_documento().get_empresa_id(),
+                          
+                            id_inv_planilla_farmacia_devolucion: id,
+                            empresa_id: $scope.planilla.get_documento().get_empresa_id(),
                             prefijo: $scope.planilla.get_documento().get_prefijo(),
                             numero: $scope.planilla.get_documento().get_numero(),
                             cantidad_cajas: $scope.planilla.get_documento().get_cantidad_cajas(),
                             cantidad_neveras: $scope.planilla.get_documento().get_cantidad_neveras(),
                             temperatura_neveras: $scope.planilla.get_documento().get_temperatura_neveras(),
-                            observacion: $scope.planilla.get_documento().get_observacion(),
-                            tipo: $scope.datos_view.opcion_predeterminada*/
-                            empresa_id: '03',
-                            prefijo: 'IDF',
-                            numero: 1,
-                            cantidad_cajas: 1,
-                            cantidad_neveras: 2,
-                            temperatura_neveras: 22,
-                            observacion: 'Delicado'
+                            observacion: ''
                            
                         }
                     }
@@ -341,6 +330,7 @@ define(["angular", "js/controllers",
                         $scope.confirmar = function() {
                             $modalInstance.close();
                             that.registrarDocumentoFarmacia(documento);
+                            
                         };
                     }
                 };
@@ -354,7 +344,12 @@ define(["angular", "js/controllers",
              * @returns {undefined}
              */
             that.registrarDocumentoFarmacia = function(documento) {
-
+                console.log(documento)
+                $scope.datos_view.documento_seleccionado = documento;
+                //(documento.get_cantidad_cajas() == documento.get_cantidad_cajas_auditadas() && documento.get_cantidad_neveras() == documento.get_cantidad_neveras_auditadas())
+                //console.log("registrarDocumentoFarmacia>>>>>>>>>>>>>>>>>>>>>>");
+               // console.log($scope.datos_view.documento_seleccionado);
+               
                 that.gestionar_planilla_farmacia(function() {
 
                 });
@@ -391,14 +386,15 @@ define(["angular", "js/controllers",
                 };
 
                 Request.realizarRequest(API.PLANILLAS_FARMACIAS.GENERAR_PLANILLA_FARMACIA, "POST", obj, function(data) {
-
+                    var idUltimoRegistroPFD = data.obj.id_inv_planilla_farmacia_devolucion[0].id_inv_planilla_farmacia_devolucion;
                     AlertService.mostrarMensaje("warning", data.msj);
-
+                   // console.log();
                     if (data.status === 200) {
                         $scope.planilla.set_numero_guia(data.obj.numero_guia);
-                        callback(true);
+                        callback(true,idUltimoRegistroPFD);
+                        
                     } else {
-                        callback(false);
+                        callback(false,idUltimoRegistroPFD);
                     }
                 });
             };
@@ -410,12 +406,12 @@ define(["angular", "js/controllers",
 
                 if ($scope.planilla.get_numero_guia() === 0) {
 
-                    that.generar_planilla_farmacia(function(continuar) {
+                    that.generar_planilla_farmacia(function(continuar,idUltimoRegistroPFD) {
 
-
+                      
                         if (continuar) {
 
-                            that.ingresar_documentos_planilla(function(continuar) {
+                            that.ingresar_documentos_planilla(idUltimoRegistroPFD,function(continuar) {
 
                                 if (callback)
                                     callback(continuar);
@@ -426,9 +422,20 @@ define(["angular", "js/controllers",
                         }
                     });
                 } else {
-                    that.ingresar_documentos_planilla(function(continuar) {
-                        if (callback)
-                            callback(continuar);
+                     that.generar_planilla_farmacia(function(continuar,idUltimoRegistroPFD) {
+
+                    
+                        if (continuar) {
+
+                            that.ingresar_documentos_planilla(idUltimoRegistroPFD,function(continuar) {
+
+                                if (callback)
+                                    callback(continuar);
+                            });
+                        } else {
+                            if (callback)
+                                callback(continuar);
+                        }
                     });
                 }
             };

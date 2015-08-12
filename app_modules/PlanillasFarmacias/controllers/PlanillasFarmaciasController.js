@@ -95,11 +95,11 @@ PlanillasFarmaciasController.prototype.listar_documentos = function(req, res) {
 
 
 PlanillasFarmaciasController.prototype.generarPlanillaFarmacia = function(req, res) {
-
+   
     var that = this;
 
     var args = req.body.data;
-
+    
     /*if (args.planillas_despachos === undefined || args.planillas_despachos.pais_id === undefined || args.planillas_despachos.departamento_id === undefined || args.planillas_despachos.ciudad_id === undefined) {
         res.send(G.utils.r(req.url, 'pais_id, departamento_id o ciudad_id no esta definido', 404, {}));
         return;
@@ -135,13 +135,17 @@ PlanillasFarmaciasController.prototype.generarPlanillaFarmacia = function(req, r
     var observacion = args.planillas_farmacia.observacion;
     var numero_guia_externo = args.planillas_farmacia.numero_guia_externo;
     var usuario_id = req.session.user.usuario_id;
-
-  that.m_planillas_farmacias.ingresar_planilla_farmacia(empresa_id,centro_utilidad,bodega,id_empresa_destino,
+   
+  that.m_planillas_farmacias.ingresar_planilla_farmacia(empresa_id,
+                                                        centro_utilidad,
+                                                        bodega,
+                                                        id_empresa_destino,
                                                         inv_transportador_id, 
                                                         nombre_conductor, 
                                                         observacion, 
                                                         numero_guia_externo, 
-                                                        usuario_id, function(err, rows, result) {
+                                                        usuario_id, 
+                                                        function(err, rows, result) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {ingresar_planilla_farmacia: []}));
@@ -150,7 +154,8 @@ PlanillasFarmaciasController.prototype.generarPlanillaFarmacia = function(req, r
 
             var numero_guia = (rows.length > 0) ? rows[0].id : 0;
 
-            res.send(G.utils.r(req.url, 'Planilla farmacia regitrada correctamente', 200, {ingresar_planilla_farmacia: numero_guia}));
+            res.send(G.utils.r(req.url, 'Planilla farmacia regitrada correctamente', 200, {ingresar_planilla_farmacia: numero_guia,
+                                                                                           id_inv_planilla_farmacia_devolucion:rows}));
             return;
         }
     });
@@ -168,7 +173,7 @@ PlanillasFarmaciasController.prototype.generarDocumentoPlanillaFarmacia = functi
     console.log("generarDocumentoPlanillaFarmacia");
     var that = this;
     var args = req.body.data;
-
+    var id = args.planillas_farmacia.id_inv_planilla_farmacia_devolucion;//Identificador de la ultima transaccion de la tabla inv_planillas_farmacia_devolucion
     var empresa_id = args.planillas_farmacia.empresa_id;
     var prefijo = args.planillas_farmacia.prefijo;
     var numero = args.planillas_farmacia.numero;
@@ -179,8 +184,10 @@ PlanillasFarmaciasController.prototype.generarDocumentoPlanillaFarmacia = functi
     
     
     var usuario_id = req.session.user.usuario_id;
-
-    that.m_planillas_farmacias.ingresar_documentos_planilla_farmacia(empresa_id, prefijo, numero, cantidad_cajas, 
+    
+    console.log(args);
+    
+    that.m_planillas_farmacias.ingresar_documentos_planilla_farmacia(id,empresa_id, prefijo, numero, cantidad_cajas, 
                                                                      cantidad_neveras, temperatura_neveras, observacion, 
                                                                      usuario_id, function(err, rows, result) {
 

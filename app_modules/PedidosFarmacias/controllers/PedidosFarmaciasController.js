@@ -2071,7 +2071,7 @@ PedidosFarmacias.prototype.generarPdfPedido = function(req, res) {
          centro_utilidad_destino :  args.pedidos_farmacias.centro_utilidad_destino,
          bodega_destino : args.pedidos_farmacias.bodega_destino,
          usuario_imprime : req.session.user.nombre_usuario,
-         fecha_actual : new Date().toFormat('DD-MM-YYYY')
+         fecha_actual : new Date().toFormat('DD-MM-YYYY HH:MM')
     };
     
      this.m_pedidos_farmacias.consultar_pedido(numero_pedido, function(err, cabecera_pedido) {
@@ -2099,41 +2099,6 @@ PedidosFarmacias.prototype.generarPdfPedido = function(req, res) {
                         console.log("pdf generado ", nombreTmp);
                         res.send(G.utils.r(req.url, 'Url reporte pedido', 200, {reporte_pedido: {nombre_reporte: nombreTmp}}));
                     });
-                    
-                    /*productos.forEach(function(producto){
-                        
-                        that.m_pedidos_farmacias.listarProductos(cabecera_pedido.empresa_destino, cabecera_pedido.centro_destino, cabecera_pedido.bodega_destino,
-                                                                 cabecera_pedido.empresa_id, cabecera_pedido.centro_utilidad, cabecera_pedido.bodega_id,
-                                                                 producto.codigo_producto, 1, producto.tipo_producto_id, function(err, _productos) {
-                                                                     
-                             if(err || _productos.length === 0){
-                                 res.send(G.utils.r(req.url, 'Error consultando disponible producto', 500, {encabezado_pedido: {}}));
-                                 return;
-                             }
-                             
-                             producto.disponible = _productos[0].disponibilidad_bodega;
-                             
-                             if(--i === 0){
-                                var obj = {
-                                    encabezado_pedido_farmacia: cabecera_pedido, 
-                                    detalle_pedido_farmacia: productos,
-                                    serverUrl:req.protocol + '://' + req.get('host') + "/",
-                                    descripcionPedido:descripcionPedido
-                                };
-
-                                //console.log("pedido ", obj);
-                                _generarDocumentoPedido(obj, function(nombreTmp){
-                                    console.log("pdf generado ", nombreTmp);
-                                    res.send(G.utils.r(req.url, 'Url reporte pedido', 200, {reporte_pedido: {nombre_reporte: nombreTmp}}));
-                                });
-                             }
-                             
-                                                               
-                        });
-                        
-                    });*/
-                    //res.send(G.utils.r(req.url, 'Consulta detalle del pedido satisfactoria', 200, {detalle_pedido: filas_pedido}));
-
                 }
 
             });

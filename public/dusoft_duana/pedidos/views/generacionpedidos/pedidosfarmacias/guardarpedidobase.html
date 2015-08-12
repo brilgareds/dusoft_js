@@ -176,7 +176,7 @@
                     <div class="input-group navbar-form ">
 
                         <div >
-                            <button type="button" ng-disabled="!root.pedido.getValido() || (root.pedido.get_numero_pedido() && root.pedido.getTipoModificacion() != '3')" class="btn btn-default btn-medium ng-scope"  ng-click="onIncluirProductos($event)">
+                             <button type="button" ng-disabled="!root.pedido.getValido() || (root.pedido.get_numero_pedido() && root.pedido.getTipoModificacion() != '3')" class="btn btn-default btn-medium ng-scope"  ng-click="onIncluirProductos($event)">
                                 <span class="glyphicon glyphicon-plus"></span> Incluir Productos
                             </button>
                         </div>   
@@ -200,10 +200,10 @@
                 
                 <tab disabled="(!root.pedido.getValido() ||  root.pedido.get_numero_pedido())"   name="cargarPlano">
                     <tab-heading>
-                        <b> Archivo Plano </b>
+                        <i class="glyphicon glyphicon-cloud-upload"></i> <b> Cargar Archivo Plano </b>
                     </tab-heading>
 
-                    <div>
+                    <div ng-if="(root.pedido.getValido() ||  !root.pedido.get_numero_pedido())">
 
                         <br/>
 
@@ -217,7 +217,7 @@
                                         <img ng-show="$flow.files.length" src="../../../images/xls.png" style="max-width: 200px; max-height: 150px; line-height: 20px; margin-bottom: 5px;"/>
                                     </div>
                                     <div ng-hide="$flow.files.length">
-                                        <b>OR</b> Arrastrar y Soltar el archivo AQUI!!..                                                    
+                                         Arrastrar y Soltar el archivo AQUI!!                                                   
                                     </div>
                                     <div class="" ng-repeat="file in $flow.files" ng-show="$flow.files.length">
                                         Nombre Archivo : <label>{{file.name}}</label>    

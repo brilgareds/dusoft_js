@@ -68,8 +68,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.datos_view.visualizar = (pedido.visualizar === '1') ? true : false;
             }
 
-            console.log('== datos view ==');
-            console.log($scope.datos_view);
 
             // Consultas Cotizaciones
             that.gestionar_consultas_cotizaciones = function() {
@@ -151,7 +149,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.Pedido.set_aprobado_cartera(data.sw_aprobado_cartera).set_observacion_cartera(data.observacion_cartera);
                 $scope.Pedido.set_estado_cotizacion(data.estado).set_descripcion_estado_cotizacion(data.descripcion_estado);
                 $scope.Pedido.setFechaRegistro(data.fecha_registro);
-                               
+
             };
 
             // Detalle Cotizacion
@@ -236,7 +234,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $scope.Pedido.set_tipo_producto(data.tipo_producto).set_descripcion_tipo_producto(data.descripcion_tipo_producto);
                 $scope.Pedido.set_aprobado_cartera(data.sw_aprobado_cartera).set_observacion_cartera(data.observacion_cartera);
                 $scope.Pedido.setFechaRegistro(data.fecha_registro);
-                               
+
             };
 
             that.buscar_detalle_pedido = function() {
@@ -516,6 +514,97 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 });
             };
 
+            $scope.confirmar_modificar_producto = function(producto) {
+
+                $scope.datos_view.producto_seleccionado = producto;
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <h4 class="modal-title">Desea modificar el producto?</h4>\
+                                </div>\
+                                <div class="modal-body">\
+                                    <h4>Codigo.</h4>\
+                                    <h5> {{ datos_view.producto_seleccionado.getCodigoProducto() }}</h5>\
+                                    <h4>Descripcion.</h4>\
+                                    <h5> {{ datos_view.producto_seleccionado.getDescripcion() }} </h5>\
+                                    <h4>Cantidad.</h4>\
+                                    <h5> {{ datos_view.producto_seleccionado.get_cantidad_solicitada() }} </h5>\
+                                </div>\
+                                <div class="modal-footer">\
+                                    <button class="btn btn-warning" ng-click="close()">No</button>\
+                                    <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Si</button>\
+                                </div>',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.confirmar = function() {
+                            $scope.modificar_producto();
+                            $modalInstance.close();
+                        };
+
+                        $scope.close = function() {
+                            $modalInstance.close();
+                        };
+
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+            };
+
+            $scope.modificar_producto = function() {
+
+                var obj = {};
+                var url = '';
+
+                // Cotizacion
+                if ($scope.Pedido.get_numero_cotizacion() > 0) {
+
+                    url = API.PEDIDOS.CLIENTES.MODIFICAR_DETALLE_COTIZACION;
+                    obj = {
+                        session: $scope.session,
+                        data: {
+                            pedidos_clientes: {
+                                cotizacion: $scope.Pedido,
+                                producto: $scope.datos_view.producto_seleccionado
+                            }
+                        }
+                    };
+                }
+
+                // Pedido
+                if ($scope.Pedido.get_numero_pedido() > 0) {
+
+                    url = API.PEDIDOS.CLIENTES.MODIFICAR_DETALLE_PEDIDO;
+                    obj = {
+                        session: $scope.session,
+                        data: {
+                            pedidos_clientes: {
+                                pedido: $scope.Pedido,
+                                producto: $scope.datos_view.producto_seleccionado
+                            }
+                        }
+                    };
+                }
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+
+                    AlertService.mostrarMensaje("warning", data.msj);
+                    $scope.datos_view.producto_seleccionado = Producto.get();
+
+                    if (data.status === 200) {
+                        if ($scope.Pedido.get_numero_cotizacion() > 0)
+                            that.buscar_detalle_cotizacion();
+                        if ($scope.Pedido.get_numero_pedido() > 0)
+                            that.gestionar_consultas_pedidos();
+                    }
+                });
+            };
+
             // Lista Productos Seleccionados
             $scope.lista_productos = {
                 data: 'Pedido.get_productos()',
@@ -549,13 +638,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 columnDefs: [
                     {field: 'getCodigoProducto()', displayName: 'Codigo', width: "10%"},
                     {field: 'getDescripcion()', displayName: 'Descripcion', width: "35%"},
-                    {field: 'get_cantidad_solicitada()', displayName: 'Cant.', width: "8%"},
+                    {field: 'get_cantidad_solicitada()', width: "8%", displayName: "Cantidad", cellFilter: "number",
+                        cellTemplate: '<div class="col-xs-12"> <input type="text" ng-disabled="habilitar_eliminacion_producto()" ng-model="row.entity.cantidad_solicitada" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'get_iva()', displayName: 'I.V.A', width: "8%"},
                     {field: 'get_precio_venta()', displayName: 'Vlr. Unit', width: "10%", cellFilter: 'currency : "$"'},
                     {field: 'get_valor_total_sin_iva()', displayName: 'Subtotal', width: "10%", cellFilter: 'currency : "$"'},
                     {field: 'get_valor_total_con_iva()', displayName: 'Total', width: "10%", cellFilter: 'currency : "$"'},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
-                        cellTemplate: '<div class="btn-group">\
+                        cellTemplate: '<div class="btn-toolbar">\
+                                        <button class="btn btn-default btn-xs" ng-click="confirmar_modificar_producto(row.entity)" ng-disabled="habilitar_eliminacion_producto()" ><span class="glyphicon glyphicon-ok"></span></button>\
                                         <button class="btn btn-default btn-xs" ng-click="confirmar_eliminar_producto(row.entity)" ng-disabled="habilitar_eliminacion_producto()" ><span class="glyphicon glyphicon-remove"></span></button>\
                                        </div>'
                     }

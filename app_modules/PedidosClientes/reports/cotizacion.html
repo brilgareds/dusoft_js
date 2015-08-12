@@ -56,7 +56,7 @@
     </head>
     <body>
         <div class="container">
-            
+
             <div class="row pad-top-botm ">
                 <!--div class="col-lg-6 col-md-6 col-sm-6 "-->
                 <div class="box">
@@ -69,10 +69,10 @@
                     Calle 9A No. 42 - 115 Valle del Cauca, Cali, Colombia. 
                 </div>                
             </div> 
-            
+
             <hr/>
             <div  class="row  pad-top-botm client-info">
-                <h1>Cotizaci&oacute;n No {{:encabezado_pedido_cliente.numero_cotizacion}}</h1>
+                <h1>Cotizaci&oacute;n No {{:cotizacion.numero_cotizacion}}</h1>
 
                 <table class="table table-striped" width='100%'>
                     <tr>
@@ -81,42 +81,40 @@
                     </tr>
                     <tr>
                         <th style='border-style:solid'>Origen</th>
-                        <td><center>{{:encabezado_pedido_cliente.empresa_origen}}</center></td>
+                        <td><center>Empresa Origen ?</center></td>
                     </tr>
 
                 </table>
                 <br>
-                <table class="table table-striped" width='100%'>
-                    <tr>
-                        <th></th>
-                        <th>Nombre</th>
-                        <th>Nit</th>
-                        <th>Ciudad</th>
-                        <th>Direcci&oacute;n</th>
-                    </tr>
+                    <table class="table table-striped" width='100%'>
+                        <tr>
+                            <th></th>
+                            <th>Nombre</th>
+                            <th>Nit</th>
+                            <th>Ciudad</th>
+                            <th>Direcci&oacute;n</th>
+                        </tr>
+                        <tr>
+                            <th style='border-style:solid'>Cliente</th>
+                            <td><center>{{:cotizacion.nombre_tercero}}</center></td>
+                            <td><center>{{:cotizacion.tercero_id}}</center></td>
+                            <td><center>{{:cotizacion.municipio}}</center></td>
+                            <td><center>{{:cotizacion.direccion}}</center></td>
+                        </tr>
+                    </table>
 
-                    <tr>
-                        <th style='border-style:solid'>Cliente</th>
-                        <td><center>{{:encabezado_pedido_cliente.nombre_cliente}}</center></td>
-                        <td><center>{{:encabezado_pedido_cliente.id_cliente}}</center></td>
-                        <td><center>{{:encabezado_pedido_cliente.ciudad_cliente}}</center></td>
-                        <td><center>{{:encabezado_pedido_cliente.direccion_cliente}}</center></td>
-                    </tr>
-                    
-                </table>
-                
             </div>
             </br>
-            
+
             <div  class="row  pad-top-botm client-info">
                 <table class="table table-striped" width='100%'>
                     <tr>
                         <th width='14%'>Observaci&oacute;n:</th>
-                        <td width='86%'>{{:encabezado_pedido_cliente.observacion}}</td>
+                        <td width='86%'>{{:cotizacion.observaciones}}</td>
                     </tr>
                 </table>
             </div>
-                    
+
             </br>
             <div class="row pad-top-botm">
                 <div class="col-lg-12 col-md-12 col-sm-12">
@@ -133,16 +131,16 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {{for detalle_pedido_cliente}}
-                                <tr>
-                                    <td>{{:codigo_producto}}</td>
-                                    <td>{{:descripcion}}</td>
-                                    <td>{{:cantidad_solicitada}}</td>
-                                    <td>{{:iva}}</td>
-                                    <td>{{:precio}}</td>
-                                    <td>{{:total_sin_iva}}</td>
-                                    <td>{{:total_con_iva}}</td>
-                                </tr>
+                            {{for lista_productos}}
+                            <tr>
+                                <td>{{:codigo_producto}}</td>
+                                <td>{{:descripcion_producto}}</td>
+                                <td>{{:cantidad_solicitada}}</td>
+                                <td>{{:iva}}%</td>
+                                <td>{{:~formatMoney(valor_unitario)}}</td>
+                                <td>{{:~formatMoney(subtotal)}}</td>
+                                <td>{{:~formatMoney(total)}}</td>
+                            </tr>
                             {{/for}}
                             <tr>
                                 <td></td>
@@ -150,35 +148,34 @@
                                 <td></td>
                                 <td></td>
                                 <th>TOTAL</th>
-                                <td>{{:encabezado_pedido_cliente.valor_total_sin_iva}}</td>
-                                <td>{{:encabezado_pedido_cliente.valor_total_con_iva}}</td>
+                                <td>$0.0 Total sin IVA</td>
+                                <td>$0.0 Total con IVA</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-            
+
             <div class="">
                 <br/>
                 <br/>
                 ______________________________________<br/>
                 FIRMA Y SELLO AUTORIZADO
-            </div>  
-            
+            </div>                         
             <div  class="row contact-info pad-top-botm footer-info">
                 <div class="col-md-12">
                     <hr />
                     <span>
-                        <strong>Realiza : </strong>  {{:encabezado_pedido_cliente.nombre_usuario}} 
+                        <strong>Realiza : </strong>  Usuario Realiza Pedido
                     </span>
                     <span>
-                        <strong>Imprime : </strong>  {{:encabezado_pedido_cliente.usuario_imprime}} 
+                        <strong>Imprime : </strong>  {{:usuario_imprime}}
                     </span>                    
                     <span>
-                        <strong>Fecha Impresión : </strong>{{:encabezado_pedido_cliente.fecha_actual}}                        
+                        <strong>Fecha Impresión : </strong>{{:fecha_actual}}                        
                     </span>
                     <span>
-                        <strong>Fecha Cotización : </strong>{{:encabezado_pedido_cliente.fecha_registro}}                        
+                        <strong>Fecha Cotizacion : </strong> {{:cotizacion.fecha_registro}}                     
                     </span>
                 </div>
             </div> 

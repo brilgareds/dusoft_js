@@ -167,10 +167,10 @@
 
             <tabset> <!--Grupo de Tabs-->
 
-                <tab >
+                <tab active="rootPedidoFarmaciaTemporal.tabListaPedidos">
 
                     <tab-heading>
-                        <span ng-if="rootCreaPedidoFarmacia.Empresa.getPedidoSeleccionado().en_uso===1" class="glyphicon glyphicon-eye-open"></span> <b>Incluir Producto </b>
+                        <span></span> <b>Incluir Producto </b>
                     </tab-heading>
 
                     <div class="input-group navbar-form ">
@@ -198,7 +198,7 @@
 
                 </tab>
                 
-                <tab disabled="(!root.pedido.getValido() ||  root.pedido.get_numero_pedido())" active="rootCreaPedidoFarmacia.tab_estados.tab2"  name="cargarPlano">
+                <tab disabled="(!root.pedido.getValido() ||  root.pedido.get_numero_pedido())"   name="cargarPlano">
                     <tab-heading>
                         <b> Archivo Plano </b>
                     </tab-heading>
@@ -237,15 +237,14 @@
                                 <br>
 
                                 <div class="well txt-center">
-                                    <span class="btn btn-default" flow-btn="" ng-disabled="rootCreaPedidoFarmacia.bloqueo_upload" ng-hide="$flow.files.length" >
-                                        <!--ng-disabled="vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '' "-->
+                                    <span class="btn btn-default" flow-btn=""  ng-hide="$flow.files.length" >
                                         <span class="glyphicon glyphicon-folder-open" style="margin-right: 5px;"></span> Seleccionar Archivo
                                         <input type="file" style="visibility: hidden; position: absolute;">
                                     </span>                                                
-                                    <button class="btn btn-default" ng-click="$flow.cancel()" ng-disabled="rootCreaPedidoFarmacia.bloqueo_upload" ng-show="$flow.files.length">
+                                    <button class="btn btn-default" ng-click="$flow.cancel()" ng-show="$flow.files.length">
                                         <span class="glyphicon glyphicon-minus" ></span> Remover
                                     </button>
-                                    <button class="btn btn-default" ng-click="subirArchivoPlano()" ng-disabled="rootCreaPedidoFarmacia.bloqueo_upload" ng-show="$flow.files.length">
+                                    <button class="btn btn-default" ng-click="subirArchivoPlano()" ng-show="$flow.files.length">
                                         <!--ng-disabled="vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '' "-->
                                         <span class="glyphicon glyphicon-cloud-upload" ></span> Subir
                                     </button>
@@ -292,11 +291,5 @@
     <div slide-content open-callback="mostrarSeleccionProducto" close-callback="cerrarSeleccionProducto"  class="slide" >
         <div ng-include src="slideurl"  ng-controller="SeleccionProductoController" ></div>
     </div>
-
-    <!-- div slide-content open-callback="mostrarseleccionproductoEspecial" close-callback="cerrarseleccionproducto"  class="slide" >
-        <div ng-include src="slideurl"  ng-controller="SeleccionProductoController" ></div>
-    </div -->
-
+    
 </div>
-
-<!--</div>-->

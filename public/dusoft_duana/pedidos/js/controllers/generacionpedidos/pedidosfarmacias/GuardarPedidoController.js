@@ -15,10 +15,6 @@ define(["angular", "js/controllers",
 
             self.init = function() {
                 $scope.rootPedidoFarmacia = {};
-                $scope.rootPedidoFarmacia.session = {
-                    usuario_id: Usuario.getUsuarioActual().getId(),
-                    auth_token: Usuario.getUsuarioActual().getToken()
-                };
 
                 var pedido = localStorageService.get("pedidoFarmacia");
 
@@ -58,7 +54,7 @@ define(["angular", "js/controllers",
             self.consultarEncabezadoPedido = function(numero_pedido, callback) {
 
                 var obj = {
-                    session: $scope.rootPedidoFarmacia.session,
+                    session: $scope.root.session,
                     data: {
                         pedidos_farmacias: {
                             numero_pedido: numero_pedido
@@ -100,7 +96,7 @@ define(["angular", "js/controllers",
 
                 var pedido = $scope.root.pedido;
                 var obj = {
-                    session: $scope.rootPedidoFarmacia.session,
+                    session: $scope.root.session,
                     data: {
                         pedidos_farmacias: {
                             numero_pedido: pedido.get_numero_pedido()
@@ -139,7 +135,7 @@ define(["angular", "js/controllers",
                 var url = API.PEDIDOS.FARMACIAS.ELIMINAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA;
                 
                  var obj = {
-                    session: $scope.rootPedidoFarmacia.session,
+                    session: $scope.root.session,
                     data: {
                         pedidos_farmacias: {
                             numero_pedido: pedido.get_numero_pedido(),
@@ -173,7 +169,7 @@ define(["angular", "js/controllers",
                 var url = API.PEDIDOS.FARMACIAS.INSERTAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA;
 
                 var obj = {
-                    session: $scope.rootPedidoFarmacia.session,
+                    session: $scope.root.session,
                     data: {
                         detalle_pedidos_farmacias: {
                             numero_pedido: pedido.get_numero_pedido(),
@@ -263,7 +259,7 @@ define(["angular", "js/controllers",
                 }
                 
                 var obj = {
-                    session:$scope.rootPedidoFarmacia.session,
+                    session:$scope.root.session,
                     data:{
                         pedidos_farmacias:{
                             numero_pedido: $scope.root.pedido.get_numero_pedido(),
@@ -316,16 +312,15 @@ define(["angular", "js/controllers",
                     keyboard: true,
                     template: ' <div class="modal-header">\
                                     <button type="button" class="close" ng-click="modal.dismiss();">&times;</button>\
-                                    <h4 class="modal-title">Alerta del sistema </h4>\
+                                    <h4 class="modal-title">Productos no encontrados en la farmacia seleccionada</h4>\
                                 </div>\
                                 <div class="modal-body row">\
                                     <div class="col-md-12">\
-                                        <h4 >Productos no encontrados en la farmacia seleccionada</h4>\
                                         <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
                                             <div class="list-group">\
-                                                <a ng-repeat="producto in productosInvalidos" class="list-group-item defaultcursor" href="javascript:void(0)">\
+                                                <div ng-repeat="producto in productosInvalidos" class="list-group-item defaultcursor" href="javascript:void(0)">\
                                                     {{ producto.getCodigoProducto()}} - {{producto.getDescripcion()}}\
-                                                </a>\
+                                                </div>\
                                             </div>\
                                         </div>\
                                     </div>\
@@ -362,7 +357,7 @@ define(["angular", "js/controllers",
                 var url = API.PEDIDOS.FARMACIAS.ACTUALIZAR_PEDIDO;
 
                 var obj = {
-                    session: $scope.rootPedidoFarmacia.session,
+                    session: $scope.root.session,
                     data: {
                         pedidos_farmacias: {
                             numero_pedido: pedido.get_numero_pedido(),
@@ -394,44 +389,7 @@ define(["angular", "js/controllers",
             $scope.onGuardarPedido = function(){
                 self.guardarPedido();
             };
-            
-            /*
-             * @Author: Eduar
-             * +Descripcion: Handler del boton generar pdf
-             */
-            $scope.onGenerarPdfPedido = function(){
-                
-                var pedido = $scope.root.pedido;
-                var farmaciaDestino = pedido.getFarmaciaDestino();
-                var farmaciaOrigen  = pedido.getFarmaciaOrigen();
-                
-                var url = API.PEDIDOS.FARMACIAS.GENERAR_PDF_PEDIDO;
-
-                var obj = {
-                    session: $scope.rootPedidoFarmacia.session,
-                    data: {
-                        pedidos_farmacias: {
-                            numero_pedido: pedido.get_numero_pedido(),
-                            empresa_origen: farmaciaOrigen.getNombre(),
-                            centro_utilidad_origen: farmaciaOrigen.getCentroUtilidadSeleccionado().getNombre(),
-                            bodega_origen: farmaciaOrigen.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getNombre(),
-                            empresa_destino: farmaciaDestino.getNombre(),
-                            centro_utilidad_destino: farmaciaDestino.getCentroUtilidadSeleccionado().getNombre(),
-                            bodega_destino: farmaciaDestino.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getNombre()
-                        }
-                    }
-                };
-
-                Request.realizarRequest(url, "POST", obj, function(data) {
-                    if (data.status === 200) {
-                        var nombre = data.obj.reporte_pedido.nombre_reporte;
-                        $scope.visualizarReporte("/reports/" + nombre, nombre, "download");
-                    }  else {
-                        AlertService.mostrarMensaje("warning", "Error generando el pdf");
-                    }
-                });
-            };
-            
+           
             /*
              * @Author: Eduar
              * @param {$event} e

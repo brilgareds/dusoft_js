@@ -9,7 +9,7 @@ var ProductosModel = function() {
 // 
 ProductosModel.prototype.validar_producto = function(codigo_producto, callback) {
 
-    var sql = " select * from inventarios_productos a where a.codigo_producto = $1 ";
+    var sql = " select a. *, fc_descripcion_producto(a.codigo_producto) as descripcion_producto from inventarios_productos a where a.codigo_producto = $1 ";
 
     G.db.query(sql, [codigo_producto], function(err, rows, result) {
         callback(err, rows);

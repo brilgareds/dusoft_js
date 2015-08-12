@@ -2779,76 +2779,98 @@ function __validarProductoArchivoPlano(that, datos, productosAgrupados, producto
         callback(false, productosValidadosArchivo, productosInvalidosArchivo);
         return;
     }
+    
+    var codigo_temporal = datos.empresa_destino_id + datos.centro_utilidad_destino_id + productoAgrupado.codigo_producto;
+    
+    //Verifica que el producto no este siendo usado por otro usuario
+    that.m_pedidos_farmacias.buscar_usuario_bloqueo(codigo_temporal, function(err, rows, result) {
 
-    that.m_pedidos_farmacias.listarProductos(datos.empresa_origen_id, datos.centro_utilidad_origen_id, datos.bodega_origen_id,
-            datos.empresa_destino_id, datos.centro_utilidad_destino_id, datos.bodega_destino_id,
-            productoAgrupado.codigo_producto, 1, productoAgrupado.tipoProductoId, function(err, productos) {
-
-        var _producto = (productos.length > 0) ? productos[0] : null;
-
-        if (!_producto) {
-            productoAgrupado.existeEnEmpresaOrigen = false;
-            productosInvalidosArchivo.push(productoAgrupado);
-            index++;
-            __validarProductoArchivoPlano(that, datos, productosAgrupados, productosValidadosArchivo, productosInvalidosArchivo, index, callback);
+        if (err) {
+            res.send(G.utils.r(req.url, 'Se ha Generado un Error en la consulta del usuario', 500, {error: err}));
             return;
-        }
-
-        __consultarStockProducto(that, datos.empresa_destino_id, productoAgrupado, function(err, _productoStock) {
-            console.log("producto en stock ", _producto);
-            if (err) {
-                callback(err);
-                return;
-            }
-
-            if (!_productoStock.en_farmacia_seleccionada) {
-                productoAgrupado.en_farmacia_seleccionada = _productoStock.en_farmacia_seleccionada;
+        } else {
+            if(rows.length > 0){
+                productoAgrupado.mensajeError = "Bloqueado por el usuario: "+ rows[0].nombre;
+                productoAgrupado.bloqueado =  true;
                 productosInvalidosArchivo.push(productoAgrupado);
                 index++;
                 __validarProductoArchivoPlano(that, datos, productosAgrupados, productosValidadosArchivo, productosInvalidosArchivo, index, callback);
                 return;
-            } else {
+            }
+            
+                that.m_pedidos_farmacias.listarProductos(datos.empresa_origen_id, datos.centro_utilidad_origen_id, datos.bodega_origen_id,
+                    datos.empresa_destino_id, datos.centro_utilidad_destino_id, datos.bodega_destino_id,
+                    productoAgrupado.codigo_producto, 1, productoAgrupado.tipoProductoId, function(err, productos) {
 
-                //Se guarda el encabezado del pedido en caso de no existir
-                that.m_pedidos_farmacias.guardarEncabezadoTemporal(datos.empresa_destino_id, datos.centro_utilidad_destino_id, datos.bodega_destino_id,
-                        datos.empresa_origen_id, datos.centro_utilidad_origen_id, datos.bodega_origen_id, datos.observacion, datos.usuario_id, function(err, rows) {
+                var _producto = (productos.length > 0) ? productos[0] : null;
 
+                if (!_producto) {
+                    productoAgrupado.mensajeError = "No existe en la farmacia origen";
+                    productoAgrupado.enFarmaciaOrigen = false;
+                    productosInvalidosArchivo.push(productoAgrupado);
+                    index++;
+                    __validarProductoArchivoPlano(that, datos, productosAgrupados, productosValidadosArchivo, productosInvalidosArchivo, index, callback);
+                    return;
+                }
+
+                __consultarStockProducto(that, datos.empresa_destino_id, productoAgrupado, function(err, _productoStock) {
                     if (err) {
                         callback(err);
                         return;
+                    }
+
+                    if (!_productoStock.en_farmacia_seleccionada) {
+                        productoAgrupado.mensajeError = "No existe en la farmacia destino";
+                        productoAgrupado.en_farmacia_seleccionada = _productoStock.en_farmacia_seleccionada;
+                        productosInvalidosArchivo.push(productoAgrupado);
+                        index++;
+                        __validarProductoArchivoPlano(that, datos, productosAgrupados, productosValidadosArchivo, productosInvalidosArchivo, index, callback);
+                        return;
                     } else {
 
-                        var numeroPedido = datos.empresa_destino_id + datos.centro_utilidad_destino_id + productoAgrupado.codigo_producto;
-                        var cantidadPendiente = productoAgrupado.cantidad_solicitada - _producto.disponibilidad_bodega;
-                        cantidadPendiente = (cantidadPendiente > 0) ? cantidadPendiente : 0;
-                        productoAgrupado.cantidadPendiente = cantidadPendiente;
-                        productoAgrupado.disponible = _producto.disponibilidad_bodega;
-                        //Inserta el producto validado en el detalle del pedido
-                        that.m_pedidos_farmacias.guardarDetalleTemporal(
-                                numeroPedido, datos.empresa_destino_id, datos.centro_utilidad_destino_id, datos.bodega_destino_id, productoAgrupado.codigo_producto,
-                                productoAgrupado.cantidad_solicitada, productoAgrupado.tipoProductoId, cantidadPendiente, datos.usuario_id,
-                                function(err, rows, result) {
+                        //Se guarda el encabezado del pedido en caso de no existir
+                        that.m_pedidos_farmacias.guardarEncabezadoTemporal(datos.empresa_destino_id, datos.centro_utilidad_destino_id, datos.bodega_destino_id,
+                                datos.empresa_origen_id, datos.centro_utilidad_origen_id, datos.bodega_origen_id, datos.observacion, datos.usuario_id, function(err, rows) {
 
                             if (err) {
                                 callback(err);
                                 return;
-                            }
+                            } else {
 
-                            productosValidadosArchivo.push(productoAgrupado);
-                            index++;
-                            __validarProductoArchivoPlano(that, datos, productosAgrupados, productosValidadosArchivo, productosInvalidosArchivo, index, callback);
+                                var numeroPedido = datos.empresa_destino_id + datos.centro_utilidad_destino_id + productoAgrupado.codigo_producto;
+                                var cantidadPendiente = productoAgrupado.cantidad_solicitada - _producto.disponibilidad_bodega;
+                                cantidadPendiente = (cantidadPendiente > 0) ? cantidadPendiente : 0;
+                                productoAgrupado.cantidadPendiente = cantidadPendiente;
+                                productoAgrupado.disponible = _producto.disponibilidad_bodega;
+                                //Inserta el producto validado en el detalle del pedido
+                                that.m_pedidos_farmacias.guardarDetalleTemporal(
+                                        numeroPedido, datos.empresa_destino_id, datos.centro_utilidad_destino_id, datos.bodega_destino_id, productoAgrupado.codigo_producto,
+                                        productoAgrupado.cantidad_solicitada, productoAgrupado.tipoProductoId, cantidadPendiente, datos.usuario_id,
+                                        function(err, rows, result) {
+
+                                    if (err) {
+                                        callback(err);
+                                        return;
+                                    }
+
+                                    productosValidadosArchivo.push(productoAgrupado);
+                                    index++;
+                                    __validarProductoArchivoPlano(that, datos, productosAgrupados, productosValidadosArchivo, productosInvalidosArchivo, index, callback);
+
+                                });
+                            }
 
                         });
                     }
 
+
                 });
-            }
 
 
-        });
-
-
+            });
+        }
     });
+
 }
 
 /*
@@ -2949,8 +2971,10 @@ function __validar_productos_archivo_plano(contexto, contenido_archivo_plano, ca
 
             if (existe_producto.length > 0 && cantidad_solicitada > 0) {
                 producto.tipoProductoId = existe_producto[0].tipo_producto_id;
+                producto.descripcion = existe_producto[0].descripcion_producto;
                 productos_validos.push(producto);
             } else {
+                producto.mensajeError = "No existe en inventario";
                 producto.existeInventario = false;
                 productos_invalidos.push(producto);
             }

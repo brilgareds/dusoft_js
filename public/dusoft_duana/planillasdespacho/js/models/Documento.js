@@ -15,7 +15,8 @@ define(["angular", "js/models"], function(angular, models) {
                 this.cantidad_neveras_auditadas = 0;
                 this.temperatura_neveras = temperatura_neveras || '';
                 this.observacion = observacion || '';                
-                this.tipo = tipo;                
+                this.tipo = tipo;   
+                this.fecha_registro;
             }
 
             this.get = function(id, empresa_id, prefijo, numero, numero_pedido, cantidad_cajas, cantidad_neveras, temperatura_neveras, observacion, tipo) {
@@ -101,7 +102,15 @@ define(["angular", "js/models"], function(angular, models) {
             Documento.prototype.get_cantidad_neveras_auditadas = function() {
                 return this.cantidad_neveras_auditadas;
             };
-
+            
+            Documento.prototype.set_fecha_registro = function(fecha_registro) {
+                this.fecha_registro = fecha_registro;
+            };
+            
+            Documento.prototype.get_fecha_registro = function() {
+                return this.fecha_registro;
+            };
+            
             return this;
         }]);
 });

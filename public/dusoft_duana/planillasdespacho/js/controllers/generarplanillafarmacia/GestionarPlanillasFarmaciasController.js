@@ -17,133 +17,87 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         "UsuarioPlanillaDespacho",
         "PlanillaDespacho",
         "Documento",
-        "Usuario", "EmpresaPlanillaFarmacia",
-        function($scope, $rootScope, Request,
-                $modal, API, socket, $timeout,
-                AlertService, localStorageService, $state,
-                $filter, Empresa, Ciudad,
-                Transportadora, UsuarioPlanilla, PlanillaDespacho,
-                Documento, Sesion, EmpresaPlanillaFarmacia) {
+        "Usuario",
+        function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state, $filter,
+                Empresa, Ciudad, Transportadora, UsuarioPlanilla, PlanillaDespacho, Documento, Usuario) {
 
             /*
              * 
              * @type variable global
              */
             var that = this;
+
             $scope.Empresa = Empresa;
+
             $scope.Empresa.limpiar_ciudades();
             $scope.Empresa.limpiar_transportadoras();
-            $scope.Empresa.empresaSeleccionada;
-            var empresa = angular.copy(Sesion.getUsuarioActual().getEmpresa());
 
-
-
-            $scope.Empresa.empresaSeleccionada = EmpresaPlanillaFarmacia.get(empresa.getNombre(), empresa.getCodigo());
-            that.empresaSeleccionada = $scope.Empresa.empresaSeleccionada;
-           
-           // console.log("AQUI SE VERA EL VALOR ", CentroUtilidad.get( $scope.Empresa.empresaSeleccionada.centrosUtilidad.nombre,$scope.Empresa.empresaSeleccionada.centrosUtilidad.codigo) );
-            /**
-             * +Descripcion: Variables de sesion
-             */
             $scope.session = {
-                usuario_id: Sesion.getUsuarioActual().getId(),
-                auth_token: Sesion.getUsuarioActual().getToken()
+                usuario_id: Usuario.getUsuarioActual().getId(),
+                auth_token: Usuario.getUsuarioActual().getToken()
             };
 
-
-            /*
-             * 
-             * @param {N/N}
-             * @Author: Cristian Ardila
-             * +Descripcion: metodo el cual se encarga de cargar el combobox
-             * empresa con todas las empresas disponibles
-             */
-
-
-
-            that.traerFarmacias = function() {
-
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        planillasfarmacias: {
-                            codigoempresa: that.empresaSeleccionada.getCodigo()
-                        }
-                    }
-                };
-                Request.realizarRequest(API.PLANILLAS_FARMACIAS.LISTAR_FARMACIAS, "POST", obj, function(data) {
-                    
-
-                    if (data.status === 200) {
-                        that.renderListarFarmacia(data);
-                        //callback();
-                    } else {
-                        AlertService.mostrarMensaje("warning", data.msj)
-                    }
-                });
+            $scope.datos_view = {
+                termino_busqueda_ciudades: '',
+                termino_busqueda_documentos: '',
             };
-            that.renderListarFarmacia = function(data) {
-
-                console.log(data)
-                $scope.farmacias = [];
-                for (var i in data.obj.listar_farmacias) {
-
-                    var _farmacia = data.obj.listar_farmacias[i];
-                    var farmacia = EmpresaPlanillaFarmacia.get(_farmacia.razon_social, _farmacia.empresa_id);
-
-                    $scope.farmacias.push(farmacia);
-                }
-            };
-
-
-            that.traerFarmacias();
-
-
-
-
-
-
-
-
-
 
             // Variables 
             $scope.planilla = PlanillaDespacho.get();
             $scope.planilla.set_numero_guia(parseInt(localStorageService.get("numero_guia")) || 0);
             $scope.planilla.set_fecha_registro($filter('date')(new Date(), "dd/MM/yyyy"));
 
-            
-              $scope.parametrosDocumentoFarmacia = {
-                    empresa: empresa.getCodigo(), 
-                    centroUtilidad: empresa.getCentroUtilidadSeleccionado().getCodigo(),
-                    bodega: empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()   
-                 };
-                 
-            $scope.datos_view = {
-                termino_busqueda_ciudades: '',
-                termino_busqueda_documentos: ''
+
+
+            that.obtenerEmpresas = function() {
+
+                var empresas = Usuario.getUsuarioActual().getEmpresasUsuario();
+
+                $scope.Empresa.limpiar_empresas();
+
+                empresas.forEach(function(empresa) {
+                    $scope.Empresa.set_empresas(empresa);
+                });
+
             };
 
-            $scope.datos_planilla = [];
+
+            /**
+             * type (Object)
+             * +Descripcion: objeto que se enviara al controlador (GestionarDocumentosFarmaciaController.js
+             * cuando se presione el boton (+Generar Planillas Farmacias), previamente se validara
+             * cada una de las variables si se encuentran con contenido
+             */
+            that.validarEmpresa = function() {
+
+                var empresa = Usuario.getUsuarioActual().getEmpresa();
+
+                if (!empresa) {
+                    $rootScope.$emit("onIrAlHome", {mensaje: "Documentos Bodegas : Se debe seleccionar una Empresa", tipo: "warning"});
+                } else if (!empresa.getCentroUtilidadSeleccionado()) {
+                    $rootScope.$emit("onIrAlHome", {mensaje: "Documentos Bodegas : Se debe seleccionar un Centro de Utilidad", tipo: "warning"});
+                } else if (!empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada()) {
+                    $rootScope.$emit("onIrAlHome", {mensaje: "Documentos Bodegas : Se debe seleccionar una Bodega", tipo: "warning"});
+                }
+                
+            };
+            
 
             that.gestionar_consultas = function() {
 
-                that.buscar_ciudades(function(ciudades) {
+                //  if ($scope.planilla.get_numero_guia() > 0)
 
-                    if ($scope.planilla.get_numero_guia() > 0)
-                        that.render_ciudades(ciudades);
+                that.buscar_transportadoras(function() {
 
-                    that.buscar_transportadoras(function() {
-
-                        if ($scope.planilla.get_numero_guia() > 0) {
-                            that.consultar_planilla_despacho(function(continuar) {
-                                if (continuar) {
-                                    $scope.consultar_documentos_planilla_despacho();
-                                }
-                            });
-                        }
-                    });
+                    if ($scope.planilla.get_numero_guia() > 0) {
+                        that.consultar_planilla_despacho(function(continuar) {
+                            if (continuar) {
+                                $scope.consultar_documentos_planilla_despacho();
+                            }
+                        });
+                    }
                 });
+
             };
 
             /**
@@ -196,68 +150,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
 
-            /**
-             * @author Cristian Ardila
-             * @param {string} termino_busqueda
-             * +Descripcion: Metodo que se ejecutara a traves del evento ng-keypress
-             * del comobobox Farmacia, si el string tiene un tamaño mayor a 3 caracteres
-             * cargara las ciudades segun la descripcion ingresada
-             */
-            $scope.listar_farmacias = function(termino_busqueda) {
-
-                if (termino_busqueda.length < 3) {
-                    return;
-                }
-
-                $scope.datos_view.termino_busqueda_ciudades = termino_busqueda;
-                that.buscar_ciudades(function(ciudades) {
-                    that.render_ciudades(ciudades);
-                });
-            };
-
-            /**
-             * @author : Cristian Ardila
-             * type(funcion)
-             * +Descripcion: metodo que se encarga de realizar la peticion al
-             * servidor consultando por descripcion las farmacias
-             */
-            that.buscar_ciudades = function(callback) {
-
-                var obj = {
-                    session: $scope.session,
-                    data: {
-                        ciudades: {
-                            termino_busqueda: $scope.datos_view.termino_busqueda_ciudades
-                        }
-                    }
-                };
-
-                Request.realizarRequest(API.FARMACIAS.LISTAR_FARMACIAS, "POST", obj, function(data) {
-
-                    if (data.status === 200) {
-                        callback(data.obj.ciudades);
-                    }
-                });
-            };
-            /**
-             * @author Cristian Ardila
-             * @param {Object} ciudades
-             * +Descripcion: Metodo encargado de mapear el objecto json
-             * de las farmacias contra el modelo farmacias
-             */
-            that.render_ciudades = function(ciudades) {
-
-                $scope.Empresa.limpiar_ciudades();
-                ciudades.forEach(function(data) {
-
-                    var ciudad = Ciudad.get(data.pais_id, data.nombre_pais, data.departamento_id, data.nombre_departamento, data.id, data.nombre_ciudad);
-                    $scope.Empresa.set_ciudades(ciudad);
-                });
-            };
-
-            $scope.seleccionar_ciudad = function() {
-
-            };
 
 
 
@@ -355,11 +247,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
             $scope.gestionar_documentos_farmacia = function() {
-              
-                $scope.slideurl = "views/generarplanillafarmacia/gestionardocumentosfarmacia.html?time=" + new Date().getTime();
-                $scope.$emit('gestionar_documentos_farmacia');
 
-                console.log("Slider Planillas")
+                    $scope.slideurl = "views/generarplanillafarmacia/gestionardocumentosfarmacia.html?time=" + new Date().getTime();
+                    $scope.$emit('gestionar_documentos_farmacia');
+                   
             };
 
             $scope.confirmar_eliminar_documento_planilla = function(documento) {
@@ -581,7 +472,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 ]
             };
 
-            that.gestionar_consultas();
+
+            that.init = function() {
+
+                that.validarEmpresa();
+                
+                that.obtenerEmpresas();
+
+                that.gestionar_consultas();
+            };
+
+            that.init();
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;

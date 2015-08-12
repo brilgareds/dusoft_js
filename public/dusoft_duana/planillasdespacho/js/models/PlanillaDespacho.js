@@ -18,6 +18,7 @@ define(["angular", "js/models"], function(angular, models) {
                 this.numero_guia_externo = '';
                 this.documento = '';
                 this.documentos = [];
+                this.empresa = '';
             }
 
             this.get = function(id, transportadora, ciudad, nombre_conductor, observacion, usuario, fecha_registro, fecha_despacho, estado, descripcion_estado) {
@@ -63,6 +64,10 @@ define(["angular", "js/models"], function(angular, models) {
 
             PlanillaDespacho.prototype.set_numero_guia_externo = function(numero_guia_externo) {
                 this.numero_guia_externo = numero_guia_externo || '';
+            };
+            
+            PlanillaDespacho.prototype.set_empresa = function(empresa) {
+                this.empresa = empresa;
             };
 
             PlanillaDespacho.prototype.get_numero_guia = function() {
@@ -126,6 +131,10 @@ define(["angular", "js/models"], function(angular, models) {
 
             PlanillaDespacho.prototype.get_numero_guia_externo = function() {
                 return this.numero_guia_externo;
+            };
+            
+            PlanillaDespacho.prototype.get_empresa = function() {
+                return this.empresa;
             };
 
             return this;

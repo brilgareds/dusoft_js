@@ -31,8 +31,6 @@ define([
     "models/ClientePlanillaDespacho",
     "models/FarmaciaPlanillaDespacho",
     "models/PlanillaDespacho",
-    "models/modelsPlanillaFarmacia/EmpresaPlanillaFarmacia",
-    "models/modelsPlanillaFarmacia/DocumentoPlanillaFarmacia",
     "controllers/generarplanilladespacho/PlanillasController",
     "controllers/generarplanilladespacho/ListarPlanillasController",
     "controllers/generarplanilladespacho/GestionarPlanillasController",
@@ -45,10 +43,10 @@ define([
      * @author Cristian Ardila
      * +Descripcion: Controladores Farmacia
      */
+    "controllers/generarplanillafarmacia/PlanillasFarmaciaController",
     "controllers/generarplanillafarmacia/ListarPlanillasFarmaciaController",
     "controllers/generarplanillafarmacia/GestionarPlanillasFarmaciasController",
     "controllers/generarplanillafarmacia/GestionarDocumentosFarmaciaController",
-    "controllers/generarplanillafarmacia/PlanillasFarmaciaController",
     
     
     "includes/helpersdirectives/visualizarReporte",

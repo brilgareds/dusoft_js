@@ -1043,6 +1043,31 @@ PedidosClienteModel.prototype.insertar_detalle_cotizacion = function(cotizacion,
 
 };
 
+
+/*
+ * Author : Camilo Orozco
+ * Descripcion :  SQL Modificar Detalle Cotizacion
+ */
+PedidosClienteModel.prototype.modificar_detalle_cotizacion = function(cotizacion, producto, callback) {
+
+    var sql = " UPDATE ventas_ordenes_pedidos_d_tmp SET porc_iva = $3, numero_unidades = $4, valor_unitario = $5, usuario_id = $6, fecha_registro = NOW() \n\
+                WHERE pedido_cliente_id_tmp = $1 and codigo_producto = $2 ;";
+
+    var params = [
+        cotizacion.numero_cotizacion,
+        producto.codigo_producto,
+        producto.iva,
+        producto.cantidad_solicitada,
+        producto.precio_venta,
+        cotizacion.usuario_id
+    ];
+
+    G.db.query(sql, params, function(err, rows, result) {
+        callback(err, rows, result);
+    });
+
+};
+
 /*
  * Author : Camilo Orozco
  * Descripcion :  SQL Listar Cotizaciones
@@ -1295,6 +1320,30 @@ PedidosClienteModel.prototype.insertar_detalle_pedido = function(pedido, product
                     usuario_id,    \
                     fecha_registro\
                 ) VALUES ( $1, $2, $3, $4, $5, $6, NOW() ) ;";
+
+    var params = [
+        pedido.numero_pedido,
+        producto.codigo_producto,
+        producto.iva,
+        producto.cantidad_solicitada,
+        producto.precio_venta,
+        pedido.usuario_id
+    ];
+
+    G.db.query(sql, params, function(err, rows, result) {
+        callback(err, rows, result);
+    });
+};
+
+
+/*
+ * Author : Camilo Orozco
+ * Descripcion :  SQL Modificar Detalle Pedido
+ */
+PedidosClienteModel.prototype.modificar_detalle_pedido = function(pedido, producto, callback) {
+
+    var sql = " UPDATE ventas_ordenes_pedidos_d SET porc_iva = $3, numero_unidades = $4, valor_unitario = $5, usuario_id = $6 , fecha_registro = NOW() \
+                WHERE  pedido_cliente_id = $1 AND codigo_producto = $2 ;";
 
     var params = [
         pedido.numero_pedido,

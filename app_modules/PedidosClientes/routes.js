@@ -59,6 +59,11 @@ module.exports = function(app, di_container) {
         c_pedidos_clientes.insertarDetalleCotizacion(req, res);
     });
 
+    // Modificar Detalle de Cotización
+    app.post('/api/PedidosClientes/modificarDetalleCotizacion', function(req, res) {
+        c_pedidos_clientes.modificarDetalleCotizacion(req, res);
+    });
+
     // Eliminar producto de la Cotización
     app.post('/api/PedidosClientes/eliminarProductoCotizacion', function(req, res) {
         c_pedidos_clientes.eliminarProductoCotizacion(req, res);
@@ -73,6 +78,11 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/subirPlano', function(req, res) {
         c_pedidos_clientes.cotizacionArchivoPlano(req, res);
     });
+    
+    // Reporte Cotización    
+    app.post('/api/PedidosClientes/reporteCotizacion', function(req, res) {
+        c_pedidos_clientes.reporteCotizacion(req, res);
+    });
 
     /* Generacion Pedidos */
 
@@ -84,6 +94,11 @@ module.exports = function(app, di_container) {
     // Insertar Detalle Pedido
     app.post('/api/PedidosClientes/insertarDetallePedido', function(req, res) {
         c_pedidos_clientes.insertarDetallePedido(req, res);
+    });
+
+    // Modificar Detalle Pedido
+    app.post('/api/PedidosClientes/modificarDetallePedido', function(req, res) {
+        c_pedidos_clientes.modificarDetallePedido(req, res);
     });
 
     // Consultar Pedido
@@ -105,6 +120,14 @@ module.exports = function(app, di_container) {
     app.post('/api/PedidosClientes/observacionCarteraPedido', function(req, res) {
         c_pedidos_clientes.observacionCarteraPedido(req, res);
     });
+
+    // Reporte Cotización    
+    app.post('/api/PedidosClientes/reportePedido', function(req, res) {
+        c_pedidos_clientes.reportePedido(req, res);
+    });
+
+
+
 
 
     /**************************************************
@@ -180,17 +203,7 @@ module.exports = function(app, di_container) {
     });
 
 
-// Generar PDF Cotización
-    //????????????????????????
-    app.post('/api/PedidosClientes/imprimirCotizacionCliente', function(req, res) {
-        c_pedidos_clientes.imprimirCotizacionCliente(req, res);
-    });
 
-    //Generar PDF Pedido
-    //???????????????????????????????
-    app.post('/api/PedidosClientes/imprimirPedidoCliente', function(req, res) {
-        c_pedidos_clientes.imprimirPedidoCliente(req, res);
-    });
 
 
 

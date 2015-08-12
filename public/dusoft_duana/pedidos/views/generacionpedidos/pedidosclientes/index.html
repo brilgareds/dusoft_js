@@ -1,22 +1,25 @@
-<div ng-controller="ListarPedidosClientesController">
-    <div class="row">        
-        <div class="col-md-12">
-            <tabset>
-                <tab>
-                    <tab-heading>
-                        <i class="glyphicon glyphicon-time"></i> Cotizaciones
-                    </tab-heading>
-                    <br> 
-                    <div ng-include="'views/generacionpedidos/pedidosclientes/listarcotizacionesclientes.html'"></div>
-                </tab>                        
-                <tab>
-                    <tab-heading>
-                        <i class="glyphicon glyphicon-th"></i> Pedidos Clientes
-                    </tab-heading>
-                    <br>                    
-                    <div ng-include="'views/generacionpedidos/pedidosclientes/listarpedidosclientes.html'"></div>
-                </tab>                                                                             
-            </tabset>                                      
-        </div>
-    </div>    
+<div ng-controller="ReportePedidosClientesController">
+    <div ng-controller="ListarPedidosClientesController">
+        <div class="row">        
+            <div class="col-md-12">
+                <tabset>
+                    <tab>
+                        <tab-heading>
+                            <i class="glyphicon glyphicon-time"></i> Cotizaciones
+                        </tab-heading>
+                        <br> 
+                        <div ng-include="'views/generacionpedidos/pedidosclientes/listarcotizacionesclientes.html'"></div>
+                    </tab>                        
+                    <tab>
+                        <tab-heading>
+                            <i class="glyphicon glyphicon-th"></i> Pedidos Clientes
+                        </tab-heading>
+                        <br>                    
+                        <div ng-include="'views/generacionpedidos/pedidosclientes/listarpedidosclientes.html'"></div>
+                    </tab>                                                                             
+                </tabset>                                      
+            </div>
+        </div>    
+    </div>
+     <visualizar-reporte></visualizar-reporte>
 </div>

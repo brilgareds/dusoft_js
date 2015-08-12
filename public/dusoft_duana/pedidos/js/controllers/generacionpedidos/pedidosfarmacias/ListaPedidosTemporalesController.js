@@ -301,10 +301,6 @@ define(["angular",
              
              };
              
-             
-            $scope.onIrVistaGuardarPedidoTemporal = function(){
-                $state.go('GuardarPedidoTemporal');
-            };
             
             localStorageService.remove("pedidotemporal");
             self.buscarPedidos();

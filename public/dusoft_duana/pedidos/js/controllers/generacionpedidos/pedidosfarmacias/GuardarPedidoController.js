@@ -27,7 +27,7 @@ define(["angular", "js/controllers",
                     
                     $scope.root.lista_productos.columnDefs[4].visible = self.visualizarColumnaModificarCantidad();
                     
-                    self.consultarEncabezadoPedido(pedido, function(consultaEncabezado) {
+                    self.consultarEncabezadoPedido(pedido.numero_pedido, function(consultaEncabezado) {
                         if (!consultaEncabezado) {
                             AlertService.mostrarMensaje("warning", "No se ha consultado el pedido temporal");
                         }
@@ -55,13 +55,13 @@ define(["angular", "js/controllers",
              * @param {function} callback
              * +Descripcion: Consulta encabezado del pedido
              */
-            self.consultarEncabezadoPedido = function(pedido, callback) {
+            self.consultarEncabezadoPedido = function(numero_pedido, callback) {
 
                 var obj = {
                     session: $scope.rootPedidoFarmacia.session,
                     data: {
                         pedidos_farmacias: {
-                            numero_pedido: pedido.numero_pedido
+                            numero_pedido: numero_pedido
                         }
                     }
                 };
@@ -90,7 +90,6 @@ define(["angular", "js/controllers",
                     }
                 });
             };
-            
             
              /*
              * @Author: Eduar
@@ -244,7 +243,6 @@ define(["angular", "js/controllers",
              * @param {ProductoPedidoFarmacia} _producto
              * +Descripcion: Realiza la peticion al api para cambiar la cantidad solicitada y la pendiente 
              */
-            
             self.modificarCantidadSolicitada = function(_producto){
                                 
                 var diferencia_cantidad = 0;
@@ -292,6 +290,12 @@ define(["angular", "js/controllers",
                 });            
             };
             
+            
+            /*
+             * @Author: Eduar
+             * @param {Array <ProductoPedidoFarmacia>} productos
+             * +Descripcion: Ventana que muestra los productos que no estan presentes en la farmacia destino
+             */
             self.mostrarAlertaProductosNoEncontrados = function(productos){
                 $scope.productosInvalidos = [];
                 
@@ -307,16 +311,16 @@ define(["angular", "js/controllers",
                 $scope.productos = productos;   
                 $scope.opts = {
                     backdrop: true,
-                    backdropClick: true,
+                    backdropClick: false,
                     dialogFade: false,
                     keyboard: true,
                     template: ' <div class="modal-header">\
-                                    <button type="button" class="close" ng-click="close()">&times;</button>\
+                                    <button type="button" class="close" ng-click="modal.dismiss();">&times;</button>\
                                     <h4 class="modal-title">Alerta del sistema </h4>\
                                 </div>\
                                 <div class="modal-body row">\
                                     <div class="col-md-12">\
-                                        <h4 >Productos no encontrados en la farmacia seleccionada .</h4>\
+                                        <h4 >Productos no encontrados en la farmacia seleccionada</h4>\
                                         <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
                                             <div class="list-group">\
                                                 <a ng-repeat="producto in productosInvalidos" class="list-group-item defaultcursor" href="javascript:void(0)">\
@@ -327,17 +331,23 @@ define(["angular", "js/controllers",
                                     </div>\
                                 </div>\
                                 <div class="modal-footer">\
-                                    <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                    <button class="btn btn-primary" ng-click="modal.dismiss();" ng-disabled="" >Aceptar</button>\
                                 </div>',
                     scope: $scope,
                     controller: function($scope, $modalInstance) {
-                        $scope.close = function() {
-                            $modalInstance.close();
-                        };
+                        $scope.modal = $modalInstance;
                     }
                 };
                 
                 var modalInstance = $modal.open($scope.opts);  
+                
+                modalInstance.result.then(function() {
+
+                }, function() {
+                    self.consultarEncabezadoPedido($scope.root.pedido.get_numero_pedido(), function(){
+                                
+                    });
+                });
             };
             
             /*
@@ -472,7 +482,10 @@ define(["angular", "js/controllers",
                 self.eliminarProducto(producto, index);
             });
             
-            
+            /*
+             * @Author: Eduar
+             * +Descripcion: Evento que se dispara desde el controlador de seleccion de productos para insertar en el detalle
+             */
             $scope.eventoInsertarProductoPedido = $scope.$on("insertarProductoPedido", function(){
                 self.guardarDetallePedido(function(agregado, msj) {
                     if(!agregado){

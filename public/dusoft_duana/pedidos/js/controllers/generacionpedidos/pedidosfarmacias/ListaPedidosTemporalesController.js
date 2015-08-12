@@ -83,28 +83,23 @@ define(["angular",
                 self.consultarEncabezadosPedidos(obj, function(data) {
                     console.log("datos encontrados ", data);
                     if (data.status === 200) {
-                        if (data.obj.pedidos_farmacias.length > 0) {
 
-                            /*las empresas del usuario (de la session) son de tipo Empresa, por lo tanto se requiere asegurar 
-                             que sean de tipo EmpresaPedidoFarmacia para acceder a los metodos 
-                             de esta ultima*/
+                        /*las empresas del usuario (de la session) son de tipo Empresa, por lo tanto se requiere asegurar 
+                         que sean de tipo EmpresaPedidoFarmacia para acceder a los metodos 
+                         de esta ultima*/
 
-                            $scope.rootPedidosTempFarmacias.empresaSeleccionada = EmpresaPedidoFarmacia.get(
-                                    $scope.rootPedidosTempFarmacias.empresaSeleccionada.getNombre(),
-                                    $scope.rootPedidosTempFarmacias.empresaSeleccionada.getCodigo()
-                            );
+                        $scope.rootPedidosTempFarmacias.empresaSeleccionada = EmpresaPedidoFarmacia.get(
+                                $scope.rootPedidosTempFarmacias.empresaSeleccionada.getNombre(),
+                                $scope.rootPedidosTempFarmacias.empresaSeleccionada.getCodigo()
+                        );
 
-                            $scope.rootPedidosTempFarmacias.empresaSeleccionada.vaciarPedidos();
-                            self.renderPedidos(data.obj.pedidos_farmacias);
+                        $scope.rootPedidosTempFarmacias.empresaSeleccionada.vaciarPedidos();
+                        self.renderPedidos(data.obj.pedidos_farmacias);
 
-                            if (callback) {
-                                callback(true);
-                            }
-                        } else {
-                            if (callback) {
-                                callback(false);
-                            }
+                        if (callback) {
+                            callback(true);
                         }
+                        
                     } else {
                         AlertService.mostrarMensaje("warning", "Ha ocurrido un error");
                     }
@@ -301,10 +296,6 @@ define(["angular",
              
              };
              
-             
-            $scope.onIrVistaGuardarPedidoTemporal = function(){
-                $state.go('GuardarPedidoTemporal');
-            };
             
             localStorageService.remove("pedidotemporal");
             self.buscarPedidos();

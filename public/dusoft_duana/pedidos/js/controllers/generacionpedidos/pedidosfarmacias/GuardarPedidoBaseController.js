@@ -31,6 +31,11 @@ define(["angular", "js/controllers",
                         
             $scope.root.pedido = PedidoFarmacia.get();
             
+            $scope.root.session = {
+                usuario_id: Usuario.getUsuarioActual().getId(),
+                auth_token: Usuario.getUsuarioActual().getToken()
+            };
+            
             
             $scope.root.lista_productos = {
                 data: 'root.pedido.getProductosSeleccionados()',
@@ -316,6 +321,43 @@ define(["angular", "js/controllers",
 
                 var modalInstance = $modal.open($scope.opts);
                 
+            };
+            
+            /*
+             * @Author: Eduar
+             * +Descripcion: Handler del boton generar pdf
+             */
+            $scope.onGenerarPdfPedido = function(){
+                
+                var pedido = $scope.root.pedido;
+                var farmaciaDestino = pedido.getFarmaciaDestino();
+                var farmaciaOrigen  = pedido.getFarmaciaOrigen();
+                
+                var url = API.PEDIDOS.FARMACIAS.GENERAR_PDF_PEDIDO;
+
+                var obj = {
+                    session: $scope.root.session,
+                    data: {
+                        pedidos_farmacias: {
+                            numero_pedido: pedido.get_numero_pedido(),
+                            empresa_origen: farmaciaOrigen.getNombre(),
+                            centro_utilidad_origen: farmaciaOrigen.getCentroUtilidadSeleccionado().getNombre(),
+                            bodega_origen: farmaciaOrigen.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getNombre(),
+                            empresa_destino: farmaciaDestino.getNombre(),
+                            centro_utilidad_destino: farmaciaDestino.getCentroUtilidadSeleccionado().getNombre(),
+                            bodega_destino: farmaciaDestino.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getNombre()
+                        }
+                    }
+                };
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        var nombre = data.obj.reporte_pedido.nombre_reporte;
+                        $scope.visualizarReporte("/reports/" + nombre, nombre, "download");
+                    }  else {
+                        AlertService.mostrarMensaje("warning", "Error generando el pdf");
+                    }
+                });
             };
             
             $scope.deshabilitarSeleccionEmpresa = function(){

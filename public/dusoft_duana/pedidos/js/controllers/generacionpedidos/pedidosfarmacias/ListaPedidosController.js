@@ -69,8 +69,8 @@ define(["angular",
                     {field: 'descripcion_estado_actual_pedido', displayName: 'Estado', cellClass: "txt-center", visible: $scope.rootPedidosFarmacias.opciones.sw_ver_columna_estado_pedidos,
                         cellTemplate: "<button ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},
                     {field: 'numero_pedido', displayName: 'Número Pedido'},
-                    {field: 'farmaciaOrigen.getCentroUtilidadSeleccionado().getNombre()', displayName: 'Farmacia'},
-                    {field: 'farmaciaOrigen.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getNombre()', displayName: 'Bodega'},
+                    {field: 'farmaciaDestino.getCentroUtilidadSeleccionado().getNombre()', displayName: 'Farmacia'},
+                    {field: 'farmaciaDestino.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getNombre()', displayName: 'Bodega'},
                     {field: 'zona', displayName: 'Zona'},
                     {field: 'fecha_registro', displayName: 'Fecha'},
                     {field: 'estado_actual_pedido', displayName: 'EstadoId', visible: false},
@@ -114,11 +114,6 @@ define(["angular",
                     setDespachoEmpresaId(obj.despacho_empresa_id).
                     setDespachoPrefijo(obj.despacho_prefijo).
                     setDespachoNumero(obj.despacho_numero);
-
-                      //Falta el campo del estado True o False para botón "Imprimir EFC"
-
-                      //pedido.setEnUso(obj.en_uso);
-                    
 
                     $scope.rootPedidosFarmacias.empresaSeleccionada.agregarPedido(pedido);
 

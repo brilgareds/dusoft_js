@@ -5,7 +5,7 @@
 
             <tab ng-controller="ListaPedidosController">
                 <tab-heading>
-                    Pedidos Farmacias <!--<span ng-show="notificacionclientes > 0" class="badge badge-warning">{{notificacionclientes}}</span>-->
+                   <i class="glyphicon glyphicon-th"></i> <b> Pedidos Farmacias </b>
                 </tab-heading>
                 
                 <div ng-include src="'views/generacionpedidos/pedidosfarmacias/tabPedidos.html'"></div>
@@ -14,7 +14,7 @@
 
             <tab ng-controller="ListaPedidosTemporalesController" > 
                 <tab-heading >
-                    Pedidos Temporales
+                   <i class="glyphicon glyphicon-time"></i> <b>Pedidos Temporales</b>
                 </tab-heading>
                 
                 <div ng-include src="'views/generacionpedidos/pedidosfarmacias/tabPedidosTemporales.html'"></div>

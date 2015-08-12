@@ -70,11 +70,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                 $scope.root.pedido;
                 //$scope.rootSeleccionProductoFarmacia.listaTiposProductos  = [];
 
-                $scope.rootSeleccionProductoFarmacia.session = {
-                    usuario_id: Usuario.getUsuarioActual().getId(),
-                    auth_token: Usuario.getUsuarioActual().getToken()
-                };
-
             };
 
             /*
@@ -108,7 +103,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             self.buscarProductos = function(callback) {
 
                 var obj = {
-                    session: $scope.rootSeleccionProductoFarmacia.session,
+                    session: $scope.root.session,
                     data: {
                         productos: {
                             termino_busqueda: $scope.rootSeleccionProductoFarmacia.termino_busqueda,
@@ -152,7 +147,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             /*self.listarTiposProductos = function(){
                 var obj_tipo_producto = {
-                    session: $scope.rootSeleccionProductoFarmacia.session,
+                    session: $scope.root.session,
                     data: {
                         tipo_producto: {}
                     }
@@ -243,7 +238,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             
             self.verificarBloqueoProducto = function(callback){
                 var obj = {
-                    session: $scope.rootSeleccionProductoFarmacia.session,
+                    session: $scope.root.session,
                     data: {
                         usuario_bloqueo: {                            
                             farmacia_id: $scope.root.pedido.getFarmaciaDestino().getCodigo(),

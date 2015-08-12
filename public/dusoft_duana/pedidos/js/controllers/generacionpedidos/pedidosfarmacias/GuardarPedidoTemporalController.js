@@ -16,18 +16,15 @@ define(["angular", "js/controllers",
 
             self.init = function() {
                 $scope.rootPedidoFarmaciaTemporal = {};
-                $scope.rootPedidoFarmaciaTemporal.session = {
-                    usuario_id: Usuario.getUsuarioActual().getId(),
-                    auth_token: Usuario.getUsuarioActual().getToken()
-                };
                 
+                $scope.rootPedidoFarmaciaTemporal.tabListaPedidos = false;
                 //prepara la configuracion de la directiva para subir el archivo
                 $scope.rootPedidoFarmaciaTemporal.opcionesArchivo = new Flow();
                 $scope.rootPedidoFarmaciaTemporal.opcionesArchivo.target = API.PEDIDOS.FARMACIAS.SUBIR_ARCHIVO_PLANO;
                 $scope.rootPedidoFarmaciaTemporal.opcionesArchivo.testChunks = false;
                 $scope.rootPedidoFarmaciaTemporal.opcionesArchivo.singleFile = true;
                 $scope.rootPedidoFarmaciaTemporal.opcionesArchivo.query = {
-                    session: JSON.stringify($scope.rootPedidoFarmaciaTemporal.session)
+                    session: JSON.stringify($scope.root.session)
                 };
 
                 var pedidoTemporal = localStorageService.get("pedidotemporal");
@@ -50,7 +47,7 @@ define(["angular", "js/controllers",
             self.consultarEncabezadoPedidoTemporal = function(pedidoTemporal, callback) {
 
                 var obj = {
-                    session: $scope.rootPedidoFarmaciaTemporal.session,
+                    session: $scope.root.session,
                     data: {
                         pedidos_farmacias: {
                             empresa_id: pedidoTemporal.farmacia,
@@ -91,7 +88,7 @@ define(["angular", "js/controllers",
 
                 var pedido = $scope.root.pedido;
                 var obj = {
-                    session: $scope.rootPedidoFarmaciaTemporal.session,
+                    session: $scope.root.session,
                     data: {
                         pedidos_farmacias: {
                             empresa_id: pedido.getFarmaciaDestino().getCodigo(),
@@ -104,7 +101,7 @@ define(["angular", "js/controllers",
                 var url = API.PEDIDOS.FARMACIAS.LISTAR_DETALLE_PEDIDO_TEMPORAL;
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
-                        
+                        pedido.vaciarProductosSeleccionados();
                         $scope.renderDetalle(data.obj.listado_productos);
 
                         callback(true);
@@ -124,7 +121,7 @@ define(["angular", "js/controllers",
             self.guardarEncabezadoPedidoTemporal = function(callback) {
                 var pedido = $scope.root.pedido;
                 var obj = {
-                    session: $scope.rootPedidoFarmaciaTemporal.session,
+                    session: $scope.root.session,
                     data: {
                         pedidos_farmacias: {
                             empresa_origen_id: pedido.getFarmaciaOrigen().getCodigo(),
@@ -173,7 +170,7 @@ define(["angular", "js/controllers",
                 var url = API.PEDIDOS.FARMACIAS.CREAR_DETALLE_PEDIDO_TEMPORAL;
 
                 var obj = {
-                    session: $scope.rootPedidoFarmaciaTemporal.session,
+                    session: $scope.root.session,
                     data: {
                         detalle_pedidos_farmacias: {
                             numero_pedido: farmacia.getCodigo() + farmacia.getCentroUtilidadSeleccionado().getCodigo() + producto.getCodigoProducto(),
@@ -210,7 +207,7 @@ define(["angular", "js/controllers",
                 var url = API.PEDIDOS.FARMACIAS.GENERAR_PEDIDO_FARMACIA;
                 
                  var obj = {
-                    session: $scope.rootPedidoFarmaciaTemporal.session,
+                    session: $scope.root.session,
                     data: {
                         pedidos_farmacias: {
                             empresa_id: farmacia.getCodigo(),
@@ -239,11 +236,12 @@ define(["angular", "js/controllers",
              */
             self.eliminarProductoTemporal = function(producto, index){
                 var pedido = $scope.root.pedido;
+                
                 var farmacia = pedido.getFarmaciaDestino();
                 var url = API.PEDIDOS.FARMACIAS.ELIMINAR_REGISTRO_DETALLE_PEDIDO_TEMPORAL;
                 
                  var obj = {
-                    session: $scope.rootPedidoFarmaciaTemporal.session,
+                    session: $scope.root.session,
                     data: {
                         detalle_pedidos_farmacias: {
                             empresa_id: farmacia.getCodigo(),
@@ -278,7 +276,7 @@ define(["angular", "js/controllers",
                 var url = API.PEDIDOS.FARMACIAS.ELIMINAR_PEDIDO_TEMPORAL;
                 
                  var obj = {
-                    session: $scope.rootPedidoFarmaciaTemporal.session,
+                    session: $scope.root.session,
                     data: {
                         detalle_pedidos_farmacias: {
                             empresa_id: farmacia.getCodigo(),
@@ -308,8 +306,10 @@ define(["angular", "js/controllers",
                 
                 for (var i in productos) {
                     var _producto = productos[i];
-                    var producto = ProductoPedidoFarmacia.get(_producto.codigo_producto, _producto.descripcion).
-                                                              setCantidadSolicitada(_producto.cantidad_solicitada);
+                    var producto = ProductoPedidoFarmacia.get(_producto.codigo_producto, _producto.descripcion || "?").
+                                                              setCantidadSolicitada(_producto.cantidad_solicitada).
+                                                              setMensajeError(_producto.mensajeError);
+                      
 
                      $scope.productosInvalidos.push(producto);                                   
                 }
@@ -323,16 +323,16 @@ define(["angular", "js/controllers",
                     keyboard: true,
                     template: ' <div class="modal-header">\
                                     <button type="button" class="close" ng-click="close()">&times;</button>\
-                                    <h4 class="modal-title">Listado Productos </h4>\
+                                    <h4 class="modal-title">Lista de productos no validos</h4>\
                                 </div>\
                                 <div class="modal-body row">\
                                     <div class="col-md-12">\
-                                        <h4 >Lista Productos INVALIDOS.</h4>\
                                         <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
                                             <div class="list-group">\
-                                                <a ng-repeat="producto in productosInvalidos" class="list-group-item defaultcursor" href="javascript:void(0)">\
-                                                    {{ producto.getCodigoProducto()}}\
-                                                </a>\
+                                                <div ng-repeat="producto in productosInvalidos" class="list-group-item defaultcursor" href="javascript:void(0)">\
+                                                    <h5 style="color:red;">{{producto.getMensajeError()}}</h5>\
+                                                    {{ producto.getCodigoProducto()}} - {{producto.getDescripcion()}} \
+                                                </div>\
                                             </div>\
                                         </div>\
                                     </div>\
@@ -379,6 +379,13 @@ define(["angular", "js/controllers",
              * +Descripcion: Handler del boton cancelar pedido
              */
             $scope.onEliminarPedidoTemporal = function(){
+                
+                                
+                if($scope.root.pedido.get_numero_pedido()){
+                    console.log("el pedido fue generado, no se borrara un item");
+                    return;
+                }
+                
                 var template = ' <div class="modal-header">\
                                     <button type="button" class="close" ng-click="close()">&times;</button>\
                                     <h4 class="modal-title">Mensaje del Sistema</h4>\
@@ -524,6 +531,7 @@ define(["angular", "js/controllers",
                 if(datos.status === 200){
                     self.consultarDetallePedidoTemporal(function(){
                         self.mostrarProductosNoValidos(datos.obj.productosInvalidos);
+                        $scope.rootPedidoFarmaciaTemporal.tabListaPedidos = true;
                     });
                 } else {
                     AlertService.mostrarMensaje("warning", datos.msj);

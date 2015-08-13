@@ -44,7 +44,7 @@ define(["angular", "js/controllers",
                 enableHighlighting:true,
                 multiSelect: false,
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Código', width: "9%",
+                    {field: 'codigo_producto', displayName: 'Código', width:150,
                         cellTemplate : '<div class="ngCellText" ng-class="col.colIndex()">\
                                                     <span class="label label-success" ng-show="row.entity.getTipoProductoId() == 1" >N</span>\
                                                     <span class="label label-danger" ng-show="row.entity.getTipoProductoId() == 2">A</span>\
@@ -54,7 +54,7 @@ define(["angular", "js/controllers",
                                                     <span ng-cell-text class="pull-right" >{{COL_FIELD}}</span>\
                                                 </div>'
                     },
-                    {field: 'descripcion', displayName: 'Descripción', width: "37%"},
+                    {field: 'descripcion', displayName: 'Descripción', width: "50%"},
                     {field: 'getCantidadSolicitada()', displayName: 'Solicitado'},
                     {field: 'getCantidadPendiente()', displayName: 'Pendiente'},
                     {field: 'nueva_cantidad', displayName: 'Modificar Cantidad',visible:false,

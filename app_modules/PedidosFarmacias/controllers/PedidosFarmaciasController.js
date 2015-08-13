@@ -1,5 +1,5 @@
 
-var PedidosFarmacias = function(pedidos_farmacias, eventos_pedidos_farmacias, productos, pedidos_clientes, m_pedidos, terceros) {
+var PedidosFarmacias = function(pedidos_farmacias, eventos_pedidos_farmacias, productos, pedidos_clientes, m_pedidos, terceros, emails) {
 
 
     console.log("Modulo Pedidos Farmacias  Cargado ");
@@ -10,6 +10,7 @@ var PedidosFarmacias = function(pedidos_farmacias, eventos_pedidos_farmacias, pr
     this.m_productos = productos;
     this.m_pedidos = m_pedidos;
     this.m_terceros = terceros;
+    this.emails = emails;
 
 
 };
@@ -1437,7 +1438,7 @@ PedidosFarmacias.prototype.buscarUsuarioBloqueo = function(req, res) {
 
 /*
  * @Author: Eduar
- * +Descripcion: Gestina la generacion del pedido, asigna el responsable y cambia el estado del pedido
+ * +Descripcion: Gestiona la generacion del pedido, asigna el responsable y cambia el estado del pedido
  */
 PedidosFarmacias.prototype.generarPedidoFarmacia = function(req, res) {
 
@@ -2031,9 +2032,7 @@ PedidosFarmacias.prototype.insertarDetallePedidoFarmacia = function(req, res) {
         if (err) {
             res.send(G.utils.r(req.url, 'Se ha Generado un Error en el almacenamiento del Detalle', 500, {error: err}));
             return;
-        }
-        else
-        {
+        } else {
             res.send(G.utils.r(req.url, 'Detalle del pedido almacenado exitosamente', 200, {}));
             return;
         }
@@ -2041,46 +2040,144 @@ PedidosFarmacias.prototype.insertarDetallePedidoFarmacia = function(req, res) {
 
 };
 
-
+/*
+ * @Author: Eduar
+ * +Descripcion: Permite generar el pdf de un pedido
+ */
 PedidosFarmacias.prototype.generarPdfPedido = function(req, res) {
     var that = this;
 
     var args = req.body.data;
+    
+    __generarReportePedido(that, req, args, function(err, nombrePdf){
+        if(err){
+            res.send(G.utils.r(req.url, err.msj, err.status, {}));
+            return;
+        }
+        
+        res.send(G.utils.r(req.url, 'Url reporte pedido', 200, {reporte_pedido: {nombre_reporte: nombrePdf}}));
 
-    if (args.pedidos_farmacias === undefined || args.pedidos_farmacias.numero_pedido === undefined) {
-        res.send(G.utils.r(req.url, 'numero_pedido no está definido', 404, {}));
+    });
+    
+};
+
+
+PedidosFarmacias.prototype.enviarEmailPedido = function(req, res) {
+    var that = this;
+
+    var args = req.body.data;
+    
+    if (args.pedidos_farmacias.mensaje === undefined || args.pedidos_farmacias.destinatarios === undefined
+        || args.pedidos_farmacias.asunto === undefined) {
+
+        res.send(G.utils.r(req.url, 'Mensaje, destinatarios, asunto o nombre de adjunto no estan definidos', 404, {}));
         return;
+
     }
 
-    if (args.pedidos_farmacias.numero_pedido === "") {
-        res.send(G.utils.r(req.url, 'numero_pedido está vacio', 404, {}));
+    var mensaje = args.pedidos_farmacias.mensaje;
+    var destinatarios = args.pedidos_farmacias.destinatarios;
+    var asunto = args.pedidos_farmacias.asunto;
+    
+    __generarReportePedido(that, req, args, function(err, nombrePdf){
+        if(err){
+            res.send(G.utils.r(req.url, err.msj, err.status, {}));
+            return;
+        }
+        var path = G.dirname + "/public/reports/" + nombrePdf;
+        __enviarCorreoElectronico(that, destinatarios, path, nombrePdf, asunto, mensaje, function(err){
+            if(err){
+                res.send(G.utils.r(req.url, 'Se ha Generado un Error en el envio del pdf', 500, {error: err}));
+            }
+            
+            res.send(G.utils.r(req.url, 'Url reporte pedido', 200, {reporte_pedido: {nombre_reporte: nombrePdf}}));
+        });
+        
+    });
+    
+};
+
+function __enviarCorreoElectronico(that, to, ruta_archivo, nombre_archivo, asunto, mensaje, callback) {
+
+    var smtpTransport = that.emails.createTransport();
+    
+    var settings = {
+        from: G.settings.email_sender,
+        to: to,
+        subject: asunto,
+        html: mensaje,
+        attachments: [{'filename': nombre_archivo, 'contents': G.fs.readFileSync(ruta_archivo)}]
+    };
+
+    smtpTransport.sendMail(settings, function(error, response) {
+
+        if (error) {
+            callback(false);
+            return;
+        } else {
+            smtpTransport.close();
+            callback(true);
+            return;
+        }
+    });
+};
+
+
+function __generarReportePedido(that, req, args, callback){
+   if (args.pedidos_farmacias === undefined || args.pedidos_farmacias.farmaciaDestino === undefined || args.pedidos_farmacias.farmaciaOrigen === undefined ||
+        args.pedidos_farmacias.numero_pedido === undefined) {
+        
+        callback({msj :'empresa_id, centro_utilidad_id ,bodega_id o numero de pedido no estan definidos', status:404});
+        return;
+    }
+    var farmaciaDestino = args.pedidos_farmacias.farmaciaDestino;
+    var farmaciaOrigen  = args.pedidos_farmacias.farmaciaOrigen;
+    
+    if ((farmaciaDestino.codigo === undefined || farmaciaDestino.codigo === '') || 
+       (farmaciaDestino.centroUtilidad.codigo === undefined || farmaciaDestino.centroUtilidad.codigo === '') || 
+       (farmaciaDestino.centroUtilidad.bodega.codigo === undefined || farmaciaDestino.centroUtilidad.bodega.codigo === '')) {
+   
+        callback({msj:'empresa_id, centro_utilidad_id o bodega_id  destino no estan definidos o estan vacios', status:404});
         return;
     }
     
+   if ((farmaciaOrigen.codigo === undefined || farmaciaOrigen.codigo === '') || 
+       (farmaciaOrigen.centroUtilidad.codigo === undefined || farmaciaOrigen.centroUtilidad.codigo === '') || 
+       (farmaciaOrigen.centroUtilidad.bodega.codigo === undefined || farmaciaOrigen.centroUtilidad.bodega.codigo === '')) {
+   
+        callback({msj:'empresa_id, centro_utilidad_id o bodega_id  origen no estan definidos o estan vacios', status:404});
+        return;
+    }
+    
+    if (args.pedidos_farmacias.numero_pedido === "") {
+        callback({msj:'numero_pedido está vacio', status:404});
+        return;
+    }
     
     var numero_pedido = args.pedidos_farmacias.numero_pedido;
     
     var descripcionPedido = {
-         empresa_origen : args.pedidos_farmacias.empresa_origen,
-         centro_utilidad_origen : args.pedidos_farmacias.centro_utilidad_origen,
-         bodega_origen :  args.pedidos_farmacias.bodega_origen,
-         empresa_destino : args.pedidos_farmacias.empresa_destino,
-         centro_utilidad_destino :  args.pedidos_farmacias.centro_utilidad_destino,
-         bodega_destino : args.pedidos_farmacias.bodega_destino,
+         empresa_origen : farmaciaOrigen.codigo,
+         centro_utilidad_origen : farmaciaOrigen.centroUtilidad.codigo,
+         bodega_origen :  farmaciaOrigen.centroUtilidad.bodega.codigo,
+         
+         empresa_destino : farmaciaDestino.codigo,
+         centro_utilidad_destino :  farmaciaDestino.centroUtilidad.codigo,
+         bodega_destino : farmaciaDestino.centroUtilidad.bodega.codigo,
          usuario_imprime : req.session.user.nombre_usuario,
          fecha_actual : new Date().toFormat('DD-MM-YYYY HH:MM')
     };
     
-     this.m_pedidos_farmacias.consultar_pedido(numero_pedido, function(err, cabecera_pedido) {
+    that.m_pedidos_farmacias.consultar_pedido(numero_pedido, function(err, cabecera_pedido) {
 
         if (err || cabecera_pedido.length === 0) {
-            res.send(G.utils.r(req.url, 'Error en consulta de pedido', 500, {encabezado_pedido: {}}));
+            callback({msj:'Error en consulta de pedido', status:500});
         } else {
             cabecera_pedido = cabecera_pedido[0];
             that.m_pedidos_farmacias.consultar_detalle_pedido(numero_pedido, function(err, productos) {
 
                 if (err || productos.length === 0) {
-                    res.send(G.utils.r(req.url, 'Error en consulta detalle del pedido', 500, {detalle_pedido: {}}));
+                    callback({msj:'Error en consulta detalle del pedido', status:500});
                 } else {
                     
                     
@@ -2093,8 +2190,7 @@ PedidosFarmacias.prototype.generarPdfPedido = function(req, res) {
 
                     //console.log("pedido ", obj);
                     _generarDocumentoPedido(obj, function(nombreTmp){
-                        console.log("pdf generado ", nombreTmp);
-                        res.send(G.utils.r(req.url, 'Url reporte pedido', 200, {reporte_pedido: {nombre_reporte: nombreTmp}}));
+                        callback(null, nombreTmp);
                     });
                 }
 
@@ -2102,9 +2198,7 @@ PedidosFarmacias.prototype.generarPdfPedido = function(req, res) {
         }
 
     });
-    
-};
-
+}
 
 //************** fin nuevo eduar garcia temporal farmacias ***************
 
@@ -2996,6 +3090,6 @@ function __consultarStockProducto(that, empresa_destino_id, producto, callback) 
     });
 }
 
-PedidosFarmacias.$inject = ["m_pedidos_farmacias", "e_pedidos_farmacias", "m_productos", "m_pedidos_clientes", "m_pedidos", "m_terceros"];
+PedidosFarmacias.$inject = ["m_pedidos_farmacias", "e_pedidos_farmacias", "m_productos", "m_pedidos_clientes", "m_pedidos", "m_terceros", "emails"];
 
 module.exports = PedidosFarmacias;

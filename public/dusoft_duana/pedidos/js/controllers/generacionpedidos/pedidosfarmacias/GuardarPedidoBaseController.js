@@ -325,9 +325,9 @@ define(["angular", "js/controllers",
             
             /*
              * @Author: Eduar
-             * +Descripcion: Handler del boton generar pdf
+             * +Descripcion: Realiza la peticion al api para generar pdf
              */
-            $scope.onGenerarPdfPedido = function(){
+            self.generarPdf = function(){
                 
                 var pedido = $scope.root.pedido;
                 var farmaciaDestino = pedido.getFarmaciaDestino();
@@ -340,12 +340,8 @@ define(["angular", "js/controllers",
                     data: {
                         pedidos_farmacias: {
                             numero_pedido: pedido.get_numero_pedido(),
-                            empresa_origen: farmaciaOrigen.getNombre(),
-                            centro_utilidad_origen: farmaciaOrigen.getCentroUtilidadSeleccionado().getNombre(),
-                            bodega_origen: farmaciaOrigen.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getNombre(),
-                            empresa_destino: farmaciaDestino.getNombre(),
-                            centro_utilidad_destino: farmaciaDestino.getCentroUtilidadSeleccionado().getNombre(),
-                            bodega_destino: farmaciaDestino.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getNombre()
+                            farmaciaOrigen:farmaciaOrigen,
+                            farmaciaDestino:farmaciaDestino
                         }
                     }
                 };
@@ -359,6 +355,134 @@ define(["angular", "js/controllers",
                     }
                 });
             };
+            
+            self.enviarEmail = function(){
+                var pedido = $scope.root.pedido;
+                var farmaciaDestino = pedido.getFarmaciaDestino();
+                var farmaciaOrigen  = pedido.getFarmaciaOrigen();
+                
+                var url = API.PEDIDOS.FARMACIAS.ENVIAR_EMAIL;
+
+                var obj = {
+                    session: $scope.root.session,
+                    data: {
+                        pedidos_farmacias: {
+                            numero_pedido: pedido.get_numero_pedido(),
+                            farmaciaOrigen:farmaciaOrigen,
+                            farmaciaDestino:farmaciaDestino,
+                            destinatarios:$scope.destinatarios,
+                            nombreAdjunto:$scope.nombreAdjunto,
+                            mensaje:$scope.mensaje,
+                            asunto:$scope.asunto
+                        }
+                    }
+                };
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        var nombre = data.obj.reporte_pedido.nombre_reporte;
+                        $scope.visualizarReporte("/reports/" + nombre, nombre, "download");
+                    }  else {
+                        AlertService.mostrarMensaje("warning", "Error generando el pdf");
+                    }
+                });
+            };
+            
+            self.ventanaEnviarEmail = function() {
+
+                var pedido = $scope.root.pedido;
+                $scope.asunto = 'Pedido No.' + pedido.get_numero_pedido();
+                $scope.mensaje = 'Pedido con destino a  '+ pedido.getFarmaciaDestino().getNombre();
+                $scope.nombreAdjunto = "PedidoFarmacia-" + pedido.get_numero_pedido()+ '.pdf';
+                $scope.destinatarios = "";
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    templateUrl: 'views/generacionpedidos/pedidosfarmacias/redactaremail.html',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.validarEnvioEmail = function() {
+
+                            var expresion = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+                            var emails = $scope.destinatarios.split(',');
+                            var continuar = true;
+
+                            emails.forEach(function(email) {
+                                if (!expresion.test(email.trim())) {
+                                    continuar = false;
+                                }
+                            });
+
+                            if (continuar) {
+                                self.enviarEmail(function(continuar) {
+                                    if (continuar) {
+                                        
+                                        $modalInstance.close();
+                                    }
+                                });
+                            } else {
+                                AlertService.mostrarMensaje("warning", 'Direcciones de correo electrónico inválidas!.');
+                            }
+                        };
+
+                        $scope.cancelarEnviarEmail = function() {
+                            $modalInstance.close();
+                        };
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+            };
+            
+            /*
+             * @Author: Eduar
+             * +Descripcion: Handler del boton generar pdf
+             */
+            $scope.onGenerarReporte = function() {
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                        <button type="button" class="close" ng-click="cancelar_generacion_reporte()">&times;</button>\
+                                        <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                    </div>\
+                                    <div class="modal-body">\
+                                        <div class="btn-group btn-group-justified" role="group" aria-label="...">\
+                                            <div class="btn-group" role="group">\
+                                              <button type="button" class="btn btn-success" ng-click="descargarReportePdf()" ><span class="glyphicon glyphicon-cloud-download"></span> Descargar PDF</button>\
+                                            </div>\
+                                            <div class="btn-group" role="group">\
+                                              <button type="button" class="btn btn-primary" ng-click="enviarReportePdfEmail()" ><span class="glyphicon glyphicon-send"></span> Enviar por Email</button>\
+                                            </div>\
+                                        </div>\
+                                    </div>',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.descargarReportePdf = function() {
+                            self.generarPdf();
+                            $modalInstance.close();
+                        };
+
+                        $scope.enviarReportePdfEmail = function() {
+                            self.ventanaEnviarEmail();
+                            $modalInstance.close();
+                        };
+
+                        $scope.cancelar_generacion_reporte = function() {
+                            $modalInstance.close();
+                        };
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+            };
+            
             
             $scope.deshabilitarSeleccionEmpresa = function(){
                 

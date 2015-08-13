@@ -380,8 +380,8 @@ define(["angular", "js/controllers",
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
-                        //var nombre = data.obj.reporte_pedido.nombre_reporte;
-                        //$scope.visualizarReporte("/reports/" + nombre, nombre, "download");
+                        var nombre = data.obj.reporte_pedido.nombre_reporte;
+                        $scope.visualizarReporte("/reports/" + nombre, nombre, "download");
                     }  else {
                         AlertService.mostrarMensaje("warning", "Error generando el pdf");
                     }

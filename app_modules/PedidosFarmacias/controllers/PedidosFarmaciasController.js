@@ -2088,8 +2088,9 @@ PedidosFarmacias.prototype.enviarEmailPedido = function(req, res) {
         __enviarCorreoElectronico(that, destinatarios, path, nombrePdf, asunto, mensaje, function(err){
             if(err){
                 res.send(G.utils.r(req.url, 'Se ha Generado un Error en el envio del pdf', 500, {error: err}));
+                return;
             }
-            
+            console.log("nombre pdf ", nombrePdf);
             res.send(G.utils.r(req.url, 'Url reporte pedido', 200, {reporte_pedido: {nombre_reporte: nombrePdf}}));
         });
         
@@ -2100,7 +2101,6 @@ PedidosFarmacias.prototype.enviarEmailPedido = function(req, res) {
 function __enviarCorreoElectronico(that, to, ruta_archivo, nombre_archivo, asunto, mensaje, callback) {
 
     var smtpTransport = that.emails.createTransport();
-    
     var settings = {
         from: G.settings.email_sender,
         to: to,
@@ -2115,8 +2115,8 @@ function __enviarCorreoElectronico(that, to, ruta_archivo, nombre_archivo, asunt
             callback(false);
             return;
         } else {
-            smtpTransport.close();
             callback(true);
+            smtpTransport.close();
             return;
         }
     });

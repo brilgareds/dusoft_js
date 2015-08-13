@@ -51,7 +51,7 @@ PlanillasFarmaciasController.prototype.listar_documentos = function(req, res) {
     var empresa = parametros.empresa;
     var centroUtilidad = parametros.centroUtilidad;
     var bodega = parametros.bodega;
-    
+
     /**
      * @type string parametros: arreglo con todos los parametros
      * @type string empresa: contiene el id de la empresa
@@ -80,7 +80,7 @@ PlanillasFarmaciasController.prototype.listar_documentos = function(req, res) {
     }
 
 
-    this.m_planillas_farmacias.obtenerTipoDocumento(empresa,centroUtilidad,bodega,function(err, listar_documentos) {
+    this.m_planillas_farmacias.obtenerTipoDocumento(empresa, centroUtilidad, bodega, function(err, listar_documentos) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Listado de documentos tipo EDB', 500, {listar_documentos: {}}));
@@ -95,36 +95,10 @@ PlanillasFarmaciasController.prototype.listar_documentos = function(req, res) {
 
 
 PlanillasFarmaciasController.prototype.generarPlanillaFarmacia = function(req, res) {
-   
+
     var that = this;
 
     var args = req.body.data;
-    
-    /*if (args.planillas_despachos === undefined || args.planillas_despachos.pais_id === undefined || args.planillas_despachos.departamento_id === undefined || args.planillas_despachos.ciudad_id === undefined) {
-        res.send(G.utils.r(req.url, 'pais_id, departamento_id o ciudad_id no esta definido', 404, {}));
-        return;
-    }
-
-    if (args.planillas_despachos.transportador_id === undefined || args.planillas_despachos.nombre_conductor === undefined || args.planillas_despachos.observacion === undefined) {
-        res.send(G.utils.r(req.url, 'transportador_id, nombre_conductor u observacion no esta definido', 404, {}));
-        return;
-    }
-
-    if (args.planillas_despachos.numero_guia_externo === undefined) {
-        res.send(G.utils.r(req.url, 'numero_guia_externo no esta definido', 404, {}));
-        return;
-    }
-
-    if (args.planillas_despachos.pais_id === '' || args.planillas_despachos.departamento_id === '' || args.planillas_despachos.ciudad_id === '') {
-        res.send(G.utils.r(req.url, 'pais_id, departamento_id o ciudad_id  estan vacias', 404, {}));
-        return;
-    }
-
-    if (args.planillas_despachos.transportador_id === '' || args.planillas_despachos.nombre_conductor === '' || args.planillas_despachos.observacion === '') {
-        res.send(G.utils.r(req.url, 'transportador_id, nombre_conductor u observacion esta vacia', 404, {}));
-        return;
-    }*/
-
 
     var empresa_id = args.planillas_farmacia.empresa_id;
     var centro_utilidad = args.planillas_farmacia.centro_utilidad;
@@ -135,30 +109,67 @@ PlanillasFarmaciasController.prototype.generarPlanillaFarmacia = function(req, r
     var observacion = args.planillas_farmacia.observacion;
     var numero_guia_externo = args.planillas_farmacia.numero_guia_externo;
     var usuario_id = req.session.user.usuario_id;
-   
-  that.m_planillas_farmacias.ingresar_planilla_farmacia(empresa_id,
-                                                        centro_utilidad,
-                                                        bodega,
-                                                        id_empresa_destino,
-                                                        inv_transportador_id, 
-                                                        nombre_conductor, 
-                                                        observacion, 
-                                                        numero_guia_externo, 
-                                                        usuario_id, 
-                                                        function(err, rows, result) {
 
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error Interno', 500, {ingresar_planilla_farmacia: []}));
-            return;
-        } else {
+    if (args.planillas_farmacia === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
 
-            var numero_guia = (rows.length > 0) ? rows[0].id : 0;
+    if (empresa_id === '' || empresa_id === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de empresa', 404, {}));
+        return;
+    }
 
-            res.send(G.utils.r(req.url, 'Planilla farmacia regitrada correctamente', 200, {ingresar_planilla_farmacia: numero_guia,
-                                                                                           id_inv_planilla_farmacia_devolucion:rows}));
-            return;
-        }
-    });
+    if (centro_utilidad === '' || centro_utilidad === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el centro de utilidad', 404, {}));
+        return;
+    }
+
+    if (bodega === '' || bodega === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el valor de la bodega', 404, {}));
+        return;
+    }
+
+    if (id_empresa_destino === '' || id_empresa_destino === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el valor de la empresa destino', 404, {}));
+        return;
+    }
+
+    if (inv_transportador_id === '' || inv_transportador_id === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el identificador del transportador', 404, {}));
+        return;
+    }
+
+    if (nombre_conductor === '' || nombre_conductor === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el nombre del conductor', 404, {}));
+        return;
+
+
+    }
+
+    that.m_planillas_farmacias.ingresar_planilla_farmacia(empresa_id,
+            centro_utilidad,
+            bodega,
+            id_empresa_destino,
+            inv_transportador_id,
+            nombre_conductor,
+            observacion,
+            numero_guia_externo,
+            usuario_id,
+            function(err, rows, result) {
+
+                if (err) {
+                    res.send(G.utils.r(req.url, 'Error Interno', 500, {ingresar_planilla_farmacia: []}));
+                    return;
+                } else {
+
+                    var numero_guia = (rows.length > 0) ? rows[0].id : 0;
+
+                    res.send(G.utils.r(req.url, 'Planilla farmacia regitrada correctamente', 200, {ingresar_planilla_farmacia: numero_guia,
+                        id_inv_planilla_farmacia_devolucion: rows}));
+                    return;
+                }
+            });
 
 };
 
@@ -168,7 +179,7 @@ PlanillasFarmaciasController.prototype.generarPlanillaFarmacia = function(req, r
 
 
 PlanillasFarmaciasController.prototype.generarDocumentoPlanillaFarmacia = function(req, res) {
-    
+
     console.log("<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
     console.log("generarDocumentoPlanillaFarmacia");
     var that = this;
@@ -181,15 +192,51 @@ PlanillasFarmaciasController.prototype.generarDocumentoPlanillaFarmacia = functi
     var cantidad_neveras = args.planillas_farmacia.cantidad_neveras;
     var temperatura_neveras = args.planillas_farmacia.temperatura_neveras;
     var observacion = args.planillas_farmacia.observacion;
-    
-    
+
+
     var usuario_id = req.session.user.usuario_id;
-    
-    console.log(args);
-    
-    that.m_planillas_farmacias.ingresar_documentos_planilla_farmacia(id,empresa_id, prefijo, numero, cantidad_cajas, 
-                                                                     cantidad_neveras, temperatura_neveras, observacion, 
-                                                                     usuario_id, function(err, rows, result) {
+
+
+    if (args.planillas_farmacia === undefined) {
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+
+    if (empresa_id === '' || empresa_id === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el numero de empresa', 404, {}));
+        return;
+    }
+
+    if (prefijo === '' || prefijo === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el prefijo', 404, {}));
+        return;
+    }
+
+    if (numero === '' || numero === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el numero', 404, {}));
+        return;
+    }
+
+    /*if (cantidad_cajas === '' || cantidad_cajas === undefined) {
+        res.send(G.utils.r(req.url, 'Se requiere el valor de la cantidad de cajas', 404, {}));
+        return;
+    }
+*/
+      
+    if (cantidad_neveras.length > 0) {
+       
+        if (temperatura_neveras === '' || temperatura_neveras === undefined) {
+            res.send(G.utils.r(req.url, 'Se requiere el valor de la temperatura', 404, {}));
+            return;
+        }
+
+    }
+
+
+
+    that.m_planillas_farmacias.ingresar_documentos_planilla_farmacia(id, empresa_id, prefijo, numero, cantidad_cajas,
+            cantidad_neveras, temperatura_neveras, observacion,
+            usuario_id, function(err, rows, result) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {ingresar_documentos_planilla_farmacia: []}));

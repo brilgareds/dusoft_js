@@ -265,7 +265,7 @@ define(["angular", "js/controllers",
                     session: $scope.session,
                     data: {
                         planillas_farmacia: {
-                          
+                            
                             id_inv_planilla_farmacia_devolucion: id,
                             empresa_id: $scope.planilla.get_documento().get_empresa_id(),
                             prefijo: $scope.planilla.get_documento().get_prefijo(),
@@ -282,9 +282,9 @@ define(["angular", "js/controllers",
                 Request.realizarRequest(API.PLANILLAS_FARMACIAS.INGRESAR_DOCUMENTO_FARMACIA, "POST", obj, function(data) {
 
                     
-
+                    console.log(data)
                     if (data.status === 200) {
-                        
+                       
                         AlertService.mostrarMensaje("warning", data.msj);
                        // $scope.planilla.set_documentos($scope.datos_view.documento_seleccionado);
                       //  $scope.datos_view.documento_seleccionado = Documento.get();
@@ -293,6 +293,8 @@ define(["angular", "js/controllers",
 
                         callback(true);
                     } else {
+                      
+                       // AlertService.mostrarMensaje("warning", data.msj);
                         callback(false);
                     }
                 });
@@ -521,12 +523,24 @@ define(["angular", "js/controllers",
                     {field: 'temperatura_neveras', displayName: '°C Nevera', width: "10%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.temperatura_neveras" validacion-numero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="confirmRegistroDocumentoDevolucion(row.entity)" ng-disabled="validar_ingreso_documento(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
+                                            <button class="btn btn-default btn-xs" ng-click="seleccionar_documento_planilla(row.entity)" ng-disabled="validar_ingreso_documento(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
                                         </div>'
                     }
                 ]
             };
 
+               $scope.seleccionar_documento_planilla = function(documento) {
+                
+                // Validar que la cantidad de cajas y neveras sean iguales a las cantidades auditadas
+                if (documento.get_cantidad_cajas() == documento.get_cantidad_cajas_auditadas() && documento.get_cantidad_neveras() == documento.get_cantidad_neveras_auditadas()) {
+
+                    $scope.datos_view.documento_seleccionado = documento;
+
+                    that.gestionar_planilla_despacho();
+                }else{
+                    AlertService.mostrarMensaje("warning", "Las cantidades de cajas y/o neveras NO coinciden con las cantidades auditadas");
+                }
+            };
 
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {

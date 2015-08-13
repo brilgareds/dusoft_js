@@ -115,7 +115,24 @@ FROM  documentos a INNER JOIN inv_bodegas_documentos b ON a.documento_id = b.doc
 }
 
 
-
+/**
+ * 
+ * @param {string} empresa_id
+ * @param {string} centro_utilidad
+ * @param {string} bodega
+ * @param {string} id_empresa_destino
+ * @param {string} inv_transportador_id
+ * @param {string} nombre_conductor
+ * @param {string} observacion
+ * @param {string} numero_guia_externo
+ * @param {string} usuario_id
+ * @param {string} callback
+ * @returns {void}
+ * +Descripcion: Metodo encargado de ejecutar el query para registrar el encabezado
+ * de las planillas de devoluciones
+ * @author Cristian Ardila
+ * @fecha 12/08/2015
+ */
 PlanillasFarmaciasModel.prototype.ingresar_planilla_farmacia = function(empresa_id,
                                                         centro_utilidad,
                                                         bodega,
@@ -124,14 +141,15 @@ PlanillasFarmaciasModel.prototype.ingresar_planilla_farmacia = function(empresa_
                                                         nombre_conductor, 
                                                         observacion, 
                                                         numero_guia_externo, 
-                                                        usuario_id, callback) {
+                                                        usuario_id, 
+                                                        callback) {
      
     
-    var sql = "INSERT INTO inv_planillas_farmacia_devolucion(empresa_id, centro_utilidad, bodega, id_empresa_destino, inv_transportador_id, nombre_conductor, observacion, numero_guia_externo, usuario_id)\
-            VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)RETURNING id_inv_planilla_farmacia_devolucion;";
+    var sql = "INSERT INTO inv_planillas_farmacia_devolucion(empresa_id, centro_utilidad, bodega, id_empresa_destino, inv_transportador_id, nombre_conductor, observacion, numero_guia_externo,estado,usuario_id)\
+            VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)RETURNING id_inv_planilla_farmacia_devolucion;";
    
                      
-    G.db.query(sql, [empresa_id, centro_utilidad,bodega,id_empresa_destino, inv_transportador_id,nombre_conductor,observacion,numero_guia_externo,usuario_id], function(err, rows, result) {
+    G.db.query(sql, [empresa_id, centro_utilidad,bodega,id_empresa_destino, inv_transportador_id,nombre_conductor,observacion,numero_guia_externo,'0',usuario_id], function(err, rows, result) {
         callback(err, rows, result);
         
     });
@@ -139,28 +157,37 @@ PlanillasFarmaciasModel.prototype.ingresar_planilla_farmacia = function(empresa_
 
 
 
-
+/**
+ * 
+ * @param {string} id
+ * @param {string} empresa_id
+ * @param {string} prefijo
+ * @param {string} numero
+ * @param {string} cantidad_cajas
+ * @param {string} cantidad_neveras
+ * @param {string} temperatura_neveras
+ * @param {string} observacion
+ * @param {string} usuario_id
+ * @param {string} callback
+ * @returns {void}
+ * * +Descripcion: Metodo encargado de ejecutar el query para registrar el detallado
+ * de las planillas de devoluciones
+ * @author Cristian Ardila
+ * @fecha 12/08/2015
+ */
 PlanillasFarmaciasModel.prototype.ingresar_documentos_planilla_farmacia = function(id,empresa_id, prefijo, numero, cantidad_cajas, 
                                                                      cantidad_neveras, temperatura_neveras, observacion, 
                                                                      usuario_id, callback) {
 
-/*var sql = "INSERT INTO inv_planillas_farmacia_devolucion_detalle(empresa_id, centro_utilidad, bodega, id_empresa_destino, inv_transportador_id, nombre_conductor, observacion, numero_guia_externo, usuario_id)\n\
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)RETURNING id_inv_planilla_farmacia_devolucion;";*/
-    
+
 var sql = "INSERT INTO inv_planillas_farmacia_devolucion_detalle\
 (id_inv_planilla_farmacia_devolucion_detalle,empresa_id, prefijo, numero, cantidad_cajas, cantidad_neveras, temperatura_neveras, observacion, usuario_id, fecha_registro)\
 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,now())RETURNING id_inv_planilla_farmacia_devolucion_detalle;";
 
-   
-//INSERT INTO "public"."inv_planillas_farmacia_devolucion_detalle" 
-//("id_inv_planilla_farmacia_devolucion", "empresa_id", "prefijo", "numero", "cantidad_cajas", "cantidad_neveras", "temperatura_neveras", "observacion", "usuario_id", "fecha_registro") VALUES 
-//('1', 'FD', 'EDB', '1', '1', 1, '23', 'ass', '3732', now())
 
     G.db.query(sql, [id,empresa_id, prefijo, numero, cantidad_cajas,cantidad_neveras, temperatura_neveras, observacion, usuario_id], function(err, rows, result) {
         callback(err, rows, result);
-         console.log("err", err);
-        console.log("rows",rows);
-        console.log("result",result);
+
     });
 };
 

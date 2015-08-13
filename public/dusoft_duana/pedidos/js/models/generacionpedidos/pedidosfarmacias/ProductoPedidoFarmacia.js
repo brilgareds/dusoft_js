@@ -122,7 +122,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
         };
         
         ProductoPedidoFarmacia.prototype.getCantidadSolicitada = function() {
-            return this.cantidadSolicitada;
+            return parseInt(this.cantidadSolicitada);
         };
         
         ProductoPedidoFarmacia.prototype.setCantidadPendiente = function(cantidadPendiente) {

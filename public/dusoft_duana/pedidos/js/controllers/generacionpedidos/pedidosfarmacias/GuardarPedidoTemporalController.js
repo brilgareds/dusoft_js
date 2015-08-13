@@ -91,9 +91,7 @@ define(["angular", "js/controllers",
                     session: $scope.root.session,
                     data: {
                         pedidos_farmacias: {
-                            empresa_id: pedido.getFarmaciaDestino().getCodigo(),
-                            centro_utilidad_id: pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getCodigo(),
-                            bodega_id: pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo()
+                            farmaciaDestino:pedido.getFarmaciaDestino()
                         }
                     }
                 };
@@ -124,13 +122,9 @@ define(["angular", "js/controllers",
                     session: $scope.root.session,
                     data: {
                         pedidos_farmacias: {
-                            empresa_origen_id: pedido.getFarmaciaOrigen().getCodigo(),
-                            centro_utilidad_origen_id: pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getCodigo(),
-                            bodega_origen_id: pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
-                            empresa_destino_id: pedido.getFarmaciaDestino().getCodigo(),
-                            centro_utilidad_destino_id: pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getCodigo(),
-                            bodega_destino_id: pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
-                            observacion: pedido.getDescripcion()
+                            observacion: pedido.getDescripcion(),
+                            farmaciaDestino:pedido.getFarmaciaDestino(),
+                            farmaciaOrigen:pedido.getFarmaciaOrigen()
                         }
                     }
                 };
@@ -172,15 +166,11 @@ define(["angular", "js/controllers",
                 var obj = {
                     session: $scope.root.session,
                     data: {
-                        detalle_pedidos_farmacias: {
+                        pedidos_farmacias: {
                             numero_pedido: farmacia.getCodigo() + farmacia.getCentroUtilidadSeleccionado().getCodigo() + producto.getCodigoProducto(),
-                            empresa_id: farmacia.getCodigo(),
-                            centro_utilidad_id: farmacia.getCentroUtilidadSeleccionado().getCodigo(),
-                            bodega_id: farmacia.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
-                            codigo_producto: producto.getCodigoProducto(),
-                            cantidad_solic: parseInt(producto.getCantidadSolicitada()),
-                            tipo_producto_id: producto.getTipoProductoId(),
-                            cantidad_pendiente: cantidadPendiente
+                            farmaciaDestino:farmacia,
+                            producto:producto
+                            
                         }
                     }
                 };

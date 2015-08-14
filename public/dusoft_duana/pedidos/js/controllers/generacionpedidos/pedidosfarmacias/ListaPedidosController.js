@@ -304,6 +304,40 @@ define(["angular",
                 $state.go('GuardarPedido');
              
              };
+             
+             
+             //referencia del socket io
+            socket.on("onListarPedidosFarmacias", function(datos) {
+
+                if (datos.status === 200) {
+                    console.log("pedido del socket ", datos);
+                    var pedido = datos.obj.pedidos_farmacias[0];
+                    self.reemplazarPedidoEstado(pedido);
+
+                }
+            }); 
+            
+            
+            self.reemplazarPedidoEstado = function(pedido) {
+                var empresa = $scope.rootPedidosFarmacias.empresaSeleccionada;
+                if(empresa!== undefined){
+                    
+                    for (var i in empresa.obtenerPedidos() ) {
+                        var _pedido = empresa.obtenerPedidos()[i];
+
+                        if (_pedido.get_numero_pedido() === pedido.numero_pedido) {
+                            /*_pedido.descripcion_estado_actual_pedido = pedido.descripcion_estado_actual_pedido;
+                            _pedido.estado_actual_pedido = pedido.estado_actual_pedido;
+                            _pedido.estado_separacion = pedido.estado_separacion;*/
+                            _pedido.setDatos(pedido);
+
+                            break;
+                        }
+                    }
+                
+                }
+                
+            };
             
             localStorageService.remove("pedidoFarmacia");
             self.buscarPedidos();

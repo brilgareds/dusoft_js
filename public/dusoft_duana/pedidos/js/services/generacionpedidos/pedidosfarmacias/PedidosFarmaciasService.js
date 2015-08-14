@@ -14,6 +14,7 @@ define(["angular", "js/services"], function(angular, services) {
             self.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
             
             
+            
             self.getOpcionesModulo = function(pedido) {
                 
                 var _opciones =    {
@@ -44,6 +45,11 @@ define(["angular", "js/services"], function(angular, services) {
                 return _opciones;
             };
             
+            /*
+             * @Author: Eduar
+             * @param {PedidoFarmacia} pedido
+             * +Descripcion: Metodo que permite validar el permiso del boton de eliminar producto
+             */
             self.validarBotonEliminarProducto = function(pedido){
                 if(pedido === undefined){
                     return;
@@ -57,6 +63,12 @@ define(["angular", "js/services"], function(angular, services) {
                 
                 return false;
             };
+            
+            /*
+             * @Author: Eduar
+             * @param {PedidoFarmacia} pedido
+             * +Descripcion: Metodo que permite validar el permiso del boton de incluir producto
+             */
             
             self.validarBotonIncluirProductos = function(pedido){
                 if(pedido === undefined){
@@ -151,7 +163,13 @@ define(["angular", "js/services"], function(angular, services) {
                 });
             };
             
-            
+            /*
+             * @Author: Eduar
+             * @param {Object} session
+             * @param {PedidoFarmacia}pedido
+             * @param {function} callback
+             * +Descripcion: Permite abrir la ventana para enviar por correo el pdf generado
+             */
             self.ventanaEnviarEmail = function(session, pedido, callback) {
                 
                 var opts = {

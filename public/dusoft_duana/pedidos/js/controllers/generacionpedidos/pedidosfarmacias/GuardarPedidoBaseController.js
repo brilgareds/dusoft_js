@@ -8,20 +8,22 @@ define(["angular", "js/controllers",
     "models/generacionpedidos/pedidosfarmacias/ProductoPedidoFarmacia",
     "controllers/generacionpedidos/pedidosfarmacias/GuardarPedidoController",
     "controllers/generacionpedidos/pedidosfarmacias/GuardarPedidoTemporalController",
-    "controllers/generacionpedidos/pedidosfarmacias/SeleccionProductoController"], function(angular, controllers) {
+    "controllers/generacionpedidos/pedidosfarmacias/SeleccionProductoController",
+    "services/generacionpedidos/pedidosfarmacias/PedidosFarmaciasService"], function(angular, controllers) {
 
     var fo = controllers.controller('GuardarPedidoBaseController', [
         '$scope', '$rootScope', 'Request',
         'EmpresaPedidoFarmacia', 'FarmaciaPedido', 'PedidoFarmacia',
         'API', "socket", "AlertService",
         '$state', "Usuario", "localStorageService", '$modal',
-        'ProductoPedidoFarmacia', "$timeout",
+        'ProductoPedidoFarmacia', "$timeout","PedidosFarmaciasService",
         function($scope, $rootScope, Request, 
                  EmpresaPedidoFarmacia, FarmaciaPedido, PedidoFarmacia,
                  API, socket, AlertService,
                  $state, Usuario, localStorageService, $modal,
-                 ProductoPedidoFarmacia, $timeout) {
-
+                 ProductoPedidoFarmacia, $timeout, PedidosFarmaciasService) {
+                     
+            
             var self = this;
             $scope.root = {};
             $scope.root.empresasDestino = angular.copy(Usuario.getUsuarioActual().getEmpresasFarmacias());
@@ -30,13 +32,14 @@ define(["angular", "js/controllers",
             $scope.root.mostrarSeleccionProductoCompleto;
                         
             $scope.root.pedido = PedidoFarmacia.get();
+            $scope.root.servicio = PedidosFarmaciasService;
             
             $scope.root.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
             
-            
+                        
             $scope.root.lista_productos = {
                 data: 'root.pedido.getProductosSeleccionados()',
                 enableColumnResize: true,
@@ -59,14 +62,13 @@ define(["angular", "js/controllers",
                     {field: 'getCantidadPendiente()', displayName: 'Pendiente'},
                     {field: 'nueva_cantidad', displayName: 'Modificar Cantidad',visible:false,
                                 cellTemplate: ' <div class="col-xs-12">\n\
-                                                    <input type="text" validacion-numero-entero class="form-control grid-inline-input"'+
-                                                    'ng-keyup="onModificarCantidad($event, row)" ng-model="row.entity.cantidadIngresada" />\n\
+                                                    <input ng-disabled="!root.servicio.opciones.sw_modificar_pedido" type="text" validacion-numero-entero class="form-control grid-inline-input"'+
+                                                    'ng-keyup="onModificarCantidad($event, row)" ng-model="row.entity.cantidadIngresada" />\
                                                 </div>'
                     },
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "5%",
                             cellTemplate: ' <div class="row">\
-                                                <button class="btn btn-default btn-xs" ng-click="onEliminarProducto\n\
-(row.entity, row.rowIndex)">\
+                                                <button class="btn btn-default btn-xs" ng-click="onEliminarProducto(row.entity, row.rowIndex)" ng-validate-events="{{root.servicio.getOpcionesModulo(root.pedido).btnEliminarPedidoTemporal}}">\
                                                     <span class="glyphicon glyphicon-remove"></span>\n\
                                                 </button>\
                                             </div>'
@@ -325,9 +327,9 @@ define(["angular", "js/controllers",
             
             /*
              * @Author: Eduar
-             * +Descripcion: Handler del boton generar pdf
+             * +Descripcion: Realiza la peticion al api para generar pdf
              */
-            $scope.onGenerarPdfPedido = function(){
+            self.generarPdf = function(){
                 
                 var pedido = $scope.root.pedido;
                 var farmaciaDestino = pedido.getFarmaciaDestino();
@@ -340,12 +342,8 @@ define(["angular", "js/controllers",
                     data: {
                         pedidos_farmacias: {
                             numero_pedido: pedido.get_numero_pedido(),
-                            empresa_origen: farmaciaOrigen.getNombre(),
-                            centro_utilidad_origen: farmaciaOrigen.getCentroUtilidadSeleccionado().getNombre(),
-                            bodega_origen: farmaciaOrigen.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getNombre(),
-                            empresa_destino: farmaciaDestino.getNombre(),
-                            centro_utilidad_destino: farmaciaDestino.getCentroUtilidadSeleccionado().getNombre(),
-                            bodega_destino: farmaciaDestino.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getNombre()
+                            farmaciaOrigen:farmaciaOrigen,
+                            farmaciaDestino:farmaciaDestino
                         }
                     }
                 };
@@ -359,6 +357,65 @@ define(["angular", "js/controllers",
                     }
                 });
             };
+            
+            
+            self.ventanaEnviarEmail = function() {
+                var pedido = $scope.root.pedido;
+                PedidosFarmaciasService.ventanaEnviarEmail($scope.root.session, pedido,function(err, archivo){
+                    if(err.err){
+                        AlertService.mostrarMensaje("warning", err.msj);
+                    } else if(archivo) {
+                        $scope.visualizarReporte("/reports/" + archivo, archivo, "download");
+                    }
+                });
+            };
+            
+            /*
+             * @Author: Eduar
+             * +Descripcion: Handler del boton generar pdf
+             */
+            $scope.onGenerarReporte = function() {
+
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                        <button type="button" class="close" ng-click="cancelar_generacion_reporte()">&times;</button>\
+                                        <h4 class="modal-title">Mensaje del Sistema</h4>\
+                                    </div>\
+                                    <div class="modal-body">\
+                                        <div class="btn-group btn-group-justified" role="group" aria-label="...">\
+                                            <div class="btn-group" role="group">\
+                                              <button type="button" class="btn btn-success" ng-click="descargarReportePdf()" ><span class="glyphicon glyphicon-cloud-download"></span> Descargar PDF</button>\
+                                            </div>\
+                                            <div class="btn-group" role="group">\
+                                              <button type="button" class="btn btn-primary" ng-click="enviarReportePdfEmail()" ><span class="glyphicon glyphicon-send"></span> Enviar por Email</button>\
+                                            </div>\
+                                        </div>\
+                                    </div>',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.descargarReportePdf = function() {
+                            self.generarPdf();
+                            $modalInstance.close();
+                        };
+
+                        $scope.enviarReportePdfEmail = function() {
+                            self.ventanaEnviarEmail();
+                            $modalInstance.close();
+                        };
+
+                        $scope.cancelar_generacion_reporte = function() {
+                            $modalInstance.close();
+                        };
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+            };
+            
             
             $scope.deshabilitarSeleccionEmpresa = function(){
                 

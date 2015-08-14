@@ -81,6 +81,9 @@ module.exports = function(app, di_container) {
         c_pedidos_farmacias.subirArchivoPlano(req, res);
     }); 
     
+    app.post('/api/PedidosFarmacias/enviarEmailPedido', function(req, res) {
+        c_pedidos_farmacias.enviarEmailPedido(req, res);
+    }); 
     
     // -- depreciado
     app.post('/api/PedidosFarmacias/listarProductos', function(req, res) {

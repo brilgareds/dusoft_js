@@ -800,7 +800,7 @@ PedidosFarmacias.prototype.listar_productos = function(req, res) {
 
 
 //depreciado
-PedidosFarmacias.prototype.existeRegistroEncabezadoTemporal = function(req, res) {
+/*PedidosFarmacias.prototype.existeRegistroEncabezadoTemporal = function(req, res) {
 
     var that = this;
 
@@ -835,10 +835,10 @@ PedidosFarmacias.prototype.existeRegistroEncabezadoTemporal = function(req, res)
         }
 
     });
-};
+};*/
 
 //depreciado
-PedidosFarmacias.prototype.existeRegistroDetalleTemporal = function(req, res) {
+/*PedidosFarmacias.prototype.existeRegistroDetalleTemporal = function(req, res) {
 
     var that = this;
 
@@ -877,10 +877,10 @@ PedidosFarmacias.prototype.existeRegistroDetalleTemporal = function(req, res) {
         }
     });
 
-}
+}*/
 
 // depreciado
-PedidosFarmacias.prototype.existeRegistroDetallePedido = function(req, res) {
+/*PedidosFarmacias.prototype.existeRegistroDetallePedido = function(req, res) {
 
     var that = this;
 
@@ -911,10 +911,10 @@ PedidosFarmacias.prototype.existeRegistroDetallePedido = function(req, res) {
             return;
         }
     });
-};
+};*/
 
 //depreciado
-PedidosFarmacias.prototype.actualizarRegistroEncabezadoTemporal = function(req, res) {
+/*PedidosFarmacias.prototype.actualizarRegistroEncabezadoTemporal = function(req, res) {
 
     var that = this;
 
@@ -951,11 +951,11 @@ PedidosFarmacias.prototype.actualizarRegistroEncabezadoTemporal = function(req, 
         }
 
     });
-};
+};*/
 
 // depreciado
 
-PedidosFarmacias.prototype.crearPedidoTemporal = function(req, res) {
+/*PedidosFarmacias.prototype.crearPedidoTemporal = function(req, res) {
 
     var that = this;
 
@@ -992,9 +992,7 @@ PedidosFarmacias.prototype.crearPedidoTemporal = function(req, res) {
     var usuario_id = req.session.user.usuario_id;
 
     that.m_pedidos_farmacias.insertar_pedido_farmacia_temporal(empresa_id, centro_utilidad_id, bodega_id, empresa_destino_id, centro_utilidad_destino_id, bodega_destino_id, observacion, usuario_id, function(err, rows, result) {
-        /*console.log(err);
-         console.log(rows);
-         console.log(result);*/
+
         if (err) {
             res.send(G.utils.r(req.url, 'Se ha Generado un Error en la InserciÃ³n del encabezado del pedido', 500, {error: err}));
             return;
@@ -1006,10 +1004,9 @@ PedidosFarmacias.prototype.crearPedidoTemporal = function(req, res) {
         }
 
     });
-};
+};*/
 
-//depreciado
-PedidosFarmacias.prototype.insertarPedidoFarmacia = function(req, res) {
+/*PedidosFarmacias.prototype.insertarPedidoFarmacia = function(req, res) {
 
     var that = this;
 
@@ -1062,7 +1059,6 @@ PedidosFarmacias.prototype.insertarPedidoFarmacia = function(req, res) {
                     return;
                 }
 
-                /*Inicio - Actualización sw_terminado*/
                 that.m_pedidos_farmacias.terminar_estado_pedido(numero_pedido, ['0'], '1', function(err, rows, results) {
 
                     if (err) {
@@ -1080,7 +1076,7 @@ PedidosFarmacias.prototype.insertarPedidoFarmacia = function(req, res) {
         }
 
     });
-};
+};*/
 //
 
 
@@ -2203,7 +2199,7 @@ function __generarReportePedido(that, req, args, callback){
 
 
 // depreciado insertarProductoDetallePedidoFarmacia
-PedidosFarmacias.prototype.eliminarRegistroEncabezadoTemporal = function(req, res) {
+/*PedidosFarmacias.prototype.eliminarRegistroEncabezadoTemporal = function(req, res) {
 
     var that = this;
 
@@ -2238,7 +2234,7 @@ PedidosFarmacias.prototype.eliminarRegistroEncabezadoTemporal = function(req, re
         }
 
     });
-};
+};*/
 
 PedidosFarmacias.prototype.insertarProductoDetallePedidoFarmacia = function(req, res) { 
 
@@ -2330,7 +2326,7 @@ PedidosFarmacias.prototype.insertarProductoDetallePedidoFarmacia = function(req,
 
 
 //depreciado
-PedidosFarmacias.prototype.pedidoFarmaciaArchivoPlano = function(req, res) {
+/*PedidosFarmacias.prototype.pedidoFarmaciaArchivoPlano = function(req, res) {
 
     var that = this;
 
@@ -2391,13 +2387,11 @@ PedidosFarmacias.prototype.pedidoFarmaciaArchivoPlano = function(req, res) {
 
                     var usuario_id = session.usuario_id;
 
-                    /* Inicio - Modificación para Tipo Producto */
                     var tipo_producto = '0';
 
                     if (args.pedido_farmacia.tipo_producto !== undefined) {
                         var tipo_producto = args.pedido_farmacia.tipo_producto;
                     }
-                    /* Fin - Modificación para Tipo Producto */
 
                     //Consultar tipo_producto_id y cantidad_pendiente
                     that.m_productos.buscar_productos(empresa_id, centro_utilidad_id, bodega_id, producto_valido.codigo_producto, 1, tipo_producto, function(err, lista_productos) {
@@ -2448,7 +2442,7 @@ PedidosFarmacias.prototype.pedidoFarmaciaArchivoPlano = function(req, res) {
             console.log('Se ha generado error subiendo el archivo Plano. Revise el formato!');
         }
     });
-};
+};*/
 
 PedidosFarmacias.prototype.actualizarEstadoActualPedido = function(req, res) {
 
@@ -2491,14 +2485,13 @@ PedidosFarmacias.prototype.actualizarEstadoActualPedido = function(req, res) {
 };
 
 //depreciado Generar documento PDF 
-PedidosFarmacias.prototype.imprimirPedidoFarmacia = function(req, res) {
+/*PedidosFarmacias.prototype.imprimirPedidoFarmacia = function(req, res) {
 
     var that = this;
 
     var args = req.body.data;
 
-    //console.log(">>>>Antes del encabezado");
-    //console.log(">>>> Args: ", args);
+
 
     if (args.encabezado_pedido_farmacia === undefined || args.encabezado_pedido_farmacia.numero_pedido === undefined || args.encabezado_pedido_farmacia.empresa_origen_id === undefined) {
         res.send(G.utils.r(req.url, 'numero_pedido o empresa_origen_id no están definidos', 404, {}));
@@ -2550,7 +2543,6 @@ PedidosFarmacias.prototype.imprimirPedidoFarmacia = function(req, res) {
     }
     else {
 
-        //Inicialización Nueva Para eliminar uno de los ciclos
         var i = args.detalle_pedido_farmacia.length;
 
         if (i === 0) {
@@ -2560,7 +2552,6 @@ PedidosFarmacias.prototype.imprimirPedidoFarmacia = function(req, res) {
 
         args.detalle_pedido_farmacia.forEach(function(producto) {
 
-            //console.log(">>>>>>>>>>>>>>>Leyendo elementos producto");
 
             if (producto.codigo_producto === undefined || producto.descripcion === undefined) {
                 res.send(G.utils.r(req.url, 'codigo_producto o descripcion no están definidos', 404, {}));
@@ -2583,7 +2574,6 @@ PedidosFarmacias.prototype.imprimirPedidoFarmacia = function(req, res) {
             }
 
             //Si las anteriores validaciones pasaron, entonces se adiciona a cada elemento del objeto su disponibilidad
-            /* Inicio - Disponibilidad */
 
             //var numero_pedido = args.encabezado_pedido_farmacia.numero_pedido;
             var empresa_id = args.encabezado_pedido_farmacia.empresa_origen_id;
@@ -2623,8 +2613,7 @@ PedidosFarmacias.prototype.imprimirPedidoFarmacia = function(req, res) {
                                     }
                                     else
                                     {
-                                        //                                res.send(G.utils.r(req.url, 'Listado de Productos', 200, {lista_productos: lista_productos}));
-                                        //                                return;
+  
                                         args.serverUrl = req.protocol + '://' + req.get('host') + "/";
 
                                         console.log(">>>> ARGS antes _generarDocumentoPedido: ", args);
@@ -2644,11 +2633,10 @@ PedidosFarmacias.prototype.imprimirPedidoFarmacia = function(req, res) {
                 });
             });
 
-            /* Fin - Disponibilidad */
         });
     }
 
-};
+};*/
 
 
 PedidosFarmacias.prototype.listarDetallePedidoPDF = function(req, res) {

@@ -12,14 +12,12 @@ define(["angular", "js/services"], function(angular, services) {
             var self = this;
             
             self.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
-            
-            
-            
+                        
             self.getOpcionesModulo = function(pedido) {
                 
                 var _opciones =    {
                     btnCrearPedido: {
-                        'click': self.validarBotonIncluirProductos(pedido)
+                        'click': (pedido !== undefined)?self.validarBotonIncluirProductos(pedido):self.opciones.sw_crear_pedido
                        //Ejemplo 'mouseover':self.opciones.sw_consultar_pedido 
                     },
                     btnVerPedido: {

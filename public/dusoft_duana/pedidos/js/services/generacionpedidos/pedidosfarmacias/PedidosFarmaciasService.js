@@ -14,11 +14,12 @@ define(["angular", "js/services"], function(angular, services) {
             self.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
             
             
-            self.getOpcionesModulo = function() {
+            self.getOpcionesModulo = function(pedido) {
                 
                 var _opciones =    {
                     btnCrearPedido: {
-                        'click': self.opciones.sw_crear_pedido
+                        'click': self.validarBotonIncluirProductos(pedido)
+                       //Ejemplo 'mouseover':self.opciones.sw_consultar_pedido 
                     },
                     btnVerPedido: {
                         'click':self.opciones.sw_consultar_pedido 
@@ -36,11 +37,43 @@ define(["angular", "js/services"], function(angular, services) {
                         'click': self.opciones.sw_generar_pedido
                     },
                     btnEliminarPedidoTemporal:{
-                        'click': self.opciones.sw_eliminar_temporal
+                        'click': self.validarBotonEliminarProducto(pedido)
                     }
                 };
                 
                 return _opciones;
+            };
+            
+            self.validarBotonEliminarProducto = function(pedido){
+                if(pedido === undefined){
+                    return;
+                }
+                
+                if(pedido.getEsTemporal() && self.opciones.sw_eliminar_temporal){
+                    return true;
+                } else if(pedido.get_numero_pedido()){
+                    return true;
+                }
+                
+                return false;
+            };
+            
+            self.validarBotonIncluirProductos = function(pedido){
+                if(pedido === undefined){
+                    return false;
+                }
+                
+                //El pedido aun no esta guardado y el usuario puede crear pedidos
+                if(!pedido.getEsTemporal() && self.opciones.sw_crear_pedido){
+                    return true;
+                    
+                //El pedio es temporal y el usuario puede modificar
+                } else if(pedido.getEsTemporal() && self.opciones.sw_modificar_pedido ){
+                    return true;
+                    
+                } 
+                
+                return false;
             };
             
             /*

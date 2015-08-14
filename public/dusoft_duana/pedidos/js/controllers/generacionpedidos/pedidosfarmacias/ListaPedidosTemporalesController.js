@@ -50,7 +50,7 @@ define(["angular",
                                         <ul class="dropdown-menu dropdown-options">\
                                             <li><a href="javascript:void(0);" ng-click="onEditarPedidoTemporal(row.entity)" ng-validate-events="{{root.servicio.getOpcionesModulo().btnModificarPedido}}">Modificar</a></li>\
                                             <li class="divider"></li>\
-                                            <li><a href="javascript:void(0);" ng-validate-events="{{root.servicio.getOpcionesModulo().btnEliminarPedidoTemporal}}" ng-click="onEliminarPedidoTemporal(row.entity, row.entity)" >Eliminar</a></li>\
+                                            <li><a href="javascript:void(0);" ng-validate-events="{{root.servicio.getOpcionesModulo(row.entity).btnEliminarPedidoTemporal}}" ng-click="onEliminarPedidoTemporal(row.entity, row.entity)" >Eliminar</a></li>\
                                         </ul>\n\
                                         </div>'
                     }
@@ -135,6 +135,7 @@ define(["angular",
                 for (var i in data) {
                     var obj = data[i];
                     var pedido = PedidosFarmaciasService.crearPedido(obj);
+                    pedido.setEsTemporal(true);
                     $scope.rootPedidosTempFarmacias.empresaSeleccionada.agregarPedido(pedido);
                 }
 

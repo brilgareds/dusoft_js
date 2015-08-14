@@ -176,7 +176,7 @@
                     <div class="input-group navbar-form ">
 
                         <div >
-                             <button type="button" ng-disabled="!root.pedido.getValido() || (root.pedido.get_numero_pedido() && root.pedido.getTipoModificacion() != '3')" class="btn btn-default btn-medium ng-scope"  ng-click="onIncluirProductos($event)" ng-validate-events="{{root.servicio.getOpcionesModulo().btnCrearPedido}}" ng-if="!root.pedido.get_numero_pedido()">
+                             <button type="button" ng-disabled="!root.pedido.getValido() || (root.pedido.get_numero_pedido() && root.pedido.getTipoModificacion() != '3')" class="btn btn-default btn-medium ng-scope"  ng-click="onIncluirProductos($event)" ng-validate-events="{{root.servicio.getOpcionesModulo(root.pedido).btnCrearPedido}}" ng-if="!root.pedido.get_numero_pedido()">
                                 <span class="glyphicon glyphicon-plus"></span> Incluir Productos
                             </button>
                             
@@ -265,7 +265,7 @@
     <div class="col-sm-12 btn-toolbar">
         <button type="submit" ng-show="!root.pedido.get_numero_pedido()" class="btn btn-default pull-right" ng-click="onGenerarPedido()"
                  ng-validate-events="{{root.servicio.getOpcionesModulo().btnGenerarPedido}}" ng-disabled="!root.pedido.getEsTemporal()" >
-            <span class="glyphicon glyphicon-cog"></span> Generar Pedido
+            <span class="glyphicon glyphicon-cog"></span> Generar Pedido 
         </button>
         <button type="submit" ng-show="!root.pedido.get_numero_pedido()" class="btn btn-default pull-right" ng-click="onGuardarEncabezadoPedidoTemporal()"
          ng-validate-events="{{root.servicio.getOpcionesModulo().btnGuardarTemporal}}" ng-disabled="!root.pedido.getEsTemporal()">

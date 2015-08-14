@@ -38,6 +38,7 @@ define(["angular", "js/controllers",
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
+            
                         
             $scope.root.lista_productos = {
                 data: 'root.pedido.getProductosSeleccionados()',
@@ -62,12 +63,12 @@ define(["angular", "js/controllers",
                     {field: 'nueva_cantidad', displayName: 'Modificar Cantidad',visible:false,
                                 cellTemplate: ' <div class="col-xs-12">\n\
                                                     <input ng-disabled="!root.servicio.opciones.sw_modificar_pedido" type="text" validacion-numero-entero class="form-control grid-inline-input"'+
-                                                    'ng-keyup="onModificarCantidad($event, row)" ng-model="row.entity.cantidadIngresada" />\n\
+                                                    'ng-keyup="onModificarCantidad($event, row)" ng-model="row.entity.cantidadIngresada" />\
                                                 </div>'
                     },
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "5%",
                             cellTemplate: ' <div class="row">\
-                                                <button class="btn btn-default btn-xs" ng-click="onEliminarProducto(row.entity, row.rowIndex)" >\
+                                                <button class="btn btn-default btn-xs" ng-click="onEliminarProducto(row.entity, row.rowIndex)" ng-validate-events="{{root.servicio.getOpcionesModulo(root.pedido).btnEliminarPedidoTemporal}}">\
                                                     <span class="glyphicon glyphicon-remove"></span>\n\
                                                 </button>\
                                             </div>'

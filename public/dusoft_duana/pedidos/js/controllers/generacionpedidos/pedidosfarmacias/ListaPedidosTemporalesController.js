@@ -11,10 +11,10 @@ define(["angular",
         'EmpresaPedidoFarmacia', 'FarmaciaPedido', 'PedidoFarmacia',
         'API', "socket", "AlertService",
         '$state', "Usuario", "localStorageService", "$modal",
-        "CentroUtilidadPedidoFarmacia", "BodegaPedidoFarmacia", "ListaPedidosFarmaciasService",
+        "CentroUtilidadPedidoFarmacia", "BodegaPedidoFarmacia", "PedidosFarmaciasService",
         function($scope, $rootScope, Request, EmpresaPedidoFarmacia, FarmaciaPedido, PedidoFarmacia,
                 API, socket, AlertService, $state, Usuario, localStorageService, $modal,
-                CentroUtilidadPedidoFarmacia, BodegaPedidoFarmacia, ListaPedidosFarmaciasService) {
+                CentroUtilidadPedidoFarmacia, BodegaPedidoFarmacia, PedidosFarmaciasService) {
             var self = this;
 
             $scope.rootPedidosTempFarmacias = {};
@@ -48,12 +48,11 @@ define(["angular",
                         cellTemplate: '<div class="btn-group">\
                                         <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
                                         <ul class="dropdown-menu dropdown-options">\
-                                            <li><a href="javascript:void(0);" ng-click="onEditarPedidoTemporal(row.entity)">Modificar</a></li>\
+                                            <li><a href="javascript:void(0);" ng-click="onEditarPedidoTemporal(row.entity)" ng-validate-events="{{root.servicio.getOpcionesModulo().btnModificarPedido}}">Modificar</a></li>\
                                             <li class="divider"></li>\
-                                            <li><a href="javascript:void(0);" ng-click="onEliminarPedidoTemporal(row.entity, row.entity)" >Eliminar</a></li>\
+                                            <li><a href="javascript:void(0);" ng-validate-events="{{root.servicio.getOpcionesModulo().btnEliminarPedidoTemporal}}" ng-click="onEliminarPedidoTemporal(row.entity, row.entity)" >Eliminar</a></li>\
                                         </ul>\n\
                                         </div>'
-
                     }
 
                 ]
@@ -135,7 +134,7 @@ define(["angular",
             self.renderPedidos = function(data) {
                 for (var i in data) {
                     var obj = data[i];
-                    var pedido = ListaPedidosFarmaciasService.crearPedido(obj);
+                    var pedido = PedidosFarmaciasService.crearPedido(obj);
                     $scope.rootPedidosTempFarmacias.empresaSeleccionada.agregarPedido(pedido);
                 }
 

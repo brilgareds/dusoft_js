@@ -8,20 +8,22 @@ define(["angular", "js/controllers",
     "models/generacionpedidos/pedidosfarmacias/ProductoPedidoFarmacia",
     "controllers/generacionpedidos/pedidosfarmacias/GuardarPedidoController",
     "controllers/generacionpedidos/pedidosfarmacias/GuardarPedidoTemporalController",
-    "controllers/generacionpedidos/pedidosfarmacias/SeleccionProductoController"], function(angular, controllers) {
+    "controllers/generacionpedidos/pedidosfarmacias/SeleccionProductoController",
+    "services/generacionpedidos/pedidosfarmacias/PedidosFarmaciasService"], function(angular, controllers) {
 
     var fo = controllers.controller('GuardarPedidoBaseController', [
         '$scope', '$rootScope', 'Request',
         'EmpresaPedidoFarmacia', 'FarmaciaPedido', 'PedidoFarmacia',
         'API', "socket", "AlertService",
         '$state', "Usuario", "localStorageService", '$modal',
-        'ProductoPedidoFarmacia', "$timeout",
+        'ProductoPedidoFarmacia', "$timeout","PedidosFarmaciasService",
         function($scope, $rootScope, Request, 
                  EmpresaPedidoFarmacia, FarmaciaPedido, PedidoFarmacia,
                  API, socket, AlertService,
                  $state, Usuario, localStorageService, $modal,
-                 ProductoPedidoFarmacia, $timeout) {
-
+                 ProductoPedidoFarmacia, $timeout, PedidosFarmaciasService) {
+                     
+            
             var self = this;
             $scope.root = {};
             $scope.root.empresasDestino = angular.copy(Usuario.getUsuarioActual().getEmpresasFarmacias());
@@ -30,13 +32,13 @@ define(["angular", "js/controllers",
             $scope.root.mostrarSeleccionProductoCompleto;
                         
             $scope.root.pedido = PedidoFarmacia.get();
+            $scope.root.servicio = PedidosFarmaciasService;
             
             $scope.root.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
-            
-            
+                        
             $scope.root.lista_productos = {
                 data: 'root.pedido.getProductosSeleccionados()',
                 enableColumnResize: true,
@@ -59,14 +61,13 @@ define(["angular", "js/controllers",
                     {field: 'getCantidadPendiente()', displayName: 'Pendiente'},
                     {field: 'nueva_cantidad', displayName: 'Modificar Cantidad',visible:false,
                                 cellTemplate: ' <div class="col-xs-12">\n\
-                                                    <input type="text" validacion-numero-entero class="form-control grid-inline-input"'+
+                                                    <input ng-disabled="!root.servicio.opciones.sw_modificar_pedido" type="text" validacion-numero-entero class="form-control grid-inline-input"'+
                                                     'ng-keyup="onModificarCantidad($event, row)" ng-model="row.entity.cantidadIngresada" />\n\
                                                 </div>'
                     },
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "5%",
                             cellTemplate: ' <div class="row">\
-                                                <button class="btn btn-default btn-xs" ng-click="onEliminarProducto\n\
-(row.entity, row.rowIndex)">\
+                                                <button class="btn btn-default btn-xs" ng-click="onEliminarProducto(row.entity, row.rowIndex)" >\
                                                     <span class="glyphicon glyphicon-remove"></span>\n\
                                                 </button>\
                                             </div>'
@@ -356,85 +357,16 @@ define(["angular", "js/controllers",
                 });
             };
             
-            self.enviarEmail = function(){
-                var pedido = $scope.root.pedido;
-                var farmaciaDestino = pedido.getFarmaciaDestino();
-                var farmaciaOrigen  = pedido.getFarmaciaOrigen();
-                
-                var url = API.PEDIDOS.FARMACIAS.ENVIAR_EMAIL;
-
-                var obj = {
-                    session: $scope.root.session,
-                    data: {
-                        pedidos_farmacias: {
-                            numero_pedido: pedido.get_numero_pedido(),
-                            farmaciaOrigen:farmaciaOrigen,
-                            farmaciaDestino:farmaciaDestino,
-                            destinatarios:$scope.destinatarios,
-                            nombreAdjunto:$scope.nombreAdjunto,
-                            mensaje:$scope.mensaje,
-                            asunto:$scope.asunto
-                        }
-                    }
-                };
-
-                Request.realizarRequest(url, "POST", obj, function(data) {
-                    if (data.status === 200) {
-                        var nombre = data.obj.reporte_pedido.nombre_reporte;
-                        $scope.visualizarReporte("/reports/" + nombre, nombre, "download");
-                    }  else {
-                        AlertService.mostrarMensaje("warning", "Error generando el pdf");
-                    }
-                });
-            };
             
             self.ventanaEnviarEmail = function() {
-
                 var pedido = $scope.root.pedido;
-                $scope.asunto = 'Pedido No.' + pedido.get_numero_pedido();
-                $scope.mensaje = 'Pedido con destino a  '+ pedido.getFarmaciaDestino().getNombre();
-                $scope.nombreAdjunto = "PedidoFarmacia-" + pedido.get_numero_pedido()+ '.pdf';
-                $scope.destinatarios = "";
-
-                $scope.opts = {
-                    backdrop: true,
-                    backdropClick: true,
-                    dialogFade: false,
-                    keyboard: true,
-                    templateUrl: 'views/generacionpedidos/pedidosfarmacias/redactaremail.html',
-                    scope: $scope,
-                    controller: function($scope, $modalInstance) {
-
-                        $scope.validarEnvioEmail = function() {
-
-                            var expresion = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
-                            var emails = $scope.destinatarios.split(',');
-                            var continuar = true;
-
-                            emails.forEach(function(email) {
-                                if (!expresion.test(email.trim())) {
-                                    continuar = false;
-                                }
-                            });
-
-                            if (continuar) {
-                                self.enviarEmail(function(continuar) {
-                                    if (continuar) {
-                                        
-                                        $modalInstance.close();
-                                    }
-                                });
-                            } else {
-                                AlertService.mostrarMensaje("warning", 'Direcciones de correo electrónico inválidas!.');
-                            }
-                        };
-
-                        $scope.cancelarEnviarEmail = function() {
-                            $modalInstance.close();
-                        };
+                PedidosFarmaciasService.ventanaEnviarEmail($scope.root.session, pedido,function(err, archivo){
+                    if(err.err){
+                        AlertService.mostrarMensaje("warning", err.msj);
+                    } else if(archivo) {
+                        $scope.visualizarReporte("/reports/" + archivo, archivo, "download");
                     }
-                };
-                var modalInstance = $modal.open($scope.opts);
+                });
             };
             
             /*

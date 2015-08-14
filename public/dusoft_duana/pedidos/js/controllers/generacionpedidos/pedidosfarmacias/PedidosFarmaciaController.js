@@ -10,20 +10,26 @@ define(["angular",
     "models/generacionpedidos/pedidosfarmacias/BodegaPedidoFarmacia",
     "controllers/generacionpedidos/pedidosfarmacias/ListaPedidosController",
     "controllers/generacionpedidos/pedidosfarmacias/ListaPedidosTemporalesController",
-    "services/generacionpedidos/pedidosfarmacias/ListaPedidosFarmaciasService"], function(angular, controllers) {
+    "services/generacionpedidos/pedidosfarmacias/PedidosFarmaciasService"], function(angular, controllers) {
 
     controllers.controller('PedidosFarmaciaController', [
         '$scope', '$rootScope', 'Request',
         'EmpresaPedidoFarmacia', 'FarmaciaVenta', 'PedidoVenta',
         'API', "socket", "AlertService",
         '$state', "Usuario", "localStorageService", "$modal",
-        function($scope, $rootScope, Request, EmpresaPedidoFarmacia, FarmaciaVenta, PedidoVenta, API, socket, AlertService, $state, Usuario, localStorageService, $modal) {
+        "PedidosFarmaciasService",
+        function($scope, $rootScope, Request,
+                 EmpresaPedidoFarmacia, FarmaciaVenta, PedidoVenta, 
+                 API, socket, AlertService, 
+                 $state, Usuario, localStorageService, $modal,
+                 PedidosFarmaciasService) {
+                     
             var self = this;
             
             $scope.root = {};
             var self = this;
             $scope.root.empresasFarmacias = Usuario.getUsuarioActual().getEmpresasFarmacias();
-            
+            $scope.root.servicio =  PedidosFarmaciasService;
             /*
              * @Author: Eduar
              * @param {object} obj
@@ -33,20 +39,6 @@ define(["angular",
                 $state.go('GuardarPedidoTemporal');
             };
             
-            self.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
-            
-            //permisos kardex
-            $scope.root.opcionesModulo = {
-                btnCrearPedido: {
-                    'click': self.opciones.sw_crear_pedido
-                },
-                btnVerPedido: {
-                    'click': self.opciones.sw_consultar_pedido 
-                },
-                btnModificarPedido: {
-                    'click': self.opciones.sw_consultar_pedido  && self.opciones.sw_modificar_pedido
-                }        
-            };
 
         }]);
         

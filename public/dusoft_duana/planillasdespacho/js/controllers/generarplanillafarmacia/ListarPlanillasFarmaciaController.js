@@ -97,15 +97,22 @@ define(["angular", "js/controllers",
                 $scope.Empresa.limpiar_planillas();
                 
                 planillas.forEach(function(data) {
-
+                    //console.log(data)
                     var ciudad = Ciudad.get(data.pais_id, data.nombre_pais, data.departamento_id, data.nombre_departamento, data.ciudad_id, data.nombre_ciudad);
                     var transportadora = Transportadora.get(data.transportadora_id, data.nombre_transportadora, data.placa_vehiculo, data.estado_transportadora);
                     var usuario = UsuarioPlanilla.get(data.usuario_id, data.nombre_usuario);
+                   
+                    
+                    
+                    //(data.empresa_origen);
                     var planilla = PlanillaDespacho.get(data.id, transportadora, ciudad, data.nombre_conductor, data.observacion, usuario, data.fecha_registro, data.fecha_despacho, data.estado, data.descripcion_estado);
+                     planilla.set_empresa(data.empresa_origen);
                     planilla.set_cantidad_cajas(data.total_cajas);
                     planilla.set_cantidad_neveras(data.total_neveras);
                     $scope.Empresa.set_planillas(planilla);
                 });
+                
+                console.log($scope.Empresa.get_planillas())
             };
             
             /**
@@ -153,7 +160,7 @@ define(["angular", "js/controllers",
                 columnDefs: [
                     {field: 'get_numero_guia()', displayName: '# Guía', width: "5%"},
                     {field: 'get_transportadora().get_descripcion()', displayName: 'Transportador', width: "15%"},
-                    {field: 'get_ciudad().get_nombre_ciudad()', displayName: 'Ciudad Despacho', width: "15%"},
+                    {field: 'get_empresa()', displayName: 'Farmacia', width: "15%"},
                     {field: 'get_cantidad_cajas()', displayName: 'Cant. Cajas', width: "10%"},
                     {field: 'get_cantidad_neveras()', displayName: 'Cant. Neveras', width: "10%"},
                     {field: 'get_descripcion_estado()', displayName: "Estado", width: "15%"},

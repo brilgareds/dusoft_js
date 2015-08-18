@@ -5,8 +5,43 @@ var PlanillasFarmaciasModel = function() {
 
 PlanillasFarmaciasModel.prototype.listar_planillas_farmacias = function(fecha_inicial, fecha_final, termino_busqueda, callback) {
 
-
-    var sql = " select \
+    var sql = "select \
+                a.id_inv_planilla_farmacia_devolucion as id,\
+                a.id_inv_planilla_farmacia_devolucion as numero_guia,\
+                a.numero_guia_externo,\
+                b.transportadora_id, \
+                b.descripcion as nombre_transportadora,\
+                b.placa_vehiculo,\
+                b.estado as estado_transportadora,\
+                a.nombre_conductor, a.observacion,\
+                a.id_empresa_destino,\
+                (select r.razon_social from empresas r where r.empresa_id =a.id_empresa_destino)as empresa_destino,\
+                a.empresa_id,\
+                (select r.razon_social from empresas r where r.empresa_id =a.empresa_id ) as empresa_origen,  \
+                g.total_cajas,  \
+                g.total_neveras,  \
+                a.usuario_id,  \
+                f.nombre as nombre_usuario, \
+                a.estado, \
+                case when a.estado = 0 then 'Anulada' when a.estado = 1 then 'Activa'   when a.estado = 2 then 'Despachada' end as descripcion_estado, \
+                To_char(a.fecha_registro,'dd-mm-yyyy') as fecha_registro  \
+                from inv_planillas_farmacia_devolucion a \
+                inner join inv_transportadoras b on a.inv_transportador_id = b.transportadora_id  \
+                inner join system_usuarios f on a.usuario_id = f.usuario_id   \
+                left join ( select a.planilla_id, sum(a.cantidad_cajas) as total_cajas, \
+                sum(a.cantidad_neveras) as total_neveras \
+                from (select a.id_inv_planilla_farmacia_devolucion_detalle as planilla_id, \
+                a.cantidad_cajas, a.cantidad_neveras, 1 \
+                from inv_planillas_farmacia_devolucion_detalle a) as a group by 1) as g on a.id_inv_planilla_farmacia_devolucion = g.planilla_id \
+                INNER JOIN empresas h ON a.empresa_id = h.empresa_id  \
+                where a.fecha_registro between $1 and $2  \
+                and (\
+                a.id_inv_planilla_farmacia_devolucion ilike $3 \
+                or  b.descripcion ilike $3 \
+                or b.placa_vehiculo ilike $3 \
+                or a.nombre_conductor ilike $3 \
+                ) order by a.id_inv_planilla_farmacia_devolucion DESC;";
+  /*  var sql = " select \
                 a.id, \
                 a.id as numero_guia,\
                 a.numero_guia_externo,\
@@ -60,7 +95,7 @@ PlanillasFarmaciasModel.prototype.listar_planillas_farmacias = function(fecha_in
                     d.departamento ilike $3 or\
                     c.municipio ilike $3 or\
                     a.nombre_conductor ilike $3 \
-                ) order by a.id DESC; ";
+                ) order by a.id DESC; ";*/
 
     G.db.query(sql, [fecha_inicial, fecha_final, "%"+termino_busqueda+"%"], function(err, rows, result) {
         callback(err, rows);
@@ -218,7 +253,7 @@ PlanillasFarmaciasModel.prototype.ingresar_planilla_farmacia = function(empresa_
             VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)RETURNING id_inv_planilla_farmacia_devolucion;";
    
                      
-    G.db.query(sql, [empresa_id, centro_utilidad,bodega,id_empresa_destino, inv_transportador_id,nombre_conductor,observacion,numero_guia_externo,'0',usuario_id], function(err, rows, result) {
+    G.db.query(sql, [empresa_id, centro_utilidad,bodega,id_empresa_destino, inv_transportador_id,nombre_conductor,observacion,numero_guia_externo,'1',usuario_id], function(err, rows, result) {
         callback(err, rows, result);
         
     });

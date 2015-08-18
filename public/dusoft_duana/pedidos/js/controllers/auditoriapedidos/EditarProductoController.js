@@ -27,6 +27,7 @@ define(["angular", "js/controllers",
             $scope.rootEditarProducto.producto.lote.cantidad_ingresada = $scope.rootEditarProducto.producto.cantidad_separada;
             $scope.rootEditarProducto.lotes = [];
             $scope.rootEditarProducto.seleccionados = [];
+            $scope.rootEditarProducto.justificacionAuditor;
 
             $scope.justificaciones = [
                 {descripcion: "No hay fisico"},
@@ -458,7 +459,7 @@ define(["angular", "js/controllers",
 
             $scope.auditarPedido = function() {
 
-
+                console.log("rootEditarProducto.producto.lote.justificacion_auditor ", $scope.rootEditarProducto.producto.lote.justificacion_auditor)
                 $scope.rootEditarProducto.validacionproducto.valido = true;
 
 
@@ -616,10 +617,12 @@ define(["angular", "js/controllers",
                 return cantidad;
             };
 
-
+            $scope.justificacionSeleccionada = function(){
+                $scope.rootEditarProducto.producto.lote.justificacion_auditor = $scope.rootEditarProducto.justificacionAuditor.descripcion;
+            };
+            
             $scope.onSeleccionarCaja = function() {
                 $scope.imprimir = false;
-                console.log("items seleccionados ", $scope.lotes_producto.selectedItems);
                 if (that.cantidadItemsSeleccionados() === 0) {
                     $scope.rootEditarProducto.validacionproducto.valido = false;
                     $scope.rootEditarProducto.caja.setValida(false);

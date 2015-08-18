@@ -27,7 +27,7 @@ define(["angular", "js/controllers",
             $scope.documentos_usuarios = [];
             $scope.documento_temporal_id = "";
             $scope.usuario_id = "";
-            $scope.seleccion = {};
+            $scope.seleccion;
             $scope.documento_despacho = {};
             $scope.seleccion2 = 154;
             $scope.cajas = [];
@@ -113,8 +113,8 @@ define(["angular", "js/controllers",
                 //$scope.renderDetalleDocumentoTemporal($scope.DocumentoTemporal, data, paginando);
 
                 $scope.DocumentoTemporal.bodegas_doc_id = data.bodegas_doc_id;
-                $scope.seleccion.bodegas_doc_id = $scope.DocumentoTemporal.bodegas_doc_id;
-                that.seleccionarDocumentoDespacho($scope.seleccion.bodegas_doc_id);
+                that.seleccionarDocumentoDespacho(data.bodegas_doc_id);
+                $scope.seleccion.bodegas_doc_id = data.bodegas_doc_id;
 
                 //$('#id').select2('val',$scope.seleccion.bodegas_doc_id );
                 $scope.documento_temporal_id = data.doc_tmp_id;
@@ -324,6 +324,8 @@ define(["angular", "js/controllers",
                     
                     if (bodega_doc_id === doc.bodegas_doc_id) {
                         $scope.documento_despacho = doc;
+                        $scope.seleccion.prefijo = doc.prefijo;
+                        $scope.seleccion.descripcion  = doc.descripcion;
                         break;
                     }
                 }

@@ -26,19 +26,6 @@ define([
     "includes/helpersdirectives/visualizarReporte",
     "includes/validation/NgValidateEvents",
     "models/pedidos/EmpresaPedido",
-    /*"controllers/generarpedidos/CotizacionesController",
-    "controllers/generarpedidos/CreaCotizacionesController",
-    "controllers/generarpedidos/SeleccionClienteController",
-    "controllers/generarpedidos/SeleccionProductoClienteController",
-    "controllers/generarpedidos/SeleccionProductoFarmaciaController",
-    "controllers/generarpedidos/CreaPedidoFarmaciaController",
-    "controllers/generarpedidos/VerPedidosFarmaciasController",
-    "controllers/generarpedidos/VerPedidosTempFarmaciasController",
-    "controllers/generarpedidos/PedidosClientesVentasController",
-    "controllers/generarpedidos/MailPdfController",
-    "controllers/generarpedidos/ContenedorPedidosFarmaciasController",
-    "controllers/generarpedidos/AprobarCotizacionController",
-    "controllers/generarpedidos/AprobarPedidoController",*/
     "controllers/asignarpedidos/PedidosController",
     "controllers/asignarpedidos/PedidosClientesController",
     "controllers/asignarpedidos/PedidosFarmaciasController",
@@ -106,37 +93,12 @@ define([
                     url: "/AsignarPedidos",
                     text: "Asignar Pedidos",
                     templateUrl: "views/asignarpedidos/AsignarPedidos.html"
-                            //controller:"pedidoscontroller"
                 })
                 .state('AuditarPedidos', {
                     url: "/AuditarPedidos",
                     text: "Auditar Pedidos",
                     templateUrl: "views/auditoriapedidos/AuditoriaPedidos.html"
-                })
-                /*.state('PedidosClientes', {
-                    url: "/PedidosClientes",
-                    text: "Pedidos Clientes",
-                    templateUrl: "views/generarpedidos/pedidosclientes.html"
-                })
-                .state('CotizacionCliente', {
-                    url: "/CotizacionCliente",
-                    text: "Cotización Clientes",
-                    templateUrl: "views/generarpedidos/cotizacioncliente.html",
-                    parent_name: "PedidosClientes"
-                })
-                .state('VerPedidosFarmacias', {
-                    url: "/VerPedidosFarmacias",
-                    text: "Pedidos Farmacias",
-                    templateUrl: "views/generarpedidos/verpedidosfarmacias.html"
-                })
-                .state('CreaPedidosFarmacias', {
-                    url: "/CreaPedidosFarmacias",
-                    text: "Crear/Editar Pedidos Farmacias",
-                    templateUrl: "views/generarpedidos/creapedidosfarmacias.html",
-                    parent_name: "VerPedidosFarmacias"
-                })*/
-                
-                
+                })                
                 .state('ListarPedidosFarmacias',{
                     url: "/ListarPedidosFarmacias",
                     text: "Pedidos Farmacias",

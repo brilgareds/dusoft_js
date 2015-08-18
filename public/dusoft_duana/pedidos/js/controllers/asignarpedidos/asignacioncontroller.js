@@ -11,10 +11,9 @@ define(["angular", "js/controllers", 'models/asignacionpedidos/Separador'], func
             $scope.noAsignar = true;
             $scope.titulo = "Asignar Responsable";
             $scope.pedidosSeleccionados = pedidosSeleccionados;
-            $scope.idAsignado;
             $scope.dialog = false;
             $scope.msg = "";
-            $scope.operario_id = false;
+            $scope.operario;
             var that = this;
             
             console.log('=== Pedidos seleccionados ======');
@@ -34,11 +33,9 @@ define(["angular", "js/controllers", 'models/asignacionpedidos/Separador'], func
             });
 
 
-            $scope.valorSeleccionado = function(valor) {
-                console.log('=== valorSeleccionado ===');
-                console.log(valor);
+            $scope.valorSeleccionado = function() {
+                console.log($scope.operario);
                 $scope.noAsignar = false;
-                $scope.idAsignado = valor;
             };
 
             $scope.close = function() {
@@ -70,7 +67,7 @@ define(["angular", "js/controllers", 'models/asignacionpedidos/Separador'], func
                         asignacion_pedidos: {
                             pedidos: pedidos,
                             estado_pedido: "1",
-                            responsable: $scope.idAsignado
+                            responsable: $scope.operario.operario_id
                         }
                     }
                 };
@@ -93,8 +90,9 @@ define(["angular", "js/controllers", 'models/asignacionpedidos/Separador'], func
 
                 for (var i  in pedidosSeleccionados) {
                     var pedido = pedidosSeleccionados[i];
-                    if ((pedido.estado_actual_pedido !== '0' && pedido.estado_actual_pedido !== '1' && pedido.estado_actual_pedido !== '5' && pedido.estado_actual_pedido !== '8' )
-                            || pedido.estado === '2' || pedido.estado_separacion) {
+                    if ((pedido.estado_actual_pedido !== '0' && pedido.estado_actual_pedido !== '1' && 
+                         pedido.estado_actual_pedido !== '5' && pedido.estado_actual_pedido !== '8' )||
+                         pedido.estado === '2' || pedido.estado_separacion) {
                         pedidosSeleccionados.splice(i, 1);
                         $scope.validarEstado(pedidosSeleccionados);
                         break;
@@ -129,11 +127,11 @@ define(["angular", "js/controllers", 'models/asignacionpedidos/Separador'], func
                                 obj.nombre_operario,
                                 obj.operario_id,
                                 obj.total_pedidos_asignados
-                                );
+                        );
 
                         $scope.Empresa.agregarSeparador(
                                 separador
-                                );
+                        );
                     }
                 } else {
                     $scope.dialog = true;

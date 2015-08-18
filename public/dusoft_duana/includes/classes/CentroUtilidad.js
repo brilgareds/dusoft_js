@@ -11,8 +11,6 @@ define(["angular", "js/models"], function(angular, models) {
             this.empresaId = "";
             this.nombreEmpresa = "";
             this.bodega = undefined;
-            //this.clientes = []; 
-            //this.proveedores = [];
         };
 
         CentroUtilidad.prototype.setNombre = function(nombre) {

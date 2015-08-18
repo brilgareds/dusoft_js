@@ -48,10 +48,13 @@
             <div class="panel-body">
                 <div class="span6" style="width:250px;">
                     <!--textarea placeholder="Justificación por pendientes" ng-model="rootEditarProducto.producto.lote.justificacion_auditor" class="col-xs-12 textareajustificacion"></textarea-->
-                    <select ui-select2  class="form-control selectgeneral" ng-model="rootEditarProducto.producto.lote.justificacion_auditor"  placeholder="Seleccionar Justificacion" ng-change="justificacionSeleccionada()">
-                        <option></option>
-                        <option ng-repeat="justificacion in  justificaciones"  value="{{justificacion.descripcion}}" >{{::justificacion.descripcion}}</option>
-                    </select>
+                    
+                    <ui-select  ng-model="rootEditarProducto.justificacionAuditor" theme="select2" class="form-control selectgeneral pull-left" ng-change="justificacionSeleccionada()">
+                        <ui-select-match  placeholder="Seleccionar Documento">{{$select.selected.descripcion}}</ui-select-match>
+                        <ui-select-choices repeat="justificacion in  justificaciones| filter:$select.search">
+                            {{justificacion.descripcion}}
+                        </ui-select-choices>
+                    </ui-select>
                 </div>
             </div>
         </div>

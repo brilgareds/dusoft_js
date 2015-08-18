@@ -333,7 +333,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 };
 
                 Request.realizarRequest(API.TERCEROS.LISTAR_VENDEDORES, "POST", obj, function(data) {
-
+                    console.log('=== vendedores ===');
+                    console.log(data);
                     if (data.status === 200) {
                         that.render_vendedores(data.obj.listado_vendedores);
                         callback(true);
@@ -903,11 +904,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             that.init = function() {
 
-                if ($scope.Pedido.get_numero_cotizacion() > 0)
-                    that.gestionar_consultas_cotizaciones();
-
                 if ($scope.Pedido.get_numero_pedido() > 0)
                     that.gestionar_consultas_pedidos();
+                else
+                    that.gestionar_consultas_cotizaciones();
             };
 
 

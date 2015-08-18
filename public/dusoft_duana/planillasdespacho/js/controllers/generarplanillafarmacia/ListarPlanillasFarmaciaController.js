@@ -69,7 +69,7 @@ define(["angular", "js/controllers",
                 var obj = {
                     session: $scope.session,
                     data: {
-                        planillas_despachos: {
+                        listar_planillas_farmacias: {
                             fecha_inicial: $scope.datos_view.fecha_inicial + " 00:00:00",
                             fecha_final: $scope.datos_view.fecha_final + " 23:59:00",
                             termino_busqueda: $scope.datos_view.termino_busqueda
@@ -80,7 +80,7 @@ define(["angular", "js/controllers",
                 Request.realizarRequest(API.PLANILLAS_FARMACIAS.LISTAR_PLANILLAS_FARMACIAS, "POST", obj, function(data) {
 
                     if (data.status === 200) {
-                        that.render_planillas(data.obj.planillas_despachos);
+                        that.render_planillas(data.obj.listar_planillas_farmacias);
                     }
                 });
             };

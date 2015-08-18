@@ -23,7 +23,7 @@
                                         <h4>Seleccionar Cliente/Farmaciaaaaa</h4>                                        
                                     </div>
                                 </div>
-                                <div class="row">
+                               <!-- <div class="row">
                                     <div class="col-md-4">
                                         <p class="input-group col-md-12">
                                             <select ui-select2=""  class="form-control selectgeneral pull-left" ng-model="datos_view.opcion_predeterminada"  placeholder="Seleccionar Cliente/Farmacia" ng-change="seleccionar_cliente_farmacia()">                                                
@@ -53,9 +53,28 @@
                                             </div>
 
                                             <div class="" style="height: 500px" ng-grid="lista_remisiones_bodega" > </div>
+                                            <br>
+                                            <div class="row text-center">
+                                                <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 0" ng-click="paginaAnterior()">
+                                                    <span class="glyphicon glyphicon-chevron-left" ></span>
+                                                </button>
+                                                <button type="button" class="btn btn-default btn-medium" ng-disabled="items == 0" ng-click="paginaSiguiente()">
+                                                    <span class="glyphicon glyphicon-chevron-right" ></span>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div>//-->
+                               <div class="" style="height: 500px" ng-grid="lista_remisiones_bodega" > </div>
+                                            <br>
+                                            <div class="row text-center">
+                                                <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 0" ng-click="paginaAnterior()">
+                                                    <span class="glyphicon glyphicon-chevron-left" ></span>
+                                                </button>
+                                                <button type="button" class="btn btn-default btn-medium" ng-disabled="items == 0" ng-click="paginaSiguiente()">
+                                                    <span class="glyphicon glyphicon-chevron-right" ></span>
+                                                </button>
+                                            </div>
                             </div>
 
 

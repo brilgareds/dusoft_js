@@ -3,6 +3,10 @@ module.exports = function(app, di_container) {
 
     var c_planillas_farmacias = di_container.get("c_planillas_farmacias");
     
+     app.post('/api/PlanillasDevolucion/listar', function(req, res) {
+        c_planillas_farmacias.listarPlanillasFarmacias(req, res);
+    });
+    
     /**
      * @author Cristian Ardila
      * +Descripcion: path del servicio que ejecutara la funcion para listar las

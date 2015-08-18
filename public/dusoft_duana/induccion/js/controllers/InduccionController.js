@@ -40,13 +40,13 @@ define(["angular", "js/controllers",
 
                         $scope.buscar = {descripcion: ''};
                         that.paginaactual = 1;
-                        
+                         
                         
                         $scope.root.empresaSeleccionada.setCentroUtilidadSeleccionado(
                                 CentroUtilidadesInduccion.get(centroUtilidad.getNombre(), centroUtilidad.getCodigo())
                                 ).getCentroUtilidadSeleccionado().setBodegaSeleccionada(BodegasInduccion.get(bodega.getNombre(), bodega.getCodigo()));
                                 console.log($scope.root.empresaSeleccionada)
-                        callback();
+                        callback();  
                     }
 
                     /*

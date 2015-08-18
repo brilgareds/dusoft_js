@@ -5,6 +5,38 @@ var PlanillasFarmaciasController = function(PlanillasFarmacias) {
 
 };
 
+
+PlanillasFarmaciasController.prototype.listarPlanillasFarmacias = function(req, res) {
+
+    var that = this;
+
+
+    var args = req.body.data;
+
+    if (args.listar_planillas_farmacias === undefined || args.listar_planillas_farmacias.fecha_inicial === undefined || args.listar_planillas_farmacias.fecha_final === undefined || args.listar_planillas_farmacias.termino_busqueda === undefined) {
+        res.send(G.utils.r(req.url, 'fecha_inicial, fecha_final o termino_busqueda no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.listar_planillas_farmacias.fecha_inicial === '' || args.listar_planillas_farmacias.fecha_final === '') {
+        res.send(G.utils.r(req.url, 'fecha_inicial o fecha_final estan vacíos', 404, {}));
+        return;
+    }
+
+    var fecha_inicial = args.listar_planillas_farmacias.fecha_inicial;
+    var fecha_final = args.listar_planillas_farmacias.fecha_final;
+    var termino_busqueda = args.listar_planillas_farmacias.termino_busqueda;
+
+    that.m_planillas_farmacias.listar_planillas_farmacias(fecha_inicial, fecha_final, termino_busqueda, function(err, listar_planillas_farmacias) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error listando las planillas_farmacias', 500, {listar_planillas_farmacias: {}}));
+        } else {
+            res.send(G.utils.r(req.url, 'Lista de planillas_farmacias', 200, {listar_planillas_farmacias: listar_planillas_farmacias}));
+        }
+    });
+};
+
 /**
  * 
  * @param {type} req
@@ -51,7 +83,7 @@ PlanillasFarmaciasController.prototype.listar_documentos = function(req, res) {
     var empresa = parametros.empresa;
     var centroUtilidad = parametros.centroUtilidad;
     var bodega = parametros.bodega;
-
+    var pagina = parametros.pagina;
     /**
      * @type string parametros: arreglo con todos los parametros
      * @type string empresa: contiene el id de la empresa
@@ -80,7 +112,7 @@ PlanillasFarmaciasController.prototype.listar_documentos = function(req, res) {
     }
 
 
-    this.m_planillas_farmacias.obtenerTipoDocumento(empresa, centroUtilidad, bodega, function(err, listar_documentos) {
+    this.m_planillas_farmacias.obtenerTipoDocumento(empresa, centroUtilidad, bodega,pagina, function(err, listar_documentos) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Listado de documentos tipo EDB', 500, {listar_documentos: {}}));

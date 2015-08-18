@@ -436,7 +436,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $state.go('GestionarPlanillasFarmacias');
             };
 
-
+          //  console.log($scope.planilla.get_documentos());
             $scope.lista_documentos_bodega = {
                 data: 'planilla.get_documentos()',
                 enableColumnResize: true,
@@ -459,7 +459,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                     </div>\
                                  </div>',
                 columnDefs: [
-                    {field: 'get_tercero()', displayName: 'Cliente', width: "35%"},
+                   
                     {field: 'get_descripcion()', displayName: 'Documento', width: "25%"},
                     {field: 'get_cantidad_cajas()', displayName: 'Cant. Cajas', width: "10%"},
                     {field: 'get_cantidad_neveras()', displayName: 'Cant. Neveras', width: "10%"},

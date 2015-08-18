@@ -32,7 +32,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 if (cotizacion_pedido.get_numero_cotizacion() > 0) {
 
                     url = API.PEDIDOS.CLIENTES.REPORTE_COTIZACION;
-                    nombre_archivo = 'CotizacionNo.' + cotizacion_pedido.get_numero_cotizacion();
+                    nombre_archivo = 'CotizacionNo' + cotizacion_pedido.get_numero_cotizacion();
 
                     obj = {
                         session: $scope.session,
@@ -48,7 +48,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 if (cotizacion_pedido.get_numero_pedido() > 0) {
 
                     url = API.PEDIDOS.CLIENTES.REPORTE_PEDIDO;
-                    nombre_archivo = 'PedidoNo.' + cotizacion_pedido.get_numero_pedido();
+                    nombre_archivo = 'PedidoNo' + cotizacion_pedido.get_numero_pedido();
 
                     obj = {
                         session: $scope.session,

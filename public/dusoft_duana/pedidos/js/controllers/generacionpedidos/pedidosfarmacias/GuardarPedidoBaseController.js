@@ -75,9 +75,7 @@ define(["angular", "js/controllers",
                         }
                 ]
             };
-            
-          
-            
+
             /*
              * @Author: Eduar
              * @param {function} callback

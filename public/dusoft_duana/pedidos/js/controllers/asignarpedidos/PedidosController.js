@@ -5,10 +5,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
         
         function($scope, $rootScope, Usuario) {
 
-            $scope.selectestados = {
-                placeholder:"Seleccionar Estado"
-            };
-
             $scope.estados_pedido = [
                 {estado:"", nombre:"Todos"},
                 {estado:"no_asignados", nombre:"No Asignado"},
@@ -23,7 +19,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                 {estado:"despachado_pendientes", nombre:"Despachado con pendientes"}
             ];
 
-            $scope.estadoseleccionado = "";
+            $scope.estadoseleccionado ;
             
             
             var opciones = Usuario.getUsuarioActual().getModuloActual().opciones;

@@ -3,8 +3,6 @@
 define(["angular", 
     "js/controllers",
     'includes/slide/slideContent',
-    'models/generarpedidos/ClientePedido',
-    'models/generarpedidos/PedidoVenta',
     "models/generacionpedidos/pedidosfarmacias/FarmaciaPedido",
     "models/generacionpedidos/pedidosfarmacias/CentroUtilidadPedidoFarmacia",
     "models/generacionpedidos/pedidosfarmacias/BodegaPedidoFarmacia",
@@ -14,13 +12,11 @@ define(["angular",
 
     controllers.controller('PedidosFarmaciaController', [
         '$scope', '$rootScope', 'Request',
-        'EmpresaPedidoFarmacia', 'FarmaciaVenta', 'PedidoVenta',
-        'API', "socket", "AlertService",
+        'EmpresaPedidoFarmacia', 'API', "socket", "AlertService",
         '$state', "Usuario", "localStorageService", "$modal",
         "PedidosFarmaciasService",
         function($scope, $rootScope, Request,
-                 EmpresaPedidoFarmacia, FarmaciaVenta, PedidoVenta, 
-                 API, socket, AlertService, 
+                 EmpresaPedidoFarmacia, API, socket, AlertService, 
                  $state, Usuario, localStorageService, $modal,
                  PedidosFarmaciasService) {
                      

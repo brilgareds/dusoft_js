@@ -12,7 +12,14 @@ define(["angular", "js/services"], function(angular, services) {
             var self = this;
             
             self.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
-                        
+            
+            
+            /*
+             * @Author: Eduar
+             * @param {PedidoFarmacia} pedido
+             * +Descripcion: Permite que los controladores de pedidos farmacias obtengan los permisos en los botones, se valida con el objeto pedid
+             * de ser necesario
+             */            
             self.getOpcionesModulo = function(pedido) {
                 
                 var _opciones =    {

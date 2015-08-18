@@ -1,8 +1,10 @@
 
-var E008Events = function(socket, m_e008) {
+var E008Events = function(socket, m_e008, m_pedidos_farmacias, m_pedidos_clientes) {
     console.log("Eventos E008 Cargado ");
     this.io = socket;
     this.m_e008 = m_e008;
+    this.m_pedidos_farmacias = m_pedidos_farmacias;
+    this.m_pedidos_clientes = m_pedidos_clientes;
 };
 
 // Consultar el tiempo de separacion del pedido de clientes
@@ -94,10 +96,23 @@ E008Events.prototype.onNotificarDocumentosTemporalesClientes = function(datos) {
     var that = this;
 
     that.m_e008.consultar_documento_temporal_clientes(datos.numero_pedido, function(err, documento_temporal) {
+        
+        
+        var i = documento_temporal.length;
 
-        var response = G.utils.r('onListarDocumentosTemporalesClientes', 'Lista Documentos Temporales Clientes', 200, {documento_temporal_clientes: documento_temporal});
+        documento_temporal.forEach(function(documento) {
 
-        that.io.sockets.emit('onListarDocumentosTemporalesClientes', response);
+            that.m_pedidos_clientes.obtener_responsables_del_pedido(documento.numero_pedido, function(err, responsables) {
+                documento.responsables = responsables;
+                if (--i === 0) {
+                    var response = G.utils.r('onListarDocumentosTemporalesClientes', 'Lista Documentos Temporales Clientes', 200, {documento_temporal_clientes: documento_temporal});
+
+                    that.io.sockets.emit('onListarDocumentosTemporalesClientes', response);
+                }
+            });
+        });
+        
+
     });
 };
 
@@ -107,14 +122,28 @@ E008Events.prototype.onNotificarDocumentosTemporalesFarmacias = function(datos) 
     var that = this;
 
     that.m_e008.consultar_documento_temporal_farmacias(datos.numero_pedido, function(err, documento_temporal) {
+        
+        
+        var i = documento_temporal.length;
 
-        var response = G.utils.r('onListarDocumentosTemporalesFarmacias', 'Lista Documentos Temporales Farmacias', 200, {documento_temporal_farmacias: documento_temporal});
+            documento_temporal.forEach(function(documento) {
 
-        that.io.sockets.emit('onListarDocumentosTemporalesFarmacias', response);
+                that.m_pedidos_farmacias.obtener_responsables_del_pedido(documento.numero_pedido, function(err, responsables) {
+                    documento.responsables = responsables;
+                    if (--i === 0) {
+
+                        var response = G.utils.r('onListarDocumentosTemporalesFarmacias', 'Lista Documentos Temporales Farmacias', 200, {documento_temporal_farmacias: documento_temporal});
+
+                        that.io.sockets.emit('onListarDocumentosTemporalesFarmacias', response);
+                    }
+                });
+            });
+        
+
     });
 };
 
 
-E008Events.$inject = ["socket", "m_e008"];
+E008Events.$inject = ["socket", "m_e008", "m_pedidos_farmacias", "m_pedidos_clientes"];
 
 module.exports = E008Events;

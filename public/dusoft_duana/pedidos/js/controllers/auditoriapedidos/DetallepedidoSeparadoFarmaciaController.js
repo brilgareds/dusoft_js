@@ -26,7 +26,7 @@ define(["angular", "js/controllers",
             $scope.documentos_usuarios = [];
             $scope.documento_temporal_id = "";
             $scope.usuario_id = "";
-            $scope.seleccion = {};
+            $scope.seleccion;
             $scope.documento_despacho = {};
             $scope.cajas = [];
             $scope.seleccion_caja = "";
@@ -133,8 +133,8 @@ define(["angular", "js/controllers",
                 }
 
                 $scope.DocumentoTemporal.bodegas_doc_id = data.bodegas_doc_id;
-                $scope.seleccion = $scope.DocumentoTemporal.bodegas_doc_id;
-                that.seleccionarDocumentoDespacho($scope.seleccion);
+                that.seleccionarDocumentoDespacho(data.bodegas_doc_id);
+                $scope.seleccion.bodegas_doc_id = data.bodegas_doc_id;
                 //$scope.renderDetalleDocumentoTemporal($scope.DocumentoTemporal, data, paginando);
 
                 $scope.documento_temporal_id = data.doc_tmp_id;
@@ -258,23 +258,24 @@ define(["angular", "js/controllers",
             });
 
             $scope.valorSeleccionado = function() {
-                that.seleccionarDocumentoDespacho($scope.seleccion);
+
+                that.seleccionarDocumentoDespacho($scope.seleccion.bodegas_doc_id);
                 var obj = {
                     session: $scope.session,
                     data: {
                         documento_temporal: {
                             documento_temporal_id: $scope.DocumentoTemporal.documento_temporal_id,
                             usuario_id: $scope.usuario_id,
-                            bodegas_doc_id: $scope.seleccion,
+                            bodegas_doc_id: $scope.seleccion.bodegas_doc_id,
                             numero_pedido: $scope.numero_pedido,
                             auditor: $scope.DocumentoTemporal.auditor.usuario_id
                         }
                     }
                 };
-
+               
                 $scope.validarDocumentoUsuario(obj, 2, function(data) {
                     if (data.status === 200) {
-                        $scope.DocumentoTemporal.bodegas_doc_id = $scope.seleccion;
+                        $scope.DocumentoTemporal.bodegas_doc_id = $scope.seleccion.bodegas_doc_id;
                         $scope.DocumentoTemporal.auditor.usuario_id = $scope.session.usuario_id;
                         AlertService.mostrarMensaje("success", data.msj);
                     } else {
@@ -290,6 +291,8 @@ define(["angular", "js/controllers",
                     var doc = $scope.documentos_usuarios[i];
                     if (bodega_doc_id === doc.bodegas_doc_id) {
                         $scope.documento_despacho = doc;
+                        $scope.seleccion.prefijo = doc.prefijo;
+                        $scope.seleccion.descripcion  = doc.descripcion;
                         console.log("documento seleccionado ", doc);
                         break;
                     }

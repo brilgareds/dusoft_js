@@ -99,17 +99,6 @@ define(["angular",
 
             };
             
-            
-           $scope.ventanaEnviarEmail = function(pedido) {
-               console.log("farmacia destino" ,pedido.getFarmaciaOrigen())
-               PedidosFarmaciasService.ventanaEnviarEmail($scope.rootPedidosFarmacias.session, pedido,function(err, archivo){
-                    if(err.err){
-                        AlertService.mostrarMensaje("warning", err.msj);
-                    } else if(archivo) {
-                        $scope.visualizarReporte("/reports/" + archivo, archivo, "download");
-                    }
-                });
-            };
             /*
              * @Author: Eduar
              * @param {Array<object>} pedidos
@@ -202,7 +191,47 @@ define(["angular",
 
                 });
             };
+            
+            /*
+             * @Author: Eduar
+             * @param {PedidoFarmacia} pedido
+             * +Descripcion: Permite reemplazar un objeto pedido que viene del socket
+             */
+            self.reemplazarPedidoEstado = function(pedido) {
+                var empresa = $scope.rootPedidosFarmacias.empresaSeleccionada;
+                if(empresa!== undefined){
+                    
+                    for (var i in empresa.obtenerPedidos() ) {
+                        var _pedido = empresa.obtenerPedidos()[i];
 
+                        if (_pedido.get_numero_pedido() === pedido.numero_pedido) {
+
+                            _pedido.setDatos(pedido);
+
+                            break;
+                        }
+                    }
+                
+                }
+                
+            };
+            
+          /*
+           * @Author: Eduar
+           * @param {string} estado
+           * +Descripcion: Handler del boton enviar email
+           */
+                        
+           $scope.ventanaEnviarEmail = function(pedido) {
+               PedidosFarmaciasService.ventanaEnviarEmail($scope.rootPedidosFarmacias.session, pedido,function(err, archivo){
+                    if(err.err){
+                        AlertService.mostrarMensaje("warning", err.msj);
+                    } else if(archivo) {
+                        $scope.visualizarReporte("/reports/" + archivo, archivo, "download");
+                    }
+                });
+            };
+            
             /*
              * @Author: Eduar
              * @param {string} estado
@@ -317,27 +346,6 @@ define(["angular",
                 }
             }); 
             
-            
-            self.reemplazarPedidoEstado = function(pedido) {
-                var empresa = $scope.rootPedidosFarmacias.empresaSeleccionada;
-                if(empresa!== undefined){
-                    
-                    for (var i in empresa.obtenerPedidos() ) {
-                        var _pedido = empresa.obtenerPedidos()[i];
-
-                        if (_pedido.get_numero_pedido() === pedido.numero_pedido) {
-                            /*_pedido.descripcion_estado_actual_pedido = pedido.descripcion_estado_actual_pedido;
-                            _pedido.estado_actual_pedido = pedido.estado_actual_pedido;
-                            _pedido.estado_separacion = pedido.estado_separacion;*/
-                            _pedido.setDatos(pedido);
-
-                            break;
-                        }
-                    }
-                
-                }
-                
-            };
             
             localStorageService.remove("pedidoFarmacia");
             self.buscarPedidos();

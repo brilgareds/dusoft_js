@@ -2,9 +2,7 @@
 
 define(["angular",
     "js/controllers",
-    'includes/slide/slideContent',
-    'models/generarpedidos/ClientePedido',
-    'models/generarpedidos/PedidoVenta'], function(angular, controllers) {
+    'includes/slide/slideContent'], function(angular, controllers) {
 
     controllers.controller('ListaPedidosTemporalesController', [
         '$scope', '$rootScope', 'Request',

@@ -11,7 +11,6 @@ define(["angular",
         'PedidoAuditoria', 'API', "socket", "$timeout",
         "AlertService", "Usuario", "localStorageService", "$state",
         function($scope, $rootScope, Request, $modal, Empresa, Cliente, PedidoAuditoria, API, socket, $timeout, AlertService, Usuario, localStorageService, $state) {
-            console.log("cliente controller ======")
             $scope.Empresa = Empresa;
             Empresa.setNombre("Duana");
 
@@ -48,8 +47,8 @@ define(["angular",
                     }
                 };
 
-                if ($scope.estadoseleccionado !== "") {
-                    obj.data.pedidos_clientes.filtro[$scope.estadoseleccionado] = true;
+                if ($scope.estadoseleccionado !== undefined) {
+                    obj.data.pedidos_clientes.filtro[$scope.estadoseleccionado.estado] = true;
                 }
 
 
@@ -61,8 +60,6 @@ define(["angular",
                     } else {
                         AlertService.mostrarMensaje("warning", data.msj);
                     }
-                    //Mostrar data en consola
-                    console.log("Información de la data: ", data);
                 });
             };
 
@@ -89,7 +86,7 @@ define(["angular",
 
                     $scope.Empresa.agregarPedido(
                             pedido
-                            );
+                    );
 
 
                 }

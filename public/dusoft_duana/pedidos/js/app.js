@@ -26,7 +26,7 @@ define([
     "includes/helpersdirectives/visualizarReporte",
     "includes/validation/NgValidateEvents",
     "models/pedidos/EmpresaPedido",
-    "controllers/generarpedidos/CotizacionesController",
+    /*"controllers/generarpedidos/CotizacionesController",
     "controllers/generarpedidos/CreaCotizacionesController",
     "controllers/generarpedidos/SeleccionClienteController",
     "controllers/generarpedidos/SeleccionProductoClienteController",
@@ -38,7 +38,7 @@ define([
     "controllers/generarpedidos/MailPdfController",
     "controllers/generarpedidos/ContenedorPedidosFarmaciasController",
     "controllers/generarpedidos/AprobarCotizacionController",
-    "controllers/generarpedidos/AprobarPedidoController",
+    "controllers/generarpedidos/AprobarPedidoController",*/
     "controllers/asignarpedidos/PedidosController",
     "controllers/asignarpedidos/PedidosClientesController",
     "controllers/asignarpedidos/PedidosFarmaciasController",
@@ -113,7 +113,7 @@ define([
                     text: "Auditar Pedidos",
                     templateUrl: "views/auditoriapedidos/AuditoriaPedidos.html"
                 })
-                .state('PedidosClientes', {
+                /*.state('PedidosClientes', {
                     url: "/PedidosClientes",
                     text: "Pedidos Clientes",
                     templateUrl: "views/generarpedidos/pedidosclientes.html"
@@ -134,7 +134,7 @@ define([
                     text: "Crear/Editar Pedidos Farmacias",
                     templateUrl: "views/generarpedidos/creapedidosfarmacias.html",
                     parent_name: "VerPedidosFarmacias"
-                })
+                })*/
                 
                 
                 .state('ListarPedidosFarmacias',{

@@ -313,7 +313,7 @@ PedidosFarmaciasModel.prototype.insertar_producto_detalle_pedido_farmacia = func
 };
 
 //depreciado
-PedidosFarmaciasModel.prototype.consultar_encabezado_pedido = function(numero_pedido, callback) {
+/*PedidosFarmaciasModel.prototype.consultar_encabezado_pedido = function(numero_pedido, callback) {
     var sql = "SELECT farmacia_id, centro_utilidad, bodega, observacion, usuario_id, fecha_registro, empresa_destino, sw_despacho, estado, \
                 tipo_pedido, centro_destino, bodega_destino, solicitud_prod_a_bod_ppal_id as numero_pedido\
                 FROM solicitud_productos_a_bodega_principal\
@@ -322,7 +322,7 @@ PedidosFarmaciasModel.prototype.consultar_encabezado_pedido = function(numero_pe
     G.db.query(sql, [numero_pedido], function(err, rows, result) {
         callback(err, rows);
     });
-};
+};*/
 
 //depreciado
 /*PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedido, callback)

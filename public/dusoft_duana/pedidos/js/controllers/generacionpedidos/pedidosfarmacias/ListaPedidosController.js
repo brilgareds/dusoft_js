@@ -10,12 +10,12 @@ define(["angular",
         'EmpresaPedidoFarmacia', 'FarmaciaPedido', 'PedidoFarmacia',
         'CentroUtilidadPedidoFarmacia', 'BodegaPedidoFarmacia',
         'API', "socket", "AlertService",
-        '$state', "Usuario", "localStorageService", "$modal","ListaPedidosFarmaciasService",
+        '$state', "Usuario", "localStorageService", "$modal","PedidosFarmaciasService",
         function($scope, $rootScope, Request,
                 EmpresaPedidoFarmacia, FarmaciaPedido, PedidoFarmacia,
                 CentroUtilidadPedidoFarmacia, BodegaPedidoFarmacia,
                 API, socket, AlertService, $state, Usuario,
-                localStorageService, $modal, ListaPedidosFarmaciasService) {
+                localStorageService, $modal, PedidosFarmaciasService) {
 
             var self = this;
 
@@ -26,7 +26,7 @@ define(["angular",
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
             };
-
+            
 
             var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
 
@@ -78,15 +78,18 @@ define(["angular",
                     cellTemplate: '<div class="btn-group">\
                                         <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" >Acción<span class="caret"></span></button>\
                                         <ul class="dropdown-menu dropdown-options">\
-                                            <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)" ng-if="rootPedidosFarmacias.opciones.sw_modificar_pedido">\n\
-                                                <a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity, \'1\')" ng-validate-events="{{rootPedidosFarmacias.opcionesModulo.btnModificarPedido}}" >Modificar</a>\
+                                            <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)">\n\
+                                                <a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity, \'1\')" ng-validate-events="{{root.servicio.getOpcionesModulo().btnModificarPedido}}" >Modificar</a>\
                                             </li>\
-                                            <li><a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity, \'2\')" ng-validate-events="{{rootPedidosFarmacias.opcionesModulo.btnConsultarPedido}}">Ver</a></li>\
-                                            <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)" ng-if="rootPedidosFarmacias.opciones.sw_modificacion_especial_pedidos">\
-                                                <a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity, \'3\')" ng-validate-events="{{rootPedidosFarmacias.opcionesModulo.btnModificarEspecialPedido}}" >Modificación Especial</a>\
+                                            <li><a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity, \'2\')" ng-validate-events="{{root.servicio.getOpcionesModulo().btnVerPedido}}">Ver</a></li>\
+                                            <li ng-show="!(row.entity.estado_actual_pedido != 0 || row.entity.estado_separacion != null)">\
+                                                <a href="javascript:void(0);" ng-click="onVerPedidoFarmacia(row.entity, \'3\')" ng-validate-events="{{root.servicio.getOpcionesModulo().btnModificacionEspecial}}" >Modificación Especial</a>\
                                             </li>\
                                             <li ng-if="row.entity.getTieneDespacho()">\
                                                 <a href="javascript:void(0);" ng-click="imprimirDespacho(row.entity)">Documento Despacho</a>\
+                                            </li>\
+                                            <li ng-if="false">\
+                                                <a href="javascript:void(0);" ng-click="ventanaEnviarEmail(row.entity)">Enviar Email</a>\
                                             </li>\
                                         </ul>\n\
                                     </div>'
@@ -95,7 +98,18 @@ define(["angular",
                 ]
 
             };
-
+            
+            
+           $scope.ventanaEnviarEmail = function(pedido) {
+               console.log("farmacia destino" ,pedido.getFarmaciaOrigen())
+               PedidosFarmaciasService.ventanaEnviarEmail($scope.rootPedidosFarmacias.session, pedido,function(err, archivo){
+                    if(err.err){
+                        AlertService.mostrarMensaje("warning", err.msj);
+                    } else if(archivo) {
+                        $scope.visualizarReporte("/reports/" + archivo, archivo, "download");
+                    }
+                });
+            };
             /*
              * @Author: Eduar
              * @param {Array<object>} pedidos
@@ -108,7 +122,7 @@ define(["angular",
 
                     var obj = pedidos[i];
 
-                    var pedido = ListaPedidosFarmaciasService.crearPedido(obj);
+                    var pedido = PedidosFarmaciasService.crearPedido(obj);
                     
                     pedido.setTieneDespacho(obj.tiene_despacho).
                     setDespachoEmpresaId(obj.despacho_empresa_id).
@@ -290,6 +304,40 @@ define(["angular",
                 $state.go('GuardarPedido');
              
              };
+             
+             
+             //referencia del socket io
+            socket.on("onListarPedidosFarmacias", function(datos) {
+
+                if (datos.status === 200) {
+                    console.log("pedido del socket ", datos);
+                    var pedido = datos.obj.pedidos_farmacias[0];
+                    self.reemplazarPedidoEstado(pedido);
+
+                }
+            }); 
+            
+            
+            self.reemplazarPedidoEstado = function(pedido) {
+                var empresa = $scope.rootPedidosFarmacias.empresaSeleccionada;
+                if(empresa!== undefined){
+                    
+                    for (var i in empresa.obtenerPedidos() ) {
+                        var _pedido = empresa.obtenerPedidos()[i];
+
+                        if (_pedido.get_numero_pedido() === pedido.numero_pedido) {
+                            /*_pedido.descripcion_estado_actual_pedido = pedido.descripcion_estado_actual_pedido;
+                            _pedido.estado_actual_pedido = pedido.estado_actual_pedido;
+                            _pedido.estado_separacion = pedido.estado_separacion;*/
+                            _pedido.setDatos(pedido);
+
+                            break;
+                        }
+                    }
+                
+                }
+                
+            };
             
             localStorageService.remove("pedidoFarmacia");
             self.buscarPedidos();

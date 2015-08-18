@@ -95,56 +95,25 @@ define(["angular"], function(angular) {
                 'CENTROS_UTILIDAD_FARMACIAS': BASE_URL + '/PedidosFarmacias/listarCentrosUtilidad',
                 'BODEGAS_FARMACIAS': BASE_URL + '/PedidosFarmacias/listarBodegas',
                 'LISTAR_PRODUCTOS': BASE_URL + '/Productos/listarProductos', 
-                'LISTAR_PRODUCTOS_FARMACIAS': BASE_URL + '/PedidosFarmacias/listarProductos',//depreciado
-                'CREAR_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/crearPedidoTemporal', //depreciado
-                'CREAR_DETALLE_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/ingresarDetallePedidoTemporal',//depreciado
-                'EXISTE_REGISTRO_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/existeRegistroEncabezadoTemporal',//depreciado
                 'EXISTE_REGISTRO_DETALLE_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/existeRegistroDetalleTemporal',
-                'EXISTE_REGISTRO_DETALLE_PEDIDO': BASE_URL + '/PedidosFarmacias/existeRegistroDetallePedido',//depreciado
-                'CONSULTAR_ENCABEZADO_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/consultarPedidoFarmaciaTemporal',//depreciado
-                'LISTAR_DETALLE_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/listarProductosDetalleTemporal',//depreciado
                 'ELIMINAR_REGISTRO_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/eliminarRegistroEncabezadoTemporal',
-                'ELIMINAR_REGISTRO_DETALLE_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/eliminarRegistroDetalleTemporal',//depreciado
-                'ELIMINAR_PEDIDO_TEMPORAL': BASE_URL + '/PedidosFarmacias/eliminarPedidoTemporal',//depreciado
-                'INSERTAR_PEDIDO_FARMACIA_DEFINITIVO': BASE_URL + '/PedidosFarmacias/insertarPedidoFarmacia',//depreciado
-                'INSERTAR_DETALLE_PEDIDO_FARMACIA_DEFINITIVO': BASE_URL + '/PedidosFarmacias/insertarDetallePedidoFarmacia',//depreciado
-                'INSERTAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/insertarProductoDetallePedidoFarmacia',//depreciado
-                'CONSULTAR_ENCABEZADO_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/consultarEncabezadoPedido',//depreciado
-                'CONSULTAR_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/consultarDetallePedido',//depreciado
-                'ACTUALIZAR_CANTIDADES_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/actualizarCantidadesDetallePedido',//depreciado
-                'ELIMINAR_PRODUCTO_DETALLE_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/eliminarProductoDetallePedidoFinal',//depreciado
-                'LISTADO_TIPO_PRODUCTOS': BASE_URL + '/Productos/listarTipoProductos',//deprecido
-                'ARCHIVO_PLANO_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/pedidoFarmaciaArchivoPlano',//depreciado
-                'IMPRIMIR_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/imprimirPedidoFarmacia',//depreciado
                 'ACTUALIZAR_ESTADO_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/actualizarEstadoActualPedido',
                 'LISTADO_PEDIDOS_TEMPORALES_FARMACIAS': BASE_URL + '/PedidosFarmacias/listarPedidosTemporalesFarmacias',
                 'ACTUALIZAR_ENCABEZADO_TEMPORAL_PEDIDO_FARMACIA': BASE_URL + '/PedidosFarmacias/actualizarRegistroEncabezadoTemporal',
-                //'LISTAR_PRODUCTOS_CLIENTES': BASE_URL + '/PedidosClientes/listarProductosClientes', // ------- url clientes => Pdte remover ---
-                'BUSCAR_USUARIO_BLOQUEO': BASE_URL + '/PedidosFarmacias/buscarUsuarioBloqueo', //depreciado
-                //'CREAR_COTIZACION': BASE_URL + '/PedidosClientes/insertarCotizacion',
-                //'INSERTAR_DETALLE_COTIZACION': BASE_URL + '/PedidosClientes/insertarDetalleCotizacion',
-                //'LISTAR_COTIZACIONES': BASE_URL + '/PedidosClientes/listarCotizaciones',
                 'CONSULTA_ESTADO_COTIZACION': BASE_URL + '/PedidosClientes/estadoCotizacion',
-                //'LISTAR_DETALLE_COTIZACION': BASE_URL + '/PedidosClientes/listarDetalleCotizacion',
-                //'ELIMINAR_REGISTRO_DETALLE_COTIZACION': BASE_URL + '/PedidosClientes/eliminarRegistroDetalleCotizacion',
                 'CAMBIAR_ESTADO_COTIZACION': BASE_URL + '/PedidosClientes/cambiarEstadoCotizacion',
                 'CAMBIAR_ESTADO_APROBACION_COTIZACION': BASE_URL + '/PedidosClientes/cambiarEstadoAprobacionCotizacion',
-                //'ARCHIVO_PLANO_PEDIDO_CLIENTE': BASE_URL + '/PedidosClientes/pedidoClienteArchivoPlano',
                 'IMPRIMIR_COTIZACION_CLIENTE': BASE_URL + '/PedidosClientes/imprimirCotizacionCliente',
                 'LISTADO_PEDIDOS_CLIENTES': BASE_URL + '/PedidosClientes/listadoPedidosClientes',
                 'INSERTAR_PEDIDO_CLIENTE': BASE_URL + '/PedidosClientes/insertarPedidoCliente',
                 'LISTAR_DETALLE_PEDIDO': BASE_URL + '/PedidosClientes/listarDetallePedido',
                 'CONSULTA_ESTADO_PEDIDO': BASE_URL + '/PedidosClientes/estadoPedido',
-                //'INSERTAR_DETALLE_PEDIDO_CLIENTE': BASE_URL + '/PedidosClientes/insertarDetallePedido',
                 'ELIMINAR_REGISTRO_DETALLE_PEDIDO': BASE_URL + '/PedidosClientes/eliminarRegistroDetallePedido',
                 'IMPRIMIR_PEDIDO_CLIENTE': BASE_URL + '/PedidosClientes/imprimirPedidoCliente',
                 'MODIFICAR_CANTIDADES_COTIZACION': BASE_URL + '/PedidosClientes/modificarCantidadesCotizacion',
                 'MODIFICAR_CANTIDADES_PEDIDO': BASE_URL + '/PedidosClientes/modificarCantidadesPedido',
                 'CONSULTAR_PRODUCTO_EN_FARMACIA': BASE_URL + '/PedidosFarmacias/consultarProductoEnFarmacia',
-                'ACTUALIZAR_ENCABEZADO_PEDIDO_DEFINITIVO': BASE_URL + '/PedidosFarmacias/actualizarEncabezadoPedidoDefinitivo',//depreciado
-                'CAMBIAR_ESTADO_APROBACION_PEDIDO': BASE_URL + '/PedidosClientes/cambiarEstadoAprobacionPedido',
-                //'CONSULTAR_ENCABEZADO_COTIZACION_CLIENTE': BASE_URL + '/PedidosClientes/consultarEncabezadoCotizacion',
-                //'CONSULTAR_ENCABEZADO_PEDIDO_CLIENTE': BASE_URL + '/PedidosClientes/consultarEncabezadoPedido'
+                'CAMBIAR_ESTADO_APROBACION_PEDIDO': BASE_URL + '/PedidosClientes/cambiarEstadoAprobacionPedido'
             },
             'TERCEROS': {
                 'LISTAR_OPERARIOS': BASE_URL + "/Terceros/operariosBodega/listar",

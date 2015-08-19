@@ -79,6 +79,24 @@ define(["angular", "js/controllers",
                 ]
             };
 
+            // Validar Seleccion Empresa Centro Bodega
+            that.validacion_inicial = function() {
+
+                var empresa = Sesion.getUsuarioActual().getEmpresa();
+
+                if (!empresa) {
+                    $rootScope.$emit("onIrAlHome", {mensaje: "Para Ingresar a Pedidos Clientes : Se debe seleccionar una Empresa", tipo: "warning"});
+                    return;
+                } else if (!empresa.getCentroUtilidadSeleccionado()) {
+                    $rootScope.$emit("onIrAlHome", {mensaje: "Para Ingresar a Pedidos Clientes : Se debe seleccionar un Centro de Utilidad", tipo: "warning"});
+                    return;
+                } else if (!empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada()) {
+                    $rootScope.$emit("onIrAlHome", {mensaje: "Para Ingresar a Pedidos Clientes : Se debe seleccionar una Bodega", tipo: "warning"});
+                    return;
+                }
+            };
+
+
             // Acciones Botones 
             $scope.gestionar_cotizacion_cliente = function() {
 
@@ -164,9 +182,14 @@ define(["angular", "js/controllers",
 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_COTIZACIONES, "POST", obj, function(data) {
 
-                    $scope.datos_view.ultima_busqueda_cotizaciones = $scope.datos_view.termino_busqueda_cotizaciones;
+                    if (data.status === 500) {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                        return;
+                    }
 
                     if (data.status === 200) {
+
+                        $scope.datos_view.ultima_busqueda_cotizaciones = $scope.datos_view.termino_busqueda_cotizaciones;
 
                         $scope.datos_view.cantidad_items_cotizaciones = data.obj.pedidos_clientes.lista_cotizaciones.length;
 
@@ -376,8 +399,14 @@ define(["angular", "js/controllers",
             };
 
 
-            that.buscar_cotizaciones();
-            that.buscar_pedidos();
+            that.init = function() {
+                that.validacion_inicial();
+                that.buscar_cotizaciones();
+                that.buscar_pedidos();
+            };
+
+
+            that.init();
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;

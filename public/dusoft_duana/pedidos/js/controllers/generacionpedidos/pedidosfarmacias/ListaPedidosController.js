@@ -65,6 +65,7 @@ define(["angular",
                 data: 'rootPedidosFarmacias.empresaSeleccionada.obtenerPedidos()',
                 enableColumnResize: true,
                 enableRowSelection: false,
+                enableHighlighting:true,
                 columnDefs: [
                     {field: 'descripcion_estado_actual_pedido', displayName: 'Estado', cellClass: "txt-center", visible: $scope.rootPedidosFarmacias.opciones.sw_ver_columna_estado_pedidos,
                         cellTemplate: "<button ng-class='agregarClase(row.entity.estado_actual_pedido)'> <span ng-class='agregarRestriccion(row.entity.estado_separacion)'></span> {{row.entity.descripcion_estado_actual_pedido}} </button>"},

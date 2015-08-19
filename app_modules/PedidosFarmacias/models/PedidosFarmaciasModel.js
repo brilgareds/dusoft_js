@@ -440,16 +440,16 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
                 a.usuario_id, \
                 e.nombre as nombre_usuario ,\
                 a.estado as estado_actual_pedido, \
-                case when a.estado = 0 then 'No Asignado' \
-                     when a.estado = 1 then 'Asignado' \
-                     when a.estado = 2 then 'Auditado' \
-                     when a.estado = 3 then 'En Zona Despacho' \
-                     when a.estado = 4 then 'Despachado' \
-                     when a.estado = 5 then 'Despachado con Pendientes' \
-                     when a.estado = 6 then 'Separacion Finalizada' \
-                     when a.estado = 7 then 'En Auditoria'  \
-                     when a.estado = 8 then 'Auditado con pdtes' \
-                     when a.estado = 9 then 'En zona con pdtes' end as descripcion_estado_actual_pedido, \
+                case when a.estado = '0' then 'No Asignado' \
+                     when a.estado = '1' then 'Asignado' \
+                     when a.estado = '2' then 'Auditado' \
+                     when a.estado = '3' then 'En Zona Despacho' \
+                     when a.estado = '4' then 'Despachado' \
+                     when a.estado = '5' then 'Despachado con Pendientes' \
+                     when a.estado = '6' then 'Separacion Finalizada' \
+                     when a.estado = '7' then 'En Auditoria'  \
+                     when a.estado = '8' then 'Auditado con pdtes' \
+                     when a.estado = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido, \
                 f.estado as estado_separacion, \
                 to_char(a.fecha_registro, 'dd-mm-yyyy') as fecha_registro,\
                 c.descripcion as nombre_centro_utilidad,\
@@ -467,7 +467,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
                 left join inv_bodegas_movimiento_tmp_despachos_farmacias f on a.solicitud_prod_a_bod_ppal_id = f.solicitud_prod_a_bod_ppal_id  \
                 left join inv_bodegas_movimiento_despachos_farmacias g on a.solicitud_prod_a_bod_ppal_id = g.solicitud_prod_a_bod_ppal_id \
                 where a.farmacia_id = $1 " + sql_aux + "\
-                and ( a.solicitud_prod_a_bod_ppal_id ilike $2 \
+                and ( a.solicitud_prod_a_bod_ppal_id :: varchar ilike $2 \
                       or d.razon_social ilike $2 \
                       or b.descripcion ilike $2 \
                       or e.nombre ilike $2 ) \
@@ -526,16 +526,16 @@ PedidosFarmaciasModel.prototype.consultar_pedido = function(numero_pedido, callb
                 a.usuario_id, \
                 e.nombre as nombre_usuario ,\
                 a.estado as estado_actual_pedido, \
-                case when a.estado = 0 then 'No Asignado' \
-                     when a.estado = 1 then 'Asignado' \
-                     when a.estado = 2 then 'Auditado' \
-                     when a.estado = 3 then 'En Zona Despacho' \
-                     when a.estado = 4 then 'Despachado' \
-                     when a.estado = 5 then 'Despachado con Pendientes' \
-                     when a.estado = 6 then 'Separacion Finalizada'  \
-                     when a.estado = 7 then 'En auditoria'  \
-                     when a.estado = 8 then 'Auditado con pdtes'  \
-                     when a.estado = 9 then 'En zona con pdtes' end as descripcion_estado_actual_pedido, \
+                case when a.estado = '0' then 'No Asignado' \
+                     when a.estado = '1' then 'Asignado' \
+                     when a.estado = '2' then 'Auditado' \
+                     when a.estado = '3' then 'En Zona Despacho' \
+                     when a.estado = '4' then 'Despachado' \
+                     when a.estado = '5' then 'Despachado con Pendientes' \
+                     when a.estado = '6' then 'Separacion Finalizada'  \
+                     when a.estado = '7' then 'En auditoria'  \
+                     when a.estado = '8' then 'Auditado con pdtes'  \
+                     when a.estado = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido, \
                 f.estado as estado_separacion, \
                 to_char(a.fecha_registro, 'dd-mm-yyyy HH24:MI:SS.MS') as fecha_registro, \
                 a.fecha_registro as fecha_registro_pedido,\
@@ -655,16 +655,16 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                 a.usuario_id, \
                 e.nombre as nombre_usuario ,\
                 a.estado as estado_actual_pedido, \
-                case when a.estado = 0 then 'No Asignado' \
-                     when a.estado = 1 then 'Asignado' \
-                     when a.estado = 2 then 'Auditado' \
-                     when a.estado = 3 then 'En Zona Despacho' \
-                     when a.estado = 4 then 'Despachado' \
-                     when a.estado = 5 then 'Despachado con Pendientes' \
-                     when a.estado = 6 then 'Separacion Finalizada' \
-                     when a.estado = 7 then 'En Auditoria'  \
-                     when a.estado = 8 then 'Auditado con pdtes'  \
-                     when a.estado = 9 then 'En zona con pdtes' end as descripcion_estado_actual_pedido, \
+                case when a.estado = '0' then 'No Asignado' \
+                     when a.estado = '1' then 'Asignado' \
+                     when a.estado = '2' then 'Auditado' \
+                     when a.estado = '3' then 'En Zona Despacho' \
+                     when a.estado = '4' then 'Despachado' \
+                     when a.estado = '5' then 'Despachado con Pendientes' \
+                     when a.estado = '6' then 'Separacion Finalizada' \
+                     when a.estado = '7' then 'En Auditoria'  \
+                     when a.estado = '8' then 'Auditado con pdtes'  \
+                     when a.estado = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido, \
                 h.estado as estado_separacion,     \
                 case when h.estado = '0' then 'Separacion en Proceso' \
                      when h.estado = '1' then 'Separacion Finalizada' \
@@ -686,7 +686,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                 where " + sql_aux + " \
                  a.estado = "+estado_pedido+" /*AND a.sw_despacho = 0*/ \
                 and (\
-                    a.solicitud_prod_a_bod_ppal_id ilike $1 or\
+                    a.solicitud_prod_a_bod_ppal_id :: varchar ilike $1 or\
                     d.razon_social ilike  $1 or\
                     b.descripcion ilike $1 or\
                     e.nombre  ilike $1 \

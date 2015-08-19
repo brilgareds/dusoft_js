@@ -37,6 +37,7 @@ define(["angular",
                 data: 'rootPedidosTempFarmacias.empresaSeleccionada.obtenerPedidos()',
                 enableColumnResize: true,
                 enableRowSelection: false,
+                enableHighlighting:true,
                 columnDefs: [
                     {field: 'farmaciaDestino.nombre_farmacia', displayName: 'Farmacia', width: "15%"},
                     {field: 'farmaciaDestino.getCentroUtilidadSeleccionado().getNombre()', displayName: 'Centro Utilidad', width: "15%"},

@@ -76,8 +76,11 @@ define(["angular", "js/controllers",
                     "btn btn-primary btn-xs",
                     "btn btn-primary btn-xs",
                     "btn btn-info btn-xs"
-                ]
+                ],
+                // Opciones del Modulo 
+                opciones: Sesion.getUsuarioActual().getModuloActual().opciones
             };
+
 
             // Validar Seleccion Empresa Centro Bodega
             that.validacion_inicial = function() {
@@ -94,6 +97,30 @@ define(["angular", "js/controllers",
                     $rootScope.$emit("onIrAlHome", {mensaje: "Para Ingresar a Pedidos Clientes : Se debe seleccionar una Bodega", tipo: "warning"});
                     return;
                 }
+            };
+
+            // cargar permisos del modulo
+            that.cargar_permisos = function() {
+                
+                // Permisos para Cotizaciones
+                $scope.datos_view.permisos_cotizaciones = {
+                    btn_crear_cotizaciones: {
+                        'click': $scope.datos_view.opciones.sw_crear_cotizacion
+                    },                    
+                    btn_visualizar_cotizaciones: {
+                        'click': $scope.datos_view.opciones.sw_visualizar_cotizacion
+                    },                    
+                    btn_cartera_cotizaciones: {
+                        'click': $scope.datos_view.opciones.sw_observacion_cartera_cotizaciones
+                    },                    
+                    btn_reporte_cotizaciones: {
+                        'click': $scope.datos_view.opciones.sw_reporte_cotizaciones
+                    },                    
+                    btn_email_cotizaciones: {
+                        'click': $scope.datos_view.opciones.sw_enviar_email_cotizaciones
+                    }                    
+                };
+                
             };
 
 
@@ -246,7 +273,7 @@ define(["angular", "js/controllers",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li ng-if="row.entity.get_estado_cotizacion() == \'0\' " ><a href="javascript:void(0);" ng-click="visualizar(row.entity)" >Visualizar</a></li>\
+                                                <li ng-if="row.entity.get_estado_cotizacion() == \'0\' " ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_visualizar_cotizaciones }}" ng-click="visualizar(row.entity)" >Visualizar</a></li>\
                                                 <li ng-if="row.entity.get_estado_cotizacion() != \'0\' " ><a href="javascript:void(0);" ng-click="modificar_cotizacion_cliente(row.entity)" >Modificar</a></li>\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ habilitar_observacion_cartera(row.entity) }}" ng-click="generar_observacion_cartera(row.entity)" >Cartera</a></li>\
                                                 <li><a href="javascript:void(0);" ng-click="generar_reporte(row.entity,false)" >Ver PDF</a></li>\
@@ -405,6 +432,9 @@ define(["angular", "js/controllers",
 
             that.init = function() {
                 that.validacion_inicial();
+                
+                that.cargar_permisos();
+                
                 that.buscar_cotizaciones();
                 that.buscar_pedidos();
             };

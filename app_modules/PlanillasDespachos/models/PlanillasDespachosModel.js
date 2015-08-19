@@ -27,9 +27,9 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function(fecha_in
                 a.usuario_id,\
                 f.nombre as nombre_usuario,\
                 a.estado,\
-                case when a.estado = 0 then 'Anulada' \
-                     when a.estado = 1 then 'Activa' \
-                     when a.estado = 2 then 'Despachada' end as descripcion_estado, \
+                case when a.estado = '0' then 'Anulada' \
+                     when a.estado = '1' then 'Activa' \
+                     when a.estado = '2' then 'Despachada' end as descripcion_estado, \
                 To_char(a.fecha_registro,'dd-mm-yyyy') as fecha_registro,\
                 To_char(a.fecha_despacho,'dd-mm-yyyy') as fecha_despacho\
                 from inv_planillas_despacho a \
@@ -53,7 +53,7 @@ PlanillasDespachosModel.prototype.listar_planillas_despachos = function(fecha_in
                   ) as g on a.id = g.planilla_id\
                 where a.fecha_registro between $1 and $2 \
                 and (\
-                    a.id ilike $3 or\
+                    a.id::varchar ilike $3 or\
                     b.descripcion ilike $3 or\
                     b.placa_vehiculo ilike $3 or\
                     e.pais ilike $3 or\
@@ -169,9 +169,9 @@ PlanillasDespachosModel.prototype.consultar_planilla_despacho = function(planill
                 a.usuario_id,\
                 f.nombre as nombre_usuario,\
                 a.estado,\
-                case when a.estado = 0 then 'Anulada' \
-                     when a.estado = 1 then 'Activa' \
-                     when a.estado = 2 then 'Despachada' end as descripcion_estado, \
+                case when a.estado = '0' then 'Anulada' \
+                     when a.estado = '1' then 'Activa' \
+                     when a.estado = '2' then 'Despachada' end as descripcion_estado, \
                 To_char(a.fecha_registro,'dd-mm-yyyy') as fecha_registro,\
                 To_char(a.fecha_despacho,'dd-mm-yyyy') as fecha_despacho\
                 from inv_planillas_despacho a \

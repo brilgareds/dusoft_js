@@ -135,19 +135,19 @@ DocuemntoBodegaE008.prototype.consultar_documentos_temporales_clientes = functio
                 e.vendedor_id as idetificacion_vendedor, \
                 e.nombre as nombre_vendedor, \
                 c.estado,\
-                case when c.estado = 0 then 'Inactivo' \
-                     when c.estado = 1 then 'Activo' end as descripcion_estado,\
+                case when c.estado = '0' then 'Inactivo' \
+                     when c.estado = '1' then 'Activo' end as descripcion_estado,\
                 c.estado_pedido as estado_actual_pedido, \
-                case when c.estado_pedido = 0 then 'No Asignado' \
-                     when c.estado_pedido = 1 then 'Asignado' \
-                     when c.estado_pedido = 2 then 'Auditado' \
-                     when c.estado_pedido = 3 then 'En Zona Despacho' \
-                     when c.estado_pedido = 4 then 'Despachado'\
-                     when c.estado_pedido = 5 then 'Despachado con Pendientes' \
-                     when c.estado_pedido = 6 then 'Separacion Finalizada'     \
-                     when c.estado_pedido = 7 then 'En Auditoria'     \
-                     when c.estado_pedido = 8 then 'Auditado con pdtes'   \
-                     when c.estado_pedido = 9 then 'En zona con pdtes' end as descripcion_estado_actual_pedido,    \
+                case when c.estado_pedido = '0' then 'No Asignado' \
+                     when c.estado_pedido = '1' then 'Asignado' \
+                     when c.estado_pedido = '2' then 'Auditado' \
+                     when c.estado_pedido = '3' then 'En Zona Despacho' \
+                     when c.estado_pedido = '4' then 'Despachado'\
+                     when c.estado_pedido = '5' then 'Despachado con Pendientes' \
+                     when c.estado_pedido = '6' then 'Separacion Finalizada'     \
+                     when c.estado_pedido = '7' then 'En Auditoria'     \
+                     when c.estado_pedido = '8' then 'Auditado con pdtes'   \
+                     when c.estado_pedido = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido,    \
                 a.estado as estado_separacion,     \
                 case when a.estado = '0' then 'Separacion en Proceso' \
                      when a.estado = '1' then 'Separacion Finalizada' \
@@ -162,7 +162,7 @@ DocuemntoBodegaE008.prototype.consultar_documentos_temporales_clientes = functio
                 inner join vnts_vendedores e on c.tipo_id_vendedor = e.tipo_id_vendedor and c.vendedor_id = e.vendedor_id \
                 where c.empresa_id = $1 " + sql_aux + "\
                 and (\
-                     a.pedido_cliente_id ilike $2 or\
+                     a.pedido_cliente_id :: varchar ilike $2 or\
                      d.tercero_id ilike $2 or\
                      d.nombre_tercero  ilike $2 or\
                      e.vendedor_id ilike $2 or\
@@ -207,16 +207,16 @@ DocuemntoBodegaE008.prototype.consultar_documentos_temporales_farmacias = functi
                 c.usuario_id as usuario_genero,\
                 g.nombre as nombre_usuario,\
                 c.estado as esta_actual_pedido,\
-                case when c.estado = 0 then 'No Asignado' \
-                     when c.estado = 1 then 'Asignado' \
-                     when c.estado = 2 then 'Auditado' \
-                     when c.estado = 3 then 'En Zona Despacho' \
-                     when c.estado = 4 then 'Despachado' \
-                     when c.estado = 5 then 'Despachado con Pendientes' \
-                     when c.estado = 6 then 'Separacion Finalizada' \
-                     when c.estado = 7 then 'En Auditoria'  \
-                     when c.estado = 8 then 'Auditado con pdtes'  \
-                     when c.estado = 9 then 'En zona con pdtes' end as descripcion_estado_actual_pedido, \
+                case when c.estado = '0' then 'No Asignado' \
+                     when c.estado = '1' then 'Asignado' \
+                     when c.estado = '2' then 'Auditado' \
+                     when c.estado = '3' then 'En Zona Despacho' \
+                     when c.estado = '4' then 'Despachado' \
+                     when c.estado = '5' then 'Despachado con Pendientes' \
+                     when c.estado = '6' then 'Separacion Finalizada' \
+                     when c.estado = '7' then 'En Auditoria'  \
+                     when c.estado = '8' then 'Auditado con pdtes'  \
+                     when c.estado = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido, \
                 a.estado as estado_separacion,\
                 case when a.estado = '0' then 'Separacion en Proceso' \
                      when a.estado = '1' then 'Separacion Finalizada' \
@@ -232,7 +232,7 @@ DocuemntoBodegaE008.prototype.consultar_documentos_temporales_farmacias = functi
                 inner join system_usuarios g ON c.usuario_id = g.usuario_id \
                 where " +sql_empresa + sql_aux + "\
                 and (\
-                        a.solicitud_prod_a_bod_ppal_id ilike $2 or\
+                        a.solicitud_prod_a_bod_ppal_id :: varchar ilike $2 or\
                         f.razon_social ilike $2 or\
                         d.descripcion ilike $2 or\
                         g.nombre ilike $2 \
@@ -260,8 +260,8 @@ DocuemntoBodegaE008.prototype.consultar_documento_temporal_clientes = function(n
                 e.vendedor_id as idetificacion_vendedor, \
                 e.nombre as nombre_vendedor, \
                 c.estado,\
-                case when c.estado = 0 then 'Inactivo' \
-                     when c.estado = 1 then 'Activo' end as descripcion_estado,\
+                case when c.estado = '0' then 'Inactivo' \
+                     when c.estado = '1' then 'Activo' end as descripcion_estado,\
                 c.estado_pedido as estado_actual_pedido, \
                 case when c.estado_pedido = '0' then 'No Asignado' \
                      when c.estado_pedido = '1' then 'Asignado' \

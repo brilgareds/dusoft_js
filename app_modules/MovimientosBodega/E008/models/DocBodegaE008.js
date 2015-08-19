@@ -260,8 +260,8 @@ DocuemntoBodegaE008.prototype.consultar_documento_temporal_clientes = function(n
                 e.vendedor_id as idetificacion_vendedor, \
                 e.nombre as nombre_vendedor, \
                 c.estado,\
-                case when c.estado = 0 then 'Inactivo' \
-                     when c.estado = 1 then 'Activo' end as descripcion_estado,\
+                case when c.estado = '0' then 'Inactivo' \
+                     when c.estado = '1' then 'Activo' end as descripcion_estado,\
                 c.estado_pedido as estado_actual_pedido, \
                 case when c.estado_pedido = '0' then 'No Asignado' \
                      when c.estado_pedido = '1' then 'Asignado' \

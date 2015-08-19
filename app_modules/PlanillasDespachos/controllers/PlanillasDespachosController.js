@@ -499,6 +499,8 @@ PlanillasDespachos.prototype.despacharPlanilla = function(req, res) {
     that.m_planillas_despachos.consultar_documentos_planilla_despacho(planilla_id, '', function(err, documentos_planilla) {
 
         if (err || documentos_planilla.length === 0) {
+            console.log('==================>');
+            console.log(err, documentos_planilla);
             res.send(G.utils.r(req.url, 'Error Interno code 1', 500, {planillas_despachos: []}));
             return;
         } else {
@@ -640,15 +642,24 @@ function __despachar_documentos_planilla(contexto, i, documentos_planilla, resul
         var usuario_id = documento.usuario_id;
 
         that.m_e008.consultar_documento_despacho(numero, prefijo, empresa_id, usuario_id, function(err, documento_bodega) {
-
-            if (err || documento_bodega.length === 0) {
+            
+            console.log('==========');
+            console.log(err, documento_bodega);
+            console.log('==========');
+            
+            if (err /*|| documento_bodega.length === 0*/) {
                 resultado.continuar = false;
                 resultado.msj += ' Error Interno code 1. ';
 
                 __despachar_documentos_planilla(contexto, ++i, documentos_planilla, resultado, callback);
 
             } else {
-
+                
+                if (tipo === '2') {
+                    __despachar_documentos_planilla(contexto, ++i, documentos_planilla, resultado, callback);
+                    return;
+                }
+                
                 documento_bodega = documento_bodega[0];
 
                 var numero_pedido = documento_bodega.numero_pedido;
@@ -709,10 +720,11 @@ function __despachar_documentos_planilla(contexto, i, documentos_planilla, resul
                         });
                     });
                 }
-
-                if (tipo === '2') {
+                
+                // Otras Empresas 
+                /*if (tipo === '2') {
                     __despachar_documentos_planilla(contexto, ++i, documentos_planilla, resultado, callback);
-                }
+                }*/
             }
         });
 

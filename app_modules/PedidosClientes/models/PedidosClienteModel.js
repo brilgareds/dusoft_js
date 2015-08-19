@@ -421,7 +421,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
     // asignados al operario de bodega y saber si el pedido tiene temporales o 
     // fue finalizado correctamente.
     /*=========================================================================*/
-    var estado_pedido = '1';
+    var estado_pedido = 1;
     if (filtro !== undefined) {
 
         if (filtro.asignados) {
@@ -452,21 +452,21 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
                 c.vendedor_id as idetificacion_vendedor, \
                 c.nombre as nombre_vendedor, \
                 a.estado, \
-                case when a.estado = 0 then 'Inactivo' \
-                     when a.estado = 1 then 'Activo' \
-                     when a.estado = 2 then 'Anulado' \
-                     when a.estado = 3 then 'Entregado' end as descripcion_estado, \
+                case when a.estado = '0' then 'Inactivo' \
+                     when a.estado = '1' then 'Activo' \
+                     when a.estado = '2' then 'Anulado' \
+                     when a.estado = '3' then 'Entregado' end as descripcion_estado, \
                 a.estado_pedido as estado_actual_pedido, \
-                case when a.estado_pedido = 0 then 'No Asignado' \
-                     when a.estado_pedido = 1 then 'Asignado' \
-                     when a.estado_pedido = 2 then 'Auditado' \
-                     when a.estado_pedido = 3 then 'En Zona Despacho' \
-                     when a.estado_pedido = 4 then 'Despachado' \
-                     when a.estado_pedido = 5 then 'Despachado con Pendientes' \
-                     when a.estado_pedido = 6 then 'Separacion Finalizada' \
-                     when a.estado_pedido = 7 then 'En Auditoria'\
-                     when a.estado_pedido = 8 then 'Auditado con pdtes' \
-                     when a.estado_pedido = 9 then 'En zona con pdtes' end as descripcion_estado_actual_pedido,\
+                case when a.estado_pedido = '0' then 'No Asignado' \
+                     when a.estado_pedido = '1' then 'Asignado' \
+                     when a.estado_pedido = '2' then 'Auditado' \
+                     when a.estado_pedido = '3' then 'En Zona Despacho' \
+                     when a.estado_pedido = '4' then 'Despachado' \
+                     when a.estado_pedido = '5' then 'Despachado con Pendientes' \
+                     when a.estado_pedido = '6' then 'Separacion Finalizada' \
+                     when a.estado_pedido = '7' then 'En Auditoria'\
+                     when a.estado_pedido = '8' then 'Auditado con pdtes' \
+                     when a.estado_pedido = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido,\
                 f.estado as estado_separacion,     \
                 case when f.estado = '0' then 'Separacion en Proceso' \
                      when f.estado = '1' then 'Separacion Finalizada' end as descripcion_estado_separacion,\
@@ -483,10 +483,10 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
                 left join inv_bodegas_movimiento_tmp_despachos_clientes f on a.pedido_cliente_id = f.pedido_cliente_id\
                 left join inv_bodegas_movimiento_tmp g on f.usuario_id = g.usuario_id and f.doc_tmp_id = g.doc_tmp_id \
                 where " + sql_aux + " \
-                a.estado_pedido = " + estado_pedido + " \
+                a.estado_pedido = '" + estado_pedido + "' \
                 /*AND (a.estado IN ('1'))*/   \
                 and (\
-                        a.pedido_cliente_id ilike $1 or\
+                        a.pedido_cliente_id :: varchar ilike $1 or\
                         b.tercero_id ilike $1 or\
                         b.nombre_tercero  ilike $1 or\
                         c.vendedor_id ilike $1 or\
@@ -745,16 +745,16 @@ PedidosClienteModel.prototype.obtener_responsables_del_pedido = function(numero_
     var sql = " select \
                 a.pedido_cliente_id as numero_pedido,  \
                 a.estado,\
-                case when a.estado=0 then 'No Asignado'\
-                     when a.estado=1 then 'Asignado'\
-                     when a.estado=2 then 'Auditado'\
-                     when a.estado=3 then 'En Zona Despacho' \
-                     when a.estado=4 then 'Despachado'\
-                     when a.estado=5 then 'Despachado con Pendientes' \
-                     when a.estado=6 then 'Separacion Finalizada' \
-                     when a.estado=7 then 'En Auditoria'\
-                     when a.estado=8 then 'Auditado con pdtes' \
-                     when a.estado=9 then 'En zona con pdtes' end as descripcion_estado,\
+                case when a.estado='0' then 'No Asignado'\
+                     when a.estado='1' then 'Asignado'\
+                     when a.estado='2' then 'Auditado'\
+                     when a.estado='3' then 'En Zona Despacho' \
+                     when a.estado='4' then 'Despachado'\
+                     when a.estado='5' then 'Despachado con Pendientes' \
+                     when a.estado='6' then 'Separacion Finalizada' \
+                     when a.estado='7' then 'En Auditoria'\
+                     when a.estado='8' then 'Auditado con pdtes' \
+                     when a.estado='9' then 'En zona con pdtes' end as descripcion_estado,\
                 b.operario_id,\
                 b.nombre as nombre_responsable,\
                 b.usuario_id as usuario_id_responsable,\

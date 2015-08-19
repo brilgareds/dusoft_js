@@ -621,7 +621,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
     // asignados al operario de bodega y saber si el pedido tiene temporales o 
     // fue finalizado correctamente.
     /*=========================================================================*/
-    var estado_pedido = '1';
+    var estado_pedido = 1;
     if (filtro !== undefined) {
 
         if (filtro.asignados) {
@@ -684,7 +684,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                 left join inv_bodegas_movimiento_tmp_despachos_farmacias h on a.solicitud_prod_a_bod_ppal_id = h.solicitud_prod_a_bod_ppal_id \
                 left join inv_bodegas_movimiento_tmp i on h.doc_tmp_id = i.doc_tmp_id and h.usuario_id = i.usuario_id \
                 where " + sql_aux + " \
-                 a.estado = "+estado_pedido+" /*AND a.sw_despacho = 0*/ \
+                 a.estado = '"+estado_pedido+"' /*AND a.sw_despacho = 0*/ \
                 and (\
                     a.solicitud_prod_a_bod_ppal_id :: varchar ilike $1 or\
                     d.razon_social ilike  $1 or\
@@ -787,16 +787,16 @@ PedidosFarmaciasModel.prototype.obtener_responsables_del_pedido = function(numer
     var sql = " select \
                 a.solicitud_prod_a_bod_ppal_id as numero_pedido,  \
                 a.estado,\
-                case when a.estado=0 then 'Registrado'\
-                     when a.estado=1 then 'Asignado'\
-                     when a.estado=2 then 'Auditado'\
-                     when a.estado=3 then 'En Zona Despacho' \
-                     when a.estado=4 then 'Despachado' \
-                     when a.estado=5 then 'Despachado con Pendientes' \
-                     when a.estado=6 then 'Separacion Finalizada' \
-                     when a.estado=7 then 'En Auditoria' \
-                     when a.estado=8 then 'Auditado con pdtes' \
-                     when a.estado=9 then 'En zona con pdtes' end as descripcion_estado,\
+                case when a.estado='0' then 'Registrado'\
+                     when a.estado='1' then 'Asignado'\
+                     when a.estado='2' then 'Auditado'\
+                     when a.estado='3' then 'En Zona Despacho' \
+                     when a.estado='4' then 'Despachado' \
+                     when a.estado='5' then 'Despachado con Pendientes' \
+                     when a.estado='6' then 'Separacion Finalizada' \
+                     when a.estado='7' then 'En Auditoria' \
+                     when a.estado='8' then 'Auditado con pdtes' \
+                     when a.estado='9' then 'En zona con pdtes' end as descripcion_estado,\
                 b.operario_id,\
                 b.nombre as nombre_responsable,\
                 b.usuario_id as usuario_id_responsable,\

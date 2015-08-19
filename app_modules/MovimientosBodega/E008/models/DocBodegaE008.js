@@ -263,16 +263,16 @@ DocuemntoBodegaE008.prototype.consultar_documento_temporal_clientes = function(n
                 case when c.estado = 0 then 'Inactivo' \
                      when c.estado = 1 then 'Activo' end as descripcion_estado,\
                 c.estado_pedido as estado_actual_pedido, \
-                case when c.estado_pedido = 0 then 'No Asignado' \
-                     when c.estado_pedido = 1 then 'Asignado' \
-                     when c.estado_pedido = 2 then 'Auditado' \
-                     when c.estado_pedido = 3 then 'En Zona Despacho' \
-                     when c.estado_pedido = 4 then 'Despachado'\
-                     when c.estado_pedido = 5 then 'Despachado con Pendientes' \
-                     when c.estado_pedido = 6 then 'Separacion Finalizada'     \
-                     when c.estado_pedido = 7 then 'En Auditoria'   \
-                     when c.estado_pedido = 8 then 'Auditado con pdtes'     \
-                     when c.estado_pedido = 9 then 'En zona con pdtes' end as descripcion_estado_actual_pedido,    \
+                case when c.estado_pedido = '0' then 'No Asignado' \
+                     when c.estado_pedido = '1' then 'Asignado' \
+                     when c.estado_pedido = '2' then 'Auditado' \
+                     when c.estado_pedido = '3' then 'En Zona Despacho' \
+                     when c.estado_pedido = '4' then 'Despachado'\
+                     when c.estado_pedido = '5' then 'Despachado con Pendientes' \
+                     when c.estado_pedido = '6' then 'Separacion Finalizada'     \
+                     when c.estado_pedido = '7' then 'En Auditoria'   \
+                     when c.estado_pedido = '8' then 'Auditado con pdtes'     \
+                     when c.estado_pedido = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido,    \
                 a.estado as estado_separacion,     \
                 case when a.estado = '0' then 'Separacion en Proceso' \
                      when a.estado = '1' then 'Separacion Finalizada' \
@@ -310,16 +310,16 @@ DocuemntoBodegaE008.prototype.consultar_documento_temporal_farmacias = function(
                 c.usuario_id as usuario_genero,\
                 g.nombre as nombre_usuario,\
                 c.estado as esta_actual_pedido,\
-                case when c.estado = 0 then 'No Asignado' \
-                     when c.estado = 1 then 'Asignado' \
-                     when c.estado = 2 then 'Auditado' \
-                     when c.estado = 3 then 'En Zona Despacho' \
-                     when c.estado = 4 then 'Despachado' \
-                     when c.estado = 5 then 'Despachado con Pendientes' \
-                     when c.estado = 6 then 'Separacion Finalizada' \
-                     when c.estado = 7 then 'En Auditoria'  \
-                     when c.estado = 8 then 'Auditado con pdtes'  \
-                     when c.estado = 9 then 'En zona con pdtes' end as descripcion_estado_actual_pedido, \
+                case when c.estado = '0' then 'No Asignado' \
+                     when c.estado = '1' then 'Asignado' \
+                     when c.estado = '2' then 'Auditado' \
+                     when c.estado = '3' then 'En Zona Despacho' \
+                     when c.estado = '4' then 'Despachado' \
+                     when c.estado = '5' then 'Despachado con Pendientes' \
+                     when c.estado = '6' then 'Separacion Finalizada' \
+                     when c.estado = '7' then 'En Auditoria'  \
+                     when c.estado = '8' then 'Auditado con pdtes'  \
+                     when c.estado = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido, \
                 a.estado as estado_separacion,\
                 case when a.estado = '0' then 'Separacion en Proceso' \
                      when a.estado = '1' then 'Separacion Finalizada' \

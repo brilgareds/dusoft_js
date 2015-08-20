@@ -110,7 +110,7 @@ define(["angular", "js/controllers",
                     planilla.set_cantidad_cajas(data.total_cajas);
                     planilla.set_cantidad_neveras(data.total_neveras);
                     $scope.Empresa.set_planillas(planilla);
-                });
+                });   
                 
                 console.log($scope.Empresa.get_planillas())
             };

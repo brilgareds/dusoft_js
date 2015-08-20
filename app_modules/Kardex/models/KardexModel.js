@@ -366,7 +366,7 @@ KardexModel.prototype.obtener_movimientos_productos = function(empresa_id, centr
             "   ) " +
             " ) AS DATOS ORDER BY DATOS.fecha ;";
 
-
+    console.log("ambiente de trabajo es ", G.settings.env);
     var sql = (G.settings.env === 'prod') ? sql_produccion : sql_pruebas;
 
     G.db.query(sql, [empresa_id, centro_utilidad_id, bodega_id, codigo_producto, fecha_inicial, fecha_final], function(err, rows, result) {

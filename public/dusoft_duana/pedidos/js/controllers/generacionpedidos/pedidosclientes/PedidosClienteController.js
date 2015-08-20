@@ -611,6 +611,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 data: 'Pedido.get_productos()',
                 enableColumnResize: true,
                 enableRowSelection: false,
+                enableCellSelection: true,
+                enableHighlighting: true,
                 showFooter: true,
                 footerTemplate: '<div class="row col-md-12">\
                                     <div class="col-md-3 pull-right">\

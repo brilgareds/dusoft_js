@@ -490,9 +490,9 @@ OrdenesCompraModel.prototype.listar_recepciones_mercancia = function(fecha_inici
                 a.contiene_medicamentos,\
                 a.contiene_dispositivos,\
                 a.estado,\
-                CASE WHEN a.estado = 0 THEN 'Anulada' \
-                     WHEN a.estado = 1 THEN 'Activa' \
-                     WHEN a.estado = 2 THEN 'Finalizada' END as descripcion_estado, \
+                CASE WHEN a.estado = '0' THEN 'Anulada' \
+                     WHEN a.estado = '1' THEN 'Activa' \
+                     WHEN a.estado = '2' THEN 'Finalizada' END as descripcion_estado, \
                 to_char(a.fecha_recepcion,'dd-mm-yyyy') as fecha_recepcion,\
                 to_char(a.fecha_registro,'dd-mm-yyyy') as fecha_registro\
                 from recepcion_mercancia a\
@@ -505,11 +505,11 @@ OrdenesCompraModel.prototype.listar_recepciones_mercancia = function(fecha_inici
                 (\
                     d.tercero_id ilike $3 or\
                     d.nombre_tercero ilike $3 or\
-                    a.orden_pedido_id ilike $3 or \
+                    a.orden_pedido_id::varchar ilike $3 or \
                     e.descripcion ilike $3 or\
                     a.numero_guia ilike $3 or\
-                    a.numero_factura ilike $3 \
-                ) order by a.fecha_registro DESC";
+                    a.numero_factura::varchar ilike $3 \
+                ) order by a.fecha_registro DESC ";
 
     G.db.pagination(sql, [fecha_inicial, fecha_final, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
         callback(err, rows);
@@ -548,9 +548,9 @@ OrdenesCompraModel.prototype.consultar_recepcion_mercancia = function(recepcion_
                 a.contiene_medicamentos,\
                 a.contiene_dispositivos,\
                 a.estado,\
-                CASE WHEN a.estado = 0 THEN 'Anulada' \
-                     WHEN a.estado = 1 THEN 'Activa' \
-                     WHEN a.estado = 2 THEN 'Finalizada' END as descripcion_estado, \
+                CASE WHEN a.estado = '0' THEN 'Anulada' \
+                     WHEN a.estado = '1' THEN 'Activa' \
+                     WHEN a.estado = '2' THEN 'Finalizada' END as descripcion_estado, \
                 to_char(a.fecha_recepcion,'dd-mm-yyyy') as fecha_recepcion,\
                 to_char(a.hora_recepcion,'HH24:MI:SS') as hora_recepcion,\
                 to_char(a.fecha_registro,'dd-mm-yyyy') as fecha_registro\

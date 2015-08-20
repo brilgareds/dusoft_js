@@ -178,6 +178,8 @@ define(["angular", "js/controllers",
                 data: 'Empresa.get_ordenes_compras()',
                 enableColumnResize: true,
                 enableRowSelection: false,
+                enableCellSelection: true,
+                enableHighlighting: true,
                 columnDefs: [
                     {field: 'numero_orden_compra', displayName: '# Orden', width: "5%"},
                     {field: 'proveedor.get_nombre()', displayName: 'Proveedor', width: "30%"},

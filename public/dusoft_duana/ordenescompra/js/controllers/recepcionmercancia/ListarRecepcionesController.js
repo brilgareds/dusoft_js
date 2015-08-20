@@ -124,6 +124,8 @@ define(["angular", "js/controllers",
                 data: 'Empresa.get_recepciones_mercancia()',
                 enableColumnResize: true,
                 enableRowSelection: false,
+                enableCellSelection: true,
+                enableHighlighting: true,
                 columnDefs: [
                     {field: 'get_numero_guia()', displayName: '# Guía', width: "10%"},
                     {field: 'get_transportadora().get_descripcion()', displayName: 'Transportador', width: "13%"},

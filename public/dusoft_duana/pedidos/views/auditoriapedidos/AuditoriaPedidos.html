@@ -80,9 +80,13 @@
                 Farmacias <span ng-show="notificacionfarmacias > 0" class="badge badge-warning">{{notificacionfarmacias}}</span>
             </tab-heading>
 
-            <select ui-select2  class="pull-left" style="width:300px" ng-model="seleccion" data-placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
-                <option ng-repeat="empresa in  empresas"  ng-value="empresa.codigo" >{{empresa.nombre}}</option>
-            </select>
+            
+            <ui-select  ng-model="$parent.seleccion" style="width:300px"  theme="select2" class="form-control selectgeneral pull-left" ng-change="valorSeleccionado()">
+                <ui-select-match  placeholder="Seleccionar Empresa">{{$select.selected.nombre}}</ui-select-match>
+                <ui-select-choices repeat="empresa in  empresas| filter:$select.search">
+                    {{empresa.nombre}}
+                </ui-select-choices>
+            </ui-select>
 
             <div class="input-group navbar-form">
 

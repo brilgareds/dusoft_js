@@ -364,6 +364,8 @@ define(["angular", "js/controllers"
                 data: 'recepcion.get_orden_compra().get_productos()',
                 enableColumnResize: true,
                 enableRowSelection: false,
+                enableCellSelection: true,
+                enableHighlighting: true,
                 columnDefs: [
                     {field: 'getCodigoProducto()', displayName: 'Codigo Producto', width: "10%"},
                     {field: 'getDescripcion()', displayName: 'Descripcion', width: "35%"},

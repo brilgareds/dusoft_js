@@ -31,7 +31,7 @@ OperariosBodega.prototype.listarOperariosBodega = function(req, res) {
             
             if(lista_operarios.length === 0){
                 res.send(G.utils.r(req.url, 'Lista Operarios Bodega', 200, {lista_operarios: lista_operarios}));
-                return
+                return;
             }
             
             var i = lista_operarios.length;

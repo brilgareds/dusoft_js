@@ -2,9 +2,7 @@
 
 define(["angular",
     "js/controllers",
-    'includes/slide/slideContent',
-    'models/generarpedidos/ClientePedido',
-    'models/generarpedidos/PedidoVenta'], function(angular, controllers) {
+    'includes/slide/slideContent'], function(angular, controllers) {
 
     controllers.controller('ListaPedidosTemporalesController', [
         '$scope', '$rootScope', 'Request',
@@ -39,6 +37,7 @@ define(["angular",
                 data: 'rootPedidosTempFarmacias.empresaSeleccionada.obtenerPedidos()',
                 enableColumnResize: true,
                 enableRowSelection: false,
+                enableHighlighting:true,
                 columnDefs: [
                     {field: 'farmaciaDestino.nombre_farmacia', displayName: 'Farmacia', width: "15%"},
                     {field: 'farmaciaDestino.getCentroUtilidadSeleccionado().getNombre()', displayName: 'Centro Utilidad', width: "15%"},

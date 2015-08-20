@@ -312,30 +312,6 @@ PedidosFarmaciasModel.prototype.insertar_producto_detalle_pedido_farmacia = func
     });    
 };
 
-//depreciado
-/*PedidosFarmaciasModel.prototype.consultar_encabezado_pedido = function(numero_pedido, callback) {
-    var sql = "SELECT farmacia_id, centro_utilidad, bodega, observacion, usuario_id, fecha_registro, empresa_destino, sw_despacho, estado, \
-                tipo_pedido, centro_destino, bodega_destino, solicitud_prod_a_bod_ppal_id as numero_pedido\
-                FROM solicitud_productos_a_bodega_principal\
-                WHERE solicitud_prod_a_bod_ppal_id = $1";
-
-    G.db.query(sql, [numero_pedido], function(err, rows, result) {
-        callback(err, rows);
-    });
-};*/
-
-//depreciado
-/*PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedido, callback)
-{
-    	
-    var sql = "SELECT solicitud_prod_a_bod_ppal_det_id as numero_detalle_pedido, farmacia_id, centro_utilidad, bodega, codigo_producto, fc_descripcion_producto(codigo_producto) as descripcion, cantidad_solic::integer as cantidad_solicitada, tipo_producto as tipo_producto_id, usuario_id, fecha_registro, sw_pendiente, cantidad_pendiente\
-                FROM solicitud_productos_a_bodega_principal_detalle\
-                WHERE solicitud_prod_a_bod_ppal_id = $1";
-
-    G.db.query(sql, [numero_pedido], function(err, rows, result) {
-        callback(err, rows);
-    });
-};*/
 
 PedidosFarmaciasModel.prototype.actualizar_cantidades_detalle_pedido = function(numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente, usuario, callback)
 {    
@@ -390,38 +366,6 @@ PedidosFarmaciasModel.prototype.eliminar_producto_detalle_pedido = function(nume
            });
        });
     });
-};
-
-function __actualizar_cantidades_detalle_pedido(numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente, callback)
-{
-    
-    var sql = "UPDATE solicitud_productos_a_bodega_principal_detalle\
-                SET cantidad_solic = $3, cantidad_pendiente = $4\
-                WHERE solicitud_prod_a_bod_ppal_id = $1 and codigo_producto = $2";
-
-    G.db.transaction(sql, [numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente], callback);
-};
-
-function __eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, callback) {
-
-    var sql = "DELETE FROM solicitud_productos_a_bodega_principal_detalle\
-                WHERE solicitud_prod_a_bod_ppal_id = $1 and codigo_producto = $2";
-
-    G.db.transaction(sql, [numero_pedido, codigo_producto], callback);
-};
-
-function __log_eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, usuario, callback)
-{
-    
-    var sql = "INSERT INTO log_eliminacion_pedidos_farmacia(pedido_id,farmacia,usuario_solicitud,codigo_producto,cant_solicita,cant_pendiente,usuario_id,fecha_registro,usuario_ejecuta)\
-                SELECT a.solicitud_prod_a_bod_ppal_id as pedido_id, b.razon_social as farmacia, c.usuario as usuario_solicitud, a.codigo_producto, a.cantidad_solic as cant_solicita, a.cantidad_pendiente as cant_pendiente, a.usuario_id, CURRENT_TIMESTAMP as fecha_registro, c.nombre as usuario_ejecuta\
-                FROM solicitud_productos_a_bodega_principal_detalle a\
-                LEFT JOIN empresas b on b.empresa_id = a.farmacia_id\
-                LEFT JOIN system_usuarios c on c.usuario_id = $3\
-                WHERE a.solicitud_prod_a_bod_ppal_id = $1\
-                AND a.codigo_producto = $2";
-
-    G.db.transaction(sql, [numero_pedido, codigo_producto, usuario], callback);
 };
 
 // Listar todos los pedidos de farmacias
@@ -496,16 +440,16 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
                 a.usuario_id, \
                 e.nombre as nombre_usuario ,\
                 a.estado as estado_actual_pedido, \
-                case when a.estado = 0 then 'No Asignado' \
-                     when a.estado = 1 then 'Asignado' \
-                     when a.estado = 2 then 'Auditado' \
-                     when a.estado = 3 then 'En Zona Despacho' \
-                     when a.estado = 4 then 'Despachado' \
-                     when a.estado = 5 then 'Despachado con Pendientes' \
-                     when a.estado = 6 then 'Separacion Finalizada' \
-                     when a.estado = 7 then 'En Auditoria'  \
-                     when a.estado = 8 then 'Auditado con pdtes' \
-                     when a.estado = 9 then 'En zona con pdtes' end as descripcion_estado_actual_pedido, \
+                case when a.estado = '0' then 'No Asignado' \
+                     when a.estado = '1' then 'Asignado' \
+                     when a.estado = '2' then 'Auditado' \
+                     when a.estado = '3' then 'En Zona Despacho' \
+                     when a.estado = '4' then 'Despachado' \
+                     when a.estado = '5' then 'Despachado con Pendientes' \
+                     when a.estado = '6' then 'Separacion Finalizada' \
+                     when a.estado = '7' then 'En Auditoria'  \
+                     when a.estado = '8' then 'Auditado con pdtes' \
+                     when a.estado = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido, \
                 f.estado as estado_separacion, \
                 to_char(a.fecha_registro, 'dd-mm-yyyy') as fecha_registro,\
                 c.descripcion as nombre_centro_utilidad,\
@@ -523,7 +467,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
                 left join inv_bodegas_movimiento_tmp_despachos_farmacias f on a.solicitud_prod_a_bod_ppal_id = f.solicitud_prod_a_bod_ppal_id  \
                 left join inv_bodegas_movimiento_despachos_farmacias g on a.solicitud_prod_a_bod_ppal_id = g.solicitud_prod_a_bod_ppal_id \
                 where a.farmacia_id = $1 " + sql_aux + "\
-                and ( a.solicitud_prod_a_bod_ppal_id ilike $2 \
+                and ( a.solicitud_prod_a_bod_ppal_id :: varchar ilike $2 \
                       or d.razon_social ilike $2 \
                       or b.descripcion ilike $2 \
                       or e.nombre ilike $2 ) \
@@ -532,7 +476,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
     G.db.paginated(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result) {
         callback(err, rows);
     });
-}
+};
 
 // Lista todos los pedidos temorales de farmacias
 PedidosFarmaciasModel.prototype.listar_pedidos_temporales_farmacias = function(empresa_id, termino_busqueda, pagina, usuario, callback) {
@@ -582,16 +526,16 @@ PedidosFarmaciasModel.prototype.consultar_pedido = function(numero_pedido, callb
                 a.usuario_id, \
                 e.nombre as nombre_usuario ,\
                 a.estado as estado_actual_pedido, \
-                case when a.estado = 0 then 'No Asignado' \
-                     when a.estado = 1 then 'Asignado' \
-                     when a.estado = 2 then 'Auditado' \
-                     when a.estado = 3 then 'En Zona Despacho' \
-                     when a.estado = 4 then 'Despachado' \
-                     when a.estado = 5 then 'Despachado con Pendientes' \
-                     when a.estado = 6 then 'Separacion Finalizada'  \
-                     when a.estado = 7 then 'En auditoria'  \
-                     when a.estado = 8 then 'Auditado con pdtes'  \
-                     when a.estado = 9 then 'En zona con pdtes' end as descripcion_estado_actual_pedido, \
+                case when a.estado = '0' then 'No Asignado' \
+                     when a.estado = '1' then 'Asignado' \
+                     when a.estado = '2' then 'Auditado' \
+                     when a.estado = '3' then 'En Zona Despacho' \
+                     when a.estado = '4' then 'Despachado' \
+                     when a.estado = '5' then 'Despachado con Pendientes' \
+                     when a.estado = '6' then 'Separacion Finalizada'  \
+                     when a.estado = '7' then 'En auditoria'  \
+                     when a.estado = '8' then 'Auditado con pdtes'  \
+                     when a.estado = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido, \
                 f.estado as estado_separacion, \
                 to_char(a.fecha_registro, 'dd-mm-yyyy HH24:MI:SS.MS') as fecha_registro, \
                 a.fecha_registro as fecha_registro_pedido,\
@@ -677,7 +621,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
     // asignados al operario de bodega y saber si el pedido tiene temporales o 
     // fue finalizado correctamente.
     /*=========================================================================*/
-    var estado_pedido = '1';
+    var estado_pedido = 1;
     if (filtro !== undefined) {
 
         if (filtro.asignados) {
@@ -711,16 +655,16 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                 a.usuario_id, \
                 e.nombre as nombre_usuario ,\
                 a.estado as estado_actual_pedido, \
-                case when a.estado = 0 then 'No Asignado' \
-                     when a.estado = 1 then 'Asignado' \
-                     when a.estado = 2 then 'Auditado' \
-                     when a.estado = 3 then 'En Zona Despacho' \
-                     when a.estado = 4 then 'Despachado' \
-                     when a.estado = 5 then 'Despachado con Pendientes' \
-                     when a.estado = 6 then 'Separacion Finalizada' \
-                     when a.estado = 7 then 'En Auditoria'  \
-                     when a.estado = 8 then 'Auditado con pdtes'  \
-                     when a.estado = 9 then 'En zona con pdtes' end as descripcion_estado_actual_pedido, \
+                case when a.estado = '0' then 'No Asignado' \
+                     when a.estado = '1' then 'Asignado' \
+                     when a.estado = '2' then 'Auditado' \
+                     when a.estado = '3' then 'En Zona Despacho' \
+                     when a.estado = '4' then 'Despachado' \
+                     when a.estado = '5' then 'Despachado con Pendientes' \
+                     when a.estado = '6' then 'Separacion Finalizada' \
+                     when a.estado = '7' then 'En Auditoria'  \
+                     when a.estado = '8' then 'Auditado con pdtes'  \
+                     when a.estado = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido, \
                 h.estado as estado_separacion,     \
                 case when h.estado = '0' then 'Separacion en Proceso' \
                      when h.estado = '1' then 'Separacion Finalizada' \
@@ -740,9 +684,9 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                 left join inv_bodegas_movimiento_tmp_despachos_farmacias h on a.solicitud_prod_a_bod_ppal_id = h.solicitud_prod_a_bod_ppal_id \
                 left join inv_bodegas_movimiento_tmp i on h.doc_tmp_id = i.doc_tmp_id and h.usuario_id = i.usuario_id \
                 where " + sql_aux + " \
-                 a.estado = "+estado_pedido+" /*AND a.sw_despacho = 0*/ \
+                 a.estado = '"+estado_pedido+"' /*AND a.sw_despacho = 0*/ \
                 and (\
-                    a.solicitud_prod_a_bod_ppal_id ilike $1 or\
+                    a.solicitud_prod_a_bod_ppal_id :: varchar ilike $1 or\
                     d.razon_social ilike  $1 or\
                     b.descripcion ilike $1 or\
                     e.nombre  ilike $1 \
@@ -843,16 +787,16 @@ PedidosFarmaciasModel.prototype.obtener_responsables_del_pedido = function(numer
     var sql = " select \
                 a.solicitud_prod_a_bod_ppal_id as numero_pedido,  \
                 a.estado,\
-                case when a.estado=0 then 'Registrado'\
-                     when a.estado=1 then 'Asignado'\
-                     when a.estado=2 then 'Auditado'\
-                     when a.estado=3 then 'En Zona Despacho' \
-                     when a.estado=4 then 'Despachado' \
-                     when a.estado=5 then 'Despachado con Pendientes' \
-                     when a.estado=6 then 'Separacion Finalizada' \
-                     when a.estado=7 then 'En Auditoria' \
-                     when a.estado=8 then 'Auditado con pdtes' \
-                     when a.estado=9 then 'En zona con pdtes' end as descripcion_estado,\
+                case when a.estado='0' then 'Registrado'\
+                     when a.estado='1' then 'Asignado'\
+                     when a.estado='2' then 'Auditado'\
+                     when a.estado='3' then 'En Zona Despacho' \
+                     when a.estado='4' then 'Despachado' \
+                     when a.estado='5' then 'Despachado con Pendientes' \
+                     when a.estado='6' then 'Separacion Finalizada' \
+                     when a.estado='7' then 'En Auditoria' \
+                     when a.estado='8' then 'Auditado con pdtes' \
+                     when a.estado='9' then 'En zona con pdtes' end as descripcion_estado,\
                 b.operario_id,\
                 b.nombre as nombre_responsable,\
                 b.usuario_id as usuario_id_responsable,\
@@ -876,7 +820,7 @@ PedidosFarmaciasModel.prototype.terminar_estado_pedido = function(numero_pedido,
     estados = estados.join(",");
     
     var sql = "update solicitud_productos_a_bodega_principal_estado set sw_terminado = $2\
-               where solicitud_prod_a_bod_ppal_id = $1 and estado in("+estados+") and (sw_terminado is null or sw_terminado = '0')";
+               where solicitud_prod_a_bod_ppal_id  = $1 and estado::integer in("+estados+") and (sw_terminado is null or sw_terminado = '0')";
 
     G.db.query(sql, [numero_pedido, terminado], function(err, rows, result) {
         callback(err, rows, result);
@@ -1129,8 +1073,8 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
                 b.subclase_id,\
                 b.porc_iva,\
                 b.tipo_producto_id,\
-                case when coalesce((a.existencia - h.cantidad_total_pendiente - i.total_solicitado)::integer, 0) < 0 then 0\
-                        else coalesce((a.existencia - h.cantidad_total_pendiente - i.total_solicitado)::integer, 0) end as disponibilidad_bodega,\
+                case when coalesce((a.existencia - h.cantidad_total_pendiente - coalesce(i.total_solicitado, 0))::integer, 0) < 0 then 0\
+                        else coalesce((a.existencia - h.cantidad_total_pendiente - coalesce(i.total_solicitado, 0))::integer, 0) end as disponibilidad_bodega,\
                 coalesce(j.existencias_farmacia, 0) as existencias_farmacia\
                 from existencias_bodegas a\
                 inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
@@ -1183,6 +1127,36 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
         callback(err, rows);
     });
     
+};
+
+function __actualizar_cantidades_detalle_pedido(numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente, callback){
+    
+    var sql = "UPDATE solicitud_productos_a_bodega_principal_detalle\
+                SET cantidad_solic = $3, cantidad_pendiente = $4\
+                WHERE solicitud_prod_a_bod_ppal_id = $1 and codigo_producto = $2";
+
+    G.db.transaction(sql, [numero_pedido, codigo_producto, cantidad_solicitada, cantidad_pendiente], callback);
+};
+
+function __eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, callback) {
+
+    var sql = "DELETE FROM solicitud_productos_a_bodega_principal_detalle\
+                WHERE solicitud_prod_a_bod_ppal_id = $1 and codigo_producto = $2";
+
+    G.db.transaction(sql, [numero_pedido, codigo_producto], callback);
+};
+
+function __log_eliminar_producto_detalle_pedido(numero_pedido, codigo_producto, usuario, callback){
+    
+    var sql = "INSERT INTO log_eliminacion_pedidos_farmacia(pedido_id,farmacia,usuario_solicitud,codigo_producto,cant_solicita,cant_pendiente,usuario_id,fecha_registro,usuario_ejecuta)\
+                SELECT a.solicitud_prod_a_bod_ppal_id as pedido_id, b.razon_social as farmacia, c.usuario as usuario_solicitud, a.codigo_producto, a.cantidad_solic as cant_solicita, a.cantidad_pendiente as cant_pendiente, a.usuario_id, CURRENT_TIMESTAMP as fecha_registro, c.nombre as usuario_ejecuta\
+                FROM solicitud_productos_a_bodega_principal_detalle a\
+                LEFT JOIN empresas b on b.empresa_id = a.farmacia_id\
+                LEFT JOIN system_usuarios c on c.usuario_id = $3\
+                WHERE a.solicitud_prod_a_bod_ppal_id = $1\
+                AND a.codigo_producto = $2";
+
+    G.db.transaction(sql, [numero_pedido, codigo_producto, usuario], callback);
 };
 
 module.exports = PedidosFarmaciasModel;

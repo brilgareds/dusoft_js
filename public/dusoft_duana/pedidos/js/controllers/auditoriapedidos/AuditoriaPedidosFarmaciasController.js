@@ -14,7 +14,7 @@ define(["angular", "js/controllers",
             $scope.Empresa = Empresa;
             $scope.pedidosSeparadosSeleccionados = [];
             $scope.empresas = [];
-            $scope.seleccion = Usuario.getUsuarioActual().getEmpresa().getCodigo();
+            $scope.seleccion = Usuario.getUsuarioActual().getEmpresa();
 
 
             $scope.paginas = 0;
@@ -37,7 +37,7 @@ define(["angular", "js/controllers",
 
                 //valida si cambio el termino de busqueda
                 if ($scope.ultima_busqueda.termino_busqueda !== $scope.termino_busqueda
-                        || $scope.ultima_busqueda.seleccion !== $scope.seleccion) {
+                        || $scope.ultima_busqueda.seleccion.getCodigo() !== $scope.seleccion.getCodigo()) {
                     $scope.paginaactual = 1;
                 }
 
@@ -46,7 +46,7 @@ define(["angular", "js/controllers",
                     data: {
                         documento_temporal: {
                             termino_busqueda: $scope.termino_busqueda,
-                            empresa_id: $scope.seleccion,
+                            empresa_id: $scope.seleccion.getCodigo(),
                             pagina_actual: $scope.paginaactual,
                             filtro: {
                                 finalizados: true,

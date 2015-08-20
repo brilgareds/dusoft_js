@@ -17,7 +17,7 @@ define(["angular",
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs"];
             $scope.pedidosSeleccionados = [];
             $scope.empresas = [];
-            $scope.seleccion = Usuario.getUsuarioActual().getEmpresa().getCodigo();
+            $scope.seleccion = Usuario.getUsuarioActual().getEmpresa();
             $scope.session = {
                 usuario_id: Usuario.getUsuarioActual().getId(),
                 auth_token: Usuario.getUsuarioActual().getToken()
@@ -38,23 +38,20 @@ define(["angular",
                     $scope.paginaactual = 1;
                 }
 
-                console.log($scope.ultima_busqueda);
-                console.log($scope.termino_busqueda + " " + $scope.seleccion);
-
                 var obj = {
                     session: $scope.session,
                     data: {
                         pedidos_farmacias: {
                             termino_busqueda: termino,
-                            empresa_id: $scope.seleccion,
+                            empresa_id: $scope.seleccion.getCodigo(),
                             pagina_actual: $scope.paginaactual,
                             filtro: {}
                         }
                     }
                 };
 
-                if ($scope.estadoseleccionado !== "") {
-                    obj.data.pedidos_farmacias.filtro[$scope.estadoseleccionado] = true;
+                if ($scope.estadoseleccionado !== undefined) {
+                    obj.data.pedidos_farmacias.filtro[$scope.estadoseleccionado.estado] = true;
                 }
 
                 Request.realizarRequest(API.PEDIDOS.LISTAR_PEDIDOS_FARMACIAS, "POST", obj, function(data) {

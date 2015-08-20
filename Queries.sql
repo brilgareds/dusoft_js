@@ -146,10 +146,12 @@ ALTER TABLE inv_bodegas_movimiento_tmp_despachos_clientes ADD estado char(1) DEF
 COMMENT ON COLUMN "public"."inv_bodegas_movimiento_tmp_despachos_clientes"."estado"
 IS '0 = Indica que el documento esta siendo separado , 1 = Indica que el documento se ha terminado de separar correctamente, 2 = Docuemnto esta siendo auditado ';
 
+ALTER TABLE inv_bodegas_movimiento_tmp_despachos_clientes ADD estado char(1) DEFAULT '0';
+
 ---- ==================================================================================== ----
 ---- Agregar columna auditado a la tbla inv_bodegas_movimiento_tmp_d que indica si el producto  ha sido auditado
 
-ALTER TABLE inv_bodegas_movimiento_tmp_d ADD auditado char(1) DEFAULT '0';
+ALTER TABLE inv_bodegas_movimiento_tmp_despachos_clientes ADD observacion TEXT DEFAULT null;
 
 COMMENT ON COLUMN "public"."inv_bodegas_movimiento_tmp_d"."auditado"
 IS ' Indica si el producto ha sido auditado o no 0 = false Producto No Auditado, 1 = true Product Auditado ';
@@ -1292,7 +1294,6 @@ IS 'bodega origen';
 
 /*==== Agregar observacion cartera a tabala de  ventas_ordenes_pedidos_tmp =========*/
 
-/* tmp */
 ALTER TABLE "public"."ventas_ordenes_pedidos_tmp"
   ADD COLUMN "observacion_cartera" TEXT;
 
@@ -1346,6 +1347,9 @@ ALTER TABLE "public"."ventas_ordenes_pedidos_d"
 
 ALTER TABLE ventas_ordenes_pedidos ADD COLUMN tipo_producto varchar(1);
 
+
 COMMENT ON COLUMN "public"."ventas_ordenes_pedidos_tmp"."tipo_producto"
 IS ' Indica que el pedido se hara solamente de ese tipo de producto inv_tipo_productos ';
+
+ALTER TABLE "public"."solicitud_pro_a_bod_prpal_tmp" ADD COLUMN "cantidad_pendiente" INTEGER DEFAULT 0;
 

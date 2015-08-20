@@ -75,9 +75,7 @@ define(["angular", "js/controllers",
                         }
                 ]
             };
-            
-          
-            
+
             /*
              * @Author: Eduar
              * @param {function} callback
@@ -171,9 +169,19 @@ define(["angular", "js/controllers",
              */  
             $scope.seleccionarEmpresaPedido = function(esDestino, empresaId, centroUtilidad, bodega){
                 
+                if(!empresaId || !centroUtilidad || !bodega) {
+                   return false;
+                }
+                
                 var empresa = $scope.obtenerEmpresa(esDestino, empresaId, centroUtilidad);
                 var centro  = $scope.obtenerCentroUtilidad(esDestino, empresaId, centroUtilidad);
                 var bodega  = $scope.obtenerBodega(esDestino, empresaId, centroUtilidad, bodega);
+                
+                
+                if(!centro){
+                    console.log("no se pudo obtener el centro con los argumenos ", arguments);
+                    return false;
+                }
                 
                 if(esDestino){
                     $scope.root.pedido.setFarmaciaDestino(empresa);
@@ -234,8 +242,17 @@ define(["angular", "js/controllers",
              * +Descripcion: Retorna la bodega  de utilidad del pedido consultado
              */
             $scope.obtenerBodega = function(esDestino, empresaId, centroId, bodegaId){
+               if(!empresaId || !centroId || !bodegaId) {
+                   return false;
+               }
                
                 var centro = $scope.obtenerCentroUtilidad(esDestino, empresaId, centroId);
+                
+                if(!centro){
+                    console.log("no se pudo obtener el centro con los argumenos ", arguments);
+                    return false;
+                }
+                
                 var bodegas  = centro.getBodegas();
                 for(var i in bodegas){
                     var bodega = bodegas[i];

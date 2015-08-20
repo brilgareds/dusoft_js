@@ -11,10 +11,13 @@
                 </button>
             </div>    
             <div class="col-sm-12 col-md-3">
-                <select ui-select2="selectestados"  class="form-control selectgeneral"  ng-model="estadoseleccionado"  ng-change="seleccionEstado()">
-                    <option></option>
-                    <option ng-repeat="estado_pedido in  estados_pedido"  value="{{estado_pedido.estado}}" >{{estado_pedido.nombre}}</option>
-                </select>
+                
+                <ui-select  ng-model="$parent.estadoseleccionado" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionEstado()">
+                   <ui-select-match  placeholder="Seleccionar Estado Pedido">{{$select.selected.nombre}}</ui-select-match>
+                   <ui-select-choices repeat="estado_pedido in estados_pedido| filter:$select.search">
+                       {{estado_pedido.nombre}}
+                   </ui-select-choices>
+               </ui-select>
 
             </div>
 
@@ -66,17 +69,23 @@
                 </button>
             </div> 
 
-            <div class="col-sm-12 col-md-3">
-                <select ui-select2  class="form-control selectgeneral"  ng-model="seleccion" data-placeholder="Seleccionar Empresa" ng-change="valorSeleccionado()">
-                    <option ng-repeat="empresa in  empresas"  value="{{empresa.codigo}}" >{{empresa.nombre}}</option>
-                </select>
+            <div class="col-sm-12 col-md-3">                
+               <ui-select  ng-model="$parent.seleccion" theme="select2" class="form-control selectgeneral pull-left" ng-change="valorSeleccionado()">
+                   <ui-select-match  placeholder="Seleccionar Farmacia">{{$select.selected.nombre}}</ui-select-match>
+                   <ui-select-choices repeat="empresa in  empresas| filter:$select.search">
+                       {{empresa.nombre}}
+                   </ui-select-choices>
+               </ui-select>
+                
             </div>
 
-            <div class="col-sm-12 col-md-3">
-                <select ui-select2="selectestados"  class="form-control selectgeneral"  ng-model="estadoseleccionado"  ng-change="seleccionEstado()">
-                    <option></option>
-                    <option ng-repeat="estado_pedido in  estados_pedido"  value="{{estado_pedido.estado}}" >{{estado_pedido.nombre}}</option>
-                </select>
+            <div class="col-sm-12 col-md-3">                
+               <ui-select  ng-model="$parent.estadoseleccionado" theme="select2" class="form-control selectgeneral pull-left" ng-change="seleccionEstado()">
+                   <ui-select-match  placeholder="Seleccionar Estado Pedido">{{$select.selected.nombre}}</ui-select-match>
+                   <ui-select-choices repeat="estado_pedido in estados_pedido| filter:$select.search">
+                       {{estado_pedido.nombre}}
+                   </ui-select-choices>
+               </ui-select>
             </div>
 
 

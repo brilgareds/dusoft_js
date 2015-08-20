@@ -20,15 +20,17 @@
     <h4>Responsable Separacion:</h4>
 
     <div class="row">
-
-        <select class="input-medium" style="width:300px" ng-model="operario_id"   ui-select2 ng-change="valorSeleccionado(operario_id)" data-placeholder="Seleccionar" >
-          <option ng-repeat="separador in  Empresa.getSeparadores()"  value="{{separador.operario_id}}">{{separador.nombre_operario}} ({{separador.total_pedidos_asignados}})</option>
-          
-        </select>
+        
+        <ui-select  ng-model="$parent.operario" theme="select2" class="form-control selectgeneral pull-left" ng-change="valorSeleccionado()">
+                   <ui-select-match  placeholder="Seleccionar Estado Pedido">{{$select.selected.nombre_operario}}</ui-select-match>
+                   <ui-select-choices repeat="separador in  Empresa.getSeparadores()| filter:$select.search">
+                       {{separador.nombre_operario}}
+                   </ui-select-choices>
+        </ui-select>
     </div>
 
    <div class="modal-footer">
-       <button class="btn btn-primary" ng-click="realizarAsignacion()" ng-disabled="!operario_id" >Asignar</button>
+       <button class="btn btn-primary" ng-click="realizarAsignacion()" ng-disabled="!operario" >Asignar</button>
         <button class="btn btn-warning" ng-click="close()">Cancelar</button>
          
     </div>

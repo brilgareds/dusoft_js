@@ -19,11 +19,11 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
                 c.direccion as direccion_proveedor,\
                 c.telefono as telefono_proveedor,\
                 a.estado,\
-                CASE WHEN a.estado = 0 THEN 'Ingresada en bodega' \
-                     WHEN a.estado = 1 THEN 'Activa' \
-                     WHEN a.estado = 2 THEN 'Anulado' \
-                     WHEN a.estado = 3 THEN 'Recibida en bodega' \
-                     WHEN a.estado = 4 THEN 'Verificada en bodega' END as descripcion_estado, \
+                CASE WHEN a.estado = '0' THEN 'Ingresada en bodega' \
+                     WHEN a.estado = '1' THEN 'Activa' \
+                     WHEN a.estado = '2' THEN 'Anulado' \
+                     WHEN a.estado = '3' THEN 'Recibida en bodega' \
+                     WHEN a.estado = '4' THEN 'Verificada en bodega' END as descripcion_estado, \
                 a.sw_orden_compra_finalizada,\
                 CASE WHEN a.sw_orden_compra_finalizada = '0' THEN 'En Proceso ...' \
                      WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion, \
@@ -48,7 +48,7 @@ OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fec
                 ) as g on a.orden_pedido_id = g.orden_pedido_id\
                 WHERE a.fecha_orden between $1 and $2 and \
                 (\
-                    a.orden_pedido_id ilike $3 or\
+                    a.orden_pedido_id::varchar ilike $3 or\
                     d.razon_social ilike $3 or\
                     c.tercero_id ilike $3 or \
                     c.nombre_tercero ilike $3 \
@@ -78,11 +78,11 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(codigo_p
                 c.direccion as direccion_proveedor,\
                 c.telefono as telefono_proveedor,\
                 a.estado,\
-                CASE WHEN a.estado = 0 THEN 'Ingresada en bodega' \
-                     WHEN a.estado = 1 THEN 'Activa' \
-                     WHEN a.estado = 2 THEN 'Anulado' \
-                     WHEN a.estado = 3 THEN 'Recibida en bodega' \
-                     WHEN a.estado = 4 THEN 'Verificada en bodega' END as descripcion_estado, \
+                CASE WHEN a.estado = '0' THEN 'Ingresada en bodega' \
+                     WHEN a.estado = '1' THEN 'Activa' \
+                     WHEN a.estado = '2' THEN 'Anulado' \
+                     WHEN a.estado = '3' THEN 'Recibida en bodega' \
+                     WHEN a.estado = '4' THEN 'Verificada en bodega' END as descripcion_estado, \
                 a.sw_orden_compra_finalizada,\
                 CASE WHEN a.sw_orden_compra_finalizada = '0' THEN 'En Proceso ...' \
                      WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion, \
@@ -176,11 +176,11 @@ OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, cal
                 d.descripcion,\
                 d.imagen,\
                 a.estado,\
-                CASE WHEN a.estado = 0 THEN 'Ingresada en bodega' \
-                     WHEN a.estado = 1 THEN 'Activa' \
-                     WHEN a.estado = 2 THEN 'Anulado' \
-                     WHEN a.estado = 3 THEN 'Recibida en bodega' \
-                     WHEN a.estado = 4 THEN 'Verificada en bodega' END as descripcion_estado, \
+                CASE WHEN a.estado = '0' THEN 'Ingresada en bodega' \
+                     WHEN a.estado = '1' THEN 'Activa' \
+                     WHEN a.estado = '2' THEN 'Anulado' \
+                     WHEN a.estado = '3' THEN 'Recibida en bodega' \
+                     WHEN a.estado = '4' THEN 'Verificada en bodega' END as descripcion_estado, \
                 a.sw_orden_compra_finalizada,\
                 CASE WHEN a.sw_orden_compra_finalizada = '0' THEN 'En Proceso ...'\
                      WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion,\
@@ -490,9 +490,9 @@ OrdenesCompraModel.prototype.listar_recepciones_mercancia = function(fecha_inici
                 a.contiene_medicamentos,\
                 a.contiene_dispositivos,\
                 a.estado,\
-                CASE WHEN a.estado = 0 THEN 'Anulada' \
-                     WHEN a.estado = 1 THEN 'Activa' \
-                     WHEN a.estado = 2 THEN 'Finalizada' END as descripcion_estado, \
+                CASE WHEN a.estado = '0' THEN 'Anulada' \
+                     WHEN a.estado = '1' THEN 'Activa' \
+                     WHEN a.estado = '2' THEN 'Finalizada' END as descripcion_estado, \
                 to_char(a.fecha_recepcion,'dd-mm-yyyy') as fecha_recepcion,\
                 to_char(a.fecha_registro,'dd-mm-yyyy') as fecha_registro\
                 from recepcion_mercancia a\
@@ -505,11 +505,11 @@ OrdenesCompraModel.prototype.listar_recepciones_mercancia = function(fecha_inici
                 (\
                     d.tercero_id ilike $3 or\
                     d.nombre_tercero ilike $3 or\
-                    a.orden_pedido_id ilike $3 or \
+                    a.orden_pedido_id::varchar ilike $3 or \
                     e.descripcion ilike $3 or\
                     a.numero_guia ilike $3 or\
-                    a.numero_factura ilike $3 \
-                ) order by a.fecha_registro DESC";
+                    a.numero_factura::varchar ilike $3 \
+                ) order by a.fecha_registro DESC ";
 
     G.db.pagination(sql, [fecha_inicial, fecha_final, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
         callback(err, rows);
@@ -548,9 +548,9 @@ OrdenesCompraModel.prototype.consultar_recepcion_mercancia = function(recepcion_
                 a.contiene_medicamentos,\
                 a.contiene_dispositivos,\
                 a.estado,\
-                CASE WHEN a.estado = 0 THEN 'Anulada' \
-                     WHEN a.estado = 1 THEN 'Activa' \
-                     WHEN a.estado = 2 THEN 'Finalizada' END as descripcion_estado, \
+                CASE WHEN a.estado = '0' THEN 'Anulada' \
+                     WHEN a.estado = '1' THEN 'Activa' \
+                     WHEN a.estado = '2' THEN 'Finalizada' END as descripcion_estado, \
                 to_char(a.fecha_recepcion,'dd-mm-yyyy') as fecha_recepcion,\
                 to_char(a.hora_recepcion,'HH24:MI:SS') as hora_recepcion,\
                 to_char(a.fecha_registro,'dd-mm-yyyy') as fecha_registro\

@@ -191,7 +191,7 @@
                                     <button class="btn btn-default" ng-click="cancelar_cotizacion()">
                                         <span class="glyphicon glyphicon-remove" ></span> Cancelar
                                     </button>
-                                    <button class="btn btn-default"  ng-click="descargar_enviar_reporte()" ng-if="Pedido.get_numero_cotizacion() > 0 || Pedido.get_numero_pedido() >0">
+                                    <button class="btn btn-default" ng-validate-events="{{ habilitar_generacion_reporte() }}" ng-click="descargar_enviar_reporte()" ng-if="Pedido.get_numero_cotizacion() > 0 || Pedido.get_numero_pedido() >0">
                                         <span class="glyphicon glyphicon-cog" ></span> Generar reporte
                                     </button>
                                     <button class="btn btn-default" ng-click="aceptar_cotizacion()" ng-if="Pedido.get_aprobado_cartera() == '' || Pedido.get_aprobado_cartera() === '0' || Pedido.get_numero_pedido() >0 ">

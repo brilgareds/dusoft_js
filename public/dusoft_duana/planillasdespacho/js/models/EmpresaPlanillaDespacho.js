@@ -103,8 +103,13 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
 
             EmpresaPlanillaDespacho.limpiar_lista_documentos = function() {
                 this.lista_documentos = [];
-            };
-
+            }; 
+            
+            EmpresaPlanillaDespacho.eliminarDocumento = function(documento){
+               var index = this.lista_documentos.indexOf(documento);
+               this.lista_documentos.splice(index,1);
+            }
+            
             return EmpresaPlanillaDespacho;
         }]);
 });

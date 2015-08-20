@@ -1353,3 +1353,117 @@ IS ' Indica que el pedido se hara solamente de ese tipo de producto inv_tipo_pro
 
 ALTER TABLE "public"."solicitud_pro_a_bod_prpal_tmp" ADD COLUMN "cantidad_pendiente" INTEGER DEFAULT 0;
 
+
+
+/* =================== Tabla para ingresar el encabezado de los documentos de devolucion ============*/
+CREATE TABLE "public"."inv_planillas_farmacia_devolucion" (
+  "id_inv_planilla_farmacia_devolucion" SERIAL, 
+  "empresa_id" CHAR(2) NOT NULL, 
+  "centro_utilidad" CHAR(2) NOT NULL, 
+  "bodega" VARCHAR(2) NOT NULL, 
+  "id_empresa_destino" CHAR(2) NOT NULL, 
+  "inv_transportador_id" INTEGER NOT NULL, 
+  "nombre_conductor" VARCHAR(45) NOT NULL, 
+  "observacion" TEXT, 
+  "numero_guia_externo" VARCHAR(45),
+  "estado" CHAR(1) DEFAULT 1 NOT NULL, 
+  "usuario_id" INTEGER NOT NULL, 
+  "fecha_registro" TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT now() NOT NULL, 
+  
+  CONSTRAINT "id_inv_planilla_farmacia_devolucionkey" PRIMARY KEY("id_inv_planilla_farmacia_devolucion"), 
+  CONSTRAINT "inv_planillas_farmacia_devolucionfk" FOREIGN KEY ("inv_transportador_id")
+    REFERENCES "public"."inv_transportadoras"("transportadora_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "inv_planillas_farmacia_devolucionfk1" FOREIGN KEY ("usuario_id")
+    REFERENCES "public"."system_usuarios"("usuario_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "inv_planillas_farmacia_devolucionfk2" FOREIGN KEY ("empresa_id", "centro_utilidad", "bodega")
+    REFERENCES "public"."bodegas"("empresa_id", "centro_utilidad", "bodega")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE,
+  CONSTRAINT "inv_planillas_farmacia_devolucionfk3" FOREIGN KEY ("id_empresa_destino")
+    REFERENCES "public"."empresas"("empresa_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE
+) WITH OIDS;
+
+COMMENT ON TABLE "public"."inv_planillas_farmacia_devolucion"
+IS 'Permite almacenar la informacion general de la devolucion';
+
+COMMENT ON COLUMN "public"."inv_planillas_farmacia_devolucion"."inv_transportador_id"
+IS 'Identificador de la tabla de transportadoras';
+
+COMMENT ON COLUMN "public"."inv_planillas_farmacia_devolucion"."id_empresa_destino"
+IS 'Identificador de la empresa';
+
+COMMENT ON COLUMN "public"."inv_planillas_farmacia_devolucion"."empresa_id"
+IS 'Identificador de la empresa';
+
+COMMENT ON COLUMN "public"."inv_planillas_farmacia_devolucion"."centro_utilidad"
+IS 'Identificador del centro de utilidad';
+
+COMMENT ON COLUMN "public"."inv_planillas_farmacia_devolucion"."bodega"
+IS 'Identificador de la bodega';
+
+COMMENT ON COLUMN "public"."inv_planillas_farmacia_devolucion"."observacion"
+IS 'Observacion de la planilla';
+
+COMMENT ON COLUMN "public"."inv_planillas_farmacia_devolucion"."estado"
+IS '0 = Planilla Anulada
+1 = Planilla Activa
+2 = Planilla Despachada';
+
+COMMENT ON COLUMN "public"."inv_planillas_farmacia_devolucion"."usuario_id"
+IS 'Usuario que realiza la planilla';
+
+COMMENT ON COLUMN "public"."inv_planillas_farmacia_devolucion"."fecha_registro"
+IS 'Fecha en que se crea la planilla';
+
+
+COMMENT ON COLUMN "public"."inv_planillas_farmacia_devolucion"."numero_guia_externo"
+IS 'Numero guia cuando son transportadoras externas a la empresa';
+
+
+/* =================== Tabla para ingresar el detallado de los documentos de devolucion ============*/
+
+
+/* Crear  tabla inv_planillas_detalle_farmacias */
+CREATE TABLE "public"."inv_planillas_farmacia_devolucion_detalle" (
+  "id_inv_planilla_farmacia_devolucion_detalle" SERIAL, 
+  "id_inv_planilla_farmacia_devolucion" INTEGER NOT NULL, 
+  "empresa_id" VARCHAR(2) NOT NULL, 
+  "prefijo" VARCHAR(45) NOT NULL, 
+  "numero" INTEGER NOT NULL, 
+  "cantidad_cajas" INTEGER NOT NULL, 
+  "cantidad_neveras" INTEGER DEFAULT 0 NOT NULL, 
+  "temperatura_neveras" DOUBLE PRECISION, 
+  "observacion" TEXT, 
+  "usuario_id" INTEGER NOT NULL, 
+  "fecha_registro" TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT now(), 
+  CONSTRAINT "inv_planillas_farmacia_devolucion_detalle_fk" FOREIGN KEY ("id_inv_planilla_farmacia_devolucion")
+    REFERENCES "public"."inv_planillas_farmacia_devolucion"("id_inv_planilla_farmacia_devolucion")
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "inv_planillas_farmacia_devolucion_detalle_fk1" FOREIGN KEY ("empresa_id", "prefijo", "numero")
+    REFERENCES "public"."inv_bodegas_movimiento_despachos_farmacias"("empresa_id", "prefijo", "numero")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE, 
+  CONSTRAINT "inv_planillas_farmacia_devolucion_detalle_fk2" FOREIGN KEY ("usuario_id")
+    REFERENCES "public"."system_usuarios"("usuario_id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE
+) WITH OIDS;
+
+COMMENT ON TABLE "public"."inv_planillas_farmacia_devolucion_detalle"
+IS 'Almacenas los documentos de farmacias devueltos';
+
+

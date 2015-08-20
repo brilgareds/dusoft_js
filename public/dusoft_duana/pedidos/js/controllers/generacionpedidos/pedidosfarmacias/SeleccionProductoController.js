@@ -40,7 +40,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                     {field: 'cantidadSolicitada', displayName: 'Solicitado', enableCellEdit: false, width: "10%",
                         cellTemplate: ' <div class="col-xs-12">\n\
                                                 <input ng-if="!rootSeleccionProductoFarmacia.Empresa.getPedidoSeleccionado().getModificacionEspecial()" type="text" ng-model="row.entity.cantidadSolicitada" validacion-numero-entero class="form-control grid-inline-input"\
-                                ng-keyup="onIngresarProducto($event, row.entity)" ng-disabled="row.entity.getCantidadSolicitada()<=0 || row.entity.getCantidadSolicitada()==null || !expreg.test(row.entity.getCantidadSolicitada())"/>\
+                                ng-keyup="onIngresarProducto($event, row.entity)" ng-disabled="!row.entity.getEnFarmaciaSeleccionada()"/>\
                                             </div>'
                     },
                     {field: 'opciones', displayName: "Opciones", cellClass: "txt-center", width: "6%",

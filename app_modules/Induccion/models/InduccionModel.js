@@ -106,7 +106,7 @@ var sql = "select \
 
     G.db.paginated(sql, [empresaId, centroUtilidad, bodega, '%' + descripcion + '%', '%' + codigoProducto + '%'], pagina, G.settings.limit, function(err, rows, result) {
         callback(err, rows);
-    });
+    }); 
 
 };
 

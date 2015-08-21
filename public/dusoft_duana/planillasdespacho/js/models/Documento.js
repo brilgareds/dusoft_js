@@ -43,6 +43,9 @@ define(["angular", "js/models"], function(angular, models) {
                 this.cantidad_neveras_auditadas = cantidad;
             };
             
+            Documento.prototype.set_observacion = function(observacion) {
+                return this.observacion = observacion;
+            };
             Documento.prototype.get_id = function() {
                 return this.id;
             };

@@ -38,21 +38,14 @@ define(["angular"], function(angular) {
              * +Descripcion: 
              */
             'PLANILLAS_FARMACIAS': {
-                'LISTAR_PLANILLAS_FARMACIAS': BASE_URL + '/PlanillasDespachos/listar',
+                'LISTAR_PLANILLAS_FARMACIAS': BASE_URL + '/PlanillasDevolucion/listar',
                 'LISTAR_FARMACIAS': BASE_URL + '/PlanillasFarmacias/listando/empresas',
                 'LISTAR_DOCUMENTOS': BASE_URL + '/PlanillasFarmacias/listando/documentos',
                 'GENERAR_PLANILLA_FARMACIA':BASE_URL + '/PlanillasFarmacias/generar/planilla/farmacia',
                 'INGRESAR_DOCUMENTO_FARMACIA':BASE_URL + '/PlanillasFarmacias/ingresar/documento/farmacia'
                 
               
-                /*'DOCUMENTOS_PLANILLA': BASE_URL + '/PlanillasDespachos/consultarDocumentosPlanillaDespacho',
-                'GENERAR_PLANILLA': BASE_URL + '/PlanillasDespachos/generarPlanillaDespacho',
-                'INGRESAR_DOCUMENTOS': BASE_URL + '/PlanillasDespachos/ingresarDocumentosPlanilla',
-                'ELIMINAR_DOCUMENTO': BASE_URL + '/PlanillasDespachos/eliminarDocumentoPlanilla',
-                'DESPACHAR_PLANILLA': BASE_URL + '/PlanillasDespachos/despacharPlanilla',
-                'LISTAR_DOCUMENTOS_FARMACIAS': BASE_URL + '/PlanillasDespachos/documentosDespachosPorFarmacia',
-                'LISTAR_DOCUMENTOS_CLIENTES': BASE_URL + '/PlanillasDespachos/documentosDespachosPorCliente',
-                'REPORTE_PLANILLA_DESPACHO': BASE_URL + '/PlanillasDespachos/reportePlanillaDespacho',*/
+              
             },
             'FARMACIAS': {
                 'LISTAR_FARMACIAS': BASE_URL + '/Ciudades/listar'

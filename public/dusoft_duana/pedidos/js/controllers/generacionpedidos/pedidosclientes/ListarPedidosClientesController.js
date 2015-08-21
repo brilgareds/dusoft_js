@@ -101,26 +101,51 @@ define(["angular", "js/controllers",
 
             // cargar permisos del modulo
             that.cargar_permisos = function() {
-                
+
                 // Permisos para Cotizaciones
                 $scope.datos_view.permisos_cotizaciones = {
                     btn_crear_cotizaciones: {
                         'click': $scope.datos_view.opciones.sw_crear_cotizacion
-                    },                    
+                    },
+                    btn_modificar_cotizaciones: {
+                        'click': $scope.datos_view.opciones.sw_modificar_cotizacion
+                    },
                     btn_visualizar_cotizaciones: {
                         'click': $scope.datos_view.opciones.sw_visualizar_cotizacion
-                    },                    
+                    },
                     btn_cartera_cotizaciones: {
                         'click': $scope.datos_view.opciones.sw_observacion_cartera_cotizaciones
-                    },                    
+                    },
                     btn_reporte_cotizaciones: {
                         'click': $scope.datos_view.opciones.sw_reporte_cotizaciones
-                    },                    
+                    },
                     btn_email_cotizaciones: {
                         'click': $scope.datos_view.opciones.sw_enviar_email_cotizaciones
-                    }                    
+                    }
                 };
-                
+
+                // Permisos para Pedidos
+                $scope.datos_view.permisos_pedidos = {
+                    btn_crear_pedidos: {
+                        'click': $scope.datos_view.opciones.sw_crear_pedido
+                    },
+                    btn_modificar_pedidos: {
+                        'click': $scope.datos_view.opciones.sw_modificar_pedido
+                    },
+                    btn_visualizar_pedidos: {
+                        'click': $scope.datos_view.opciones.sw_visualizar_pedido
+                    },
+                    btn_cartera_pedidos: {
+                        'click': $scope.datos_view.opciones.sw_observacion_cartera_pedidos
+                    },
+                    btn_reporte_pedidos: {
+                        'click': $scope.datos_view.opciones.sw_reporte_pedidos
+                    },
+                    btn_email_pedidos: {
+                        'click': $scope.datos_view.opciones.sw_enviar_email_pedidos
+                    }
+                };
+
             };
 
 
@@ -146,10 +171,20 @@ define(["angular", "js/controllers",
 
             $scope.habilitar_observacion_cartera = function(obj) {
 
-                if (obj.get_numero_cotizacion() > 0)
-                    return {'click': obj.get_estado_cotizacion() != '0'};
-                if (obj.get_numero_pedido() > 0)
-                    return {'click': obj.getEstadoActualPedido() === '0'};
+                if (obj.get_numero_cotizacion() > 0) {
+                    // Permisos observacion cartera [ cotizaciones ]
+                    if (!$scope.datos_view.opciones.sw_observacion_cartera_cotizaciones)
+                        return $scope.datos_view.permisos_cotizaciones.btn_cartera_cotizaciones;
+                    else
+                        return {'click': obj.get_estado_cotizacion() != '0'};
+                }
+                if (obj.get_numero_pedido() > 0) {
+                    // Permisos observacion cartera [ Pedidos ]
+                    if (!$scope.datos_view.opciones.sw_observacion_cartera_pedidos)
+                        return $scope.datos_view.permisos_pedidos.btn_cartera_pedidos;
+                    else
+                        return {'click': obj.getEstadoActualPedido() === '0'};
+                }
             };
 
             $scope.generar_observacion_cartera = function(obj) {
@@ -274,10 +309,10 @@ define(["angular", "js/controllers",
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
                                                 <li ng-if="row.entity.get_estado_cotizacion() == \'0\' " ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_visualizar_cotizaciones }}" ng-click="visualizar(row.entity)" >Visualizar</a></li>\
-                                                <li ng-if="row.entity.get_estado_cotizacion() != \'0\' " ><a href="javascript:void(0);" ng-click="modificar_cotizacion_cliente(row.entity)" >Modificar</a></li>\
+                                                <li ng-if="row.entity.get_estado_cotizacion() != \'0\' " ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_modificar_cotizaciones }}" ng-click="modificar_cotizacion_cliente(row.entity)" >Modificar</a></li>\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ habilitar_observacion_cartera(row.entity) }}" ng-click="generar_observacion_cartera(row.entity)" >Cartera</a></li>\
-                                                <li><a href="javascript:void(0);" ng-click="generar_reporte(row.entity,false)" >Ver PDF</a></li>\
-                                                <li><a href="javascript:void(0);" ng-validate-events="{{ validar_envio_email(row.entity) }}" ng-click="ventana_enviar_email(row.entity)" >Enviar por Email</a></li>\
+                                                <li><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_reporte_cotizaciones }}" ng-click="generar_reporte(row.entity,false)" >Ver PDF</a></li>\
+                                                <li><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_cotizaciones.btn_email_cotizaciones }}" ng-click="ventana_enviar_email(row.entity)" >Enviar por Email</a></li>\
                                             </ul>\
                                        </div>'
                     }
@@ -386,11 +421,11 @@ define(["angular", "js/controllers",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li ng-if="row.entity.getEstadoActualPedido() != \'0\' "  ><a href="javascript:void(0);" ng-click="visualizar(row.entity)" >Visualizar</a></li>\
-                                                <li ng-if="row.entity.getEstadoActualPedido() == \'0\' " ><a href="javascript:void(0);" ng-click="modificar_pedido_cliente(row.entity)" >Modificar</a></li>\
+                                                <li ng-if="row.entity.getEstadoActualPedido() != \'0\' "  ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_visualizar_pedidos }}" ng-click="visualizar(row.entity)" >Visualizar</a></li>\
+                                                <li ng-if="row.entity.getEstadoActualPedido() == \'0\' " ><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_modificar_pedidos }}" ng-click="modificar_pedido_cliente(row.entity)" >Modificar</a></li>\
                                                 <li><a href="javascript:void(0);" ng-validate-events="{{ habilitar_observacion_cartera(row.entity) }}" ng-click="generar_observacion_cartera(row.entity)" >Cartera</a></li>\
-                                                <li><a href="javascript:void(0);" ng-click="generar_reporte(row.entity,false)" >Ver PDF</a></li>\
-                                                <li><a href="javascript:void(0);" ng-validate-events="{{ validar_envio_email(row.entity) }}" ng-click="ventana_enviar_email(row.entity)" >Enviar por Email</a></li>\
+                                                <li><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_reporte_pedidos }}" ng-click="generar_reporte(row.entity,false)" >Ver PDF</a></li>\
+                                                <li><a href="javascript:void(0);" ng-validate-events="{{ datos_view.permisos_pedidos.btn_email_pedidos }}" ng-click="ventana_enviar_email(row.entity)" >Enviar por Email</a></li>\
                                             </ul>\
                                        </div>'
                     }
@@ -431,11 +466,13 @@ define(["angular", "js/controllers",
 
 
             that.init = function() {
+
                 that.validacion_inicial();
-                
+
                 that.cargar_permisos();
-                
+
                 that.buscar_cotizaciones();
+
                 that.buscar_pedidos();
             };
 

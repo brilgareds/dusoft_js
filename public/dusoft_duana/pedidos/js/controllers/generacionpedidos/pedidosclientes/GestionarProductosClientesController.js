@@ -131,8 +131,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     }
                 });
             };
-            
-            
+
+
             // Insertar Productos al pedido
             that.insertar_detalle_pedido = function(callback) {
 
@@ -144,8 +144,8 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                             producto: $scope.datos_form.producto_seleccionado
                         }
                     }
-                };                               
-                
+                };
+
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.INSERTAR_DETALLE_PEDIDO, "POST", obj, function(data) {
 
                     $scope.datos_form.producto_seleccionado = Producto.get();
@@ -251,7 +251,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                         }
                     }
                 };
-                
+
                 console.log('== obj ==');
                 console.log(obj.data.pedidos_clientes);
 
@@ -290,6 +290,22 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     producto.set_cantidad_disponible(data.cantidad_disponible);
                     $scope.Empresa.set_productos(producto);
                 });
+            };
+
+
+            $scope.habilitar_seleccion_producto = function() {
+
+                // Pedido
+                if ($scope.Pedido.get_numero_pedido() > 0) {
+
+                    if (!$scope.datos_view.opciones.sw_modificar_pedido)
+                        return $scope.datos_view.permisos_pedidos.btn_modificar_pedidos;
+                }
+
+                // Cotizacion
+                if (!$scope.datos_view.opciones.sw_crear_cotizacion)
+                    return $scope.datos_view.permisos_cotizaciones.btn_crear_cotizaciones;
+
             };
 
             $scope.validar_seleccion_producto = function() {
@@ -353,7 +369,7 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     {width: "7%", displayName: "Opcion", cellClass: "txt-center",
                         cellTemplate: '<div class="btn-toolbar">\
                                             <button ng-if="row.entity.get_estado() == 0 " ng-disabled="validar_seleccion_producto()" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-lock"></span></button>\
-                                            <button ng-if="row.entity.get_estado() == 1 " ng-disabled="validar_seleccion_producto()" class="btn btn-default btn-xs" ng-click="solicitar_producto(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
+                                            <button ng-if="row.entity.get_estado() == 1 " ng-disabled="validar_seleccion_producto()" class="btn btn-default btn-xs" ng-validate-events="{{ habilitar_seleccion_producto() }}" ng-click="solicitar_producto(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
                                         </div>'}
                 ]
             };

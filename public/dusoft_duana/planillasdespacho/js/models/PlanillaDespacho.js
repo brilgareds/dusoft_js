@@ -25,7 +25,8 @@ define(["angular", "js/models"], function(angular, models) {
                 return new PlanillaDespacho(id, transportadora, ciudad, nombre_conductor, observacion, usuario, fecha_registro, fecha_despacho, estado, descripcion_estado);
             };
 
-
+            
+            
             PlanillaDespacho.prototype.set_numero_guia = function(numero_guia) {
                 this.id = numero_guia;
             };

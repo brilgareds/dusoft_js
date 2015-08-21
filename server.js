@@ -88,7 +88,7 @@ if (program.config) {
  * Monitoring Server only Production
  * =========================================*/
 if (program.prod) {
-    require('newrelic');
+    //require('newrelic');
 }
 
 

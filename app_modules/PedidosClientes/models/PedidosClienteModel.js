@@ -963,18 +963,10 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                     e.descripcion ilike $5\
                 ) order by 1 ";
     
-    console.log([empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, '%' + termino_busqueda + '%']);
-    console.log(sql);
-    console.log(sql_aux);
-    
-
     // Prueba
     G.db.paginated(sql, [empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, '%' + termino_busqueda + '%'], pagina, G.settings.limit, function(err, rows, result) {
-        
-        console.log('=================>>>>>');
-        console.log(err, rows);
-        console.log('==========');
-        callback(err, rows);
+            
+        callback(err, rows );
     });
 };
 

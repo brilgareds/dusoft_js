@@ -153,6 +153,8 @@ ALTER TABLE inv_bodegas_movimiento_tmp_despachos_clientes ADD estado char(1) DEF
 
 ALTER TABLE inv_bodegas_movimiento_tmp_despachos_clientes ADD observacion TEXT DEFAULT null;
 
+ALTER TABLE inv_bodegas_movimiento_tmp_d ADD auditado char(1) DEFAULT '0';
+
 COMMENT ON COLUMN "public"."inv_bodegas_movimiento_tmp_d"."auditado"
 IS ' Indica si el producto ha sido auditado o no 0 = false Producto No Auditado, 1 = true Product Auditado ';
 
@@ -1312,6 +1314,7 @@ IS 'Observacion ingresada por cartera';
 /*==== Agregar sw_aprobado_cartera a tabala de  ventas_ordenes_pedidos_tmp =========*/
 
 /* tmp */
+ALTER TABLE ventas_ordenes_pedidos ADD COLUMN tipo_producto varchar(1);
 ALTER TABLE "public"."ventas_ordenes_pedidos_tmp"
   ADD COLUMN "sw_aprobado_cartera" CHAR(1);
 
@@ -1345,7 +1348,6 @@ ALTER TABLE "public"."ventas_ordenes_pedidos_d"
 
 -- tabla real 
 
-ALTER TABLE ventas_ordenes_pedidos ADD COLUMN tipo_producto varchar(1);
 
 
 COMMENT ON COLUMN "public"."ventas_ordenes_pedidos_tmp"."tipo_producto"
@@ -1353,3 +1355,16 @@ IS ' Indica que el pedido se hara solamente de ese tipo de producto inv_tipo_pro
 
 ALTER TABLE "public"."solicitud_pro_a_bod_prpal_tmp" ADD COLUMN "cantidad_pendiente" INTEGER DEFAULT 0;
 
+
+ALTER TABLE "public"."ventas_ordenes_pedidos"
+  ADD COLUMN "centro_destino" CHAR(2); 
+
+ALTER TABLE "public"."ventas_ordenes_pedidos"
+  ADD COLUMN "bodega_destino" CHAR(2); 
+
+
+ALTER TABLE "public"."ventas_ordenes_pedidos_tmp"
+  ADD COLUMN "centro_destino" CHAR(2); 
+
+ALTER TABLE "public"."ventas_ordenes_pedidos_tmp"
+  ADD COLUMN "bodega_destino" CHAR(2); 

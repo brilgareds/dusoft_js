@@ -29,7 +29,11 @@ G.auth = require('./lib/Authentication');
 G.fs = require('fs-extra');
 G.xlsx = require('node-xlsx');
 G.path = path;
+G.Q = require('q');
 G.accounting = accounting;
+/*G.knex = require('./lib/Knex').
+         create(G.settings.dbHost, G.settings.dbUsername, G.settings.dbPassword, G.settings.dbName).
+         connect().getInstance();*/
 
 
 var reportUrl = G.settings.reportsUrl;
@@ -39,8 +43,6 @@ if(process.argv.indexOf("-report") != -1){
     reportUrl = process.argv[process.argv.indexOf("-report") + 1]; 
     console.log(reportUrl);
 }
-
-
 
 G.jsreport = require("jsreport-client")(reportUrl);
 //G.thread = require('webworker-threads');

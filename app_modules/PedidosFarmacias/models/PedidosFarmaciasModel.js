@@ -480,6 +480,9 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
 
 // Lista todos los pedidos temorales de farmacias
 PedidosFarmaciasModel.prototype.listar_pedidos_temporales_farmacias = function(empresa_id, termino_busqueda, pagina, usuario, callback) {
+   // console.log("listar_pedidos_temporales_farmacias code 1>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    //var deferred = G.Q.defer();
+    
 
     var sql = " select\
                 d.razon_social as nombre_farmacia, \
@@ -505,10 +508,23 @@ PedidosFarmaciasModel.prototype.listar_pedidos_temporales_farmacias = function(e
                       or b.descripcion ilike $2\
                       or e.nombre ilike $2)\
                 order by 2 desc ";
+    
 
+    
+   //return G.Q.nfcall(G.db.paginated, sql, [empresa_id, "%" + termino_busqueda + "%", usuario], pagina, G.settings.limit);
+    
+    
     G.db.paginated(sql, [empresa_id, "%" + termino_busqueda + "%", usuario], pagina, G.settings.limit, function(err, rows, result) {
-        callback(err, rows);
+        /*if(err){
+            deferred.reject(err);
+        } else {
+            deferred.resolve(rows);
+        }*/
+        callback(err, rows );
+        
     });
+    
+    //return deferred.promise;
 };
 
 

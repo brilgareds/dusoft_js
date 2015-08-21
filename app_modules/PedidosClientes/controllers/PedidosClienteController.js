@@ -367,6 +367,7 @@ PedidosCliente.prototype.listarProductosClientes = function(req, res) {
         numero_cotizacion: (args.pedidos_clientes.numero_cotizacion === undefined) ? '' : args.pedidos_clientes.numero_cotizacion,
         numero_pedido: (args.pedidos_clientes.numero_pedido === undefined) ? '' : args.pedidos_clientes.numero_pedido
     };
+    
     var pagina = args.pedidos_clientes.pagina_actual;
 
     that.m_pedidos_clientes.listar_productos(empresa_id, centro_utilidad, bodega, contrato_cliente, filtro, pagina, function(err, lista_productos) {

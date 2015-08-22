@@ -1369,6 +1369,7 @@ CREATE TABLE "public"."inv_planillas_farmacia_devolucion" (
   "estado" CHAR(1) DEFAULT 1 NOT NULL, 
   "usuario_id" INTEGER NOT NULL, 
   "fecha_registro" TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT now() NOT NULL, 
+  "fecha_despacho" TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT now() NOT NULL,
   
   CONSTRAINT "id_inv_planilla_farmacia_devolucionkey" PRIMARY KEY("id_inv_planilla_farmacia_devolucion"), 
   CONSTRAINT "inv_planillas_farmacia_devolucionfk" FOREIGN KEY ("inv_transportador_id")
@@ -1429,9 +1430,13 @@ IS 'Fecha en que se crea la planilla';
 COMMENT ON COLUMN "public"."inv_planillas_farmacia_devolucion"."numero_guia_externo"
 IS 'Numero guia cuando son transportadoras externas a la empresa';
 
+COMMENT ON COLUMN "public"."inv_planillas_farmacia_devolucion"."fecha_despacho"
+IS 'Fecha que se crea al momento de realizar un despacho';
+
+
+
 
 /* =================== Tabla para ingresar el detallado de los documentos de devolucion ============*/
-
 
 /* Crear  tabla inv_planillas_detalle_farmacias */
 CREATE TABLE "public"."inv_planillas_farmacia_devolucion_detalle" (
@@ -1451,11 +1456,11 @@ CREATE TABLE "public"."inv_planillas_farmacia_devolucion_detalle" (
     ON DELETE CASCADE
     ON UPDATE NO ACTION
     NOT DEFERRABLE, 
-  CONSTRAINT "inv_planillas_farmacia_devolucion_detalle_fk1" FOREIGN KEY ("empresa_id", "prefijo", "numero")
-    REFERENCES "public"."inv_bodegas_movimiento_despachos_farmacias"("empresa_id", "prefijo", "numero")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION
-    NOT DEFERRABLE, 
+ -- CONSTRAINT "inv_planillas_farmacia_devolucion_detalle_fk1" FOREIGN KEY ("empresa_id", "prefijo", "numero")
+  --  REFERENCES "public"."inv_bodegas_movimiento_despachos_farmacias"("empresa_id", "prefijo", "numero")
+   -- ON DELETE NO ACTION
+   -- ON UPDATE NO ACTION
+   -- NOT DEFERRABLE, 
   CONSTRAINT "inv_planillas_farmacia_devolucion_detalle_fk2" FOREIGN KEY ("usuario_id")
     REFERENCES "public"."system_usuarios"("usuario_id")
     ON DELETE NO ACTION

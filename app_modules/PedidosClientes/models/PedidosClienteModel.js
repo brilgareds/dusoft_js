@@ -905,10 +905,10 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
         sql_aux += " and f.clase_id = '" + laboratorio_id + "'";
 
     if (numero_cotizacion !== undefined && numero_cotizacion !== '' && numero_cotizacion !== '0')
-        sql_aux += " and a.codigo_producto NOT IN ( select codigo_producto from ventas_ordenes_pedidos_d_tmp where pedido_cliente_id_tmp = '" + numero_cotizacion + "' ) ";
+        sql_aux += " and a.codigo_producto NOT IN ( select codigo_producto from ventas_ordenes_pedidos_d_tmp where pedido_cliente_id_tmp = " + numero_cotizacion + " ) ";
 
     if (numero_pedido !== undefined && numero_pedido !== '' && numero_pedido !== '0')
-        sql_aux += " and a.codigo_producto NOT IN ( select codigo_producto from ventas_ordenes_pedidos_d where pedido_cliente_id = '" + numero_pedido + "' ) ";
+        sql_aux += " and a.codigo_producto NOT IN ( select codigo_producto from ventas_ordenes_pedidos_d where pedido_cliente_id = " + numero_pedido + " ) ";
 
     var sql = " select \
                 a.codigo_producto,\
@@ -959,13 +959,14 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                 where a.empresa_id = $1 and a.centro_utilidad = $2 and a.bodega = $3 " + sql_aux + " \
                 and (\
                     a.codigo_producto ilike $5 or\
-                    fc_descripcion_producto(a.codigo_producto) ilike $5 or\
+                    /*fc_descripcion_producto(a.codigo_producto) ilike $5 or*/ \
                     e.descripcion ilike $5\
                 ) order by 1 ";
-
+    
     // Prueba
     G.db.paginated(sql, [empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, '%' + termino_busqueda + '%'], pagina, G.settings.limit, function(err, rows, result) {
-        callback(err, rows);
+            
+        callback(err, rows );
     });
 };
 

@@ -277,10 +277,15 @@ PedidosFarmacias.prototype.listarPedidosTemporalesFarmacias = function(req, res)
 
     var usuario = req.session.user.usuario_id;
 
-    this.m_pedidos_farmacias.listar_pedidos_temporales_farmacias(empresa_id, termino_busqueda, pagina_actual, usuario, function(err, lista_pedidos_farmacias) {
-
+    G.Q.nfcall(this.m_pedidos_farmacias.listar_pedidos_temporales_farmacias,empresa_id, termino_busqueda, pagina_actual, usuario).
+    then(function(lista_pedidos_farmacias){
         res.send(G.utils.r(req.url, 'Lista Pedidos Temporales Farmacias', 200, {pedidos_farmacias: lista_pedidos_farmacias}));
-    });
+    }).
+    fail(function(err){
+        res.send(G.utils.r(req.url, "Se ha generado un error", 500, {pedidos_farmacias: []}));
+    }).
+    done();
+
 };
 
 
@@ -1327,9 +1332,10 @@ PedidosFarmacias.prototype.subirArchivoPlano = function(req, res) {
     var tipoProducto = args.pedidos_farmacias.tipo_producto || undefined;
     args.pedidos_farmacias.usuario_id = req.session.user.usuario_id;
     args.pedidos_farmacias.observacion = "Archivo plano";
+    
 
-    __subir_archivo_plano(req.files, function(continuar, contenido) {
-        if (continuar) {
+    __subir_archivo_plano(req.files, function(error, contenido) {
+        if (!error) {
 
             var lista_productos = contenido[0].data;
 
@@ -1927,7 +1933,7 @@ function __validarProductoArchivoPlano(that, datos, productosAgrupados, producto
                     }
 
                     if (!_productoStock.en_farmacia_seleccionada) {
-                        productoAgrupado.mensajeError = "No esta habilitado en la farmacia destino";
+                        productoAgrupado.mensajeError = "No esta habilitado en la farmacia destino!!!!!!!";
                         productoAgrupado.en_farmacia_seleccionada = _productoStock.en_farmacia_seleccionada;
                         productosInvalidosArchivo.push(productoAgrupado);
                         index++;
@@ -2024,19 +2030,19 @@ function __subir_archivo_plano(files, callback) {
             if (err) {
                 // Borrar archivo fisico
                 G.fs.unlinkSync(ruta_tmp);
-                callback(false);
+                callback(true);
                 return;
             } else {
                 G.fs.unlink(ruta_tmp, function(err) {
                     if (err) {
-                        callback(false);
+                        callback(true);
                         return;
                     } else {
                         // Cargar Contenido
                         contenido_archivo_plano = G.xlsx.parse(ruta_nueva);
                         // Borrar archivo fisico
                         G.fs.unlinkSync(ruta_nueva);
-                        callback(true, contenido_archivo_plano);
+                        callback(false, contenido_archivo_plano);
                     }
                 });
             }

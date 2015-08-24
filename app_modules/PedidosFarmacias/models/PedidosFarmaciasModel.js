@@ -480,11 +480,9 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
 
 // Lista todos los pedidos temorales de farmacias
 PedidosFarmaciasModel.prototype.listar_pedidos_temporales_farmacias = function(empresa_id, termino_busqueda, pagina, usuario, callback) {
-   // console.log("listar_pedidos_temporales_farmacias code 1>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-    //var deferred = G.Q.defer();
     
 
-    var sql = " select\
+    /*var sql = " select\
                 d.razon_social as nombre_farmacia, \
                 c.descripcion as nombre_centro_utilidad,\
                 b.descripcion as nombre_bodega,\
@@ -507,24 +505,48 @@ PedidosFarmaciasModel.prototype.listar_pedidos_temporales_farmacias = function(e
                 and ( c.descripcion ilike $2 \
                       or b.descripcion ilike $2\
                       or e.nombre ilike $2)\
-                order by 2 desc ";
+                order by 2 desc ";*/
     
+   G.knex.column("d.razon_social as nombre_farmacia", "c.descripcion as nombre_centro_utilidad","b.descripcion as nombre_bodega","e.nombre as nombre_usuario",
+    "a.farmacia_id", "a.centro_utilidad", "a.bodega", "a.empresa_destino", "a.centro_destino", "a.bogega_destino","a.usuario_id", "a.observacion").
 
-    
-   //return G.Q.nfcall(G.db.paginated, sql, [empresa_id, "%" + termino_busqueda + "%", usuario], pagina, G.settings.limit);
-    
-    
-    G.db.paginated(sql, [empresa_id, "%" + termino_busqueda + "%", usuario], pagina, G.settings.limit, function(err, rows, result) {
-        /*if(err){
-            deferred.reject(err);
-        } else {
-            deferred.resolve(rows);
-        }*/
-        callback(err, rows );
-        
+    from("solicitud_bodega_principal_aux as a").
+
+    innerJoin("bodegas as b", function(){
+         this.on("a.farmacia_id", "b.empresa_id" ).
+         on("a.centro_utilidad", "b.centro_utilidad").
+         on("a.bodega", "b.bodega");
+    }).
+    innerJoin("centros_utilidad as c", function(){
+         this.on("b.empresa_id", "c.empresa_id" ).
+         on("b.centro_utilidad", "c.centro_utilidad");
+    }).
+    innerJoin("empresas as d", function(){
+         this.on("c.empresa_id", "d.empresa_id" );
+    }).
+    innerJoin("system_usuarios as e", function(){
+         this.on("a.usuario_id", "e.usuario_id" );
+    }).
+    where({
+           "a.farmacia_id" : empresa_id,
+           "a.usuario_id"  : usuario
+    }).
+    andWhere(function() {
+       this.where("c.descripcion", "like", "%" + termino_busqueda + "%").
+       orWhere("b.descripcion", "like", "%" + termino_busqueda + "%").
+       orWhere("e.nombre", "like", "%" + termino_busqueda + "%");
+    }).
+    limit(G.settings.limit).
+    offset((pagina - 1) * G.settings.limit).
+    orderBy("nombre_centro_utilidad", "desc").
+    then(function(rows){
+        console.log("listado de pedidos ", rows);
+        callback(false, rows);
+    }).
+    catch(function(err){
+       callback(err);
     });
     
-    //return deferred.promise;
 };
 
 

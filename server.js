@@ -31,9 +31,9 @@ G.xlsx = require('node-xlsx');
 G.path = path;
 G.Q = require('q');
 G.accounting = accounting;
-/*G.knex = require('./lib/Knex').
+G.knex = require('./lib/Knex').
          create(G.settings.dbHost, G.settings.dbUsername, G.settings.dbPassword, G.settings.dbName).
-         connect().getInstance();*/
+         connect().getInstance();
 
 
 var reportUrl = G.settings.reportsUrl;

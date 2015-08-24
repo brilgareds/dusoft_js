@@ -28,7 +28,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
             $scope.filtro = {};
             
             //  $scope.fechainicial = new Date((fechaActual.getMonth() + 1)+"/01/" + (fechaActual.getFullYear() -1));
-            $scope.fechainicial = $filter('date')(new Date("01/01/" + fechaActual.getFullYear()), "yyyy-MM-dd");
+            $scope.fechainicial = $filter('date')(new Date("05/01/" + fechaActual.getFullYear()), "yyyy-MM-dd");
             $scope.fechafinal = $filter('date')(fechaActual, "yyyy-MM-dd");
             $scope.abrirfechafinal = false;
 

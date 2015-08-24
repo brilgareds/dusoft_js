@@ -921,8 +921,8 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                 b.porc_iva as iva,\
                 a.existencia::integer as existencia,\
                 coalesce(h.cantidad_total_pendiente, 0)::integer as cantidad_total_pendiente,\
-                case when coalesce((a.existencia - h.cantidad_total_pendiente)::integer, 0) < 0 then 0 \
-                        else coalesce((a.existencia - h.cantidad_total_pendiente)::integer, 0) end as cantidad_disponible,\
+                case when coalesce((a.existencia - coalesce(h.cantidad_total_pendiente, 0))::integer, 0) < 0 then 0 \
+                        else coalesce((a.existencia - coalesce(h.cantidad_total_pendiente, 0))::integer, 0) end as cantidad_disponible,\
                 case when g.precio_pactado > 0 then true else false end as tiene_precio_pactado,\
                 split_part(coalesce(fc_precio_producto_contrato_cliente($4,a.codigo_producto,$1),'0'), '@', 1) as precio_producto,\
                 b.sw_regulado,\
@@ -946,7 +946,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                       select a.empresa_id, b.codigo_producto, SUM((b.numero_unidades - b.cantidad_despachada)) as cantidad_total_pendiente, 1\
                       from ventas_ordenes_pedidos a\
                       inner join ventas_ordenes_pedidos_d b ON a.pedido_cliente_id = b.pedido_cliente_id\
-                      where (b.numero_unidades - b.cantidad_despachada) > 0  \
+                      where (b.numero_unidades - b.cantidad_despachada) > 0  and a.estado='1' \
                       group by 1,2 \
                       UNION\
                       select a.empresa_destino as empresa_id, b.codigo_producto, SUM( b.cantidad_pendiente) AS cantidad_total_pendiente, 2\
@@ -963,7 +963,10 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                     e.descripcion ilike $5\
                 ) order by 1 ";
     
-    // Prueba
+    
+    console.log('== Datos ==');
+    console.log([empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, '%' + termino_busqueda + '%']);
+    
     G.db.paginated(sql, [empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, '%' + termino_busqueda + '%'], pagina, G.settings.limit, function(err, rows, result) {
             
         callback(err, rows );

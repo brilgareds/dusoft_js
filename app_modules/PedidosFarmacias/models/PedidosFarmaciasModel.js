@@ -1089,8 +1089,8 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
                 b.subclase_id,\
                 b.porc_iva,\
                 b.tipo_producto_id,\
-                case when coalesce((a.existencia - h.cantidad_total_pendiente - coalesce(i.total_solicitado, 0))::integer, 0) < 0 then 0\
-                        else coalesce((a.existencia - h.cantidad_total_pendiente - coalesce(i.total_solicitado, 0))::integer, 0) end as disponibilidad_bodega,\
+                case when coalesce((a.existencia - coalesce(h.cantidad_total_pendiente, 0) - coalesce(i.total_solicitado, 0))::integer, 0) < 0 then 0\
+                        else coalesce((a.existencia - coalesce(h.cantidad_total_pendiente, 0) - coalesce(i.total_solicitado, 0))::integer, 0) end as disponibilidad_bodega,\
                 coalesce(j.existencias_farmacia, 0) as existencias_farmacia\
                 from existencias_bodegas a\
                 inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
@@ -1111,7 +1111,7 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
                           a.empresa_id, /*a.centro_destino as centro_utilidad, a.bodega_destino as bodega,*/ b.codigo_producto, SUM((b.numero_unidades - b.cantidad_despachada)) as cantidad_total_pendiente\
                           FROM ventas_ordenes_pedidos a\
                           inner join ventas_ordenes_pedidos_d b ON a.pedido_cliente_id = b.pedido_cliente_id\
-                          where (b.numero_unidades - b.cantidad_despachada) > 0\
+                          where (b.numero_unidades - b.cantidad_despachada) > 0 and a.estado = '1'  \
                           GROUP BY 1, 2\
                        ) aa group by 1,2\
 		) h on (a.empresa_id = h.empresa_id)  /*and (a.centro_utilidad = h.centro_utilidad or a.bodega =h.bodega)*/  and c.codigo_producto = h.codigo_producto                 left join(\

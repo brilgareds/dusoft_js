@@ -1110,7 +1110,8 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
                           where (b.numero_unidades - b.cantidad_despachada) > 0 and a.estado = '1'  \
                           GROUP BY 1, 2\
                        ) aa group by 1,2\
-		) h on (a.empresa_id = h.empresa_id)  /*and (a.centro_utilidad = h.centro_utilidad or a.bodega =h.bodega)*/  and c.codigo_producto = h.codigo_producto                 left join(\
+		) h on (a.empresa_id = h.empresa_id)  /*and (a.centro_utilidad = h.centro_utilidad or a.bodega =h.bodega)*/  and c.codigo_producto = h.codigo_producto \
+                left join(\
                    SELECT aa.empresa_id, aa.codigo_producto, /*aa.centro_destino, aa.bodega_destino,*/ SUM(aa.total_reservado) as total_solicitado FROM(\
                         select b.codigo_producto, a.empresa_destino as empresa_id, /*a.centro_destino as centro_destino, a.bogega_destino as bodega_destino,*/ SUM(cantidad_solic)::integer as total_reservado\
                         from  solicitud_bodega_principal_aux a\

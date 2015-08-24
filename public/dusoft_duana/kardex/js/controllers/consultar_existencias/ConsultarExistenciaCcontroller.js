@@ -127,7 +127,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                                             </div>'
                     },
                     {field: 'producto.descripcion', displayName: 'Nombre', width:500},
-                    {field: 'producto.existencia', displayName: 'Existencia', width: "10%"}]
+                    {field: 'producto.existencia', displayName: 'Existencia', width: "10%", cellClass :"gridNumber"}
+                ]
 
             };
 

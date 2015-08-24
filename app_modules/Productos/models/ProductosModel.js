@@ -95,7 +95,7 @@ ProductosModel.prototype.consultarExistenciasProducto = function(empresa_id, ter
 
     var sql = " SELECT a.existencia, b.codigo_producto,b.descripcion as producto, b.cantidad, b.codigo_alterno, b.codigo_barras,\
                 b.contenido_unidad_venta, c.empresa_id, c.razon_social, d.descripcion AS centro, e.descripcion AS bodega,\
-                fc_descripcion_producto(b.codigo_producto) AS descripcion_producto\
+                fc_descripcion_producto(b.codigo_producto) AS descripcion_producto, b.tipo_producto_id\
                 FROM existencias_bodegas a\
                 INNER JOIN inventarios_productos b ON a.codigo_producto = b.codigo_producto\
                 INNER JOIN empresas c ON a.empresa_id = c.empresa_id  AND c.sw_activa = '1'\

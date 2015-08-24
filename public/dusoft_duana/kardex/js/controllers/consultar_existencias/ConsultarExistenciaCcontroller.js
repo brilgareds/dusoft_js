@@ -92,7 +92,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                     var centro = CentroUtilidad.get(obj.centro);
                     var bodega = Bodega.get(obj.bodega);
                     centro.agregarBodega(bodega);
-                        
+                    producto.setTipoProductoId(obj.tipo_producto_id);
+                    
                     var empresa = Empresa.get(obj.razon_social, obj.empresa_id);
                     empresa.setCentroUtilidadSeleccionado(centro);
 
@@ -115,9 +116,19 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                     {field: 'empresa.nombre', displayName: 'Empresa'},
                     {field: 'empresa.getCentroUtilidadSeleccionado().getNombre()', displayName: 'Centro Utilidad'},
                     {field: 'empresa.getCentroUtilidadSeleccionado().getBodegas()[0].getNombre()', displayName: 'Farmacia'},
-                    {field: 'producto.codigo_producto', displayName: 'Codigo', width: "10%"},
+                    {field: 'producto.codigo_producto', displayName: 'Código', width: "130",
+                        cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
+                                                <span class="label label-success" ng-show="row.entity.producto.getTipoProductoId() == 1" >N</span>\
+                                                <span class="label label-danger" ng-show="row.entity.producto.getTipoProductoId() == 2">A</span>\
+                                                <span class="label label-warning" ng-show="row.entity.producto.getTipoProductoId() == 3">C</span>\
+                                                <span class="label label-primary" ng-show="row.entity.producto.getTipoProductoId() == 4">I</span>\
+                                                <span class="label label-info" ng-show="row.entity.producto.getTipoProductoId() == 5">Ne</span>\
+                                                <span ng-cell-text >{{COL_FIELD}}</span>\
+                                            </div>'
+                    },
                     {field: 'producto.descripcion', displayName: 'Nombre', width:500},
-                    {field: 'producto.existencia', displayName: 'Existencia', width: "10%"}]
+                    {field: 'producto.existencia', displayName: 'Existencia', width: "10%", cellClass :"gridNumber"}
+                ]
 
             };
 

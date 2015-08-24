@@ -28,7 +28,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
             $scope.filtro = {};
             
             //  $scope.fechainicial = new Date((fechaActual.getMonth() + 1)+"/01/" + (fechaActual.getFullYear() -1));
-            $scope.fechainicial = $filter('date')(new Date("01/01/" + fechaActual.getFullYear()), "yyyy-MM-dd");
+            $scope.fechainicial = $filter('date')(new Date("05/01/" + fechaActual.getFullYear()), "yyyy-MM-dd");
             $scope.fechafinal = $filter('date')(fechaActual, "yyyy-MM-dd");
             $scope.abrirfechafinal = false;
 
@@ -125,11 +125,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                             obj.costo_ultima_compra,
                             obj.porc_iva,
                             obj.descuadre
-                            );
-
+                    );
+                    
+                    producto.setTipoProductoId(obj.tipo_producto_id);
+                    
                     $scope.Empresa.agregarProducto(
                             producto
-                            );
+                    );
                 }
 
             };
@@ -147,13 +149,22 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                  }
                  },*/
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Codigo', width:"130"},
+                    {field: 'codigo_producto', displayName: 'Código', width: "130",
+                        cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
+                                                <span class="label label-success" ng-show="row.entity.getTipoProductoId() == 1" >N</span>\
+                                                <span class="label label-danger" ng-show="row.entity.getTipoProductoId() == 2">A</span>\
+                                                <span class="label label-warning" ng-show="row.entity.getTipoProductoId() == 3">C</span>\
+                                                <span class="label label-primary" ng-show="row.entity.getTipoProductoId() == 4">I</span>\
+                                                <span class="label label-info" ng-show="row.entity.getTipoProductoId() == 5">Ne</span>\
+                                                <span ng-cell-text >{{COL_FIELD}}</span>\
+                                            </div>'
+                    },
                     {field: 'descripcion', displayName: 'Nombre'},
-                    {field: 'existencia', displayName: 'Existencia', width:"100"},
-                    {field: 'costo', displayName: 'Costo', width:"150", visible:that.opcionesModulo.columnaCosto.visible},
-                    {field: 'costo_ultima_compra', width:"150", displayName: 'Costo Ultima Compra', visible:that.opcionesModulo.columnaCostoUltimaCompra.visible},
-                    {field: 'precio', width:"150", displayName: 'Precio', visible:that.opcionesModulo.columnaPrecioVenta.visible},
-                    {field: 'porc_iva', displayName: 'Iva', width: "100"},
+                    {field: 'existencia', displayName: 'Existencia', width:"100", cellClass :"gridNumber"},
+                    {field: 'costo', displayName: 'Costo', width:"150", visible:that.opcionesModulo.columnaCosto.visible, cellClass :"gridNumber"},
+                    {field: 'costo_ultima_compra', width:"150", displayName: 'Costo Ultima Compra', visible:that.opcionesModulo.columnaCostoUltimaCompra.visible, cellClass :"gridNumber"},
+                    {field: 'precio', width:"150", displayName: 'Precio', visible:that.opcionesModulo.columnaPrecioVenta.visible, cellClass :"gridNumber"},
+                    {field: 'porc_iva', displayName: 'Iva', width: "100", cellClass :"gridNumber"},
                     {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "100", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'}]
 
             };

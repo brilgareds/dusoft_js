@@ -17,6 +17,7 @@ define(["angular","js/models","includes/classes/Producto"], function(angular, mo
 			this.costo_ultima_compra = costo_ultima_compra;
 			this.porc_iva = porc_iva;
 			this.descuadre  = descuadre;
+                        this.tipoProducto;
 		}
 
 		//herencia
@@ -57,7 +58,16 @@ define(["angular","js/models","includes/classes/Producto"], function(angular, mo
 
 		ProductoMovimiento.prototype.getPendientesOrdenes = function(){
 			return this.pendientesOrdenes;
-		};		
+		};	
+                
+                
+                ProductoMovimiento.prototype.setTipoProductoId = function(tipoProducto){
+                        this.tipoProducto = tipoProducto;
+                };
+                
+                ProductoMovimiento.prototype.getTipoProductoId = function(){
+                        return this.tipoProducto;
+                };
 
 		this.get = function(codigo, nombre, existencia, precio, existencia_total, costo, costo_ultima_compra, porc_iva){
 			return new ProductoMovimiento(codigo, nombre, existencia, precio, existencia_total, costo, costo_ultima_compra, porc_iva);

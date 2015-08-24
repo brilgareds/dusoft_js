@@ -125,11 +125,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                             obj.costo_ultima_compra,
                             obj.porc_iva,
                             obj.descuadre
-                            );
-
+                    );
+                    
+                    producto.setTipoProductoId(obj.tipo_producto_id);
+                    
                     $scope.Empresa.agregarProducto(
                             producto
-                            );
+                    );
                 }
 
             };
@@ -147,7 +149,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                  }
                  },*/
                 columnDefs: [
-                    {field: 'codigo_producto', displayName: 'Codigo', width:"130"},
+                    {field: 'codigo_producto', displayName: 'Código', width: "130",
+                        cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
+                                                <span class="label label-success" ng-show="row.entity.getTipoProductoId() == 1" >N</span>\
+                                                <span class="label label-danger" ng-show="row.entity.getTipoProductoId() == 2">A</span>\
+                                                <span class="label label-warning" ng-show="row.entity.getTipoProductoId() == 3">C</span>\
+                                                <span class="label label-primary" ng-show="row.entity.getTipoProductoId() == 4">I</span>\
+                                                <span class="label label-info" ng-show="row.entity.getTipoProductoId() == 5">Ne</span>\
+                                                <span ng-cell-text >{{COL_FIELD}}</span>\
+                                            </div>'
+                    },
                     {field: 'descripcion', displayName: 'Nombre'},
                     {field: 'existencia', displayName: 'Existencia', width:"100"},
                     {field: 'costo', displayName: 'Costo', width:"150", visible:that.opcionesModulo.columnaCosto.visible},

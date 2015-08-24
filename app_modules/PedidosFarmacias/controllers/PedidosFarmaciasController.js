@@ -2141,8 +2141,9 @@ function _generarDocumentoPedido(obj, callback) {
  */
 function __consultarStockProducto(that, empresa_destino_id, producto, callback) {
     that.m_productos.consultar_stock_producto(empresa_destino_id, producto.codigo_producto, function(err, total_existencias_farmacias) {
+        
         producto.total_existencias_farmacias = (total_existencias_farmacias.length > 0 && total_existencias_farmacias[0].existencia !== null) ? total_existencias_farmacias[0].existencia : 0;
-        producto.en_farmacia_seleccionada = (producto.total_existencias_farmacias > 0) ? true : false;
+        producto.en_farmacia_seleccionada = (total_existencias_farmacias.length > 0 && total_existencias_farmacias[0].existencia !== null) ? true : false;
 
         callback(err, producto);
     });

@@ -1969,6 +1969,10 @@ function __validarProductoArchivoPlano(that, datos, productosAgrupados, producto
 
                                     productosValidadosArchivo.push(productoAgrupado);
                                     index++;
+                                    
+                                    var porcentaje = (index * 100) /  productosAgrupados.length;
+                                    
+                                    that.e_pedidos_farmacias.onNotificarProgresoArchivoPlanoFarmacias(datos.usuario_id, porcentaje);
                                     __validarProductoArchivoPlano(that, datos, productosAgrupados, productosValidadosArchivo, productosInvalidosArchivo, index, callback);
 
                                 });

@@ -69,9 +69,20 @@
                                 
                             </div>
                             
-                            <div class=" row col-sm-12 col-md-12 col-lg-12 input-group">
-                            
+                            <div class=" row col-sm-12 col-md-12 col-lg-12 input-group">                                
+                                
+                                <div class="input-group">
+                                <div class="input-group-btn">
+                                  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{rootSeleccionProductoFarmacia.filtro.nombre}} <span class="caret"></span></button>
+                                  <ul class="dropdown-menu">
+                                    <li ng-repeat="filtro in rootSeleccionProductoFarmacia.filtros">
+                                        <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.nombre}}</a>
+                                    </li>
+                                  </ul>
+                                </div><!-- /btn-group -->
                                 <input type="text" class="form-control" ng-keypress="onBuscarProductos($event)" ng-model="rootSeleccionProductoFarmacia.termino_busqueda" placeholder="Buscar Producto" name="srch-term" id="srch-term">
+                              </div><!-- /input-group -->
+                            
 
                                 <div class="input-group-btn" >
                                     <button class="btn btn-default pull-right" type="submit" ng-click="onBuscarProductos({which:13})"><i class="glyphicon glyphicon-search"></i></button>

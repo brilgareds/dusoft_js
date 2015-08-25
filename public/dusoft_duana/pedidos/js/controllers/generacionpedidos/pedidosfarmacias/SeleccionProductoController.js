@@ -67,10 +67,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                 $scope.rootSeleccionProductoFarmacia.paginaactual = 1;
                 $scope.rootSeleccionProductoFarmacia.tipoProducto = "0";
                 $scope.root.pedido;
+                
+                $scope.rootSeleccionProductoFarmacia.filtros = [
+                    {nombre : "Descripcion", tipo_busqueda:0}, 
+                    {nombre : "Molecula", tipo_busqueda:1},
+                    {nombre : "Codigo", tipo_busqueda:2}
+                ];
+                
+                $scope.rootSeleccionProductoFarmacia.filtro  = $scope.rootSeleccionProductoFarmacia.filtros[0];
                 //$scope.rootSeleccionProductoFarmacia.listaTiposProductos  = [];
 
             };
-
+            
             /*
              * @Author: Eduar
              * @param {object} _productos
@@ -100,12 +108,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
              * +Descripcion: metodo que hace la peticion para traer los productos de la empresa seleccionada en el pedido
              */
             self.buscarProductos = function(callback) {
-
+                
+                $scope.rootSeleccionProductoFarmacia.filtro.termino_busqueda = $scope.rootSeleccionProductoFarmacia.termino_busqueda;
+                $scope.rootSeleccionProductoFarmacia.filtro.tipo_producto  = $scope.rootSeleccionProductoFarmacia.tipoProducto;
+                
                 var obj = {
                     session: $scope.root.session,
                     data: {
                         productos: {
-                            termino_busqueda: $scope.rootSeleccionProductoFarmacia.termino_busqueda,
                             pagina_actual: $scope.rootSeleccionProductoFarmacia.paginaactual,
                             empresa_id: $scope.root.pedido.getFarmaciaOrigen().getCodigo(),
                             centro_utilidad_id: $scope.root.pedido.getFarmaciaOrigen().getCentroUtilidadSeleccionado().getCodigo(),
@@ -113,8 +123,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                             empresa_destino_id: $scope.root.pedido.getFarmaciaDestino().getCodigo(),
                             centro_utilidad_destino_id: $scope.root.pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getCodigo(),
                             bodega_destino_id: $scope.root.pedido.getFarmaciaDestino().getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
-                            tipo_producto: $scope.rootSeleccionProductoFarmacia.tipoProducto,
-                            filtro: {}
+                            filtro: $scope.rootSeleccionProductoFarmacia.filtro
                         }
                     }
                 };
@@ -279,6 +288,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                 }
             };*/
             
+            /*
+             * @Author: Eduar
+             * @param {Object} filtro
+             * +Descripcion: Handler del dropdown de filtros
+             */
+            $scope.onSeleccionFiltro = function(filtro){
+                $scope.rootSeleccionProductoFarmacia.filtro = filtro;
+            };
             
             $scope.mostrarAlertaProducto = function(){
                 self.mostrarAlertaSeleccionProducto("Error agregando producto","El producto esta bloqueado o no se encuentra en la farmacia destino");

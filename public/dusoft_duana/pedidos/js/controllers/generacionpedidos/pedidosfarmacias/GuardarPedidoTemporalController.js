@@ -534,7 +534,10 @@ define(["angular", "js/controllers",
                 
                 if(datos.status === 200){
                     self.consultarDetallePedidoTemporal(function(){
-                        self.mostrarProductosNoValidos(datos.obj.productosInvalidos);
+                        if(datos.obj.productosInvalidos.length > 0){
+                            
+                            self.mostrarProductosNoValidos(datos.obj.productosInvalidos);
+                        }
                         $scope.rootPedidoFarmaciaTemporal.tabListaPedidos = true;
                     });
                 } else {

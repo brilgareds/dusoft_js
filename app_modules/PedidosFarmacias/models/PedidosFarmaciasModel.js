@@ -1038,15 +1038,24 @@ PedidosFarmaciasModel.prototype.actualizarDestinoDeProductos = function(numero_p
 };
 
 PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_utilidad_id, bodega_id, empresa_destino, centro_destino, bodega_destino,
-                                                           termino_busqueda, pagina, tipo_producto, callback) {
+                                                           pagina, filtro, callback) {
     
     //console.log(">>>>---Datos Recibidos---<<<<");
     var sql_aux = "";
-    var array_parametros = [empresa_id, centro_utilidad_id, bodega_id, empresa_destino, centro_destino, bodega_destino, "%" + termino_busqueda + "%"];
+    var array_parametros = [empresa_id, centro_utilidad_id, bodega_id, empresa_destino, centro_destino, bodega_destino, "%" + filtro.termino_busqueda + "%"];
+    var sql_filtro = "";
 
     // Se realiza este cambio para permitir buscar productos de un determiando tipo.
-    if (tipo_producto !== '0') {
-        sql_aux = " and b.tipo_producto_id = '"+tipo_producto+"' ";
+    if (filtro.tipo_producto !== '0') {
+        sql_aux = " and b.tipo_producto_id = '"+filtro.tipo_producto+"' ";
+    }
+    
+    if(filtro.tipo_busqueda === 0){
+        sql_filtro =  " and fc_descripcion_producto(a.codigo_producto) ILIKE  $7 ";
+    } else if(filtro.tipo_busqueda === 1){
+        sql_filtro =  " and e.descripcion ILIKE $7 "; 
+    } else {
+        sql_filtro =  " and a.codigo_producto ILIKE $7 ";
     }
     
     console.log("sql aux ", sql_aux, pagina);
@@ -1132,8 +1141,7 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
                     where a.empresa_id= $4 and a.centro_utilidad = $5 and a.bodega = $6\
                     ORDER BY 1 ASC \
                 ) j on j.codigo_producto = c.codigo_producto\
-                where a.empresa_id= $1 and a.centro_utilidad = $2 and a.bodega = $3 " + sql_aux + "\
-                and ( a.codigo_producto ILIKE $7 or fc_descripcion_producto(a.codigo_producto) ILIKE  $7)\
+                where a.empresa_id= $1 and a.centro_utilidad = $2 and a.bodega = $3 " + sql_aux + sql_filtro+ "\
                ORDER BY 1 ASC ";
     
     G.db.paginated(sql, array_parametros, pagina, G.settings.limit, function(err, rows, result) {

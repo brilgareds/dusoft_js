@@ -71,7 +71,6 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
 
                                 // se consulta el total de existencias del producto seleccionado
                                 that.m_productos.consultar_stock_producto(empresa_id, codigo_producto, function(err, stock_producto) {
-
                                     stock = (stock_producto.length === 1) ? stock_producto[0].existencia : 0;
 
                                     // Se aplica la Formula de Disponibilidad producto

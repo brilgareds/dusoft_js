@@ -78,6 +78,7 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
                                     disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - parseInt(cantidad_reservada_temporales);
 
                                     console.log('============ Here =================');
+                                    console.log("empresa ", empresa_id);
                                     console.log("stock real ", stock_producto);
                                     console.log("codigo producto ", codigo_producto);
                                     console.log('stock', stock);

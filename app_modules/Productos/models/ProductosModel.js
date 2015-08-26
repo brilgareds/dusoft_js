@@ -85,15 +85,7 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
 
 ProductosModel.prototype.consultarExistenciasProducto = function(empresa_id, termino_busqueda, pagina, callback) {
 
-    var sql_aux = "";
-    var parametros = ["%" + termino_busqueda + "%"];
-
-    if (empresa_id !== "") {
-        sql_aux = " AND c.empresa_id = $2 ";
-        parametros = ["%" + termino_busqueda + "%", empresa_id];
-    }
-
-    var sql = " SELECT a.existencia, b.codigo_producto,b.descripcion as producto, b.cantidad, b.codigo_alterno, b.codigo_barras,\
+    /*var sql = " SELECT a.existencia, b.codigo_producto, b.descripcion as producto, b.cantidad, b.codigo_alterno, b.codigo_barras,\
                 b.contenido_unidad_venta, c.empresa_id, c.razon_social, d.descripcion AS centro, e.descripcion AS bodega,\
                 fc_descripcion_producto(b.codigo_producto) AS descripcion_producto, b.tipo_producto_id\
                 FROM existencias_bodegas a\
@@ -102,11 +94,48 @@ ProductosModel.prototype.consultarExistenciasProducto = function(empresa_id, ter
                 INNER JOIN centros_utilidad d ON a.centro_utilidad = d.centro_utilidad AND a.empresa_id = d.empresa_id\
                 INNER JOIN bodegas e ON e.centro_utilidad = d.centro_utilidad AND e.empresa_id = d.empresa_id AND e.bodega = a.bodega\
                 WHERE a.estado='1' and a.existencia > 0 " + sql_aux + "\
-                AND (b.descripcion ILIKE $1 OR b.codigo_producto ILIKE $1) ";
+                AND (b.descripcion ILIKE $1 OR b.codigo_producto ILIKE $1) ";*/
+    
 
-    G.db.paginated(sql, parametros, pagina, G.settings.limit, function(err, rows, result) {
-        callback(err, rows);
+    
+    G.knex.column("a.existencia", "b.codigo_producto","b.descripcion as producto","b.cantidad",
+    "b.codigo_alterno", "b.contenido_unidad_venta", "c.empresa_id", "c.razon_social", "d.descripcion AS centro",
+    "e.descripcion as bodega",G.knex.raw("fc_descripcion_producto(b.codigo_producto) as descripcion_producto"), "b.tipo_producto_id").
+    from("existencias_bodegas as a").
+    innerJoin("inventarios_productos as b", "a.codigo_producto", "b.codigo_producto").
+    innerJoin("empresas as c", "a.empresa_id", "c.empresa_id").
+    innerJoin("centros_utilidad as d", function(){
+         this.on("a.centro_utilidad", "d.centro_utilidad" ).
+         on("a.empresa_id", "d.empresa_id");
+    }).
+    innerJoin("bodegas as e", function(){
+         this.on("e.centro_utilidad", "d.centro_utilidad" ).
+         on("e.empresa_id", "d.empresa_id").
+         on("e.bodega", "a.bodega");
+    }).
+    where(function(){
+        this.where("a.estado", "1").andWhere("a.existencia", ">", "0");
+        
+        if (empresa_id !== "") {
+            this.where("c.empresa_id", empresa_id);
+        }
+    }).     
+    andWhere(function() {
+       this.where("b.descripcion", "ilike", "%" + termino_busqueda + "%").
+       orWhere("b.codigo_producto", "ilike", "%" + termino_busqueda + "%");
+    }).
+    limit(G.settings.limit).
+    offset((pagina - 1) * G.settings.limit).
+    then(function(rows){
+        callback(false, rows);
+    }).
+    catch(function(err){
+       callback(err);
     });
+
+    /*G.db.paginated(sql, parametros, pagina, G.settings.limit, function(err, rows, result) {
+        callback(err, rows);
+    });*/
 };
 
 

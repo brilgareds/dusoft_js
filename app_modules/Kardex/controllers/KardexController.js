@@ -213,18 +213,17 @@ Kardex.prototype.consultarExistenciasProducto = function(req, res) {
     var termino_busqueda = args.kardex.termino_busqueda;
     var pagina_actual = args.kardex.pagina_actual;
     var empresa_id = args.kardex.empresa_id || '';
-
-
-    this.m_productos.consultarExistenciasProducto(empresa_id, termino_busqueda, pagina_actual, function(err, lista_productos) {
-
-        if (err) {
-            res.send(G.utils.r(req.url, 'Error Listado de Productos', 500, {lista_productos: {}}));
-            return;
-        } else {
-            res.send(G.utils.r(req.url, 'Listado de Productos', 200, {lista_productos: lista_productos}));
-            return;
-        }
-    });
+    
+    G.Q.nfcall(this.m_productos.consultarExistenciasProducto,empresa_id, termino_busqueda, pagina_actual).
+    then(function(lista_productos){
+        res.send(G.utils.r(req.url, 'Listado de Productos!!!!', 200, {lista_productos: lista_productos}));
+    }).
+    fail(function(err){
+        console.log("error generado ", err);
+        res.send(G.utils.r(req.url, 'Error Listado de Productos', 500, {lista_productos: {}}));
+    }).
+    done();
+    
 };
 
 Kardex.$inject = ["m_kardex", "m_pedidos_farmacias", "m_pedidos_clientes", "m_ordenes_compra", "m_productos"];

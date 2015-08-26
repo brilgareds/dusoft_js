@@ -213,7 +213,12 @@
 
                         <div class="row col-md-8 col-md-offset-2" style="margin-top: 25px">    
 
-                            <div flow-init="rootPedidoFarmaciaTemporal.opcionesArchivo"  flow-file-success="respuestaArchivoPlano($file, $message);" flow-file-added="!!{xlsx:1,xls:1}[$file.getExtension()]" flow-files-submitted="cargarArchivoPlano($flow)" class="ng-scope" flow-prevent-drop=""  flow-drag-enter="dropClass='drag-over'" flow-drag-leave="dropClass=''" >
+                            <div flow-init="rootPedidoFarmaciaTemporal.opcionesArchivo"  
+                                 flow-file-success="respuestaArchivoPlano($file, $message);" 
+                                 flow-file-added="!!{xlsx:1,xls:1}[$file.getExtension()]" 
+                                 flow-progress="onProgresoArchivo( $file, $flow )"
+                                 flow-files-submitted="cargarArchivoPlano($flow)" class="ng-scope" flow-prevent-drop=""  
+                                 flow-drag-enter="dropClass='drag-over'" flow-drag-leave="dropClass=''" >
                                 <div class="drop txt-center" flow-drop="" flow-drop-enabled="!(vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '')" ng-class="dropClass" >
 
                                     <div class="col-md-12">
@@ -229,9 +234,9 @@
                                         <!-- Barra de Progreso - Inicio -->
                                         <div class="progress progress-striped" ng-class="{active: file.isUploading()}">
                                             <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0"
-                                                 aria-valuemax="100" ng-style="{width: (file.progress() * 100) + '%'}">
+                                                 aria-valuemax="100" ng-style="{width: rootPedidoFarmaciaTemporal.progresoArchivo + '%'}">
                                             </div>
-                                            <span class="sr-only ng-binding">1% Completado</span>
+                                            <span class="sr-only ng-binding">{{rootPedidoFarmaciaTemporal.progresoArchivo}}% Completado</span>
                                         </div>
                                         <!-- Barra de Progreso - Fin -->
 
@@ -245,9 +250,9 @@
                                         <span class="glyphicon glyphicon-folder-open" style="margin-right: 5px;"></span> Seleccionar Archivo
                                         <input type="file" style="visibility: hidden; position: absolute;">
                                     </span>                                                
-                                    <button class="btn btn-default" ng-click="$flow.cancel()" ng-show="$flow.files.length">
+                                    <!-- button class="btn btn-default" ng-click="$flow.cancel()" ng-show="$flow.files.length">
                                         <span class="glyphicon glyphicon-minus" ></span> Remover
-                                    </button>
+                                    </button -->
                                     <button class="btn btn-default" ng-click="subirArchivoPlano()" ng-show="$flow.files.length">
                                         <!--ng-disabled="vista_previa || codigo_proveedor_id == '' || unidad_negocio_id == '' || observacion == '' "-->
                                         <span class="glyphicon glyphicon-cloud-upload" ></span> Subir

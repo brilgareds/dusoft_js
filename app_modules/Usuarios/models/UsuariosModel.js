@@ -416,9 +416,6 @@ UsuariosModel.prototype.obtenerParametrizacionUsuario = function(usuario_id, emp
                 });
             });
 
-
-
-
         });
 
     });
@@ -854,7 +851,7 @@ function __asignarOpcionesModulo(that, modulos, index, rol_id, empresa_id, usuar
 
     }
 
-    that.m_modulo.listarUsuarioModuloOpciones(modulo.modulo_id, rol_id, empresa_id, usuario_id, function(err, opciones) {
+    that.m_modulo.listarUsuarioModuloOpciones(modulo.modulo_id, rol_id, empresa_id, usuario_id,null, function(err, opciones) {
         if (err) {
             callback(err);
             return;

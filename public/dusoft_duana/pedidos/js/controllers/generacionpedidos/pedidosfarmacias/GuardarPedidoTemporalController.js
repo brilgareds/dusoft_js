@@ -5,11 +5,11 @@ define(["angular", "js/controllers",
         '$scope', '$rootScope', 'Request',
         'API', "socket", "AlertService",
         '$state', "Usuario", "localStorageService", '$modal', "$timeout", "EmpresaPedidoFarmacia",
-        "ProductoPedidoFarmacia",
+        "ProductoPedidoFarmacia", "$interval",
         function($scope, $rootScope, Request,
                 API, socket, AlertService,
                 $state, Usuario, localStorageService, $modal,
-                $timeout, EmpresaPedidoFarmacia, ProductoPedidoFarmacia) {
+                $timeout, EmpresaPedidoFarmacia, ProductoPedidoFarmacia, $interval) {
 
             var self = this;
 
@@ -23,6 +23,7 @@ define(["angular", "js/controllers",
                 $scope.rootPedidoFarmaciaTemporal.opcionesArchivo.target = API.PEDIDOS.FARMACIAS.SUBIR_ARCHIVO_PLANO;
                 $scope.rootPedidoFarmaciaTemporal.opcionesArchivo.testChunks = false;
                 $scope.rootPedidoFarmaciaTemporal.opcionesArchivo.singleFile = true;
+                $scope.rootPedidoFarmaciaTemporal.progresoArchivo = 0;
                 $scope.rootPedidoFarmaciaTemporal.opcionesArchivo.query = {
                     session: JSON.stringify($scope.root.session)
                 };
@@ -342,6 +343,18 @@ define(["angular", "js/controllers",
                 
             };
             
+           
+            /*
+             * @Author: Eduar
+             * +Descripcion: Evento que actualiza la barra de progreso
+             */
+           socket.on("onNotificarProgresoArchivoPlanoFarmacias", function(datos) {
+               console.log("onNotificarProgresoArchivoPlanoFarmacias ", datos);
+                $scope.rootPedidoFarmaciaTemporal.progresoArchivo = datos.porcentaje;
+            }); 
+            
+            
+            
             /*
              * @Author: Eduar
              * +Descripcion: Handler del boton generar pedido
@@ -485,7 +498,7 @@ define(["angular", "js/controllers",
              */
             $scope.subirArchivoPlano = function() {
                  var pedido = $scope.root.pedido;
-                 
+                 $scope.rootPedidoFarmaciaTemporal.progresoArchivo = 1;
                  self.guardarEncabezadoPedidoTemporal(function(creacionCompleta) {
                     if (creacionCompleta) {
                         pedido.setEsTemporal(true);
@@ -507,6 +520,7 @@ define(["angular", "js/controllers",
                  });
             };
             
+            
             /*
              * @Author: Eduar
              * @param {File} file
@@ -514,13 +528,16 @@ define(["angular", "js/controllers",
              * +Descripcion: Handler de la respuesta del servidor al subir el archivo
              */
             $scope.respuestaArchivoPlano = function(file, message) {
-                console.log("respuesta archivo plano ", message);
+                $scope.rootPedidoFarmaciaTemporal.progresoArchivo = 1; 
                 $scope.rootPedidoFarmaciaTemporal.opcionesArchivo.cancel();
                 var datos = JSON.parse(message);
                 
                 if(datos.status === 200){
                     self.consultarDetallePedidoTemporal(function(){
-                        self.mostrarProductosNoValidos(datos.obj.productosInvalidos);
+                        if(datos.obj.productosInvalidos.length > 0){
+                            
+                            self.mostrarProductosNoValidos(datos.obj.productosInvalidos);
+                        }
                         $scope.rootPedidoFarmaciaTemporal.tabListaPedidos = true;
                     });
                 } else {
@@ -528,6 +545,7 @@ define(["angular", "js/controllers",
                 }
                 
             };
+            
             
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.onBodegaPedidoSeleccionada();

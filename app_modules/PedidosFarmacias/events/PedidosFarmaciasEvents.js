@@ -96,6 +96,21 @@ PedidosFarmaciasEvents.prototype.onNotificacionOperarioPedidosReasignados = func
     });
 };
 
+PedidosFarmaciasEvents.prototype.onNotificarProgresoArchivoPlanoFarmacias = function(usuario_id, porcentaje) {
+
+    var that = this;
+    G.auth.getSessionsUser(usuario_id, function(err, sessions) {
+
+         //Se recorre cada una de las sesiones abiertas por el usuario
+         sessions.forEach(function(session) {
+             //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
+             that.io.sockets.socket(session.socket_id).emit('onNotificarProgresoArchivoPlanoFarmacias', {porcentaje: porcentaje});
+         });
+
+     });
+};
+
+
 PedidosFarmaciasEvents.$inject = ["socket", "m_pedidos_farmacias", "m_terceros"];
 
 module.exports = PedidosFarmaciasEvents;

@@ -22,91 +22,126 @@ ProductosModel.prototype.validar_producto = function(codigo_producto, callback) 
 //               
 
 ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad_id, bodega_id, termino_busqueda, pagina, tipo_producto, callback) {
-
-    var sql_aux = "";
-    var array_parametros = [empresa_id, centro_utilidad_id, bodega_id, "%" + termino_busqueda + "%"];
-
-    // Se realiza este cambio para permitir buscar productos de un determiando tipo.
-    if (tipo_producto !== '0') {
-        sql_aux = " and b.tipo_producto_id = $5 ";
-        array_parametros = [empresa_id, centro_utilidad_id, bodega_id, "%" + termino_busqueda + "%", tipo_producto];
-    }
-
-    var sql = " select\
-                a.empresa_id, \
-                a.centro_utilidad,\
-                a.bodega,\
-                f.descripcion as descripcion_laboratorio,    \
-                e.descripcion as descripcion_molecula,\
-                b.codigo_producto, \
-                fc_descripcion_producto(b.codigo_producto) as nombre_producto,\
-                b.unidad_id,\
-                b.estado, \
-                b.codigo_invima,\
-                b.contenido_unidad_venta,\
-                b.sw_control_fecha_vencimiento,\
-                a.existencia_minima,\
-                a.existencia_maxima,\
-                a.existencia::integer as existencia,\
-                c.existencia as existencia_total,\
-                c.costo_anterior,\
-                c.costo,\
-                CASE WHEN c.costo > 0 THEN ROUND(((c.precio_venta/c.costo)-1) * 100) ELSE NULL END as porcentaje_utilidad,\
-                c.costo_penultima_compra,\
-                c.costo_ultima_compra,\
-                c.precio_venta_anterior,\
-                c.precio_venta,\
-                c.precio_minimo,\
-                c.precio_maximo,\
-                c.sw_vende,\
-                c.grupo_contratacion_id,\
-                c.nivel_autorizacion_id,\
-                b.grupo_id,\
-                b.clase_id,\
-                b.subclase_id,\
-                b.porc_iva,\
-                b.tipo_producto_id\
-                from existencias_bodegas a \
-                inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
-                inner join inventarios c on b.codigo_producto = c.codigo_producto and a.empresa_id = c.empresa_id\
-                inner join inv_tipo_producto d ON b.tipo_producto_id = d.tipo_producto_id\
-                inner join inv_subclases_inventarios e ON b.grupo_id = e.grupo_id and b.clase_id = e.clase_id and b.subclase_id = e.subclase_id\
-                inner join inv_clases_inventarios f ON e.grupo_id = f.grupo_id and e.clase_id = f.clase_id\
-                where a.empresa_id= $1 and a.centro_utilidad = $2 and a.bodega = $3 \
-                and ( b.codigo_producto ILIKE $4 or b.descripcion ILIKE $4 ) \
-                " + sql_aux + "\
-                ORDER BY 7 ASC ";
-
-    G.db.paginated(sql, array_parametros, pagina, G.settings.limit, function(err, rows, result) {
-        callback(err, rows);
+    
+    var campos = [                
+        "a.empresa_id", 
+        "a.centro_utilidad",
+        "a.bodega",
+        "f.descripcion as descripcion_laboratorio",    
+        "e.descripcion as descripcion_molecula",
+        "b.codigo_producto", 
+        G.knex.raw("fc_descripcion_producto(b.codigo_producto) as nombre_producto"),
+        "b.unidad_id",
+        "b.estado", 
+        "b.codigo_invima",
+        "b.contenido_unidad_venta",
+        "b.sw_control_fecha_vencimiento",
+        "a.existencia_minima",
+        "a.existencia_maxima",
+        G.knex.raw("cast(a.existencia as integer) as existencia"),
+        "c.existencia as existencia_total",
+        "c.costo_anterior",
+        "c.costo",
+        G.knex.raw("CASE WHEN c.costo > 0 THEN ROUND(((c.precio_venta/c.costo)-1) * 100) ELSE NULL END as porcentaje_utilidad"),
+        "c.costo_penultima_compra",
+        "c.costo_ultima_compra",
+        "c.precio_venta_anterior",
+        "c.precio_venta",
+        "c.precio_minimo",
+        "c.precio_maximo",
+        "c.sw_vende",
+        "c.grupo_contratacion_id",
+        "c.nivel_autorizacion_id",
+        "b.grupo_id",
+        "b.clase_id",
+        "b.subclase_id",
+        "b.porc_iva",
+        "b.tipo_producto_id"
+     ];
+    
+   
+    G.knex.column(campos).
+    from("existencias_bodegas as a").
+    innerJoin("inventarios_productos as b", "a.codigo_producto","b.codigo_producto").
+    innerJoin("inventarios as c", function(){
+         this.on("b.codigo_producto", "c.codigo_producto" ).
+         on("a.empresa_id", "c.empresa_id");
+    }).
+    innerJoin("inv_tipo_producto as d", "b.tipo_producto_id","d.tipo_producto_id").
+    innerJoin("inv_subclases_inventarios as e", function(){
+         this.on("b.grupo_id", "e.grupo_id" ).
+         on("b.clase_id", "e.clase_id").
+         on("b.subclase_id", "e.subclase_id");
+    }).
+    innerJoin("inv_clases_inventarios as f", function(){
+         this.on("e.grupo_id", "f.grupo_id" ).
+         on("e.clase_id", "f.clase_id");
+    }).
+    where(function(){
+        this.where("a.empresa_id", empresa_id).
+        andWhere("a.centro_utilidad", centro_utilidad_id).
+        andWhere("a.bodega",bodega_id);
+        
+        if (tipo_producto !== '0') {
+            this.where("b.tipo_producto_id ", tipo_producto);
+        }
+    }).
+    andWhere(function() {
+       this.where("b.codigo_producto", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+       orWhere("b.descripcion", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+    }).        
+    limit(G.settings.limit).
+    offset((pagina - 1) * G.settings.limit).
+    orderBy("nombre_producto", "ASC").
+    then(function(rows){
+        callback(false, rows);
+    }).
+    catch(function(err){
+       callback(err);
     });
 };
 
 
 ProductosModel.prototype.consultarExistenciasProducto = function(empresa_id, termino_busqueda, pagina, callback) {
-
-    var sql_aux = "";
-    var parametros = ["%" + termino_busqueda + "%"];
-
-    if (empresa_id !== "") {
-        sql_aux = " AND c.empresa_id = $2 ";
-        parametros = ["%" + termino_busqueda + "%", empresa_id];
-    }
-
-    var sql = " SELECT a.existencia, b.codigo_producto,b.descripcion as producto, b.cantidad, b.codigo_alterno, b.codigo_barras,\
-                b.contenido_unidad_venta, c.empresa_id, c.razon_social, d.descripcion AS centro, e.descripcion AS bodega,\
-                fc_descripcion_producto(b.codigo_producto) AS descripcion_producto\
-                FROM existencias_bodegas a\
-                INNER JOIN inventarios_productos b ON a.codigo_producto = b.codigo_producto\
-                INNER JOIN empresas c ON a.empresa_id = c.empresa_id  AND c.sw_activa = '1'\
-                INNER JOIN centros_utilidad d ON a.centro_utilidad = d.centro_utilidad AND a.empresa_id = d.empresa_id\
-                INNER JOIN bodegas e ON e.centro_utilidad = d.centro_utilidad AND e.empresa_id = d.empresa_id AND e.bodega = a.bodega\
-                WHERE a.estado='1' and a.existencia > 0 " + sql_aux + "\
-                AND (b.descripcion ILIKE $1 OR b.codigo_producto ILIKE $1) ";
-
-    G.db.paginated(sql, parametros, pagina, G.settings.limit, function(err, rows, result) {
-        callback(err, rows);
+    
+    G.knex.column("a.existencia", "b.codigo_producto","b.descripcion as producto","b.cantidad",
+    "b.codigo_alterno", "b.contenido_unidad_venta", "c.empresa_id", "c.razon_social", "d.descripcion AS centro",
+    "e.descripcion as bodega",G.knex.raw("fc_descripcion_producto(b.codigo_producto) as descripcion_producto"), "b.tipo_producto_id").
+    from("existencias_bodegas as a").
+    innerJoin("inventarios_productos as b", "a.codigo_producto", "b.codigo_producto").
+    innerJoin("empresas as c", "a.empresa_id", "c.empresa_id").
+    innerJoin("centros_utilidad as d", function(){
+         this.on("a.centro_utilidad", "d.centro_utilidad" ).
+         on("a.empresa_id", "d.empresa_id");
+    }).
+    innerJoin("bodegas as e", function(){
+         this.on("e.centro_utilidad", "d.centro_utilidad" ).
+         on("e.empresa_id", "d.empresa_id").
+         on("e.bodega", "a.bodega");
+    }).
+    where(function(){
+        this.where("a.estado", "1").andWhere("a.existencia", ">", "0");
+        
+        if (empresa_id !== "") {
+            this.where("c.empresa_id", empresa_id);
+        }
+    }).     
+    andWhere(function() {
+       this.where("b.descripcion", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+       orWhere("b.codigo_producto", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+    }).
+    limit(G.settings.limit).
+    offset((pagina - 1) * G.settings.limit).
+    then(function(rows){
+        callback(false, rows);
+    }).
+    catch(function(err){
+       callback(err);
     });
+
+    /*G.db.paginated(sql, parametros, pagina, G.settings.limit, function(err, rows, result) {
+        callback(err, rows);
+    });*/
 };
 
 

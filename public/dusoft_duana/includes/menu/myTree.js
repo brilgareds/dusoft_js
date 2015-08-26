@@ -72,9 +72,8 @@ define(["angular", "js/directive", "includes/menu/treeSearch"], function(angular
                             "state": {"key": "tree"},
                             plugins: ["state","sort"],
                             "sort": function(a,b){
-                                
-                                 if(this.get_text(b).toLowerCase() === "home"){
-                                     return 1;
+                                 if(this.get_text(b).toLowerCase() === "home" || this.get_text(a).toLowerCase() === 'home' ){
+                                     return 0;
                                  }
                                 
                                  return this.get_text(a) > this.get_text(b) ? 1 : -1; 

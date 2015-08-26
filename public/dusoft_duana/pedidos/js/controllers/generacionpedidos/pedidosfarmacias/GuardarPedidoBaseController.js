@@ -46,6 +46,7 @@ define(["angular", "js/controllers",
                 enableRowSelection: false,
                 enableHighlighting:true,
                 multiSelect: false,
+                showFilter:true,
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Código', width:150,
                         cellTemplate : '<div class="ngCellText" ng-class="col.colIndex()">\

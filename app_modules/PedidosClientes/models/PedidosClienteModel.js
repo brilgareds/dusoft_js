@@ -921,8 +921,8 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                 b.porc_iva as iva,\
                 a.existencia::integer as existencia,\
                 coalesce(h.cantidad_total_pendiente, 0)::integer as cantidad_total_pendiente,\
-                case when coalesce((a.existencia - h.cantidad_total_pendiente)::integer, 0) < 0 then 0 \
-                        else coalesce((a.existencia - h.cantidad_total_pendiente)::integer, 0) end as cantidad_disponible,\
+                case when coalesce((a.existencia - coalesce(h.cantidad_total_pendiente, 0) - coalesce(i.total_solicitado, 0) )::integer, 0) < 0 then 0 \
+                        else coalesce((a.existencia - coalesce(h.cantidad_total_pendiente, 0) - coalesce(i.total_solicitado, 0) )::integer, 0) end as cantidad_disponible,\
                 case when g.precio_pactado > 0 then true else false end as tiene_precio_pactado,\
                 split_part(coalesce(fc_precio_producto_contrato_cliente($4,a.codigo_producto,$1),'0'), '@', 1) as precio_producto,\
                 b.sw_regulado,\
@@ -946,7 +946,7 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                       select a.empresa_id, b.codigo_producto, SUM((b.numero_unidades - b.cantidad_despachada)) as cantidad_total_pendiente, 1\
                       from ventas_ordenes_pedidos a\
                       inner join ventas_ordenes_pedidos_d b ON a.pedido_cliente_id = b.pedido_cliente_id\
-                      where (b.numero_unidades - b.cantidad_despachada) > 0  \
+                      where (b.numero_unidades - b.cantidad_despachada) > 0  and a.estado='1' \
                       group by 1,2 \
                       UNION\
                       select a.empresa_destino as empresa_id, b.codigo_producto, SUM( b.cantidad_pendiente) AS cantidad_total_pendiente, 2\
@@ -956,6 +956,19 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                       group by 1,2\
                     ) aa group by 1,2\
                 ) h on (a.empresa_id = h.empresa_id) and c.codigo_producto = h.codigo_producto\
+                left join(\
+                   SELECT aa.empresa_id, aa.codigo_producto, SUM(aa.total_reservado) as total_solicitado FROM( \
+                        select b.codigo_producto, a.empresa_destino as empresa_id, /*a.centro_destino as centro_destino, a.bogega_destino as bodega_destino,*/ SUM(cantidad_solic)::integer as total_reservado\
+                        from  solicitud_bodega_principal_aux a\
+                        inner join solicitud_pro_a_bod_prpal_tmp b on a.farmacia_id = b.farmacia_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega and a.usuario_id = b.usuario_id\
+                        group by 1,2\
+                        union\
+                        SELECT b.codigo_producto, a.empresa_id, sum(b.numero_unidades)::integer as total_reservado from ventas_ordenes_pedidos_tmp a\
+                        INNER JOIN ventas_ordenes_pedidos_d_tmp b on b.pedido_cliente_id_tmp = a.pedido_cliente_id_tmp\
+                        WHERE  a.estado = '1'\
+                        GROUP BY 1,2\
+                    ) aa group by 1,2\
+                ) i on (a.empresa_id = i.empresa_id) and c.codigo_producto = i.codigo_producto \
                 where a.empresa_id = $1 and a.centro_utilidad = $2 and a.bodega = $3 " + sql_aux + " \
                 and (\
                     a.codigo_producto ilike $5 or\
@@ -963,7 +976,10 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                     e.descripcion ilike $5\
                 ) order by 1 ";
     
-    // Prueba
+    
+    console.log('== Datos ==');
+    console.log([empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, '%' + termino_busqueda + '%']);
+    
     G.db.paginated(sql, [empresa, centro_utilidad_id, bodega_id, contrato_cliente_id, '%' + termino_busqueda + '%'], pagina, G.settings.limit, function(err, rows, result) {
             
         callback(err, rows );

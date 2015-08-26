@@ -535,3 +535,7 @@ filter: none!important;
 div.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control .select2{
     background-color: transparent;
 }
+
+.gridNumber{
+    text-align: right;
+}

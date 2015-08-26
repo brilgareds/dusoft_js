@@ -480,51 +480,46 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
 
 // Lista todos los pedidos temorales de farmacias
 PedidosFarmaciasModel.prototype.listar_pedidos_temporales_farmacias = function(empresa_id, termino_busqueda, pagina, usuario, callback) {
-   // console.log("listar_pedidos_temporales_farmacias code 1>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-    //var deferred = G.Q.defer();
     
+   G.knex.column("d.razon_social as nombre_farmacia", "c.descripcion as nombre_centro_utilidad","b.descripcion as nombre_bodega","e.nombre as nombre_usuario",
+    "a.farmacia_id", "a.centro_utilidad", "a.bodega", "a.empresa_destino", "a.centro_destino", "a.bogega_destino","a.usuario_id", "a.observacion").
 
-    var sql = " select\
-                d.razon_social as nombre_farmacia, \
-                c.descripcion as nombre_centro_utilidad,\
-                b.descripcion as nombre_bodega,\
-                e.nombre as nombre_usuario,\
-                a.farmacia_id,\
-                a.centro_utilidad,\
-                a.bodega,\
-                a.empresa_destino,\
-                a.centro_destino,\
-                a.bogega_destino,\
-                a.usuario_id,\
-                a.observacion\
-                from solicitud_Bodega_principal_aux as a\
-                inner join bodegas as b on a.farmacia_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega \
-                inner join centros_utilidad as c on b.empresa_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad \
-                inner join empresas as d ON c.empresa_id = d.empresa_id\
-                inner join system_usuarios as e ON a.usuario_id = e.usuario_id\
-                where a.farmacia_id = $1\
-                and a.usuario_id = $3\
-                and ( c.descripcion ilike $2 \
-                      or b.descripcion ilike $2\
-                      or e.nombre ilike $2)\
-                order by 2 desc ";
-    
+    from("solicitud_bodega_principal_aux as a").
 
-    
-   //return G.Q.nfcall(G.db.paginated, sql, [empresa_id, "%" + termino_busqueda + "%", usuario], pagina, G.settings.limit);
-    
-    
-    G.db.paginated(sql, [empresa_id, "%" + termino_busqueda + "%", usuario], pagina, G.settings.limit, function(err, rows, result) {
-        /*if(err){
-            deferred.reject(err);
-        } else {
-            deferred.resolve(rows);
-        }*/
-        callback(err, rows );
-        
+    innerJoin("bodegas as b", function(){
+         this.on("a.farmacia_id", "b.empresa_id" ).
+         on("a.centro_utilidad", "b.centro_utilidad").
+         on("a.bodega", "b.bodega");
+    }).
+    innerJoin("centros_utilidad as c", function(){
+         this.on("b.empresa_id", "c.empresa_id" ).
+         on("b.centro_utilidad", "c.centro_utilidad");
+    }).
+    innerJoin("empresas as d", function(){
+         this.on("c.empresa_id", "d.empresa_id" );
+    }).
+    innerJoin("system_usuarios as e", function(){
+         this.on("a.usuario_id", "e.usuario_id" );
+    }).
+    where({
+           "a.farmacia_id" : empresa_id,
+           "a.usuario_id"  : usuario
+    }).
+    andWhere(function() {
+       this.where("c.descripcion", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+       orWhere("b.descripcion", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+       orWhere("e.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+    }).
+    limit(G.settings.limit).
+    offset((pagina - 1) * G.settings.limit).
+    orderBy("nombre_centro_utilidad", "desc").
+    then(function(rows){
+        callback(false, rows);
+    }).
+    catch(function(err){
+       callback(err);
     });
     
-    //return deferred.promise;
 };
 
 
@@ -1042,15 +1037,24 @@ PedidosFarmaciasModel.prototype.actualizarDestinoDeProductos = function(numero_p
 };
 
 PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_utilidad_id, bodega_id, empresa_destino, centro_destino, bodega_destino,
-                                                           termino_busqueda, pagina, tipo_producto, callback) {
+                                                           pagina, filtro, callback) {
     
     //console.log(">>>>---Datos Recibidos---<<<<");
     var sql_aux = "";
-    var array_parametros = [empresa_id, centro_utilidad_id, bodega_id, empresa_destino, centro_destino, bodega_destino, "%" + termino_busqueda + "%"];
+    var array_parametros = [empresa_id, centro_utilidad_id, bodega_id, empresa_destino, centro_destino, bodega_destino, "%" + filtro.termino_busqueda + "%"];
+    var sql_filtro = "";
 
     // Se realiza este cambio para permitir buscar productos de un determiando tipo.
-    if (tipo_producto !== '0') {
-        sql_aux = " and b.tipo_producto_id = '"+tipo_producto+"' ";
+    if (filtro.tipo_producto !== '0') {
+        sql_aux = " and b.tipo_producto_id = '"+filtro.tipo_producto+"' ";
+    }
+    
+    if(filtro.tipo_busqueda === 0){
+        sql_filtro =  " and fc_descripcion_producto(a.codigo_producto) ILIKE  $7 ";
+    } else if(filtro.tipo_busqueda === 1){
+        sql_filtro =  " and e.descripcion ILIKE $7 "; 
+    } else {
+        sql_filtro =  " and a.codigo_producto ILIKE $7 ";
     }
     
     console.log("sql aux ", sql_aux, pagina);
@@ -1089,8 +1093,8 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
                 b.subclase_id,\
                 b.porc_iva,\
                 b.tipo_producto_id,\
-                case when coalesce((a.existencia - h.cantidad_total_pendiente - coalesce(i.total_solicitado, 0))::integer, 0) < 0 then 0\
-                        else coalesce((a.existencia - h.cantidad_total_pendiente - coalesce(i.total_solicitado, 0))::integer, 0) end as disponibilidad_bodega,\
+                case when coalesce((a.existencia - coalesce(h.cantidad_total_pendiente, 0) - coalesce(i.total_solicitado, 0))::integer, 0) < 0 then 0\
+                        else coalesce((a.existencia - coalesce(h.cantidad_total_pendiente, 0) - coalesce(i.total_solicitado, 0))::integer, 0) end as disponibilidad_bodega,\
                 coalesce(j.existencias_farmacia, 0) as existencias_farmacia\
                 from existencias_bodegas a\
                 inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
@@ -1111,10 +1115,11 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
                           a.empresa_id, /*a.centro_destino as centro_utilidad, a.bodega_destino as bodega,*/ b.codigo_producto, SUM((b.numero_unidades - b.cantidad_despachada)) as cantidad_total_pendiente\
                           FROM ventas_ordenes_pedidos a\
                           inner join ventas_ordenes_pedidos_d b ON a.pedido_cliente_id = b.pedido_cliente_id\
-                          where (b.numero_unidades - b.cantidad_despachada) > 0\
+                          where (b.numero_unidades - b.cantidad_despachada) > 0 and a.estado = '1'  \
                           GROUP BY 1, 2\
                        ) aa group by 1,2\
-		) h on (a.empresa_id = h.empresa_id)  /*and (a.centro_utilidad = h.centro_utilidad or a.bodega =h.bodega)*/  and c.codigo_producto = h.codigo_producto                 left join(\
+		) h on (a.empresa_id = h.empresa_id)  /*and (a.centro_utilidad = h.centro_utilidad or a.bodega =h.bodega)*/  and c.codigo_producto = h.codigo_producto \
+                left join(\
                    SELECT aa.empresa_id, aa.codigo_producto, /*aa.centro_destino, aa.bodega_destino,*/ SUM(aa.total_reservado) as total_solicitado FROM(\
                         select b.codigo_producto, a.empresa_destino as empresa_id, /*a.centro_destino as centro_destino, a.bogega_destino as bodega_destino,*/ SUM(cantidad_solic)::integer as total_reservado\
                         from  solicitud_bodega_principal_aux a\
@@ -1135,8 +1140,7 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
                     where a.empresa_id= $4 and a.centro_utilidad = $5 and a.bodega = $6\
                     ORDER BY 1 ASC \
                 ) j on j.codigo_producto = c.codigo_producto\
-                where a.empresa_id= $1 and a.centro_utilidad = $2 and a.bodega = $3 " + sql_aux + "\
-                and ( a.codigo_producto ILIKE $7 or fc_descripcion_producto(a.codigo_producto) ILIKE  $7)\
+                where a.empresa_id= $1 and a.centro_utilidad = $2 and a.bodega = $3 " + sql_aux + sql_filtro+ "\
                ORDER BY 1 ASC ";
     
     G.db.paginated(sql, array_parametros, pagina, G.settings.limit, function(err, rows, result) {

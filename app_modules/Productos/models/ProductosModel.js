@@ -22,7 +22,7 @@ ProductosModel.prototype.validar_producto = function(codigo_producto, callback) 
 //               
 
 ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad_id, bodega_id, termino_busqueda, pagina, tipo_producto, callback) {
-    
+
     var campos = [                
         "a.empresa_id", 
         "a.centro_utilidad",
@@ -38,7 +38,7 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
         "b.sw_control_fecha_vencimiento",
         "a.existencia_minima",
         "a.existencia_maxima",
-        G.knex.raw("cast(a.existencia as integer) as existencia"),
+        G.knex.raw("a.existencia :: integer  as existencia"),
         "c.existencia as existencia_total",
         "c.costo_anterior",
         "c.costo",
@@ -92,17 +92,33 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
     }).        
     limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit).
-    orderBy("nombre_producto", "ASC").
+    //orderByRaw("7 asc").
     then(function(rows){
         callback(false, rows);
     }).
     catch(function(err){
+       console.log("err >>>>>>>>>>>>>>>>>>>>>>> ", err);
        callback(err);
     });
+
+
 };
 
 
 ProductosModel.prototype.consultarExistenciasProducto = function(empresa_id, termino_busqueda, pagina, callback) {
+
+    /*var sql = " SELECT a.existencia, b.codigo_producto, b.descripcion as producto, b.cantidad, b.codigo_alterno, b.codigo_barras,\
+                b.contenido_unidad_venta, c.empresa_id, c.razon_social, d.descripcion AS centro, e.descripcion AS bodega,\
+                fc_descripcion_producto(b.codigo_producto) AS descripcion_producto, b.tipo_producto_id\
+                FROM existencias_bodegas a\
+                INNER JOIN inventarios_productos b ON a.codigo_producto = b.codigo_producto\
+                INNER JOIN empresas c ON a.empresa_id = c.empresa_id  AND c.sw_activa = '1'\
+                INNER JOIN centros_utilidad d ON a.centro_utilidad = d.centro_utilidad AND a.empresa_id = d.empresa_id\
+                INNER JOIN bodegas e ON e.centro_utilidad = d.centro_utilidad AND e.empresa_id = d.empresa_id AND e.bodega = a.bodega\
+                WHERE a.estado='1' and a.existencia > 0 " + sql_aux + "\
+                AND (b.descripcion ILIKE $1 OR b.codigo_producto ILIKE $1) ";*/
+    
+
     
     G.knex.column("a.existencia", "b.codigo_producto","b.descripcion as producto","b.cantidad",
     "b.codigo_alterno", "b.contenido_unidad_venta", "c.empresa_id", "c.razon_social", "d.descripcion AS centro",

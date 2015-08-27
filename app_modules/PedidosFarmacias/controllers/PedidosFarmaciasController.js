@@ -337,9 +337,6 @@ PedidosFarmacias.prototype.eliminarProductoDetallePedido = function(req, res) {
         }
 
     });
-    
-    
-
 };
 
 /**

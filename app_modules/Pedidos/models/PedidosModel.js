@@ -71,13 +71,13 @@ PedidosModel.prototype.calcular_disponibilidad_producto = function(identificador
 
                                 // se consulta el total de existencias del producto seleccionado
                                 that.m_productos.consultar_stock_producto(empresa_id, codigo_producto, function(err, stock_producto) {
-
                                     stock = (stock_producto.length === 1) ? stock_producto[0].existencia : 0;
 
                                     // Se aplica la Formula de Disponibilidad producto
                                     disponible_bodega = parseInt(stock) - parseInt(cantidad_total_pendiente) - parseInt(cantidad_despachada) - parseInt(cantidad_reservada_temporales);
 
                                     console.log('============ Here =================');
+                                    console.log("empresa ", empresa_id);
                                     console.log("stock real ", stock_producto);
                                     console.log("codigo producto ", codigo_producto);
                                     console.log('stock', stock);

@@ -506,15 +506,14 @@ PedidosFarmaciasModel.prototype.listar_pedidos_temporales_farmacias = function(e
            "a.usuario_id"  : usuario
     }).
     andWhere(function() {
-       this.where("c.descripcion", "like", "%" + termino_busqueda + "%").
-       orWhere("b.descripcion", "like", "%" + termino_busqueda + "%").
-       orWhere("e.nombre", "like", "%" + termino_busqueda + "%");
+       this.where("c.descripcion", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+       orWhere("b.descripcion", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+       orWhere("e.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%");
     }).
     limit(G.settings.limit).
     offset((pagina - 1) * G.settings.limit).
     orderBy("nombre_centro_utilidad", "desc").
     then(function(rows){
-        console.log("listado de pedidos ", rows);
         callback(false, rows);
     }).
     catch(function(err){

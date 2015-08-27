@@ -98,13 +98,13 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = 
                 where a.empresa_id = $1 and b.farmacia_id = $2 and b.centro_utilidad = $3 and b.estado in ('2','8','9','3')\
                 and a.prefijo || '-' || a.numero NOT IN( select b.prefijo || '-' || b.numero from inv_planillas_detalle_farmacias b ) and \
                 (\
-                    a.prefijo || ' ' || a.numero ilike $4 or\
-                    a.numero ilike $4 or\
-                    a.solicitud_prod_a_bod_ppal_id ilike $4 \
+                    a.prefijo || ' ' || a.numero :: varchar  ilike $4 or\
+                    a.numero :: varchar ilike  $4 or\
+                    a.solicitud_prod_a_bod_ppal_id :: varchar ilike $4 \
                 )\
                 order by a.fecha_registro desc; ";
     
-    console.log('==========consultar_documentos_despachos_por_farmacia==============');
+    console.log('==========consultar_documentos_despachos_por_farmacia============== !!!!!!!!!!!!!!!!!!!!!!!');
     console.log(empresa_id, farmacia_id, centro_utilidad_id, termino_busqueda);
     
     G.db.query(sql, [empresa_id, farmacia_id, centro_utilidad_id, "%"+termino_busqueda+"%"], function(err, rows, result) {

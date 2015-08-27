@@ -99,7 +99,7 @@ if (program.prod) {
 G.knex = require('./lib/Knex').
          create(G.settings.dbHost, G.settings.dbUsername, G.settings.dbPassword, G.settings.dbName).
          connect().getInstance();
-
+ 
 
 
 var cluster = require('cluster'),

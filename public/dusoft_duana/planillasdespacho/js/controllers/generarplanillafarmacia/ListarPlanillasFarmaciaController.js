@@ -94,6 +94,9 @@ define(["angular", "js/controllers",
              */
             that.render_planillas = function(planillas) {
                 
+                console.log("ListarPlanillasFarmaciaController.js")
+                console.log(planillas)
+            
                 $scope.Empresa.limpiar_planillas();
                 
                 planillas.forEach(function(data) {
@@ -112,7 +115,7 @@ define(["angular", "js/controllers",
                     $scope.Empresa.set_planillas(planilla);
                 });   
                 
-                console.log($scope.Empresa.get_planillas())
+               
             };
             
             /**

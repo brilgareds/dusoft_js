@@ -46,6 +46,9 @@ define(["angular", "js/models"], function(angular, models) {
             Documento.prototype.set_observacion = function(observacion) {
                 return this.observacion = observacion;
             };
+            
+            
+            
             Documento.prototype.get_id = function() {
                 return this.id;
             };

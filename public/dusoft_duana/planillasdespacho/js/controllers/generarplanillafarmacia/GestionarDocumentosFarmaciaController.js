@@ -254,10 +254,13 @@ define(["angular", "js/controllers",
              * 
              */
             that.ingresar_documentos_planilla = function(id, callback) {
-
+              
                 $scope.planilla.set_documento($scope.datos_view.documento_seleccionado);
                 $scope.planilla.get_documento().set_empresa_id($scope.planilla.get_empresa().getCodigo());
-                //$scope.planilla.get_documento().set_observacion($scope.planilla.get_observacion());
+                
+               // console.log("NUMERO # GUIA: ", id);
+                $scope.planilla.set_numero_guia(id)
+                //console.log($scope.planilla.get_numero_guia())
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -286,6 +289,7 @@ define(["angular", "js/controllers",
                         //  $scope.buscar_documentos_bodega($scope.datos_view.tercero_seleccionado);
                         $scope.planilla.set_documentos($scope.datos_view.documento_seleccionado);
                         $scope.datos_view.documento_seleccionado = Documento.get();
+                        
                         //console.log($scope.datos_view.documento_seleccionado)
                         //  $scope.buscar_documentos_bodega($scope.datos_view.tercero_seleccionado);
                         callback(true);
@@ -448,7 +452,7 @@ define(["angular", "js/controllers",
              * las peticiones al servidor y traer los documentos de farmacias
              */
             that.traerDocumentosFarmacias = function(callback) {
-
+                
                 var empresa = Sesion.getUsuarioActual().getEmpresa();
                 var obj = {
                     session: $scope.session,
@@ -494,7 +498,7 @@ define(["angular", "js/controllers",
 
 
             that.obtenerListaDocumentos = function(documentos) {
-
+                
                 for (var i in documentos.obj.listar_documentos) {
 
                     var _documentos = documentos.obj.listar_documentos[i];
@@ -552,9 +556,49 @@ define(["angular", "js/controllers",
 
                 });
             }
-
+            
             $scope.onListarDocumentos();
+            
+            
+            $scope.validar_ingreso_documento = function(documento) {
+                
+               
+                var disabled = false;
 
+                // Validar que el prefijo y el numero del documento esten presentes
+                if (documento.get_prefijo() === undefined || documento.get_numero() === undefined) {
+                    return true;
+                }
+
+                if (documento.get_prefijo() === '' || documento.get_numero() === '' || documento.get_numero() === 0) {
+                    return true;
+                }
+
+                // Validar que las cantidad de cajas no sean 0 o vacias                                
+                if (documento.get_cantidad_cajas() === '' || documento.get_cantidad_cajas() === 0) {
+                    disabled = true;
+                    
+                }
+                
+                // Validar que si ingresar solamente cajas y no ingresa neveras, no debe ingresar temperatura
+                if (documento.get_cantidad_cajas() !== '' && documento.get_cantidad_cajas() !== 0) {
+                    disabled = false;
+                    if (documento.get_temperatura_neveras() !== '') {
+                        disabled = true;
+                    }
+                }
+                // Validar que si ingresar neveras, obligatoriamente ingresen la temperatura de la nevera
+                if (documento.get_cantidad_neveras() !== '' && documento.get_cantidad_neveras() !== 0) {
+                    disabled = false;
+                    if (documento.get_temperatura_neveras() === '') {
+                        disabled = true;
+                    }
+                }
+
+                return disabled;
+            };
+            
+            
             $scope.lista_remisiones_bodega = {
                 data: 'Empresa.get_lista_documentos()',
                 enableColumnResize: true,
@@ -576,7 +620,7 @@ define(["angular", "js/controllers",
                 ]
             };
 
-
+            
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;

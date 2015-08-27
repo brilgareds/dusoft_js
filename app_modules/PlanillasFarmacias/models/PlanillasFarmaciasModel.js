@@ -4,7 +4,42 @@ var PlanillasFarmaciasModel = function() {
 
 
 PlanillasFarmaciasModel.prototype.listar_planillas_farmacias = function(fecha_inicial, fecha_final, termino_busqueda, callback) {
+   
+ /*  console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< LISTAR PLANILLAS KNEX  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+   
+G.knex.select('id_inv_planilla_farmacia_devolucion', 'numero_guia_externo').from('inv_planillas_farmacia_devolucion')
+ 
+  .then(function(rows) {
+    console.log(rows);
+  }).
+   catch(function(error){
+      console.error(error);
+   })
+    var column = [
+                "a.id_inv_planilla_farmacia_devolucion as id",
+                "a.id_inv_planilla_farmacia_devolucion as numero_guia",
+                "a.numero_guia_externo",
+                "b.transportadora_id",
+                "b.descripcion as nombre_transportadora",
+                "b.placa_vehiculo",
+                "b.estado as estado_transportadora",
+                "a.nombre_conductor, a.observacion",
+                "a.id_empresa_destino",
+                "(select r.razon_social from empresas r where r.empresa_id =a.id_empresa_destino)as empresa_destino",
+                "a.empresa_id",
+                "(select r.razon_social from empresas r where r.empresa_id =a.empresa_id ) as empresa_origen",
+                "g.total_cajas",
+                "g.total_neveras",
+                "a.usuario_id",
+                "f.nombre as nombre_usuario",
+                "a.estado",
+                "case when a.estado = '0' then 'Anulada' when a.estado = '1' then 'Activa'   when a.estado = '2' then 'Despachada' end as descripcion_estado",
+                "To_char(a.fecha_registro,'dd-mm-yyyy') as fecha_registro",
+                "To_char(a.fecha_despacho,'dd-mm-yyyy') as fecha_despacho "
+    ];
+   knex.column(column).select().from('books')*/
 
+   
     var sql = "select \
                 a.id_inv_planilla_farmacia_devolucion as id,\
                 a.id_inv_planilla_farmacia_devolucion as numero_guia,\

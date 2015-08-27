@@ -32,9 +32,7 @@ G.path = path;
 G.Q = require('q');
 G.accounting = accounting;
 G.constants =  require("./lib/Constants").create();
-G.knex = require('./lib/Knex').
-         create(G.settings.dbHost, G.settings.dbUsername, G.settings.dbPassword, G.settings.dbName).
-         connect().getInstance();
+
 
 
 var reportUrl = G.settings.reportsUrl;
@@ -98,6 +96,12 @@ if (program.prod) {
  * =========================================*/
 
 //determina el numero de procesadores del servidor, de modo que se concrete los workers que permite el balanceo de carga
+G.knex = require('./lib/Knex').
+         create(G.settings.dbHost, G.settings.dbUsername, G.settings.dbPassword, G.settings.dbName).
+         connect().getInstance();
+
+
+
 var cluster = require('cluster'),
         RedisStore = require("socket.io/lib/stores/redis"),
         redis = require("socket.io/node_modules/redis"),

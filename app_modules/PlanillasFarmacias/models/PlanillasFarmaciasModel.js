@@ -5,16 +5,20 @@ var PlanillasFarmaciasModel = function() {
 
 PlanillasFarmaciasModel.prototype.listar_planillas_farmacias = function(fecha_inicial, fecha_final, termino_busqueda, callback) {
    
- /*  console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< LISTAR PLANILLAS KNEX  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+   console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< LISTAR PLANILLAS KNEX  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+
+   /* var q = G.knex(G.knex.raw('inv_planillas_farmacia_devolucion_detalle AS t2'))
+               .select("t2.id_inv_planilla_farmacia_devolucion");*/
+    //'inv_planillas_farmacia_devolucion_detalle AS t2'
    
-G.knex.select('id_inv_planilla_farmacia_devolucion', 'numero_guia_externo').from('inv_planillas_farmacia_devolucion')
- 
-  .then(function(rows) {
-    console.log(rows);
-  }).
-   catch(function(error){
-      console.error(error);
-   })
+      var q = G.knex.from(
+         
+        G.knex.column(["a.id_inv_planilla_farmacia_devolucion as planilla_id","a.cantidad_cajas", "a.cantidad_neveras"])
+              .select().from('inv_planillas_farmacia_devolucion_detalle as a').as("a")
+              
+      ).groupBy('a.planilla_id')
+       .select("a.planilla_id as id_inv_planilla_farmacia_devolucion",G.knex.raw("sum(cantidad_cajas)as total_cajas"), G.knex.raw("sum(a.cantidad_neveras)as total_neveras"));
+                    
     var column = [
                 "a.id_inv_planilla_farmacia_devolucion as id",
                 "a.id_inv_planilla_farmacia_devolucion as numero_guia",
@@ -23,24 +27,56 @@ G.knex.select('id_inv_planilla_farmacia_devolucion', 'numero_guia_externo').from
                 "b.descripcion as nombre_transportadora",
                 "b.placa_vehiculo",
                 "b.estado as estado_transportadora",
-                "a.nombre_conductor, a.observacion",
+                "a.nombre_conductor",
+                "a.observacion",
                 "a.id_empresa_destino",
-                "(select r.razon_social from empresas r where r.empresa_id =a.id_empresa_destino)as empresa_destino",
+                G.knex.raw("(select r.razon_social from empresas as r where r.empresa_id =a.id_empresa_destino)as empresa_destino"),
                 "a.empresa_id",
-                "(select r.razon_social from empresas r where r.empresa_id =a.empresa_id ) as empresa_origen",
+                G.knex.raw("(select r.razon_social from empresas as r where r.empresa_id =a.empresa_id ) as empresa_origen"),
                 "g.total_cajas",
                 "g.total_neveras",
                 "a.usuario_id",
                 "f.nombre as nombre_usuario",
                 "a.estado",
-                "case when a.estado = '0' then 'Anulada' when a.estado = '1' then 'Activa'   when a.estado = '2' then 'Despachada' end as descripcion_estado",
-                "To_char(a.fecha_registro,'dd-mm-yyyy') as fecha_registro",
-                "To_char(a.fecha_despacho,'dd-mm-yyyy') as fecha_despacho "
+                G.knex.raw("(case when a.estado = '0' then 'Anulada' when a.estado = '1' then 'Activa'   when a.estado = '2' then 'Despachada' end) as descripcion_estado"),
+                G.knex.raw("To_char(a.fecha_registro,'dd-mm-yyyy') as fecha_registro"),
+                G.knex.raw("To_char(a.fecha_despacho,'dd-mm-yyyy') as fecha_despacho ")
     ];
-   knex.column(column).select().from('books')*/
+    
+       var sql = G.knex.column(column).select().from('inv_planillas_farmacia_devolucion as a')
+                .innerJoin("inv_transportadoras as b", "a.inv_transportador_id", "=", "b.transportadora_id" )
+                .innerJoin("system_usuarios as f", "a.usuario_id", "=", "f.usuario_id")
+                .leftJoin(G.knex.raw('(' + q.toString() + ') AS g'),
+                        'a.id_inv_planilla_farmacia_devolucion',
+                        '=',
+                        'g.id_inv_planilla_farmacia_devolucion',
+                        'LEFT')
+                .innerJoin("empresas as h","a.empresa_id","=","h.empresa_id")
+                       
+                //callback(false,sql);
+             //  console.log(sql);
+               
+                .then(function(rows) {
+                 callback(false,rows);
+               })
+                .catch(function(error){
+                   console.error(error);
+                });
+              //  .leftJoin(subquery, "g.id_inv_planilla_farmacia_devolucion","=","a.id_inv_planilla_farmacia_devolucion")
+               
+              /*  var column = ["empresa_id","bodega",G.knex.raw('existencia'),"codigo_producto"];
+                G.knex.column(column).select().from('existencias_bodegas as a')
+                .whereIn('a.codigo_producto','1161C1690001')*/
+    
+             /*  G.knex('existencias_bodegas'.where({
+                   codigo_producto: '1161C1690001'
+             
+              }).select('existencia')*/
 
+
+        
    
-    var sql = "select \
+  /*  var sql = "select \
                 a.id_inv_planilla_farmacia_devolucion as id,\
                 a.id_inv_planilla_farmacia_devolucion as numero_guia,\
                 a.numero_guia_externo,\
@@ -76,10 +112,8 @@ G.knex.select('id_inv_planilla_farmacia_devolucion', 'numero_guia_externo').from
                                 or b.placa_vehiculo ilike $3 \
                                 or a.nombre_conductor ilike $3 \
                           ) order by a.id_inv_planilla_farmacia_devolucion DESC;";
-  
-    G.db.query(sql, [fecha_inicial, fecha_final, "%"+termino_busqueda+"%"], function(err, rows, result) {
-        callback(err, rows);
-    });
+  */
+    
 };
 
 /**

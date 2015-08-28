@@ -187,26 +187,15 @@ PedidosClientesEvents.prototype.onNotificacionOperarioPedidosReasignados = funct
     // Seleccionar el Socket del Operario, si esta conectado en la Tablet.    
     this.m_terceros.seleccionar_operario_bodega(datos.responsable, function(err, operarios_bodega) {
 
-        console.log('============== operarios_bodega =================');
-        console.log(operarios_bodega);
-        console.log('=================================================');
-
         operarios_bodega.forEach(function(operario) {
-
-            console.log('============== operarios_bodega =================');
-            console.log(operario);
-            console.log('=================================================');
+           
 
             // Selecciona la sesion del usuario para obtener conexion a los sockets.
             G.auth.getSessionsUser(operario.usuario_id, function(err, sessions) {
 
                 //Se recorre cada una de las sesiones abiertas por el usuario
                 sessions.forEach(function(session) {
-
-                    console.log('============== session =================');
-                    console.log(session);
-                    console.log('=================================================');
-                    
+                 
                     //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
                     that.io.sockets.socket(session.socket_id).emit('onPedidosClientesReasignados', {pedidos_clientes: datos.numero_pedidos});
                 });
@@ -214,6 +203,22 @@ PedidosClientesEvents.prototype.onNotificacionOperarioPedidosReasignados = funct
             });
         });
     });
+};
+
+
+PedidosClientesEvents.prototype.onNotificarProgresoArchivoPlanoClientes = function(usuario_id, porcentaje) {
+
+    var that = this;
+    
+    G.auth.getSessionsUser(usuario_id, function(err, sessions) {
+
+         //Se recorre cada una de las sesiones abiertas por el usuario
+         sessions.forEach(function(session) {
+             //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
+             that.io.sockets.socket(session.socket_id).emit('onNotificarProgresoArchivoPlanoFarmacias', {porcentaje: porcentaje});
+         });
+
+     });
 };
 
 PedidosClientesEvents.$inject = ["socket", "m_pedidos_clientes", "m_terceros"];

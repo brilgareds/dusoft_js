@@ -68,7 +68,7 @@ KardexModel.prototype.obtener_existencia_inicial = function(empresa_id, centro_u
 // Selecciona los movimientos del producto dentro de un periodo de tiempo determinado
 KardexModel.prototype.obtener_movimientos_productos = function(empresa_id, centro_utilidad_id, bodega_id, codigo_producto, fecha_inicial, fecha_final, callback) {
 
-    // sql para la bd de pruebas
+    // sql para la bd de pruebas a.tipo_producto as tipo_producto_id
     var sql_pruebas = " SELECT *  \n" +
             " FROM  " +
             " ( " +

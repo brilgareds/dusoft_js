@@ -385,51 +385,51 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
     // 9 - En Zona con Pdtes
     /*=========================================================================*/
 
-    var sql_aux = " ";
+    var estado = "";
 
     if (filtro !== undefined) {
 
         if (filtro.no_asignados) {
-            sql_aux = " AND a.estado = '0'";
+            estado =  '0';
         }
 
         if (filtro.asignados) {
-            sql_aux = " AND a.estado = '1' ";
+            estado = '1';
         }
         if (filtro.auditados) {
-            sql_aux = " AND a.estado = '2'  ";
+            estado = '2';
         }
 
         if (filtro.en_zona_despacho) {
-            sql_aux = " AND  a.estado = '3' ";
+            estado = '3';
         }
 
         if (filtro.despachado) {
-            sql_aux = " AND a.estado = '4' ";
+            estado = '4';
         }
 
         if (filtro.despachado_pendientes) {
-            sql_aux = " AND a.estado = '5' ";
+            estado = '5';
         }
         
         if (filtro.separacion_finalizada) {
-            sql_aux = " AND a.estado = '6' ";
+            estado = '6';
         }
         
         if (filtro.en_auditoria) {
-            sql_aux = " AND a.estado = '7' ";
+            estado = '7';
         }
         
         if (filtro.auditados_pdtes) {
-            sql_aux = " AND a.estado = '8' ";
+            estado = '8';
         }
         
         if (filtro.en_zona_despacho_pdtes) {
-            sql_aux = " AND a.estado = '9' ";
+            estado = '9';
         }
     }
 
-    var sql = " select \
+   /* var sql = " select \
                 a.solicitud_prod_a_bod_ppal_id as numero_pedido, \
                 a.farmacia_id, \
                 d.empresa_id, \
@@ -466,7 +466,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
                 inner join system_usuarios as e ON a.usuario_id = e.usuario_id \
                 left join inv_bodegas_movimiento_tmp_despachos_farmacias f on a.solicitud_prod_a_bod_ppal_id = f.solicitud_prod_a_bod_ppal_id  \
                 left join inv_bodegas_movimiento_despachos_farmacias g on a.solicitud_prod_a_bod_ppal_id = g.solicitud_prod_a_bod_ppal_id \
-                where a.farmacia_id = $1 " + sql_aux + "\
+                where a.farmacia_id = $1 \
                 and ( a.solicitud_prod_a_bod_ppal_id :: varchar ilike $2 \
                       or d.razon_social ilike $2 \
                       or b.descripcion ilike $2 \
@@ -475,7 +475,96 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
     
     G.db.paginated(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result) {
         callback(err, rows);
+    });*/
+    
+    //return;
+    var columns = [
+        "a.solicitud_prod_a_bod_ppal_id as numero_pedido", 
+        "a.farmacia_id", 
+        "d.empresa_id", 
+        "a.centro_utilidad", 
+        "a.bodega as bodega_id", 
+        "d.razon_social as nombre_farmacia", 
+        "b.descripcion as nombre_bodega",
+        "a.usuario_id", 
+        "e.nombre as nombre_usuario" ,
+        "a.estado as estado_actual_pedido",
+        G.knex.raw("case when a.estado = '0' then 'No Asignado' \
+                     when a.estado = '1' then 'Asignado' \
+                     when a.estado = '2' then 'Auditado' \
+                     when a.estado = '3' then 'En Zona Despacho' \
+                     when a.estado = '4' then 'Despachado' \
+                     when a.estado = '5' then 'Despachado con Pendientes' \
+                     when a.estado = '6' then 'Separacion Finalizada' \
+                     when a.estado = '7' then 'En Auditoria'  \
+                     when a.estado = '8' then 'Auditado con pdtes' \
+                     when a.estado = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido"),
+        "f.estado as estado_separacion", 
+        G.knex.raw("to_char(a.fecha_registro, 'dd-mm-yyyy') as fecha_registro"),
+        "c.descripcion as nombre_centro_utilidad",
+        "a.empresa_destino as empresa_origen_id",
+        "a.observacion",
+        "g.empresa_id as despacho_empresa_id",
+        "g.prefijo as despacho_prefijo", 
+        "g.numero as despacho_numero", 
+        G.knex.raw("CASE WHEN g.numero IS NOT NULL THEN true ELSE false END as tiene_despacho")
+        
+    ];
+    
+    G.knex.column(columns).
+    from("solicitud_productos_a_bodega_principal as a").
+    innerJoin("bodegas as b", function(){
+         this.on("a.farmacia_id", "b.empresa_id" ).
+         on("a.centro_utilidad", "b.centro_utilidad").
+         on("a.bodega", "b.bodega");
+    }).
+    innerJoin("centros_utilidad as c", function(){
+         this.on("b.empresa_id", "c.empresa_id" ).
+         on("b.centro_utilidad", "c.centro_utilidad");
+    }).
+    innerJoin("empresas as d", function(){
+         this.on("c.empresa_id", "d.empresa_id" );
+    }).
+    innerJoin("system_usuarios as e", function(){
+         this.on("a.usuario_id", "e.usuario_id" );
+    }).
+    leftJoin("inv_bodegas_movimiento_tmp_despachos_farmacias as f", "a.solicitud_prod_a_bod_ppal_id", "f.solicitud_prod_a_bod_ppal_id").
+    leftJoin("inv_bodegas_movimiento_despachos_farmacias as g", "a.solicitud_prod_a_bod_ppal_id", "g.solicitud_prod_a_bod_ppal_id ").
+    where(function(){
+        this.where("a.farmacia_id", empresa_id);
+        
+        if (estado !== "") {
+            this.where("a.estado", estado);
+        }
+    }).
+    andWhere(function() {
+       if(filtro && filtro.usuario){
+           
+            this.where("e.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+            
+       } else if(filtro && filtro.razon_social){
+           
+            this.where("d.razon_social", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+       } else if (filtro && filtro.descripcion){
+           
+            this.where("b.descripcion", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+       } else {
+           this.where(G.knex.raw("a.solicitud_prod_a_bod_ppal_id :: varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%");
+       }
+       
+    }).
+    limit(G.settings.limit).
+    offset((pagina - 1) * G.settings.limit).
+    orderByRaw("1 asc").
+    then(function(rows){
+        console.log("resultado de farmacias >>>>>>>>>>>>>>>>>>> >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",rows);
+        callback(false, rows);
+    }).
+    catch(function(err){
+       console.log("error generado en lista pedidos farmacias ", err);
+       callback(err);
     });
+    
 };
 
 // Lista todos los pedidos temorales de farmacias

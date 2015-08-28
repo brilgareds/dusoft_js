@@ -270,12 +270,12 @@ OrdenesCompraModel.prototype.consultar_detalle_orden_compra = function(numero_or
 // Ingresar Cabecera Orden de Compra
 OrdenesCompraModel.prototype.insertar_orden_compra = function(unidad_negocio, codigo_proveedor, empresa_id, observacion, usuario_id, callback) {
 
+    var sql = " INSERT INTO compras_ordenes_pedidos ( orden_pedido_id, codigo_unidad_negocio, codigo_proveedor_id, empresa_id, observacion, usuario_id, estado, fecha_orden ) \
+                 VALUES((select nextval('compras_ordenes_pedidos_orden_pedido_id_seq':: regclass )), $1, $2, $3, $4,$5, '1', NOW() ) RETURNING orden_pedido_id; ";
 
-    var sql = " INSERT INTO compras_ordenes_pedidos ( codigo_unidad_negocio, codigo_proveedor_id, empresa_id, observacion, usuario_id, estado, fecha_orden ) \
-                VALUES( $1, $2, $3, $4, $5, '1', NOW() ) RETURNING orden_pedido_id; ";
-    G.db.query(sql, [unidad_negocio, codigo_proveedor, empresa_id, observacion, usuario_id], function(err, rows, result) {
-        callback(err, rows, result);
-    });
+     G.db.query(sql, [ unidad_negocio, codigo_proveedor, empresa_id, observacion, usuario_id], function(err, rows, result) {
+         callback(err, rows, result);
+     });
 };
 
 // Modificar Orden de Compra

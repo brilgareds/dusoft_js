@@ -12,7 +12,7 @@ PlanillasFarmaciasController.prototype.listarPlanillasFarmacias = function(req, 
 
 
     var args = req.body.data;
-
+    var pagina = args.listar_planillas_farmacias.pagina;
     if (args.listar_planillas_farmacias === undefined || args.listar_planillas_farmacias.fecha_inicial === undefined || args.listar_planillas_farmacias.fecha_final === undefined || args.listar_planillas_farmacias.termino_busqueda === undefined) {
         res.send(G.utils.r(req.url, 'fecha_inicial, fecha_final o termino_busqueda no esta definido', 404, {}));
         return;
@@ -27,7 +27,7 @@ PlanillasFarmaciasController.prototype.listarPlanillasFarmacias = function(req, 
     var fecha_final = args.listar_planillas_farmacias.fecha_final;
     var termino_busqueda = args.listar_planillas_farmacias.termino_busqueda;
 
-    that.m_planillas_farmacias.listar_planillas_farmacias(fecha_inicial, fecha_final, termino_busqueda, function(err, listar_planillas_farmacias) {
+    that.m_planillas_farmacias.listar_planillas_farmacias(fecha_inicial, fecha_final, termino_busqueda, pagina, function(err, listar_planillas_farmacias) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error listando las planillas_farmacias', 500, {listar_planillas_farmacias: {}}));

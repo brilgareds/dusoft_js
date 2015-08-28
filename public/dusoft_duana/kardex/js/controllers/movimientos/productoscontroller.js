@@ -109,7 +109,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                     AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
                     return;
                 }
-
+                console.log(data.lista_productos)
                 $scope.Empresa.vaciarProductos();
                 $scope.paginas = (data.lista_productos.length / 10);
                 $scope.items = data.lista_productos.length;

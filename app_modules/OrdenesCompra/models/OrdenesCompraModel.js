@@ -275,7 +275,7 @@ OrdenesCompraModel.prototype.insertar_orden_compra = function(unidad_negocio, co
 
      G.db.query(sql, [ unidad_negocio, codigo_proveedor, empresa_id, observacion, usuario_id], function(err, rows, result) {
          callback(err, rows, result);
-     });
+     }); 
 };
 
 // Modificar Orden de Compra

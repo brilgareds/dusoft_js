@@ -1,7 +1,7 @@
 
 var Kardex = function(kardex, pedidos_farmacias, pedidos_clientes, ordenes_compra, m_productos) {
 
-    console.log("Modulo Kardex  Cargado ");
+ 
 
     this.m_kardex = kardex;
     this.m_pedidos_farmacias = pedidos_farmacias;
@@ -93,12 +93,12 @@ Kardex.prototype.obtener_movimientos_producto = function(req, res) {
     }
 
 
-    var empresa_id = args.kardex.empresa_id; //req.query.empresa_id;
-    var centro_utilidad_id = args.kardex.centro_utilidad; //req.query.centro_utilidad_id;
-    var bodega_id = args.kardex.bodega_id; //req.query.bodega_id;
-    var codigo_producto = args.kardex.codigo_producto;//'198A0010042';//
-    var fecha_inicial = args.kardex.fecha_inicial; //'2014-01-01';//
-    var fecha_final = args.kardex.fecha_final; //'2014-01-31';//
+    var empresa_id = args.kardex.empresa_id;
+    var centro_utilidad_id = args.kardex.centro_utilidad;
+    var bodega_id = args.kardex.bodega_id;
+    var codigo_producto = args.kardex.codigo_producto;
+    var fecha_inicial = args.kardex.fecha_inicial;
+    var fecha_final = args.kardex.fecha_final;
 
 
     // Seleccionar los Movimientos del Producto
@@ -143,10 +143,6 @@ Kardex.prototype.obtener_movimientos_producto = function(req, res) {
                                                     stock_actual = parseInt(existencia_inicial[0]['existencia_inicial']);
                                                 }
 
-                                                //console.log('============ existencia inicial ======================');
-                                                //console.log(stock_actual);
-                                                /*console.log(movimientos_producto);*/
-                                                //return ;
                                                 movimientos_producto.forEach(function(movimiento) {
 
 
@@ -154,13 +150,13 @@ Kardex.prototype.obtener_movimientos_producto = function(req, res) {
                                                     var cantidad = parseInt(movimiento.cantidad);
                                                     if (movimiento.tipo_movimiento === "E") {
                                                         stock_actual -= cantidad;
-                                                        //console.log('Egreso', cantidad, stock_actual)
+                                                      
                                                     } else {
                                                         stock_actual += cantidad;
-                                                        //console.log('Ingreso', cantidad, stock_actual)
+                                                       
                                                     }
                                                     movimiento.stock_actual = stock_actual;
-                                                    //console.log(movimiento);
+                                                  
 
                                                     // Seleccionar los detalles de los movimientos del producto
                                                     that.m_kardex.obtener_detalle_movimientos_producto(empresa_id, movimiento.tipo_documento, movimiento.prefijo, movimiento.numero, function(err, detalle_movimiento) {
@@ -219,7 +215,7 @@ Kardex.prototype.consultarExistenciasProducto = function(req, res) {
         res.send(G.utils.r(req.url, 'Listado de Productos!!!!', 200, {lista_productos: lista_productos}));
     }).
     fail(function(err){
-        console.log("error generado ", err);
+       
         res.send(G.utils.r(req.url, 'Error Listado de Productos', 500, {lista_productos: {}}));
     }).
     done();

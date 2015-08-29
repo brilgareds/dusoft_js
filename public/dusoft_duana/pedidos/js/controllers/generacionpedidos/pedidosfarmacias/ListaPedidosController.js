@@ -28,9 +28,11 @@ define(["angular",
             };
             
 
-            var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
-
-            $scope.rootPedidosFarmacias.empresaSeleccionada = EmpresaPedidoFarmacia.get(empresa.getNombre(), empresa.getCodigo());
+            /*Se comenta debido a que no se requiere la empresa actual del usuaio, si no farmacias duana
+             * var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
+            $scope.rootPedidosFarmacias.empresaSeleccionada = EmpresaPedidoFarmacia.get(empresa.getNombre(), empresa.getCodigo());*/
+            
+            $scope.rootPedidosFarmacias.empresaSeleccionada = EmpresaPedidoFarmacia.get("FARMACIA DUANA", 'FD');
             $scope.rootPedidosFarmacias.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
 
             //selecciona la empresa del usuario

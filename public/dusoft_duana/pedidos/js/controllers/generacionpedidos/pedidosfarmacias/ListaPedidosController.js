@@ -56,7 +56,15 @@ define(["angular",
                 }
             };
             
-
+            $scope.rootPedidosFarmacias.filtros = [
+                /*{nombre : "Usuario", usuario:true}, 
+                {nombre : "Razon social", razonSocial:true},*/
+                {nombre : "Bodega", descripcionBodega:true},                
+                {nombre : "Pedido", numeroPedido:true}
+            ];
+            
+            $scope.rootPedidosFarmacias.filtro  = $scope.rootPedidosFarmacias.filtros[0];
+            
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs",
                 "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs",
                 "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs"];
@@ -156,7 +164,7 @@ define(["angular",
                             termino_busqueda: $scope.rootPedidosFarmacias.termino_busqueda,
                             empresa_id: $scope.rootPedidosFarmacias.empresaSeleccionada.getCodigo(),
                             pagina_actual: $scope.rootPedidosFarmacias.paginaactual,
-                            filtro: {}
+                            filtro:  $scope.rootPedidosFarmacias.filtro 
                         }
                     }
                 };
@@ -217,6 +225,17 @@ define(["angular",
                 
             };
             
+          /*
+           * @Author: Eduar
+           * @param {Object} filtro
+           * +Descripcion: Handler del dropdown de busqueda
+           */
+                
+          
+          $scope.onSeleccionFiltro = function(filtro){
+              $scope.rootPedidosFarmacias.filtro = filtro;
+          };
+          
           /*
            * @Author: Eduar
            * @param {string} estado

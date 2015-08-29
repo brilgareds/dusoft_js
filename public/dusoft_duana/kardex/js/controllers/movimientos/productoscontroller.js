@@ -27,7 +27,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
 
             $scope.filtro = {};
             
-            //  $scope.fechainicial = new Date((fechaActual.getMonth() + 1)+"/01/" + (fechaActual.getFullYear() -1));
+           
             $scope.fechainicial = $filter('date')(new Date("05/01/" + fechaActual.getFullYear()), "yyyy-MM-dd");
             $scope.fechafinal = $filter('date')(fechaActual, "yyyy-MM-dd");
             $scope.abrirfechafinal = false;
@@ -109,12 +109,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                     AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
                     return;
                 }
-
+                console.log(data.lista_productos)
                 $scope.Empresa.vaciarProductos();
                 $scope.paginas = (data.lista_productos.length / 10);
                 $scope.items = data.lista_productos.length;
                 for (var i in data.lista_productos) {
                     var obj = data.lista_productos[i];
+                    
                     var producto = ProductoMovimiento.get(
                             obj.codigo_producto,
                             obj.nombre_producto,
@@ -127,11 +128,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                             obj.descuadre
                     );
                     
+                    producto.setPrecioContratacion(obj.precio);
                     producto.setTipoProductoId(obj.tipo_producto_id);
                     
                     $scope.Empresa.agregarProducto(
                             producto
                     );
+                    
                 }
 
             };
@@ -143,11 +146,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                 enableHighlighting: true,
                 showFilter: true,
                 enableRowSelection: false,
-                /*afterSelectionChange:function(row){
-                 if(row.selected){
-                 $scope.onRowClick(row)
-                 }
-                 },*/
+                
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Código', width: "130",
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
@@ -163,7 +162,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                     {field: 'existencia', displayName: 'Existencia', width:"100", cellClass :"gridNumber"},
                     {field: 'costo', displayName: 'Costo', width:"150", visible:that.opcionesModulo.columnaCosto.visible, cellClass :"gridNumber"},
                     {field: 'costo_ultima_compra', width:"150", displayName: 'Costo Ultima Compra', visible:that.opcionesModulo.columnaCostoUltimaCompra.visible, cellClass :"gridNumber"},
-                    {field: 'precio', width:"150", displayName: 'Precio', visible:that.opcionesModulo.columnaPrecioVenta.visible, cellClass :"gridNumber"},
+                    {field: 'precio', width:"150", displayName: 'CP', visible:that.opcionesModulo.columnaPrecioVenta.visible, cellClass :"gridNumber"},
+                    {field: 'precioContratacion', displayName: 'Precio'},
                     {field: 'porc_iva', displayName: 'Iva', width: "100", cellClass :"gridNumber"},
                     {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "100", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'}]
 
@@ -171,8 +171,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
 
 
             $scope.onRowClick = function(row) {
-                //console.log($filter('date')($scope.fechainicial, "yyyy-MM-dd"));
-                //console.log($filter('date')($scope.fechafinal, "yyyy-MM-dd"));
+                
                 $scope.slideurl = "views/movimientos/kardex.html?t=" + new Date().getTime();
 
                 if ($scope.fechafinal === null || $scope.fechainicial === null) {
@@ -199,11 +198,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                         "POST",
                         obj,
                         function(data) {
+                            
+                            
                             if (data.status === 200) {
+                              
                                 if (data.obj.movimientos_producto.length > 0) {
-
-                                    /*console.log('===== data.obj ======');
-                                     console.log(data.obj);*/
 
                                     $scope.$emit('mostrardetallekardex', row.entity, data.obj);
                                 } else {
@@ -405,7 +404,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
 
 
                     });
-                    //alert("")
+                  
                 });
 
             });

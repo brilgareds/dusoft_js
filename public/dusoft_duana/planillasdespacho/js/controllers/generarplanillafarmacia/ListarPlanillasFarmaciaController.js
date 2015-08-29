@@ -36,7 +36,7 @@ define(["angular", "js/controllers",
                 fecha_final: $filter('date')(fecha_actual, "yyyy-MM-dd"),
                 datepicker_fecha_final: false
             };
-
+               
             // Variable para paginacion
             $scope.paginas = 0;
             $scope.cantidad_items = 0;
@@ -65,14 +65,17 @@ define(["angular", "js/controllers",
              * servidor y consulta el detallado de la planilla de devolucion
              */
             $scope.buscar_planillas_despacho = function() {
-
+                
+               // console.log("PAGINA ", $scope.pagina_actual)
                 var obj = {
                     session: $scope.session,
                     data: {
                         listar_planillas_farmacias: {
-                            fecha_inicial: $scope.datos_view.fecha_inicial + " 00:00:00",
-                            fecha_final: $scope.datos_view.fecha_final + " 23:59:00",
-                            termino_busqueda: $scope.datos_view.termino_busqueda
+                           
+                            fecha_inicial: $filter('date')($scope.datos_view.fecha_inicial, "yyyy-MM-dd") + " 00:00:00",
+                            fecha_final: $filter('date')($scope.datos_view.fecha_final, "yyyy-MM-dd") + " 23:59:00",
+                            termino_busqueda: $scope.datos_view.termino_busqueda,
+                            pagina: $scope.pagina_actual
                         }
                     }
                 };

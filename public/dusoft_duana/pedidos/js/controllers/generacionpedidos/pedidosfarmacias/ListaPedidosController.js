@@ -59,8 +59,8 @@ define(["angular",
             $scope.rootPedidosFarmacias.filtros = [
                 /*{nombre : "Usuario", usuario:true}, 
                 {nombre : "Razon social", razonSocial:true},*/
-                {nombre : "Pedido", numeroPedido:true},
-                {nombre : "Bodega", descripcionBodega:true}
+                {nombre : "Bodega", descripcionBodega:true},                
+                {nombre : "Pedido", numeroPedido:true}
             ];
             
             $scope.rootPedidosFarmacias.filtro  = $scope.rootPedidosFarmacias.filtros[0];

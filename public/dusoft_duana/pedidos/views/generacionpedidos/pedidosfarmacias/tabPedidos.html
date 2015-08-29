@@ -18,9 +18,9 @@
 
         <div class="input-group">
         <div class="input-group-btn">
-          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{rootSeleccionProductoFarmacia.filtro.nombre}} <span class="caret"></span></button>
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{rootPedidosFarmacias.filtro.nombre}} <span class="caret"></span></button>
           <ul class="dropdown-menu">
-            <li ng-repeat="filtro in rootSeleccionProductoFarmacia.filtros">
+            <li ng-repeat="filtro in rootPedidosFarmacias.filtros">
                 <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.nombre}}</a>
             </li>
           </ul>

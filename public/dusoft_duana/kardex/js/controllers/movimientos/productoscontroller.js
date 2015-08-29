@@ -128,7 +128,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                             obj.descuadre
                     );
                     
-                    producto.setPrecioContratacion(obj.precio);
+                    producto.setPrecioContratacion(obj.valor_pactado);
                     producto.setTipoProductoId(obj.tipo_producto_id);
                     
                     $scope.Empresa.agregarProducto(

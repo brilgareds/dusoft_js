@@ -34,7 +34,7 @@ define(["angular", "js/controllers",
             $scope.ultima_busqueda = "";
             $scope.pagina_actual = 1;
             
-             $scope.filtros = [
+            $scope.filtros = [
                 {nombre : "Descripcion", descripcionProducto:true},                
                 {nombre : "Codigo", codigoProducto:true},
                 {nombre : "Unidad venta", unidadVenta:true},
@@ -358,12 +358,6 @@ define(["angular", "js/controllers",
             $scope.onSeleccionFiltro = function(filtro){
                 $scope.filtro = filtro;
             };
-
-            /*$scope.cerrar = function() {
-             
-             $scope.$emit('cerrar_gestion_productos', {animado: true});
-             
-             };*/
 
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {

@@ -41,8 +41,9 @@ OrdenesCompra.prototype.listarOrdenesCompra = function(req, res) {
     var fecha_final = args.ordenes_compras.fecha_final;
     var termino_busqueda = args.ordenes_compras.termino_busqueda;
     var pagina_actual = args.ordenes_compras.pagina_actual;
+    var filtro = args.ordenes_compras.filtro || undefined;
 
-    that.m_ordenes_compra.listar_ordenes_compra(fecha_inicial, fecha_final, termino_busqueda, pagina_actual, function(err, lista_ordenes_compras) {
+    that.m_ordenes_compra.listar_ordenes_compra(fecha_inicial, fecha_final, termino_busqueda, pagina_actual, filtro, function(err, lista_ordenes_compras) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
@@ -1395,7 +1396,7 @@ function __validar_costo_productos_archivo_plano(contexto, empresa_id, codigo_pr
 
         var codigo_producto = row.codigo_producto;
 
-        that.m_ordenes_compra.listar_productos(empresa_id, codigo_proveedor_id, numero_orden, codigo_producto, null, 1, function(err, lista_productos) {
+        that.m_ordenes_compra.listar_productos(empresa_id, codigo_proveedor_id, numero_orden, codigo_producto, null, 1, null, function(err, lista_productos) {
 
             if (err || lista_productos.length === 0) {
                 productos_invalidos.push(row);

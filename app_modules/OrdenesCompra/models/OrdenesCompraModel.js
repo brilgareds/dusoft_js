@@ -3,60 +3,84 @@ var OrdenesCompraModel = function() {
 };
 
 // Listar las Ordenes de Compra 
-OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fecha_final, termino_busqueda, pagina, callback) {
+OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fecha_final, termino_busqueda, pagina, filtro, callback) {
 
+     var subQueryTmp = G.knex.column("aa.orden_pedido_id").
+                       from("inv_bodegas_movimiento_tmp_ordenes_compra as aa").as("g");
+    
+    var columns = [
+        "a.orden_pedido_id as numero_orden",
+        "a.empresa_id",
+        "d.tipo_id_tercero as tipo_id_empresa",
+        "d.id as nit_empresa",
+        "d.razon_social as nombre_empresa",
+        "a.codigo_proveedor_id",
+        "c.tipo_id_tercero as tipo_id_proveedor",
+        "c.tercero_id as nit_proveedor",
+        "c.nombre_tercero as nombre_proveedor",
+        "c.direccion as direccion_proveedor",
+        "c.telefono as telefono_proveedor",
+        "a.estado",
+        G.knex.raw("CASE WHEN a.estado = '0' THEN 'Ingresada en bodega'\
+             WHEN a.estado = '1' THEN 'Activa'\
+             WHEN a.estado = '2' THEN 'Anulado'\
+             WHEN a.estado = '3' THEN 'Recibida en bodega'\
+             WHEN a.estado = '4' THEN 'Verificada en bodega' END as descripcion_estado,\
+        a.sw_orden_compra_finalizada"),
+        G.knex.raw("CASE WHEN a.sw_orden_compra_finalizada = '0' THEN 'En Proceso ...'\
+             WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion"), 
+        "a.observacion",
+        "f.codigo_unidad_negocio",
+        "f.imagen",
+        "f.descripcion as descripcion_unidad_negocio",
+        "a.usuario_id",
+        "e.nombre as nombre_usuario",
+        G.knex.raw("To_char(a.fecha_orden,'dd-mm-yyyy') as fecha_registro"),
+        G.knex.raw("coalesce(To_char(a.fecha_recibido,'dd-mm-yyyy'),'') as fecha_recibido"),
+        G.knex.raw("coalesce(To_char(a.fecha_verificado,'dd-mm-yyyy'),'') as fecha_verificado"),
+        G.knex.raw("CASE WHEN COALESCE (g.orden_pedido_id,0)=0 then 0 else 1 end as tiene_ingreso_temporal") 
+    ];
+    
+    var query = G.knex.column(columns).
+    from("compras_ordenes_pedidos  as a").
 
-    var sql = " SELECT \
-                a.orden_pedido_id as numero_orden,\
-                a.empresa_id,\
-                d.tipo_id_tercero as tipo_id_empresa,\
-                d.id as nit_empresa,\
-                d.razon_social as nombre_empresa,\
-                a.codigo_proveedor_id,\
-                c.tipo_id_tercero as tipo_id_proveedor,\
-                c.tercero_id as nit_proveedor,\
-                c.nombre_tercero as nombre_proveedor,\
-                c.direccion as direccion_proveedor,\
-                c.telefono as telefono_proveedor,\
-                a.estado,\
-                CASE WHEN a.estado = '0' THEN 'Ingresada en bodega' \
-                     WHEN a.estado = '1' THEN 'Activa' \
-                     WHEN a.estado = '2' THEN 'Anulado' \
-                     WHEN a.estado = '3' THEN 'Recibida en bodega' \
-                     WHEN a.estado = '4' THEN 'Verificada en bodega' END as descripcion_estado, \
-                a.sw_orden_compra_finalizada,\
-                CASE WHEN a.sw_orden_compra_finalizada = '0' THEN 'En Proceso ...' \
-                     WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion, \
-                a.observacion,\
-                f.codigo_unidad_negocio,\
-                f.imagen,\
-                f.descripcion as descripcion_unidad_negocio,\
-                a.usuario_id,\
-                e.nombre as nombre_usuario,\
-                To_char(a.fecha_orden,'dd-mm-yyyy') as fecha_registro,\
-                coalesce(To_char(a.fecha_recibido,'dd-mm-yyyy'),'') as fecha_recibido,\
-                coalesce(To_char(a.fecha_verificado,'dd-mm-yyyy'),'') as fecha_verificado,\
-                CASE WHEN COALESCE (g.orden_pedido_id,0)=0 then 0 else 1 end as tiene_ingreso_temporal \
-                FROM compras_ordenes_pedidos a\
-                inner join terceros_proveedores b on a.codigo_proveedor_id = b.codigo_proveedor_id\
-                inner join terceros c on  b.tipo_id_tercero = c.tipo_id_tercero and b.tercero_id=c.tercero_id \
-                inner join empresas d on a.empresa_id = d.empresa_id\
-                inner join system_usuarios e on a.usuario_id = e.usuario_id\
-                left join unidades_negocio f on a.codigo_unidad_negocio = f.codigo_unidad_negocio \
-                left join (\
-                    select aa.orden_pedido_id from inv_bodegas_movimiento_tmp_ordenes_compra aa\
-                ) as g on a.orden_pedido_id = g.orden_pedido_id\
-                WHERE a.fecha_orden between $1 and $2 and \
-                (\
-                    a.orden_pedido_id::varchar ilike $3 or\
-                    d.razon_social ilike $3 or\
-                    c.tercero_id ilike $3 or \
-                    c.nombre_tercero ilike $3 \
-                ) and a.sw_unificada='0' order by 1 DESC ";
+    innerJoin("terceros_proveedores as b", "a.codigo_proveedor_id", "b.codigo_proveedor_id").
+    innerJoin("terceros as c", function(){
+         this.on("b.tipo_id_tercero", "c.tipo_id_tercero" ).
+         on("b.tercero_id", "c.tercero_id");
+    }).
+    innerJoin("empresas as d", "a.empresa_id", "d.empresa_id").
+    innerJoin("system_usuarios as e", "a.usuario_id", "e.usuario_id").
+    leftJoin("unidades_negocio as f", "a.codigo_unidad_negocio", "f.codigo_unidad_negocio").
+    leftJoin(subQueryTmp,"a.orden_pedido_id", "g.orden_pedido_id").    
+    whereBetween('a.fecha_orden', [G.knex.raw("('" + fecha_inicial + "')"), G.knex.raw("('" + fecha_final + "')")]).
+    where({
+           "a.sw_unificada"  : '0'
+    }).
+    andWhere(function() {
 
-    G.db.pagination(sql, [fecha_inicial, fecha_final, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
-        callback(err, rows);
+        if (filtro && filtro.proveedor){
+            this.where("c.tercero_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+            orWhere("c.nombre_tercero",  G.constants.db().LIKE, "%" + termino_busqueda + "%");
+    
+        } else if (filtro && filtro.empresa){
+            this.where("d.razon_social", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+            
+        } else {
+            this.where(G.knex.raw("a.orden_pedido_id::varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%");
+        }
+
+    }).
+    limit(G.settings.limit).
+    offset((pagina - 1) * G.settings.limit).
+    orderByRaw("1 DESC").
+    then(function(rows){
+        callback(false, rows);
+    }).
+    catch(function(err){
+       callback(err);
     });
+    
 };
 
 // Listar las Ordenes de Compra de un Proveedor

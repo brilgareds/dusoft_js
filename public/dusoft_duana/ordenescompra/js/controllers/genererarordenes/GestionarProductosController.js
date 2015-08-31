@@ -33,6 +33,16 @@ define(["angular", "js/controllers",
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
             $scope.pagina_actual = 1;
+            
+             $scope.filtros = [
+                {nombre : "Descripcion", descripcionProducto:true},                
+                {nombre : "Codigo", codigoProducto:true},
+                {nombre : "Unidad venta", unidadVenta:true},
+                {nombre : "Molecula", molecula:true}
+            ];
+            
+            $scope.filtro  = $scope.filtros[0];
+            
 
             $rootScope.$on('gestionar_productosCompleto', function(e, parametros) {
 
@@ -86,7 +96,7 @@ define(["angular", "js/controllers",
                     data: {
                         ordenes_compras: {
                             numero_orden: $scope.orden_compra.get_numero_orden(),
-                            //empresa_id: '03',
+                            filtro:$scope.filtro,
                             empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
                             codigo_proveedor_id: $scope.orden_compra.get_proveedor().get_codigo_proveedor(),
                             laboratorio_id: $scope.laboratorio_id,
@@ -344,7 +354,10 @@ define(["angular", "js/controllers",
                 };
                 var modalInstance = $modal.open($scope.opts);
             };
-
+            
+            $scope.onSeleccionFiltro = function(filtro){
+                $scope.filtro = filtro;
+            };
 
             /*$scope.cerrar = function() {
              

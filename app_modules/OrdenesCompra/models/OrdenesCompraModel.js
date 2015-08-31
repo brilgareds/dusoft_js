@@ -113,9 +113,9 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(codigo_p
 };
 
 // Listar Producto para orden de compra 
-OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_proveedor_id, numero_orden, termino_busqueda, laboratorio_id, pagina, callback) {
+OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_proveedor_id, numero_orden, termino_busqueda, laboratorio_id, pagina, filtro, callback) {
 
-    var sql_aux = " ";
+   /* var sql_aux = " ";
     if (laboratorio_id)
         sql_aux = " AND a.clase_id = $4 ";
 
@@ -159,6 +159,86 @@ OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_prov
     G.db.pagination(sql, parametros, pagina, G.settings.limit, function(err, rows, result, total_records) {
         callback(err, rows);
     });
+    
+    */
+    
+    var subQueryContrato = G.knex.column("b.codigo_producto", "b.valor_pactado").
+                        from("contratacion_produc_proveedor as a").
+                        innerJoin("contratacion_produc_prov_detalle as b", "a.contratacion_prod_id", "b.contratacion_prod_id").
+                        where("a.empresa_id", empresa_id).andWhere("a.codigo_proveedor_id",codigo_proveedor_id ).as("aa");
+    
+    
+    var columns = [
+        "e.descripcion as descripcion_grupo",
+        "d.descripcion as descripcion_clase",
+        "c.descripcion as descripcion_subclase",
+        "a.codigo_producto",
+        G.knex.raw("fc_descripcion_producto(a.codigo_producto) as descripcion_producto"),
+        "a.porc_iva as iva",
+        "e.sw_medicamento",
+        G.knex.raw("CASE WHEN COALESCE (aa.valor_pactado,0)=0 then round((b.costo_ultima_compra)/((COALESCE(a.porc_iva,0)/100)+1),2) else aa.valor_pactado end as costo_ultima_compra"),
+        G.knex.raw("CASE WHEN COALESCE (aa.valor_pactado,0)=0 then 0 else 1 end as tiene_valor_pactado"),
+        "a.cantidad",
+        "f.descripcion as presentacion",
+        "a.sw_regulado"
+    ];
+    
+    G.knex.column(columns).
+    from("inventarios_productos  as a").
+
+    innerJoin("inventarios as b", "a.codigo_producto", "b.codigo_producto").
+    innerJoin("inv_subclases_inventarios as c", function(){
+         this.on("a.subclase_id", "c.subclase_id" ).
+         on("a.clase_id", "c.clase_id").
+         on("a.grupo_id", "c.grupo_id");
+    }).
+    innerJoin("inv_clases_inventarios as d", function(){
+         this.on("c.clase_id", "d.clase_id" ).
+         on("c.grupo_id", "d.grupo_id");
+    }).
+    innerJoin("inv_grupos_inventarios as e", function(){
+         this.on("d.grupo_id", "e.grupo_id" );
+    }).
+    innerJoin("inv_presentacioncomercial as f", function(){
+         this.on("a.presentacioncomercial_id", "f.presentacioncomercial_id" );
+    }).   
+    leftJoin(subQueryContrato,"a.codigo_producto", "aa.codigo_producto").    
+    where({
+           "b.empresa_id" : empresa_id,
+           "a.estado"  : '1'
+    }).
+    andWhere(function() {
+        if (laboratorio_id)
+          this.where("a.clase_id", laboratorio_id);
+
+        if (numero_orden > 0){
+          this.whereRaw(
+            "a.codigo_producto not in ( select a.codigo_producto from compras_ordenes_pedidos_detalle a where a.orden_pedido_id = ?)", [numero_orden]
+          );
+        }
+        
+        if(filtro && filtro.descripcionProducto){
+            this.where("a.descripcion", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+        } else if (filtro && filtro.molecula){
+            this.where("c.descripcion", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+        } else if (filtro && filtro.unidadVenta){
+            this.where("a.contenido_unidad_venta", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+            
+        } else {
+            this.where("a.codigo_producto", G.constants.db().LIKE, "%" + termino_busqueda + "%");  
+        }
+
+    }).
+    limit(G.settings.limit).
+    offset((pagina - 1) * G.settings.limit).
+    then(function(rows){
+        callback(false, rows);
+    }).
+    catch(function(err){
+       console.log("error >>>>>>>>>>>>>>>>>>>>> ",err);
+       callback(err);
+    });
+    
 };
 // Consultar Ordenes de Compra  por numero de orden
 OrdenesCompraModel.prototype.consultar_orden_compra = function(numero_orden, callback) {

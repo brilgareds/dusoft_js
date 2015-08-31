@@ -429,55 +429,6 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
         }
     }
 
-   /* var sql = " select \
-                a.solicitud_prod_a_bod_ppal_id as numero_pedido, \
-                a.farmacia_id, \
-                d.empresa_id, \
-                a.centro_utilidad, \
-                a.bodega as bodega_id, \
-                d.razon_social as nombre_farmacia, \
-                b.descripcion as nombre_bodega,\
-                a.usuario_id, \
-                e.nombre as nombre_usuario ,\
-                a.estado as estado_actual_pedido, \
-                case when a.estado = '0' then 'No Asignado' \
-                     when a.estado = '1' then 'Asignado' \
-                     when a.estado = '2' then 'Auditado' \
-                     when a.estado = '3' then 'En Zona Despacho' \
-                     when a.estado = '4' then 'Despachado' \
-                     when a.estado = '5' then 'Despachado con Pendientes' \
-                     when a.estado = '6' then 'Separacion Finalizada' \
-                     when a.estado = '7' then 'En Auditoria'  \
-                     when a.estado = '8' then 'Auditado con pdtes' \
-                     when a.estado = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido, \
-                f.estado as estado_separacion, \
-                to_char(a.fecha_registro, 'dd-mm-yyyy') as fecha_registro,\
-                c.descripcion as nombre_centro_utilidad,\
-                a.empresa_destino as empresa_origen_id,\
-                a.observacion,\
-                g.empresa_id as despacho_empresa_id,\
-                g.prefijo as despacho_prefijo, \
-                g.numero as despacho_numero, \
-                CASE WHEN g.numero IS NOT NULL THEN true ELSE false END as tiene_despacho \
-                from solicitud_productos_a_bodega_principal as a \
-                inner join bodegas as b on a.farmacia_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega \
-                inner join centros_utilidad as c on b.empresa_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad \
-                inner join empresas as d ON c.empresa_id = d.empresa_id \
-                inner join system_usuarios as e ON a.usuario_id = e.usuario_id \
-                left join inv_bodegas_movimiento_tmp_despachos_farmacias f on a.solicitud_prod_a_bod_ppal_id = f.solicitud_prod_a_bod_ppal_id  \
-                left join inv_bodegas_movimiento_despachos_farmacias g on a.solicitud_prod_a_bod_ppal_id = g.solicitud_prod_a_bod_ppal_id \
-                where a.farmacia_id = $1 \
-                and ( a.solicitud_prod_a_bod_ppal_id :: varchar ilike $2 \
-                      or d.razon_social ilike $2 \
-                      or b.descripcion ilike $2 \
-                      or e.nombre ilike $2 ) \
-                order by 1 desc ";
-    
-    G.db.paginated(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result) {
-        callback(err, rows);
-    });*/
-    
-    //return;
     var columns = [
         "a.solicitud_prod_a_bod_ppal_id as numero_pedido", 
         "a.farmacia_id", 

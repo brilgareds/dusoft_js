@@ -56,7 +56,7 @@
             <button type="button" class="btn btn-default btn-medium" ng-disabled="pagina_actual == 1" ng-click="pagina_anterior()">
                 <span class="glyphicon glyphicon-chevron-left" ></span>
             </button>
-            <button type="button" class="btn btn-default btn-medium" ng-disabled="cantidad_items == 0" ng-click="pagina_siguiente()">
+            <button type="button" class="btn btn-default btn-medium" ng-disabled="cantidad_items < 25" ng-click="pagina_siguiente()">
                 <span class="glyphicon glyphicon-chevron-right" ></span>
             </button>
         </div>

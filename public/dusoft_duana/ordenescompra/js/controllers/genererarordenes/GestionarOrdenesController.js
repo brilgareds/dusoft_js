@@ -71,7 +71,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
                 $scope.orden_compra = OrdenCompra.get($scope.numero_orden, 1, $scope.observacion, new Date());
                 $scope.orden_compra.set_unidad_negocio($scope.Empresa.get_unidad_negocio($scope.unidad_negocio_id));
-                $scope.orden_compra.set_proveedor($scope.Empresa.get_proveedor($scope.codigo_proveedor_id));
+                $scope.orden_compra.set_proveedor($scope.Empresa.get_proveedor($scope.codigo_proveedor_id.get_codigo_proveedor()));
                 $scope.orden_compra.set_usuario(Usuario.get(Sesion.usuario_id));
                 $scope.orden_compra.set_descripcion_estado('Activa');
 
@@ -127,7 +127,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         $scope.orden_compra.set_descripcion_estado(datos.descripcion_estado);
 
                         //$scope.codigo_proveedor_id = $scope.orden_compra.get_proveedor().get_codigo_proveedor();
-                        $scope.codigo_proveedor_id = $scope.orden_compra.get_proveedor().get_codigo_proveedor();
+                        $scope.codigo_proveedor_id = $scope.orden_compra.get_proveedor();
                         //$scope.unidad_negocio_id = $scope.orden_compra.get_unidad_negocio().get_codigo();
                         $scope.unidad_negocio_id = $scope.orden_compra.get_unidad_negocio();
                         $scope.observacion_contrato = $scope.orden_compra.get_observacion_contrato();
@@ -428,7 +428,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
             $scope.seleccionar_proveedor = function(proveedor) {               
-                $scope.codigo_proveedor_id = proveedor.get_codigo_proveedor();
+                //$scope.codigo_proveedor_id = proveedor.get_codigo_proveedor();
+                $scope.codigo_proveedor_id = proveedor;
             };
 
             $scope.modificar_observacion = function() {
@@ -636,7 +637,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             //empresa_id: '03',
                             empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
                             numero_orden: $scope.numero_orden,
-                            codigo_proveedor_id: $scope.codigo_proveedor_id
+                            codigo_proveedor_id: $scope.codigo_proveedor_id.get_codigo_proveedor()
                         }
                     });
 
@@ -656,7 +657,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                     //empresa_id: '03',
                                     empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
                                     numero_orden: $scope.numero_orden,
-                                    codigo_proveedor_id: $scope.codigo_proveedor_id
+                                    codigo_proveedor_id: $scope.codigo_proveedor_id.get_codigo_proveedor()
                                 }
                             });
 

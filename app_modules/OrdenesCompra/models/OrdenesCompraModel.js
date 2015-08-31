@@ -212,6 +212,7 @@ OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_prov
         callback(false, rows);
     }).
     catch(function(err){
+       //console.log("error buscando productos ", err);
        callback(err);
     });
     
@@ -399,12 +400,12 @@ OrdenesCompraModel.prototype.insertar_detalle_orden_compra = function(numero_ord
 };
 
 // Modificar Detalle Orden de Compra
-OrdenesCompraModel.prototype.modificar_detalle_orden_compra = function(numero_orden, callback) {
+OrdenesCompraModel.prototype.modificar_detalle_orden_compra = function(numero_orden, codigo_producto, cantidad_solicitada, valor, callback) {
 
 
-    var sql = "  ";
-    G.db.query(sql, [numero_orden], function(err, rows, result, total_records) {
-        callback(err, rows);
+    var sql = " UPDATE  compras_ordenes_pedidos_detalle SET numero_unidades = $3, valor = $4 where orden_pedido_id = $1 and codigo_producto = $2";
+    G.db.query(sql, [numero_orden, codigo_producto, cantidad_solicitada, valor], function(err, rows, result) {
+        callback(err, rows, result);
     });
 };
 

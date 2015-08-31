@@ -430,6 +430,7 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
     var cantidad_solicitada = args.ordenes_compras.cantidad_solicitada;
     var valor = args.ordenes_compras.valor;
     var iva = args.ordenes_compras.iva;
+    var modificar = args.ordenes_compras.modificar || false;
 
 
     //validar que la OC no tenga NINGUN ingreso temporal y este Activa.
@@ -443,17 +444,32 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
             orden_compra = orden_compra[0];
 
             if (orden_compra.tiene_ingreso_temporal === 0 && orden_compra.estado === '1') {
+                
+                if(!modificar){
+                    
+                    that.m_ordenes_compra.insertar_detalle_orden_compra(numero_orden, codigo_producto, cantidad_solicitada, valor, iva, function(err, rows, result) {
 
-                that.m_ordenes_compra.insertar_detalle_orden_compra(numero_orden, codigo_producto, cantidad_solicitada, valor, iva, function(err, rows, result) {
+                        if (err || result.rowCount === 0) {
+                            res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
+                            return;
+                        } else {
+                            res.send(G.utils.r(req.url, 'Producto regitrado correctamente', 200, {ordenes_compras: {}}));
+                            return;
+                        }
+                    });
+                    
+                } else {
+                    that.m_ordenes_compra.modificar_detalle_orden_compra(numero_orden, codigo_producto, cantidad_solicitada, valor, function(err, rows, result) {
 
-                    if (err || result.rowCount === 0) {
-                        res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
-                        return;
-                    } else {
-                        res.send(G.utils.r(req.url, 'Producto regitrado correctamente', 200, {ordenes_compras: {}}));
-                        return;
-                    }
-                });
+                        if (err || result.rowCount === 0) {
+                            res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
+                            return;
+                        } else {
+                            res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {ordenes_compras: {}}));
+                            return;
+                        }
+                    });
+                }
 
             } else {
                 res.send(G.utils.r(req.url, 'No se pudo actualizar, la orde de compra esta siendo ingresada.', 403, {orden_compra: []}));
@@ -1395,6 +1411,7 @@ function __validar_costo_productos_archivo_plano(contexto, empresa_id, codigo_pr
     productos.forEach(function(row) {
 
         var codigo_producto = row.codigo_producto;
+        
 
         that.m_ordenes_compra.listar_productos(empresa_id, codigo_proveedor_id, numero_orden, codigo_producto, null, 1, null, function(err, lista_productos) {
 

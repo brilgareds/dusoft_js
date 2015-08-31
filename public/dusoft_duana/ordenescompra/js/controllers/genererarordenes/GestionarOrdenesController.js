@@ -120,7 +120,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                         $scope.orden_compra.set_descripcion_estado(datos.descripcion_estado);
 
                         //$scope.codigo_proveedor_id = $scope.orden_compra.get_proveedor().get_codigo_proveedor();
-                        $scope.codigo_proveedor_id = $scope.orden_compra.get_proveedor();
+                        $scope.codigo_proveedor_id = $scope.orden_compra.get_proveedor().get_codigo_proveedor();
                         //$scope.unidad_negocio_id = $scope.orden_compra.get_unidad_negocio().get_codigo();
                         $scope.unidad_negocio_id = $scope.orden_compra.get_unidad_negocio();
                         $scope.observacion_contrato = $scope.orden_compra.get_observacion_contrato();
@@ -499,16 +499,50 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'codigo_producto', displayName: 'Codigo Producto', width: "10%"},
                     {field: 'descripcion', displayName: 'Descripcion'},
                     {field: 'politicas', displayName: 'Políticas', width: "20%"},
-                    {field: 'cantidad_seleccionada', width: "7%", displayName: "Cantidad"},
+                    {field: 'cantidad_seleccionada', width: "7%", displayName: "Cantidad", enableCellEdit:true},
                     {field: 'iva', width: "7%", displayName: "I.V.A (%)"},
-                    {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "10%", cellFilter: "currency:'$ '"},
-                    {width: "7%", displayName: "Opcion", cellClass: "txt-center",
+                    {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "10%", cellFilter: "currency:'$ '", enableCellEdit:true},
+                    {width: "7%", displayName: "Opcion", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="eliminar_producto_orden_compra(row)" ng-disabled="vista_previa" ><span class="glyphicon glyphicon-remove"></span></button>\
+                                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
+                                            <ul class="dropdown-menu dropdown-options">\
+                                                <li><a href="javascript:void(0);" ng-click="modificarDetalle(row.entity);" >Modificar</a></li>\
+                                                <li><a href="javascript:void(0);" ng-click="eliminar_producto_orden_compra(row)" >Eliminar</a></li>\
+                                            </ul>\
                                         </div>'}
                 ]
             };
+            
+            $scope.modificarDetalle = function(producto){
+                console.log("producto a modificar ", producto);
 
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        ordenes_compras: {
+                            numero_orden: $scope.orden_compra.get_numero_orden(),
+                            codigo_producto: producto.getCodigoProducto(),
+                            cantidad_solicitada: producto.get_cantidad_seleccionada(),
+                            valor: producto.get_costo(),
+                            iva: producto.get_iva(),
+                            modificar:true
+                        }
+                    }
+                };
+
+
+                Request.realizarRequest(API.ORDENES_COMPRA.CREAR_DETALLE_ORDEN_COMPRA, "POST", obj, function(data) {
+
+
+                    if (data.status === 200) {
+                        AlertService.mostrarMensaje("success", "Modificacion realizada");
+                        $scope.buscar_detalle_orden_compra("",1);
+                    } else {
+                        AlertService.mostrarMensaje("warning", "Se ha generado un error");
+                    }
+                });
+                
+            };
 
             $scope.eliminar_producto_orden_compra = function(row) {
 
@@ -586,7 +620,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
             $scope.subir_archivo_plano = function() {
-
+                console.log("proveedor ", $scope.codigo_proveedor_id);
                 if ($scope.numero_orden > 0) {
                     // Solo Subir Plano
                     $scope.opciones_archivo.opts.query.data = JSON.stringify({

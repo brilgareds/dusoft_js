@@ -57,7 +57,14 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
             $scope.pagina_actual = 1;
-
+            
+            that.opciones = Sesion.getUsuarioActual().getModuloActual().opciones;
+            
+            $scope.opcionesModulo = {
+                btnModificarCantidad:{
+                    'click': that.opciones.sw_modificar_orden
+                }
+            };
 
 
             that.set_orden_compra = function() {
@@ -499,14 +506,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'codigo_producto', displayName: 'Codigo Producto', width: "10%"},
                     {field: 'descripcion', displayName: 'Descripcion'},
                     {field: 'politicas', displayName: 'Políticas', width: "20%"},
-                    {field: 'cantidad_seleccionada', width: "7%", displayName: "Cantidad", enableCellEdit:true},
+                    {field: 'cantidad_seleccionada', width: "7%", displayName: "Cantidad", enableCellEdit:that.opciones.sw_modificar_orden},
                     {field: 'iva', width: "7%", displayName: "I.V.A (%)"},
-                    {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "10%", cellFilter: "currency:'$ '", enableCellEdit:true},
+                    {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "10%", cellFilter: "currency:'$ '", enableCellEdit:that.opciones.sw_modificar_orden},
                     {width: "7%", displayName: "Opcion", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
-                                                <li><a href="javascript:void(0);" ng-click="modificarDetalle(row.entity);" >Modificar</a></li>\
+                                                <li><a href="javascript:void(0);" ng-click="modificarDetalle(row.entity);" \
+                                                        ng-validate-events="{{opcionesModulo.btnModificarCantidad}}" >Modificar</a></li>\
                                                 <li><a href="javascript:void(0);" ng-click="eliminar_producto_orden_compra(row)" >Eliminar</a></li>\
                                             </ul>\
                                         </div>'}

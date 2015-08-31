@@ -115,53 +115,6 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(codigo_p
 // Listar Producto para orden de compra 
 OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_proveedor_id, numero_orden, termino_busqueda, laboratorio_id, pagina, filtro, callback) {
 
-   /* var sql_aux = " ";
-    if (laboratorio_id)
-        sql_aux = " AND a.clase_id = $4 ";
-
-    if (numero_orden > 0)
-        sql_aux += " AND a.codigo_producto not in ( select a.codigo_producto from compras_ordenes_pedidos_detalle a where a.orden_pedido_id = " + numero_orden + " ) ";
-
-
-    var sql = " SELECT \
-                e.descripcion as descripcion_grupo,\
-                d.descripcion as descripcion_clase,\
-                c.descripcion as descripcion_subclase,\
-                a.codigo_producto,\
-                fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
-                a.porc_iva as iva,\
-                e.sw_medicamento,\
-                CASE WHEN COALESCE (aa.valor_pactado,0)=0 then round((b.costo_ultima_compra)/((COALESCE(a.porc_iva,0)/100)+1),2) else aa.valor_pactado end as costo_ultima_compra,\
-                CASE WHEN COALESCE (aa.valor_pactado,0)=0 then 0 else 1 end as tiene_valor_pactado,\
-                a.cantidad,\
-                f.descripcion as presentacion,\
-                a.sw_regulado\
-                FROM  inventarios_productos a\
-                INNER JOIN inventarios b ON a.codigo_producto = b.codigo_producto\
-                INNER JOIN inv_subclases_inventarios c ON a.subclase_id = c.subclase_id AND a.clase_id = c.clase_id AND a.grupo_id = c.grupo_id\
-                INNER JOIN inv_clases_inventarios d ON c.clase_id = d.clase_id AND c.grupo_id = d.grupo_id\
-                INNER JOIN inv_grupos_inventarios e ON d.grupo_id = e.grupo_id\
-                LEFT JOIN inv_presentacioncomercial f ON a.presentacioncomercial_id = f.presentacioncomercial_id\
-                LEFT JOIN (\
-                    SELECT b.codigo_producto, b.valor_pactado \
-                    FROM contratacion_produc_proveedor a \
-                    INNER JOIN contratacion_produc_prov_detalle b on a.contratacion_prod_id = b.contratacion_prod_id\
-                    WHERE a.empresa_id= $1 AND a.codigo_proveedor_id = $2 \
-                ) as aa on a.codigo_producto = aa.codigo_producto\
-                WHERE b.empresa_id = $1 AND a.estado = '1' " + sql_aux + " AND \
-                (\
-                    a.descripcion ILIKE $3 or\
-                    a.codigo_producto ILIKE $3 or\
-                    a.contenido_unidad_venta ILIKE $3 or\
-                    c.descripcion ILIKE $3 \
-                )";
-    var parametros = (laboratorio_id) ? [empresa_id, codigo_proveedor_id, "%" + termino_busqueda + "%", laboratorio_id] : [empresa_id, codigo_proveedor_id, "%" + termino_busqueda + "%"];
-    G.db.pagination(sql, parametros, pagina, G.settings.limit, function(err, rows, result, total_records) {
-        callback(err, rows);
-    });
-    
-    */
-    
     var subQueryContrato = G.knex.column("b.codigo_producto", "b.valor_pactado").
                         from("contratacion_produc_proveedor as a").
                         innerJoin("contratacion_produc_prov_detalle as b", "a.contratacion_prod_id", "b.contratacion_prod_id").
@@ -235,7 +188,6 @@ OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_prov
         callback(false, rows);
     }).
     catch(function(err){
-       console.log("error >>>>>>>>>>>>>>>>>>>>> ",err);
        callback(err);
     });
     

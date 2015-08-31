@@ -57,7 +57,7 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
         "b.subclase_id",
         "b.porc_iva",
         "b.tipo_producto_id",
-        "g.precio"
+        "g.valor_pactado"
      ];
     
    

@@ -128,7 +128,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                             obj.descuadre
                     );
                     
-                    producto.setPrecioContratacion(obj.precio);
+                    producto.setPrecioContratacion(obj.valor_pactado);
                     producto.setTipoProductoId(obj.tipo_producto_id);
                     
                     $scope.Empresa.agregarProducto(
@@ -162,8 +162,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                     {field: 'existencia', displayName: 'Existencia', width:"100", cellClass :"gridNumber"},
                     {field: 'costo', displayName: 'Costo', width:"150", visible:that.opcionesModulo.columnaCosto.visible, cellClass :"gridNumber"},
                     {field: 'costo_ultima_compra', width:"150", displayName: 'Costo Ultima Compra', visible:that.opcionesModulo.columnaCostoUltimaCompra.visible, cellClass :"gridNumber"},
-                    {field: 'precio', width:"150", displayName: 'CP', visible:that.opcionesModulo.columnaPrecioVenta.visible, cellClass :"gridNumber"},
-                    {field: 'precioContratacion', displayName: 'Precio'},
+                   // {field: 'precio', width:"150", displayName: 'CP', visible:that.opcionesModulo.columnaPrecioVenta.visible, cellClass :"gridNumber"},
+                    {field: 'precioContratacion', displayName: 'CP',  width: "100", cellClass :"gridNumber"},
                     {field: 'porc_iva', displayName: 'Iva', width: "100", cellClass :"gridNumber"},
                     {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "100", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'}]
 

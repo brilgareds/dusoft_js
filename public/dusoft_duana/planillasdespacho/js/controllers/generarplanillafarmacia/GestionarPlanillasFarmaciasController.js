@@ -216,7 +216,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             };
             that.render_documentos = function(documentos) {
-
+                console.log("render_documentos", $scope.datos_view.documento_seleccionado);
+                console.log(documentos)
                 $scope.planilla.limpiar_documentos();
 
                 documentos.forEach(function(data) {
@@ -227,7 +228,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     $scope.planilla.set_documentos(documento);
                   
                 });
-
+                console.log("TODOS LOS ", $scope.planilla.get_documentos())
             };
 
 
@@ -236,7 +237,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var disabled = false;
 
                 // Validar que todos los campos esten diligenciados
-                if ($scope.planilla.get_ciudad() === null || $scope.planilla.get_transportadora() === undefined || $scope.planilla.get_nombre_conductor() === '' || $scope.planilla.get_observacion() === '' || $scope.planilla.get_estado() === '2')
+                if ($scope.planilla.get_empresa() === null || $scope.planilla.get_transportadora() === undefined || $scope.planilla.get_nombre_conductor() === '' || $scope.planilla.get_observacion() === '' || $scope.planilla.get_estado() === '2')
                     disabled = true;
 
                 // Si la transportadora es externa solicita obligatoriamente el numero de guia    
@@ -325,7 +326,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 localStorageService.add("numero_guia", $scope.planilla.get_numero_guia());
 
-                that.gestionar_consultas();
+             //   that.gestionar_consultas();
 
             };
 
@@ -441,7 +442,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $state.go('GestionarPlanillasFarmacias');
             };
 
-            //  console.log($scope.planilla.get_documentos());
+         
 
             $scope.lista_documentos_bodega = {
                 data: 'planilla.get_documentos()',

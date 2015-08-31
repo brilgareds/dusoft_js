@@ -254,7 +254,9 @@ define(["angular", "js/controllers",
              * 
              */
             that.ingresar_documentos_planilla = function(id, callback) {
-              
+                
+                console.log("ingresar_documentos_planilla----------->>>>>>>>>>")
+                console.log($scope.planilla.get_documentos());
                 $scope.planilla.set_documento($scope.datos_view.documento_seleccionado);
                 $scope.planilla.get_documento().set_empresa_id($scope.planilla.get_empresa().getCodigo());
                 
@@ -342,7 +344,7 @@ define(["angular", "js/controllers",
                  var modalInstance = $modal.open($scope.opts);*/
 
 
-
+                
                 that.registrarDocumentoFarmacia(documento);
             };
             /**
@@ -352,7 +354,8 @@ define(["angular", "js/controllers",
              * @returns {undefined}
              */
             that.registrarDocumentoFarmacia = function(documento) {
-                $scope.datos_view.documento_seleccionado = documento;         
+                $scope.datos_view.documento_seleccionado = documento;  
+                
                 that.gestionar_planilla_farmacia(function() {
 
                 });
@@ -368,9 +371,10 @@ define(["angular", "js/controllers",
              * 
              */
             that.generar_planilla_farmacia = function(callback) {
-
+              
                 var empresa = Sesion.getUsuarioActual().getEmpresa();
-
+               
+                
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -391,7 +395,7 @@ define(["angular", "js/controllers",
                 Request.realizarRequest(API.PLANILLAS_FARMACIAS.GENERAR_PLANILLA_FARMACIA, "POST", obj, function(data) {
                     var idUltimoRegistroPFD = data.obj.id_inv_planilla_farmacia_devolucion[0].id_inv_planilla_farmacia_devolucion;
                     AlertService.mostrarMensaje("warning", data.msj);
-
+                    
                     if (data.status === 200) {
                         $scope.planilla.set_numero_guia(data.obj.numero_guia);
                         callback(true, idUltimoRegistroPFD);
@@ -403,17 +407,18 @@ define(["angular", "js/controllers",
             };
             that.gestionar_planilla_farmacia = function(callback) {
                
+           
                 var documentoSeleccionado = $scope.datos_view.documento_seleccionado;
                             
                 Empresa.eliminarDocumento(documentoSeleccionado);
              
                 if ($scope.planilla.get_numero_guia() === 0) {
-
+                    
                     that.generar_planilla_farmacia(function(continuar, idUltimoRegistroPFD) {
 
-
+                    
                         if (continuar) {
-
+                           
                             that.ingresar_documentos_planilla(idUltimoRegistroPFD, function(continuar) {
 
                                 if (callback)
@@ -425,9 +430,10 @@ define(["angular", "js/controllers",
                         }
                     });
                 } else {
+                    
                     that.generar_planilla_farmacia(function(continuar, idUltimoRegistroPFD) {
 
-
+                     
                         if (continuar) {
 
                             that.ingresar_documentos_planilla(idUltimoRegistroPFD, function(continuar) {
@@ -436,6 +442,7 @@ define(["angular", "js/controllers",
                                     callback(continuar);
                             });
                         } else {
+                            
                             if (callback)
                                 callback(continuar);
                         }
@@ -453,6 +460,8 @@ define(["angular", "js/controllers",
              */
             that.traerDocumentosFarmacias = function(callback) {
                 
+                console.log("traerDocumentosFarmacias----------->>>>>>>>>>")
+                //console.log("$scope.planilla.get_empresa().getCodigo():::: ",$scope.planilla.get_empresa().getCodigo())
                 var empresa = Sesion.getUsuarioActual().getEmpresa();
                 var obj = {
                     session: $scope.session,
@@ -612,7 +621,7 @@ define(["angular", "js/controllers",
                     {field: 'cantidad_cajas', displayName: 'Cajas', width: "10%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'cantidad_neveras', displayName: 'Nevera', width: "10%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_neveras" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {field: 'temperatura_neveras', displayName: '°C Nevera', width: "10%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.temperatura_neveras" validacion-numero class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",
+                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",width: "10%",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs" ng-click="confirmRegistroDocumentoDevolucion(row.entity)" ng-disabled="validar_ingreso_documento(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
                                         </div>'

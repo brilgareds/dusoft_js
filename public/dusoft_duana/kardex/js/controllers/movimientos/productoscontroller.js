@@ -38,7 +38,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
             };
             
             that.opciones = Usuario.getUsuarioActual().getModuloActual().opciones;
-            
+            console.log("that.opciones", that.opciones)
             //permisos kardex
             that.opcionesModulo = {
                 columnaCosto: {
@@ -47,11 +47,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                 columnaCostoUltimaCompra: {
                     'visible': that.opciones.sw_costo_ultima_compra
                 },
+                columnaCP: {
+                    'visible': that.opciones.sw_cp
+                },
                 columnaPrecioVenta: {
                     'visible': that.opciones.sw_precio_venta_clinica
                 }        
             };
-
+            
+          
+            
             $scope.buscarProductos = function(termino_busqueda, paginando) {
 
                 if ($scope.ultima_busqueda !== $scope.termino_busqueda) {
@@ -130,6 +135,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                     
                     producto.setPrecioContratacion(obj.valor_pactado);
                     producto.setTipoProductoId(obj.tipo_producto_id);
+                    producto.setCodigoCum(obj.codigo_cum);
+                    
                     
                     $scope.Empresa.agregarProducto(
                             producto
@@ -159,11 +166,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                                             </div>'
                     },
                     {field: 'descripcion', displayName: 'Nombre'},
-                    {field: 'existencia', displayName: 'Existencia', width:"100", cellClass :"gridNumber"},
+                     {field: 'codigoCum', displayName: 'Codigo cum', width:"150", cellClass :"gridNumber"},
+                    {field: 'existencia', displayName: 'Existencia', width:"100", cellClass :"gridNumber"},  
                     {field: 'costo', displayName: 'Costo', width:"150", visible:that.opcionesModulo.columnaCosto.visible, cellClass :"gridNumber"},
                     {field: 'costo_ultima_compra', width:"150", displayName: 'Costo Ultima Compra', visible:that.opcionesModulo.columnaCostoUltimaCompra.visible, cellClass :"gridNumber"},
                    // {field: 'precio', width:"150", displayName: 'CP', visible:that.opcionesModulo.columnaPrecioVenta.visible, cellClass :"gridNumber"},
-                    {field: 'precioContratacion', displayName: 'CP',  width: "100", cellClass :"gridNumber"},
+                    {field: 'precioContratacion', displayName: 'CP',  width: "100",visible:that.opcionesModulo.columnaCP.visible, cellClass :"gridNumber" },
                     {field: 'porc_iva', displayName: 'Iva', width: "100", cellClass :"gridNumber"},
                     {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "100", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'}]
 

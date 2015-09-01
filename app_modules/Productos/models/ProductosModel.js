@@ -36,6 +36,7 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
         "b.codigo_invima",
         "b.contenido_unidad_venta",
         "b.sw_control_fecha_vencimiento",
+        "b.codigo_cum",
         "a.existencia_minima",
         "a.existencia_maxima",
         G.knex.raw("a.existencia :: integer  as existencia"),

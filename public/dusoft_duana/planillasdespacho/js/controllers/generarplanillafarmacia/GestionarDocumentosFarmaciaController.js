@@ -38,13 +38,12 @@ define(["angular", "js/controllers",
                     // tercero_seleccionado: FarmaciaPlanilla.get(), // tercero_seleccionado es una Farmacia por ser la opcion_predeterminada = 0
                     documento_seleccionado: Documento.get()
                 };
-
+              
             });
 
             $rootScope.$on('cerrar_gestion_documentos_bodegaCompleto', function(e, parametros) {
                 $scope.$$watchers = null;
             });
-
 
 
             /*   $scope.buscador_documentos = function(ev) {
@@ -253,21 +252,16 @@ define(["angular", "js/controllers",
              * devolucion
              * 
              */
-            that.ingresar_documentos_planilla = function(id, callback) {
+            that.ingresar_documentos_planilla = function(callback) {
                 
-                console.log("ingresar_documentos_planilla----------->>>>>>>>>>")
-                console.log($scope.planilla.get_documentos());
                 $scope.planilla.set_documento($scope.datos_view.documento_seleccionado);
                 $scope.planilla.get_documento().set_empresa_id($scope.planilla.get_empresa().getCodigo());
-                
-               // console.log("NUMERO # GUIA: ", id);
-                $scope.planilla.set_numero_guia(id)
-                //console.log($scope.planilla.get_numero_guia())
+               
                 var obj = {
                     session: $scope.session,
                     data: {
                         planillas_farmacia: {
-                            id_inv_planilla_farmacia_devolucion: id,
+                            id_inv_planilla_farmacia_devolucion: $scope.planilla.get_numero_guia(),
                             empresa_id: $scope.planilla.get_documento().get_empresa_id(),
                             prefijo: $scope.planilla.get_documento().get_prefijo(),
                             numero: $scope.planilla.get_documento().get_numero(),
@@ -355,7 +349,7 @@ define(["angular", "js/controllers",
              */
             that.registrarDocumentoFarmacia = function(documento) {
                 $scope.datos_view.documento_seleccionado = documento;  
-                
+               
                 that.gestionar_planilla_farmacia(function() {
 
                 });
@@ -393,63 +387,76 @@ define(["angular", "js/controllers",
                 };
 
                 Request.realizarRequest(API.PLANILLAS_FARMACIAS.GENERAR_PLANILLA_FARMACIA, "POST", obj, function(data) {
-                    var idUltimoRegistroPFD = data.obj.id_inv_planilla_farmacia_devolucion[0].id_inv_planilla_farmacia_devolucion;
-                    AlertService.mostrarMensaje("warning", data.msj);
+                   
+                   var idUltimoRegistroPFD = data.obj.id_inv_planilla_farmacia_devolucion[0].id_inv_planilla_farmacia_devolucion;
+                    if($scope.planilla.get_numero_guia() === 0 ){
+                       
+                         $scope.planilla.set_numero_guia(idUltimoRegistroPFD);
+                        
+                         AlertService.mostrarMensaje("warning", data.msj);
                     
                     if (data.status === 200) {
-                        $scope.planilla.set_numero_guia(data.obj.numero_guia);
-                        callback(true, idUltimoRegistroPFD);
-
+                        
+                        callback(true);
+                        
                     } else {
-                        callback(false, idUltimoRegistroPFD);
+                        callback(false);
                     }
+                        
+                    }else{
+                       
+                         callback(true);
+                    }
+                   
                 });
             };
             that.gestionar_planilla_farmacia = function(callback) {
                
            
                 var documentoSeleccionado = $scope.datos_view.documento_seleccionado;
-                            
+                          
                 Empresa.eliminarDocumento(documentoSeleccionado);
              
                 if ($scope.planilla.get_numero_guia() === 0) {
                     
-                    that.generar_planilla_farmacia(function(continuar, idUltimoRegistroPFD) {
+                    that.generar_planilla_farmacia(function(continuar) {
 
                     
                         if (continuar) {
                            
-                            that.ingresar_documentos_planilla(idUltimoRegistroPFD, function(continuar) {
+                            that.ingresar_documentos_planilla(function(continuar) {
 
                                 if (callback)
                                     callback(continuar);
                             });
                         } else {
+                         
                             if (callback)
                                 callback(continuar);
                         }
                     });
                 } else {
-                    
-                    that.generar_planilla_farmacia(function(continuar, idUltimoRegistroPFD) {
+                   
+                  //  that.generar_planilla_farmacia(function(continuar) {
 
                      
-                        if (continuar) {
+                      //  if (continuar) {
 
-                            that.ingresar_documentos_planilla(idUltimoRegistroPFD, function(continuar) {
+                            that.ingresar_documentos_planilla(function(continuar) {
 
                                 if (callback)
                                     callback(continuar);
                             });
-                        } else {
+                       // } else {
                             
-                            if (callback)
-                                callback(continuar);
-                        }
-                    });
+                          //  if (callback)
+                              //  callback(continuar);
+                        /*}
+                    });*/
                 }
 
             };
+            
             /*
              * 
              * @param {type} selected

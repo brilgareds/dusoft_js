@@ -126,56 +126,6 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
             estado =  '9';
         }
     }
-
-    /*var sql = " select \
-                a.empresa_id, \
-                a.centro_destino as centro_utilidad_id, \
-                a.bodega_destino as bodega_id, \
-                a.pedido_cliente_id as numero_pedido, \
-                b.tipo_id_tercero as tipo_id_cliente, \
-                b.tercero_id as identificacion_cliente, \
-                b.nombre_tercero as nombre_cliente, \
-                b.direccion as direccion_cliente, \
-                b.telefono as telefono_cliente, \
-                c.tipo_id_vendedor, \
-                c.vendedor_id as idetificacion_vendedor, \
-                c.nombre as nombre_vendedor, \
-                a.estado, \
-                case when a.estado = '0' then 'Inactivo ' \
-                when a.estado = '1' then 'Activo' \
-                when a.estado = '2' then 'Anulado' \
-                when a.estado = '3' then 'Entregado' end as descripcion_estado, \
-                a.estado_pedido as estado_actual_pedido, \
-                case when a.estado_pedido = '0' then 'No Asignado' \
-                when a.estado_pedido = '1' then 'Asignado' \
-                when a.estado_pedido = '2' then 'Auditado' \
-                when a.estado_pedido = '3' then 'En Zona Despacho' \
-                when a.estado_pedido = '4' then 'Despachado' \
-                when a.estado_pedido = '5' then 'Despachado con Pendientes' \
-                when a.estado_pedido = '6' then 'Separacion Finalizada' \
-                when a.estado_pedido = '7' then 'En Auditoria'\
-                when a.estado_pedido = '8' then 'Auditado con pdtes' \
-                when a.estado_pedido = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido,\
-                d.estado as estado_separacion, \
-                to_char(a.fecha_registro, 'dd-mm-yyyy') as fecha_registro \
-                from ventas_ordenes_pedidos a \
-                inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id \
-                inner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id \
-                left join inv_bodegas_movimiento_tmp_despachos_clientes d on a.pedido_cliente_id = d.pedido_cliente_id  \
-                where a.empresa_id = $1 " + sql_aux + "\
-                and (   a.pedido_cliente_id::varchar ilike $2  \
-                        or b.tercero_id ilike $2 \
-                        or b.nombre_tercero ilike $2 \
-                        or b.direccion ilike $2  \
-                        or b.telefono ilike $2   \
-                        or c.vendedor_id ilike $2 \
-                        or c.nombre ilike $2) \
-                /*AND (a.estado IN ('0','1','2','3'))  order by 4 desc ";
-
-    G.db.paginated(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
-        callback(err, rows);
-    });*/
-    
     
     var columns = [
         "a.empresa_id", 
@@ -225,7 +175,7 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
         this.where("a.empresa_id", empresa_id);
         
         if (estado !== "") {
-            this.where("a.estado", estado);
+            this.where("a.estado_pedido", estado);
         }
     }).
     andWhere(function() {       

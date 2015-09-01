@@ -3,9 +3,9 @@ var PlanillasFarmaciasModel = function() {
 };
 
 
-PlanillasFarmaciasModel.prototype.listar_planillas_farmacias = function(fecha_inicial, fecha_final, termino_busqueda, pagina, callback) {
+PlanillasFarmaciasModel.prototype.listar_planillas_farmacias = function(fecha_inicial, fecha_final, filtro, termino_busqueda, pagina, callback) {
 
-    
+
     var subqueryCajas = G.knex.from(
             G.knex.column(["a.id_inv_planilla_farmacia_devolucion as planilla_id", "a.cantidad_cajas", "a.cantidad_neveras"])
             .select().from('inv_planillas_farmacia_devolucion_detalle as a').as("a")
@@ -49,27 +49,43 @@ PlanillasFarmaciasModel.prototype.listar_planillas_farmacias = function(fecha_in
             .whereBetween('a.fecha_registro', [G.knex.raw("('" + fecha_inicial + "')"), G.knex.raw("('" + fecha_final + "')")])
             .andWhere(
             function() {
-                this.where(G.knex.raw('a.id_inv_planilla_farmacia_devolucion::varchar'), G.constants.db().LIKE, "%" + termino_busqueda + "%")
+                console.log("<<<<<<<<<<<<FILTROSSSS>>>>>", filtro)
+                console.log("<<<<<<<<<<<<FILTROSSSS>>>>>", filtro.filtroGuia, "termino de busqueda::: ", termino_busqueda)
+                if (filtro.filtroGuia === true) {
+                    this.where(G.knex.raw('a.id_inv_planilla_farmacia_devolucion::varchar'), G.constants.db().LIKE, "%" + termino_busqueda + "%")
+
+                }
+               
+                if (filtro.filtroTransportador === true) {
+                    this.where(G.knex.raw('b.descripcion'), G.constants.db().LIKE, "%" + termino_busqueda + "%")
+
+
+                }
+
+                if (filtro.filtroEstado === true) {
+                  
+                    this.where(G.knex.raw('a.estado'), G.constants.db().LIKE, "%" + termino_busqueda + "%")
+                }
 
             })
-            .orWhere(function() {
-        this.where('b.descripcion', G.constants.db().LIKE, "%" + termino_busqueda + "%")
+            /* .orWhere(function() {
+             this.where('b.descripcion', G.constants.db().LIKE, "%" + termino_busqueda + "%")
+             
+             })
+             .orWhere(function() {
+             this.where('a.nombre_conductor', G.constants.db().LIKE, "%" + termino_busqueda + "%")
+             
+             })
+             .orWhere(function() {
+             this.where('b.placa_vehiculo', G.constants.db().LIKE, "%" + termino_busqueda + "%")
+             
+             })*/
 
-    })
-            .orWhere(function() {
-        this.where('a.nombre_conductor', G.constants.db().LIKE, "%" + termino_busqueda + "%")
+            .limit(G.settings.limit)
+            .offset((pagina - 1) * G.settings.limit)
+            .orderBy('a.id_inv_planilla_farmacia_devolucion', 'desc')
 
-    })
-            .orWhere(function() {
-        this.where('b.placa_vehiculo', G.constants.db().LIKE, "%" + termino_busqueda + "%")
-
-    })
-    
-     .limit(G.settings.limit)
-    .offset((pagina - 1) * G.settings.limit)
-    .orderBy('a.id_inv_planilla_farmacia_devolucion', 'desc')
-
-    .then(function(rows) {
+            .then(function(rows) {
         callback(false, rows);
     })
             . catch (function(error) {

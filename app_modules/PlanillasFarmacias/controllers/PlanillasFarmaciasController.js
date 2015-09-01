@@ -26,8 +26,10 @@ PlanillasFarmaciasController.prototype.listarPlanillasFarmacias = function(req, 
     var fecha_inicial = args.listar_planillas_farmacias.fecha_inicial;
     var fecha_final = args.listar_planillas_farmacias.fecha_final;
     var termino_busqueda = args.listar_planillas_farmacias.termino_busqueda;
+    var filtro = args.listar_planillas_farmacias.filtro;
+    
 
-    that.m_planillas_farmacias.listar_planillas_farmacias(fecha_inicial, fecha_final, termino_busqueda, pagina, function(err, listar_planillas_farmacias) {
+    that.m_planillas_farmacias.listar_planillas_farmacias(fecha_inicial, fecha_final, filtro, termino_busqueda, pagina, function(err, listar_planillas_farmacias) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error listando las planillas_farmacias', 500, {listar_planillas_farmacias: {}}));

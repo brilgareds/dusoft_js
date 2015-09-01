@@ -91,7 +91,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                     if ($scope.planilla.get_numero_guia() > 0) {
                         that.consultar_planilla_despacho(function(continuar) {
-                           
+
                             if (continuar) {
 
                                 $scope.consultar_documentos_planilla_despacho();
@@ -174,7 +174,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                     if (data.status === 200) {
                         that.render_planilla(data.obj.consultarPlanillaFarmacia[0]);
-                         callback(true);
+                        callback(true);
                     } else {
                         AlertService.mostrarMensaje("warning", data.msj);
                         callback(false);
@@ -186,15 +186,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 var transportadora = Transportadora.get(datos.transportadora_id, datos.nombre_transportadora, datos.placa_vehiculo, datos.estado_transportadora);
                 var usuario = UsuarioPlanilla.get(datos.usuario_id, datos.nombre_usuario);
-                 $scope.planilla= PlanillaDespacho.get(datos.id, transportadora, "", datos.nombre_conductor, datos.observacion, usuario, datos.fecha_registro, datos.fecha_despacho, datos.estado, datos.descripcion_estado);
-                 $scope.planilla.set_cantidad_cajas(datos.total_cajas);
-                 $scope.planilla.set_cantidad_neveras(datos.total_neveras);
-                 $scope.planilla.set_numero_guia_externo(datos.numero_guia_externo);
-           
+                $scope.planilla = PlanillaDespacho.get(datos.id, transportadora, "", datos.nombre_conductor, datos.observacion, usuario, datos.fecha_registro, datos.fecha_despacho, datos.estado, datos.descripcion_estado);
+                $scope.planilla.set_cantidad_cajas(datos.total_cajas);
+                $scope.planilla.set_cantidad_neveras(datos.total_neveras);
+                $scope.planilla.set_numero_guia_externo(datos.numero_guia_externo);
+
             };
 
             $scope.consultar_documentos_planilla_despacho = function() {
-                
+
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -206,7 +206,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 };
 
                 Request.realizarRequest(API.PLANILLAS_FARMACIAS.DOCUMENTOS_PLANILLA, "POST", obj, function(data) {
-                    
+
                     if (data.status === 200) {
                         that.render_documentos(data.obj.planillas_farmacias);
                     } else {
@@ -216,19 +216,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             };
             that.render_documentos = function(documentos) {
-                console.log("render_documentos", $scope.datos_view.documento_seleccionado);
-                console.log(documentos)
+               
                 $scope.planilla.limpiar_documentos();
 
                 documentos.forEach(function(data) {
-                  
+
                     var documento = Documento.get(data.id, data.empresa_id, data.prefijo, data.numero, data.numero_pedido, data.total_cajas, data.total_neveras, data.temperatura_neveras, data.observacion, data.tipo);
                     documento.set_tercero(data.descripcion_destino);
 
                     $scope.planilla.set_documentos(documento);
-                  
+
                 });
-                console.log("TODOS LOS ", $scope.planilla.get_documentos())
+               
             };
 
 
@@ -326,8 +325,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 localStorageService.add("numero_guia", $scope.planilla.get_numero_guia());
 
-             //   that.gestionar_consultas();
-
             };
 
             /**
@@ -358,7 +355,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     controller: function($scope, $modalInstance) {
 
                         $scope.aceptar_despacho = function() {
-                            $scope.despachar_planilla_despacho();
+                            that.despachar_planilla_despacho();
                             $modalInstance.close();
                         };
 
@@ -371,8 +368,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             };
 
-            $scope.despachar_planilla_despacho = function() {
+           
 
+            that.despachar_planilla_despacho = function() {
+               
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -381,7 +380,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         }
                     }
                 };
-
 
                 Request.realizarRequest(API.PLANILLAS_FARMACIAS.DESPACHAR_PLANILLA, "POST", obj, function(data) {
 
@@ -442,7 +440,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 $state.go('GestionarPlanillasFarmacias');
             };
 
-         
+
 
             $scope.lista_documentos_bodega = {
                 data: 'planilla.get_documentos()',

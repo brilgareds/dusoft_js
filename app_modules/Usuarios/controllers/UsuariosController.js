@@ -487,6 +487,7 @@ Usuarios.prototype.guardarOpcion = function(req, res) {
     var that = this;
     var args = req.body.data;
     
+    
     if(args.parametrizacion_usuarios === undefined){
         res.send(G.utils.r(req.url, 'La sintaxis del request no es valida', 404, {}));
         return;

@@ -36,7 +36,8 @@ define(["angular", "js/controllers",
                 fecha_final: $filter('date')(fecha_actual, "yyyy-MM-dd"),
                 datepicker_fecha_final: false
             };
-
+            
+            $scope.contenedorBuscador = "col-sm-2 col-md-2 col-lg-2  pull-right";
             // Variable para paginacion
             $scope.paginas = 0;
             $scope.cantidad_items = 0;
@@ -44,6 +45,55 @@ define(["angular", "js/controllers",
             $scope.ultima_busqueda = "";
             $scope.pagina_actual = 1;
 
+            $scope.filtros = [
+                {nombre: "Guia", filtroGuia: true},
+                {nombre: "Transportador", filtroTransportador: true},
+                {nombre: "Estado", filtroEstado: true}
+            ];
+            $scope.filtro = $scope.filtros[0];
+
+            //Deja en estado visible el buscador
+            $scope.visibleBuscador = true;
+            $scope.visibleBotonBuscador = true;
+            
+            $scope.onSeleccionFiltro = function(filtro) {
+               
+                $scope.filtro = filtro;
+                $scope.datos_view.termino_busqueda = null;
+                if (filtro.nombre === "Estado") {
+                    $scope.contenedorBuscador = "col-sm-2 col-md-2 col-lg-2  pull-right";
+                    $scope.visibleBuscador = false;
+                    $scope.visibleListaEstados = true;
+                    $scope.visibleBotonBuscador = false;
+                } else {
+                    $scope.visibleBuscador = true;
+                    $scope.visibleListaEstados = false;
+                    $scope.visibleBotonBuscador = true;
+                }
+                 
+                 if(filtro.nombre === "Transportador"){
+                      $scope.contenedorBuscador = "col-sm-3 col-md-3 col-lg-3  pull-right";
+                 }
+                
+            };
+
+
+            $scope.filtrosEstados = [
+                {nombre: "Anulada", estado: 0},
+                {nombre: "Activa", estado: 1},
+                {nombre: "Despachada", estado: 2}
+            ];
+
+            $scope.filtroEstado = $scope.filtrosEstados[0];
+
+            $scope.onSeleccionEstadoFiltro = function(filtrosEstados) {
+                $scope.visibleBotonBuscador = false;
+                $scope.filtroEstado = filtrosEstados;
+                $scope.datos_view.termino_busqueda = filtrosEstados.estado;
+                
+                $scope.buscar_planillas_despacho($scope.datos_view.termino_busqueda);
+                console.log("$scope.termino_busqueda ", $scope.datos_view.termino_busqueda)
+            }
             /**
              * @author Cristian Ardila
              * @param {evento} ng-keypress
@@ -72,6 +122,7 @@ define(["angular", "js/controllers",
                         listar_planillas_farmacias: {
                             fecha_inicial: $filter('date')($scope.datos_view.fecha_inicial, "yyyy-MM-dd") + " 00:00:00",
                             fecha_final: $filter('date')($scope.datos_view.fecha_final, "yyyy-MM-dd") + " 23:59:00",
+                            filtro: $scope.filtro,
                             termino_busqueda: $scope.datos_view.termino_busqueda,
                             pagina: $scope.pagina_actual
                         }
@@ -98,8 +149,8 @@ define(["angular", "js/controllers",
 
                 $scope.Empresa.limpiar_planillas();
                 $scope.cantidad_items = planillas.length;
-                
-                
+
+
                 planillas.forEach(function(data) {
 
                     var ciudad = Ciudad.get(data.pais_id, data.nombre_pais, data.departamento_id, data.nombre_departamento, data.ciudad_id, data.nombre_ciudad);

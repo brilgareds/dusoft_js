@@ -19,6 +19,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.descuadre = descuadre;
                 this.tipoProducto;
                 this.precioContratacion;
+                this.codigoCum;
             }
 
             //herencia
@@ -44,7 +45,11 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             ProductoMovimiento.prototype.setDescuadre = function(descuadre) {
                 this.descuadre = descuadre;
             };
-
+            
+            ProductoMovimiento.prototype.setCodigoCum = function(codigoCum) {
+                return this.codigoCum = codigoCum;
+            };
+            
             ProductoMovimiento.prototype.agregarPendienteCliente = function(pendiente) {
                 this.pendientesClientes.push(pendiente);
             };
@@ -76,6 +81,10 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
 
             ProductoMovimiento.prototype.getPrecioContratacion = function() {
                 return this.precioContratacion;
+            };
+            
+            ProductoMovimiento.prototype.getCodigoCum = function() {
+                return this.codigoCum;
             };
 
 

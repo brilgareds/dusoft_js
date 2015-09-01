@@ -87,7 +87,7 @@ define(["angular", "js/controllers",
             that.buscar_productos = function(termino, paginando) {
 
                 var termino = termino || "";
-                if ($scope.ultima_busqueda != $scope.termino_busqueda) {
+                if ($scope.ultima_busqueda !== $scope.termino_busqueda) {
                     $scope.pagina_actual = 1;
                 }
 
@@ -235,7 +235,7 @@ define(["angular", "js/controllers",
 
 
             $scope.buscador_productos = function(ev, termino_busqueda) {
-                if (ev.which == 13) {
+                if (ev.which === 13) {
                     that.buscar_productos(termino_busqueda);
                 }
             };

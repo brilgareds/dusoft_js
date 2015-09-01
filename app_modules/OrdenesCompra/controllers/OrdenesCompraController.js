@@ -41,8 +41,9 @@ OrdenesCompra.prototype.listarOrdenesCompra = function(req, res) {
     var fecha_final = args.ordenes_compras.fecha_final;
     var termino_busqueda = args.ordenes_compras.termino_busqueda;
     var pagina_actual = args.ordenes_compras.pagina_actual;
+    var filtro = args.ordenes_compras.filtro || undefined;
 
-    that.m_ordenes_compra.listar_ordenes_compra(fecha_inicial, fecha_final, termino_busqueda, pagina_actual, function(err, lista_ordenes_compras) {
+    that.m_ordenes_compra.listar_ordenes_compra(fecha_inicial, fecha_final, termino_busqueda, pagina_actual, filtro, function(err, lista_ordenes_compras) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
@@ -429,6 +430,7 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
     var cantidad_solicitada = args.ordenes_compras.cantidad_solicitada;
     var valor = args.ordenes_compras.valor;
     var iva = args.ordenes_compras.iva;
+    var modificar = args.ordenes_compras.modificar || false;
 
 
     //validar que la OC no tenga NINGUN ingreso temporal y este Activa.
@@ -442,17 +444,32 @@ OrdenesCompra.prototype.insertarDetalleOrdenCompra = function(req, res) {
             orden_compra = orden_compra[0];
 
             if (orden_compra.tiene_ingreso_temporal === 0 && orden_compra.estado === '1') {
+                
+                if(!modificar){
+                    
+                    that.m_ordenes_compra.insertar_detalle_orden_compra(numero_orden, codigo_producto, cantidad_solicitada, valor, iva, function(err, rows, result) {
 
-                that.m_ordenes_compra.insertar_detalle_orden_compra(numero_orden, codigo_producto, cantidad_solicitada, valor, iva, function(err, rows, result) {
+                        if (err || result.rowCount === 0) {
+                            res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
+                            return;
+                        } else {
+                            res.send(G.utils.r(req.url, 'Producto regitrado correctamente', 200, {ordenes_compras: {}}));
+                            return;
+                        }
+                    });
+                    
+                } else {
+                    that.m_ordenes_compra.modificar_detalle_orden_compra(numero_orden, codigo_producto, cantidad_solicitada, valor, function(err, rows, result) {
 
-                    if (err || result.rowCount === 0) {
-                        res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
-                        return;
-                    } else {
-                        res.send(G.utils.r(req.url, 'Producto regitrado correctamente', 200, {ordenes_compras: {}}));
-                        return;
-                    }
-                });
+                        if (err || result.rowCount === 0) {
+                            res.send(G.utils.r(req.url, 'Error Interno', 500, {ordenes_compras: []}));
+                            return;
+                        } else {
+                            res.send(G.utils.r(req.url, 'Producto modificado correctamente', 200, {ordenes_compras: {}}));
+                            return;
+                        }
+                    });
+                }
 
             } else {
                 res.send(G.utils.r(req.url, 'No se pudo actualizar, la orde de compra esta siendo ingresada.', 403, {orden_compra: []}));
@@ -915,7 +932,7 @@ OrdenesCompra.prototype.ordenCompraArchivoPlano = function(req, res) {
 
             __validar_productos_archivo_plano(that, contenido, function(productos_validos, productos_invalidos) {
 
-                __validar_costo_productos_archivo_plano(that, empresa_id, codigo_proveedor_id, numero_orden, productos_validos, function(_productos_validos, _productos_invalidos) {
+                __validar_costo_productos_archivo_plano(that, empresa_id, codigo_proveedor_id, numero_orden, productos_validos, req.session.user.usuario_id, function(_productos_validos, _productos_invalidos) {
 
                     if (_productos_validos.length === 0) {
                         res.send(G.utils.r(req.url, 'Lista de Productos', 200, {ordenes_compras: {productos_validos: _productos_validos, productos_invalidos: _productos_invalidos.concat(productos_invalidos)}}));
@@ -1378,7 +1395,7 @@ function __validar_productos_archivo_plano(contexto, contenido_archivo_plano, ca
 
 
 // Funcion que valida que los datos del archivo plano tengan el costo del producto.
-function __validar_costo_productos_archivo_plano(contexto, empresa_id, codigo_proveedor_id, numero_orden, productos, callback) {
+function __validar_costo_productos_archivo_plano(contexto, empresa_id, codigo_proveedor_id, numero_orden, productos, usuario_id, callback) {
 
     var that = contexto;
     var productos_validos = [];
@@ -1391,11 +1408,14 @@ function __validar_costo_productos_archivo_plano(contexto, empresa_id, codigo_pr
         return;
     }
 
+    
+    var index = 1;
     productos.forEach(function(row) {
 
         var codigo_producto = row.codigo_producto;
+        console.log("buscar producto con codigo ",codigo_producto );
 
-        that.m_ordenes_compra.listar_productos(empresa_id, codigo_proveedor_id, numero_orden, codigo_producto, null, 1, function(err, lista_productos) {
+        that.m_ordenes_compra.listar_productos(empresa_id, codigo_proveedor_id, numero_orden, codigo_producto, null, 1, null, function(err, lista_productos) {
 
             if (err || lista_productos.length === 0) {
                 productos_invalidos.push(row);
@@ -1405,7 +1425,11 @@ function __validar_costo_productos_archivo_plano(contexto, empresa_id, codigo_pr
                 row.iva = producto.iva;
                 productos_validos.push(row);
             }
-
+            
+            index++;
+            var porcentaje = (index * 100) /  productos.length;
+            that.e_ordenes_compra.onNotificarProgresoArchivoPlanoOrdenes(usuario_id, porcentaje);
+            
             if (--i === 0) {
                 callback(productos_validos, productos_invalidos);
             }

@@ -746,8 +746,8 @@ PedidosFarmacias.prototype.buscarProductos = function(req, res) {
             res.send(G.utils.r(req.url, 'Lista de productos vacía', 200, {lista_productos: []}));
             return;
         }
-        /*res.send(G.utils.r(req.url, 'Listado de Productos', 200, {lista_productos: productos}));
-        return;*/
+        res.send(G.utils.r(req.url, 'Listado de Productos', 200, {lista_productos: productos}));
+        return;
         productos.forEach(function(producto) {
             __consultarStockProducto(that, empresa_destino_id, producto, function(err, _producto) {
 
@@ -1931,15 +1931,15 @@ function __validarProductoArchivoPlano(that, datos, productosAgrupados, producto
                     return;
                 }
 
-                __consultarStockProducto(that, datos.empresa_destino_id, productoAgrupado, function(err, _productoStock) {
+                /*__consultarStockProducto(that, datos.empresa_destino_id, productoAgrupado, function(err, _productoStock) {
                     if (err) {
                         callback(err);
                         return;
-                    }
+                    }*/
 
-                    if (!_productoStock.en_farmacia_seleccionada) {
+                    if (!_producto.en_farmacia_seleccionada !== '1') {
                         productoAgrupado.mensajeError = "No esta habilitado en la farmacia destino!!!!!!!";
-                        productoAgrupado.en_farmacia_seleccionada = _productoStock.en_farmacia_seleccionada;
+                        productoAgrupado.en_farmacia_seleccionada = _producto.en_farmacia_seleccionada;
                         productosInvalidosArchivo.push(productoAgrupado);
                         index++;
                         __validarProductoArchivoPlano(that, datos, productosAgrupados, productosValidadosArchivo, productosInvalidosArchivo, index, callback);
@@ -1986,7 +1986,7 @@ function __validarProductoArchivoPlano(that, datos, productosAgrupados, producto
                     }
 
 
-                });
+                //});
 
 
             });

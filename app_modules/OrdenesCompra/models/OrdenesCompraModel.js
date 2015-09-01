@@ -3,60 +3,84 @@ var OrdenesCompraModel = function() {
 };
 
 // Listar las Ordenes de Compra 
-OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fecha_final, termino_busqueda, pagina, callback) {
+OrdenesCompraModel.prototype.listar_ordenes_compra = function(fecha_inicial, fecha_final, termino_busqueda, pagina, filtro, callback) {
 
+     var subQueryTmp = G.knex.column("aa.orden_pedido_id").
+                       from("inv_bodegas_movimiento_tmp_ordenes_compra as aa").as("g");
+    
+    var columns = [
+        "a.orden_pedido_id as numero_orden",
+        "a.empresa_id",
+        "d.tipo_id_tercero as tipo_id_empresa",
+        "d.id as nit_empresa",
+        "d.razon_social as nombre_empresa",
+        "a.codigo_proveedor_id",
+        "c.tipo_id_tercero as tipo_id_proveedor",
+        "c.tercero_id as nit_proveedor",
+        "c.nombre_tercero as nombre_proveedor",
+        "c.direccion as direccion_proveedor",
+        "c.telefono as telefono_proveedor",
+        "a.estado",
+        G.knex.raw("CASE WHEN a.estado = '0' THEN 'Ingresada en bodega'\
+             WHEN a.estado = '1' THEN 'Activa'\
+             WHEN a.estado = '2' THEN 'Anulado'\
+             WHEN a.estado = '3' THEN 'Recibida en bodega'\
+             WHEN a.estado = '4' THEN 'Verificada en bodega' END as descripcion_estado,\
+        a.sw_orden_compra_finalizada"),
+        G.knex.raw("CASE WHEN a.sw_orden_compra_finalizada = '0' THEN 'En Proceso ...'\
+             WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion"), 
+        "a.observacion",
+        "f.codigo_unidad_negocio",
+        "f.imagen",
+        "f.descripcion as descripcion_unidad_negocio",
+        "a.usuario_id",
+        "e.nombre as nombre_usuario",
+        G.knex.raw("To_char(a.fecha_orden,'dd-mm-yyyy') as fecha_registro"),
+        G.knex.raw("coalesce(To_char(a.fecha_recibido,'dd-mm-yyyy'),'') as fecha_recibido"),
+        G.knex.raw("coalesce(To_char(a.fecha_verificado,'dd-mm-yyyy'),'') as fecha_verificado"),
+        G.knex.raw("CASE WHEN COALESCE (g.orden_pedido_id,0)=0 then 0 else 1 end as tiene_ingreso_temporal") 
+    ];
+    
+    var query = G.knex.column(columns).
+    from("compras_ordenes_pedidos  as a").
 
-    var sql = " SELECT \
-                a.orden_pedido_id as numero_orden,\
-                a.empresa_id,\
-                d.tipo_id_tercero as tipo_id_empresa,\
-                d.id as nit_empresa,\
-                d.razon_social as nombre_empresa,\
-                a.codigo_proveedor_id,\
-                c.tipo_id_tercero as tipo_id_proveedor,\
-                c.tercero_id as nit_proveedor,\
-                c.nombre_tercero as nombre_proveedor,\
-                c.direccion as direccion_proveedor,\
-                c.telefono as telefono_proveedor,\
-                a.estado,\
-                CASE WHEN a.estado = '0' THEN 'Ingresada en bodega' \
-                     WHEN a.estado = '1' THEN 'Activa' \
-                     WHEN a.estado = '2' THEN 'Anulado' \
-                     WHEN a.estado = '3' THEN 'Recibida en bodega' \
-                     WHEN a.estado = '4' THEN 'Verificada en bodega' END as descripcion_estado, \
-                a.sw_orden_compra_finalizada,\
-                CASE WHEN a.sw_orden_compra_finalizada = '0' THEN 'En Proceso ...' \
-                     WHEN a.sw_orden_compra_finalizada = '1' THEN 'Finalizada' END as estado_digitacion, \
-                a.observacion,\
-                f.codigo_unidad_negocio,\
-                f.imagen,\
-                f.descripcion as descripcion_unidad_negocio,\
-                a.usuario_id,\
-                e.nombre as nombre_usuario,\
-                To_char(a.fecha_orden,'dd-mm-yyyy') as fecha_registro,\
-                coalesce(To_char(a.fecha_recibido,'dd-mm-yyyy'),'') as fecha_recibido,\
-                coalesce(To_char(a.fecha_verificado,'dd-mm-yyyy'),'') as fecha_verificado,\
-                CASE WHEN COALESCE (g.orden_pedido_id,0)=0 then 0 else 1 end as tiene_ingreso_temporal \
-                FROM compras_ordenes_pedidos a\
-                inner join terceros_proveedores b on a.codigo_proveedor_id = b.codigo_proveedor_id\
-                inner join terceros c on  b.tipo_id_tercero = c.tipo_id_tercero and b.tercero_id=c.tercero_id \
-                inner join empresas d on a.empresa_id = d.empresa_id\
-                inner join system_usuarios e on a.usuario_id = e.usuario_id\
-                left join unidades_negocio f on a.codigo_unidad_negocio = f.codigo_unidad_negocio \
-                left join (\
-                    select aa.orden_pedido_id from inv_bodegas_movimiento_tmp_ordenes_compra aa\
-                ) as g on a.orden_pedido_id = g.orden_pedido_id\
-                WHERE a.fecha_orden between $1 and $2 and \
-                (\
-                    a.orden_pedido_id::varchar ilike $3 or\
-                    d.razon_social ilike $3 or\
-                    c.tercero_id ilike $3 or \
-                    c.nombre_tercero ilike $3 \
-                ) and a.sw_unificada='0' order by 1 DESC ";
+    innerJoin("terceros_proveedores as b", "a.codigo_proveedor_id", "b.codigo_proveedor_id").
+    innerJoin("terceros as c", function(){
+         this.on("b.tipo_id_tercero", "c.tipo_id_tercero" ).
+         on("b.tercero_id", "c.tercero_id");
+    }).
+    innerJoin("empresas as d", "a.empresa_id", "d.empresa_id").
+    innerJoin("system_usuarios as e", "a.usuario_id", "e.usuario_id").
+    leftJoin("unidades_negocio as f", "a.codigo_unidad_negocio", "f.codigo_unidad_negocio").
+    leftJoin(subQueryTmp,"a.orden_pedido_id", "g.orden_pedido_id").    
+    whereBetween('a.fecha_orden', [G.knex.raw("('" + fecha_inicial + "')"), G.knex.raw("('" + fecha_final + "')")]).
+    where({
+           "a.sw_unificada"  : '0'
+    }).
+    andWhere(function() {
 
-    G.db.pagination(sql, [fecha_inicial, fecha_final, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result, total_records) {
-        callback(err, rows);
+        if (filtro && filtro.proveedor){
+            this.where("c.tercero_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+            orWhere("c.nombre_tercero",  G.constants.db().LIKE, "%" + termino_busqueda + "%");
+    
+        } else if (filtro && filtro.empresa){
+            this.where("d.razon_social", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+            
+        } else {
+            this.where(G.knex.raw("a.orden_pedido_id::varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%");
+        }
+
+    }).
+    limit(G.settings.limit).
+    offset((pagina - 1) * G.settings.limit).
+    orderByRaw("1 DESC").
+    then(function(rows){
+        callback(false, rows);
+    }).
+    catch(function(err){
+       callback(err);
     });
+    
 };
 
 // Listar las Ordenes de Compra de un Proveedor
@@ -115,53 +139,6 @@ OrdenesCompraModel.prototype.listar_ordenes_compra_proveedor = function(codigo_p
 // Listar Producto para orden de compra 
 OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_proveedor_id, numero_orden, termino_busqueda, laboratorio_id, pagina, filtro, callback) {
 
-   /* var sql_aux = " ";
-    if (laboratorio_id)
-        sql_aux = " AND a.clase_id = $4 ";
-
-    if (numero_orden > 0)
-        sql_aux += " AND a.codigo_producto not in ( select a.codigo_producto from compras_ordenes_pedidos_detalle a where a.orden_pedido_id = " + numero_orden + " ) ";
-
-
-    var sql = " SELECT \
-                e.descripcion as descripcion_grupo,\
-                d.descripcion as descripcion_clase,\
-                c.descripcion as descripcion_subclase,\
-                a.codigo_producto,\
-                fc_descripcion_producto(a.codigo_producto) as descripcion_producto,\
-                a.porc_iva as iva,\
-                e.sw_medicamento,\
-                CASE WHEN COALESCE (aa.valor_pactado,0)=0 then round((b.costo_ultima_compra)/((COALESCE(a.porc_iva,0)/100)+1),2) else aa.valor_pactado end as costo_ultima_compra,\
-                CASE WHEN COALESCE (aa.valor_pactado,0)=0 then 0 else 1 end as tiene_valor_pactado,\
-                a.cantidad,\
-                f.descripcion as presentacion,\
-                a.sw_regulado\
-                FROM  inventarios_productos a\
-                INNER JOIN inventarios b ON a.codigo_producto = b.codigo_producto\
-                INNER JOIN inv_subclases_inventarios c ON a.subclase_id = c.subclase_id AND a.clase_id = c.clase_id AND a.grupo_id = c.grupo_id\
-                INNER JOIN inv_clases_inventarios d ON c.clase_id = d.clase_id AND c.grupo_id = d.grupo_id\
-                INNER JOIN inv_grupos_inventarios e ON d.grupo_id = e.grupo_id\
-                LEFT JOIN inv_presentacioncomercial f ON a.presentacioncomercial_id = f.presentacioncomercial_id\
-                LEFT JOIN (\
-                    SELECT b.codigo_producto, b.valor_pactado \
-                    FROM contratacion_produc_proveedor a \
-                    INNER JOIN contratacion_produc_prov_detalle b on a.contratacion_prod_id = b.contratacion_prod_id\
-                    WHERE a.empresa_id= $1 AND a.codigo_proveedor_id = $2 \
-                ) as aa on a.codigo_producto = aa.codigo_producto\
-                WHERE b.empresa_id = $1 AND a.estado = '1' " + sql_aux + " AND \
-                (\
-                    a.descripcion ILIKE $3 or\
-                    a.codigo_producto ILIKE $3 or\
-                    a.contenido_unidad_venta ILIKE $3 or\
-                    c.descripcion ILIKE $3 \
-                )";
-    var parametros = (laboratorio_id) ? [empresa_id, codigo_proveedor_id, "%" + termino_busqueda + "%", laboratorio_id] : [empresa_id, codigo_proveedor_id, "%" + termino_busqueda + "%"];
-    G.db.pagination(sql, parametros, pagina, G.settings.limit, function(err, rows, result, total_records) {
-        callback(err, rows);
-    });
-    
-    */
-    
     var subQueryContrato = G.knex.column("b.codigo_producto", "b.valor_pactado").
                         from("contratacion_produc_proveedor as a").
                         innerJoin("contratacion_produc_prov_detalle as b", "a.contratacion_prod_id", "b.contratacion_prod_id").
@@ -235,7 +212,7 @@ OrdenesCompraModel.prototype.listar_productos = function(empresa_id, codigo_prov
         callback(false, rows);
     }).
     catch(function(err){
-       console.log("error >>>>>>>>>>>>>>>>>>>>> ",err);
+       //console.log("error buscando productos ", err);
        callback(err);
     });
     
@@ -423,12 +400,12 @@ OrdenesCompraModel.prototype.insertar_detalle_orden_compra = function(numero_ord
 };
 
 // Modificar Detalle Orden de Compra
-OrdenesCompraModel.prototype.modificar_detalle_orden_compra = function(numero_orden, callback) {
+OrdenesCompraModel.prototype.modificar_detalle_orden_compra = function(numero_orden, codigo_producto, cantidad_solicitada, valor, callback) {
 
 
-    var sql = "  ";
-    G.db.query(sql, [numero_orden], function(err, rows, result, total_records) {
-        callback(err, rows);
+    var sql = " UPDATE  compras_ordenes_pedidos_detalle SET numero_unidades = $3, valor = $4 where orden_pedido_id = $1 and codigo_producto = $2";
+    G.db.query(sql, [numero_orden, codigo_producto, cantidad_solicitada, valor], function(err, rows, result) {
+        callback(err, rows, result);
     });
 };
 

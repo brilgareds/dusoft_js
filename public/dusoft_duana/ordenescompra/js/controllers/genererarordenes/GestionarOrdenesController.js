@@ -57,6 +57,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
             $scope.pagina_actual = 1;
+            $scope.progresoArchivo = 0;
             
             that.opciones = Sesion.getUsuarioActual().getModuloActual().opciones;
             
@@ -629,6 +630,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
             $scope.subir_archivo_plano = function() {
+                $scope.progresoArchivo = 1; 
                 console.log("proveedor ", $scope.codigo_proveedor_id);
                 if ($scope.numero_orden > 0) {
                     // Solo Subir Plano
@@ -666,56 +668,70 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     });
                 }
             };
+            
+            /*
+             * @Author: Eduar
+             * +Descripcion: Evento que actualiza la barra de progreso
+             */
+           socket.on("onNotificarProgresoArchivoPlanoOrdenes", function(datos) {
+                $scope.progresoArchivo = datos.porcentaje;
+            }); 
+            
+            
 
             $scope.respuesta_archivo_plano = function(file, message) {
-
+                //$scope.progresoArchivo = 1;
                 var data = (message !== undefined) ? JSON.parse(message) : {};
-
-
                 if (data.status === 200) {
+                    
+                    $timeout(function(){
+                        
+                        $scope.opciones_archivo.cancel();
 
-                    $scope.opciones_archivo.cancel();
+                        $scope.buscar_detalle_orden_compra();
 
-                    $scope.buscar_detalle_orden_compra();
+                        $scope.activar_tab.tab_productos = true;
+                        $scope.progresoArchivo = 0;
+                        $scope.productos_validos = data.obj.ordenes_compras.productos_validos;
+                        $scope.productos_invalidos = data.obj.ordenes_compras.productos_invalidos;
+                        
+                        if($scope.productos_invalidos.length === 0){
+                            return;
+                        }
 
-                    $scope.activar_tab.tab_productos = true;
-
-                    $scope.productos_validos = data.obj.ordenes_compras.productos_validos;
-                    $scope.productos_invalidos = data.obj.ordenes_compras.productos_invalidos;
-
-
-                    $scope.opts = {
-                        backdrop: true,
-                        backdropClick: true,
-                        dialogFade: false,
-                        keyboard: true,
-                        template: ' <div class="modal-header">\
-                                        <button type="button" class="close" ng-click="close()">&times;</button>\
-                                        <h4 class="modal-title">Listado Productos </h4>\
-                                    </div>\
-                                    <div class="modal-body row">\
-                                        <div class="col-md-12">\
-                                            <h4 >Lista Productos INVALIDOS.</h4>\
-                                            <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
-                                                <div class="list-group">\
-                                                    <a ng-repeat="producto in productos_invalidos" class="list-group-item defaultcursor" href="javascript:void(0)">\
-                                                        {{ producto.codigo_producto}}\
-                                                    </a>\
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: ' <div class="modal-header">\
+                                            <button type="button" class="close" ng-click="close()">&times;</button>\
+                                            <h4 class="modal-title">Listado Productos </h4>\
+                                        </div>\
+                                        <div class="modal-body row">\
+                                            <div class="col-md-12">\
+                                                <h4 >Lista Productos INVALIDOS.</h4>\
+                                                <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
+                                                    <div class="list-group">\
+                                                        <a ng-repeat="producto in productos_invalidos" class="list-group-item defaultcursor" href="javascript:void(0)">\
+                                                            {{ producto.codigo_producto}}\
+                                                        </a>\
+                                                    </div>\
                                                 </div>\
                                             </div>\
                                         </div>\
-                                    </div>\
-                                    <div class="modal-footer">\
-                                        <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
-                                    </div>',
-                        scope: $scope,
-                        controller: function($scope, $modalInstance) {
-                            $scope.close = function() {
-                                $modalInstance.close();
-                            };
-                        }
-                    };
-                    var modalInstance = $modal.open($scope.opts);
+                                        <div class="modal-footer">\
+                                            <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                        </div>',
+                            scope: $scope,
+                            controller: function($scope, $modalInstance) {
+                                $scope.close = function() {
+                                    $modalInstance.close();
+                                };
+                            }
+                        };
+                        var modalInstance = $modal.open($scope.opts);
+                    },500);
 
                 } else {
                     AlertService.mostrarMensaje("warning", data.msj);

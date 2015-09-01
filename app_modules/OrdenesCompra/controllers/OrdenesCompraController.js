@@ -932,7 +932,7 @@ OrdenesCompra.prototype.ordenCompraArchivoPlano = function(req, res) {
 
             __validar_productos_archivo_plano(that, contenido, function(productos_validos, productos_invalidos) {
 
-                __validar_costo_productos_archivo_plano(that, empresa_id, codigo_proveedor_id, numero_orden, productos_validos, function(_productos_validos, _productos_invalidos) {
+                __validar_costo_productos_archivo_plano(that, empresa_id, codigo_proveedor_id, numero_orden, productos_validos, req.session.user.usuario_id, function(_productos_validos, _productos_invalidos) {
 
                     if (_productos_validos.length === 0) {
                         res.send(G.utils.r(req.url, 'Lista de Productos', 200, {ordenes_compras: {productos_validos: _productos_validos, productos_invalidos: _productos_invalidos.concat(productos_invalidos)}}));
@@ -1395,7 +1395,7 @@ function __validar_productos_archivo_plano(contexto, contenido_archivo_plano, ca
 
 
 // Funcion que valida que los datos del archivo plano tengan el costo del producto.
-function __validar_costo_productos_archivo_plano(contexto, empresa_id, codigo_proveedor_id, numero_orden, productos, callback) {
+function __validar_costo_productos_archivo_plano(contexto, empresa_id, codigo_proveedor_id, numero_orden, productos, usuario_id, callback) {
 
     var that = contexto;
     var productos_validos = [];
@@ -1408,10 +1408,12 @@ function __validar_costo_productos_archivo_plano(contexto, empresa_id, codigo_pr
         return;
     }
 
+    
+    var index = 1;
     productos.forEach(function(row) {
 
         var codigo_producto = row.codigo_producto;
-        
+        console.log("buscar producto con codigo ",codigo_producto );
 
         that.m_ordenes_compra.listar_productos(empresa_id, codigo_proveedor_id, numero_orden, codigo_producto, null, 1, null, function(err, lista_productos) {
 
@@ -1423,7 +1425,11 @@ function __validar_costo_productos_archivo_plano(contexto, empresa_id, codigo_pr
                 row.iva = producto.iva;
                 productos_validos.push(row);
             }
-
+            
+            index++;
+            var porcentaje = (index * 100) /  productos.length;
+            that.e_ordenes_compra.onNotificarProgresoArchivoPlanoOrdenes(usuario_id, porcentaje);
+            
             if (--i === 0) {
                 callback(productos_validos, productos_invalidos);
             }

@@ -131,7 +131,14 @@
                                                     <b>OR</b> Arrastrar y Soltar el archivo AQUI!!..                                                    
                                                 </div>
                                                 <div class="" ng-repeat="file in $flow.files" ng-show="$flow.files.length">
-                                                    Nombre Archivo : <label>{{file.name}}</label>                                                                                                                                                       
+                                                    Nombre Archivo : <label>{{file.name}}</label>                                                                                                                      <!-- Barra de Progreso - Inicio -->
+                                                    <div class="progress progress-striped" ng-class="{active: file.isUploading()}">
+                                                        <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                                                             aria-valuemax="100" ng-style="{width: progresoArchivo + '%'}">
+                                                        </div>
+                                                        <span class="sr-only ng-binding">{{progresoArchivo}}% Completado</span>
+                                                    </div>
+                                                    <!-- Barra de Progreso - Fin -->
                                                 </div>
                                             </div>
 

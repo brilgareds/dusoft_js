@@ -20,6 +20,21 @@ OrdenesCompraEvents.prototype.onNotificarOrdenesComprasActualizados = function(d
 };
 
 
+OrdenesCompraEvents.prototype.onNotificarProgresoArchivoPlanoOrdenes = function(usuario_id, porcentaje) {
+
+    var that = this;
+    G.auth.getSessionsUser(usuario_id, function(err, sessions) {
+
+         //Se recorre cada una de las sesiones abiertas por el usuario
+         sessions.forEach(function(session) {
+             //Se envia la notificacion con los pedidos asignados a cada una de las sesiones del usuario.
+             that.io.sockets.socket(session.socket_id).emit('onNotificarProgresoArchivoPlanoOrdenes', {porcentaje: porcentaje});
+         });
+
+     });
+};
+
+
 OrdenesCompraEvents.$inject = ["socket", "m_ordenes_compra"];
 
 module.exports = OrdenesCompraEvents;

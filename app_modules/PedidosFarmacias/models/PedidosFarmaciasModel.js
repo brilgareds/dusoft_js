@@ -1093,7 +1093,7 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
     } else if(filtro.tipo_busqueda === 1){
         sql_filtro =  " and e.descripcion ILIKE $7 "; 
     } else {
-        sql_filtro =  " and a.codigo_producto ILIKE $7 ";
+        sql_filtro =  " and a.codigo_producto ILIKE $7 and k.codigo_producto ILIKE $7  ";
     }
     
     console.log("sql aux ", sql_aux, pagina);
@@ -1134,7 +1134,9 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
                 b.tipo_producto_id,\
                 case when coalesce((a.existencia - coalesce(h.cantidad_total_pendiente, 0) - coalesce(i.total_solicitado, 0))::integer, 0) < 0 then 0\
                         else coalesce((a.existencia - coalesce(h.cantidad_total_pendiente, 0) - coalesce(i.total_solicitado, 0))::integer, 0) end as disponibilidad_bodega,\
-                coalesce(j.existencias_farmacia, 0) as existencias_farmacia\
+                coalesce(j.existencias_farmacia, 0) as existencias_farmacia,\
+                coalesce(k.total_existencias_farmacias, 0) as total_existencias_farmacias,\
+                case when k.total_existencias_farmacias is not null then '1' else '0' end as en_farmacia_seleccionada\
                 from existencias_bodegas a\
                 inner join inventarios_productos b on a.codigo_producto = b.codigo_producto\
                 inner join inventarios c on b.codigo_producto = c.codigo_producto and a.empresa_id = c.empresa_id\
@@ -1179,6 +1181,11 @@ PedidosFarmaciasModel.prototype.listarProductos = function(empresa_id, centro_ut
                     where a.empresa_id= $4 and a.centro_utilidad = $5 and a.bodega = $6\
                     ORDER BY 1 ASC \
                 ) j on j.codigo_producto = c.codigo_producto\
+                 left join(\
+                       select a.codigo_producto, COALESCE(SUM(a.existencia::integer), 0) as total_existencias_farmacias from existencias_bodegas a\
+                       where a.empresa_id = 'FD'   and a.estado = '1'\
+                       group by 1\
+                ) k on k.codigo_producto = c.codigo_producto  and b.estado = '1'\
                 where a.empresa_id= $1 and a.centro_utilidad = $2 and a.bodega = $3 " + sql_aux + sql_filtro+ "\
                ORDER BY 1 ASC ";
     

@@ -433,14 +433,8 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
 
 PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable, termino_busqueda, filtro, pagina, limite, callback) {
 
-    var sql_aux = " ";
-
-    /*=========================================================================*/
-    // Se implementa este filtro, para poder filtrar los pedidos del clientes 
-    // asignados al operario de bodega y saber si el pedido tiene temporales o 
-    // fue finalizado correctamente.
-    /*=========================================================================*/
     var estado_pedido = 1;
+    var sql_aux = "";
     if (filtro !== undefined) {
 
         if (filtro.asignados) {
@@ -502,8 +496,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
                 left join inv_bodegas_movimiento_tmp_despachos_clientes f on a.pedido_cliente_id = f.pedido_cliente_id\
                 left join inv_bodegas_movimiento_tmp g on f.usuario_id = g.usuario_id and f.doc_tmp_id = g.doc_tmp_id \
                 where " + sql_aux + " \
-                a.estado_pedido = '" + estado_pedido + "' \
-                /*AND (a.estado IN ('1'))*/   \
+                a.estado_pedido = '" + estado_pedido + "' \   \
                 and (\
                         a.pedido_cliente_id :: varchar ilike $1 or\
                         b.tercero_id ilike $1 or\
@@ -516,8 +509,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
     G.db.pagination(sql, ["%" + termino_busqueda + "%"], pagina, limite, function(err, rows, result, total_records) {
         callback(err, rows, total_records);
     });
-
-
+        
 };
 
 

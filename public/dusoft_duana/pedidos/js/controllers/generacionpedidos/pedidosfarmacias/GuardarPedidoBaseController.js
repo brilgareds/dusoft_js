@@ -257,7 +257,7 @@ define(["angular", "js/controllers",
                 var bodegas  = centro.getBodegas();
                 for(var i in bodegas){
                     var bodega = bodegas[i];
-                    if(bodega.getCodigo() === bodegaId ){
+                    if(bodega.getCodigo().trim() === bodegaId.trim() ){
                         return bodega;
                     }
                 }

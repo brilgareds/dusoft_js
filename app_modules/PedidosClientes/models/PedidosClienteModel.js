@@ -509,6 +509,7 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
     G.db.pagination(sql, ["%" + termino_busqueda + "%"], pagina, limite, function(err, rows, result, total_records) {
         callback(err, rows, total_records);
     });
+        
 };
 
 

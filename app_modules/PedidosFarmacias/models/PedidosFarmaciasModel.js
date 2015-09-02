@@ -665,12 +665,14 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
 
 PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsable, termino_busqueda, filtro, pagina, limite, callback) {
 
+    var sql_aux = " ";
+
     /*=========================================================================*/
     // Se implementa este filtro, para poder filtrar los pedidos del clientes 
     // asignados al operario de bodega y saber si el pedido tiene temporales o 
     // fue finalizado correctamente.
     /*=========================================================================*/
-    /*var estado_pedido = 1;
+    var estado_pedido = 1;
     if (filtro !== undefined) {
 
         if (filtro.asignados) {
@@ -733,7 +735,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
                 left join inv_bodegas_movimiento_tmp_despachos_farmacias h on a.solicitud_prod_a_bod_ppal_id = h.solicitud_prod_a_bod_ppal_id \
                 left join inv_bodegas_movimiento_tmp i on h.doc_tmp_id = i.doc_tmp_id and h.usuario_id = i.usuario_id \
                 where " + sql_aux + " \
-                 a.estado = '"+estado_pedido+"'  \
+                 a.estado = '"+estado_pedido+"' /*AND a.sw_despacho = 0*/ \
                 and (\
                     a.solicitud_prod_a_bod_ppal_id :: varchar ilike $1 or\
                     d.razon_social ilike  $1 or\
@@ -747,109 +749,6 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
     G.db.pagination(sql, ["%" + termino_busqueda + "%"], pagina, limite, function(err, rows, result, total_records) {
 
         callback(err, rows, total_records);
-    });*/
-    
-    var columnas = [
-        "h.doc_tmp_id as documento_temporal_id",
-        "h.usuario_id",
-        "a.solicitud_prod_a_bod_ppal_id as numero_pedido", 
-        "a.farmacia_id", 
-        "d.empresa_id", 
-        "a.centro_utilidad", 
-        "a.bodega as bodega_id", 
-        "a.empresa_destino",
-        "a.centro_destino",
-        "a.bodega_destino",
-        "d.razon_social as nombre_farmacia", 
-        "b.descripcion as nombre_bodega",
-        "a.usuario_id", 
-        "e.nombre as nombre_usuario" ,
-        "a.estado as estado_actual_pedido", 
-        G.knex.raw("case when a.estado = '0' then 'No Asignado'\
-             when a.estado = '1' then 'Asignado'\
-             when a.estado = '2' then 'Auditado'\
-             when a.estado = '3' then 'En Zona Despacho'\
-             when a.estado = '4' then 'Despachado'\
-             when a.estado = '5' then 'Despachado con Pendientes'\
-             when a.estado = '6' then 'Separacion Finalizada'\
-             when a.estado = '7' then 'En Auditoria'\
-             when a.estado = '8' then 'Auditado con pdtes'\
-             when a.estado = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido"), 
-        "h.estado as estado_separacion",     
-        G.knex.raw("case when h.estado = '0' then 'Separacion en Proceso'\
-             when h.estado = '1' then 'Separacion Finalizada'\
-             when h.estado = '2' then 'En Auditoria' end as descripcion_estado_separacion"), 
-        "a.fecha_registro::date as fecha_registro", 
-        "f.responsable_id",
-        "g.nombre as responsable_pedido",
-        "f.fecha as fecha_asignacion_pedido", 
-        "i.fecha_registro as fecha_separacion_pedido"
-    ];
-    
-    G.knex("solicitud_productos_a_bodega_principal as a").
-    distinct(columnas).select().
-    innerJoin("bodegas as b",function(){
-        this.on("a.farmacia_id", "b.empresa_id").
-        on("a.centro_utilidad", "b.centro_utilidad").
-        on("a.bodega", "b.bodega");
-    }).
-    innerJoin("centros_utilidad as c",function(){
-        this.on("b.empresa_id", "c.empresa_id").
-        on("b.centro_utilidad", "c.centro_utilidad");
-    }).
-    innerJoin("empresas as d","c.empresa_id", "d.empresa_id").
-    innerJoin("system_usuarios as e", "a.usuario_id", "e.usuario_id").
-    innerJoin("solicitud_productos_a_bodega_principal_estado as f", function(){
-        this.on("a.solicitud_prod_a_bod_ppal_id", "f.solicitud_prod_a_bod_ppal_id").
-        on("a.estado", "f.estado").
-        on(G.knex.raw("(f.sw_terminado is null or f.sw_terminado = ?)", ['0']));
-    }).
-    innerJoin("operarios_bodega as g", "f.responsable_id", "g.operario_id").
-    leftJoin("inv_bodegas_movimiento_tmp_despachos_farmacias as h","a.solicitud_prod_a_bod_ppal_id", "h.solicitud_prod_a_bod_ppal_id").
-    leftJoin("inv_bodegas_movimiento_tmp as i", function(){
-        this.on("h.doc_tmp_id", "i.doc_tmp_id").
-        on("h.usuario_id", "i.usuario_id");
-    }).
-    where(function(){
-        /*=========================================================================*/
-        // Se implementa este filtro, para poder filtrar los pedidos del clientes 
-        // asignados al operario de bodega y saber si el pedido tiene temporales o 
-        // fue finalizado correctamente.
-        /*=========================================================================*/
-        
-        var estado_pedido = '1';
-        if (filtro !== undefined) {
-
-            if (filtro.asignados) {
-                 this.whereRaw("  h.doc_tmp_id IS NULL and  g.usuario_id  = ? ", [responsable]);
-            }
-
-            if (filtro.temporales) {
-                this.whereRaw("  h.doc_tmp_id IS NOT NULL AND h.estado = '0' and g.usuario_id = ? ", [responsable]);
-            }
-            if (filtro.finalizados) {
-                estado_pedido = '7';
-                this.whereRaw(" g.usuario_id = (select usuario_id from operarios_bodega where operario_id = f.responsable_id ) and  i.usuario_id = ?", [responsable]);
-            }
-        }
-        
-        this.where("a.estado", estado_pedido);
-        
-    }).
-    andWhere(function(){
-        this.where(G.knex.raw("a.solicitud_prod_a_bod_ppal_id :: varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%").
-        orWhere("d.razon_social", G.constants.db().LIKE, "%" + termino_busqueda + "%").
-        orWhere("b.descripcion", G.constants.db().LIKE, "%" + termino_busqueda + "%").
-        orWhere("e.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%");
-    }).
-    limit(G.settings.limit).
-    offset((pagina - 1) * G.settings.limit).
-    orderBy("f.fecha","asc").
-    then(function(rows){
-        callback(false, rows, rows.length);
-    }).
-    catch(function(err){
-        callback(err);
     });
 };
 

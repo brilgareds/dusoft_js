@@ -87,26 +87,30 @@ OperariosBodegaModel.prototype.modificar_operarios_bodega = function(operario_id
         left join system_usuarios b on a.usuario_id = b.usuario_id 
         where a.nombre ilike $1 and a.estado = $2 order by 2
  */ 
-OperariosBodegaModel.prototype.listar_operarios_bodega = function(termino_busqueda, estado_registro, callback) {
-
-    var sql_aux = "";
-    if (estado_registro !== '') {
-        sql_aux = " and a.estado = '" + estado_registro + "'";
-    }
-
-    var sql = " select \
-                a.operario_id, \
-                a.nombre as nombre_operario, \
-                a.usuario_id, \
-                b.usuario as descripcion_usuario, \
-                a.estado, \
-                case when a.estado='1' then 'Activo' else 'Inactivo' end as descripcion_estado \
-                from operarios_bodega a \
-                left join system_usuarios b on a.usuario_id = b.usuario_id \
-                where a.nombre ilike $1 " + sql_aux + " order by 2 ";
-
-    G.db.query(sql, ["%" + termino_busqueda + "%"], function(err, rows, result) {
-        callback(err, rows);
+OperariosBodegaModel.prototype.listar_operarios_bodega = function(termino_busqueda, estado_registro, callback) {    
+    var columnas = [
+        "a.operario_id", 
+        "a.nombre as nombre_operario", 
+        "a.usuario_id", 
+        "b.usuario as descripcion_usuario", 
+        "a.estado", 
+        G.knex.raw("case when a.estado='1' then 'Activo' else 'Inactivo' end as descripcion_estado")
+    ];
+    
+    G.knex.column(columnas).
+    from("operarios_bodega as a").
+    leftJoin("system_usuarios as b","a.usuario_id", "b.usuario_id").
+    where("a.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+    andWhere(function(){
+        if(estado_registro !== ''){
+            this.where("a.estado", estado_registro);
+        }
+    }).
+    then(function(rows){
+        callback(false, rows);
+    }).
+    catch(function(err){
+        callback(err);
     });
 };
 

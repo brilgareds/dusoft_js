@@ -433,91 +433,111 @@ PedidosClienteModel.prototype.consultar_detalle_pedido = function(numero_pedido,
 
 PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable, termino_busqueda, filtro, pagina, limite, callback) {
 
-    var sql_aux = " ";
+    var columnas = [
+        "a.empresa_id as empresa_destino",
+        "a.centro_destino",
+        "a.bodega_destino",
+        "f.doc_tmp_id as documento_temporal_id",
+        "a.pedido_cliente_id as numero_pedido", 
+        "b.tipo_id_tercero as tipo_id_cliente", 
+        "b.tercero_id as identificacion_cliente", 
+        "b.nombre_tercero as nombre_cliente", 
+        "b.direccion as direccion_cliente", 
+        "b.telefono as telefono_cliente", 
+        "c.tipo_id_vendedor", 
+        "c.vendedor_id as idetificacion_vendedor", 
+        "c.nombre as nombre_vendedor", 
+        "a.estado",
+        G.knex.raw("case when a.estado = '0' then 'Inactivo'\
+                    when a.estado = '1' then 'Activo'\
+                    when a.estado = '2' then 'Anulado'\
+                    when a.estado = '3' then 'Entregado' end as descripcion_estado"), 
+        "a.estado_pedido as estado_actual_pedido", 
+        G.knex.raw("case when a.estado_pedido = '0' then 'No Asignado'\
+                    when a.estado_pedido = '1' then 'Asignado'\
+                    when a.estado_pedido = '2' then 'Auditado'\
+                    when a.estado_pedido = '3' then 'En Zona Despacho'\
+                    when a.estado_pedido = '4' then 'Despachado'\
+                    when a.estado_pedido = '5' then 'Despachado con Pendientes'\
+                    when a.estado_pedido = '6' then 'Separacion Finalizada'\
+                    when a.estado_pedido = '7' then 'En Auditoria'\
+                    when a.estado_pedido = '8' then 'Auditado con pdtes'\
+                    when a.estado_pedido = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido"),
+        "f.estado as estado_separacion",     
+        G.knex.raw("case when f.estado = '0' then 'Separacion en Proceso'\
+                    when f.estado = '1' then 'Separacion Finalizada' end as descripcion_estado_separacion"),
+        "a.fecha_registro",
+        "d.responsable_id",
+        "e.nombre as responsable_pedido",
+        "d.fecha as fecha_asignacion_pedido", 
+        "g.fecha_registro as fecha_separacion_pedido"
+    ];
+    
+    var query = G.knex.column(columnas).
+    from("ventas_ordenes_pedidos as a").
+    innerJoin("terceros as b", function(){
+        this.on("a.tipo_id_tercero", "b.tipo_id_tercero").
+        on("a.tercero_id", "b.tercero_id");
+    }).
+    innerJoin("vnts_vendedores as c", function(){
+        this.on("a.tipo_id_vendedor", "c.tipo_id_vendedor").
+        on("a.vendedor_id", "c.vendedor_id");
+        
+    }).
+    innerJoin("ventas_ordenes_pedidos_estado as d", function(){
+        this.on("a.pedido_cliente_id", "d.pedido_cliente_id").
+        on("a.estado_pedido", "d.estado").
+        on(G.knex.raw("(d.sw_terminado is null or d.sw_terminado = ?)", ['0']));
+        
+    }).
+    innerJoin("operarios_bodega as e", "d.responsable_id", "e.operario_id").
+    leftJoin("inv_bodegas_movimiento_tmp_despachos_clientes as f", "a.pedido_cliente_id", "f.pedido_cliente_id").
+    leftJoin("inv_bodegas_movimiento_tmp as g", function(){
+        this.on("f.usuario_id", "g.usuario_id").
+        on("f.doc_tmp_id", "g.doc_tmp_id");
+    }).
+    where(function(){
+        
+        /*=========================================================================*/
+        // Se implementa este filtro, para poder filtrar los pedidos del clientes 
+        // asignados al operario de bodega y saber si el pedido tiene temporales o 
+        // fue finalizado correctamente.
+        /*=========================================================================*/
 
-    /*=========================================================================*/
-    // Se implementa este filtro, para poder filtrar los pedidos del clientes 
-    // asignados al operario de bodega y saber si el pedido tiene temporales o 
-    // fue finalizado correctamente.
-    /*=========================================================================*/
-    var estado_pedido = 1;
-    if (filtro !== undefined) {
+        var estado_pedido = '1';
+        if (filtro !== undefined) {
 
-        if (filtro.asignados) {
-            sql_aux = "  f.doc_tmp_id IS NULL and  e.usuario_id = " + responsable + " and  ";
+            if (filtro.asignados) {
+                 this.whereRaw(" f.doc_tmp_id IS NULL and  e.usuario_id = ? ", [responsable]);
+            }
+
+            if (filtro.temporales) {
+                this.whereRaw("  f.doc_tmp_id IS NOT NULL AND f.estado = '0' and  e.usuario_id = ? ", [responsable]);
+            }
+            if (filtro.finalizados) {
+                estado_pedido = '7';
+                this.whereRaw(" e.usuario_id = (select usuario_id from operarios_bodega where operario_id = d.responsable_id ) and  g.usuario_id = ?", [responsable]);
+            }
         }
-
-        if (filtro.temporales) {
-            sql_aux = "  f.doc_tmp_id IS NOT NULL AND f.estado = '0' and  e.usuario_id = " + responsable + " and ";
-        }
-        if (filtro.finalizados) {
-            estado_pedido = '7';
-            sql_aux = " e.usuario_id = (select usuario_id from operarios_bodega where operario_id = d.responsable_id ) and  g.usuario_id = " + responsable + " and ";
-        }
-    }
-
-    var sql = " select \
-                a.empresa_id as empresa_destino,\
-                a.centro_destino,\
-                a.bodega_destino,\
-                f.doc_tmp_id as documento_temporal_id,\
-                a.pedido_cliente_id as numero_pedido, \
-                b.tipo_id_tercero as tipo_id_cliente, \
-                b.tercero_id as identificacion_cliente, \
-                b.nombre_tercero as nombre_cliente, \
-                b.direccion as direccion_cliente, \
-                b.telefono as telefono_cliente, \
-                c.tipo_id_vendedor, \
-                c.vendedor_id as idetificacion_vendedor, \
-                c.nombre as nombre_vendedor, \
-                a.estado, \
-                case when a.estado = '0' then 'Inactivo' \
-                     when a.estado = '1' then 'Activo' \
-                     when a.estado = '2' then 'Anulado' \
-                     when a.estado = '3' then 'Entregado' end as descripcion_estado, \
-                a.estado_pedido as estado_actual_pedido, \
-                case when a.estado_pedido = '0' then 'No Asignado' \
-                     when a.estado_pedido = '1' then 'Asignado' \
-                     when a.estado_pedido = '2' then 'Auditado' \
-                     when a.estado_pedido = '3' then 'En Zona Despacho' \
-                     when a.estado_pedido = '4' then 'Despachado' \
-                     when a.estado_pedido = '5' then 'Despachado con Pendientes' \
-                     when a.estado_pedido = '6' then 'Separacion Finalizada' \
-                     when a.estado_pedido = '7' then 'En Auditoria'\
-                     when a.estado_pedido = '8' then 'Auditado con pdtes' \
-                     when a.estado_pedido = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido,\
-                f.estado as estado_separacion,     \
-                case when f.estado = '0' then 'Separacion en Proceso' \
-                     when f.estado = '1' then 'Separacion Finalizada' end as descripcion_estado_separacion,\
-                a.fecha_registro,\
-                d.responsable_id,\
-                e.nombre as responsable_pedido,\
-                d.fecha as fecha_asignacion_pedido, \
-                g.fecha_registro as fecha_separacion_pedido \
-                from ventas_ordenes_pedidos a \
-                inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id \
-                inner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id \
-                inner join ventas_ordenes_pedidos_estado d on a.pedido_cliente_id = d.pedido_cliente_id and a.estado_pedido = d.estado and (d.sw_terminado is null or d.sw_terminado = '0')\
-                inner join operarios_bodega e on d.responsable_id = e.operario_id\
-                left join inv_bodegas_movimiento_tmp_despachos_clientes f on a.pedido_cliente_id = f.pedido_cliente_id\
-                left join inv_bodegas_movimiento_tmp g on f.usuario_id = g.usuario_id and f.doc_tmp_id = g.doc_tmp_id \
-                where " + sql_aux + " \
-                a.estado_pedido = '" + estado_pedido + "' \
-                /*AND (a.estado IN ('1'))*/   \
-                and (\
-                        a.pedido_cliente_id :: varchar ilike $1 or\
-                        b.tercero_id ilike $1 or\
-                        b.nombre_tercero  ilike $1 or\
-                        c.vendedor_id ilike $1 or\
-                        c.nombre ilike $1\
-                    )\
-                order by d.fecha asc ";
-
-    G.db.pagination(sql, ["%" + termino_busqueda + "%"], pagina, limite, function(err, rows, result, total_records) {
-        callback(err, rows, total_records);
+        
+        this.where("a.estado_pedido", estado_pedido);
+        
+    }).
+    andWhere(function(){
+        this.where(G.knex.raw("a.pedido_cliente_id :: varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%").
+        orWhere("b.tercero_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+        orWhere("b.nombre_tercero", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+        orWhere("c.vendedor_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+        orWhere("c.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+    }).
+    orderBy("d.fecha","asc").
+    then(function(rows){
+        callback(false, rows, rows.length);
+    }).
+    catch(function(err){
+        callback(err);
     });
-
-
+        
 };
 
 

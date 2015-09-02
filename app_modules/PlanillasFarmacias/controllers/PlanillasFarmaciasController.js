@@ -86,6 +86,9 @@ PlanillasFarmaciasController.prototype.listar_documentos = function(req, res) {
     var centroUtilidad = parametros.centroUtilidad;
     var bodega = parametros.bodega;
     var pagina = parametros.pagina;
+    var terminoBusqueda = parametros.terminoBusqueda;
+    var fechaInicial = parametros.fechaInicial;
+    var fechaFinal = parametros.fechaFinal;
     /**
      * @type string parametros: arreglo con todos los parametros
      * @type string empresa: contiene el id de la empresa
@@ -114,7 +117,7 @@ PlanillasFarmaciasController.prototype.listar_documentos = function(req, res) {
     }
 
 
-    this.m_planillas_farmacias.obtenerTipoDocumento(empresa, centroUtilidad, bodega, pagina, function(err, listar_documentos) {
+    this.m_planillas_farmacias.obtenerTipoDocumento(empresa,centroUtilidad, bodega, pagina,terminoBusqueda,fechaInicial,fechaFinal, function(err, listar_documentos) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Listado de documentos tipo EDB', 500, {listar_documentos: {}}));

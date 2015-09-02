@@ -44,7 +44,8 @@
                                         <legend>Numero Guia</legend>                                 
                                         <div class="row">  
                                             <div class="col-md-12">                                          
-                                                <input type="text" ng-model="planilla.numero_guia_externo" ng-disabled="planilla.get_numero_guia() > 0 || planilla.get_transportadora() == undefined || planilla.get_transportadora().get_solicitar_guia() == '' || planilla.get_transportadora().get_solicitar_guia() == '0'" class="form-control"  placeholder="Ingrese Numero Guía" name="" id="" />
+                                                <input type="text" ng-model="planilla.numero_guia_externo" 
+                                                 ng-disabled="estadoNumeroGuia" class="form-control"  placeholder="Ingrese Numero Guía" name="" id="" />
                                             </div>
                                         </div>
                                     </fieldset>

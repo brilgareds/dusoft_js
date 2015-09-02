@@ -7,94 +7,64 @@ PlanillasFarmaciasModel.prototype.listar_planillas_farmacias = function(fecha_in
 
 
     var subqueryCajas = G.knex.from(
-            G.knex.column(["a.id_inv_planilla_farmacia_devolucion as planilla_id", "a.cantidad_cajas", "a.cantidad_neveras"])
-            .select().from('inv_planillas_farmacia_devolucion_detalle as a').as("a")
-
-            ).groupBy('a.planilla_id')
-            .select("a.planilla_id as id_inv_planilla_farmacia_devolucion", G.knex.raw("sum(cantidad_cajas)as total_cajas"), G.knex.raw("sum(a.cantidad_neveras)as total_neveras"));
+                                   G.knex.column(["a.id_inv_planilla_farmacia_devolucion as planilla_id", "a.cantidad_cajas", "a.cantidad_neveras"])
+                                    .select().from('inv_planillas_farmacia_devolucion_detalle as a').as("a")).groupBy('a.planilla_id')
+                                    .select("a.planilla_id as id_inv_planilla_farmacia_devolucion", 
+                                    G.knex.raw("sum(cantidad_cajas)as total_cajas"), 
+                                    G.knex.raw("sum(a.cantidad_neveras)as total_neveras"));
 
     var column = [
-        "a.id_inv_planilla_farmacia_devolucion as id",
-        "a.id_inv_planilla_farmacia_devolucion as numero_guia",
-        "a.numero_guia_externo",
-        "b.transportadora_id",
-        "b.descripcion as nombre_transportadora",
-        "b.placa_vehiculo",
-        "b.estado as estado_transportadora",
-        "a.nombre_conductor",
-        "a.observacion",
-        "a.id_empresa_destino",
-        G.knex.raw("(select r.razon_social from empresas as r where r.empresa_id =a.id_empresa_destino)as empresa_destino"),
-        "a.empresa_id",
-        G.knex.raw("(select r.razon_social from empresas as r where r.empresa_id =a.empresa_id ) as empresa_origen"),
-        "g.total_cajas",
-        "g.total_neveras",
-        "a.usuario_id",
-        "f.nombre as nombre_usuario",
-        "a.estado",
-        G.knex.raw("(case when a.estado = '0' then 'Anulada' when a.estado = '1' then 'Activa'   when a.estado = '2' then 'Despachada' end) as descripcion_estado"),
-        G.knex.raw("To_char(a.fecha_registro,'dd-mm-yyyy') as fecha_registro"),
-        G.knex.raw("To_char(a.fecha_despacho,'dd-mm-yyyy') as fecha_despacho ")
-    ];
+                    "a.id_inv_planilla_farmacia_devolucion as id",
+                    "a.id_inv_planilla_farmacia_devolucion as numero_guia",
+                    "a.numero_guia_externo",
+                    "b.transportadora_id",
+                    "b.descripcion as nombre_transportadora",
+                    "b.placa_vehiculo",
+                    "b.estado as estado_transportadora",
+                    "a.nombre_conductor",
+                    "a.observacion",
+                    "a.id_empresa_destino",
+                    G.knex.raw("(select r.razon_social from empresas as r where r.empresa_id =a.id_empresa_destino)as empresa_destino"),
+                    "a.empresa_id",
+                    G.knex.raw("(select r.razon_social from empresas as r where r.empresa_id =a.empresa_id ) as empresa_origen"),
+                    "g.total_cajas",
+                    "g.total_neveras",
+                    "a.usuario_id",
+                    "f.nombre as nombre_usuario",
+                    "a.estado",
+                    G.knex.raw("(case when a.estado = '0' then 'Anulada' when a.estado = '1' then 'Activa'   when a.estado = '2' then 'Despachada' end) as descripcion_estado"),
+                    G.knex.raw("To_char(a.fecha_registro,'dd-mm-yyyy') as fecha_registro"),
+                    G.knex.raw("To_char(a.fecha_despacho,'dd-mm-yyyy') as fecha_despacho ")
+         ];
 
-    G.knex.column(column).select().from('inv_planillas_farmacia_devolucion as a')
+    G.knex .column(column)
+            .select()
+            .from('inv_planillas_farmacia_devolucion as a')
             .innerJoin("inv_transportadoras as b", "a.inv_transportador_id", "=", "b.transportadora_id")
             .innerJoin("system_usuarios as f", "a.usuario_id", "=", "f.usuario_id")
-            .leftJoin(G.knex.raw('(' + subqueryCajas.toString() + ') AS g'),
-            'a.id_inv_planilla_farmacia_devolucion',
-            '=',
-            'g.id_inv_planilla_farmacia_devolucion',
-            'LEFT')
+            .leftJoin(G.knex.raw('(' + subqueryCajas.toString() + ') AS g'),'a.id_inv_planilla_farmacia_devolucion','=','g.id_inv_planilla_farmacia_devolucion','LEFT')
             .innerJoin("empresas as h", "a.empresa_id", "=", "h.empresa_id")
             .whereBetween('a.fecha_registro', [G.knex.raw("('" + fecha_inicial + "')"), G.knex.raw("('" + fecha_final + "')")])
-            .andWhere(
-            function() {
-                console.log("<<<<<<<<<<<<FILTROSSSS>>>>>", filtro)
-                console.log("<<<<<<<<<<<<FILTROSSSS>>>>>", filtro.filtroGuia, "termino de busqueda::: ", termino_busqueda)
+            .andWhere(function() {          
                 if (filtro.filtroGuia === true) {
                     this.where(G.knex.raw('a.id_inv_planilla_farmacia_devolucion::varchar'), G.constants.db().LIKE, "%" + termino_busqueda + "%")
-
                 }
-               
                 if (filtro.filtroTransportador === true) {
                     this.where(G.knex.raw('b.descripcion'), G.constants.db().LIKE, "%" + termino_busqueda + "%")
-
-
                 }
-
                 if (filtro.filtroEstado === true) {
-                  
                     this.where(G.knex.raw('a.estado'), G.constants.db().LIKE, "%" + termino_busqueda + "%")
                 }
-
             })
-            /* .orWhere(function() {
-             this.where('b.descripcion', G.constants.db().LIKE, "%" + termino_busqueda + "%")
-             
-             })
-             .orWhere(function() {
-             this.where('a.nombre_conductor', G.constants.db().LIKE, "%" + termino_busqueda + "%")
-             
-             })
-             .orWhere(function() {
-             this.where('b.placa_vehiculo', G.constants.db().LIKE, "%" + termino_busqueda + "%")
-             
-             })*/
-
             .limit(G.settings.limit)
             .offset((pagina - 1) * G.settings.limit)
             .orderBy('a.id_inv_planilla_farmacia_devolucion', 'desc')
-
             .then(function(rows) {
-        callback(false, rows);
-    })
+                callback(false, rows);
+            })
             . catch (function(error) {
-        console.error(error);
-    });
-
-
-
-
+                console.error(error);
+            });
 
     /*  var sql = "select \
      a.id_inv_planilla_farmacia_devolucion as id,\
@@ -154,8 +124,6 @@ PlanillasFarmaciasModel.prototype.obtenerFarmacias = function(codigoempresa, cal
                 FROM empresas WHERE sw_activa = 1  \
                 AND empresa_id IN('03','01','FD') );";
 
-
-
     G.db.query(sql, [codigoempresa], function(err, rows, result) {
         callback(err, rows);
     });
@@ -163,7 +131,7 @@ PlanillasFarmaciasModel.prototype.obtenerFarmacias = function(codigoempresa, cal
 };
 
 
-PlanillasFarmaciasModel.prototype.obtenerTipoDocumento = function(empresa, centroUtilidad, bodega, pagina, callback) {
+PlanillasFarmaciasModel.prototype.obtenerTipoDocumento = function(empresa, centroUtilidad, bodega, pagina, terminoBusqueda, fechaInicial, fechaFinal, callback) {
 
     var sql = "SELECT  m.prefijo,m.numero,m.fecha_registro,a.bodegas_doc_id\
              FROM  inv_bodegas_movimiento as m,\
@@ -184,6 +152,8 @@ PlanillasFarmaciasModel.prototype.obtenerTipoDocumento = function(empresa, centr
             AND b.empresa_id = a.empresa_id\
             AND c.tipo_doc_general_id = b.tipo_doc_general_id\
             AND m.numero NOT IN (SELECT numero from inv_planillas_farmacia_devolucion_detalle)\
+            AND m.numero::varchar ilike $4\
+            AND m.fecha_registro between $5 and $6 \
             UNION SELECT   m.prefijo,m.numero,m.fecha_registro,a.bodegas_doc_id\
             FROM inv_bodegas_movimiento as m, \
             inv_bodegas_movimiento_despachos_clientes as dc,\
@@ -200,7 +170,7 @@ PlanillasFarmaciasModel.prototype.obtenerTipoDocumento = function(empresa, centr
             AND m.empresa_id = dc.empresa_id\
             AND m.prefijo = dc.prefijo \
             AND m.numero = dc.numero\
-             AND dc.pedido_cliente_id = vop.pedido_cliente_id\
+            AND dc.pedido_cliente_id = vop.pedido_cliente_id\
             AND a.documento_id = m.documento_id \
             AND a.empresa_id = m.empresa_id\
             AND a.centro_utilidad = m.centro_utilidad \
@@ -209,6 +179,8 @@ PlanillasFarmaciasModel.prototype.obtenerTipoDocumento = function(empresa, centr
             AND b.empresa_id = a.empresa_id\
             AND c.tipo_doc_general_id = b.tipo_doc_general_id\
             AND m.numero NOT IN (SELECT numero from inv_planillas_farmacia_devolucion_detalle)\
+            AND m.numero::varchar ilike $4\
+            AND m.fecha_registro between $5 and $6 \
             UNION SELECT  m.prefijo,m.numero,m.fecha_registro,a.bodegas_doc_id\
             FROM  inv_bodegas_movimiento as m, \
             inv_bodegas_movimiento_despachos_farmacias as df,\
@@ -231,10 +203,12 @@ PlanillasFarmaciasModel.prototype.obtenerTipoDocumento = function(empresa, centr
             AND b.documento_id = a.documento_id\
             AND b.empresa_id = a.empresa_id \
             AND c.tipo_doc_general_id = b.tipo_doc_general_id\
-            AND m.numero NOT IN (SELECT numero from inv_planillas_farmacia_devolucion_detalle)";
+            AND m.numero NOT IN (SELECT numero from inv_planillas_farmacia_devolucion_detalle) \
+            AND m.numero::varchar ilike $4 AND m.fecha_registro between $5 and $6 \
+            ORDER BY 2 DESC";
 
 
-    G.db.paginated(sql, [empresa, centroUtilidad, bodega], pagina, G.settings.limit, function(err, rows, result) {
+    G.db.paginated(sql, [empresa, centroUtilidad, bodega, '%' + terminoBusqueda + '%', fechaInicial, fechaFinal], pagina, G.settings.limit, function(err, rows, result) {
         callback(err, rows);
 
     });
@@ -306,6 +280,8 @@ PlanillasFarmaciasModel.prototype.ingresar_documentos_planilla_farmacia = functi
         cantidad_neveras, temperatura_neveras, observacion,
         usuario_id, callback) {
 
+    var cantidad_neveras = (cantidad_neveras === '') ? 0 : cantidad_neveras;
+    var temperatura_neveras = (temperatura_neveras === '') ? 0 : cantidad_neveras;
 
     var sql = "INSERT INTO inv_planillas_farmacia_devolucion_detalle\
 (id_inv_planilla_farmacia_devolucion,empresa_id, prefijo, numero, cantidad_cajas, cantidad_neveras, temperatura_neveras, observacion, usuario_id, fecha_registro)\

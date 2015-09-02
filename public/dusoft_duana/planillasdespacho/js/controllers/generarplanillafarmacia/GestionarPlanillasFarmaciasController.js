@@ -85,8 +85,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             that.gestionar_consultas = function() {
 
-                //  if ($scope.planilla.get_numero_guia() > 0)
-
+              
                 that.buscar_transportadoras(function() {
 
                     if ($scope.planilla.get_numero_guia() > 0) {
@@ -146,9 +145,15 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     $scope.Empresa.set_transportadoras(transportadora);
                 });
             };
-
+            $scope.estadoNumeroGuia = true;
             $scope.seleccionar_transportadora = function() {
-
+          
+                  if($scope.planilla.get_transportadora().get_id() === 4){
+                      $scope.estadoNumeroGuia = false;
+                  }else{
+                      $scope.estadoNumeroGuia = true;
+                  }
+                
             };
 
 
@@ -234,16 +239,17 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             $scope.validar_btn_ingreso_documentos = function() {
 
                 var disabled = false;
-
                 // Validar que todos los campos esten diligenciados
-                if ($scope.planilla.get_empresa() === null || $scope.planilla.get_transportadora() === undefined || $scope.planilla.get_nombre_conductor() === '' || $scope.planilla.get_observacion() === '' || $scope.planilla.get_estado() === '2')
+                if ($scope.planilla.get_empresa() === null || $scope.planilla.get_transportadora() === undefined || 
+                    $scope.planilla.get_nombre_conductor() === '' || $scope.planilla.get_observacion() === '' || $scope.planilla.get_estado() === '2')
                     disabled = true;
 
-                // Si la transportadora es externa solicita obligatoriamente el numero de guia    
-                if ($scope.planilla.get_transportadora() !== undefined && $scope.planilla.get_transportadora().get_solicitar_guia() === '1') {
-                    if ($scope.planilla.get_numero_guia_externo() === '')
+            
+              if($scope.planilla.get_transportadora()!== undefined){
+                    if ($scope.planilla.get_transportadora().get_id() === 4 && $scope.planilla.get_numero_guia_externo().length === 0){
                         disabled = true;
                 }
+              }
                 return disabled;
             };
 

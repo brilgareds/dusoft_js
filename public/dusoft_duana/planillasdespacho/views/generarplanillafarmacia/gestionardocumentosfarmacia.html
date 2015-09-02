@@ -13,68 +13,107 @@
                             </div> 
                         </div>
                     </div>
+
                     <div class="panel-body">
 
                         <div class="row" ng-switch on="datos_view.opcion_predeterminada" >                            
 
-                            <div class="col-md-12" ng-switch on="(datos_view.opcion_predeterminada == '0') || (datos_view.opcion_predeterminada == '1')" >
-                                <div class="row" style="margin-bottom: 20px;">
-                                    <div class="col-lg-12">
-                                        <h4>Seleccionar Cliente/Farmaciaaaaa</h4>                                        
-                                    </div>
-                                </div>
-                               <!-- <div class="row">
-                                    <div class="col-md-4">
-                                        <p class="input-group col-md-12">
-                                            <select ui-select2=""  class="form-control selectgeneral pull-left" ng-model="datos_view.opcion_predeterminada"  placeholder="Seleccionar Cliente/Farmacia" ng-change="seleccionar_cliente_farmacia()">                                                
-                                                <option value="0">Farmacias</option>
-                                                <option value="1">Clientes</option>
-                                                <option value="2">Otras Empresas</option>
-                                            </select>
-                                        </p>
-                                    </div>
+                            <div class="col-md-3">
+                                <p class="input-group">
 
+                                    <input type="text" class="form-control readonlyinput" datepicker-popup="{{format}}" 
+                                           ng-model="datos_view.fecha_inicial" is-open="datos_view.datepicker_fecha_inicial" min="minDate"   readonly  close-text="Cerrar" ng-change="" clear-text="Borrar" current-text="Hoy" placeholder="Fecha Inicial" show-weeks="false" toggle-weeks-text="#"  />
 
-                                    <div class="col-md-12" ng-switch on="(datos_view.opcion_predeterminada == '0') || (datos_view.opcion_predeterminada == '1')" >
-                                        <div ng-switch-when="true">
-                                            <div class="row" style="margin-bottom: 20px;">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" ng-click="abrir_fecha_inicial($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+                                    </span>
+                                </p>
+                            </div>
 
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-4 pull-right">
-                                                    <p class="input-group">
+                            <div class="col-md-3">
+                                <p class="input-group">
 
-                                                        <input type="text" class="form-control" ng-keypress="buscador_documentos($event);" ng-model="datos_view.termino_busqueda_documentos" placeholder="Buscar" name="" id="" />
-                                                        <span class="input-group-btn">
-                                                            <button class="btn btn-default" type="submit" ng-click=""><i class="glyphicon glyphicon-search"></i></button>
-                                                        </span>
-                                                    </p>
-                                                </div>
-                                            </div>
+                                    <input type="text" class="form-control readonlyinput" 
+                                           datepicker-popup="{{format}}" 
+                                           ng-model="datos_view.fecha_final" 
+                                           is-open="datos_view.datepicker_fecha_final" 
+                                           min="datos_view.fecha_inicial"  
+                                           readonly  close-text="Cerrar"
+                                           clear-text="Borrar"  placeholder="Fecha Final" current-text="Hoy" show-weeks="false" toggle-weeks-text="#" />
+                                    <span class="input-group-btn">
 
-                                            <div class="" style="height: 500px" ng-grid="lista_remisiones_bodega" > </div>
-                                            <br>
-                                            <div class="row text-center">
-                                                <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 0" ng-click="paginaAnterior()">
-                                                    <span class="glyphicon glyphicon-chevron-left" ></span>
-                                                </button>
-                                                <button type="button" class="btn btn-default btn-medium" ng-disabled="items == 0" ng-click="paginaSiguiente()">
-                                                    <span class="glyphicon glyphicon-chevron-right" ></span>
-                                                </button>
-                                            </div>
+                                        <button class="btn btn-default"  ng-click="abrir_fecha_final($event);"><i class="glyphicon glyphicon-calendar"></i></button>
+                                    </span>
+                                </p>
+                            </div>
+                            
+                             <div class="col-md-3 pull-right">
+                                            <p class="input-group">
+                                                <input type="text" class="form-control" 
+                                                       ng-keypress="buscador_documentos($event);" 
+                                                       ng-model="datos_view.termino_busqueda_documentos" 
+                                                       placeholder="Buscar" name="" id="" 
+                                                       />
+                                                <span class="input-group-btn">
+                                                    <button class="btn btn-default" type="submit" ng-click="consultar_documentos_planilla_despacho()"><i class="glyphicon glyphicon-search"></i></button>
+                                                </span>
+                                            </p>
                                         </div>
-                                    </div>
-                                </div>//-->
-                               <div class="" style="height: 500px" ng-grid="lista_remisiones_bodega" > </div>
-                                            <br>
-                                            <div class="row text-center">
-                                                <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 0" ng-click="paginaAnterior()">
-                                                    <span class="glyphicon glyphicon-chevron-left" ></span>
-                                                </button>
-                                                <button type="button" class="btn btn-default btn-medium" ng-disabled="items == 0" ng-click="paginaSiguiente()">
-                                                    <span class="glyphicon glyphicon-chevron-right" ></span>
-                                                </button>
-                                            </div>
+                            <div class="col-md-12" ng-switch on="(datos_view.opcion_predeterminada == '0') || (datos_view.opcion_predeterminada == '1')" >
+
+                                <!-- <div class="row">
+                                     <div class="col-md-4">
+                                         <p class="input-group col-md-12">
+                                             <select ui-select2=""  class="form-control selectgeneral pull-left" ng-model="datos_view.opcion_predeterminada"  placeholder="Seleccionar Cliente/Farmacia" ng-change="seleccionar_cliente_farmacia()">                                                
+                                                 <option value="0">Farmacias</option>
+                                                 <option value="1">Clientes</option>
+                                                 <option value="2">Otras Empresas</option>
+                                             </select>
+                                         </p>
+                                     </div>
+ 
+ 
+                                     <div class="col-md-12" ng-switch on="(datos_view.opcion_predeterminada == '0') || (datos_view.opcion_predeterminada == '1')" >
+                                         <div ng-switch-when="true">
+                                             <div class="row" style="margin-bottom: 20px;">
+ 
+                                             </div>
+                                             <div class="row">
+                                                 <div class="col-md-4 pull-right">
+                                                     <p class="input-group">
+ 
+                                                         <input type="text" class="form-control" ng-keypress="buscador_documentos($event);" ng-model="datos_view.termino_busqueda_documentos" placeholder="Buscar" name="" id="" />
+                                                         <span class="input-group-btn">
+                                                             <button class="btn btn-default" type="submit" ng-click=""><i class="glyphicon glyphicon-search"></i></button>
+                                                         </span>
+                                                     </p>
+                                                 </div>
+                                             </div>
+ 
+                                             <div class="" style="height: 500px" ng-grid="lista_remisiones_bodega" > </div>
+                                             <br>
+                                             <div class="row text-center">
+                                                 <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 0" ng-click="paginaAnterior()">
+                                                     <span class="glyphicon glyphicon-chevron-left" ></span>
+                                                 </button>
+                                                 <button type="button" class="btn btn-default btn-medium" ng-disabled="items == 0" ng-click="paginaSiguiente()">
+                                                     <span class="glyphicon glyphicon-chevron-right" ></span>
+                                                 </button>
+                                             </div>
+                                         </div>
+                                     </div>
+                                 </div>//-->
+
+                                <div class="" style="height: 600px" ng-grid="lista_remisiones_bodega" > </div>
+                                <br>
+                                <div class="row text-center">
+                                    <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 1" ng-click="paginaAnterior()">
+                                        <span class="glyphicon glyphicon-chevron-left" ></span>
+                                    </button>
+                                    <button type="button" class="btn btn-default btn-medium" ng-disabled="items < 25" ng-click="paginaSiguiente()">
+                                        <span class="glyphicon glyphicon-chevron-right" ></span>
+                                    </button>
+                                </div>
                             </div>
 
 

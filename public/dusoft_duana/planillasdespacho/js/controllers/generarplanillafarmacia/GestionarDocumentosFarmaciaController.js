@@ -17,13 +17,15 @@ define(["angular", "js/controllers",
         "ClientePlanillaDespacho",
         "FarmaciaPlanillaDespacho",
         "Documento",
-        "Usuario",
+        "Usuario","$filter",
         function($scope, $rootScope, Request, $modal, API, socket, $timeout, AlertService, localStorageService, $state,
-                Empresa, ClientePlanilla, FarmaciaPlanilla, Documento, Sesion) {
+                Empresa, ClientePlanilla, FarmaciaPlanilla, Documento, Sesion, $filter) {
 
             var that = this;
 
-            that.paginaactual = 1;
+            $scope.paginaactual = 1;
+            
+            var fecha_actual = new Date();
             /**
              * +Descripcion: Evento que se ejecuta en el momento que se 
              * visualiza la plantilla al cargar el slider
@@ -32,19 +34,66 @@ define(["angular", "js/controllers",
 
 
                 $scope.datos_view = {
-                    // opcion_predeterminada: "0", // 0 = farmacias 1 = clientes 2 = Otras Empresas
-                    //  termino_busqueda: '',
-                    //  termino_busqueda_documentos: '',
-                    // tercero_seleccionado: FarmaciaPlanilla.get(), // tercero_seleccionado es una Farmacia por ser la opcion_predeterminada = 0
-                    documento_seleccionado: Documento.get()
+                  
+                    termino_busqueda_documentos: '',
+                    documento_seleccionado: Documento.get(),
+                    fecha_inicial: $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"),
+                    fecha_final: $filter('date')(fecha_actual, "yyyy-MM-dd"),
                 };
-              
-            });
 
+            });
+            $scope.datos_view.fecha_inicial = $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd");
+            $scope.datos_view.fecha_final =  $filter('date')(fecha_actual, "yyyy-MM-dd");
+            
             $rootScope.$on('cerrar_gestion_documentos_bodegaCompleto', function(e, parametros) {
                 $scope.$$watchers = null;
             });
+            
+              $scope.buscador_documentos = function(ev) {
+                if (ev.which === 13) {
+                    console.log("ENTER ", $scope.datos_view.termino_busqueda_documentos)
+                    $scope.datos_view.datepicker_fecha_inicial = false;
+                    $scope.datos_view.datepicker_fecha_final = false;
+                    
+                    that.traerDocumentosFarmacias(function(){
+                        
+                    })
+                    //$scope.consultar_documentos_planilla_despacho();
+                }
+                $scope.datos_view.datepicker_fecha_inicial = false;
+                $scope.datos_view.datepicker_fecha_final = false;
+            };
+            /**
+             * @author Cristian Ardila
+             * @param {evento} ng-click
+             * +Descripcion: funcion encargada de ejecutar al momento de
+             * desplegar el date picker para la fecha inicial
+             */
+            $scope.abrir_fecha_inicial = function($event) {
 
+                $event.preventDefault();
+                $event.stopPropagation();
+                $scope.datos_view.datepicker_fecha_inicial = true;
+                $scope.datos_view.datepicker_fecha_final = false;
+               
+
+            };
+
+            /**
+             * @author Cristian Ardila
+             * @param {evento} ng-click
+             * +Descripcion: funcion encargada de ejecutar al momento de
+             * desplegar el date picker para la fecha final
+             */
+            $scope.abrir_fecha_final = function($event) {
+
+                $event.preventDefault();
+                $event.stopPropagation();
+
+                $scope.datos_view.datepicker_fecha_inicial = false;
+                $scope.datos_view.datepicker_fecha_final = true;
+
+            };
 
             /*   $scope.buscador_documentos = function(ev) {
              
@@ -253,10 +302,10 @@ define(["angular", "js/controllers",
              * 
              */
             that.ingresar_documentos_planilla = function(callback) {
-                
+
                 $scope.planilla.set_documento($scope.datos_view.documento_seleccionado);
                 $scope.planilla.get_documento().set_empresa_id($scope.planilla.get_empresa().getCodigo());
-               
+       
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -285,7 +334,7 @@ define(["angular", "js/controllers",
                         //  $scope.buscar_documentos_bodega($scope.datos_view.tercero_seleccionado);
                         $scope.planilla.set_documentos($scope.datos_view.documento_seleccionado);
                         $scope.datos_view.documento_seleccionado = Documento.get();
-                        
+
                         //console.log($scope.datos_view.documento_seleccionado)
                         //  $scope.buscar_documentos_bodega($scope.datos_view.tercero_seleccionado);
                         callback(true);
@@ -299,46 +348,6 @@ define(["angular", "js/controllers",
             };
 
             $scope.confirmRegistroDocumentoDevolucion = function(documento) {
-
-
-                /*   $scope.opts = {
-                 backdrop: true,
-                 backdropClick: true,
-                 dialogFade: false,
-                 keyboard: true,
-                 template: ' <div class="modal-header">\
-                 <button type="button" class="close" ng-click="close()">&times;</button>\
-                 <h4 class="modal-title">Aviso: </h4>\
-                 </div>\
-                 <div class="modal-body row">\
-                 <div class="col-md-12">\
-                 <h4 >Confirma que registrara el documento de devolucion con el seiguiente detalle:<br><br>\
-                 <b>DOCUMENTO:</b>' + documento.get_prefijo() + '(' + documento.get_numero() + ')' + '<br>\
-                 <b>FECHA DE REGISTRO:</b>' + documento.get_fecha_registro() + '<br>\
-                 </div>\
-                 </div>\
-                 <div class="modal-footer">\
-                 <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Cancelar</button>\
-                 <button class="btn btn-primary" ng-click="confirmar()" ng-disabled="" >Confirmar</button>\
-                 </div>',
-                 scope: $scope,
-                 controller: function($scope, $modalInstance) {
-                 $scope.close = function() {
-                 $modalInstance.close();
-                 };
-                 
-                 $scope.confirmar = function() {
-                 $modalInstance.close();
-                 that.registrarDocumentoFarmacia(documento);
-                 
-                 };
-                 }
-                 };
-                 
-                 var modalInstance = $modal.open($scope.opts);*/
-
-
-                
                 that.registrarDocumentoFarmacia(documento);
             };
             /**
@@ -348,8 +357,8 @@ define(["angular", "js/controllers",
              * @returns {undefined}
              */
             that.registrarDocumentoFarmacia = function(documento) {
-                $scope.datos_view.documento_seleccionado = documento;  
-               
+                $scope.datos_view.documento_seleccionado = documento;
+
                 that.gestionar_planilla_farmacia(function() {
 
                 });
@@ -365,10 +374,10 @@ define(["angular", "js/controllers",
              * 
              */
             that.generar_planilla_farmacia = function(callback) {
-              
+
                 var empresa = Sesion.getUsuarioActual().getEmpresa();
-               
-                
+
+
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -387,76 +396,76 @@ define(["angular", "js/controllers",
                 };
 
                 Request.realizarRequest(API.PLANILLAS_FARMACIAS.GENERAR_PLANILLA_FARMACIA, "POST", obj, function(data) {
-                   
-                   var idUltimoRegistroPFD = data.obj.id_inv_planilla_farmacia_devolucion[0].id_inv_planilla_farmacia_devolucion;
-                    if($scope.planilla.get_numero_guia() === 0 ){
-                       
-                         $scope.planilla.set_numero_guia(idUltimoRegistroPFD);
-                        
-                         AlertService.mostrarMensaje("warning", data.msj);
-                    
-                    if (data.status === 200) {
-                        
-                        callback(true);
-                        
+
+                    var idUltimoRegistroPFD = data.obj.id_inv_planilla_farmacia_devolucion[0].id_inv_planilla_farmacia_devolucion;
+                    if ($scope.planilla.get_numero_guia() === 0) {
+
+                        $scope.planilla.set_numero_guia(idUltimoRegistroPFD);
+
+                        AlertService.mostrarMensaje("warning", data.msj);
+
+                        if (data.status === 200) {
+
+                            callback(true);
+
+                        } else {
+                            callback(false);
+                        }
+
                     } else {
-                        callback(false);
+
+                        callback(true);
                     }
-                        
-                    }else{
-                       
-                         callback(true);
-                    }
-                   
+
                 });
             };
             that.gestionar_planilla_farmacia = function(callback) {
-               
-           
+
+
                 var documentoSeleccionado = $scope.datos_view.documento_seleccionado;
-                          
+
                 Empresa.eliminarDocumento(documentoSeleccionado);
-             
+
                 if ($scope.planilla.get_numero_guia() === 0) {
-                    
+
                     that.generar_planilla_farmacia(function(continuar) {
 
-                    
+
                         if (continuar) {
-                           
+
                             that.ingresar_documentos_planilla(function(continuar) {
 
                                 if (callback)
                                     callback(continuar);
                             });
                         } else {
-                         
+
                             if (callback)
                                 callback(continuar);
                         }
                     });
                 } else {
-                   
-                  //  that.generar_planilla_farmacia(function(continuar) {
 
-                     
-                      //  if (continuar) {
+                    //  that.generar_planilla_farmacia(function(continuar) {
 
-                            that.ingresar_documentos_planilla(function(continuar) {
 
-                                if (callback)
-                                    callback(continuar);
-                            });
-                       // } else {
-                            
-                          //  if (callback)
-                              //  callback(continuar);
-                        /*}
-                    });*/
+                    //  if (continuar) {
+
+                    that.ingresar_documentos_planilla(function(continuar) {
+
+                        if (callback)
+                            callback(continuar);
+                    });
+                    // } else {
+
+                    //  if (callback)
+                    //  callback(continuar);
+                    /*}
+                     });*/
                 }
 
             };
-            
+
             /*
              * 
              * @param {type} selected
@@ -466,9 +475,8 @@ define(["angular", "js/controllers",
              * las peticiones al servidor y traer los documentos de farmacias
              */
             that.traerDocumentosFarmacias = function(callback) {
-                
-                console.log("traerDocumentosFarmacias----------->>>>>>>>>>")
-                //console.log("$scope.planilla.get_empresa().getCodigo():::: ",$scope.planilla.get_empresa().getCodigo())
+
+              
                 var empresa = Sesion.getUsuarioActual().getEmpresa();
                 var obj = {
                     session: $scope.session,
@@ -478,17 +486,23 @@ define(["angular", "js/controllers",
                                     empresa: empresa.getCodigo(),
                                     centroUtilidad: empresa.getCentroUtilidadSeleccionado().getCodigo(),
                                     bodega: empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionada().getCodigo(),
-                                    pagina: that.paginaactual
+                                    pagina: $scope.paginaactual,
+                                    terminoBusqueda: $scope.datos_view.termino_busqueda_documentos,
+                                    fechaInicial:$filter('date')($scope.datos_view.fecha_inicial, "yyyy-MM-dd"), 
+                                    fechaFinal: $filter('date')($scope.datos_view.fecha_final, "yyyy-MM-dd")
                                 }
                     }
                 };
                 Request.realizarRequest(API.PLANILLAS_FARMACIAS.LISTAR_DOCUMENTOS, "POST", obj, function(data) {
 
                     if (data.status === 200) {
+                        
+                        $scope.items = data.obj.listar_documentos.length;
+                        
                         //se limpia la grid cada vez que realice una nueva paginacion
                         Empresa.limpiar_lista_documentos();
                         if (data.obj.listar_documentos.length === 0) {
-                            that.paginaactual = 1;
+                            $scope.paginaactual = 1;
                         } else {
                             that.renderDocumentoFarmacia(data);
                             callback();
@@ -514,7 +528,7 @@ define(["angular", "js/controllers",
 
 
             that.obtenerListaDocumentos = function(documentos) {
-                
+
                 for (var i in documentos.obj.listar_documentos) {
 
                     var _documentos = documentos.obj.listar_documentos[i];
@@ -536,9 +550,9 @@ define(["angular", "js/controllers",
              * de los documentos
              */
             $scope.paginaAnterior = function() {
-                if (that.paginaactual === 1)
+                if ($scope.paginaactual === 1)
                     return;
-                that.paginaactual--;
+                $scope.paginaactual--;
                 that.traerDocumentosFarmacias(function() {
                 });
             };
@@ -553,7 +567,7 @@ define(["angular", "js/controllers",
              * de los documentos
              */
             $scope.paginaSiguiente = function() {
-                that.paginaactual++;
+                $scope.paginaactual++;
                 that.traerDocumentosFarmacias(function() {
                 });
             };
@@ -567,18 +581,18 @@ define(["angular", "js/controllers",
              */
             $scope.onListarDocumentos = function(callback) {
 
-                that.paginaactual = 1;
+                $scope.paginaactual = 1;
                 that.traerDocumentosFarmacias(function() {
 
                 });
             }
-            
+
             $scope.onListarDocumentos();
-            
-            
+
+
             $scope.validar_ingreso_documento = function(documento) {
-                
-               
+
+
                 var disabled = false;
 
                 // Validar que el prefijo y el numero del documento esten presentes
@@ -593,9 +607,9 @@ define(["angular", "js/controllers",
                 // Validar que las cantidad de cajas no sean 0 o vacias                                
                 if (documento.get_cantidad_cajas() === '' || documento.get_cantidad_cajas() === 0) {
                     disabled = true;
-                    
+
                 }
-                
+
                 // Validar que si ingresar solamente cajas y no ingresa neveras, no debe ingresar temperatura
                 if (documento.get_cantidad_cajas() !== '' && documento.get_cantidad_cajas() !== 0) {
                     disabled = false;
@@ -613,8 +627,8 @@ define(["angular", "js/controllers",
 
                 return disabled;
             };
-            
-            
+
+
             $scope.lista_remisiones_bodega = {
                 data: 'Empresa.get_lista_documentos()',
                 enableColumnResize: true,
@@ -624,11 +638,11 @@ define(["angular", "js/controllers",
                     //  {field: 'get_prefijo()', displayName: 'Prefijo', width: "10%"},
                     {field: 'get_bodegas_doc_id()', displayName: 'bodega documento id', width: "15%", visible: false},
                     {field: 'get_numero()', displayName: 'numero', width: "10%", visible: false},
-                    {field: 'get_fecha_registro()', displayName: 'Fecha registro', width: "10%"},
-                    {field: 'cantidad_cajas', displayName: 'Cajas', width: "10%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    {field: 'cantidad_neveras', displayName: 'Nevera', width: "10%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_neveras" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    {field: 'temperatura_neveras', displayName: '°C Nevera', width: "10%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.temperatura_neveras" validacion-numero class="form-control grid-inline-input" name="" id="" /> </div>'},
-                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",width: "10%",
+                    {field: 'get_fecha_registro()', displayName: 'Fecha registro', width: "15%"},
+                    {field: 'cantidad_cajas', displayName: 'Cajas', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_cajas" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                    {field: 'cantidad_neveras', displayName: 'Nevera', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.cantidad_neveras" validacion-numero-entero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                    {field: 'temperatura_neveras', displayName: '°C Nevera', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.temperatura_neveras" validacion-numero class="form-control grid-inline-input" name="" id="" /> </div>'},
+                    {displayName: "Opciones", cellClass: "txt-center dropdown-button", width: "5%",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs" ng-click="confirmRegistroDocumentoDevolucion(row.entity)" ng-disabled="validar_ingreso_documento(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
                                         </div>'
@@ -636,7 +650,7 @@ define(["angular", "js/controllers",
                 ]
             };
 
-            
+
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;

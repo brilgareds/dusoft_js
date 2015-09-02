@@ -59,7 +59,7 @@ define(["angular", "js/controllers",
             $scope.onSeleccionFiltro = function(filtro) {
                
                 $scope.filtro = filtro;
-                $scope.datos_view.termino_busqueda = null;
+                $scope.datos_view.termino_busqueda = '';
                 if (filtro.nombre === "Estado") {
                     $scope.contenedorBuscador = "col-sm-2 col-md-2 col-lg-2  pull-right";
                     $scope.visibleBuscador = false;
@@ -90,9 +90,8 @@ define(["angular", "js/controllers",
                 $scope.visibleBotonBuscador = false;
                 $scope.filtroEstado = filtrosEstados;
                 $scope.datos_view.termino_busqueda = filtrosEstados.estado;
-                
                 $scope.buscar_planillas_despacho($scope.datos_view.termino_busqueda);
-                console.log("$scope.termino_busqueda ", $scope.datos_view.termino_busqueda)
+               
             }
             /**
              * @author Cristian Ardila
@@ -124,7 +123,8 @@ define(["angular", "js/controllers",
                             fecha_final: $filter('date')($scope.datos_view.fecha_final, "yyyy-MM-dd") + " 23:59:00",
                             filtro: $scope.filtro,
                             termino_busqueda: $scope.datos_view.termino_busqueda,
-                            pagina: $scope.pagina_actual
+                            pagina: $scope.pagina_actual,
+                            
                         }
                     }
                 };

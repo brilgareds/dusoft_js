@@ -530,6 +530,8 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
         orWhere("c.vendedor_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
         orWhere("c.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%");
     }).
+    limit(G.settings.limit).
+    offset((pagina - 1) * G.settings.limit).
     orderBy("d.fecha","asc").
     then(function(rows){
         callback(false, rows, rows.length);

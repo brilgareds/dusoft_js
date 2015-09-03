@@ -108,7 +108,23 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
             EmpresaPlanillaDespacho.eliminarDocumento = function(documento){
                var index = this.lista_documentos.indexOf(documento);
                this.lista_documentos.splice(index,1);
-            }
+            };
+            
+            EmpresaPlanillaDespacho.obtenerEmpresasFiltradasCodigo = function(codigoEmpresa){
+                
+             
+                var empresas = [];
+                
+                for(var i in this.lista_empresas){
+                   var empresa = this.lista_empresas[i]; 
+                   if(codigoEmpresa !== empresa.getCodigo()){
+                       empresas.push(empresa);
+                   }
+                }
+                
+                return empresas;
+            };
+            
             
             return EmpresaPlanillaDespacho;
         }]);

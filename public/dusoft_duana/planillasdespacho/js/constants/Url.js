@@ -46,7 +46,7 @@ define(["angular"], function(angular) {
                 'DESPACHAR_PLANILLA': BASE_URL + '/PlanillasFarmacias/despacharPlanilla',
                 'CONSULTAR_PLANILLA': BASE_URL + '/PlanillasFarmacias/consultarPlanillaFarmacia',
                 'DOCUMENTOS_PLANILLA': BASE_URL + '/PlanillasFarmacias/consultarDocumentosPlanillaFarmacia',
-                                                
+                'ELIMINAR_DOCUMENTO': BASE_URL + '/PlanillasFarmacias/eliminarDocumentoPlanillaFarmacia',                                
                                         
               
             },

@@ -578,19 +578,20 @@ PedidosClienteModel.prototype.asignar_responsables_pedidos = function(numero_ped
      console.log(usuario);
      console.log('==================================================');*/
 
-    var that = this;
+    var that = this; 
 
-    // Validar si existen responsables asignados
-    var sql = " SELECT * FROM ventas_ordenes_pedidos_estado a WHERE a.pedido_cliente_id=$1 AND a.estado = $2 and (a.sw_terminado is null or a.sw_terminado = '0');";
-
-    G.db.query(sql, [numero_pedido, estado_pedido], function(err, responsable_estado_pedido, result) {
+    G.knex.column("*").
+    from("ventas_ordenes_pedidos_estado as a").
+    where("a.pedido_cliente_id", numero_pedido).
+    andWhere("a.estado", estado_pedido).
+    whereRaw("(a.sw_terminado is null or a.sw_terminado = '0')").then(function(responsable_estado_pedido){
         if (responsable_estado_pedido.length > 0) {
             //Actualizar
             that.actualizar_responsables_pedidos(numero_pedido, estado_pedido, responsable, usuario, function(_err, _rows) {
                 //Actualizar estado actual del pedido
                 that.actualizar_estado_actual_pedido(numero_pedido, estado_pedido, function() {
                     callback(_err, _rows, responsable_estado_pedido);
-                    return;
+                    return; 
                 });
             });
         } else {
@@ -603,7 +604,12 @@ PedidosClienteModel.prototype.asignar_responsables_pedidos = function(numero_ped
                 });
             });
         }
+
+    }).catch(function(err){
+        callback(err);
     });
+    
+    
 };
 
 
@@ -631,13 +637,17 @@ PedidosClienteModel.prototype.asignar_responsables_pedidos = function(numero_ped
 // Callbacks :  * Modulo :  PedidosClientes 
 //                          Modelo - asignar_responsables_pedidos();
 PedidosClienteModel.prototype.insertar_responsables_pedidos = function(numero_pedido, estado_pedido, responsable, usuario, callback) {
-
-    var sql = "INSERT INTO ventas_ordenes_pedidos_estado( pedido_cliente_id, estado, responsable_id, fecha, usuario_id) " +
-            "VALUES ($1, $2, $3, now(), $4);";
-
-    G.db.query(sql, [numero_pedido, estado_pedido, responsable, usuario], function(err, rows, result) {
-        callback(err, rows);
-    });
+    
+    G.knex("ventas_ordenes_pedidos_estado").
+    returning("venta_orden_pedido_estado_id").
+    insert({pedido_cliente_id:numero_pedido, estado:estado_pedido, responsable_id:responsable, fecha: 'now()', usuario_id:usuario}).
+    then(function(resultado){
+        console.log("resultado de insertar en ventas_ordenes estado ", resultado);
+        callback(false, resultado);
+    }).catch(function(err){
+        callback(err);
+    }).done();
+    
 };
 
 /**
@@ -661,13 +671,18 @@ PedidosClienteModel.prototype.insertar_responsables_pedidos = function(numero_pe
  */
 
 PedidosClienteModel.prototype.actualizar_responsables_pedidos = function(numero_pedido, estado_pedido, responsable, usuario, callback) {
-
-    var sql = "UPDATE ventas_ordenes_pedidos_estado SET responsable_id=$3, fecha=NOW(), usuario_id=$4 " +
-            "WHERE pedido_cliente_id=$1 AND estado=$2 and (sw_terminado is null or sw_terminado = '0');";
-
-    G.db.query(sql, [numero_pedido, estado_pedido, responsable, usuario], function(err, rows, result) {
-        callback(err, rows);
+    
+    var query = G.knex("ventas_ordenes_pedidos_estado").
+    where("pedido_cliente_id", numero_pedido).
+    andWhere("estado", estado_pedido).
+    whereRaw("(sw_terminado is null or sw_terminado = '0')").
+    returning('venta_orden_pedido_estado_id').
+    update({responsable_id : responsable, fecha: 'NOW()', usuario_id : usuario}).then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        callback(err);
     });
+    
 };
 
 
@@ -725,11 +740,15 @@ PedidosClienteModel.prototype.eliminar_responsables_pedidos = function(numero_pe
 
 PedidosClienteModel.prototype.actualizar_estado_actual_pedido = function(numero_pedido, estado_pedido, callback) {
 
-    var sql = "UPDATE ventas_ordenes_pedidos SET estado_pedido=$2 WHERE pedido_cliente_id=$1;";
-
-    G.db.query(sql, [numero_pedido, estado_pedido], function(err, rows, result) {
-        callback(err, rows, result);
+    G.knex("ventas_ordenes_pedidos").
+    where("pedido_cliente_id", numero_pedido).
+    update({estado_pedido : estado_pedido}).then(function(resultado){
+        //console.log("resultado ", resultado);
+        callback(false, resultado);
+    }).catch(function(err){
+        callback(err);
     });
+    
 };
 
 

@@ -770,7 +770,6 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
         return registros;
         
     }).then(function(rows){
-        console.log("registros ", rows.length, " cantidad ",query.totalRegistros);
         callback(false, rows, query.totalRegistros);
     }).
     catch(function(err){

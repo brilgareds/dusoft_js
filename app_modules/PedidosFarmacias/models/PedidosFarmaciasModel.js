@@ -757,18 +757,27 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
         orWhere("b.descripcion", G.constants.db().LIKE, "%" + termino_busqueda + "%").
         orWhere("e.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%");
     });
+       
+    
+    query.totalRegistros = 0;
+    query.then(function(total){
+        var registros = query.
+                limit(limite).
+                offset((pagina - 1) * limite).
+                orderBy("f.fecha","asc");
+                
+        query.totalRegistros = total.length;
+        return registros;
         
-    query.clone().
-    then(function(total){
-        query.clone().
-        limit(limite).
-        offset((pagina - 1) * limite).
-        orderBy("f.fecha","asc").
-        then(function(registros){
-            callback(false, registros, total.length);
-        });
-
-    });
+    }).then(function(rows){
+        console.log("registros ", rows.length, " cantidad ",query.totalRegistros);
+        callback(false, rows, query.totalRegistros);
+    }).
+    catch(function(err){
+        console.log("errror ", err);
+        callback(err);
+    }).
+    done();
 
 };
 

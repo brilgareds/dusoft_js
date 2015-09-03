@@ -531,20 +531,24 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
         orWhere("c.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%");
     });
     
-    query.clone().
-    then(function(total){
-        query.clone().
-        limit(limite).
-        offset((pagina - 1) * limite).
-        orderBy("d.fecha","asc").
-        then(function(registros){
-            callback(false, registros, total.length);
-        });
-
+    query.totalRegistros = 0;
+    query.then(function(total){
+        var registros = query.
+                limit(limite).
+                offset((pagina - 1) * limite).
+                orderBy("d.fecha","asc");
+                
+        query.totalRegistros = total.length;
+        return registros;
+        
+    }).then(function(rows){
+        callback(false, rows, query.totalRegistros);
     }).
     catch(function(err){
+        console.log("error ", err);
         callback(err);
-    });
+    }).
+    done();
         
 };
 

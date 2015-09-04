@@ -173,7 +173,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                     {field: 'costo_ultima_compra', width:"80", displayName: 'C.U.C', visible:that.opcionesModulo.columnaCostoUltimaCompra.visible, cellClass :"gridNumber"},
                    // {field: 'precio', width:"150", displayName: 'CP', visible:that.opcionesModulo.columnaPrecioVenta.visible, cellClass :"gridNumber"},
                     {field: 'precioContratacion', displayName: 'CP',  width: "80",visible:that.opcionesModulo.columnaCP.visible, cellClass :"gridNumber" },
-                    {field: 'porc_iva', displayName: 'Iva', width: "80", cellClass :"gridNumber"},
+                    {field: 'porc_iva', displayName: 'Iva', width: "50", cellClass :"gridNumber"},
                     {field: 'movimiento', displayName: "", cellClass: "txt-center", width: "50", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'}]
 
             };

@@ -62,8 +62,8 @@ PlanillasFarmaciasModel.prototype.listar_planillas_farmacias = function(fecha_in
                 callback(false, rows);
             })
             .catch (function(error) {
-                console.error(error);
-            });
+                callback(error);
+            }).done();
 
 };
 

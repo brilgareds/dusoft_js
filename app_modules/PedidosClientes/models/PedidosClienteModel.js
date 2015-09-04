@@ -726,7 +726,6 @@ PedidosClienteModel.prototype.eliminar_responsables_pedidos = function(numero_pe
         callback(err);
     }).done();
     
-    
 };
 
 /**

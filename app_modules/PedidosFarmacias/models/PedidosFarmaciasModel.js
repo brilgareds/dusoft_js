@@ -606,7 +606,6 @@ PedidosFarmaciasModel.prototype.consultar_pedido = function(numero_pedido, callb
     G.db.query(sql, [numero_pedido], function(err, rows, result) {
         callback(err, rows);
     });
-    
 };
 
 PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedido, callback) {

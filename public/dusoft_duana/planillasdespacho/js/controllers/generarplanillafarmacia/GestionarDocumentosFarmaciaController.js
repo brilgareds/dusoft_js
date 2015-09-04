@@ -49,16 +49,17 @@ define(["angular", "js/controllers",
                 $scope.$$watchers = null;
             });
             
-              $scope.buscador_documentos = function(ev) {
+              $scope.buscadorDocumentosPlanilla = function(ev) {
+                    
                 if (ev.which === 13) {
-                    console.log("ENTER ", $scope.datos_view.termino_busqueda_documentos)
+               
                     $scope.datos_view.datepicker_fecha_inicial = false;
                     $scope.datos_view.datepicker_fecha_final = false;
                     
                     that.traerDocumentosFarmacias(function(){
                         
                     })
-                    //$scope.consultar_documentos_planilla_despacho();
+                   
                 }
                 $scope.datos_view.datepicker_fecha_inicial = false;
                 $scope.datos_view.datepicker_fecha_final = false;
@@ -95,179 +96,6 @@ define(["angular", "js/controllers",
 
             };
 
-            /*   $scope.buscador_documentos = function(ev) {
-             
-             if (ev.which == 13) {
-             $scope.buscar_documentos_bodega($scope.datos_view.tercero_seleccionado);
-             }
-             };*/
-
-            //  $scope.seleccionar_cliente_farmacia = function() {
-
-
-            // $scope.datos_view.tercero_seleccionado.limpiar_documentos();
-            //$scope.datos_view.termino_busqueda = '';
-            //  $scope.datos_view.termino_busqueda_documentos = '';
-            //  $scope.datos_view.documento_seleccionado = Documento.get();
-            /// console.log($scope.datos_view.documento_seleccionado)
-            /*  if ($scope.datos_view.opcion_predeterminada === "0") {
-             that.buscar_farmacias();
-             }
-             
-             if ($scope.datos_view.opcion_predeterminada === "1") {
-             that.buscar_clientes();
-             }*/
-
-            // };
-
-            /*     that.buscar_clientes = function() {
-             
-             
-             var obj = {
-             session: $scope.session,
-             data: {
-             clientes: {
-             empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
-             pais_id: $scope.planilla.get_ciudad().get_pais_id(),
-             departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
-             ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
-             termino_busqueda: $scope.datos_view.termino_busqueda
-             }
-             }
-             };
-             
-             Request.realizarRequest(API.CLIENTES.LISTAR_CLIENTES, "POST", obj, function(data) {
-             
-             if (data.status === 200) {
-             that.render_clientes(data.obj.listado_clientes);
-             
-             }
-             });
-             };
-             
-             that.render_clientes = function(clientes) {
-             
-             
-             $scope.Empresa.limpiar_clientes();
-             
-             clientes.forEach(function(data) {
-             
-             var cliente = ClientePlanilla.get(data.nombre_tercero, data.direccion, data.tipo_id_tercero, data.tercero_id, data.telefono);
-             $scope.Empresa.set_clientes(cliente);
-             });
-             
-             };*/
-
-            /* that.buscar_farmacias = function() {
-             
-             var obj = {
-             session: $scope.session,
-             data: {
-             centro_utilidad: {
-             pais_id: $scope.planilla.get_ciudad().get_pais_id(),
-             departamento_id: $scope.planilla.get_ciudad().get_departamento_id(),
-             ciudad_id: $scope.planilla.get_ciudad().get_ciudad_id(),
-             termino_busqueda: $scope.datos_view.termino_busqueda
-             }
-             }
-             };
-             
-             Request.realizarRequest(API.CENTROS_UTILIDAD.LISTAR_CENTROS_UTILIDAD, "POST", obj, function(data) {
-             
-             if (data.status === 200) {
-             that.render_farmacias(data.obj.centros_utilidad);
-             
-             }
-             });
-             };
-             
-             that.render_farmacias = function(farmacias) {
-             
-             $scope.Empresa.limpiar_farmacias();
-             
-             farmacias.forEach(function(data) {
-             
-             var farmacia = FarmaciaPlanilla.get(data.empresa_id, data.centro_utilidad_id, data.descripcion);
-             $scope.Empresa.set_farmacias(farmacia);
-             });
-             
-             };*/
-
-
-            /*   $scope.buscar_documentos_bodega = function(tercero) {
-             
-             $scope.datos_view.tercero_seleccionado = tercero;
-             
-             
-             if ($scope.datos_view.opcion_predeterminada === "0") {
-             that.documentos_bodega_farmacias();
-             }
-             
-             if ($scope.datos_view.opcion_predeterminada === "1") {
-             that.documentos_bodega_clientes();
-             }
-             };
-             
-             that.documentos_bodega_clientes = function() {
-             
-             var obj = {
-             session: $scope.session,
-             data: {
-             planillas_despachos: {
-             empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
-             tipo_id: $scope.datos_view.tercero_seleccionado.getTipoId(),
-             tercero_id: $scope.datos_view.tercero_seleccionado.getId(),
-             termino_busqueda: $scope.datos_view.termino_busqueda_documentos
-             }
-             }
-             };
-             
-             Request.realizarRequest(API.PLANILLAS.LISTAR_DOCUMENTOS_CLIENTES, "POST", obj, function(data) {
-             
-             if (data.status === 200) {
-             that.render_documentos(data.obj.planillas_despachos);
-             }
-             });
-             };*/
-
-            /*    that.documentos_bodega_farmacias = function() {
-             
-             var obj = {
-             session: $scope.session,
-             data: {
-             planillas_despachos: {
-             empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
-             farmacia_id: $scope.datos_view.tercero_seleccionado.get_empresa_id(),
-             centro_utilidad_id: $scope.datos_view.tercero_seleccionado.getCodigo(),
-             termino_busqueda: $scope.datos_view.termino_busqueda_documentos
-             }
-             }
-             };
-             
-             Request.realizarRequest(API.PLANILLAS.LISTAR_DOCUMENTOS_FARMACIAS, "POST", obj, function(data) {
-             
-             if (data.status === 200) {
-             
-             that.render_documentos(data.obj.planillas_despachos);
-             }
-             });
-             };
-             
-             that.render_documentos = function(documentos) {
-             
-             $scope.datos_view.tercero_seleccionado.limpiar_documentos();
-             
-             documentos.forEach(function(data) {
-             
-             var documento = Documento.get(0, data.empresa_id, data.prefijo, data.numero, data.numero_pedido);
-             
-             documento.set_cantidad_cajas_auditadas(data.total_cajas);
-             documento.set_cantidad_neveras_auditadas(data.total_neveras);
-             
-             $scope.datos_view.tercero_seleccionado.set_documentos(documento);
-             });
-             
-             };*/
 
             /**
              * @author Cristian Manuel Ardila
@@ -275,23 +103,17 @@ define(["angular", "js/controllers",
              * boton (Aceptar) de la view (gestionardocumentosfarmacia.html)
              * y se encargara de registrar los documentos de devoluciones
              */
-            $scope.aceptar_documentos_bodegas = function() {
-
+            $scope.prepararDocumentosDevolucionesPlanilla = function() {
+                
                 if ($scope.datos_view.opcion_predeterminada === "2") {
 
                     $scope.datos_view.documento_seleccionado.set_empresa_id(Sesion.getUsuarioActual().getEmpresa().getCodigo());
-
-                    that.gestionar_planilla_despacho(function(continuar) {
-                        if (continuar)
-                            $scope.cerrar_gestion_documentos_bodega();
-                    });
+                    $scope.cerrarRemisionesDocumentos();
+                
                 } else {
-                    $scope.cerrar_gestion_documentos_bodega();
+                    $scope.cerrarRemisionesDocumentos();
                 }
             };
-
-
-
 
             /**
              * @author Cristian Manuel Ardila
@@ -301,10 +123,10 @@ define(["angular", "js/controllers",
              * devolucion
              * 
              */
-            that.ingresar_documentos_planilla = function(callback) {
-
+            that.ingresarDocumentosPlanilla = function(callback) {
+                
                 $scope.planilla.set_documento($scope.datos_view.documento_seleccionado);
-                $scope.planilla.get_documento().set_empresa_id($scope.planilla.get_empresa().getCodigo());
+                $scope.planilla.get_documento().set_empresa_id(Sesion.getUsuarioActual().getEmpresa().getCodigo());
        
                 var obj = {
                     session: $scope.session,
@@ -328,55 +150,47 @@ define(["angular", "js/controllers",
                     if (data.status === 200) {
 
                         AlertService.mostrarMensaje("warning", data.msj);
-                        // $scope.planilla.set_documentos($scope.datos_view.documento_seleccionado);
-                        //  $scope.datos_view.documento_seleccionado = Documento.get();
-
-                        //  $scope.buscar_documentos_bodega($scope.datos_view.tercero_seleccionado);
+                       
                         $scope.planilla.set_documentos($scope.datos_view.documento_seleccionado);
                         $scope.datos_view.documento_seleccionado = Documento.get();
 
-                        //console.log($scope.datos_view.documento_seleccionado)
-                        //  $scope.buscar_documentos_bodega($scope.datos_view.tercero_seleccionado);
                         callback(true);
                     } else {
 
-                        // AlertService.mostrarMensaje("warning", data.msj);
+                      
                         callback(false);
                     }
                 });
 
             };
-
-            $scope.confirmRegistroDocumentoDevolucion = function(documento) {
-                that.registrarDocumentoFarmacia(documento);
-            };
-            /**
+            
+             /**
              * +Descripcion: function que invocara funcion encargada de ejecutar dos servicios
              * generar planillas e ingresar documentos planilla
              * @param {type} documento
              * @returns {undefined}
              */
-            that.registrarDocumentoFarmacia = function(documento) {
+            $scope.seleccionarDocumentoDevolucion = function(documento) {
+             
                 $scope.datos_view.documento_seleccionado = documento;
-
-                that.gestionar_planilla_farmacia(function() {
+                           
+                 that.registrarDocumentoFarmacia(function() {
 
                 });
-
             };
-
+    
             /**
              * @author Cristian Manuel Ardila
              * @param {type} callback
              * @returns {undefined}
-             * +Descripcion: funcion encargada de registrar el detallado de la persona
-             * encargada de transportar la devolucion,el origen y el destino 
+             * +Descripcion: funcion encargada de registrar una planilla (el 
+             * detallado de la persona encargada de transportar la devolucion,
+             * el origen y el destino )
              * 
              */
-            that.generar_planilla_farmacia = function(callback) {
+            that.guardarPlanillaFarmacia = function(callback) {
 
                 var empresa = Sesion.getUsuarioActual().getEmpresa();
-
 
                 var obj = {
                     session: $scope.session,
@@ -398,6 +212,7 @@ define(["angular", "js/controllers",
                 Request.realizarRequest(API.PLANILLAS_FARMACIAS.GENERAR_PLANILLA_FARMACIA, "POST", obj, function(data) {
 
                     var idUltimoRegistroPFD = data.obj.id_inv_planilla_farmacia_devolucion[0].id_inv_planilla_farmacia_devolucion;
+                    
                     if ($scope.planilla.get_numero_guia() === 0) {
 
                         $scope.planilla.set_numero_guia(idUltimoRegistroPFD);
@@ -419,21 +234,29 @@ define(["angular", "js/controllers",
 
                 });
             };
-            that.gestionar_planilla_farmacia = function(callback) {
-
-
+            
+            /**
+             * @author Cristian Ardila
+             * +Descripcion: Metodo encargado de invocar los metodos para 
+             * almacenar la planilla almacenar los documentos
+             * @param {type} callback
+             * @version 11:13 am 03/09/2015
+             * @returns {void}
+             * 
+             */
+            that.registrarDocumentoFarmacia = function(callback) {
                 var documentoSeleccionado = $scope.datos_view.documento_seleccionado;
 
                 Empresa.eliminarDocumento(documentoSeleccionado);
 
                 if ($scope.planilla.get_numero_guia() === 0) {
 
-                    that.generar_planilla_farmacia(function(continuar) {
+                    that.guardarPlanillaFarmacia(function(continuar) {
 
 
                         if (continuar) {
 
-                            that.ingresar_documentos_planilla(function(continuar) {
+                            that.ingresarDocumentosPlanilla(function(continuar) {
 
                                 if (callback)
                                     callback(continuar);
@@ -446,22 +269,11 @@ define(["angular", "js/controllers",
                     });
                 } else {
 
-                    //  that.generar_planilla_farmacia(function(continuar) {
-
-
-                    //  if (continuar) {
-
-                    that.ingresar_documentos_planilla(function(continuar) {
+                    that.ingresarDocumentosPlanilla(function(continuar) {
 
                         if (callback)
                             callback(continuar);
-                    });
-                    // } else {
-
-                    //  if (callback)
-                    //  callback(continuar);
-                    /*}
-                     });*/
+                    });       
                 }
 
             };
@@ -579,18 +391,26 @@ define(["angular", "js/controllers",
              *+Descripcion: metodo handler el cual se comunicara con la
              * vista y carga el componente gridview
              */
-            $scope.onListarDocumentos = function(callback) {
-
+            that.onListarDocumentos = function() {
+               
                 $scope.paginaactual = 1;
                 that.traerDocumentosFarmacias(function() {
 
                 });
             }
 
-            $scope.onListarDocumentos();
+            that.onListarDocumentos();
 
-
-            $scope.validar_ingreso_documento = function(documento) {
+            /**
+             * +Descripcion: Metodo el cual validara si se ingresa una cantidad
+             *  de cajas, neveras, temperaturas y posteriormente activar el boton 
+             *  para registrar el documento
+             * @author: Cristian Ardila
+             * @version 11:13 am 03/09/2015
+             * @param {object} documento
+             * @returns {disabled|Boolean}
+             */
+            $scope.validarPaqueteEnvioDevolucion = function(documento) {
 
 
                 var disabled = false;
@@ -617,7 +437,7 @@ define(["angular", "js/controllers",
                         disabled = true;
                     }
                 }
-                // Validar que si ingresar neveras, obligatoriamente ingresen la temperatura de la nevera
+                // Validar que si ingresa neveras, obligatoriamente ingresen la temperatura de la nevera
                 if (documento.get_cantidad_neveras() !== '' && documento.get_cantidad_neveras() !== 0) {
                     disabled = false;
                     if (documento.get_temperatura_neveras() === '') {
@@ -629,13 +449,12 @@ define(["angular", "js/controllers",
             };
 
 
-            $scope.lista_remisiones_bodega = {
+            $scope.listaRemisionesBodega = {
                 data: 'Empresa.get_lista_documentos()',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
                     {displayName: 'Prefijo', width: "10%", cellTemplate: '<label ng-model="row.entity.prefijo">{{row.entity.prefijo}}<label/> <label ng-model="row.entity.numero">({{row.entity.numero}}) <label/> '},
-                    //  {field: 'get_prefijo()', displayName: 'Prefijo', width: "10%"},
                     {field: 'get_bodegas_doc_id()', displayName: 'bodega documento id', width: "15%", visible: false},
                     {field: 'get_numero()', displayName: 'numero', width: "10%", visible: false},
                     {field: 'get_fecha_registro()', displayName: 'Fecha registro', width: "15%"},
@@ -644,7 +463,7 @@ define(["angular", "js/controllers",
                     {field: 'temperatura_neveras', displayName: '°C Nevera', width: "15%", cellTemplate: '<div class="col-xs-12"> <input type="text" ng-model="row.entity.temperatura_neveras" validacion-numero class="form-control grid-inline-input" name="" id="" /> </div>'},
                     {displayName: "Opciones", cellClass: "txt-center dropdown-button", width: "5%",
                         cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="confirmRegistroDocumentoDevolucion(row.entity)" ng-disabled="validar_ingreso_documento(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
+                                            <button class="btn btn-default btn-xs" ng-click="seleccionarDocumentoDevolucion(row.entity)" ng-disabled="validarPaqueteEnvioDevolucion(row.entity)" ><span class="glyphicon glyphicon-ok"></span></button>\
                                         </div>'
                     }
                 ]

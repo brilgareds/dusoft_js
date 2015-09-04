@@ -15,7 +15,7 @@ module.exports = function(app, di_container) {
     app.post('/api/PlanillasFarmacias/listando/empresas', function(req, res) {
         
     
-        c_planillas_farmacias.listar_farmacias(req, res);
+        c_planillas_farmacias.listarFarmacias(req, res);
     });
     
     
@@ -27,7 +27,7 @@ module.exports = function(app, di_container) {
     app.post('/api/PlanillasFarmacias/listando/documentos', function(req, res) {
         
     
-        c_planillas_farmacias.listar_documentos(req, res);
+        c_planillas_farmacias.listarDocumentos(req, res);
     });
     
     
@@ -75,5 +75,10 @@ module.exports = function(app, di_container) {
     
      app.post('/api/PlanillasFarmacias/consultarDocumentosPlanillaFarmacia', function(req, res) {
         c_planillas_farmacias.consultarDocumentosPlanillaFarmacia(req, res);
+    });
+    
+    
+     app.post('/api/PlanillasFarmacias/eliminarDocumentoPlanillaFarmacia', function(req, res) {
+        c_planillas_farmacias.eliminarDocumentoPlanilla(req, res);
     });
 };

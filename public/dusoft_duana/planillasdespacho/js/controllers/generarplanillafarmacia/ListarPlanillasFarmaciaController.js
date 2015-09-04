@@ -219,22 +219,18 @@ define(["angular", "js/controllers",
                     {field: 'get_descripcion_estado()', displayName: "Estado", width: "15%"},
                     {field: 'get_fecha_registro()', displayName: "F. Registro", width: "9%"},
                     {field: 'get_fecha_despacho()', displayName: "F. Despacho", width: "9%"},
-                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",
+                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",width: "9%",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\
                                                 <li><a href="javascript:void(0);" ng-click="gestionar_planilla_farmacias(row.entity,true)" >Modificar</a></li>\
-                                                <li><a href="javascript:void(0);" ng-click="generar_reporte(row.entity,false)" >Ver PDF</a></li>\
-                                                <li><a href="javascript:void(0);" ng-validate-events="{{ validar_envio_email(row.entity) }}" ng-click="ventana_enviar_email(row.entity)" >Enviar por Email</a></li>\
                                             </ul>\
                                        </div>'
                     }
                 ]
             };
 
-            $scope.validar_envio_email = function(planilla) {
-                return {'click': planilla.get_estado() == '2'};
-            };
+           
 
 
             /**

@@ -246,52 +246,70 @@ PedidosClienteModel.prototype.listar_pedidos_clientes = function(empresa_id, ter
 
 PedidosClienteModel.prototype.consultar_pedido = function(numero_pedido, callback) {
 
-    var sql = " select \
-                a.pedido_cliente_id as numero_pedido, \
-                b.tipo_id_tercero as tipo_id_cliente, \
-                b.tercero_id as identificacion_cliente, \
-                b.nombre_tercero as nombre_cliente, \
-                b.direccion as direccion_cliente, \
-                b.telefono as telefono_cliente, \
-                coalesce(f.contrato_cliente_id, (SELECT contrato_cliente_id FROM vnts_contratos_clientes WHERE estado = '1' and contrato_generico = '1')) as contrato_cliente_id,\
-                c.tipo_id_vendedor, \
-                c.vendedor_id as idetificacion_vendedor, \
-                c.nombre as nombre_vendedor, \
-                a.estado, \
-                case when a.estado = '0' then 'Inactivo ' \
-                     when a.estado = '1' then 'Activo' \
-                     when a.estado = '2' then 'Anulado' \
-                     when a.estado = '3' then 'Entregado' end as descripcion_estado, \
-                a.estado_pedido as estado_actual_pedido, \
-                case when a.estado_pedido = '0' then 'No Asignado' \
-                     when a.estado_pedido = '1' then 'Asignado' \
-                     when a.estado_pedido = '2' then 'Auditado' \
-                     when a.estado_pedido = '3' then 'En Zona Despacho' \
-                     when a.estado_pedido = '4' then 'Despachado' \
-                     when a.estado_pedido = '5' then 'Despachado con Pendientes' \
-                     when a.estado_pedido = '6' then 'Separacion Finalizada' \
-                     when a.estado_pedido = '7' then 'En Auditoria'\
-                     when a.estado_pedido = '8' then 'Auditado con pdtes' \
-                     when a.estado_pedido = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido,\
-                d.estado as estado_separacion, \
-                a.observacion, \
-                a.observacion_cartera,\
-                a.sw_aprobado_cartera,\
-                coalesce(a.tipo_producto,'') as tipo_producto,\
-                coalesce(e.descripcion,'') as descripcion_tipo_producto,\
-                a.fecha_registro \
-                from ventas_ordenes_pedidos a \
-                inner join terceros b on a.tipo_id_tercero = b.tipo_id_tercero and a.tercero_id = b.tercero_id \
-                inner join vnts_vendedores c on a.tipo_id_vendedor = c.tipo_id_vendedor and a.vendedor_id = c.vendedor_id \
-                left join inv_bodegas_movimiento_tmp_despachos_clientes d on a.pedido_cliente_id = d.pedido_cliente_id\
-                left join inv_tipo_producto e on a.tipo_producto = e.tipo_producto_id\
-                left join vnts_contratos_clientes f ON b.tipo_id_tercero = f.tipo_id_tercero AND b.tercero_id = f.tercero_id and a.empresa_id = f.empresa_id and f.estado = '1' \
-                where a.pedido_cliente_id = $1  \
-                order by 1 desc; ";
+    var columnas = [
+        "a.pedido_cliente_id as numero_pedido", 
+        "b.tipo_id_tercero as tipo_id_cliente", 
+        "b.tercero_id as identificacion_cliente", 
+        "b.nombre_tercero as nombre_cliente", 
+        "b.direccion as direccion_cliente", 
+        "b.telefono as telefono_cliente", 
+        G.knex.raw("coalesce(f.contrato_cliente_id, (SELECT contrato_cliente_id FROM vnts_contratos_clientes WHERE estado = '1' and contrato_generico = '1')) as contrato_cliente_id"),
+        "c.tipo_id_vendedor", 
+        "c.vendedor_id as idetificacion_vendedor", 
+        "c.nombre as nombre_vendedor", 
+        "a.estado", 
+        G.knex.raw("case when a.estado = '0' then 'Inactivo '\
+             when a.estado = '1' then 'Activo'\
+             when a.estado = '2' then 'Anulado'\
+             when a.estado = '3' then 'Entregado' end as descripcion_estado"), 
+        "a.estado_pedido as estado_actual_pedido", 
+        G.knex.raw("case when a.estado_pedido = '0' then 'No Asignado'\
+             when a.estado_pedido = '1' then 'Asignado'\
+             when a.estado_pedido = '2' then 'Auditado'\
+             when a.estado_pedido = '3' then 'En Zona Despacho'\
+             when a.estado_pedido = '4' then 'Despachado'\
+             when a.estado_pedido = '5' then 'Despachado con Pendientes'\
+             when a.estado_pedido = '6' then 'Separacion Finalizada'\
+             when a.estado_pedido = '7' then 'En Auditoria'\
+             when a.estado_pedido = '8' then 'Auditado con pdtes'\
+             when a.estado_pedido = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido"),
+        "d.estado as estado_separacion", 
+        "a.observacion", 
+        "a.observacion_cartera",
+        "a.sw_aprobado_cartera",
+        G.knex.raw("coalesce(a.tipo_producto,'') as tipo_producto"),
+        G.knex.raw("coalesce(e.descripcion,'') as descripcion_tipo_producto"),
+        "a.fecha_registro" 
+    ];
+    
+    G.knex.column(columnas).
+    from("ventas_ordenes_pedidos as a").
+    innerJoin("terceros as b", function(){
+        this.on("a.tipo_id_tercero", "b.tipo_id_tercero").
+        on("a.tercero_id", "b.tercero_id");
+    }).
+    innerJoin("vnts_vendedores as c", function(){
+        this.on("a.tipo_id_vendedor", "c.tipo_id_vendedor").
+        on("a.vendedor_id", "c.vendedor_id");
+    }).
+    leftJoin("inv_bodegas_movimiento_tmp_despachos_clientes as d","a.pedido_cliente_id", "d.pedido_cliente_id").
+    leftJoin("inv_tipo_producto as e", "a.tipo_producto", "e.tipo_producto_id").
+    leftJoin("vnts_contratos_clientes as f", function(){
+        this.on("b.tipo_id_tercero", "f.tipo_id_tercero").
+        on("b.tercero_id", "f.tercero_id").
+        on("a.empresa_id", "f.empresa_id").
+        on(G.knex.raw("f.estado = '1'"));
+    }).
+    where("a.pedido_cliente_id", numero_pedido).
+    orderByRaw("1 desc").
+    then(function(rows){
+        callback(false, rows);
+    }).catch(function(err){
+        console.log("error >>>>>>>> ", err);
+        callback(err);
+    }).done();
+    
 
-    G.db.query(sql, [numero_pedido], function(err, rows, result) {
-        callback(err, rows);
-    });
 };
 
 /**
@@ -572,12 +590,6 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
  */
 
 PedidosClienteModel.prototype.asignar_responsables_pedidos = function(numero_pedido, estado_pedido, responsable, usuario, callback) {
-
-    /*console.log('========== asignar_responsables_pedidos ==========');
-     console.log(responsable);
-     console.log(usuario);
-     console.log('==================================================');*/
-
     var that = this; 
 
     G.knex.column("*").
@@ -703,13 +715,17 @@ PedidosClienteModel.prototype.actualizar_responsables_pedidos = function(numero_
  *          UPDATE ventas_ordenes_pedidos_estado SET responsable_id=$3, fecha=NOW(), usuario_id=$4  WHERE pedido_cliente_id=$1 AND estado=$2;
  */
 
-PedidosClienteModel.prototype.eliminar_responsables_pedidos = function(numero_pedido, callback) {
-
-    var sql = "DELETE FROM ventas_ordenes_pedidos_estado WHERE pedido_cliente_id=$1 and (sw_terminado is null or sw_terminado = '0'); ; ";
-
-    G.db.query(sql, [numero_pedido], function(err, rows, result) {
-        callback(err, rows, result);
-    });
+PedidosClienteModel.prototype.eliminar_responsables_pedidos = function(numero_pedido, callback) {    
+    G.knex("ventas_ordenes_pedidos_estado").
+    where("pedido_cliente_id", numero_pedido).
+    whereRaw("(sw_terminado is null or sw_terminado = '0')").del().
+    then(function(rows){
+        callback(false, rows);
+    }).catch(function(err){
+        console.log("ventas ordenes error al borrar ", err);
+        callback(err);
+    }).done();
+    
 };
 
 /**
@@ -811,36 +827,42 @@ PedidosClienteModel.prototype.calcular_cantidad_reservada_cotizaciones_clientes_
 // lista todos los responsables del pedido
 PedidosClienteModel.prototype.obtener_responsables_del_pedido = function(numero_pedido, callback) {
 
-
-    var sql = " select \
-                a.pedido_cliente_id as numero_pedido,  \
-                a.estado,\
-                case when a.estado='0' then 'No Asignado'\
-                     when a.estado='1' then 'Asignado'\
-                     when a.estado='2' then 'Auditado'\
-                     when a.estado='3' then 'En Zona Despacho' \
-                     when a.estado='4' then 'Despachado'\
-                     when a.estado='5' then 'Despachado con Pendientes' \
-                     when a.estado='6' then 'Separacion Finalizada' \
-                     when a.estado='7' then 'En Auditoria'\
-                     when a.estado='8' then 'Auditado con pdtes' \
-                     when a.estado='9' then 'En zona con pdtes' end as descripcion_estado,\
-                b.operario_id,\
-                b.nombre as nombre_responsable,\
-                b.usuario_id as usuario_id_responsable,\
-                a.usuario_id,\
-                c.nombre as nombre_usuario,\
-                a.fecha as fecha_asignacion,\
-                a.fecha_registro,    \
-                COALESCE(a.sw_terminado,'0') as sw_terminado\
-                from ventas_ordenes_pedidos_estado a \
-                inner join system_usuarios c on a.usuario_id = c.usuario_id\
-                left join operarios_bodega b on a.responsable_id = b.operario_id\
-                where a.pedido_cliente_id=$1 order by a.fecha_registro DESC; ";
-
-    G.db.query(sql, [numero_pedido], function(err, rows, result) {
-        callback(err, rows);
-    });
+    var columnas = [
+        "a.pedido_cliente_id as numero_pedido",  
+        "a.estado",
+        G.knex.raw("case when a.estado='0' then 'No Asignado'\
+             when a.estado='1' then 'Asignado'\
+             when a.estado='2' then 'Auditado'\
+             when a.estado='3' then 'En Zona Despacho'\
+             when a.estado='4' then 'Despachado'\
+             when a.estado='5' then 'Despachado con Pendientes'\
+             when a.estado='6' then 'Separacion Finalizada'\
+             when a.estado='7' then 'En Auditoria'\
+             when a.estado='8' then 'Auditado con pdtes'\
+             when a.estado='9' then 'En zona con pdtes' end as descripcion_estado"),
+        "b.operario_id",
+        "b.nombre as nombre_responsable",
+        "b.usuario_id as usuario_id_responsable",
+        "a.usuario_id",
+        "c.nombre as nombre_usuario",
+        "a.fecha as fecha_asignacion",
+        "a.fecha_registro",    
+        G.knex.raw("COALESCE(a.sw_terminado,'0') as sw_terminado")
+    ];
+    
+    G.knex.columns(columnas).
+    from("ventas_ordenes_pedidos_estado as a").
+    innerJoin("system_usuarios as c", "a.usuario_id", "c.usuario_id").
+    leftJoin("operarios_bodega as b", "a.responsable_id", "b.operario_id").
+    where("a.pedido_cliente_id", numero_pedido).
+    orderBy("a.fecha_registro", "desc").
+    then(function(rows){
+        callback(false, rows);
+    }).catch(function(err){
+        console.log("err ", err);
+        callback(err);
+    }).done();
+    
 };
 
 

@@ -17,7 +17,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
             var fechaActual = new Date();
             $scope.paginas = 0;
             $scope.items = 0;
-            $scope.paginaactual = 0;
+            $scope.paginaactual = 1;
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
             $scope.listaEmpresas = [];
@@ -60,7 +60,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
             $scope.buscarProductos = function(termino_busqueda, paginando) {
 
                 if ($scope.ultima_busqueda !== $scope.termino_busqueda) {
-                    $scope.paginaactual = 0;
+                    $scope.paginaactual = 1;
                 }
 
                 if ($scope.filtro.empresa_seleccion === "") {
@@ -108,13 +108,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                 $scope.items = data.lista_productos.length;
                 //se valida que hayan registros en una siguiente pagina
                 if (paginando && $scope.items === 0) {
-                    if ($scope.paginaactual > 0) {
+                    if ($scope.paginaactual > 1) {
                         $scope.paginaactual--;
                     }
                     AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
                     return;
                 }
-                console.log(data.lista_productos)
                 $scope.Empresa.vaciarProductos();
                 $scope.paginas = (data.lista_productos.length / 10);
                 $scope.items = data.lista_productos.length;
@@ -136,6 +135,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                     producto.setPrecioContratacion(obj.valor_pactado);
                     producto.setTipoProductoId(obj.tipo_producto_id);
                     producto.setCodigoCum(obj.codigo_cum);
+                    producto.setPrecioRegulado(obj.precio_regulado);
                     
                     
                     $scope.Empresa.agregarProducto(
@@ -153,7 +153,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                 enableHighlighting: true,
                 showFilter: true,
                 enableRowSelection: false,
-                
+                enableColumnResize:true,
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Código', width: "130",
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
@@ -165,15 +165,16 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                                                 <span ng-cell-text >{{COL_FIELD}}</span>\
                                             </div>'
                     },
-                    {field: 'descripcion', displayName: 'Nombre'},
-                     {field: 'codigoCum', displayName: 'Codigo cum', width:"150", cellClass :"gridNumber"},
-                    {field: 'existencia', displayName: 'Existencia', width:"100", cellClass :"gridNumber"},  
-                    {field: 'costo', displayName: 'Costo', width:"150", visible:that.opcionesModulo.columnaCosto.visible, cellClass :"gridNumber"},
-                    {field: 'costo_ultima_compra', width:"150", displayName: 'Costo Ultima Compra', visible:that.opcionesModulo.columnaCostoUltimaCompra.visible, cellClass :"gridNumber"},
+                    {field: 'descripcion', displayName: 'Nombre',  cellTemplate: '<div class="ngCellText"  ng-class="col.colIndex()">{{row.entity.descripcion}}</div>' },
+                    {field: 'codigoCum', displayName: 'Cum', width:"90", cellClass :"gridNumber"},
+                    {field: 'existencia', displayName: 'Stock', width:"80", cellClass :"gridNumber"},  
+                    {field: 'precioRegulado', displayName: 'P.Reg', width:"80",  cellClass :"gridNumber"},
+                    {field: 'costo', displayName: 'Costo', width:"80", visible:that.opcionesModulo.columnaCosto.visible, cellClass :"gridNumber"},
+                    {field: 'costo_ultima_compra', width:"80", displayName: 'C.U.C', visible:that.opcionesModulo.columnaCostoUltimaCompra.visible, cellClass :"gridNumber"},
                    // {field: 'precio', width:"150", displayName: 'CP', visible:that.opcionesModulo.columnaPrecioVenta.visible, cellClass :"gridNumber"},
-                    {field: 'precioContratacion', displayName: 'CP',  width: "100",visible:that.opcionesModulo.columnaCP.visible, cellClass :"gridNumber" },
-                    {field: 'porc_iva', displayName: 'Iva', width: "100", cellClass :"gridNumber"},
-                    {field: 'movimiento', displayName: "Movimiento", cellClass: "txt-center", width: "100", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'}]
+                    {field: 'precioContratacion', displayName: 'CP',  width: "80",visible:that.opcionesModulo.columnaCP.visible, cellClass :"gridNumber" },
+                    {field: 'porc_iva', displayName: 'Iva', width: "50", cellClass :"gridNumber"},
+                    {field: 'movimiento', displayName: "", cellClass: "txt-center", width: "50", cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="onRowClick(row)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'}]
 
             };
 
@@ -379,6 +380,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
 
 
             $scope.paginaAnterior = function() {
+                if($scope.paginaactual === 1) return;
                 $scope.paginaactual--;
                 $scope.buscarProductos($scope.termino_busqueda, true);
             };

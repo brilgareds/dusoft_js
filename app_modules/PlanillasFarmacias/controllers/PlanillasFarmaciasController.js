@@ -193,16 +193,17 @@ PlanillasFarmaciasController.prototype.generarPlanillaFarmacia = function(req, r
             observacion,
             numero_guia_externo,
             usuario_id,
-            function(err, rows, result) {
-
+            function(err, rows) {
+                console.log("//////***********************ingresarPlanillaFarmacia*******************");
                 if (err) {
                     res.send(G.utils.r(req.url, 'Error Interno', 500, {ingresar_planilla_farmacia: []}));
                     return;
                 } else {
 
                     var numero_guia = (rows.length > 0) ? rows[0].id : 0;
-
-                    res.send(G.utils.r(req.url, 'Planilla farmacia regitrada correctamente', 200, {ingresar_planilla_farmacia: numero_guia,
+                //    console.log({id_inv_planilla_farmacia_devolucion: rows});
+                    res.send(G.utils.r(req.url, 'Planilla farmacia regitrada correctamente', 200, 
+                       {ingresar_planilla_farmacia: numero_guia,
                         id_inv_planilla_farmacia_devolucion: rows}));
                     return;
                 }

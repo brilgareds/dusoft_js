@@ -97,7 +97,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                             
                             if (continuar) {
 
-                                $scope.consultar_documentos_planilla_despacho();
+                                $scope.consultarDocumentosPlanillaFarmacia();
                             }
                         });
                     }
@@ -161,13 +161,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 
             };
 
-
-            $scope.buscador_documentos_planillas = function(ev) {
-                if (ev.which === 13) {
-                    $scope.consultar_documentos_planilla_despacho();
-                }
-            };
-
             that.consultarPlanillaDespacho = function(callback) {
                 
                 var obj = {
@@ -193,7 +186,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
             that.renderPlanilla = function(datos) {
-              
+                 
                 var transportadora = Transportadora.get(datos.transportadora_id, datos.nombre_transportadora, datos.placa_vehiculo, datos.estado_transportadora);
                 var usuario = UsuarioPlanilla.get(datos.usuario_id, datos.nombre_usuario);
                 $scope.planilla = PlanillaDespacho.get(datos.id, transportadora, "", datos.nombre_conductor, datos.observacion, usuario, datos.fecha_registro, datos.fecha_despacho, datos.estado, datos.descripcion_estado);
@@ -203,8 +196,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             };
 
-            $scope.consultar_documentos_planilla_despacho = function() {
-
+            $scope.consultarDocumentosPlanillaFarmacia = function() {
+               
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -216,7 +209,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 };
 
                 Request.realizarRequest(API.PLANILLAS_FARMACIAS.DOCUMENTOS_PLANILLA, "POST", obj, function(data) {
-
+                        
                     if (data.status === 200) {
                         that.renderDocumentos(data.obj.planillas_farmacias);
                     } else {
@@ -290,7 +283,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     controller: function($scope, $modalInstance) {
 
                         $scope.aceptar_eliminacion_documento = function() {
-                            that.eliminar_documento_planilla_devolucion();
+                            that.eliminarDocumentoPlanillaDevolucion();
                             $modalInstance.close();
                         };
 
@@ -303,8 +296,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             };
 
-            that.eliminar_documento_planilla_devolucion = function() {
-              
+            that.eliminarDocumentoPlanillaDevolucion = function() {
+             
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -321,17 +314,22 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 Request.realizarRequest(API.PLANILLAS_FARMACIAS.ELIMINAR_DOCUMENTO, "POST", obj, function(data) {
 
                     AlertService.mostrarMensaje("warning", data.msj);
-
+                    var documentosCantidades = $scope.planilla.get_documentos();
+                    
                     if (data.status === 200) {
+                       
+                       //Refrescar la grilla de los totales de caja y neveras
+                        that.gestionarConsultas();
+                       
                         $scope.planilla.set_documento('');
-                        $scope.consultar_documentos_planilla_despacho();
+                        $scope.consultarDocumentosPlanillaFarmacia();
                     }
                 });
 
             };
 
             $scope.cerrarRemisionesDocumentos = function() {
-
+                that.gestionarConsultas(); 
                 $scope.$emit('cerrar_gestion_documentos_bodega', {animado: true});
                 $scope.estadoNumeroGuia = true;
                 localStorageService.add("numero_guia", $scope.planilla.get_numero_guia());
@@ -443,19 +441,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
 
-            // that.init = function() {
-
             that.validarEmpresa();
 
             that.obtenerEmpresas();
 
-
-            // };
-
             that.gestionarConsultas();
-
-            //  that.init();
-
+           
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
             });

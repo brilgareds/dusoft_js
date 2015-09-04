@@ -114,7 +114,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                     AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
                     return;
                 }
-                console.log(data.lista_productos)
                 $scope.Empresa.vaciarProductos();
                 $scope.paginas = (data.lista_productos.length / 10);
                 $scope.items = data.lista_productos.length;
@@ -136,6 +135,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                     producto.setPrecioContratacion(obj.valor_pactado);
                     producto.setTipoProductoId(obj.tipo_producto_id);
                     producto.setCodigoCum(obj.codigo_cum);
+                    producto.setPrecioRegulado(obj.precio_regulado);
                     
                     
                     $scope.Empresa.agregarProducto(
@@ -153,7 +153,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                 enableHighlighting: true,
                 showFilter: true,
                 enableRowSelection: false,
-                
+                enableColumnResize:true,
                 columnDefs: [
                     {field: 'codigo_producto', displayName: 'Código', width: "130",
                         cellTemplate: '<div class="ngCellText" ng-class="col.colIndex()">\
@@ -168,8 +168,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent', "controllers
                     {field: 'descripcion', displayName: 'Nombre'},
                      {field: 'codigoCum', displayName: 'Codigo cum', width:"150", cellClass :"gridNumber"},
                     {field: 'existencia', displayName: 'Existencia', width:"100", cellClass :"gridNumber"},  
-                    {field: 'costo', displayName: 'Costo', width:"150", visible:that.opcionesModulo.columnaCosto.visible, cellClass :"gridNumber"},
-                    {field: 'costo_ultima_compra', width:"150", displayName: 'Costo Ultima Compra', visible:that.opcionesModulo.columnaCostoUltimaCompra.visible, cellClass :"gridNumber"},
+                    {field: 'precioRegulado', displayName: 'Precio Regulado', width:"120",  cellClass :"gridNumber"},
+                    {field: 'costo', displayName: 'Costo', width:"120", visible:that.opcionesModulo.columnaCosto.visible, cellClass :"gridNumber"},
+                    {field: 'costo_ultima_compra', width:"120", displayName: 'C/Ultima Compra', visible:that.opcionesModulo.columnaCostoUltimaCompra.visible, cellClass :"gridNumber"},
                    // {field: 'precio', width:"150", displayName: 'CP', visible:that.opcionesModulo.columnaPrecioVenta.visible, cellClass :"gridNumber"},
                     {field: 'precioContratacion', displayName: 'CP',  width: "100",visible:that.opcionesModulo.columnaCP.visible, cellClass :"gridNumber" },
                     {field: 'porc_iva', displayName: 'Iva', width: "100", cellClass :"gridNumber"},

@@ -606,6 +606,7 @@ PedidosFarmaciasModel.prototype.consultar_pedido = function(numero_pedido, callb
     G.db.query(sql, [numero_pedido], function(err, rows, result) {
         callback(err, rows);
     });
+    
 };
 
 PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedido, callback) {
@@ -789,12 +790,12 @@ PedidosFarmaciasModel.prototype.obtenerTotalPedidosOperario = function(){
 // Asigancion de responsable al pedido 
 PedidosFarmaciasModel.prototype.asignar_responsables_pedidos = function(numero_pedido, estado_pedido, responsable, usuario, callback) {
 
-    var that = this;
-
-    // Validar si existen responsables asigandos
-    var sql = " SELECT * FROM solicitud_productos_a_bodega_principal_estado a WHERE a.solicitud_prod_a_bod_ppal_id = $1 AND a.estado = $2 and (a.sw_terminado is null or a.sw_terminado = '0');";
-
-    G.db.query(sql, [numero_pedido, estado_pedido], function(err, responsable_estado_pedido, result) {
+    var that = this;    
+    G.knex.column("*").
+    from("solicitud_productos_a_bodega_principal_estado as a").
+    where("a.solicitud_prod_a_bod_ppal_id", numero_pedido).
+    andWhere("a.estado", estado_pedido).
+    whereRaw("(a.sw_terminado is null or a.sw_terminado = '0')").then(function(responsable_estado_pedido){
         if (responsable_estado_pedido.length > 0) {
             //Actualizar
             that.actualizar_responsables_pedidos(numero_pedido, estado_pedido, responsable, usuario, function(_err, _rows) {
@@ -814,29 +815,38 @@ PedidosFarmaciasModel.prototype.asignar_responsables_pedidos = function(numero_p
                 });
             });
         }
+
+    }).catch(function(err){
+        callback(err);
     });
 };
 
 
 //  Almacenar responsable al pedido 
 PedidosFarmaciasModel.prototype.insertar_responsables_pedidos = function(numero_pedido, estado_pedido, responsable, usuario, callback) {
-
-    var sql = "INSERT INTO solicitud_productos_a_bodega_principal_estado( solicitud_prod_a_bod_ppal_id, estado, responsable_id, fecha, usuario_id) " +
-            "VALUES ($1, $2, $3, now(), $4);";
-
-    G.db.query(sql, [numero_pedido, estado_pedido, responsable, usuario], function(err, rows, result) {
-        callback(err, rows);
-    });
+        
+    G.knex("solicitud_productos_a_bodega_principal_estado").
+    returning("solicitud_prod_a_bod_ppal_est_id").
+    insert({solicitud_prod_a_bod_ppal_id:numero_pedido, estado:estado_pedido, responsable_id:responsable, fecha: 'now()', usuario_id:usuario}).
+    then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        callback(err);
+    }).done();
 };
 
 // actualizacion del responsable del pedido
 PedidosFarmaciasModel.prototype.actualizar_responsables_pedidos = function(numero_pedido, estado_pedido, responsable, usuario, callback) {
-
-    var sql = "UPDATE solicitud_productos_a_bodega_principal_estado SET responsable_id=$3, fecha=NOW(), usuario_id=$4 " +
-            "WHERE solicitud_prod_a_bod_ppal_id=$1 AND estado=$2 and (sw_terminado is null or sw_terminado = '0'); ";
-
-    G.db.query(sql, [numero_pedido, estado_pedido, responsable, usuario], function(err, rows, result) {
-        callback(err, rows);
+    
+    G.knex("solicitud_productos_a_bodega_principal_estado").
+    where("solicitud_prod_a_bod_ppal_id", numero_pedido).
+    andWhere("estado", estado_pedido).
+    whereRaw("(sw_terminado is null or sw_terminado = '0')").
+    returning('solicitud_prod_a_bod_ppal_est_id').
+    update({responsable_id : responsable, fecha: 'NOW()', usuario_id : usuario}).then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        callback(err);
     });
 };
 
@@ -852,12 +862,16 @@ PedidosFarmaciasModel.prototype.eliminar_responsables_pedidos = function(numero_
 
 // actualizacion el estado actual del pedido
 PedidosFarmaciasModel.prototype.actualizar_estado_actual_pedido = function(numero_pedido, estado_pedido, callback) {
-
-    var sql = "UPDATE solicitud_productos_a_bodega_principal SET estado=$2 WHERE solicitud_prod_a_bod_ppal_id=$1;";
-
-    G.db.query(sql, [numero_pedido, estado_pedido], function(err, rows, result) {
-        callback(err, rows);
+    
+    G.knex("solicitud_productos_a_bodega_principal").
+    where("solicitud_prod_a_bod_ppal_id", numero_pedido).
+    update({estado : estado_pedido}).then(function(resultado){
+        //console.log("resultado ", resultado);
+        callback(false, resultado);
+    }).catch(function(err){
+        callback(err);
     });
+    
 };
 
 

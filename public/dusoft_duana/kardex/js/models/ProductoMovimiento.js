@@ -20,6 +20,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
                 this.tipoProducto;
                 this.precioContratacion;
                 this.codigoCum;
+                this.precioRegulado = 0;
             }
 
             //herencia
@@ -86,7 +87,10 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             ProductoMovimiento.prototype.getCodigoCum = function() {
                 return this.codigoCum;
             };
-
+            
+            ProductoMovimiento.prototype.setPrecioRegulado = function(precioRegulado) {
+                return this.precioRegulado = precioRegulado;
+            };
 
 
             this.get = function(codigo, nombre, existencia, precio, existencia_total, costo, costo_ultima_compra, porc_iva) {

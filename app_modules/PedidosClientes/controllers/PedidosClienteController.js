@@ -170,7 +170,7 @@ PedidosCliente.prototype.eliminarResponsablesPedido = function(req, res) {
     var numero_pedido = args.pedidos_clientes.numero_pedido;
     var estado_pedido = ''; // 0 = No asignado
 
-    that.m_pedidos_clientes.consultar_pedido(numero_pedido, function(err, pedido_cliente) {
+    that.m_pedidos_clientes.consultar_pedido(numero_pedido, function(err, pedido_cliente) { 
 
         if (err || pedido_cliente.length === 0) {
 

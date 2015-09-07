@@ -5,7 +5,7 @@ define(["angular","js/services"], function(angular, services){
                 var requestObj = {
                     method:method,
                     url:url
-                }
+                };
 
                 if(method == "GET"){
                     requestObj.params = params;
@@ -23,7 +23,7 @@ define(["angular","js/services"], function(angular, services){
                     callback(data);
                 }); 
 
-            }
+            };
 
             return this;
             

@@ -36,7 +36,7 @@ PlanillasFarmaciasModel.prototype.listar_planillas_farmacias = function(fecha_in
                     G.knex.raw("To_char(a.fecha_despacho,'dd-mm-yyyy') as fecha_despacho ")
          ];
 
-    G.knex .column(column)
+      G.knex.column(column)
             .select()
             .from('inv_planillas_farmacia_devolucion as a')
             .innerJoin("inv_transportadoras as b", "a.inv_transportador_id", "=", "b.transportadora_id")
@@ -62,8 +62,8 @@ PlanillasFarmaciasModel.prototype.listar_planillas_farmacias = function(fecha_in
                 callback(false, rows);
             })
             .catch (function(error) {
-                console.error(error);
-            });
+                callback(error);
+            }).done();
 
 };
 
@@ -206,15 +206,40 @@ PlanillasFarmaciasModel.prototype.ingresarPlanillaFarmacia = function(empresa_id
         usuario_id,
         callback) {
 
-
-    var sql = "INSERT INTO inv_planillas_farmacia_devolucion(empresa_id, centro_utilidad, bodega, id_empresa_destino, inv_transportador_id, nombre_conductor, observacion, numero_guia_externo,estado,usuario_id)\
+        
+  /*var sql = "INSERT INTO inv_planillas_farmacia_devolucion(empresa_id, centro_utilidad, bodega, id_empresa_destino, inv_transportador_id, nombre_conductor, observacion, numero_guia_externo,estado,usuario_id)\
             VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)RETURNING id_inv_planilla_farmacia_devolucion;";
 
 
     G.db.query(sql, [empresa_id, centro_utilidad, bodega, id_empresa_destino, inv_transportador_id, nombre_conductor, observacion, numero_guia_externo, '1', usuario_id], function(err, rows, result) {
-        callback(err, rows, result);
-
-    });
+        callback(err, rows);
+        console.log("OK");
+        console.log(rows);
+    });*/
+    
+   G.knex("inv_planillas_farmacia_devolucion").
+    returning("id_inv_planilla_farmacia_devolucion").
+    insert({
+            empresa_id:empresa_id, 
+            centro_utilidad:centro_utilidad, 
+            bodega:bodega,
+            id_empresa_destino:id_empresa_destino, 
+            inv_transportador_id: inv_transportador_id,
+            nombre_conductor: nombre_conductor,
+            observacion:observacion,
+            numero_guia_externo: numero_guia_externo,
+            estado: '1',
+            usuario_id:usuario_id
+            
+        }).
+    then(function(resultado){
+      
+        callback(false, resultado[0]);
+       
+    }).catch(function(err){
+        callback(err);
+        
+    }).done();
 };
 
 
@@ -244,7 +269,7 @@ PlanillasFarmaciasModel.prototype.ingresarDocumentosPlanillaFarmacia = function(
     var cantidad_neveras = (cantidad_neveras === '') ? 0 : cantidad_neveras;
     var temperatura_neveras = (temperatura_neveras === '') ? 0 : temperatura_neveras;
 
-    var sql = "INSERT INTO inv_planillas_farmacia_devolucion_detalle\
+  /*  var sql = "INSERT INTO inv_planillas_farmacia_devolucion_detalle\
 (id_inv_planilla_farmacia_devolucion,empresa_id, prefijo, numero, cantidad_cajas, cantidad_neveras, temperatura_neveras, observacion, usuario_id, fecha_registro)\
 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,now())RETURNING id_inv_planilla_farmacia_devolucion_detalle;";
 
@@ -252,7 +277,29 @@ VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,now())RETURNING id_inv_planilla_farmacia_devo
     G.db.query(sql, [id, empresa_id, prefijo, numero, cantidad_cajas, cantidad_neveras, temperatura_neveras, observacion, usuario_id], function(err, rows, result) {
         callback(err, rows, result);
 
-    });
+    });*/
+     G.knex("inv_planillas_farmacia_devolucion_detalle").
+    returning("id_inv_planilla_farmacia_devolucion_detalle").
+    insert({
+            id_inv_planilla_farmacia_devolucion: id,
+            empresa_id:empresa_id, 
+            prefijo:prefijo, 
+            numero:numero,
+            cantidad_cajas:cantidad_cajas, 
+            cantidad_neveras: cantidad_neveras,
+            temperatura_neveras: temperatura_neveras,
+            observacion:observacion,
+            usuario_id:usuario_id
+            
+        }).
+    then(function(resultado){
+      
+        callback(false, resultado[0]);
+       
+    }).catch(function(err){
+        callback(err);
+        
+    }).done();
 };
 
 PlanillasFarmaciasModel.prototype.modificar_estado_planilla_despacho = function(planilla_id, estado, callback) {

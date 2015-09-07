@@ -213,13 +213,13 @@ define(["angular", "js/controllers",
                 columnDefs: [
                     {field: 'get_numero_guia()', displayName: '# Guía', width: "5%"},
                     {field: 'get_transportadora().get_descripcion()', displayName: 'Transportador', width: "15%"},
-                    {field: 'get_empresa()', displayName: 'Farmacia', width: "15%"},
+                    {field: 'get_empresa()', displayName: 'Farmacia', width: "20%"},
                     {field: 'get_cantidad_cajas()', displayName: 'Cant. Cajas', width: "10%"},
                     {field: 'get_cantidad_neveras()', displayName: 'Cant. Neveras', width: "10%"},
-                    {field: 'get_descripcion_estado()', displayName: "Estado", width: "15%"},
-                    {field: 'get_fecha_registro()', displayName: "F. Registro", width: "9%"},
-                    {field: 'get_fecha_despacho()', displayName: "F. Despacho", width: "9%"},
-                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",width: "9%",
+                    {field: 'get_descripcion_estado()', displayName: "Estado", width: "12%"},
+                    {field: 'get_fecha_registro()', displayName: "F. Registro", width: "11%"},
+                    {field: 'get_fecha_despacho()', displayName: "F. Despacho", width: "11%"},
+                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",width: "7%",
                         cellTemplate: '<div class="btn-group">\
                                             <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
                                             <ul class="dropdown-menu dropdown-options">\

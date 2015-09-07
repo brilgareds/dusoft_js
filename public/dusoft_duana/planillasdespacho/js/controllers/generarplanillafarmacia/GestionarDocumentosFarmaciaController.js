@@ -32,7 +32,8 @@ define(["angular", "js/controllers",
              */
             $rootScope.$on('gestionar_documentos_farmaciaCompleto', function(e, parametros) {
 
-
+                that.traerDocumentosFarmacias(function() {
+                });
                 $scope.datos_view = {
                   
                     termino_busqueda_documentos: '',
@@ -46,12 +47,24 @@ define(["angular", "js/controllers",
             $scope.datos_view.fecha_final =  $filter('date')(fecha_actual, "yyyy-MM-dd");
             
             $rootScope.$on('cerrar_gestion_documentos_bodegaCompleto', function(e, parametros) {
+             
                 $scope.$$watchers = null;
             });
             
               $scope.buscadorDocumentosPlanilla = function(ev) {
-                    
+                  
                 if (ev.which === 13) {
+               
+                    $scope.datos_view.datepicker_fecha_inicial = false;
+                    $scope.datos_view.datepicker_fecha_final = false;
+                    
+                    that.traerDocumentosFarmacias(function(){
+                        
+                    })
+                   
+                }
+                
+                if (ev.which === 1) {
                
                     $scope.datos_view.datepicker_fecha_inicial = false;
                     $scope.datos_view.datepicker_fecha_final = false;
@@ -171,7 +184,7 @@ define(["angular", "js/controllers",
              * @returns {undefined}
              */
             $scope.seleccionarDocumentoDevolucion = function(documento) {
-             
+               
                 $scope.datos_view.documento_seleccionado = documento;
                            
                  that.registrarDocumentoFarmacia(function() {
@@ -211,9 +224,9 @@ define(["angular", "js/controllers",
 
                 Request.realizarRequest(API.PLANILLAS_FARMACIAS.GENERAR_PLANILLA_FARMACIA, "POST", obj, function(data) {
 
-                    var idUltimoRegistroPFD = data.obj.id_inv_planilla_farmacia_devolucion[0].id_inv_planilla_farmacia_devolucion;
-                    
-                    if ($scope.planilla.get_numero_guia() === 0) {
+                    var idUltimoRegistroPFD = data.obj.id_inv_planilla_farmacia_devolucion;
+                   
+                   if ($scope.planilla.get_numero_guia() === 0) {
 
                         $scope.planilla.set_numero_guia(idUltimoRegistroPFD);
 

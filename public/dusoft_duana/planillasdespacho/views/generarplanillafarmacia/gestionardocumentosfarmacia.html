@@ -56,7 +56,7 @@
                                                        placeholder="Buscar" name="" id="" 
                                                        />
                                                 <span class="input-group-btn">
-                                                    <button class="btn btn-default" type="submit" ng-click="consultar_documentos_planilla_despacho()"><i class="glyphicon glyphicon-search"></i></button>
+                                                    <button class="btn btn-default" type="submit" ng-click="buscadorDocumentosPlanilla($event)"><i class="glyphicon glyphicon-search"></i></button>
                                                 </span>
                                             </p>
                                         </div>
@@ -69,7 +69,7 @@
                                     <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 1" ng-click="paginaAnterior()">
                                         <span class="glyphicon glyphicon-chevron-left" ></span>
                                     </button>
-                                    <button type="button" class="btn btn-default btn-medium" ng-disabled="items < 25" ng-click="paginaSiguiente()">
+                                    <button type="button" class="btn btn-default btn-medium" ng-disabled="items <=25" ng-click="paginaSiguiente()">
                                         <span class="glyphicon glyphicon-chevron-right" ></span>
                                     </button>
                                 </div>

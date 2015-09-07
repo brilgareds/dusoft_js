@@ -684,7 +684,7 @@ PedidosClienteModel.prototype.insertar_responsables_pedidos = function(numero_pe
 
 PedidosClienteModel.prototype.actualizar_responsables_pedidos = function(numero_pedido, estado_pedido, responsable, usuario, callback) {
     
-    var query = G.knex("ventas_ordenes_pedidos_estado").
+    G.knex("ventas_ordenes_pedidos_estado").
     where("pedido_cliente_id", numero_pedido).
     andWhere("estado", estado_pedido).
     whereRaw("(sw_terminado is null or sw_terminado = '0')").

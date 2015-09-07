@@ -27,7 +27,7 @@ Admin.prototype.inicializarAplicacion = function(req, res){
         
     });
     
-    
+         
       
 };
 

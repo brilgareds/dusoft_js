@@ -12,7 +12,7 @@ PlanillasFarmaciasController.prototype.listarPlanillasFarmacias = function(req, 
 
 
     var args = req.body.data;
-
+    var pagina = args.listar_planillas_farmacias.pagina;
     if (args.listar_planillas_farmacias === undefined || args.listar_planillas_farmacias.fecha_inicial === undefined || args.listar_planillas_farmacias.fecha_final === undefined || args.listar_planillas_farmacias.termino_busqueda === undefined) {
         res.send(G.utils.r(req.url, 'fecha_inicial, fecha_final o termino_busqueda no esta definido', 404, {}));
         return;
@@ -26,8 +26,10 @@ PlanillasFarmaciasController.prototype.listarPlanillasFarmacias = function(req, 
     var fecha_inicial = args.listar_planillas_farmacias.fecha_inicial;
     var fecha_final = args.listar_planillas_farmacias.fecha_final;
     var termino_busqueda = args.listar_planillas_farmacias.termino_busqueda;
+    var filtro = args.listar_planillas_farmacias.filtro;
 
-    that.m_planillas_farmacias.listar_planillas_farmacias(fecha_inicial, fecha_final, termino_busqueda, function(err, listar_planillas_farmacias) {
+
+    that.m_planillas_farmacias.listar_planillas_farmacias(fecha_inicial, fecha_final, filtro, termino_busqueda, pagina, function(err, listar_planillas_farmacias) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error listando las planillas_farmacias', 500, {listar_planillas_farmacias: {}}));
@@ -46,10 +48,10 @@ PlanillasFarmaciasController.prototype.listarPlanillasFarmacias = function(req, 
  * +Descripcion Controlador encargado de invocar el metodo model para listar
  * las farmacias
  */
-PlanillasFarmaciasController.prototype.listar_farmacias = function(req, res) {
+PlanillasFarmaciasController.prototype.listarFarmacias = function(req, res) {
 
     var args = req.body.data;
-    var codigoempresa = req.body.data.planillasfarmacias.codigoempresa;
+    var codigoempresa = req.body.data.planillasFarmacias.codigoempresa;
 
     /*  if (args.induccion === undefined ) { 
      res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
@@ -77,13 +79,16 @@ PlanillasFarmaciasController.prototype.listar_farmacias = function(req, res) {
  * @Author Cristian Ardila
  * +Descripcion Controlador encargado de los documentos con prefijo EDB
  */
-PlanillasFarmaciasController.prototype.listar_documentos = function(req, res) {
+PlanillasFarmaciasController.prototype.listarDocumentos = function(req, res) {
 
     var parametros = req.body.data.parametros;
     var empresa = parametros.empresa;
     var centroUtilidad = parametros.centroUtilidad;
     var bodega = parametros.bodega;
     var pagina = parametros.pagina;
+    var terminoBusqueda = parametros.terminoBusqueda;
+    var fechaInicial = parametros.fechaInicial;
+    var fechaFinal = parametros.fechaFinal;
     /**
      * @type string parametros: arreglo con todos los parametros
      * @type string empresa: contiene el id de la empresa
@@ -112,7 +117,7 @@ PlanillasFarmaciasController.prototype.listar_documentos = function(req, res) {
     }
 
 
-    this.m_planillas_farmacias.obtenerTipoDocumento(empresa, centroUtilidad, bodega, pagina, function(err, listar_documentos) {
+    this.m_planillas_farmacias.obtenerTipoDocumento(empresa, centroUtilidad, bodega, pagina, terminoBusqueda, fechaInicial, fechaFinal, function(err, listar_documentos) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error Listado de documentos tipo EDB', 500, {listar_documentos: {}}));
@@ -179,7 +184,7 @@ PlanillasFarmaciasController.prototype.generarPlanillaFarmacia = function(req, r
 
     }
 
-    that.m_planillas_farmacias.ingresar_planilla_farmacia(empresa_id,
+    that.m_planillas_farmacias.ingresarPlanillaFarmacia(empresa_id,
             centro_utilidad,
             bodega,
             id_empresa_destino,
@@ -188,16 +193,17 @@ PlanillasFarmaciasController.prototype.generarPlanillaFarmacia = function(req, r
             observacion,
             numero_guia_externo,
             usuario_id,
-            function(err, rows, result) {
-
+            function(err, rows) {
+                console.log("//////***********************ingresarPlanillaFarmacia*******************");
                 if (err) {
                     res.send(G.utils.r(req.url, 'Error Interno', 500, {ingresar_planilla_farmacia: []}));
                     return;
                 } else {
 
                     var numero_guia = (rows.length > 0) ? rows[0].id : 0;
-
-                    res.send(G.utils.r(req.url, 'Planilla farmacia regitrada correctamente', 200, {ingresar_planilla_farmacia: numero_guia,
+                //    console.log({id_inv_planilla_farmacia_devolucion: rows});
+                    res.send(G.utils.r(req.url, 'Planilla farmacia regitrada correctamente', 200, 
+                       {ingresar_planilla_farmacia: numero_guia,
                         id_inv_planilla_farmacia_devolucion: rows}));
                     return;
                 }
@@ -250,7 +256,7 @@ PlanillasFarmaciasController.prototype.generarDocumentoPlanillaFarmacia = functi
 
 
 
-    that.m_planillas_farmacias.ingresar_documentos_planilla_farmacia(id, empresa_id, prefijo, numero, cantidad_cajas,
+    that.m_planillas_farmacias.ingresarDocumentosPlanillaFarmacia(id, empresa_id, prefijo, numero, cantidad_cajas,
             cantidad_neveras, temperatura_neveras, observacion,
             usuario_id, function(err, rows, result) {
 
@@ -317,22 +323,21 @@ PlanillasFarmaciasController.prototype.consultarPlanillaFarmacia = function(req,
 
 
     var args = req.body.data;
-    
-    console.log("<<<<<<<<<<<<<<<===========consultarPlanillaFarmacia>>>>>>>>>>>>=========");
+
     if (args.planillas_farmacia === undefined || args.planillas_farmacia.planilla_id === undefined) {
         res.send(G.utils.r(req.url, 'planilla_id no esta definido', 404, {}));
         return;
     }
 
     var planilla_id = args.planillas_farmacia.planilla_id;
-    
-    
+
+
     that.m_planillas_farmacias.verificarPlanillaFarmacia(planilla_id, function(err, consultarPlanillaFarmacia) {
 
         if (err) {
             res.send(G.utils.r(req.url, 'Error consultado la planilla', 500, {consultarPlanillaFarmacia: {}}));
         } else {
-            res.send(G.utils.r(req.url, 'Planilla farmacia', 200, {consultarPlanillaFarmacia:consultarPlanillaFarmacia}));
+            res.send(G.utils.r(req.url, 'Planilla farmacia', 200, {consultarPlanillaFarmacia: consultarPlanillaFarmacia}));
         }
     });
 };
@@ -344,8 +349,8 @@ PlanillasFarmaciasController.prototype.consultarDocumentosPlanillaFarmacia = fun
     var that = this;
 
     var args = req.body.data;
-    
-   
+
+
     if (args.planillas_farmacia === undefined || args.planillas_farmacia.planilla_id === undefined || args.planillas_farmacia.termino_busqueda === undefined) {
         res.send(G.utils.r(req.url, 'planilla_id no esta definido', 404, {}));
         return;
@@ -369,6 +374,50 @@ PlanillasFarmaciasController.prototype.consultarDocumentosPlanillaFarmacia = fun
     });
 };
 
+
+PlanillasFarmaciasController.prototype.eliminarDocumentoPlanilla = function(req, res) {
+
+    var that = this;
+
+    var args = req.body.data;
+
+    if (args.planillas_farmacia === undefined 
+            || args.planillas_farmacia.planilla_id === undefined 
+            || args.planillas_farmacia.empresa_id === undefined 
+            || args.planillas_farmacia.prefijo === undefined 
+            || args.planillas_farmacia.numero === undefined) {
+        res.send(G.utils.r(req.url, 'planilla_id, empresa_id, prefijo o numero no esta definido', 404, {}));
+        return;
+    }
+
+    if (args.planillas_farmacia.planilla_id === '' 
+            || args.planillas_farmacia.empresa_id === '' 
+            || args.planillas_farmacia.prefijo === '' 
+            || args.planillas_farmacia.numero === '') {
+        res.send(G.utils.r(req.url, 'planilla_id, empresa_id, prefijo o numero estan vacios', 404, {}));
+        return;
+    }
+
+
+    
+
+    var planilla_id = args.planillas_farmacia.planilla_id;
+    var empresa_id = args.planillas_farmacia.empresa_id;
+    var prefijo = args.planillas_farmacia.prefijo;
+    var numero = args.planillas_farmacia.numero;
+    
+    
+     that.m_planillas_farmacias.eliminar_documento_planilla(planilla_id, empresa_id, prefijo, numero, function(err, rows, result) {
+
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error eliminando el documento de la planilla', 500, {planillas_farmacia: {}}));
+        } else {
+            res.send(G.utils.r(req.url, 'El documento se ha eliminado ', 200, {planillas_farmacias: {}}));
+        }
+    });
+   
+
+};
 PlanillasFarmaciasController.$inject = ["m_planillas_farmacias"];
 
 module.exports = PlanillasFarmaciasController;

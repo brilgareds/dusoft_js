@@ -37,14 +37,15 @@ OperariosBodega.prototype.listarOperariosBodega = function(req, res) {
             var i = lista_operarios.length;
 
             lista_operarios.forEach(function(operario_bodega) {
+                console.log("id del operario >>>>>>>>>>>>>>>>>>>>", operario_bodega.usuario_id);
 
-                that.m_pedidos_clientes.listar_pedidos_del_operario(operario_bodega.usuario_id, '', '', 1, undefined, function(err, rows, total_registros_clientes) {
+                that.m_pedidos_clientes.listar_pedidos_del_operario(operario_bodega.usuario_id, '', {asignados:true}, 1, 1, function(err, rows, total_registros_clientes) {
 
                     total_pedidos_clientes = (err) ? 0 : parseInt(total_registros_clientes);
 
                     operario_bodega.total_pedidos_clientes = total_pedidos_clientes;
 
-                    that.m_pedidos_farmacias.listar_pedidos_del_operario(operario_bodega.usuario_id, '', '', 1, undefined, function(err, rows, total_registros_farmacias) {
+                    that.m_pedidos_farmacias.listar_pedidos_del_operario(operario_bodega.usuario_id, '', {asignados:true}, 1, 1, function(err, rows, total_registros_farmacias) {
 
                         total_pedidos_farmacias = (err) ? 0 : parseInt(total_registros_farmacias);
 

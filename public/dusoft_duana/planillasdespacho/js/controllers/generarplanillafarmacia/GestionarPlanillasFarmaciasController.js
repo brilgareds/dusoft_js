@@ -28,8 +28,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             var that = this;
 
             $scope.Empresa = Empresa;
-
-            $scope.Empresa.limpiar_ciudades();
+            $scope.EmpresaOrigen = Usuario.getUsuarioActual().getEmpresa().getCodigo();
+            
             $scope.Empresa.limpiar_transportadoras();
 
             $scope.session = {
@@ -50,9 +50,9 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
 
             that.obtenerEmpresas = function() {
-
+                
                 var empresas = Usuario.getUsuarioActual().getEmpresasUsuario();
-
+                
                 $scope.Empresa.limpiar_empresas();
 
                 empresas.forEach(function(empresa) {
@@ -82,19 +82,22 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             };
 
+            /**
+             * +Descripcion: Metodo encargado de invocar el metodo de las planillas
+             * despachadas 
+             * @returns {undefined}
+             */
+            that.gestionarConsultas = function() {
 
-            that.gestionar_consultas = function() {
-
-                //  if ($scope.planilla.get_numero_guia() > 0)
-
-                that.buscar_transportadoras(function() {
+               
+                that.buscarTransportadoras(function() {
 
                     if ($scope.planilla.get_numero_guia() > 0) {
-                        that.consultar_planilla_despacho(function(continuar) {
-                           
+                        that.consultarPlanillaDespacho(function(continuar) {
+                            
                             if (continuar) {
 
-                                $scope.consultar_documentos_planilla_despacho();
+                                $scope.consultarDocumentosPlanillaFarmacia();
                             }
                         });
                     }
@@ -108,7 +111,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * +Descripcion: Metodo metodo que se encarga de realizar la peticion al
              * servidor consultando los trnasportadores
              */
-            that.buscar_transportadoras = function(callback) {
+            that.buscarTransportadoras = function(callback) {
 
                 var obj = {
                     session: $scope.session,
@@ -122,7 +125,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 Request.realizarRequest(API.TRANSPORTADORAS.LISTAR_TRANSPORTADORAS, "POST", obj, function(data) {
 
                     if (data.status === 200) {
-                        that.render_transportadoras(data.obj.transportadoras);
+                        that.renderTransportadoras(data.obj.transportadoras);
                         callback(true);
                     }
                 });
@@ -134,7 +137,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * +Descripcion: Metodo encargado de mapear el objecto json
              * de con la informacion de los transportadores contra el modelo trnasportadora
              */
-            that.render_transportadoras = function(transportadoras) {
+            that.renderTransportadoras = function(transportadoras) {
 
 
                 $scope.Empresa.limpiar_transportadoras();
@@ -146,20 +149,20 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     $scope.Empresa.set_transportadoras(transportadora);
                 });
             };
-
+            $scope.estadoNumeroGuia = true;
             $scope.seleccionar_transportadora = function() {
-
+          
+                  if($scope.planilla.get_transportadora().get_id() === 4){
+                      
+                      $scope.estadoNumeroGuia = false;
+                  }else{
+                      $scope.estadoNumeroGuia = true;
+                  }
+                
             };
 
-
-            $scope.buscador_documentos_planillas = function(ev) {
-                if (ev.which === 13) {
-                    $scope.consultar_documentos_planilla_despacho();
-                }
-            };
-
-            that.consultar_planilla_despacho = function(callback) {
-
+            that.consultarPlanillaDespacho = function(callback) {
+                
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -173,8 +176,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
 
                     if (data.status === 200) {
-                        that.render_planilla(data.obj.consultarPlanillaFarmacia[0]);
-                         callback(true);
+                        that.renderPlanilla(data.obj.consultarPlanillaFarmacia[0]);
+                        callback(true);
                     } else {
                         AlertService.mostrarMensaje("warning", data.msj);
                         callback(false);
@@ -182,19 +185,19 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 });
             };
 
-            that.render_planilla = function(datos) {
-
+            that.renderPlanilla = function(datos) {
+                 
                 var transportadora = Transportadora.get(datos.transportadora_id, datos.nombre_transportadora, datos.placa_vehiculo, datos.estado_transportadora);
                 var usuario = UsuarioPlanilla.get(datos.usuario_id, datos.nombre_usuario);
-                 $scope.planilla= PlanillaDespacho.get(datos.id, transportadora, "", datos.nombre_conductor, datos.observacion, usuario, datos.fecha_registro, datos.fecha_despacho, datos.estado, datos.descripcion_estado);
-                 $scope.planilla.set_cantidad_cajas(datos.total_cajas);
-                 $scope.planilla.set_cantidad_neveras(datos.total_neveras);
-                 $scope.planilla.set_numero_guia_externo(datos.numero_guia_externo);
-           
+                $scope.planilla = PlanillaDespacho.get(datos.id, transportadora, "", datos.nombre_conductor, datos.observacion, usuario, datos.fecha_registro, datos.fecha_despacho, datos.estado, datos.descripcion_estado);
+                $scope.planilla.set_cantidad_cajas(datos.total_cajas);
+                $scope.planilla.set_cantidad_neveras(datos.total_neveras);
+                $scope.planilla.set_numero_guia_externo(datos.numero_guia_externo);
+
             };
 
-            $scope.consultar_documentos_planilla_despacho = function() {
-                
+            $scope.consultarDocumentosPlanillaFarmacia = function() {
+               
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -206,44 +209,45 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 };
 
                 Request.realizarRequest(API.PLANILLAS_FARMACIAS.DOCUMENTOS_PLANILLA, "POST", obj, function(data) {
-                    
+                        
                     if (data.status === 200) {
-                        that.render_documentos(data.obj.planillas_farmacias);
+                        that.renderDocumentos(data.obj.planillas_farmacias);
                     } else {
                         AlertService.mostrarMensaje("warning", data.msj);
                     }
                 });
 
             };
-            that.render_documentos = function(documentos) {
-
+            that.renderDocumentos = function(documentos) {
+               
                 $scope.planilla.limpiar_documentos();
 
                 documentos.forEach(function(data) {
-                  
+
                     var documento = Documento.get(data.id, data.empresa_id, data.prefijo, data.numero, data.numero_pedido, data.total_cajas, data.total_neveras, data.temperatura_neveras, data.observacion, data.tipo);
                     documento.set_tercero(data.descripcion_destino);
 
                     $scope.planilla.set_documentos(documento);
-                  
-                });
 
+                });
+               
             };
 
 
             $scope.validar_btn_ingreso_documentos = function() {
-
+                
                 var disabled = false;
-
                 // Validar que todos los campos esten diligenciados
-                if ($scope.planilla.get_ciudad() === null || $scope.planilla.get_transportadora() === undefined || $scope.planilla.get_nombre_conductor() === '' || $scope.planilla.get_observacion() === '' || $scope.planilla.get_estado() === '2')
+                if ($scope.planilla.get_empresa() === null || $scope.planilla.get_transportadora() === undefined || 
+                    $scope.planilla.get_nombre_conductor() === '' || $scope.planilla.get_observacion() === '' || $scope.planilla.get_estado() === '2')
                     disabled = true;
 
-                // Si la transportadora es externa solicita obligatoriamente el numero de guia    
-                if ($scope.planilla.get_transportadora() !== undefined && $scope.planilla.get_transportadora().get_solicitar_guia() === '1') {
-                    if ($scope.planilla.get_numero_guia_externo() === '')
+            
+              if($scope.planilla.get_transportadora()!== undefined){
+                    if ($scope.planilla.get_transportadora().get_id() === 4 && $scope.planilla.get_numero_guia_externo().length === 0){
                         disabled = true;
                 }
+              }
                 return disabled;
             };
 
@@ -254,7 +258,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             };
 
-            $scope.confirmar_eliminar_documento_planilla = function(documento) {
+            $scope.eliminarDocumentoPlanilla = function(documento) {
 
                 $scope.planilla.set_documento(documento);
 
@@ -279,7 +283,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     controller: function($scope, $modalInstance) {
 
                         $scope.aceptar_eliminacion_documento = function() {
-                            $scope.eliminar_documento_planilla_despacho();
+                            that.eliminarDocumentoPlanillaDevolucion();
                             $modalInstance.close();
                         };
 
@@ -292,40 +296,43 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             };
 
-            $scope.eliminar_documento_planilla_despacho = function() {
-
+            that.eliminarDocumentoPlanillaDevolucion = function() {
+             
                 var obj = {
                     session: $scope.session,
                     data: {
-                        planillas_despachos: {
-                            planilla_id: $scope.planilla.get_numero_guia(),
+                        planillas_farmacia: {
+                            planilla_id: $scope.planilla.get_numero_guia(), 
                             empresa_id: $scope.planilla.get_documento().get_empresa_id(),
                             prefijo: $scope.planilla.get_documento().get_prefijo(),
-                            numero: $scope.planilla.get_documento().get_numero(),
-                            tipo: $scope.planilla.get_documento().get_tipo()
+                            numero: $scope.planilla.get_documento().get_numero()
+                            
                         }
                     }
                 };
-
-                Request.realizarRequest(API.PLANILLAS.ELIMINAR_DOCUMENTO, "POST", obj, function(data) {
+                
+                Request.realizarRequest(API.PLANILLAS_FARMACIAS.ELIMINAR_DOCUMENTO, "POST", obj, function(data) {
 
                     AlertService.mostrarMensaje("warning", data.msj);
-
+                    var documentosCantidades = $scope.planilla.get_documentos();
+                    
                     if (data.status === 200) {
+                       
+                       //Refrescar la grilla de los totales de caja y neveras
+                        that.gestionarConsultas();
+                       
                         $scope.planilla.set_documento('');
-                        $scope.consultar_documentos_planilla_despacho();
+                        $scope.consultarDocumentosPlanillaFarmacia();
                     }
                 });
 
             };
 
-            $scope.cerrar_gestion_documentos_bodega = function() {
-
+            $scope.cerrarRemisionesDocumentos = function() {
+                that.gestionarConsultas(); 
                 $scope.$emit('cerrar_gestion_documentos_bodega', {animado: true});
-
+                $scope.estadoNumeroGuia = true;
                 localStorageService.add("numero_guia", $scope.planilla.get_numero_guia());
-
-                that.gestionar_consultas();
 
             };
 
@@ -333,9 +340,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
              * +Descripcion: Funcion encargada de pintar las opciones de despachar
              * y cancelar una devolucion
              */
-            $scope.confirmar_despacho_planilla = function() {
-
-
+            $scope.despacharPlanilla = function() {
 
                 $scope.opts = {
                     backdrop: true,
@@ -350,18 +355,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                         <h4>¿Desea despachar la <b>Guía No {{ planilla.get_numero_guia() }} </b> con destino a la bodega de<br><b>{{ planilla.get_empresa().getNombre() }}</b>?</h4>\
                                     </div>\
                                     <div class="modal-footer">\
-                                        <button class="btn btn-warning" ng-click="cancelar_despacho()">Cancelar</button>\
-                                        <button class="btn btn-primary" ng-click="aceptar_despacho()">Aceptar</button>\
+                                        <button class="btn btn-warning" ng-click="cancelarDespacho()">Cancelar</button>\
+                                        <button class="btn btn-primary" ng-click="aceptarDespacho()">Aceptar</button>\
                                     </div>',
                     scope: $scope,
                     controller: function($scope, $modalInstance) {
 
-                        $scope.aceptar_despacho = function() {
-                            $scope.despachar_planilla_despacho();
+                        $scope.aceptarDespacho = function() {
+                            that.despachar_planilla_despacho();
                             $modalInstance.close();
                         };
 
-                        $scope.cancelar_despacho = function() {
+                        $scope.cancelarDespacho = function() {
                             $modalInstance.close();
                         };
                     }
@@ -370,8 +375,10 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             };
 
-            $scope.despachar_planilla_despacho = function() {
+           
 
+            that.despachar_planilla_despacho = function() {
+            
                 var obj = {
                     session: $scope.session,
                     data: {
@@ -380,7 +387,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                         }
                     }
                 };
-
 
                 Request.realizarRequest(API.PLANILLAS_FARMACIAS.DESPACHAR_PLANILLA, "POST", obj, function(data) {
 
@@ -392,62 +398,18 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 });
             };
 
-            $scope.descargar_enviar_reporte = function() {
-
-                $scope.opts = {
-                    backdrop: true,
-                    backdropClick: true,
-                    dialogFade: false,
-                    keyboard: true,
-                    template: ' <div class="modal-header">\
-                                        <button type="button" class="close" ng-click="cancelar_generacion_reporte()">&times;</button>\
-                                        <h4 class="modal-title">Mensaje del Sistema</h4>\
-                                    </div>\
-                                    <div class="modal-body">\
-                                        <div class="btn-group btn-group-justified" role="group" aria-label="...">\
-                                            <div class="btn-group" role="group">\
-                                              <button type="button" class="btn btn-success" ng-click="descargar_reporte_pdf()" ><span class="glyphicon glyphicon-cloud-download"></span> Descargar PDF</button>\
-                                            </div>\
-                                            <div class="btn-group" role="group">\
-                                              <button type="button" class="btn btn-primary" ng-click="enviar_reporte_pdf_email()" ><span class="glyphicon glyphicon-send"></span> Enviar por Email</button>\
-                                            </div>\
-                                        </div>\
-                                    </div>',
-                    scope: $scope,
-                    controller: function($scope, $modalInstance) {
-
-                        $scope.descargar_reporte_pdf = function() {
-                            $scope.generar_reporte($scope.planilla, true);
-                            $modalInstance.close();
-                        };
-
-                        $scope.enviar_reporte_pdf_email = function() {
-                            $scope.ventana_enviar_email($scope.planilla);
-                            $modalInstance.close();
-                        };
-
-                        $scope.cancelar_generacion_reporte = function() {
-                            $modalInstance.close();
-                        };
-                    }
-                };
-                var modalInstance = $modal.open($scope.opts);
-            };
-
-
-
-            $scope.cancelar_planilla_farmacia = function() {
+           
+            $scope.cancelarPlanillaFarmacia = function() {
 
                 $state.go('GestionarPlanillasFarmacias');
             };
 
-            //  console.log($scope.planilla.get_documentos());
-
-            $scope.lista_documentos_bodega = {
+            $scope.listaDocumentosPlanillados = {
                 data: 'planilla.get_documentos()',
                 enableColumnResize: true,
                 enableRowSelection: false,
-                showFooter: true,
+               // showFooter: true,
+                showFilter: true,
                 footerTemplate: '<div class="row col-md-12">\
                                     <div class="col-md-3 pull-right">\
                                         <table class="table table-clear">\
@@ -466,31 +428,25 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                                  </div>',
                 columnDefs: [
                     {field: 'get_prefijo_numero()', displayName: 'Documento', width: "25%"},
-                    {field: 'get_cantidad_cajas()', displayName: 'Cant. Cajas', width: "10%"},
-                    {field: 'get_cantidad_neveras()', displayName: 'Cant. Neveras', width: "10%"},
-                    {field: 'get_temperatura_neveras()', displayName: 'Temp. Neveras', width: "10%"},
-                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",
+                    {field: 'get_prefijo_numero()', displayName: 'Documento', width: "1%", visible: false},
+                    {field: 'get_cantidad_cajas()', displayName: 'Cant. Cajas', width: "25%"},
+                    {field: 'get_cantidad_neveras()', displayName: 'Cant. Neveras', width: "20%"},
+                    {field: 'get_temperatura_neveras()', displayName: 'Temp. Neveras', width: "20%"},
+                    {displayName: "Opciones", cellClass: "txt-center dropdown-button",width: "10%",
                         cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="confirmar_eliminar_documento_planilla(row.entity)" ng-disabled="planilla.get_estado()==\'2\'" ><span class="glyphicon glyphicon-remove"></span></button>\
+                                            <button class="btn btn-default btn-xs" ng-click="eliminarDocumentoPlanilla(row.entity)" ng-disabled="planilla.get_estado()==\'2\'" ><span class="glyphicon glyphicon-remove"></span></button>\
                                         </div>'
                     }
                 ]
             };
 
 
-            // that.init = function() {
-
             that.validarEmpresa();
 
             that.obtenerEmpresas();
 
-
-            // };
-
-            that.gestionar_consultas();
-
-            //  that.init();
-
+            that.gestionarConsultas();
+           
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
             });

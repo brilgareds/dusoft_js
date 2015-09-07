@@ -385,62 +385,63 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
     // 9 - En Zona con Pdtes
     /*=========================================================================*/
 
-    var sql_aux = " ";
+    var estado = "";
 
     if (filtro !== undefined) {
 
         if (filtro.no_asignados) {
-            sql_aux = " AND a.estado = '0'";
+            estado =  '0';
         }
 
         if (filtro.asignados) {
-            sql_aux = " AND a.estado = '1' ";
+            estado = '1';
         }
+        
         if (filtro.auditados) {
-            sql_aux = " AND a.estado = '2'  ";
+            estado = '2';
         }
 
         if (filtro.en_zona_despacho) {
-            sql_aux = " AND  a.estado = '3' ";
+            estado = '3';
         }
 
         if (filtro.despachado) {
-            sql_aux = " AND a.estado = '4' ";
+            estado = '4';
         }
 
         if (filtro.despachado_pendientes) {
-            sql_aux = " AND a.estado = '5' ";
+            estado = '5';
         }
         
         if (filtro.separacion_finalizada) {
-            sql_aux = " AND a.estado = '6' ";
+            estado = '6';
         }
         
         if (filtro.en_auditoria) {
-            sql_aux = " AND a.estado = '7' ";
+            estado = '7';
         }
         
         if (filtro.auditados_pdtes) {
-            sql_aux = " AND a.estado = '8' ";
+            estado = '8';
         }
         
         if (filtro.en_zona_despacho_pdtes) {
-            sql_aux = " AND a.estado = '9' ";
+            estado = '9';
         }
     }
 
-    var sql = " select \
-                a.solicitud_prod_a_bod_ppal_id as numero_pedido, \
-                a.farmacia_id, \
-                d.empresa_id, \
-                a.centro_utilidad, \
-                a.bodega as bodega_id, \
-                d.razon_social as nombre_farmacia, \
-                b.descripcion as nombre_bodega,\
-                a.usuario_id, \
-                e.nombre as nombre_usuario ,\
-                a.estado as estado_actual_pedido, \
-                case when a.estado = '0' then 'No Asignado' \
+    var columns = [
+        "a.solicitud_prod_a_bod_ppal_id as numero_pedido", 
+        "a.farmacia_id", 
+        "d.empresa_id", 
+        "a.centro_utilidad", 
+        "a.bodega as bodega_id", 
+        "d.razon_social as nombre_farmacia", 
+        "b.descripcion as nombre_bodega",
+        "a.usuario_id", 
+        "e.nombre as nombre_usuario" ,
+        "a.estado as estado_actual_pedido",
+        G.knex.raw("case when a.estado = '0' then 'No Asignado' \
                      when a.estado = '1' then 'Asignado' \
                      when a.estado = '2' then 'Auditado' \
                      when a.estado = '3' then 'En Zona Despacho' \
@@ -449,33 +450,72 @@ PedidosFarmaciasModel.prototype.listar_pedidos_farmacias = function(empresa_id, 
                      when a.estado = '6' then 'Separacion Finalizada' \
                      when a.estado = '7' then 'En Auditoria'  \
                      when a.estado = '8' then 'Auditado con pdtes' \
-                     when a.estado = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido, \
-                f.estado as estado_separacion, \
-                to_char(a.fecha_registro, 'dd-mm-yyyy') as fecha_registro,\
-                c.descripcion as nombre_centro_utilidad,\
-                a.empresa_destino as empresa_origen_id,\
-                a.observacion,\
-                g.empresa_id as despacho_empresa_id,\
-                g.prefijo as despacho_prefijo, \
-                g.numero as despacho_numero, \
-                CASE WHEN g.numero IS NOT NULL THEN true ELSE false END as tiene_despacho \
-                from solicitud_productos_a_bodega_principal as a \
-                inner join bodegas as b on a.farmacia_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega \
-                inner join centros_utilidad as c on b.empresa_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad \
-                inner join empresas as d ON c.empresa_id = d.empresa_id \
-                inner join system_usuarios as e ON a.usuario_id = e.usuario_id \
-                left join inv_bodegas_movimiento_tmp_despachos_farmacias f on a.solicitud_prod_a_bod_ppal_id = f.solicitud_prod_a_bod_ppal_id  \
-                left join inv_bodegas_movimiento_despachos_farmacias g on a.solicitud_prod_a_bod_ppal_id = g.solicitud_prod_a_bod_ppal_id \
-                where a.farmacia_id = $1 " + sql_aux + "\
-                and ( a.solicitud_prod_a_bod_ppal_id :: varchar ilike $2 \
-                      or d.razon_social ilike $2 \
-                      or b.descripcion ilike $2 \
-                      or e.nombre ilike $2 ) \
-                order by 1 desc ";
+                     when a.estado = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido"),
+        "f.estado as estado_separacion", 
+        G.knex.raw("to_char(a.fecha_registro, 'dd-mm-yyyy') as fecha_registro"),
+        "c.descripcion as nombre_centro_utilidad",
+        "a.empresa_destino as empresa_origen_id",
+        "a.observacion",
+        "g.empresa_id as despacho_empresa_id",
+        "g.prefijo as despacho_prefijo", 
+        "g.numero as despacho_numero", 
+        G.knex.raw("CASE WHEN g.numero IS NOT NULL THEN true ELSE false END as tiene_despacho")
+        
+    ];
     
-    G.db.paginated(sql, [empresa_id, "%" + termino_busqueda + "%"], pagina, G.settings.limit, function(err, rows, result) {
-        callback(err, rows);
+    G.knex.column(columns).
+    from("solicitud_productos_a_bodega_principal as a").
+    innerJoin("bodegas as b", function(){
+         this.on("a.farmacia_id", "b.empresa_id" ).
+         on("a.centro_utilidad", "b.centro_utilidad").
+         on("a.bodega", "b.bodega");
+    }).
+    innerJoin("centros_utilidad as c", function(){
+         this.on("b.empresa_id", "c.empresa_id" ).
+         on("b.centro_utilidad", "c.centro_utilidad");
+    }).
+    innerJoin("empresas as d", function(){
+         this.on("c.empresa_id", "d.empresa_id" );
+    }).
+    innerJoin("system_usuarios as e", function(){
+         this.on("a.usuario_id", "e.usuario_id" );
+    }).
+    leftJoin("inv_bodegas_movimiento_tmp_despachos_farmacias as f", "a.solicitud_prod_a_bod_ppal_id", "f.solicitud_prod_a_bod_ppal_id").
+    leftJoin("inv_bodegas_movimiento_despachos_farmacias as g", "a.solicitud_prod_a_bod_ppal_id", "g.solicitud_prod_a_bod_ppal_id ").
+    where(function(){
+        this.where("a.farmacia_id", empresa_id);
+        
+        if (estado !== "") {
+            this.where("a.estado", estado);
+        }
+    }).
+    andWhere(function() {
+       if(filtro && filtro.usuario){
+           
+            this.where("e.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+            
+       } else if(filtro && filtro.razonSocial){
+           
+            this.where("d.razon_social", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+       } else if (filtro && filtro.descripcionBodega){
+           
+            this.where("b.descripcion", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+       } else {
+           this.where(G.knex.raw("a.solicitud_prod_a_bod_ppal_id :: varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%");
+       }
+       
+    }).
+    limit(G.settings.limit).
+    offset((pagina - 1) * G.settings.limit).
+    orderByRaw("1 DESC").
+    then(function(rows){
+        callback(false, rows);
+    }).
+    catch(function(err){
+       console.log("error generado en lista pedidos farmacias ", err);
+       callback(err);
     });
+    
 };
 
 // Lista todos los pedidos temorales de farmacias
@@ -526,7 +566,7 @@ PedidosFarmaciasModel.prototype.listar_pedidos_temporales_farmacias = function(e
 // Seleccionar Pedido Por un numero de pedido
 PedidosFarmaciasModel.prototype.consultar_pedido = function(numero_pedido, callback) {
 
-    var sql = " select \
+    /*var sql = " select \
                 a.solicitud_prod_a_bod_ppal_id as numero_pedido, \
                 a.farmacia_id, \
                 d.empresa_id, \
@@ -565,7 +605,63 @@ PedidosFarmaciasModel.prototype.consultar_pedido = function(numero_pedido, callb
 
     G.db.query(sql, [numero_pedido], function(err, rows, result) {
         callback(err, rows);
-    });
+    });*/
+    
+    
+    var columnas = [
+        "a.solicitud_prod_a_bod_ppal_id as numero_pedido", 
+        "a.farmacia_id", 
+        "d.empresa_id", 
+        "a.centro_utilidad", 
+        "a.bodega as bodega_id", 
+        "d.razon_social as nombre_farmacia", 
+        "b.descripcion as nombre_bodega",
+        "a.usuario_id", 
+        "e.nombre as nombre_usuario" ,
+        "a.estado as estado_actual_pedido", 
+        G.knex.raw("case when a.estado = '0' then 'No Asignado'\
+             when a.estado = '1' then 'Asignado'\
+             when a.estado = '2' then 'Auditado'\
+             when a.estado = '3' then 'En Zona Despacho'\
+             when a.estado = '4' then 'Despachado'\
+             when a.estado = '5' then 'Despachado con Pendientes'\
+             when a.estado = '6' then 'Separacion Finalizada'\
+             when a.estado = '7' then 'En auditoria'\
+             when a.estado = '8' then 'Auditado con pdtes'\
+             when a.estado = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido"), 
+        "f.estado as estado_separacion", 
+        G.knex.raw("to_char(a.fecha_registro, 'dd-mm-yyyy HH24:MI:SS.MS') as fecha_registro"), 
+        "a.fecha_registro as fecha_registro_pedido",
+        "a.empresa_destino",
+        "a.centro_destino",
+        "a.bodega_destino",
+        "a.observacion"
+    ];
+    
+    G.knex.column(columnas).
+    from("solicitud_productos_a_bodega_principal as a").
+    innerJoin("bodegas as b", function(){
+        this.on("a.farmacia_id", "b.empresa_id").
+        on("a.centro_utilidad", "b.centro_utilidad").
+        on("a.bodega", "b.bodega");
+    }).
+    innerJoin("centros_utilidad as c", function(){
+        this.on("b.empresa_id", "c.empresa_id").
+        on("b.centro_utilidad", "c.centro_utilidad");
+        
+    }).
+    innerJoin("empresas as d", "c.empresa_id", "d.empresa_id").
+    innerJoin("system_usuarios as e", "a.usuario_id", "e.usuario_id").
+    leftJoin("inv_bodegas_movimiento_tmp_despachos_farmacias as f", "a.solicitud_prod_a_bod_ppal_id", "f.solicitud_prod_a_bod_ppal_id").
+    where("a.solicitud_prod_a_bod_ppal_id", numero_pedido).
+    orderByRaw("1 desc").
+    then(function(rows){
+       callback(false, rows);
+    }).
+    catch(function(err){
+        callback(err);
+    }).done();
+    
 };
 
 PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedido, callback) {
@@ -623,108 +719,138 @@ PedidosFarmaciasModel.prototype.consultar_detalle_pedido = function(numero_pedid
 
 };
 
-PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsable, termino_busqueda, filtro, pagina, limite, callback) {
+PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsable, termino_busqueda, filtro, pagina, limite, callback) {    
+    var columnas = [
+        "h.doc_tmp_id as documento_temporal_id",
+        "h.usuario_id",
+        "a.solicitud_prod_a_bod_ppal_id as numero_pedido", 
+        "a.farmacia_id", 
+        "d.empresa_id", 
+        "a.centro_utilidad", 
+        "a.bodega as bodega_id", 
+        "a.empresa_destino",
+        "a.centro_destino",
+        "a.bodega_destino",
+        "d.razon_social as nombre_farmacia", 
+        "b.descripcion as nombre_bodega",
+        "a.usuario_id", 
+        "e.nombre as nombre_usuario" ,
+        "a.estado as estado_actual_pedido", 
+        G.knex.raw("case when a.estado = '0' then 'No Asignado'\
+             when a.estado = '1' then 'Asignado'\
+             when a.estado = '2' then 'Auditado'\
+             when a.estado = '3' then 'En Zona Despacho'\
+             when a.estado = '4' then 'Despachado'\
+             when a.estado = '5' then 'Despachado con Pendientes'\
+             when a.estado = '6' then 'Separacion Finalizada'\
+             when a.estado = '7' then 'En Auditoria'\
+             when a.estado = '8' then 'Auditado con pdtes'\
+             when a.estado = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido"), 
+        "h.estado as estado_separacion",     
+        G.knex.raw("case when h.estado = '0' then 'Separacion en Proceso'\
+             when h.estado = '1' then 'Separacion Finalizada'\
+             when h.estado = '2' then 'En Auditoria' end as descripcion_estado_separacion"), 
+        G.knex.raw("a.fecha_registro::date as fecha_registro"), 
+        "f.responsable_id",
+        "g.nombre as responsable_pedido",
+        "f.fecha as fecha_asignacion_pedido", 
+        "i.fecha_registro as fecha_separacion_pedido"
+    ];
+    
+    var query = G.knex("solicitud_productos_a_bodega_principal as a").
+    distinct(columnas).select().
+    innerJoin("bodegas as b",function(){
+        this.on("a.farmacia_id", "b.empresa_id").
+        on("a.centro_utilidad", "b.centro_utilidad").
+        on("a.bodega", "b.bodega");
+    }).
+    innerJoin("centros_utilidad as c",function(){
+        this.on("b.empresa_id", "c.empresa_id").
+        on("b.centro_utilidad", "c.centro_utilidad");
+    }).
+    innerJoin("empresas as d","c.empresa_id", "d.empresa_id").
+    innerJoin("system_usuarios as e", "a.usuario_id", "e.usuario_id").
+    innerJoin("solicitud_productos_a_bodega_principal_estado as f", function(){
+        this.on("a.solicitud_prod_a_bod_ppal_id", "f.solicitud_prod_a_bod_ppal_id").
+        on("a.estado", "f.estado").
+        on(G.knex.raw("(f.sw_terminado is null or f.sw_terminado = ?)", ['0']));
+    }).
+    innerJoin("operarios_bodega as g", "f.responsable_id", "g.operario_id").
+    leftJoin("inv_bodegas_movimiento_tmp_despachos_farmacias as h","a.solicitud_prod_a_bod_ppal_id", "h.solicitud_prod_a_bod_ppal_id").
+    leftJoin("inv_bodegas_movimiento_tmp as i", function(){
+        this.on("h.doc_tmp_id", "i.doc_tmp_id").
+        on("h.usuario_id", "i.usuario_id");
+    }).
+    where(function(){
+        /*=========================================================================*/
+        // Se implementa este filtro, para poder filtrar los pedidos del clientes 
+        // asignados al operario de bodega y saber si el pedido tiene temporales o 
+        // fue finalizado correctamente.
+        /*=========================================================================*/
+        
+        var estado_pedido = '1';
+        if (filtro !== undefined) {
 
-    var sql_aux = " ";
+            if (filtro.asignados) {
+                 this.whereRaw("  h.doc_tmp_id IS NULL and  g.usuario_id  = ? ", [responsable]);
+            }
 
-    /*=========================================================================*/
-    // Se implementa este filtro, para poder filtrar los pedidos del clientes 
-    // asignados al operario de bodega y saber si el pedido tiene temporales o 
-    // fue finalizado correctamente.
-    /*=========================================================================*/
-    var estado_pedido = 1;
-    if (filtro !== undefined) {
-
-        if (filtro.asignados) {
-            sql_aux = "  h.doc_tmp_id IS NULL and  g.usuario_id = "+responsable+" and ";
-        }
-
-        if (filtro.temporales) {
-            sql_aux = "  h.doc_tmp_id IS NOT NULL AND h.estado = '0' and g.usuario_id = "+responsable+" and ";
+            if (filtro.temporales) {
+                this.whereRaw("  h.doc_tmp_id IS NOT NULL AND h.estado = '0' and g.usuario_id = ? ", [responsable]);
+            }
+            if (filtro.finalizados) {
+                estado_pedido = '7';
+                this.whereRaw(" g.usuario_id = (select usuario_id from operarios_bodega where operario_id = f.responsable_id ) and  i.usuario_id = ?", [responsable]);
+            }
         }
         
-        //filtro para traer los pedidos que estan  en auditoria
-        if (filtro.finalizados) {
-            estado_pedido = '7';
-            sql_aux = " g.usuario_id = (select usuario_id from operarios_bodega where operario_id = f.responsable_id ) and  i.usuario_id = "+responsable+" and ";
-        }
-    }
-
-    var sql = " select distinct\
-                h.doc_tmp_id as documento_temporal_id,\
-                h.usuario_id,\
-                a.solicitud_prod_a_bod_ppal_id as numero_pedido, \
-                a.farmacia_id, \
-                d.empresa_id, \
-                a.centro_utilidad, \
-                a.bodega as bodega_id, \
-                a.empresa_destino,\
-                a.centro_destino,\
-                a.bodega_destino,\
-                d.razon_social as nombre_farmacia, \
-                b.descripcion as nombre_bodega,\
-                a.usuario_id, \
-                e.nombre as nombre_usuario ,\
-                a.estado as estado_actual_pedido, \
-                case when a.estado = '0' then 'No Asignado' \
-                     when a.estado = '1' then 'Asignado' \
-                     when a.estado = '2' then 'Auditado' \
-                     when a.estado = '3' then 'En Zona Despacho' \
-                     when a.estado = '4' then 'Despachado' \
-                     when a.estado = '5' then 'Despachado con Pendientes' \
-                     when a.estado = '6' then 'Separacion Finalizada' \
-                     when a.estado = '7' then 'En Auditoria'  \
-                     when a.estado = '8' then 'Auditado con pdtes'  \
-                     when a.estado = '9' then 'En zona con pdtes' end as descripcion_estado_actual_pedido, \
-                h.estado as estado_separacion,     \
-                case when h.estado = '0' then 'Separacion en Proceso' \
-                     when h.estado = '1' then 'Separacion Finalizada' \
-                     when h.estado = '2' then 'En Auditoria' end as descripcion_estado_separacion, \
-                a.fecha_registro::date as fecha_registro, \
-                f.responsable_id,\
-                g.nombre as responsable_pedido,\
-                f.fecha as fecha_asignacion_pedido, \
-                i.fecha_registro as fecha_separacion_pedido  \
-                from solicitud_productos_a_bodega_principal a \
-                inner join bodegas b on a.farmacia_id = b.empresa_id and a.centro_utilidad = b.centro_utilidad and a.bodega = b.bodega \
-                inner join centros_utilidad c on b.empresa_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad \
-                inner join empresas d ON c.empresa_id = d.empresa_id \
-                inner join system_usuarios e ON a.usuario_id = e.usuario_id \
-                inner join solicitud_productos_a_bodega_principal_estado f on a.solicitud_prod_a_bod_ppal_id = f.solicitud_prod_a_bod_ppal_id and a.estado = f.estado and (f.sw_terminado is null or f.sw_terminado = '0') \
-                inner join operarios_bodega g on f.responsable_id = g.operario_id\
-                left join inv_bodegas_movimiento_tmp_despachos_farmacias h on a.solicitud_prod_a_bod_ppal_id = h.solicitud_prod_a_bod_ppal_id \
-                left join inv_bodegas_movimiento_tmp i on h.doc_tmp_id = i.doc_tmp_id and h.usuario_id = i.usuario_id \
-                where " + sql_aux + " \
-                 a.estado = '"+estado_pedido+"' /*AND a.sw_despacho = 0*/ \
-                and (\
-                    a.solicitud_prod_a_bod_ppal_id :: varchar ilike $1 or\
-                    d.razon_social ilike  $1 or\
-                    b.descripcion ilike $1 or\
-                    e.nombre  ilike $1 \
-                ) order by f.fecha asc ";
-    
-    //La clausula AND a.sw_despacho = 0 en la consulta SQL, se agrega temporalemente mientras se corrgigen los estados de los pedidos
-    //esta clausula permite determinar si un pedido esta pendiente por despachaar (0) o despachado (1)
-
-    G.db.pagination(sql, ["%" + termino_busqueda + "%"], pagina, limite, function(err, rows, result, total_records) {
-
-        callback(err, rows, total_records);
+        this.where("a.estado", estado_pedido);
+        
+    }).
+    andWhere(function(){
+        this.where(G.knex.raw("a.solicitud_prod_a_bod_ppal_id :: varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%").
+        orWhere("d.razon_social", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+        orWhere("b.descripcion", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+        orWhere("e.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%");
     });
+       
+    
+    query.totalRegistros = 0;
+    query.then(function(total){
+        var registros = query.
+                limit(limite).
+                offset((pagina - 1) * limite).
+                orderBy("f.fecha","asc");
+                
+        query.totalRegistros = total.length;
+        return registros;
+        
+    }).then(function(rows){
+        callback(false, rows, query.totalRegistros);
+    }).
+    catch(function(err){
+        console.log("errror ", err);
+        callback(err);
+    }).
+    done();
+
 };
 
 
-
+PedidosFarmaciasModel.prototype.obtenerTotalPedidosOperario = function(){
+    
+};
 
 
 // Asigancion de responsable al pedido 
 PedidosFarmaciasModel.prototype.asignar_responsables_pedidos = function(numero_pedido, estado_pedido, responsable, usuario, callback) {
 
-    var that = this;
-
-    // Validar si existen responsables asigandos
-    var sql = " SELECT * FROM solicitud_productos_a_bodega_principal_estado a WHERE a.solicitud_prod_a_bod_ppal_id = $1 AND a.estado = $2 and (a.sw_terminado is null or a.sw_terminado = '0');";
-
-    G.db.query(sql, [numero_pedido, estado_pedido], function(err, responsable_estado_pedido, result) {
+    var that = this;    
+    G.knex.column("*").
+    from("solicitud_productos_a_bodega_principal_estado as a").
+    where("a.solicitud_prod_a_bod_ppal_id", numero_pedido).
+    andWhere("a.estado", estado_pedido).
+    whereRaw("(a.sw_terminado is null or a.sw_terminado = '0')").then(function(responsable_estado_pedido){
         if (responsable_estado_pedido.length > 0) {
             //Actualizar
             that.actualizar_responsables_pedidos(numero_pedido, estado_pedido, responsable, usuario, function(_err, _rows) {
@@ -744,86 +870,109 @@ PedidosFarmaciasModel.prototype.asignar_responsables_pedidos = function(numero_p
                 });
             });
         }
+
+    }).catch(function(err){
+        callback(err);
     });
 };
 
 
 //  Almacenar responsable al pedido 
 PedidosFarmaciasModel.prototype.insertar_responsables_pedidos = function(numero_pedido, estado_pedido, responsable, usuario, callback) {
-
-    var sql = "INSERT INTO solicitud_productos_a_bodega_principal_estado( solicitud_prod_a_bod_ppal_id, estado, responsable_id, fecha, usuario_id) " +
-            "VALUES ($1, $2, $3, now(), $4);";
-
-    G.db.query(sql, [numero_pedido, estado_pedido, responsable, usuario], function(err, rows, result) {
-        callback(err, rows);
-    });
+        
+    G.knex("solicitud_productos_a_bodega_principal_estado").
+    returning("solicitud_prod_a_bod_ppal_est_id").
+    insert({solicitud_prod_a_bod_ppal_id:numero_pedido, estado:estado_pedido, responsable_id:responsable, fecha: 'now()', usuario_id:usuario}).
+    then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        callback(err);
+    }).done();
 };
 
 // actualizacion del responsable del pedido
 PedidosFarmaciasModel.prototype.actualizar_responsables_pedidos = function(numero_pedido, estado_pedido, responsable, usuario, callback) {
-
-    var sql = "UPDATE solicitud_productos_a_bodega_principal_estado SET responsable_id=$3, fecha=NOW(), usuario_id=$4 " +
-            "WHERE solicitud_prod_a_bod_ppal_id=$1 AND estado=$2 and (sw_terminado is null or sw_terminado = '0'); ";
-
-    G.db.query(sql, [numero_pedido, estado_pedido, responsable, usuario], function(err, rows, result) {
-        callback(err, rows);
+    
+    G.knex("solicitud_productos_a_bodega_principal_estado").
+    where("solicitud_prod_a_bod_ppal_id", numero_pedido).
+    andWhere("estado", estado_pedido).
+    whereRaw("(sw_terminado is null or sw_terminado = '0')").
+    returning('solicitud_prod_a_bod_ppal_est_id').
+    update({responsable_id : responsable, fecha: 'NOW()', usuario_id : usuario}).then(function(resultado){
+        callback(false, resultado);
+    }).catch(function(err){
+        callback(err);
     });
 };
 
 PedidosFarmaciasModel.prototype.eliminar_responsables_pedidos = function(numero_pedido, callback) {
 
-    var sql = "DELETE FROM solicitud_productos_a_bodega_principal_estado WHERE solicitud_prod_a_bod_ppal_id =$1 and (sw_terminado is null or sw_terminado = '0') ; ";
-
-    G.db.query(sql, [numero_pedido], function(err, rows, result) {
-        callback(err, rows, result);
-    });
+    G.knex("solicitud_productos_a_bodega_principal_estado").
+    where("solicitud_prod_a_bod_ppal_id", numero_pedido).
+    whereRaw("(sw_terminado is null or sw_terminado = '0')").del().
+    then(function(rows){
+        callback(false, rows);
+    }).catch(function(err){
+        console.log("ventas ordenes error al borrar ", err);
+        callback(err);
+    }).done();
 };
 
 
 // actualizacion el estado actual del pedido
 PedidosFarmaciasModel.prototype.actualizar_estado_actual_pedido = function(numero_pedido, estado_pedido, callback) {
-
-    var sql = "UPDATE solicitud_productos_a_bodega_principal SET estado=$2 WHERE solicitud_prod_a_bod_ppal_id=$1;";
-
-    G.db.query(sql, [numero_pedido, estado_pedido], function(err, rows, result) {
-        callback(err, rows);
+    
+    G.knex("solicitud_productos_a_bodega_principal").
+    where("solicitud_prod_a_bod_ppal_id", numero_pedido).
+    update({estado : estado_pedido}).then(function(resultado){
+        //console.log("resultado ", resultado);
+        callback(false, resultado);
+    }).catch(function(err){
+        callback(err);
     });
+    
 };
 
 
 
 // lista todos los responsables del pedido
-PedidosFarmaciasModel.prototype.obtener_responsables_del_pedido = function(numero_pedido, callback) {
-
-    var sql = " select \
-                a.solicitud_prod_a_bod_ppal_id as numero_pedido,  \
-                a.estado,\
-                case when a.estado='0' then 'Registrado'\
-                     when a.estado='1' then 'Asignado'\
-                     when a.estado='2' then 'Auditado'\
-                     when a.estado='3' then 'En Zona Despacho' \
-                     when a.estado='4' then 'Despachado' \
-                     when a.estado='5' then 'Despachado con Pendientes' \
-                     when a.estado='6' then 'Separacion Finalizada' \
-                     when a.estado='7' then 'En Auditoria' \
-                     when a.estado='8' then 'Auditado con pdtes' \
-                     when a.estado='9' then 'En zona con pdtes' end as descripcion_estado,\
-                b.operario_id,\
-                b.nombre as nombre_responsable,\
-                b.usuario_id as usuario_id_responsable,\
-                a.usuario_id,\
-                c.nombre as nombre_usuario,\
-                a.fecha as fecha_asignacion,\
-                a.fecha_registro,    \
-                COALESCE(a.sw_terminado,'0') as sw_terminado\
-                from solicitud_productos_a_bodega_principal_estado a \
-                inner join system_usuarios c on a.usuario_id = c.usuario_id\
-                left join operarios_bodega b on a.responsable_id = b.operario_id\
-                where a.solicitud_prod_a_bod_ppal_id=$1 order by a.fecha_registro DESC; ";
-
-    G.db.query(sql, [numero_pedido], function(err, rows, result) {
-        callback(err, rows);
-    });
+PedidosFarmaciasModel.prototype.obtener_responsables_del_pedido = function(numero_pedido, callback) {    
+    var columnas = [
+        "a.solicitud_prod_a_bod_ppal_id as numero_pedido",  
+        "a.estado",
+        G.knex.raw("case when a.estado='0' then 'Registrado'\
+             when a.estado='1' then 'Asignado'\
+             when a.estado='2' then 'Auditado'\
+             when a.estado='3' then 'En Zona Despacho'\
+             when a.estado='4' then 'Despachado'\
+             when a.estado='5' then 'Despachado con Pendientes'\
+             when a.estado='6' then 'Separacion Finalizada'\
+             when a.estado='7' then 'En Auditoria'\
+             when a.estado='8' then 'Auditado con pdtes'\
+             when a.estado='9' then 'En zona con pdtes' end as descripcion_estado"),
+        "b.operario_id",
+        "b.nombre as nombre_responsable",
+        "b.usuario_id as usuario_id_responsable",
+        "a.usuario_id",
+        "c.nombre as nombre_usuario",
+        "a.fecha as fecha_asignacion",
+        "a.fecha_registro",    
+        G.knex.raw("COALESCE(a.sw_terminado,'0') as sw_terminado")
+    ];
+    
+    G.knex.column(columnas).
+    from("solicitud_productos_a_bodega_principal_estado as a").
+    innerJoin("system_usuarios as c", "a.usuario_id", "c.usuario_id").
+    leftJoin("operarios_bodega as b", "a.responsable_id", "b.operario_id").
+    where("a.solicitud_prod_a_bod_ppal_id", numero_pedido).
+    orderBy("a.fecha_registro", "desc").
+    then(function(rows){
+        callback(false, rows);
+    }).
+    catch(function(err){
+        callback(err);
+    }).done();
+    
 };
 
 PedidosFarmaciasModel.prototype.terminar_estado_pedido = function(numero_pedido,estados,terminado,callback) {

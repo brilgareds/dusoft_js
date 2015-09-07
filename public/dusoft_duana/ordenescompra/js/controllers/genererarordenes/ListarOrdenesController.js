@@ -66,6 +66,14 @@ define(["angular", "js/controllers",
             };
 
             var estados = ["btn btn-primary btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-info btn-xs"];
+            
+            $scope.filtros = [
+                {nombre : "Orden", numeroOrden:true},                
+                {nombre : "Proveedor", proveedor:true},
+                {nombre : "Empresa", empresa:true}
+            ];
+            
+            $scope.filtro  = $scope.filtros[0];
 
 
             $scope.buscar_ordenes_compras = function(termino, paginando) {
@@ -83,7 +91,8 @@ define(["angular", "js/controllers",
                             fecha_inicial: $filter('date')($scope.fecha_inicial, "yyyy-MM-dd") + " 00:00:00",
                             fecha_final: $filter('date')($scope.fecha_final, "yyyy-MM-dd") + " 23:59:00",
                             termino_busqueda: termino,
-                            pagina_actual: $scope.pagina_actual
+                            pagina_actual: $scope.pagina_actual,
+                            filtro:$scope.filtro
                         }
                     }
                 };
@@ -562,6 +571,10 @@ define(["angular", "js/controllers",
             });
 
             $scope.buscar_ordenes_compras();
+            
+            $scope.onSeleccionFiltro = function(filtro){
+                $scope.filtro = filtro;
+            };
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;

@@ -22,6 +22,7 @@ define([
     "includes/classes/Usuario",
     "includes/http/Request",
     "dragndropfile",
+    "includes/validation/NgValidateEvents",
     "controllers/genererarordenes/ListarOrdenesController",
     "controllers/genererarordenes/GestionarOrdenesController",
     "controllers/novedadesordenes/GestionarNovedadesController",

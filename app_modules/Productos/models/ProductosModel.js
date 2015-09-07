@@ -36,6 +36,7 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
         "b.codigo_invima",
         "b.contenido_unidad_venta",
         "b.sw_control_fecha_vencimiento",
+        "b.codigo_cum",
         "a.existencia_minima",
         "a.existencia_maxima",
         G.knex.raw("a.existencia :: integer  as existencia"),
@@ -56,7 +57,9 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
         "b.clase_id",
         "b.subclase_id",
         "b.porc_iva",
-        "b.tipo_producto_id"
+        "b.tipo_producto_id",
+        "g.valor_pactado",
+        "c.precio_regulado"
      ];
     
    
@@ -76,6 +79,10 @@ ProductosModel.prototype.buscar_productos = function(empresa_id, centro_utilidad
     innerJoin("inv_clases_inventarios as f", function(){
          this.on("e.grupo_id", "f.grupo_id" ).
          on("e.clase_id", "f.clase_id");
+    }).
+    leftJoin("contratacion_produc_prov_detalle as g", function(){
+         this.on("b.codigo_producto", "g.codigo_producto" )
+        .on("a.empresa_id", "g.empresa_id");
     }).
     where(function(){
         this.where("a.empresa_id", empresa_id).

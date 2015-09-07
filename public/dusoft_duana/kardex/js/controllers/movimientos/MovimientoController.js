@@ -70,7 +70,7 @@ define([
                             {field: 'costo', displayName: 'Costo', width: "6%"},
                             {field: 'lote', displayName: 'Lote', width: "5%"},
                             {field: 'fecha_vencimiento', displayName: 'Fecha V', cellTemplate: "<div> {{formatearFecha(row.entity.fecha_vencimiento)}} </div>", width: "10%"},
-                            {field: 'usuario', displayName: 'Usuario', width: "7%"}
+                            {field: 'nombre', displayName: 'Usuario', width: "7%"}
                         ]
 
                     };
@@ -242,9 +242,7 @@ define([
                         for (var i in movimientos.pendientes_ordenes_compra) {
                             var obj = movimientos.pendientes_ordenes_compra[i];
 
-                            console.log('== Ordenes de Compras === ');
-                            console.log(obj);
-
+                          
                             var pendiente = Pendiente.get(obj.fecha_registro);
                             var orden = OrdenCompra.get(obj.numero_orden_compra);
 
@@ -270,9 +268,6 @@ define([
                         }
 
                         $scope.calcularRenderGrid();
-
-
-                        //console.log($scope.producto.getPendientesOrdenes());
 
                     });
 

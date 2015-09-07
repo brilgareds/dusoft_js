@@ -24,7 +24,7 @@
         <ui-select  ng-model="$parent.operario" theme="select2" class="form-control selectgeneral pull-left" ng-change="valorSeleccionado()">
                    <ui-select-match  placeholder="Seleccionar Estado Pedido">{{$select.selected.nombre_operario}}</ui-select-match>
                    <ui-select-choices repeat="separador in  Empresa.getSeparadores()| filter:$select.search">
-                       {{separador.nombre_operario}}
+                       {{separador.nombre_operario}}  ({{separador.total_pedidos_asignados}})
                    </ui-select-choices>
         </ui-select>
     </div>

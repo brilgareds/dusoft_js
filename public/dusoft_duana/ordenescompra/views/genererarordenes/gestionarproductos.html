@@ -41,8 +41,32 @@
                                     </ui-select>
                                     </p>
                                 </div>
+                                
+                                
+                                
+                                    <div class=" col-sm-3 col-md-3 col-lg-3  pull-right">                                
 
-                                <div class="col-md-3 pull-right">
+                                         <div class="input-group">
+                                             <div class="input-group-btn">
+                                               <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{filtro.nombre}} <span class="caret"></span></button>
+                                               <ul class="dropdown-menu">
+                                                 <li ng-repeat="filtro in filtros">
+                                                     <a href="javascript:void(0)" ng-click="onSeleccionFiltro(filtro)">{{filtro.nombre}}</a>
+                                                 </li>
+                                               </ul>
+                                             </div>
+                                             <input type="text" class="form-control" ng-keypress="buscador_productos($event, termino_busqueda);"  ng-model="termino_busqueda" placeholder="Buscar" name="" id="" />
+                                            <div class="input-group-btn" >
+                                                <button class="btn btn-default pull-right" type="submit" ng-click="buscador_productos({which:13}, termino_busqueda)"><i class="glyphicon glyphicon-search"></i></button>
+                                            </div>
+                                       </div>
+
+
+
+                                 </div>
+                                
+
+                                <!-- div class="col-md-3 pull-right">
                                     <p class="input-group">
 
                                         <input type="text" class="form-control" ng-keypress="buscador_productos($event, termino_busqueda);"  ng-model="termino_busqueda" placeholder="Buscar" name="" id="" />
@@ -50,7 +74,7 @@
                                             <button class="btn btn-default" type="submit" ng-click=""><i class="glyphicon glyphicon-search"></i></button>
                                         </span>
                                     </p>
-                                </div>
+                                </div -->
                             </div>
 
                             <div class="" style="height: 700px" ng-grid="lista_productos" > </div>

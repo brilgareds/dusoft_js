@@ -18,7 +18,7 @@ define(["angular", "js/models"], function(angular, models) {
                 this.numero_guia_externo = '';
                 this.documento = '';
                 this.documentos = [];
-                this.empresa = '';
+                this.empresa = null;
             }
 
             this.get = function(id, transportadora, ciudad, nombre_conductor, observacion, usuario, fecha_registro, fecha_despacho, estado, descripcion_estado) {

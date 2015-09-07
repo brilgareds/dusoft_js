@@ -20,7 +20,7 @@
 
                                     <ui-select ng-model="planilla.empresa"  theme="select2" class="form-control selectgeneral pull-left" >
                                         <ui-select-match  placeholder="Seleccionar empresas" >{{ $select.selected.getNombre()}}</ui-select-match>
-                                        <ui-select-choices  refresh-delay="0" repeat="empresa in Empresa.get_empresas() | filter:$select.search">
+                                        <ui-select-choices  refresh-delay="0" repeat="empresa in Empresa.obtenerEmpresasFiltradasCodigo(EmpresaOrigen) | filter:$select.search">
                                             {{ empresa.getNombre() }}
                                         </ui-select-choices>
                                     </ui-select> </p>       
@@ -44,7 +44,8 @@
                                         <legend>Numero Guia</legend>                                 
                                         <div class="row">  
                                             <div class="col-md-12">                                          
-                                                <input type="text" ng-model="planilla.numero_guia_externo" ng-disabled="planilla.get_numero_guia() > 0 || planilla.get_transportadora() == undefined || planilla.get_transportadora().get_solicitar_guia() == '' || planilla.get_transportadora().get_solicitar_guia() == '0'" class="form-control"  placeholder="Ingrese Numero Guía" name="" id="" />
+                                                <input type="text" ng-model="planilla.numero_guia_externo" 
+                                                 ng-disabled="estadoNumeroGuia" class="form-control"  placeholder="Ingrese Numero Guía" name="" id="" />
                                             </div>
                                         </div>
                                     </fieldset>
@@ -114,35 +115,21 @@
                                         </div>
 
                                         <div class="col-md-3 pull-right">
-                                            <p class="input-group">
-                                                <input type="text" class="form-control" ng-keypress="buscador_documentos_planillas($event);" ng-model="datos_view.termino_busqueda_documentos" placeholder="Buscar" name="" id="" />
-                                                <span class="input-group-btn">
-                                                    <button class="btn btn-default" type="submit" ng-click="consultar_documentos_planilla_despacho()"><i class="glyphicon glyphicon-search"></i></button>
-                                                </span>
+                                            <p class="input-group">    
                                             </p>
                                         </div>
                                     </div>
 
                                 </div>
-                                <div class="" style="height: 240px" ng-grid="lista_documentos_bodega" > </div>
+                                <div class="" style="height: 240px" ng-grid="listaDocumentosPlanillados" > </div>
 
-                                <div class="row text-center col-md-12">
-                                    <button type="button" class="btn btn-default btn-medium" ng-disabled="pagina_actual == 1" ng-click="pagina_anterior()">
-                                        <span class="glyphicon glyphicon-chevron-left" ></span>
-                                    </button>
-                                    <button type="button" class="btn btn-default btn-medium" ng-disabled="cantidad_items == 0" ng-click="pagina_siguiente()">
-                                        <span class="glyphicon glyphicon-chevron-right" ></span>
-                                    </button>
-                                </div>  
-
+                          
                                 <div class="modal-footer col-md-12">
-                                    <button class="btn btn-default" ng-click="cancelar_planilla_farmacia()">
+                                    <button class="btn btn-default" ng-click="cancelarPlanillaFarmacia()">
                                         <span class="glyphicon glyphicon-remove" ></span> Cancelar
                                     </button>
-                                    <button class="btn btn-default" ng-disabled="planilla.get_estado()=='0' || planilla.get_estado()=='1' || planilla.get_documentos().length === 0" ng-click="descargar_enviar_reporte()">
-                                        <span class="glyphicon glyphicon-cog" ></span> Generar reporte
-                                    </button>
-                                    <button class="btn btn-default" ng-disabled="planilla.get_estado()=='2' || planilla.get_documentos().length === 0" ng-click="confirmar_despacho_planilla()">
+                                   
+                                    <button class="btn btn-default" ng-disabled="planilla.get_estado()=='2' || planilla.get_documentos().length === 0" ng-click="despacharPlanilla()">
                                         <span class="glyphicon glyphicon-ok" ></span> Despachar
                                     </button>
                                 </div>                            

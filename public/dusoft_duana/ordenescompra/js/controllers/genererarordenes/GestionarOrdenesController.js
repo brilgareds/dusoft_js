@@ -57,14 +57,22 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             $scope.termino_busqueda = "";
             $scope.ultima_busqueda = "";
             $scope.pagina_actual = 1;
-
+            $scope.progresoArchivo = 0;
+            
+            that.opciones = Sesion.getUsuarioActual().getModuloActual().opciones;
+            
+            $scope.opcionesModulo = {
+                btnModificarCantidad:{
+                    'click': that.opciones.sw_modificar_orden
+                }
+            };
 
 
             that.set_orden_compra = function() {
 
                 $scope.orden_compra = OrdenCompra.get($scope.numero_orden, 1, $scope.observacion, new Date());
                 $scope.orden_compra.set_unidad_negocio($scope.Empresa.get_unidad_negocio($scope.unidad_negocio_id));
-                $scope.orden_compra.set_proveedor($scope.Empresa.get_proveedor($scope.codigo_proveedor_id));
+                $scope.orden_compra.set_proveedor($scope.Empresa.get_proveedor($scope.codigo_proveedor_id.get_codigo_proveedor()));
                 $scope.orden_compra.set_usuario(Usuario.get(Sesion.usuario_id));
                 $scope.orden_compra.set_descripcion_estado('Activa');
 
@@ -421,7 +429,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
             $scope.seleccionar_proveedor = function(proveedor) {               
-                $scope.codigo_proveedor_id = proveedor.get_codigo_proveedor();
+                //$scope.codigo_proveedor_id = proveedor.get_codigo_proveedor();
+                $scope.codigo_proveedor_id = proveedor;
             };
 
             $scope.modificar_observacion = function() {
@@ -499,16 +508,51 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     {field: 'codigo_producto', displayName: 'Codigo Producto', width: "10%"},
                     {field: 'descripcion', displayName: 'Descripcion'},
                     {field: 'politicas', displayName: 'Políticas', width: "20%"},
-                    {field: 'cantidad_seleccionada', width: "7%", displayName: "Cantidad"},
+                    {field: 'cantidad_seleccionada', width: "7%", displayName: "Cantidad", enableCellEdit:that.opciones.sw_modificar_orden},
                     {field: 'iva', width: "7%", displayName: "I.V.A (%)"},
-                    {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "10%", cellFilter: "currency:'$ '"},
-                    {width: "7%", displayName: "Opcion", cellClass: "txt-center",
+                    {field: 'costo_ultima_compra', displayName: '$$ última compra', width: "10%", cellFilter: "currency:'$ '", enableCellEdit:that.opciones.sw_modificar_orden},
+                    {width: "7%", displayName: "Opcion", cellClass: "txt-center dropdown-button",
                         cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="eliminar_producto_orden_compra(row)" ng-disabled="vista_previa" ><span class="glyphicon glyphicon-remove"></span></button>\
+                                            <button class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">Acción<span class="caret"></span></button>\
+                                            <ul class="dropdown-menu dropdown-options">\
+                                                <li><a href="javascript:void(0);" ng-click="modificarDetalle(row.entity);" \
+                                                        ng-validate-events="{{opcionesModulo.btnModificarCantidad}}" >Modificar</a></li>\
+                                                <li><a href="javascript:void(0);" ng-click="eliminar_producto_orden_compra(row)" >Eliminar</a></li>\
+                                            </ul>\
                                         </div>'}
                 ]
             };
+            
+            $scope.modificarDetalle = function(producto){
+                console.log("producto a modificar ", producto);
 
+                var obj = {
+                    session: $scope.session,
+                    data: {
+                        ordenes_compras: {
+                            numero_orden: $scope.orden_compra.get_numero_orden(),
+                            codigo_producto: producto.getCodigoProducto(),
+                            cantidad_solicitada: producto.get_cantidad_seleccionada(),
+                            valor: producto.get_costo(),
+                            iva: producto.get_iva(),
+                            modificar:true
+                        }
+                    }
+                };
+
+
+                Request.realizarRequest(API.ORDENES_COMPRA.CREAR_DETALLE_ORDEN_COMPRA, "POST", obj, function(data) {
+
+
+                    if (data.status === 200) {
+                        AlertService.mostrarMensaje("success", "Modificacion realizada");
+                        $scope.buscar_detalle_orden_compra("",1);
+                    } else {
+                        AlertService.mostrarMensaje("warning", "Se ha generado un error");
+                    }
+                });
+                
+            };
 
             $scope.eliminar_producto_orden_compra = function(row) {
 
@@ -586,7 +630,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
             };
 
             $scope.subir_archivo_plano = function() {
-
+                $scope.progresoArchivo = 1; 
+                console.log("proveedor ", $scope.codigo_proveedor_id);
                 if ($scope.numero_orden > 0) {
                     // Solo Subir Plano
                     $scope.opciones_archivo.opts.query.data = JSON.stringify({
@@ -594,7 +639,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                             //empresa_id: '03',
                             empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
                             numero_orden: $scope.numero_orden,
-                            codigo_proveedor_id: $scope.codigo_proveedor_id
+                            codigo_proveedor_id: $scope.codigo_proveedor_id.get_codigo_proveedor()
                         }
                     });
 
@@ -614,7 +659,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                                     //empresa_id: '03',
                                     empresa_id: Sesion.getUsuarioActual().getEmpresa().getCodigo(),
                                     numero_orden: $scope.numero_orden,
-                                    codigo_proveedor_id: $scope.codigo_proveedor_id
+                                    codigo_proveedor_id: $scope.codigo_proveedor_id.get_codigo_proveedor()
                                 }
                             });
 
@@ -623,56 +668,70 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
                     });
                 }
             };
+            
+            /*
+             * @Author: Eduar
+             * +Descripcion: Evento que actualiza la barra de progreso
+             */
+           socket.on("onNotificarProgresoArchivoPlanoOrdenes", function(datos) {
+                $scope.progresoArchivo = datos.porcentaje;
+            }); 
+            
+            
 
             $scope.respuesta_archivo_plano = function(file, message) {
-
+                //$scope.progresoArchivo = 1;
                 var data = (message !== undefined) ? JSON.parse(message) : {};
-
-
                 if (data.status === 200) {
+                    
+                    $timeout(function(){
+                        
+                        $scope.opciones_archivo.cancel();
 
-                    $scope.opciones_archivo.cancel();
+                        $scope.buscar_detalle_orden_compra();
 
-                    $scope.buscar_detalle_orden_compra();
+                        $scope.activar_tab.tab_productos = true;
+                        $scope.progresoArchivo = 0;
+                        $scope.productos_validos = data.obj.ordenes_compras.productos_validos;
+                        $scope.productos_invalidos = data.obj.ordenes_compras.productos_invalidos;
+                        
+                        if($scope.productos_invalidos.length === 0){
+                            return;
+                        }
 
-                    $scope.activar_tab.tab_productos = true;
-
-                    $scope.productos_validos = data.obj.ordenes_compras.productos_validos;
-                    $scope.productos_invalidos = data.obj.ordenes_compras.productos_invalidos;
-
-
-                    $scope.opts = {
-                        backdrop: true,
-                        backdropClick: true,
-                        dialogFade: false,
-                        keyboard: true,
-                        template: ' <div class="modal-header">\
-                                        <button type="button" class="close" ng-click="close()">&times;</button>\
-                                        <h4 class="modal-title">Listado Productos </h4>\
-                                    </div>\
-                                    <div class="modal-body row">\
-                                        <div class="col-md-12">\
-                                            <h4 >Lista Productos INVALIDOS.</h4>\
-                                            <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
-                                                <div class="list-group">\
-                                                    <a ng-repeat="producto in productos_invalidos" class="list-group-item defaultcursor" href="javascript:void(0)">\
-                                                        {{ producto.codigo_producto}}\
-                                                    </a>\
+                        $scope.opts = {
+                            backdrop: true,
+                            backdropClick: true,
+                            dialogFade: false,
+                            keyboard: true,
+                            template: ' <div class="modal-header">\
+                                            <button type="button" class="close" ng-click="close()">&times;</button>\
+                                            <h4 class="modal-title">Listado Productos </h4>\
+                                        </div>\
+                                        <div class="modal-body row">\
+                                            <div class="col-md-12">\
+                                                <h4 >Lista Productos INVALIDOS.</h4>\
+                                                <div class="row" style="max-height:300px; overflow:hidden; overflow-y:auto;">\
+                                                    <div class="list-group">\
+                                                        <a ng-repeat="producto in productos_invalidos" class="list-group-item defaultcursor" href="javascript:void(0)">\
+                                                            {{ producto.codigo_producto}}\
+                                                        </a>\
+                                                    </div>\
                                                 </div>\
                                             </div>\
                                         </div>\
-                                    </div>\
-                                    <div class="modal-footer">\
-                                        <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
-                                    </div>',
-                        scope: $scope,
-                        controller: function($scope, $modalInstance) {
-                            $scope.close = function() {
-                                $modalInstance.close();
-                            };
-                        }
-                    };
-                    var modalInstance = $modal.open($scope.opts);
+                                        <div class="modal-footer">\
+                                            <button class="btn btn-primary" ng-click="close()" ng-disabled="" >Aceptar</button>\
+                                        </div>',
+                            scope: $scope,
+                            controller: function($scope, $modalInstance) {
+                                $scope.close = function() {
+                                    $modalInstance.close();
+                                };
+                            }
+                        };
+                        var modalInstance = $modal.open($scope.opts);
+                    },500);
 
                 } else {
                     AlertService.mostrarMensaje("warning", data.msj);
@@ -684,6 +743,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent',
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
+                $scope.Empresa.limpiar_proveedores();
             });
 
         }]);

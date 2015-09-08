@@ -5,7 +5,7 @@ var ModuloModel = function() {
 
 ModuloModel.prototype.listar_modulos = function(termino, callback) {
 
-    var parametros = [];
+    /*var parametros = [];
     var sql_aux = "";
 
 
@@ -20,7 +20,22 @@ ModuloModel.prototype.listar_modulos = function(termino, callback) {
 
     G.db.query(sql, parametros, function(err, rows, result) {
         callback(err, rows);
-    });
+    });*/
+    
+    var query = G.knex.column("*").
+    from("modulos");
+    
+    if (termino.length > 0) {
+        query.where("nombre", G.constants.db().LIKE, "%" + termino + "%");
+    }
+    
+    query.orderBy("id", "asc").then(function(rows){
+        callback(false, rows);
+    }).catch(function(err){
+        callback(err);
+    }).done();
+           
+    
 };
 
 ModuloModel.prototype.obtenerCantidadModulos = function(callback) {
@@ -33,13 +48,12 @@ ModuloModel.prototype.obtenerCantidadModulos = function(callback) {
 };
 
 ModuloModel.prototype.obtenerModulosPorId = function(ids, callback) {
-
-    var ids = ids.join(",");
-    var sql = "SELECT * FROM modulos WHERE id IN($1) ";
-
-    G.db.query(sql, [ids], function(err, rows, result) {
-        callback(err, rows);
-    });
+    G.knex.column("*").from("modulos").whereIn('id', ids).
+    then(function(rows){
+        callback(false, rows);
+    }).catch(function(err){
+        callback(err);
+    }).done();
 };
 
 //gestiona para modificar o insertar el modulo
@@ -313,12 +327,14 @@ ModuloModel.prototype.obtenerVariablePorNombre = function(nombre, callback) {
 };
 
 ModuloModel.prototype.listarOpcionesPorModulo = function(modulo_id, rol_modulo_id, callback) {
-    var sql = "SELECT * FROM modulos_opciones  a\
-               WHERE a.modulo_id =  $1 ORDER BY a.id";
-
-    G.db.query(sql, [modulo_id], function(err, rows, result) {
-        callback(err, rows);
-    });
+    G.knex.column("*").from("modulos_opciones as a").
+    where("a.modulo_id", modulo_id).
+    orderBy("a.id", "asc").
+    then(function(rows){
+        callback(false,rows);
+    }).catch(function(err){
+        callback(err);
+    }).done();
 };
 
 ModuloModel.prototype.listarUsuarioModuloOpciones = function(modulo_id, rol_id, empresa_id, usuario_id, opcion_id, callback) {

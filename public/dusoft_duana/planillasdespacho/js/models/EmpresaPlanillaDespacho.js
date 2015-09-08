@@ -125,6 +125,29 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
                 return empresas;
             };
             
+             /**
+              * +Descripcion: metodo para obtener la empresa y visualizarla en 
+              * el modelo del dropdown Empresas de la siguiente forma 
+              * scope.planilla.set_empresa(Empresa.obtenerEmpresaPorCodigo(datos.id_empresa_destino))
+              * @param {type} codigoEmpresa
+              * @returns {_L1._L3.EmpresaPlanillaDespacho.obtenerEmpresaPorCodigo.empresa}
+              */
+             EmpresaPlanillaDespacho.obtenerEmpresaPorCodigo = function(codigoEmpresa){
+                
+             
+                for(var i in this.lista_empresas){
+                    
+                   var empresa = this.lista_empresas[i]; 
+                 
+                   if(codigoEmpresa === empresa.getCodigo()){
+                      
+                       return empresa;
+                       
+                   }
+                }
+                
+               
+            };
             
             return EmpresaPlanillaDespacho;
         }]);

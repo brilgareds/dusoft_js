@@ -79,9 +79,9 @@ ClientesModel.prototype.listar_clientes_ciudad = function(empresa_id, pais_id, d
                 left join tipo_pais g on f.tipo_pais_id = g.tipo_pais_id\
                 WHERE b.empresa_id = $1 and a.tipo_pais_id = $2  and a.tipo_dpto_id= $3 and a.tipo_mpio_id= $4 and \
                 (\
-                    a.tipo_id_tercero ILIKE $5 or\
-                    a.tercero_id ILIKE $5 or\
-                    a.nombre_tercero ILIKE $5 \
+                    a.tipo_id_tercero :: varchar ILIKE $5 or\
+                    a.tercero_id :: varchar ILIKE  $5 or\
+                    a.nombre_tercero :: varchar ILIKE $5 \
                 )\
                 ORDER BY a.nombre_tercero ";
 

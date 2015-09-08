@@ -87,15 +87,18 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_farmacia = 
                 a.prefijo,\
                 a.numero,\
                 a.solicitud_prod_a_bod_ppal_id as numero_pedido,\
-                (select coalesce(max(aa.numero_caja),0) as total_cajas  from inv_bodegas_movimiento_d aa where aa.empresa_id = a.empresa_id and  aa.prefijo = a.prefijo and aa.numero = a.numero and aa.tipo_caja = '0') as total_cajas,\
-                (select coalesce(max(aa.numero_caja),0) as total_neveras  from inv_bodegas_movimiento_d aa where aa.empresa_id = a.empresa_id and  aa.prefijo = a.prefijo and aa.numero = a.numero and aa.tipo_caja = '1') as total_neveras,\
+                (select coalesce(max(aa.numero_caja),'0') as total_cajas  from inv_bodegas_movimiento_d aa where aa.empresa_id = a.empresa_id and  aa.prefijo = a.prefijo and aa.numero = a.numero and aa.tipo_caja = '0') as total_cajas,\
+                (select coalesce(max(aa.numero_caja),'0') as total_neveras  from inv_bodegas_movimiento_d aa where aa.empresa_id = a.empresa_id and  aa.prefijo = a.prefijo and aa.numero = a.numero and aa.tipo_caja = '1') as total_neveras,\
                 a.fecha_registro\
                 from inv_bodegas_movimiento_despachos_farmacias a\
                 inner join solicitud_productos_a_bodega_principal b on a.solicitud_prod_a_bod_ppal_id = b.solicitud_prod_a_bod_ppal_id\
                 inner join bodegas c on b.farmacia_id = c.empresa_id and b.centro_utilidad = c.centro_utilidad and b.bodega = c.bodega\
                 inner join centros_utilidad d on c.empresa_id = d.empresa_id and c.centro_utilidad = d.centro_utilidad\
                 inner join empresas e on d.empresa_id = e.empresa_id\
-                where a.empresa_id = $1 and b.farmacia_id = $2 and b.centro_utilidad = $3 and b.estado in ('2','8','9','3')\
+                where a.empresa_id = $1 \
+                and b.farmacia_id = $2 \
+                and b.centro_utilidad  = $3 \
+                and b.estado in ('2','8','9','3')\
                 and a.prefijo || '-' || a.numero NOT IN( select b.prefijo || '-' || b.numero from inv_planillas_detalle_farmacias b ) and \
                 (\
                     a.prefijo || ' ' || a.numero :: varchar  ilike $4 or\
@@ -132,9 +135,9 @@ PlanillasDespachosModel.prototype.consultar_documentos_despachos_por_cliente = f
                 where a.empresa_id= $1 and a.tipo_id_tercero = $2 and a.tercero_id = $3 and b.estado_pedido in ('2','8','9','3') \
                 and a.prefijo || '-' || a.numero NOT IN( select b.prefijo || '-' || b.numero from inv_planillas_detalle_clientes b ) and \
                 ( \
-                    a.prefijo || ' ' || a.numero ilike $4 or \
-                    a.numero ilike $4 or \
-                    a.pedido_cliente_id ilike $4 \
+                    a.prefijo || ' ' || a.numero :: varchar ilike $4 or \
+                    a.numero :: varchar ilike $4 or \
+                    a.pedido_cliente_id :: varchar ilike $4 \
                 )\
                 order by a.fecha_registro desc ; ";
     

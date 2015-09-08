@@ -14,7 +14,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
         "EmpresaPlanillaDespacho",
         "Ciudad",
         "Transportadora",
-        "UsuarioPlanillaDespacho",
+        "UsuarioPlanillaDespacho", 
         "PlanillaDespacho",
         "Documento",
         "Usuario",
@@ -39,20 +39,19 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
             $scope.datos_view = {
                 termino_busqueda_ciudades: '',
-                termino_busqueda_documentos: '',
+                termino_busqueda_documentos: ''
             };
 
             // Variables 
             $scope.planilla = PlanillaDespacho.get();
             $scope.planilla.set_numero_guia(parseInt(localStorageService.get("numero_guia")) || 0);
             $scope.planilla.set_fecha_registro($filter('date')(new Date(), "dd/MM/yyyy"));
-
+            $scope.estadoNumeroGuia = true;
 
 
             that.obtenerEmpresas = function() {
                 
-                var empresas = Usuario.getUsuarioActual().getEmpresasUsuario();
-                
+                var empresas = Usuario.getUsuarioActual().getEmpresasUsuario();               
                 $scope.Empresa.limpiar_empresas();
 
                 empresas.forEach(function(empresa) {
@@ -60,6 +59,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 });
 
             };
+
 
 
             /**
@@ -149,7 +149,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                     $scope.Empresa.set_transportadoras(transportadora);
                 });
             };
-            $scope.estadoNumeroGuia = true;
+           
             $scope.seleccionar_transportadora = function() {
           
                   if($scope.planilla.get_transportadora().get_id() === 4){
@@ -186,16 +186,23 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
             that.renderPlanilla = function(datos) {
-                 
+                
                 var transportadora = Transportadora.get(datos.transportadora_id, datos.nombre_transportadora, datos.placa_vehiculo, datos.estado_transportadora);
                 var usuario = UsuarioPlanilla.get(datos.usuario_id, datos.nombre_usuario);
                 $scope.planilla = PlanillaDespacho.get(datos.id, transportadora, "", datos.nombre_conductor, datos.observacion, usuario, datos.fecha_registro, datos.fecha_despacho, datos.estado, datos.descripcion_estado);
                 $scope.planilla.set_cantidad_cajas(datos.total_cajas);
                 $scope.planilla.set_cantidad_neveras(datos.total_neveras);
                 $scope.planilla.set_numero_guia_externo(datos.numero_guia_externo);
-
+                $scope.planilla.set_empresa(Empresa.obtenerEmpresaPorCodigo(datos.id_empresa_destino));
+             
+              
             };
-
+            
+            /**
+             * +Descripcion: Metodo que ejecuta el servicio encargado de mostrar
+             * los documentos preparados en planilla
+             * @author: Cristian Ardila
+             */
             $scope.consultarDocumentosPlanillaFarmacia = function() {
                
                 var obj = {
@@ -233,7 +240,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                
             };
 
-
+            /**
+             * +Descripcion: Funcion que validara en la vista Gestionar planillas
+             * farmacias, si todos los campos obligatorios estan diligenciados
+             * y se es asi, el boton Buscar Remisiones se activara
+             * @returns {disabled}
+             */
             $scope.validar_btn_ingreso_documentos = function() {
                 
                 var disabled = false;
@@ -250,14 +262,25 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
               }
                 return disabled;
             };
-
+            
+            /**
+             * +Descripcion: metodo ejecutado por el slider para cambiar a la 
+             * pagina donde se encuentran los documentos para despachar
+             * 
+             */
             $scope.gestionar_documentos_farmacia = function() {
 
                 $scope.slideurl = "views/generarplanillafarmacia/gestionardocumentosfarmacia.html?time=" + new Date().getTime();
                 $scope.$emit('gestionar_documentos_farmacia');
-
+               
             };
-
+            
+            /**
+             * +Descripcion: Metodo el cual despliega una ventana modal para
+             * confirmar si se elimina o no un documento de la planilla
+             * @author: Cristian Ardila
+             * @param {type} documento
+             */
             $scope.eliminarDocumentoPlanilla = function(documento) {
 
                 $scope.planilla.set_documento(documento);
@@ -295,7 +318,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 var modalInstance = $modal.open($scope.opts);
 
             };
-
+            
+            /**
+             * +Descripcion: metodo encargado de ejecutar el servicio para eliminar
+             * una documento asignado a una planilla
+             * @author: Cristian Ardila
+             * @returns {void}
+             */
             that.eliminarDocumentoPlanillaDevolucion = function() {
              
                 var obj = {
@@ -314,8 +343,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 Request.realizarRequest(API.PLANILLAS_FARMACIAS.ELIMINAR_DOCUMENTO, "POST", obj, function(data) {
 
                     AlertService.mostrarMensaje("warning", data.msj);
-                    var documentosCantidades = $scope.planilla.get_documentos();
-                    
+                   
                     if (data.status === 200) {
                        
                        //Refrescar la grilla de los totales de caja y neveras
@@ -327,7 +355,11 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
                 });
 
             };
-
+            /**
+             * +Descripcion: Metodo encargado de cerrar el slider que reflieja
+             * la grilla de los documentos que podran ser agregados a una planilla
+             * @author: Cristian Ardila
+             */
             $scope.cerrarRemisionesDocumentos = function() {
                 that.gestionarConsultas(); 
                 $scope.$emit('cerrar_gestion_documentos_bodega', {animado: true});
@@ -339,6 +371,7 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             /**
              * +Descripcion: Funcion encargada de pintar las opciones de despachar
              * y cancelar una devolucion
+             * @author: Cristian Ardila
              */
             $scope.despacharPlanilla = function() {
 
@@ -376,14 +409,19 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
             };
 
            
-
+           /**
+            * @author: Cristian Ardila
+            * +Descripcion: Metodo que ejecuta el servicio para actualizar
+            * el estado activo de una planilla a estado Despachado
+            * @returns {void}
+            */
             that.despachar_planilla_despacho = function() {
             
                 var obj = {
                     session: $scope.session,
                     data: {
                         planillas_farmacia: {
-                            planilla_id: $scope.planilla.get_numero_guia(),
+                            planilla_id: $scope.planilla.get_numero_guia()
                         }
                     }
                 };
@@ -403,7 +441,12 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
 
                 $state.go('GestionarPlanillasFarmacias');
             };
-
+            
+            /**
+             * +Descripcion: Objeto que se invocara desde la vista para mostrar
+             * una tabla con los documentos asignados a una planilla
+             * @author: Cristian Ardila
+             */
             $scope.listaDocumentosPlanillados = {
                 data: 'planilla.get_documentos()',
                 enableColumnResize: true,
@@ -449,6 +492,8 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'
            
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
+                localStorageService.remove("numero_guia");
+              
             });
         }]);
 });

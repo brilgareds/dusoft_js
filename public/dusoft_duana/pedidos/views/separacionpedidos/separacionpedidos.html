@@ -1,0 +1,29 @@
+<div ng-controller="ContenedorSeparacionController">
+   <ul class="nav nav-tabs">
+    <li role="presentation" class="dropdown" ng-class="{'active': !root.esTemporal}">
+      <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+        Pedidos Asignados {{root.vista.tipo}} <span class="caret"></span>
+      </a>
+      <ul class="dropdown-menu">
+          <li><a href="javascript:void(0);" ng-click="onCambiarVista(root.vistas[0], false)">{{root.vistas[0].nombre}}</a></li>
+          <li><a href="javascript:void(0);" ng-click="onCambiarVista(root.vistas[1], false)">{{root.vistas[1].nombre}}</a></li>
+      </ul>
+    </li>
+    <li role="presentation" class="dropdown" ng-class="{'active': root.esTemporal}">
+      <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+        Pedidos Temporales {{root.vista.tipoTemporal}} <span class="caret"></span>
+      </a>
+      <ul class="dropdown-menu">
+         <li><a href="javascript:void(0);" ng-click="onCambiarVista(root.vistas[2], true)">{{root.vistas[2].nombre}}</a></li>
+         <li><a href="javascript:void(0);" ng-click="onCambiarVista(root.vistas[3], true)">{{root.vistas[3].nombre}}</a></li>
+      </ul>
+    </li>
+
+  </ul>
+    
+    
+  <div ng-include src="root.vista.fullPath">
+        
+  </div>
+
+</div>

@@ -43,7 +43,8 @@ define([
     "controllers/generacionpedidos/pedidosclientes/ReportePedidosClientesController",
     "controllers/generacionpedidos/pedidosclientes/ListarPedidosClientesController",
     "controllers/generacionpedidos/pedidosclientes/PedidosClienteController",
-    "controllers/generacionpedidos/pedidosclientes/GestionarProductosClientesController"
+    "controllers/generacionpedidos/pedidosclientes/GestionarProductosClientesController",
+    "controllers/separacionpedidos/ContenedorSeparacionController"
 
 ], function(angular) {
     /* App Module and its dependencies */
@@ -134,6 +135,11 @@ define([
                     text: "Gestionar Pedidos Clientes",
                     templateUrl: "views/generacionpedidos/pedidosclientes/gestionarpedidocliente.html",
                     parent_name : "ListarPedidosClientes"
+                }).state('SeparacionPedidos', {
+                    url: "/SeparacionPedidos",
+                    text: "Separacion Pedidos",
+                    templateUrl: "views/separacionpedidos/separacionpedidos.html",
+                    parent_name : "GestionarPlanillas"
                 });
 
                 if ($location.path() === "") {

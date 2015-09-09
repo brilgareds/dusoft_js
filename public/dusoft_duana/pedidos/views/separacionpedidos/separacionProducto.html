@@ -50,13 +50,13 @@
         <div class="panel-heading">
 
 
-            <ul class="pagination ">
+            <ul class="pagination paginacionSeparacion">
                 <li><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
                 <li><a href="#">Detalle</a></li>
                 <li><a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
             </ul>
 
-            <div class="btn-group  navbar-nav navbar-right navbar-brand ">
+            <div class="btn-group   navbar-right accionSeparacion ">
                 <button type="button" class="btn btn-default dropdown-toggle" 
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{filtro.nombre}} <span class="caret"></span></button>
                 <ul class="dropdown-menu">
@@ -73,14 +73,7 @@
         </div>
     </div>
 
-    <div class="row text-center">
-        <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 1" ng-click="paginaAnterior()">
-            <span class="glyphicon glyphicon-chevron-left" ></span>
-        </button>
-        <button type="button" class="btn btn-default btn-medium" ng-disabled="items <=25" ng-click="paginaSiguiente()">
-            <span class="glyphicon glyphicon-chevron-right" ></span>
-        </button>
-    </div>
+
 
 
 

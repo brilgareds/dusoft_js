@@ -44,7 +44,8 @@ define([
     "controllers/generacionpedidos/pedidosclientes/ListarPedidosClientesController",
     "controllers/generacionpedidos/pedidosclientes/PedidosClienteController",
     "controllers/generacionpedidos/pedidosclientes/GestionarProductosClientesController",
-    "controllers/separacionpedidos/ContenedorSeparacionController"
+    "controllers/separacionpedidos/ContenedorSeparacionController",
+    "controllers/separacionpedidos/SeparacionProductosController"
 
 ], function(angular) {
     /* App Module and its dependencies */
@@ -138,9 +139,19 @@ define([
                 }).state('SeparacionPedidos', {
                     url: "/SeparacionPedidos",
                     text: "Separacion Pedidos",
-                    templateUrl: "views/separacionpedidos/separacionpedidos.html",
-                    parent_name : "GestionarPlanillas"
+                    templateUrl: "views/separacionpedidos/separacionpedidos.html"
+                    
+                }).state('SeparacionProducto', {
+                    url: "/SeparacionProducto",
+                    text: "Separacion producto", 
+                    parent_name: "SeparacionPedidos",
+                    templateUrl: "views/separacionpedidos/separacionProducto.html",
+                    controller: "SeparacionProductosController"
+                    
                 });
+                
+                
+                
 
                 if ($location.path() === "") {
                     $state.go(vistaDefecto);

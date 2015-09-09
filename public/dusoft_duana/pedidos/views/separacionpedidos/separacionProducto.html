@@ -1,0 +1,89 @@
+<div  ng-controller="SeparacionProductosController"> 
+
+    <div class="row paddingToptZero">
+
+
+        <div class="col-sm-12 col-md-12"  ng-controller="ContenedorSeparacionController">
+
+
+            <button type="button" class="btn btn-default pull-right boton-separacion-cancelar btn-sm" ng-click="retornarPaginaInicio()"  
+                    aria-haspopup="true" aria-expanded="false" ><span class="glyphicon glyphicon-arrow-left"></span> Regresar </button>
+
+
+            <div class="panel panel-default marginBottom5">
+
+                <div class="panel-heading">
+                    <h4 class="h4MarginTopBottom"><span >Separacion de pedidos</span> </h4>
+                </div>
+
+                <div class="panel-body">
+
+                    <table class="table " id="tablaSeparacion">
+                        <tr><th>Cliente </th><td>FARMACIA DUANA</td></tr>
+                        <tr><th>Observacion &nbsp;</th><td>Se solicita pedido por tutela</td></tr>
+                        <tr><th>Producto </th><td>168PO483783 - PIROXCAM 5% GEL O JALEA | TUBO  40GR. GEN-FAR.SA</td></tr>
+                        <tr>
+                            <th>Justificar </th>
+                            <td> 
+                                <div class="btn-group  navbar-left ">
+                                    <button type="button" class="btn btn-default dropdown-toggle" 
+                                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{justificacion.nombre}} <span class="caret"></span></button>
+                                    <ul class="dropdown-menu">
+                                        <li ng-repeat="justificacion in justificaciones">
+                                            <a href="javascript:void(0)" ng-click="onSeleccionJustificacion(justificacion)">{{justificacion.nombre}}</a>
+                                        </li>
+                                    </ul>
+                                </div>                           
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div> 
+
+
+
+    <div class="panel panel-default marginBottom5">
+
+        <div class="panel-heading">
+
+
+            <ul class="pagination ">
+                <li><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+                <li><a href="#">Detalle</a></li>
+                <li><a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+            </ul>
+
+            <div class="btn-group  navbar-nav navbar-right navbar-brand ">
+                <button type="button" class="btn btn-default dropdown-toggle" 
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >{{filtro.nombre}} <span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                    <li ng-repeat="filtro in filtros">
+                        <a href="javascript:void(0)" ng-click="onSeleccionFiltros(filtro)">{{filtro.nombre}}</a>
+                    </li>
+                </ul>
+            </div>                                      
+        </div>
+
+
+        <div class="panel-body">
+            <div class="grid-separacion-producto grid-responsive" ng-grid="separacionProducto" > </div>
+        </div>
+    </div>
+
+    <div class="row text-center">
+        <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactual == 1" ng-click="paginaAnterior()">
+            <span class="glyphicon glyphicon-chevron-left" ></span>
+        </button>
+        <button type="button" class="btn btn-default btn-medium" ng-disabled="items <=25" ng-click="paginaSiguiente()">
+            <span class="glyphicon glyphicon-chevron-right" ></span>
+        </button>
+    </div>
+
+
+
+
+</div> 
+

@@ -15,7 +15,7 @@ InduccionModel.prototype.obtenerEmpresasActivas = function(callback) {
     var sql = "SELECT \
                empresa_id, razon_social \
                FROM empresas \
-               WHERE sw_activa = 1 \
+               WHERE sw_activa = '1' \
                ORDER BY razon_social asc;";
 
 
@@ -102,7 +102,7 @@ var sql = "select \
             INNER JOIN existencias_bodegas d ON d.empresa_id = c.empresa_id AND d.centro_utilidad  = c.centro_utilidad AND d.bodega = c.bodega \
             INNER JOIN inventarios_productos e ON e.codigo_producto = d.codigo_producto \
             INNER JOIN inventarios f ON c.empresa_id = f.empresa_id AND f.codigo_producto = e.codigo_producto \
-            WHERE a.empresa_id = $1 AND b.centro_utilidad = $2 AND c.bodega = $3 AND a.sw_activa = 1 and e.descripcion ilike $4 AND d.codigo_producto ilike $5 ";
+            WHERE a.empresa_id = $1 AND b.centro_utilidad = $2 AND c.bodega = $3 AND a.sw_activa = '1' and e.descripcion ilike $4 AND d.codigo_producto ilike $5 ";
 
     G.db.paginated(sql, [empresaId, centroUtilidad, bodega, '%' + descripcion + '%', '%' + codigoProducto + '%'], pagina, G.settings.limit, function(err, rows, result) {
         callback(err, rows);

@@ -2,43 +2,48 @@
 define(["angular", "js/controllers",
     'includes/slide/slideContent'], function(angular, controllers) {
 
-    var fo = controllers.controller('SeparacionClientesController', [
+    var fo = controllers.controller('SeparacionProductosController', [
         '$scope', '$rootScope', 'Request', 'API',
-        "socket", "AlertService", "$modal", "$state",
+        "socket", "AlertService", "$modal", "localStorageService", "$state",
         function($scope, $rootScope, Request,
-                API, socket, AlertService, $modal, $state) {
+                API, socket, AlertService, $modal, localStorageService, $state) {
 
 
             var self = this;
 
             self.init = function(callback) {
                 $scope.rootSeparacionClientes = {};
-                $scope.paginaactualClientes = 1;
+                $scope.paginaactual = 1;
                 callback();
             };
 
-
-
-            self.traerPedidosTemporales = function() {
-                console.log("traer pedidos temporales SeparacionClientesController");
-            };
-
-            self.traerPedidosAsignados = function() {
-                console.log("traer pedidos asignados SeparacionClientesController");
-            };
-
-            /*
-             * @Author: Eduar
-             * +Descripcion: Funcion utilizada para destruir las referencias del controlador ejemplo la variable rootSeparacionClientes
-             */
-            $scope.$on('$destroy', function iVeBeenDismissed() {
-                console.log("goodbye SeparacionClientesController");
-                $scope.rootSeparacionClientes = null;
-            });
-
-           
-
-
+              $scope.justificaciones = [
+                {nombre: "Guia", id: 1},
+                {nombre: "Transportador", id: 2},
+                {nombre: "Estado", id: 3}
+            ];
+            $scope.justificacion = $scope.justificaciones[0];
+            
+            $scope.onSeleccionJustificacion = function(justificacion) {
+               
+                $scope.justificacion = justificacion;
+                
+            }
+            
+            
+            
+             $scope.filtros = [
+                {nombre: "Listar productos", id: 1},
+                {nombre: "Refrescar", id: 2}
+               
+            ];
+            $scope.filtro = $scope.filtros[0];
+            
+            $scope.onSeleccionFiltros = function(justificacion) {
+               
+                $scope.filtro = justificacion;
+                
+            }
             /**
              * +Descripcion: Datos de prueba
              */
@@ -55,7 +60,7 @@ define(["angular", "js/controllers",
              * +Descripcion: Grilla en comun para pedidos asignados 
              *  clientes y pedidos temporales clientes
              */
-            $scope.pedidos = {
+            $scope.separacionProducto = {
                 data: 'myData',
                 enableColumnResize: true,
                 enableRowSelection: false,
@@ -72,8 +77,8 @@ define(["angular", "js/controllers",
                 ]
             };
 
-
-            /**
+            
+               /**
              * @param {N/N}
              * @author Cristian Ardila
              * @returns {int} paginaactual
@@ -82,12 +87,12 @@ define(["angular", "js/controllers",
              * y aumentara en 1 la pagina actual, refrescando la gridview
              * de los documentos
              */
-            $scope.paginaAnteriorClientes = function() {
-                if ($scope.paginaactualClientes === 1)
+            $scope.paginaAnterior = function() {
+                if ($scope.paginaactual === 1)
                     return;
-                $scope.paginaactualClientes--;
-                /* that.traerDocumentosFarmacias(function() {
-                 });*/
+                $scope.paginaactual--;
+               /* that.traerDocumentosFarmacias(function() {
+                });*/
             };
 
             /**
@@ -99,21 +104,25 @@ define(["angular", "js/controllers",
              * y aumentara en 1 la pagina actual, refrescando la gridview
              * de los documentos
              */
-            $scope.paginaSiguienteClientes = function() {
-
-                $scope.paginaactualClientes++;
-
+            $scope.paginaSiguiente = function() {
+              
+                $scope.paginaactual++;
                 /* that.traerDocumentosFarmacias(function() {
-                 });*/
+                });*/
             };
+            
+            /*
+             * @Author: Eduar
+             * +Descripcion: Funcion utilizada para destruir las referencias del controlador ejemplo la variable rootSeparacionClientes
+             */
+            $scope.$on('$destroy', function iVeBeenDismissed() {
+                console.log("goodbye SeparacionClientesController");
+                $scope.rootSeparacionClientes = null;
+            });
 
             self.init(function() {
 
-                if ($scope.root.esTemporal) {
-                    self.traerPedidosTemporales();
-                } else {
-                    self.traerPedidosAsignados();
-                }
+
             });
 
         }]);

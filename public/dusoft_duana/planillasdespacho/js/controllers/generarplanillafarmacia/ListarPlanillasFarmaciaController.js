@@ -92,7 +92,7 @@ define(["angular", "js/controllers",
                 $scope.datos_view.termino_busqueda = filtrosEstados.estado;
                 $scope.buscar_planillas_despacho($scope.datos_view.termino_busqueda);
                
-            }
+            };
             /**
              * @author Cristian Ardila
              * @param {evento} ng-keypress
@@ -102,7 +102,7 @@ define(["angular", "js/controllers",
              */
             $scope.buscador_planillas_despacho = function(ev) {
 
-                if (ev.which == 13) {
+                if (ev.which === 13) {
                     $scope.buscar_planillas_despacho();
                 }
             };
@@ -291,6 +291,8 @@ define(["angular", "js/controllers",
              */
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
+                //localStorageService.remove("numero_guia");
+               // $scope.datos_view = null;
             });
 
         }]);

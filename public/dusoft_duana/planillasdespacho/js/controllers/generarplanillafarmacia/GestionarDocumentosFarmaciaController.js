@@ -39,7 +39,7 @@ define(["angular", "js/controllers",
                     termino_busqueda_documentos: '',
                     documento_seleccionado: Documento.get(),
                     fecha_inicial: $filter('date')(new Date("01/01/" + fecha_actual.getFullYear()), "yyyy-MM-dd"),
-                    fecha_final: $filter('date')(fecha_actual, "yyyy-MM-dd"),
+                    fecha_final: $filter('date')(fecha_actual, "yyyy-MM-dd")
                 };
 
             });
@@ -60,7 +60,7 @@ define(["angular", "js/controllers",
                     
                     that.traerDocumentosFarmacias(function(){
                         
-                    })
+                    });
                    
                 }
                 
@@ -71,7 +71,7 @@ define(["angular", "js/controllers",
                     
                     that.traerDocumentosFarmacias(function(){
                         
-                    })
+                    });
                    
                 }
                 $scope.datos_view.datepicker_fecha_inicial = false;
@@ -334,11 +334,11 @@ define(["angular", "js/controllers",
 
                         }
                     } else {
-                        AlertService.mostrarMensaje("warning", data.msj)
+                        AlertService.mostrarMensaje("warning", data.msj);
                     }
                 });
 
-            }
+            };
 
             that.renderDocumentoFarmacia = function(documentos) {
 
@@ -349,7 +349,7 @@ define(["angular", "js/controllers",
                     $scope.Empresa.set_empresas(empresa);
                 });
                 that.obtenerListaDocumentos(documentos);
-            }
+            };
 
 
             that.obtenerListaDocumentos = function(documentos) {
@@ -362,7 +362,7 @@ define(["angular", "js/controllers",
                     $scope.Empresa.set_lista_documentos(documento);
 
                 }
-            }
+            };
 
 
             /**
@@ -410,7 +410,7 @@ define(["angular", "js/controllers",
                 that.traerDocumentosFarmacias(function() {
 
                 });
-            }
+            };
 
             that.onListarDocumentos();
 
@@ -486,6 +486,8 @@ define(["angular", "js/controllers",
 
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.$$watchers = null;
+               
+               
             });
         }]);
 });

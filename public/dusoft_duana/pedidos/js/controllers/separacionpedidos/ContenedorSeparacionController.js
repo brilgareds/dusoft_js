@@ -5,9 +5,9 @@ define(["angular", "js/controllers",
 
     var fo = controllers.controller('ContenedorSeparacionController', [
         '$scope', '$rootScope', 'Request', 'API',
-        "socket", "AlertService", "$modal", 
+        "socket", "AlertService", "$modal","$state",
         function($scope, $rootScope, Request,
-                API, socket, AlertService, $modal) {
+                API, socket, AlertService, $modal,$state) {
              
              
              
@@ -54,10 +54,30 @@ define(["angular", "js/controllers",
              };
              
              self.init(function(){
-                 $scope.root.vista = $scope.root.vistas[1];
+                 $scope.root.vista = $scope.root.vistas[0];
+                 
                 self.modificarVista(false);     
              });
              
+           /**
+             * +Descripcion: Conduce a la vista encargada de separar los productos
+             * @param {type} producto
+             */
+            $scope.detallePedido = function(producto) {
+                $state.go("SeparacionProducto");
+            };
+            
+            
+
+            /**
+             * +Descripcion: Conduce a la vista principal 
+             * @param {type} producto
+             */
+            $scope.retornarPaginaInicio = function() {
+
+                $state.go("SeparacionPedidos");
+            };
+
              /*
              * @Author: Eduar
              * +Descripcion: Evento que se dispara cuando la url cambia, es util liberar memoria en este punto

@@ -67,31 +67,6 @@ PlanillasFarmaciasModel.prototype.listar_planillas_farmacias = function(fecha_in
 
 };
 
-/**
- * 
- * @param {type} callback
- * @returns {undefined}
- * @author Cristian Ardila
- * +Descripcion: Metodo que ejecuta el query de la consulta encargada de listar
- * las farmacias
- */
-PlanillasFarmaciasModel.prototype.obtenerFarmacias = function(codigoempresa, callback) {
-
-    var sql = "SELECT razon_social, empresa_id \
-            FROM empresas WHERE sw_activa = '1'\
-            AND empresa_id != $1\
-            AND empresa_id IN(\
-                SELECT empresa_id  \
-                FROM empresas WHERE sw_activa = '1'  \
-                AND empresa_id IN('03','01','FD') );";
-
-    G.db.query(sql, [codigoempresa], function(err, rows, result) {
-        callback(err, rows);
-    });
-
-};
-
-
 PlanillasFarmaciasModel.prototype.obtenerTipoDocumento = function(empresa, centroUtilidad, bodega, pagina, terminoBusqueda, fechaInicial, fechaFinal, callback) {
 
     var sql = "SELECT  m.prefijo,m.numero,m.fecha_registro,a.bodegas_doc_id\

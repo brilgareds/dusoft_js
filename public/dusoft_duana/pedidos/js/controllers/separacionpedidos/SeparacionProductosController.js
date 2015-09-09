@@ -2,58 +2,72 @@
 define(["angular", "js/controllers",
     'includes/slide/slideContent'], function(angular, controllers) {
 
-    var fo = controllers.controller('SeparacionFarmaciasController', [
+    var fo = controllers.controller('SeparacionProductosController', [
         '$scope', '$rootScope', 'Request', 'API',
-        "socket", "AlertService", "$modal",
+        "socket", "AlertService", "$modal", "localStorageService", "$state",
         function($scope, $rootScope, Request,
-                API, socket, AlertService, $modal) {
+                API, socket, AlertService, $modal, localStorageService, $state) {
 
 
             var self = this;
 
             self.init = function(callback) {
-                $scope.rootSeparacionFarmacias = {};
-                $scope.paginaactualFarmacias = 1;
+                $scope.rootSeparacionClientes = {};
+                $scope.paginaactual = 1;
+                $scope.justificaciones = [
+                    {nombre: "Guia", id: 1},
+                    {nombre: "Transportador", id: 2},
+                    {nombre: "Estado", id: 3}
+                ];
+                $scope.filtros = [
+                    {nombre: "Listar productos", id: 1},
+                    {nombre: "Refrescar", id: 2}
+
+                ];
+                 $scope.filtro = $scope.filtros[0];
+                 $scope.justificacion = $scope.justificaciones[0];
                 callback();
             };
+            
+            $scope.onSeleccionJustificacion = function(justificacion) {
+                $scope.justificacion = justificacion;
+            }
 
-
+           
+            $scope.onSeleccionFiltros = function(justificacion) {
+                $scope.filtro = justificacion;
+            }
             /**
              * +Descripcion: Datos de prueba
              */
             $scope.myData = [
-                {pedido: 50, farmacia: "FAMRACIAS DUANA - MAN PALO GRANDE", bodega: "MAN PALO GRANDE", cantidad: 60},
-                {pedido: 50, farmacia: "FAMRACIAS DUANA - MAN PALO GRANDE", bodega: "PEÑITAS ", cantidad: 60},
-                {pedido: 50, farmacia: "FAMRACIAS DUANA - MAN PALO GRANDE", bodega: "Ixon", cantidad: 60},
-                {pedido: 50, farmacia: "FAMRACIAS DUANA - MAN PALO GRANDE", bodega: "Fabio", cantidad: 60},
-                {pedido: 50, farmacia: "FAMRACIAS DUANA - MAN PALO GRANDE", bodega: "Alex", cantidad: 60}
+                {pedido: 50, operario: "Moroni", cantidad: 60},
+                {pedido: 50, operario: "Gomez", cantidad: 60},
+                {pedido: 50, operario: "Ixon", cantidad: 60},
+                {pedido: 50, operario: "Fabio", cantidad: 60},
+                {pedido: 50, operario: "Alex", cantidad: 60}
             ];
-
             /**
              * @author Cristian Ardila
              * +Descripcion: Grilla en comun para pedidos asignados 
-             *  farmacias y pedidos temporales farmacias
+             *  clientes y pedidos temporales clientes
              */
-            $scope.pedidosFarmacias = {
+            $scope.separacionProducto = {
                 data: 'myData',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
                     {field: 'pedido', displayName: 'Pedido No'},
-                    {field: 'farmacia', displayName: 'Farmacia'},
-                    {field: 'bodega', displayName: 'Bodega'},
-                    {field: 'cantidad', width: "10%"},
-                    {field: 'detalle', width: "10%",
-                        displayName: "Cantidad",
+                    {field: 'operario', displayName: 'Operario'},
+                    {field: 'cantidad', displayName: 'Cantidad'},
+                    {field: 'Detalle', width: "10%",
+                        displayName: "Detalle",
                         cellClass: "txt-center",
                         cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="detallePedido(row.entity)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'
 
                     }
                 ]
             };
-
-
-
             /**
              * @param {N/N}
              * @author Cristian Ardila
@@ -63,11 +77,10 @@ define(["angular", "js/controllers",
              * y aumentara en 1 la pagina actual, refrescando la gridview
              * de los documentos
              */
-            $scope.paginaAnteriorFarmacias = function() {
-               
-                if ($scope.paginaactualFarmacias === 1)
+            $scope.paginaAnterior = function() {
+                if ($scope.paginaactual === 1)
                     return;
-                $scope.paginaactualFarmacias--;
+                $scope.paginaactual--;
                 /* that.traerDocumentosFarmacias(function() {
                  });*/
             };
@@ -81,29 +94,26 @@ define(["angular", "js/controllers",
              * y aumentara en 1 la pagina actual, refrescando la gridview
              * de los documentos
              */
-            $scope.paginaSiguienteFarmacias = function() {
-                
-                $scope.paginaactualFarmacias++;
+            $scope.paginaSiguiente = function() {
 
+                $scope.paginaactual++;
                 /* that.traerDocumentosFarmacias(function() {
                  });*/
             };
 
-
             /*
              * @Author: Eduar
-             * +Descripcion: Funcion utilizada para destruir las referencias del controlador ejemplo la variable rootSeparacionFarmacias
+             * +Descripcion: Funcion utilizada para destruir las referencias del controlador ejemplo la variable rootSeparacionClientes
              */
             $scope.$on('$destroy', function iVeBeenDismissed() {
-                console.log("goodbye SeparacionFarmaciasController");
-                $scope.rootSeparacionFarmacias = null;
+                console.log("goodbye SeparacionClientesController");
+                $scope.rootSeparacionClientes = null;
             });
 
             self.init(function() {
 
+
             });
-
-
 
         }]);
 });

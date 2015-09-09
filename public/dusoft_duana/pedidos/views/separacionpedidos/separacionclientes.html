@@ -1,3 +1,30 @@
 <div ng-controller="SeparacionClientesController">
-   Es pedido temporal {{root.esTemporal}}
+   <div class ="row">
+       <br>
+        <div class="col-md-3 pull-right">
+            <p class="input-group">
+                <input type="text" class="form-control" 
+                       ng-keypress="buscadorDocumentosPlanilla($event);" 
+                       ng-model="datos_view.termino_busqueda_documentos" 
+                       placeholder="Buscar" name="" id="" 
+                       />
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="submit" ng-click="buscadorDocumentosPlanilla($event)"><i class="glyphicon glyphicon-search"></i></button>
+                </span>
+            </p>
+        </div>
+    </div>
+   <div class="table-responsive" >
+        <div class="defaultGrid grid-responsive" ng-grid="pedidos" > </div>
+    </div>
+    <div class="row text-center">
+        <button type="button" class="btn btn-default btn-medium" ng-disabled="paginaactualClientes == 1" ng-click="paginaAnteriorClientes()">
+            <span class="glyphicon glyphicon-chevron-left" ></span>
+        </button>
+        <button type="button" class="btn btn-default btn-medium" ng-disabled="items <=25" ng-click="paginaSiguienteClientes()">
+            <span class="glyphicon glyphicon-chevron-right" ></span>
+        </button>
+    </div>
+   
+    
 </div>

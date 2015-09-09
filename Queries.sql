@@ -1373,7 +1373,7 @@ ALTER TABLE "public"."ventas_ordenes_pedidos_tmp"
 
 /* =================== Tabla para ingresar el encabezado de los documentos de devolucion ============*/
 CREATE TABLE "public"."inv_planillas_farmacia_devolucion" (
-  "id_inv_planilla_farmacia_devolucion" INTEGER SERIE, 
+  "id_inv_planilla_farmacia_devolucion" INTEGER SERIAL, 
   "empresa_id" CHAR(2) NOT NULL, 
   "centro_utilidad" CHAR(2) NOT NULL, 
   "bodega" VARCHAR(2) NOT NULL, 

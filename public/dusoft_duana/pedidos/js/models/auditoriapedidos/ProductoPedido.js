@@ -41,6 +41,8 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             //Objeto Lote
             this.lote = {};
             this.lotesSeleccionados = [];
+
+            this.valorUnitario = 0;
         }
 
         ProductoPedido.prototype = Object.create(Producto.getClass().prototype);
@@ -53,6 +55,47 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             return this.lote;
         };
         
+        
+        
+        ProductoPedido.prototype.setCantidadSolicitada = function(cantidad_solicitada) {
+            this.cantidad_solicitada = cantidad_solicitada;
+            return this;
+        };
+        
+        ProductoPedido.prototype.getCantidadSolicitada = function() {
+            return this.cantidad_solicitada;
+        };        
+        
+        
+        ProductoPedido.prototype.setCantidadPendiente = function(cantidad_pendiente) {
+            this.cantidad_pendiente = cantidad_pendiente;
+            return this;
+        };
+        
+        ProductoPedido.prototype.getCantidadPendiente = function() {
+            return this.cantidad_pendiente;
+        };      
+        
+        ProductoPedido.prototype.setValorUnitario = function(valorUnitario) {
+            this.valorUnitario = valorUnitario;
+            return this;
+        };
+        
+        ProductoPedido.prototype.getValorUnitario = function() {
+            return this.valorUnitario;
+        };  
+        
+
+        ProductoPedido.prototype.setPorcentajeGravament = function(porcentaje_gravament) {
+            this.porcentaje_gravament = porcentaje_gravament;
+            return this;
+        };
+        
+        ProductoPedido.prototype.getPorcentajeGravament = function() {
+            return this.porcentaje_gravament;
+        }; 
+        
+
         ProductoPedido.prototype.setCodigoCum = function(codigo_cum) {
             this.codigo_cum = codigo_cum;
         };

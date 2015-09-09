@@ -18,6 +18,8 @@ define(["angular", "js/models"], function(angular, models) {
             this.empresa_id = 0;
             this.centro_utilidad = 0;
             this.bodega_id = 0;
+            
+            this.fechaRegistro;
             //this.detalle_documento_temporal = [];
         }
 
@@ -30,6 +32,10 @@ define(["angular", "js/models"], function(angular, models) {
             this.usuario_id = datos.usuario_id;
         };
 
+        DocumentoTemporal.prototype.getPedido = function() {
+            return this.pedido;
+        };
+        
         DocumentoTemporal.prototype.setPedido = function(pedido) {
             this.pedido = pedido;
         };
@@ -42,13 +48,39 @@ define(["angular", "js/models"], function(angular, models) {
             this.auditor = auditor;
         };
         
-        DocumentoTemporal.prototype.getPedido = function() {
-            return this.pedido;
-        };
         
         DocumentoTemporal.prototype.getSeparador = function () {
             return this.separador;
         };
+        
+        DocumentoTemporal.prototype.setdocumentoTemporalId = function (documento_temporal_id) {
+            this.documento_temporal_id = documento_temporal_id;
+        };
+        
+        DocumentoTemporal.prototype.getdocumentoTemporalId = function () {
+            return this.documento_temporal_id;
+        };
+        
+        DocumentoTemporal.prototype.setBodegasDocId = function (bodegas_doc_id) {
+            this.bodegas_doc_id = bodegas_doc_id;
+            return this;
+        };
+        
+        DocumentoTemporal.prototype.getBodegasDocId = function () {
+            return this.bodegas_doc_id;
+        };
+        
+        
+        
+        DocumentoTemporal.prototype.setFechaRegistro = function (fechaRegistro) {
+            this.fechaRegistro = fechaRegistro;
+            return this;
+        };
+        
+        DocumentoTemporal.prototype.getFechaRegistro = function () {
+            return this.fechaRegistro;
+        };
+        
 
         //we return new instance of usermodel class  because factory is a singleton and we dont need like that
         this.get = function() {

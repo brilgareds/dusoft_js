@@ -68,6 +68,14 @@ define(["angular", "js/models"], function(angular, models) {
             return this.descripcion;
         };
         
+        Pedido.prototype.setEstado = function(estado){
+            this.estado = estado;
+            return this;
+        };
+
+        Pedido.prototype.getEstado = function() {
+            return this.estado;
+        };
         
         Pedido.prototype.setEstadoActualPedido = function(estadoActualPedido){
             this.estado_actual_pedido = estadoActualPedido;
@@ -78,6 +86,16 @@ define(["angular", "js/models"], function(angular, models) {
             return this.estado_actual_pedido;
         };
         
+        
+        Pedido.prototype.setEstadoSeparacion = function(estado_separacion){
+            this.estado_separacion = estado_separacion;
+            return this;
+        };
+
+        Pedido.prototype.getEstadoSeparacion = function() {
+            return this.estado_separacion;
+        };
+
 
         this.getClass = function(){
             return Pedido;

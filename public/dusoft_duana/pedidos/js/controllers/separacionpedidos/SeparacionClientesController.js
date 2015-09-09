@@ -9,11 +9,38 @@ define(["angular", "js/controllers",
                 API, socket, AlertService, $modal) {
              
              
+             var self = this;
+             
+             self.init = function(callback){
+                $scope.rootSeparacionClientes = {}; 
+                callback();
+             };
              
              
+             self.traerPedidosTemporales = function(){
+                console.log("traer pedidos temporales SeparacionClientesController");
+             }; 
              
+             self.traerPedidosAsignados = function(){
+                 console.log("traer pedidos asignados SeparacionClientesController");
+             };
+             
+             /*
+             * @Author: Eduar
+             * +Descripcion: Funcion utilizada para destruir las referencias del controlador ejemplo la variable rootSeparacionClientes
+             */
              $scope.$on('$destroy', function iVeBeenDismissed() {
                  console.log("goodbye SeparacionClientesController");
+                 $scope.rootSeparacionClientes = null;
+             });
+             
+             self.init(function(){
+                 
+                if($scope.root.esTemporal){
+                    self.traerPedidosTemporales();
+                } else {
+                    self.traerPedidosAsignados();
+                }
              });
 
         }]);

@@ -11,29 +11,62 @@ define(["angular", "js/controllers",
              
              
              
-             $scope.root = {};
-             var self = this;
+            var self = this;
              
-             $scope.root.vistas = [
-                 {path:"separacionclientes.html", nombre:"Asignacion Clientes"},
-                 {path:"separacionfarmacias.html", nombre:"Asignacion Farmacias"},
-                 {path:"separacionclientes.html", nombre:"Temporales Clientes"},
-                 {path:"separacionfarmacias.html", nombre:"Temporales Farmacias"}
-             ];
-             
-             
-             
-             self.modificarVista = function(vista){
-                $scope.root.vista = "views/separacionpedidos/"+vista+"?time=" + new Date().getTime();
-                
-                console.log("vista ", $scope.root.vista);
+            /*
+             * @Author: Eduar
+             * @param {function} callback
+             * +Descripcion: Permite inicializar el controlador
+             */
+             self.init = function(callback){ 
+                $scope.root = {};
+                $scope.root.esTemporal = false;
+                $scope.root.vistas = [
+                    {path:"separacionclientes.html", nombre:"Asignacion Clientes", tipo:"Clientes"},
+                    {path:"separacionfarmacias.html", nombre:"Asignacion Farmacias", tipo:"Farmacias"},
+                    {path:"separacionclientes.html", nombre:"Temporales Clientes", tipoTemporal:"Clientes"},
+                    {path:"separacionfarmacias.html", nombre:"Temporales Farmacias", tipoTemporal:"Farmacias"}
+                ];
+
+                callback();
              };
              
-             self.modificarVista($scope.root.vistas[1].path);
-             
-             $scope.onCambiarVista = function(vista){
-                self.modificarVista(vista); 
+            /*
+             * @Author: Eduar
+             * @param {String} vista
+             * @param {Boolen} esTemporal
+             * +Descripcion: Funcion privada que permite llamar el view apartir del parametro esTemporal
+             */
+             self.modificarVista = function(esTemporal){
+                $scope.root.esTemporal = esTemporal;
+                $scope.root.vista.fullPath = "views/separacionpedidos/"+$scope.root.vista.path+"?time=" + new Date().getTime();
              };
+             
+            /*
+             * @Author: Eduar
+             * @param {String} vista
+             * @param {Boolen} esTemporal
+             * +Descripcion: Handler de los dropdown de los tabs de navegacion
+             */
+             $scope.onCambiarVista = function(vista, esTemporal){
+                $scope.root.vista = vista;
+                self.modificarVista(esTemporal); 
+             };
+             
+             self.init(function(){
+                 $scope.root.vista = $scope.root.vistas[1];
+                self.modificarVista(false);     
+             });
+             
+             /*
+             * @Author: Eduar
+             * +Descripcion: Evento que se dispara cuando la url cambia, es util liberar memoria en este punto
+             */
+             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+                $scope.root = {};
+                $scope.$$watchers = null;
+            });
+
 
         }]);
 });

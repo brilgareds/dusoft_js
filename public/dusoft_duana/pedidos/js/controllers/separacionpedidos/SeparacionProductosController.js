@@ -14,35 +14,28 @@ define(["angular", "js/controllers",
             self.init = function(callback) {
                 $scope.rootSeparacionClientes = {};
                 $scope.paginaactual = 1;
+                $scope.justificaciones = [
+                    {nombre: "Guia", id: 1},
+                    {nombre: "Transportador", id: 2},
+                    {nombre: "Estado", id: 3}
+                ];
+                $scope.filtros = [
+                    {nombre: "Listar productos", id: 1},
+                    {nombre: "Refrescar", id: 2}
+
+                ];
+                 $scope.filtro = $scope.filtros[0];
+                 $scope.justificacion = $scope.justificaciones[0];
                 callback();
             };
-
-              $scope.justificaciones = [
-                {nombre: "Guia", id: 1},
-                {nombre: "Transportador", id: 2},
-                {nombre: "Estado", id: 3}
-            ];
-            $scope.justificacion = $scope.justificaciones[0];
             
             $scope.onSeleccionJustificacion = function(justificacion) {
-               
                 $scope.justificacion = justificacion;
-                
             }
-            
-            
-            
-             $scope.filtros = [
-                {nombre: "Listar productos", id: 1},
-                {nombre: "Refrescar", id: 2}
-               
-            ];
-            $scope.filtro = $scope.filtros[0];
-            
+
+           
             $scope.onSeleccionFiltros = function(justificacion) {
-               
                 $scope.filtro = justificacion;
-                
             }
             /**
              * +Descripcion: Datos de prueba
@@ -54,7 +47,6 @@ define(["angular", "js/controllers",
                 {pedido: 50, operario: "Fabio", cantidad: 60},
                 {pedido: 50, operario: "Alex", cantidad: 60}
             ];
-
             /**
              * @author Cristian Ardila
              * +Descripcion: Grilla en comun para pedidos asignados 
@@ -76,9 +68,7 @@ define(["angular", "js/controllers",
                     }
                 ]
             };
-
-            
-               /**
+            /**
              * @param {N/N}
              * @author Cristian Ardila
              * @returns {int} paginaactual
@@ -91,8 +81,8 @@ define(["angular", "js/controllers",
                 if ($scope.paginaactual === 1)
                     return;
                 $scope.paginaactual--;
-               /* that.traerDocumentosFarmacias(function() {
-                });*/
+                /* that.traerDocumentosFarmacias(function() {
+                 });*/
             };
 
             /**
@@ -105,12 +95,12 @@ define(["angular", "js/controllers",
              * de los documentos
              */
             $scope.paginaSiguiente = function() {
-              
+
                 $scope.paginaactual++;
                 /* that.traerDocumentosFarmacias(function() {
-                });*/
+                 });*/
             };
-            
+
             /*
              * @Author: Eduar
              * +Descripcion: Funcion utilizada para destruir las referencias del controlador ejemplo la variable rootSeparacionClientes

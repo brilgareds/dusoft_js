@@ -43,6 +43,10 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.lotesSeleccionados = [];
 
             this.valorUnitario = 0;
+            this.justificacion = "";
+            this.valorIva = 0;
+            this.valorUnitarioConIva = 0;
+            
         }
 
         ProductoPedido.prototype = Object.create(Producto.getClass().prototype);
@@ -206,6 +210,30 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.lotesSeleccionados.push(lote);
         };
         
+        ProductoPedido.prototype.setJustificacion = function(justificacion) {
+            this.justificacion = justificacion;
+        };  
+        
+        ProductoPedido.prototype.getJustificacion = function() {
+            this.justificacion;
+        };
+
+        ProductoPedido.prototype.setValorIva = function(valorIva) {
+            this.valorIva = valorIva;
+        };  
+        
+        ProductoPedido.prototype.getValorIva = function() {
+            this.valorIva;
+        };
+        
+        ProductoPedido.prototype.setValorUnitarioConIva = function(valorUnitarioConIva) {
+            this.valorUnitarioConIva = valorUnitarioConIva;
+        };  
+        
+        ProductoPedido.prototype.getValorUnitarioConIva = function() {
+            this.valorUnitarioConIva;
+        };
+                
         ProductoPedido.prototype.obtenerCantidadSeleccionada = function() {
             var cantidad = 0;
             for(var i in this.lotesSeleccionados){

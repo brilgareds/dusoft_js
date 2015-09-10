@@ -5,50 +5,51 @@ define(["angular", "js/controllers",
     var fo = controllers.controller('SeparacionClientesController', [
         '$scope', '$rootScope', 'Request', 'API',
         "socket", "AlertService", "$modal", "$state",
+        "PedidoAuditoria", "Cliente","SeparacionService",
         function($scope, $rootScope, Request,
-                API, socket, AlertService, $modal, $state) {
+                API, socket, AlertService, $modal, $state,
+                PedidoAuditoria,Cliente, SeparacionService) {
 
 
             var self = this;
 
             self.init = function(callback) {
                 $scope.rootSeparacionClientes = {};
-                $scope.paginaactualClientes = 1;
+                $scope.rootSeparacionClientes.paginaActual = 1;
+                $scope.rootSeparacionClientes.terminoBusqueda = "";
+                $scope.rootSeparacionClientes.listaPedidos = [];
                 callback();
             };
 
-
-
-            self.traerPedidosTemporales = function() {
-                console.log("traer pedidos temporales SeparacionClientesController");
+            
+            /*
+             * @Author: Eduar
+             * @param {Boolean} esTemporal
+             * +Descripcion: Trae los pedidos asignados al tercero o los que estan en separacion
+             */
+            self.traerPedidosAsignados = function(esTemporal, callback) {
+                var filtro = (esTemporal)? {temporales : true} : {asignados : true};
+                   
+                SeparacionService.traerPedidosAsignadosClientes($scope.root.session, filtro,
+                $scope.rootSeparacionClientes.paginaActual, $scope.rootSeparacionClientes.terminoBusqueda, function(pedidos){
+                    
+                    if(pedidos){
+                        $scope.rootSeparacionClientes.listaPedidos = pedidos;
+                    }
+                });
+                
+                
             };
-
-            self.traerPedidosAsignados = function() {
-                console.log("traer pedidos asignados SeparacionClientesController");
-            };
+            
 
             /*
              * @Author: Eduar
              * +Descripcion: Funcion utilizada para destruir las referencias del controlador ejemplo la variable rootSeparacionClientes
              */
             $scope.$on('$destroy', function iVeBeenDismissed() {
-                console.log("goodbye SeparacionClientesController");
                 $scope.rootSeparacionClientes = null;
             });
 
-           
-
-
-            /**
-             * +Descripcion: Datos de prueba
-             */
-            $scope.myData = [
-                {pedido: 50, operario: "Moroni", cantidad: 60},
-                {pedido: 50, operario: "Gomez", cantidad: 60},
-                {pedido: 50, operario: "Ixon", cantidad: 60},
-                {pedido: 50, operario: "Fabio", cantidad: 60},
-                {pedido: 50, operario: "Alex", cantidad: 60}
-            ];
 
             /**
              * @author Cristian Ardila
@@ -56,14 +57,16 @@ define(["angular", "js/controllers",
              *  clientes y pedidos temporales clientes
              */
             $scope.pedidos = {
-                data: 'myData',
+                data: 'rootSeparacionClientes.listaPedidos',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
-                    {field: 'pedido', displayName: 'Pedido No'},
-                    {field: 'operario', displayName: 'Operario'},
-                    {field: 'cantidad', displayName: 'Cantidad'},
-                    {field: 'Detalle', width: "10%",
+                    {field: 'numero_pedido', displayName: 'Pedido No',width:100},
+                    {field: 'cliente.nombre_tercero', displayName: 'Cliente', 
+                        cellClass: "ngCellText",
+                        cellTemplate: '<div>{{row.entity.cliente.getTipoId()}} {{row.entity.cliente.getId()}} - {{row.entity.cliente.nombre_tercero}}</div>'},
+                    {field: 'cantidadProductos', displayName: 'Productos', width:100},
+                    {field: 'Detalle', width: "5%",
                         displayName: "Detalle",
                         cellClass: "txt-center",
                         cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="detallePedido(row.entity)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'
@@ -83,9 +86,9 @@ define(["angular", "js/controllers",
              * de los documentos
              */
             $scope.paginaAnteriorClientes = function() {
-                if ($scope.paginaactualClientes === 1)
+                if ($scope.rootSeparacionClientes.paginaActual === 1)
                     return;
-                $scope.paginaactualClientes--;
+                 $scope.rootSeparacionClientes.paginaActual--;
                 /* that.traerDocumentosFarmacias(function() {
                  });*/
             };
@@ -101,19 +104,25 @@ define(["angular", "js/controllers",
              */
             $scope.paginaSiguienteClientes = function() {
 
-                $scope.paginaactualClientes++;
+                 $scope.rootSeparacionClientes.paginaActual++;
 
-                /* that.traerDocumentosFarmacias(function() {
-                 });*/
+                 self.traerPedidosAsignados($scope.root.esTemporal, function(){
+                    
+                 });
+            };
+            
+            $scope.onBuscarPedidos = function(event){
+                if(event.which === 13){
+                    self.traerPedidosAsignados($scope.root.esTemporal, function(){
+                    
+                    });
+                }
             };
 
             self.init(function() {
-
-                if ($scope.root.esTemporal) {
-                    self.traerPedidosTemporales();
-                } else {
-                    self.traerPedidosAsignados();
-                }
+                self.traerPedidosAsignados($scope.root.esTemporal, function(){
+                    
+                });
             });
 
         }]);

@@ -45,7 +45,9 @@ define([
     "controllers/generacionpedidos/pedidosclientes/PedidosClienteController",
     "controllers/generacionpedidos/pedidosclientes/GestionarProductosClientesController",
     "controllers/separacionpedidos/ContenedorSeparacionController",
-    "controllers/separacionpedidos/SeparacionProductosController"
+    "controllers/separacionpedidos/SeparacionProductosController",
+    "controllers/separacionpedidos/SeparacionDetalleController",
+    
 
 ], function(angular) {
     /* App Module and its dependencies */

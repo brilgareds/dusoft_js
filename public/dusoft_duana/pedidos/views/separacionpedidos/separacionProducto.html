@@ -1,21 +1,12 @@
 <div  ng-controller="SeparacionProductosController"> 
-
     <div class="row paddingToptZero">
-
-
         <div class="col-sm-12 col-md-12"  ng-controller="ContenedorSeparacionController">
-
-
             <button type="button" class="btn btn-default pull-right boton-separacion-cancelar btn-sm" ng-click="retornarPaginaInicio()"  
                     aria-haspopup="true" aria-expanded="false" ><span class="glyphicon glyphicon-arrow-left"></span> Regresar </button>
-
-
             <div class="panel panel-default marginBottom5">
-
                 <div class="panel-heading">
                     <h4 class="h4MarginTopBottom"><span >Separacion de pedidos</span> </h4>
                 </div>
-
                 <div class="panel-body">
 
                     <table class="table " id="tablaSeparacion">
@@ -38,21 +29,18 @@
                         </tr>
                     </table>
                 </div>
-
             </div>
         </div>
     </div> 
 
-
-
     <div class="panel panel-default marginBottom5">
-
         <div class="panel-heading">
-
-
             <ul class="pagination paginacionSeparacion">
                 <li><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
-                <li><a href="#">Detalle</a></li>
+                <li><a href="" ng-click="showDetallePedidos()">Detalle</a></li>
+                 <div  class="slide" slide-content open-callback="showDetallePedidos" close-callback="closeDetallePedidos"   >
+                    <div ng-include src="slideurl" ></div>
+                </div>
                 <li><a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
             </ul>
 
@@ -66,17 +54,9 @@
                 </ul>
             </div>                                      
         </div>
-
-
         <div class="panel-body">
             <div class="grid-separacion-producto grid-responsive" ng-grid="separacionProducto" > </div>
         </div>
     </div>
-
-
-
-
-
-
 </div> 
 

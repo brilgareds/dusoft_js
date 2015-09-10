@@ -24,28 +24,70 @@ define(["angular", "js/controllers",
                     {nombre: "Refrescar", id: 2}
 
                 ];
+                  $scope.tipos = [
+                    {nombre: "Tipo 1", id: 1},
+                    {nombre: "Tipo 2", id: 2},
+                    {nombre: "Tipo 3", id: 3}
+                ];
+                 $scope.tipo = $scope.tipos[0];
                  $scope.filtro = $scope.filtros[0];
                  $scope.justificacion = $scope.justificaciones[0];
                 callback();
             };
             
+            
+             $scope.onSeleccionTipo = function(tipo) {
+                $scope.tipo = tipo;
+            };
+            
             $scope.onSeleccionJustificacion = function(justificacion) {
                 $scope.justificacion = justificacion;
-            }
+            };
 
            
             $scope.onSeleccionFiltros = function(justificacion) {
                 $scope.filtro = justificacion;
-            }
+            };
+            
+            
+            
+              /**
+               * +Descripcion: metodo para desplegar la ventana modal de
+               * cantidades en la separacion
+               * @author Cristian Ardila
+               * @fecha: 10/09/2015
+               * @returns {undefined}
+               */
+             self.ventanaCantidad = function() {
+                 
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: true,
+                    keyboard: true,
+                    
+                    templateUrl: 'views/separacionpedidos/separacionVentanaCantidad.html',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.cerrarVentanaCantidadCaja = function() {
+                            $modalInstance.close();
+                            
+                        };
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+            };
+
             /**
              * +Descripcion: Datos de prueba
              */
             $scope.myData = [
-                {pedido: 50, operario: "Moroni", cantidad: 60},
-                {pedido: 50, operario: "Gomez", cantidad: 60},
-                {pedido: 50, operario: "Ixon", cantidad: 60},
-                {pedido: 50, operario: "Fabio", cantidad: 60},
-                {pedido: 50, operario: "Alex", cantidad: 60}
+                {pedido: 50, fechavencimiento: "20/08/2015", existencia: 60, disponible: 50},
+                {pedido: 50, fechavencimiento: "20/08/2015", existencia: 60, disponible: 50},
+                {pedido: 50, fechavencimiento: "20/08/2015", existencia: 60, disponible: 50},
+                {pedido: 50, fechavencimiento: "20/08/2015", existencia: 60, disponible: 50},
+                {pedido: 50, fechavencimiento: "20/08/2015", existencia: 60, disponible: 50}
             ];
             /**
              * @author Cristian Ardila
@@ -54,53 +96,41 @@ define(["angular", "js/controllers",
              */
             $scope.separacionProducto = {
                 data: 'myData',
+                afterSelectionChange:function(rowItem){
+                     if(rowItem.selected){
+                         self.ventanaCantidad();
+                     }
+                },
                 enableColumnResize: true,
-                enableRowSelection: false,
+                enableRowSelection: true,
+                keepLastSelected:false,
+                multiSelect:false,
                 columnDefs: [
-                    {field: 'pedido', displayName: 'Pedido No'},
-                    {field: 'operario', displayName: 'Operario'},
-                    {field: 'cantidad', displayName: 'Cantidad'},
-                    {field: 'Detalle', width: "10%",
-                        displayName: "Detalle",
-                        cellClass: "txt-center",
-                        cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="detallePedido(row.entity)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'
-
+                    {field: 'pedido', displayName: 'Lote'},
+                    {field: 'fechavencimiento', displayName: 'F. vencimiento'},
+                    {field: 'existencia', displayName: 'Existencia'},
+                    {field: 'disponible', width: "10%",
+                        displayName: "Disponible"
+                        
                     }
-                ]
+                     
+                ],
+               
             };
+         
+         
             /**
-             * @param {N/N}
-             * @author Cristian Ardila
-             * @returns {int} paginaactual
-             * +Descripcion: funcion que se invoca al presionar click
-             * en el boton izquiero (<) del paginador del gridview
-             * y aumentara en 1 la pagina actual, refrescando la gridview
-             * de los documentos
+             * +Descripcion: metodo ejecutado por el slider para cambiar a la 
+             * pagina donde se encuentran los documentos para despachar
+             * 
              */
-            $scope.paginaAnterior = function() {
-                if ($scope.paginaactual === 1)
-                    return;
-                $scope.paginaactual--;
-                /* that.traerDocumentosFarmacias(function() {
-                 });*/
+            $scope.showDetallePedidos = function() {
+
+                $scope.slideurl = "views/separacionpedidos/separacionDetalle.html?time=" + new Date().getTime();
+                $scope.$emit('showDetallePedidos');
+             
             };
-
-            /**
-             * @param {N/N}
-             * @author Cristian Ardila
-             * @returns {int} paginaactual
-             * +Descripcion: funcion que se invoca al presionar click
-             * en el boton derecho (>) del paginador del gridview
-             * y aumentara en 1 la pagina actual, refrescando la gridview
-             * de los documentos
-             */
-            $scope.paginaSiguiente = function() {
-
-                $scope.paginaactual++;
-                /* that.traerDocumentosFarmacias(function() {
-                 });*/
-            };
-
+            
             /*
              * @Author: Eduar
              * +Descripcion: Funcion utilizada para destruir las referencias del controlador ejemplo la variable rootSeparacionClientes

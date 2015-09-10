@@ -1,0 +1,65 @@
+<div  ng-controller="SeparacionDetalleController"> 
+
+
+    <div class="panel panel-default">
+
+        <div class="row paddingToptZero">
+
+
+            <div class="col-sm-12 col-md-12"  ng-controller="ContenedorSeparacionController">
+
+
+                <button type="button" class="btn btn-default pull-right boton-separacion-cancelar btn-sm" ng-click="closeDetallePedidos()"  
+                        aria-haspopup="true" aria-expanded="false" ><span class="glyphicon glyphicon glyphicon-remove-circle"></span> Cerrar </button>
+
+
+                <div class="panel panel-default marginBottom5">
+
+                    <div class="panel-heading">
+                        <h4 class="h4MarginTopBottom"><span >Separacion de pedidos</span> </h4>
+                    </div>
+
+                    <div class="panel-body">
+
+                        <table id="tablaSeparacion">
+                            <tr><th>Cliente </th><td>FARMACIA DUANA</td></tr>
+                            <tr><th>Observacion &nbsp;</th><td>Se solicita pedido por tutela</td></tr>
+                            <tr><th>  </th><td> </td></tr>
+                            <tr>
+                                <th>  </th>
+                                <td> 
+
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div> 
+        <div class="panel panel-default ">
+            <div class="panel-heading">                                   
+            </div>
+            <div class="panel-body">
+                <div class="grid-separacion-producto grid-responsive" ng-grid="detalleSeparacionProducto" > </div>
+            </div>
+        </div>
+        
+        <div class="modal-footer">                                
+            <button class="btn btn-default" ng-click="onEliminarProductosTodos()">
+                <span class="glyphicon glyphicon-ok" ></span> Eliminar
+            </button>   
+            
+            <button class="btn btn-default" ng-click="onGenerarSeparacion()">
+                <span class="glyphicon glyphicon-ok" ></span> Generar
+            </button> 
+            
+            <button class="btn btn-default" ng-click="onGenerarAuditar()">
+                <span class="glyphicon glyphicon-ok" ></span> Generar y auditar
+            </button>  
+        </div> 
+       
+    </div>   
+
+</div> 
+

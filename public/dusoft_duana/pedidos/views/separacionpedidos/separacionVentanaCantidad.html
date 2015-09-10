@@ -1,0 +1,62 @@
+<div class="modal-view" id="editarproductomodal"  ng-controller="SeparacionProductosController">
+    <alert ng-show="" type="danger">{{}}</alert>
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h5 class="panel-title">Información General</h5>
+        </div>
+        <div class="panel-body">
+            <div class="row" >
+                <div class ="col-md-3"><div class="lbl_editar_producto">Producto</div>{{}</div>
+            </div>
+            <div class="row">
+                <div class="col-md-3"><div class="lbl_editar_producto">Lote</div>{{}}</div>
+                <div class ="col-md-4"><div class="lbl_editar_producto">Fecha vencimiento</div>{{}}</div>
+            </div>
+            <div class="row">
+                <div class ="col-md-3"><div class="lbl_editar_producto">Cantidad solicitada</div> {{}} </div>
+                <div class ="col-md-3"><div class="lbl_editar_producto">Cantidad disponible</div><div>{{}}</div></div>
+            </div>
+            <div class="row">
+                <div class ="col-md-3"><label class="lbl_editar_producto lbl_caja" >Cantidad</label></div>
+                <div class ="col-md-3">
+                    <input type="text"
+                           class="form-control" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-info panelCaja">
+        <div class="panel-heading">
+            <h3 class="panel-title">Información Caja / Nevera</h3>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-lg-10">
+                    <label class="lbl_editar_producto lbl_caja" for="">Numero: </label>
+                    <div class="input-group input-group-sm">
+                        <input type="text" class="form-control"  />
+                        <div class="input-group-btn" >                         
+                            <button type="button" class="btn btn-default dropdown-toggle" 
+                                    data-toggle="dropdown" aria-haspopup="true" 
+                                    aria-expanded="false" >{{tipo.nombre}} <span class="caret"></span></button>
+                            <ul class="dropdown-menu">
+                                <li ng-repeat="tipo in tipos">
+                                    <a href="javascript:void(0)" ng-click="onSeleccionTipo(tipo)">{{tipo.nombre}}</a>
+                                </li>
+                            </ul>                           
+                        </div>
+                        <div class="input-group-btn" >
+                            <button type="button" class="btn btn-default" >
+                                Seleccionar
+                            </button>                                                     
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="btn btn-warning ng-binding pull-right" ng-click="cerrarVentanaCantidadCaja()">Cerrar</button>
+    <button class="btn btn-primary pull-right" style="margin-right:20px;">Terminar</button>
+
+</div>

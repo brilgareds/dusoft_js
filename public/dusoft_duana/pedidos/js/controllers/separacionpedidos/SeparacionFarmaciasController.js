@@ -4,45 +4,57 @@ define(["angular", "js/controllers",
 
     var fo = controllers.controller('SeparacionFarmaciasController', [
         '$scope', '$rootScope', 'Request', 'API',
-        "socket", "AlertService", "$modal",
+        "socket", "AlertService", "$modal","PedidoAuditoria","Farmacia",
+        "SeparacionService",
         function($scope, $rootScope, Request,
-                API, socket, AlertService, $modal) {
+                API, socket, AlertService, $modal, 
+                PedidoAuditoria, Farmacia, SeparacionService) {
 
 
             var self = this;
 
             self.init = function(callback) {
                 $scope.rootSeparacionFarmacias = {};
-                $scope.paginaactualFarmacias = 1;
+                $scope.rootSeparacionFarmacias = {};
+                $scope.rootSeparacionFarmacias.paginaActual = 1;
+                $scope.rootSeparacionFarmacias.terminoBusqueda = "";
+                $scope.rootSeparacionFarmacias.listaPedidos = [];
                 callback();
             };
-
-
-            /**
-             * +Descripcion: Datos de prueba
+            
+            
+            /*
+             * @Author: Eduar
+             * @param {Boolean} esTemporal
+             * +Descripcion: Trae los pedidos asignados al tercero o los que estan en separacion
              */
-            $scope.myData = [
-                {pedido: 50, farmacia: "FAMRACIAS DUANA - MAN PALO GRANDE", bodega: "MAN PALO GRANDE", cantidad: 60},
-                {pedido: 50, farmacia: "FAMRACIAS DUANA - MAN PALO GRANDE", bodega: "PEÑITAS ", cantidad: 60},
-                {pedido: 50, farmacia: "FAMRACIAS DUANA - MAN PALO GRANDE", bodega: "Ixon", cantidad: 60},
-                {pedido: 50, farmacia: "FAMRACIAS DUANA - MAN PALO GRANDE", bodega: "Fabio", cantidad: 60},
-                {pedido: 50, farmacia: "FAMRACIAS DUANA - MAN PALO GRANDE", bodega: "Alex", cantidad: 60}
-            ];
+            self.traerPedidosAsignados = function(esTemporal, callback) {
+                
+                var filtro = (esTemporal)? {temporales : true} : {asignados : true};
 
+                SeparacionService.traerPedidosAsignadosFarmacias($scope.root.session, filtro,
+                $scope.rootSeparacionFarmacias.paginaActual, $scope.rootSeparacionFarmacias.terminoBusqueda, function(pedidos){
+                    
+                    if(pedidos){
+                        $scope.rootSeparacionFarmacias.listaPedidos = pedidos;
+                    }
+                });
+            };
+            
             /**
              * @author Cristian Ardila
              * +Descripcion: Grilla en comun para pedidos asignados 
              *  farmacias y pedidos temporales farmacias
              */
             $scope.pedidosFarmacias = {
-                data: 'myData',
+                data: 'rootSeparacionFarmacias.listaPedidos',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
-                    {field: 'pedido', displayName: 'Pedido No'},
-                    {field: 'farmacia', displayName: 'Farmacia'},
-                    {field: 'bodega', displayName: 'Bodega'},
-                    {field: 'cantidad', width: "10%"},
+                    {field: 'numero_pedido', displayName: 'Pedido No'},
+                    {field: 'farmacia.nombre_farmacia', displayName: 'Farmacia'},
+                    {field: 'farmacia.nombre_bodega', displayName: 'Bodega'},
+                   {field: 'cantidadProductos', displayName: 'Productos', width:100},
                     {field: 'detalle', width: "10%",
                         displayName: "Cantidad",
                         cellClass: "txt-center",
@@ -52,7 +64,7 @@ define(["angular", "js/controllers",
                 ]
             };
 
-
+            
 
             /**
              * @param {N/N}
@@ -65,9 +77,9 @@ define(["angular", "js/controllers",
              */
             $scope.paginaAnteriorFarmacias = function() {
                
-                if ($scope.paginaactualFarmacias === 1)
+                if ($scope.rootSeparacionFarmacias.paginaActual === 1)
                     return;
-                $scope.paginaactualFarmacias--;
+                $scope.rootSeparacionFarmacias.paginaActual--;
                 /* that.traerDocumentosFarmacias(function() {
                  });*/
             };
@@ -83,7 +95,7 @@ define(["angular", "js/controllers",
              */
             $scope.paginaSiguienteFarmacias = function() {
                 
-                $scope.paginaactualFarmacias++;
+                $scope.rootSeparacionFarmacias.paginasActual++;
 
                 /* that.traerDocumentosFarmacias(function() {
                  });*/
@@ -100,7 +112,9 @@ define(["angular", "js/controllers",
             });
 
             self.init(function() {
-
+                self.traerPedidosAsignados($scope.root.esTemporal, function(){
+                    
+                });
             });
 
 

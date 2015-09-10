@@ -3,7 +3,7 @@ define(["angular",
     "js/controllers",
     'controllers/asignarpedidos/asignacioncontroller',
     'models/asignacionpedidos/ClientePedido',
-    'models/asignacionpedidos/PedidoAuditoria'], function(angular, controllers) {
+    'models/auditoriapedidos/PedidoAuditoria'], function(angular, controllers) {
 
     var fo = controllers.controller('PedidosClientesController', [
         '$scope', '$rootScope', 'Request',

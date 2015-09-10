@@ -4,9 +4,9 @@ define(["angular", "js/controllers",
     'controllers/separacionpedidos/SeparacionClientesController'], function(angular, controllers) {
 
     var fo = controllers.controller('ContenedorSeparacionController', [
-        '$scope', '$rootScope', 'Request', 'API',
+        '$scope', '$rootScope', 'Usuario', 'Request', 'API',
         "socket", "AlertService", "$modal","$state",
-        function($scope, $rootScope, Request,
+        function($scope, $rootScope, Usuario, Request,
                 API, socket, AlertService, $modal,$state) {
              
              
@@ -27,6 +27,11 @@ define(["angular", "js/controllers",
                     {path:"separacionclientes.html", nombre:"Temporales Clientes", tipoTemporal:"Clientes"},
                     {path:"separacionfarmacias.html", nombre:"Temporales Farmacias", tipoTemporal:"Farmacias"}
                 ];
+                
+                $scope.root.session = {
+                    usuario_id: Usuario.getUsuarioActual().getId(),
+                    auth_token: Usuario.getUsuarioActual().getToken()
+                };
 
                 callback();
              };
@@ -54,7 +59,7 @@ define(["angular", "js/controllers",
              };
              
              self.init(function(){
-                 $scope.root.vista = $scope.root.vistas[0];
+                $scope.root.vista = $scope.root.vistas[0];
                  
                 self.modificarVista(false);     
              });

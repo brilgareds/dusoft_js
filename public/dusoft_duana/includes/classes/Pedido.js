@@ -11,6 +11,14 @@ define(["angular", "js/models"], function(angular, models) {
             this.cliente;
             this.farmacia;
             this.descripcion = "";
+            this.numero_pedido;
+            this.nombre_vendedor;
+            this.fecha_registro ;
+            this.descripcion_estado;
+            this.descripcion_estado_actual_pedido;
+            this.estado_actual_pedido;
+            this.estado;
+            this.estado_separacion;
         }
 
         // Pedidos

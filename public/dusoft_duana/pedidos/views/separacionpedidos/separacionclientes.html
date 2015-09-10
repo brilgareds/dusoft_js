@@ -4,12 +4,12 @@
         <div class="col-md-3 pull-right">
             <p class="input-group">
                 <input type="text" class="form-control" 
-                       ng-keypress="buscadorDocumentosPlanilla($event);" 
-                       ng-model="datos_view.termino_busqueda_documentos" 
+                       ng-keypress="onBuscarPedidos($event);" 
+                       ng-model="rootSeparacionClientes.terminoBusqueda" 
                        placeholder="Buscar" name="" id="" 
                        />
                 <span class="input-group-btn">
-                    <button class="btn btn-default" type="submit" ng-click="buscadorDocumentosPlanilla($event)"><i class="glyphicon glyphicon-search"></i></button>
+                    <button class="btn btn-default"  type="submit" ng-click="onBuscarPedidos({which:13})"><i class="glyphicon glyphicon-search"></i></button>
                 </span>
             </p>
         </div>

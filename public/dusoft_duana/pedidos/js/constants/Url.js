@@ -115,6 +115,14 @@ define(["angular"], function(angular) {
                 'CONSULTAR_PRODUCTO_EN_FARMACIA': BASE_URL + '/PedidosFarmacias/consultarProductoEnFarmacia',
                 'CAMBIAR_ESTADO_APROBACION_PEDIDO': BASE_URL + '/PedidosClientes/cambiarEstadoAprobacionPedido'
             },
+            'SEPARACION_PEDIDOS':{
+                'CLIENTES':{
+                    'LISTAR_PEDIDOS_OPERARIO_CLIENTE': BASE_URL + "/PedidosClientes/listaPedidosOperarioBodega"
+                },
+                'FARMACIAS':{
+                    'LISTAR_PEDIDOS_OPERARIO_FARMACIA': BASE_URL + "/PedidosFarmacias/listaPedidosOperarioBodega"
+                }
+            },
             'TERCEROS': {
                 'LISTAR_OPERARIOS': BASE_URL + "/Terceros/operariosBodega/listar",
                 'LISTAR_CLIENTES': BASE_URL + "/Terceros/Clientes/listarClientes",

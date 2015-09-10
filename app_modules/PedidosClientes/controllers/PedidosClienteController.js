@@ -274,6 +274,7 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
     var limite = args.pedidos_clientes.limite;
     var filtro = args.pedidos_clientes.filtro;
     var fecha_actual = new Date();
+    var detalle = (args.pedidos_clientes.detalle === undefined)? true : args.pedidos_clientes.detalle ;
 
     this.m_pedidos_clientes.listar_pedidos_del_operario(operario_bodega, termino_busqueda, filtro, pagina_actual, limite, function(err, lista_pedidos_clientes, total_registros) {
 
@@ -281,6 +282,13 @@ PedidosCliente.prototype.listaPedidosOperariosBodega = function(req, res) {
             res.send(G.utils.r(req.url, 'Se Ha Generado Un Error Interno', 500, {}));
             return;
         }
+        
+        //En la separacion de la version web no se necesita el detalle inmediatamente
+       /* if(!detalle){
+            res.send(G.utils.r(req.url, 'Lista Pedidos Clientes', 200, {pedidos_clientes: lista_pedidos_clientes, total_registros: total_registros}));
+            return;
+        }*/
+        
         var i = lista_pedidos_clientes.length;
 
         lista_pedidos_clientes.forEach(function(pedido) {

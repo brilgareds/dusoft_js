@@ -107,7 +107,6 @@ define(["angular", "js/controllers",
              * +Descripcion: Funcion utilizada para destruir las referencias del controlador ejemplo la variable rootSeparacionFarmacias
              */
             $scope.$on('$destroy', function iVeBeenDismissed() {
-                console.log("goodbye SeparacionFarmaciasController");
                 $scope.rootSeparacionFarmacias = null;
             });
 

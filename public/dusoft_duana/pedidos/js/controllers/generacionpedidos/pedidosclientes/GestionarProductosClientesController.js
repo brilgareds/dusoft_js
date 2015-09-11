@@ -223,9 +223,12 @@ define(["angular", "js/controllers"], function(angular, controllers) {
             };
 
             $scope.buscador_productos = function(ev) {
+                
+              
                 if (ev.which === 13) {
                     that.buscar_productos_clientes();
                 }
+               
             };
 
             that.buscar_productos_clientes = function() {
@@ -252,8 +255,6 @@ define(["angular", "js/controllers"], function(angular, controllers) {
                     }
                 };
 
-                console.log('== obj ==');
-                console.log(obj.data.pedidos_clientes);
 
                 Request.realizarRequest(API.PEDIDOS.CLIENTES.LISTAR_PRODUCTOS_CLIENTES, "POST", obj, function(data) {
 

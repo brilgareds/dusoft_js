@@ -47,7 +47,8 @@ define([
     "controllers/separacionpedidos/ContenedorSeparacionController",
     "controllers/separacionpedidos/SeparacionProductosController",
     "controllers/separacionpedidos/SeparacionDetalleController",
-    "services/separacionpedidos/SeparacionService"
+    "services/separacionpedidos/SeparacionService",
+    "controllers/separacionpedidos/SeparacionProductosPendientesController"
 
 ], function(angular) {
     /* App Module and its dependencies */

@@ -60,7 +60,7 @@ define(["angular", "js/services"], function(angular, services) {
                         pedidos_farmacias: {
                             filtro: filtro,
                             operario_id:0,
-                            pagina_actual:pagina,
+                            pagina_actual:pagina,  
                             limite:25,
                             termino_busqueda:termino
                         }

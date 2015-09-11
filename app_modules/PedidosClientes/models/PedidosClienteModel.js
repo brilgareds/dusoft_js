@@ -1063,10 +1063,9 @@ PedidosClienteModel.prototype.listar_productos = function(empresa, centro_utilid
                 ) i on (a.empresa_id = i.empresa_id) and c.codigo_producto = i.codigo_producto \
                 where a.empresa_id = $1 and a.centro_utilidad = $2 and a.bodega = $3 " + sql_aux + " \
                 and (\
-                    a.codigo_producto ilike $5 or\
-                    /*fc_descripcion_producto(a.codigo_producto) ilike $5 or*/ \
-                    e.descripcion ilike $5\
-                ) order by 1 ";
+                    a.codigo_producto ilike $5 or \
+                    b.descripcion ilike $5\
+                ) ";
     
     
     console.log('== Datos ==');

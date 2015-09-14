@@ -23,6 +23,7 @@ define([
     "includes/helpersdirectives/visualizarReporte",
     "includes/validation/NgValidateEvents",
     "chart",
+    "models/EmpresaInduccion",
     "controllers/InduccionController"
 ], function(angular) {
 

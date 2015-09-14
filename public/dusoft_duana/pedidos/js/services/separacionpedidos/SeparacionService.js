@@ -10,22 +10,6 @@ define(["angular", "js/services"], function(angular, services) {
                  Farmacia, ProductoPedido) {
 
             var self = this;
-            self.pedido;
-            
-             
-            /*
-             * @Author: Eduar
-             * @param {PedidoAuditoria} pedido
-             * +Descripcion: Realiza el set del objeto pedido util para el detalle de la separacion
-             */
-            self.setPedido = function(pedido){
-                self.pedido = pedido;
-            };
-            
-            
-            self.getPedido = function(){
-                return self.pedido;
-            };
             
             /*
              * @Author: Eduar
@@ -53,7 +37,7 @@ define(["angular", "js/services"], function(angular, services) {
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
 
-                       var pedidos = self.renderPedidosOperario('1', data.obj.pedidos_clientes);
+                       var pedidos = self.serializarPedidosOperario('1', data.obj.pedidos_clientes);
                        callback(pedidos);
 
                     } else {
@@ -87,7 +71,7 @@ define(["angular", "js/services"], function(angular, services) {
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
 
-                       var pedidos = self.renderPedidosOperario('2', data.obj.pedidos_farmacias);
+                       var pedidos = self.serializarPedidosOperario('2', data.obj.pedidos_farmacias);
                        callback(pedidos);
 
                     } else {
@@ -135,7 +119,7 @@ define(["angular", "js/services"], function(angular, services) {
              * @param {Array<Object>} pedidos
              * +Descripcion: Serializa los objetos necesarios del modulo
              */
-            self.renderPedidosOperario = function(tipoPedido, pedidos){
+            self.serializarPedidosOperario = function(tipoPedido, pedidos){
                 var listaPedidos  = [];
                 for(var i in pedidos){
                     var _pedido = pedidos[i];
@@ -165,7 +149,7 @@ define(["angular", "js/services"], function(angular, services) {
                             
                             pedido.setFarmacia(farmacia);
                         }
-
+                        
                         pedido.setDatos(_pedido);
                         pedido.agregarDetallePedido(ProductoPedido, _pedido.lista_productos);
                         pedido.setCantidadProductos(pedido.getProductos().length);

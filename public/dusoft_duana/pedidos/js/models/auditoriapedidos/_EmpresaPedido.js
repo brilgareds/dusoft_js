@@ -39,6 +39,10 @@ define(["angular", "js/models", "includes/classes/Empresa"], function(angular, m
         EmpresaPedido.getPedidos = function() {
             return this.pedidos;
         };
+        
+        EmpresaPedido.setPedidos = function(pedidos){
+            this.pedidos = pedidos;
+        };
 
         EmpresaPedido.vaciarPedidos = function() {
             this.pedidos = [];

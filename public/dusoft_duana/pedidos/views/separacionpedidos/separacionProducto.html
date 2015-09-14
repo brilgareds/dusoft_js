@@ -11,8 +11,8 @@
 
                     <table class="table " id="tablaSeparacion">
                         <tr><th>Cliente </th><td>FARMACIA DUANA</td></tr>
-                        <tr><th>Observacion &nbsp;</th><td>Se solicita pedido por tutela</td></tr>
-                        <tr><th>Producto </th><td>168PO483783 - PIROXCAM 5% GEL O JALEA | TUBO  40GR. GEN-FAR.SA</td></tr>
+                        <tr><th>Observacion &nbsp;</th><td>Se solicita pedido por tutela</th></tr>
+                        <tr><th>{{rootSeparacion.empresa.getPedidoSeleccionado().getProductoSeleccionado().getDescripcion()}}</th></tr>
                         <tr>
                             <th>Justificar </th>
                             <td> 
@@ -36,12 +36,12 @@
     <div class="panel panel-default marginBottom5">
         <div class="panel-heading">
             <ul class="pagination paginacionSeparacion">
-                <li><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+                <li><a href="javascript:void(0);" ng-click="onAnterior()" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
                 <li><a href="" ng-click="showDetallePedidos()">Detalle</a></li>
                  <div  class="slide" slide-content open-callback="showDetallePedidos" close-callback="closeDetallePedidos"   >
                     <div ng-include src="slideurl" ></div>
                 </div>
-                <li><a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
+                <li><a href="javascript:void(0);" ng-click="onSiguiente()" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
             </ul>
 
             <div class="btn-group   navbar-right accionSeparacion ">

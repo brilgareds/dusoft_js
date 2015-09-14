@@ -5,10 +5,11 @@ define(["angular", "js/controllers",
     var fo = controllers.controller('SeparacionFarmaciasController', [
         '$scope', '$rootScope', 'Request', 'API',
         "socket", "AlertService", "$modal","PedidoAuditoria","Farmacia",
-        "SeparacionService",
+        "SeparacionService","EmpresaPedido",
         function($scope, $rootScope, Request,
                 API, socket, AlertService, $modal, 
-                PedidoAuditoria, Farmacia, SeparacionService) {
+                PedidoAuditoria, Farmacia, SeparacionService,
+                EmpresaPedido) {
 
 
             var self = this;
@@ -18,7 +19,7 @@ define(["angular", "js/controllers",
                 $scope.rootSeparacionFarmacias = {};
                 $scope.rootSeparacionFarmacias.paginaActual = 1;
                 $scope.rootSeparacionFarmacias.terminoBusqueda = "";
-                $scope.rootSeparacionFarmacias.listaPedidos = [];
+                $scope.rootSeparacionFarmacias.empresa = EmpresaPedido;
                 $scope.rootSeparacionFarmacias.filtroPedido = {};
                 callback();
             };
@@ -37,7 +38,7 @@ define(["angular", "js/controllers",
                 $scope.rootSeparacionFarmacias.paginaActual, $scope.rootSeparacionFarmacias.terminoBusqueda, function(pedidos){
                     
                     if(pedidos){
-                        $scope.rootSeparacionFarmacias.listaPedidos = pedidos;
+                        EmpresaPedido.setPedidos(pedidos);
                     }
                 });
             };
@@ -48,7 +49,7 @@ define(["angular", "js/controllers",
              *  farmacias y pedidos temporales farmacias
              */
             $scope.pedidosFarmacias = {
-                data: 'rootSeparacionFarmacias.listaPedidos',
+                data: 'rootSeparacionFarmacias.empresa.getPedidos()',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [
@@ -116,6 +117,7 @@ define(["angular", "js/controllers",
              * +Descripcion: Funcion utilizada para destruir las referencias del controlador ejemplo la variable rootSeparacionFarmacias
              */
             $scope.$on('$destroy', function iVeBeenDismissed() {
+                EmpresaPedido.vaciarPedidos();
                 $scope.rootSeparacionFarmacias = null;
             });
 

@@ -5,10 +5,10 @@ define(["angular", "js/controllers",
     var fo = controllers.controller('SeparacionProductosController', [
         '$scope', '$rootScope', 'Request', 'API',
         "socket", "AlertService", "$modal", "localStorageService", "$state",
-        "SeparacionService","Usuario",
+        "SeparacionService","Usuario","EmpresaPedido",
         function($scope, $rootScope, Request,
                 API, socket, AlertService, $modal, localStorageService, $state,
-                SeparacionService, Usuario) {
+                SeparacionService, Usuario, EmpresaPedido) {
 
 
             var self = this;
@@ -21,7 +21,10 @@ define(["angular", "js/controllers",
                     auth_token: Usuario.getUsuarioActual().getToken()
                 };
                 
-                $scope.paginaactual = 1;
+                $scope.rootSeparacion.empresa = EmpresaPedido;
+                
+                $scope.rootSeparacion.paginaactual = 0;
+                
                 $scope.justificaciones = [
                     {nombre: "Guia", id: 1},
                     {nombre: "Transportador", id: 2},
@@ -41,14 +44,10 @@ define(["angular", "js/controllers",
                  $scope.filtro = $scope.filtros[0];
                  $scope.justificacion = $scope.justificaciones[0];
                  
-                 $scope.rootSeparacion.pedido;
+                 
                  callback();
             };
             
-            
-            $scope.onSeleccionTipo = function(tipo) {
-                $scope.tipo = tipo;
-            };
             
               /**
                * +Descripcion: metodo para desplegar la ventana modal de
@@ -94,13 +93,14 @@ define(["angular", "js/controllers",
                     metodo = "traerPedidosAsignadosFarmacias";
                 } 
                 
-                SeparacionService[metodo]($scope.rootSeparacion.session, filtro,
-                1, filtroPedido.numeroPedido, function(pedidos){
-                   $scope.rootSeparacion.pedido  = (pedidos.length > 0)? pedidos[0] : null;
-                   console.log("pedidos >>>>>>>>>", $scope.rootSeparacion.pedido);
-                   self.traerDocumentoTemporal();
+                SeparacionService[metodo]($scope.rootSeparacion.session, filtro, 1, filtroPedido.numeroPedido, function(pedidos){
+                   EmpresaPedido.setPedidoSeleccionado((pedidos.length > 0)? pedidos[0] : null);
+                   
+                   console.log("pedido seleccionado", EmpresaPedido.getPedidoSeleccionado());
+                  // self.traerDocumentoTemporal();
                });
             };
+            
             
             self.traerDocumentoTemporal = function(){
                 SeparacionService.traerDocumentoTemporal($scope.rootSeparacion.session, $scope.rootSeparacion.pedido, function(){
@@ -117,7 +117,10 @@ define(["angular", "js/controllers",
                 $scope.filtro = justificacion;
             };
             
-            
+                        
+            $scope.onSeleccionTipo = function(tipo) {
+                $scope.tipo = tipo;
+            };
 
             /**
              * +Descripcion: Datos de prueba
@@ -159,8 +162,28 @@ define(["angular", "js/controllers",
                 ]
                
             };
-         
-         
+            
+            self.seleccionarProductoPorPosicion = function(){
+                var pedido = EmpresaPedido.getPedidoSeleccionado();
+                var producto = pedido.getProductos()[$scope.rootSeparacion.paginaactual];
+                
+                if(!producto){
+                    return;
+                }
+                
+                pedido.setProductoSeleccionado(producto);
+            };
+            
+            $scope.onSiguiente = function(){
+                $scope.rootSeparacion.paginaactual++;
+                self.seleccionarProductoPorPosicion();
+            };
+            
+            $scope.onAnterior = function(){
+                $scope.rootSeparacion.paginaactual--;
+                self.seleccionarProductoPorPosicion();
+            };
+            
             /**
              * +Descripcion: metodo ejecutado por el slider para cambiar a la 
              * pagina donde se encuentran los documentos para despachar
@@ -183,13 +206,10 @@ define(["angular", "js/controllers",
             });
 
             self.init(function() {
-               if(!SeparacionService.getPedido()){
+                console.log("pedido seleccioando ",EmpresaPedido.getPedidoSeleccionado())
+               if(Object.keys(EmpresaPedido.getPedidoSeleccionado()).length === 0){
                    self.gestionarPedido();
-               } else {
-                   $scope.rootSeparacion.pedido  = SeparacionService.getPedido();
-                   console.log("pedido >>>>>>", SeparacionService.getPedido());
-               }
-
+               } 
 
             });
 

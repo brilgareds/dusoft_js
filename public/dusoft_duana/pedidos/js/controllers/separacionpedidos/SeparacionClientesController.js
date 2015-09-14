@@ -6,9 +6,11 @@ define(["angular", "js/controllers",
         '$scope', '$rootScope', 'Request', 'API',
         "socket", "AlertService", "$modal", "$state",
         "PedidoAuditoria", "Cliente","SeparacionService",
+        "EmpresaPedido",
         function($scope, $rootScope, Request,
                 API, socket, AlertService, $modal, $state,
-                PedidoAuditoria,Cliente, SeparacionService) {
+                PedidoAuditoria,Cliente, SeparacionService,
+                EmpresaPedido) {
 
 
             var self = this;
@@ -17,7 +19,7 @@ define(["angular", "js/controllers",
                 $scope.rootSeparacionClientes = {};
                 $scope.rootSeparacionClientes.paginaActual = 1;
                 $scope.rootSeparacionClientes.terminoBusqueda = "";
-                $scope.rootSeparacionClientes.listaPedidos = [];
+                $scope.rootSeparacionClientes.empresa = EmpresaPedido;
                 $scope.rootSeparacionClientes.filtroPedido = {};
                 callback();
             };
@@ -34,9 +36,10 @@ define(["angular", "js/controllers",
                    
                 SeparacionService.traerPedidosAsignadosClientes($scope.root.session, filtro,
                 $scope.rootSeparacionClientes.paginaActual, $scope.rootSeparacionClientes.terminoBusqueda, function(pedidos){
-                    
-                    if(pedidos){
-                        $scope.rootSeparacionClientes.listaPedidos = pedidos;
+                    if(pedidos && pedidos.length > 0){
+                        //console.log("$scope.rootSeparacionClientes.empresa", $scope.rootSeparacionClientes.empresa);
+                        EmpresaPedido.setPedidos(pedidos);
+                        
                     }
                 });
                 
@@ -49,6 +52,7 @@ define(["angular", "js/controllers",
              * +Descripcion: Funcion utilizada para destruir las referencias del controlador ejemplo la variable rootSeparacionClientes
              */
             $scope.$on('$destroy', function iVeBeenDismissed() {
+                EmpresaPedido.vaciarPedidos();
                 $scope.rootSeparacionClientes = null;
             });
 
@@ -59,7 +63,7 @@ define(["angular", "js/controllers",
              *  clientes y pedidos temporales clientes
              */
             $scope.pedidos = {
-                data: 'rootSeparacionClientes.listaPedidos',
+                data: 'rootSeparacionClientes.empresa.getPedidos()',
                 enableColumnResize: true,
                 enableRowSelection: false,
                 columnDefs: [

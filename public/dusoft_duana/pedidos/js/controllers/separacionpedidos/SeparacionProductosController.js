@@ -47,8 +47,39 @@ define(["angular", "js/controllers",
            
             $scope.onSeleccionFiltros = function(justificacion) {
                 $scope.filtro = justificacion;
+                
+                self.ventanaListarProductos();
             };
             
+            
+            
+             /**
+               * +Descripcion: metodo para desplegar la ventana modal de
+               * cantidades en la separacion
+               * @author Cristian Ardila
+               * @fecha: 10/09/2015
+               * @returns {undefined}
+               */
+             self.ventanaListarProductos = function() {
+                 
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: true,
+                    keyboard: true,
+                    
+                    templateUrl: 'views/separacionpedidos/separacionAsignacionListarProductos.html',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.cerrarListarProductos = function() {
+                            $modalInstance.close();
+                            
+                        };
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+            };
             
             
               /**
@@ -117,7 +148,23 @@ define(["angular", "js/controllers",
                 ],
                
             };
-         
+            
+            
+            $scope.listarProductos = {
+                data: 'myData',
+                
+                enableColumnResize: true,
+                enableRowSelection: true,
+                keepLastSelected:false,
+                multiSelect:false,
+                columnDefs: [
+                    {field: 'pedido', displayName: 'Lote'},
+                    {field: 'fechavencimiento', displayName: 'F. vencimiento'},
+                   
+                     
+                ],
+               
+            };
          
             /**
              * +Descripcion: metodo ejecutado por el slider para cambiar a la 

@@ -404,3 +404,15 @@ button.btnTipo{
 .paginacionSeparacion {
     margin: 0px 0px;
 }
+
+
+.gridStyle2 {
+    border: 1px solid rgb(212,212,212);
+    width: 585px; 
+    height: 400px
+}
+
+.checkbox-listarproductos{
+    
+        margin: 5px;
+}

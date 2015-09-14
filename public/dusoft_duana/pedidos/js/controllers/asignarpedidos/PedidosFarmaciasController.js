@@ -13,7 +13,6 @@ define(["angular",
         function($scope, $rootScope, Request, $modal, Empresa, Farmacia, PedidoAuditoria, API, socket, AlertService, Usuario) {
 
             $scope.Empresa = Empresa;
-            //var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs"];
             var estados = ["btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs", "btn btn-success btn-xs", "btn btn-danger btn-xs", "btn btn-warning btn-xs", "btn btn-primary btn-xs", "btn btn-primary btn-xs", "btn btn-info btn-xs"];
             $scope.pedidosSeleccionados = [];
             $scope.empresas = [];

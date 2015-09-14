@@ -75,7 +75,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
                 ];
                 
                 $scope.rootSeleccionProductoFarmacia.filtro  = $scope.rootSeleccionProductoFarmacia.filtros[0];
-                //$scope.rootSeleccionProductoFarmacia.listaTiposProductos  = [];
 
             };
             
@@ -148,30 +147,13 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
 
             };
             
+            
             /*
              * @Author: Eduar
-             * +Descripcion: Lista los tipos de productos (Normales, Alto costo, Controlados, Insumos y Neveras)
+             * @param {String} titulo
+             * @param {String} mensaje
+             * +Descripcion: Mensaje de alerta
              */
-            
-            /*self.listarTiposProductos = function(){
-                var obj_tipo_producto = {
-                    session: $scope.root.session,
-                    data: {
-                        tipo_producto: {}
-                    }
-                };
-
-                var url_tipo_producto = API.PEDIDOS.LISTADO_TIPO_PRODUCTOS;
-
-                Request.realizarRequest(url_tipo_producto, "POST", obj_tipo_producto, function(data) {
-
-                    if (data.status === 200) {
-                         $scope.rootSeleccionProductoFarmacia.listaTiposProductos = data.obj.lista_tipo_productos;
-                    }
-                
-                });
-            }; */
-
             self.mostrarAlertaSeleccionProducto = function(titulo, mensaje) {
                 $scope.opts = {
                     backdrop: true,
@@ -274,22 +256,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
             
             /*
              * @Author: Eduar
-             * @param {ProductoPedidoFarmacia} producto
-             * @return Object
-             * +Descripcion: Obtiene la descripcion del tipo de producto pasado como argumento
-             */
-            /*self.obtenerTipoProducto
-             *  = function(producto){
-                var tipos =  $scope.rootSeleccionProductoFarmacia.listaTiposProductos;
-                for(var i in tipos){
-                    if(tipos[i].tipo_producto_id === producto.getTipoProductoId()){
-                        return tipos[i];
-                    }
-                }
-            };*/
-            
-            /*
-             * @Author: Eduar
              * @param {Object} filtro
              * +Descripcion: Handler del dropdown de filtros
              */
@@ -309,7 +275,6 @@ define(["angular", "js/controllers", 'includes/slide/slideContent'], function(an
              */
             $scope.root.mostrarSeleccionProductoCompleto = $rootScope.$on("mostrarSeleccionProductoCompleto", function(e, datos) {
                 self.init();
-               // self.listarTiposProductos();
                 self.buscarProductos();
             });
 

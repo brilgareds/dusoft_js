@@ -42,6 +42,10 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.tipo = tipo;
         };
         
+        PedidoAuditoria.prototype.getTipo = function() {
+            return this.tipo;
+        };
+        
         PedidoAuditoria.prototype.getProductos = function() {
             return this.productos;
         };

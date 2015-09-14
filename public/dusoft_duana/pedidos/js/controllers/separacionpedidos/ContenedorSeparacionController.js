@@ -5,9 +5,11 @@ define(["angular", "js/controllers",
 
     var fo = controllers.controller('ContenedorSeparacionController', [
         '$scope', '$rootScope', 'Usuario', 'Request', 'API',
-        "socket", "AlertService", "$modal","$state",
+        "socket", "AlertService", "$modal","$state","SeparacionService",
+        "localStorageService",
         function($scope, $rootScope, Usuario, Request,
-                API, socket, AlertService, $modal,$state) {
+                API, socket, AlertService, $modal,$state, SeparacionService,
+                localStorageService) {
              
              
              
@@ -68,7 +70,11 @@ define(["angular", "js/controllers",
              * +Descripcion: Conduce a la vista encargada de separar los productos
              * @param {type} producto
              */
-            $scope.detallePedido = function(producto) {
+            $scope.detallePedido = function(pedido, filtroPedido) {
+                filtroPedido.numeroPedido = pedido.get_numero_pedido();
+                filtroPedido.tipoPedido  = pedido.getTipo();
+                SeparacionService.setPedido(pedido);
+                localStorageService.set("pedidoSeparacion", filtroPedido);
                 $state.go("SeparacionProducto");
             };
             

@@ -10,8 +10,23 @@ define(["angular", "js/services"], function(angular, services) {
                  Farmacia, ProductoPedido) {
 
             var self = this;
+            self.pedido;
             
              
+            /*
+             * @Author: Eduar
+             * @param {PedidoAuditoria} pedido
+             * +Descripcion: Realiza el set del objeto pedido util para el detalle de la separacion
+             */
+            self.setPedido = function(pedido){
+                self.pedido = pedido;
+            };
+            
+            
+            self.getPedido = function(){
+                return self.pedido;
+            };
+            
             /*
              * @Author: Eduar
              * @param {Boolean} esTemporal
@@ -24,7 +39,7 @@ define(["angular", "js/services"], function(angular, services) {
                     session: session,
                     data: {
                         pedidos_clientes: {
-                            filtro: filtro,
+                            filtro: filtro.estado,
                             operario_id:0,
                             pagina_actual:pagina,
                             limite:25,
@@ -74,6 +89,39 @@ define(["angular", "js/services"], function(angular, services) {
 
                        var pedidos = self.renderPedidosOperario('2', data.obj.pedidos_farmacias);
                        callback(pedidos);
+
+                    } else {
+                        callback(false);
+                    }
+                });
+            };
+            
+            /*
+             * @Author: Eduar
+             * @param {Object} parametros
+             * @param {function} callback
+             * +Descripcion: Realiza la peticion para traer los pedidos de farmacias
+             */
+           self.traerDocumentoTemporal = function(session, pedido, callback) {
+               var url = API.SEPARACION_PEDIDOS.CLIENTES.CONSULTAR_TEMPORAL_CLIENTES;
+               if(pedido.getTipo() === '2'){
+                   url = API.SEPARACION_PEDIDOS.FARMACIAS.CONSULTAR_TEMPORAL_FARMACIAS;
+               }
+               
+                var obj = {
+                    session: session,
+                    data: {
+                        documento_temporal: {
+                            numero_pedido: pedido.get_numero_pedido()
+                        }
+                    }
+                };
+                
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    if (data.status === 200) {
+
+                      console.log("pedidos clientes >>>>>>>> ", data);
 
                     } else {
                         callback(false);

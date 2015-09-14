@@ -5,14 +5,22 @@ define(["angular", "js/controllers",
     var fo = controllers.controller('SeparacionProductosController', [
         '$scope', '$rootScope', 'Request', 'API',
         "socket", "AlertService", "$modal", "localStorageService", "$state",
+        "SeparacionService","Usuario",
         function($scope, $rootScope, Request,
-                API, socket, AlertService, $modal, localStorageService, $state) {
+                API, socket, AlertService, $modal, localStorageService, $state,
+                SeparacionService, Usuario) {
 
 
             var self = this;
 
             self.init = function(callback) {
-                $scope.rootSeparacionClientes = {};
+                $scope.rootSeparacion = {};
+                
+                $scope.rootSeparacion.session = {
+                    usuario_id: Usuario.getUsuarioActual().getId(),
+                    auth_token: Usuario.getUsuarioActual().getToken()
+                };
+                
                 $scope.paginaactual = 1;
                 $scope.justificaciones = [
                     {nombre: "Guia", id: 1},
@@ -32,24 +40,15 @@ define(["angular", "js/controllers",
                  $scope.tipo = $scope.tipos[0];
                  $scope.filtro = $scope.filtros[0];
                  $scope.justificacion = $scope.justificaciones[0];
-                callback();
+                 
+                 $scope.rootSeparacion.pedido;
+                 callback();
             };
             
             
-             $scope.onSeleccionTipo = function(tipo) {
+            $scope.onSeleccionTipo = function(tipo) {
                 $scope.tipo = tipo;
             };
-            
-            $scope.onSeleccionJustificacion = function(justificacion) {
-                $scope.justificacion = justificacion;
-            };
-
-           
-            $scope.onSeleccionFiltros = function(justificacion) {
-                $scope.filtro = justificacion;
-            };
-            
-            
             
               /**
                * +Descripcion: metodo para desplegar la ventana modal de
@@ -78,6 +77,47 @@ define(["angular", "js/controllers",
                 };
                 var modalInstance = $modal.open($scope.opts);
             };
+            
+            /**
+             * @author Eduar Garcia
+             * +Descripcion: Permite consultar el epdido en caso de recargar la pagina
+             */
+            self.gestionarPedido = function(){
+                var filtroPedido =  localStorageService.get("pedidoSeparacion");
+                var filtro = {};
+                filtro.estado = (filtroPedido.temporal)? {temporales : true} : {asignados : true};
+                filtro.estado.numeroPedido = true;
+                
+                var metodo = "traerPedidosAsignadosClientes";
+                
+                if(filtroPedido.tipoPedido === '2'){
+                    metodo = "traerPedidosAsignadosFarmacias";
+                } 
+                
+                SeparacionService[metodo]($scope.rootSeparacion.session, filtro,
+                1, filtroPedido.numeroPedido, function(pedidos){
+                   $scope.rootSeparacion.pedido  = (pedidos.length > 0)? pedidos[0] : null;
+                   console.log("pedidos >>>>>>>>>", $scope.rootSeparacion.pedido);
+                   self.traerDocumentoTemporal();
+               });
+            };
+            
+            self.traerDocumentoTemporal = function(){
+                SeparacionService.traerDocumentoTemporal($scope.rootSeparacion.session, $scope.rootSeparacion.pedido, function(){
+                    
+                });
+            };
+            
+            $scope.onSeleccionJustificacion = function(justificacion) {
+                $scope.justificacion = justificacion;
+            };
+
+           
+            $scope.onSeleccionFiltros = function(justificacion) {
+                $scope.filtro = justificacion;
+            };
+            
+            
 
             /**
              * +Descripcion: Datos de prueba
@@ -89,6 +129,8 @@ define(["angular", "js/controllers",
                 {pedido: 50, fechavencimiento: "20/08/2015", existencia: 60, disponible: 50},
                 {pedido: 50, fechavencimiento: "20/08/2015", existencia: 60, disponible: 50}
             ];
+            
+            
             /**
              * @author Cristian Ardila
              * +Descripcion: Grilla en comun para pedidos asignados 
@@ -114,7 +156,7 @@ define(["angular", "js/controllers",
                         
                     }
                      
-                ],
+                ]
                
             };
          
@@ -124,10 +166,10 @@ define(["angular", "js/controllers",
              * pagina donde se encuentran los documentos para despachar
              * 
              */
-            $scope.showDetallePedidos = function() {
+            $scope.mostrarDetallePedidos = function() {
 
                 $scope.slideurl = "views/separacionpedidos/separacionDetalle.html?time=" + new Date().getTime();
-                $scope.$emit('showDetallePedidos');
+                $scope.$emit('mostrarDetallePedidos');
              
             };
             
@@ -141,6 +183,12 @@ define(["angular", "js/controllers",
             });
 
             self.init(function() {
+               if(!SeparacionService.getPedido()){
+                   self.gestionarPedido();
+               } else {
+                   $scope.rootSeparacion.pedido  = SeparacionService.getPedido();
+                   console.log("pedido >>>>>>", SeparacionService.getPedido());
+               }
 
 
             });

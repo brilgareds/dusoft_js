@@ -117,10 +117,12 @@ define(["angular"], function(angular) {
             },
             'SEPARACION_PEDIDOS':{
                 'CLIENTES':{
-                    'LISTAR_PEDIDOS_OPERARIO_CLIENTE': BASE_URL + "/PedidosClientes/listaPedidosOperarioBodega"
+                    'LISTAR_PEDIDOS_OPERARIO_CLIENTE': BASE_URL + "/PedidosClientes/listaPedidosOperarioBodega",
+                    'CONSULTAR_TEMPORAL_CLIENTES' : BASE_URL + "/movBodegas/E008/consultarDocumentoTemporalClientes"
                 },
                 'FARMACIAS':{
-                    'LISTAR_PEDIDOS_OPERARIO_FARMACIA': BASE_URL + "/PedidosFarmacias/listaPedidosOperarioBodega"
+                    'LISTAR_PEDIDOS_OPERARIO_FARMACIA': BASE_URL + "/PedidosFarmacias/listaPedidosOperarioBodega",
+                    'CONSULTAR_TEMPORAL_FARMACIAS' : BASE_URL + "/movBodegas/E008/consultarDocumentoTemporalFarmacias"
                 }
             },
             'TERCEROS': {

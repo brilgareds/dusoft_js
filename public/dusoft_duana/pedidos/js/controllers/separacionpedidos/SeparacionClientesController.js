@@ -18,6 +18,7 @@ define(["angular", "js/controllers",
                 $scope.rootSeparacionClientes.paginaActual = 1;
                 $scope.rootSeparacionClientes.terminoBusqueda = "";
                 $scope.rootSeparacionClientes.listaPedidos = [];
+                $scope.rootSeparacionClientes.filtroPedido = {};
                 callback();
             };
 
@@ -28,7 +29,8 @@ define(["angular", "js/controllers",
              * +Descripcion: Trae los pedidos asignados al tercero o los que estan en separacion
              */
             self.traerPedidosAsignados = function(esTemporal, callback) {
-                var filtro = (esTemporal)? {temporales : true} : {asignados : true};
+                var filtro = {};
+                filtro.estado = (esTemporal)? {temporales : true} : {asignados : true};
                    
                 SeparacionService.traerPedidosAsignadosClientes($scope.root.session, filtro,
                 $scope.rootSeparacionClientes.paginaActual, $scope.rootSeparacionClientes.terminoBusqueda, function(pedidos){
@@ -69,7 +71,7 @@ define(["angular", "js/controllers",
                     {field: 'Detalle', width: "5%",
                         displayName: "Detalle",
                         cellClass: "txt-center",
-                        cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="detallePedido(row.entity)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'
+                        cellTemplate: '<div><button class="btn btn-default btn-xs" ng-click="detallePedido(row.entity, rootSeparacionClientes.filtroPedido)"><span class="glyphicon glyphicon-zoom-in">Ver</span></button></div>'
 
                     }
                 ]
@@ -120,6 +122,7 @@ define(["angular", "js/controllers",
             };
 
             self.init(function() {
+                $scope.rootSeparacionClientes.filtroPedido = {temporal:$scope.root.esTemporal};
                 self.traerPedidosAsignados($scope.root.esTemporal, function(){
                     
                 });

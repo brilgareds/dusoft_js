@@ -1,10 +1,10 @@
 <div >
 
-
-    <div ng-repeat="model in empresas">
-        {{model.razon_social}} {{model.empresa_id}}
-    </div>
-   modulo de induccion
+    <select >
+        <option value="-1" style="text-align:center;" >--seleccionar--</option>
+        <option ng-repeat="model in empresas" value="{{model.empresa_id}}">{{model.razon_social}}</option>
+    </select>
+    modulo de induccion
 </div>
 
 

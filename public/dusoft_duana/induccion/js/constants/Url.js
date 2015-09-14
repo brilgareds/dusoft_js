@@ -1,4 +1,4 @@
-define(["angular"], function(angular) {
+define(["angular"], function (angular) {
     var Url = angular.module('Url', []);
 
     var BASE_URL = "/api";
@@ -8,16 +8,14 @@ define(["angular"], function(angular) {
         'API': {
             'BASE_URL': BASE_URL,
             'INDUCCION': {
-                "LISTAR_EMPRESAS":BASE_URL+"/Induccion/listar/empresas",
-                "LISTAR_CENTRO_UTILIDADES":BASE_URL+"/Induccion/listar/centroutilidad",
-                "LISTAR_BODEGAS":BASE_URL+"/Induccion/listar/bodegas",
-                "LISTAR_PRODUCTOS":BASE_URL+"/Induccion/listar/productos"
+                "LISTAR_EMPRESAS": BASE_URL + "/induccion/listarempresas"
+
             }
         }
 
     };
 
-    angular.forEach(data, function(key, value) {
+    angular.forEach(data, function (key, value) {
         Url.constant(value, key);
     });
 

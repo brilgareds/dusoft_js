@@ -5,15 +5,26 @@ define(["angular", "js/controllers",
     var fo = controllers.controller('SeparacionProductosController', [
         '$scope', '$rootScope', 'Request', 'API',
         "socket", "AlertService", "$modal", "localStorageService", "$state",
+        "SeparacionService","Usuario","EmpresaPedido",
         function($scope, $rootScope, Request,
-                API, socket, AlertService, $modal, localStorageService, $state) {
+                API, socket, AlertService, $modal, localStorageService, $state,
+                SeparacionService, Usuario, EmpresaPedido) {
 
 
             var self = this;
 
             self.init = function(callback) {
-                $scope.rootSeparacionClientes = {};
-                $scope.paginaactual = 1;
+                $scope.rootSeparacion = {};
+                
+                $scope.rootSeparacion.session = {
+                    usuario_id: Usuario.getUsuarioActual().getId(),
+                    auth_token: Usuario.getUsuarioActual().getToken()
+                };
+                
+                $scope.rootSeparacion.empresa = EmpresaPedido;
+                
+                $scope.rootSeparacion.paginaactual = 0;
+                
                 $scope.justificaciones = [
                     {nombre: "Guia", id: 1},
                     {nombre: "Transportador", id: 2},
@@ -82,6 +93,7 @@ define(["angular", "js/controllers",
             };
             
             
+
               /**
                * +Descripcion: metodo para desplegar la ventana modal de
                * cantidades en la separacion
@@ -109,6 +121,51 @@ define(["angular", "js/controllers",
                 };
                 var modalInstance = $modal.open($scope.opts);
             };
+            
+            /**
+             * @author Eduar Garcia
+             * +Descripcion: Permite consultar el epdido en caso de recargar la pagina
+             */
+            self.gestionarPedido = function(){
+                var filtroPedido =  localStorageService.get("pedidoSeparacion");
+                var filtro = {};
+                filtro.estado = (filtroPedido.temporal)? {temporales : true} : {asignados : true};
+                filtro.estado.numeroPedido = true;
+                
+                var metodo = "traerPedidosAsignadosClientes";
+                
+                if(filtroPedido.tipoPedido === '2'){
+                    metodo = "traerPedidosAsignadosFarmacias";
+                } 
+                
+                SeparacionService[metodo]($scope.rootSeparacion.session, filtro, 1, filtroPedido.numeroPedido, function(pedidos){
+                   EmpresaPedido.setPedidoSeleccionado((pedidos.length > 0)? pedidos[0] : null);
+                   
+                   console.log("pedido seleccionado", EmpresaPedido.getPedidoSeleccionado());
+                  // self.traerDocumentoTemporal();
+               });
+            };
+            
+            
+            self.traerDocumentoTemporal = function(){
+                SeparacionService.traerDocumentoTemporal($scope.rootSeparacion.session, $scope.rootSeparacion.pedido, function(){
+                    
+                });
+            };
+            
+            $scope.onSeleccionJustificacion = function(justificacion) {
+                $scope.justificacion = justificacion;
+            };
+
+           
+            $scope.onSeleccionFiltros = function(justificacion) {
+                $scope.filtro = justificacion;
+            };
+            
+                        
+            $scope.onSeleccionTipo = function(tipo) {
+                $scope.tipo = tipo;
+            };
 
             /**
              * +Descripcion: Datos de prueba
@@ -120,6 +177,8 @@ define(["angular", "js/controllers",
                 {pedido: 50, fechavencimiento: "20/08/2015", existencia: 60, disponible: 50},
                 {pedido: 50, fechavencimiento: "20/08/2015", existencia: 60, disponible: 50}
             ];
+            
+            
             /**
              * @author Cristian Ardila
              * +Descripcion: Grilla en comun para pedidos asignados 
@@ -145,7 +204,7 @@ define(["angular", "js/controllers",
                         
                     }
                      
-                ],
+                ]
                
             };
             
@@ -166,15 +225,36 @@ define(["angular", "js/controllers",
                
             };
          
+            self.seleccionarProductoPorPosicion = function(){
+                var pedido = EmpresaPedido.getPedidoSeleccionado();
+                var producto = pedido.getProductos()[$scope.rootSeparacion.paginaactual];
+                
+                if(!producto){
+                    return;
+                }
+                
+                pedido.setProductoSeleccionado(producto);
+            };
+            
+            $scope.onSiguiente = function(){
+                $scope.rootSeparacion.paginaactual++;
+                self.seleccionarProductoPorPosicion();
+            };
+            
+            $scope.onAnterior = function(){
+                $scope.rootSeparacion.paginaactual--;
+                self.seleccionarProductoPorPosicion();
+            };
+            
             /**
              * +Descripcion: metodo ejecutado por el slider para cambiar a la 
              * pagina donde se encuentran los documentos para despachar
              * 
              */
-            $scope.showDetallePedidos = function() {
+            $scope.mostrarDetallePedidos = function() {
 
                 $scope.slideurl = "views/separacionpedidos/separacionDetalle.html?time=" + new Date().getTime();
-                $scope.$emit('showDetallePedidos');
+                $scope.$emit('mostrarDetallePedidos');
              
             };
             
@@ -188,7 +268,10 @@ define(["angular", "js/controllers",
             });
 
             self.init(function() {
-
+                console.log("pedido seleccioando ",EmpresaPedido.getPedidoSeleccionado())
+               if(Object.keys(EmpresaPedido.getPedidoSeleccionado()).length === 0){
+                   self.gestionarPedido();
+               } 
 
             });
 

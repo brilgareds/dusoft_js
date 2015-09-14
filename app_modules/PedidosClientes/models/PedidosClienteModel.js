@@ -540,14 +540,22 @@ PedidosClienteModel.prototype.listar_pedidos_del_operario = function(responsable
         
         this.where("a.estado_pedido", estado_pedido);
         
-    }).
-    andWhere(function(){
-        this.where(G.knex.raw("a.pedido_cliente_id :: varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%").
-        orWhere("b.tercero_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
-        orWhere("b.nombre_tercero", G.constants.db().LIKE, "%" + termino_busqueda + "%").
-        orWhere("c.vendedor_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
-        orWhere("c.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%");
     });
+    
+    if(filtro.numeroPedido){
+        
+        query.where(G.knex.raw("a.pedido_cliente_id :: varchar"), "=",termino_busqueda);
+    } else {
+        
+        query.andWhere(function(){
+            this.where(G.knex.raw("a.pedido_cliente_id :: varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%").
+            orWhere("b.tercero_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+            orWhere("b.nombre_tercero", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+            orWhere("c.vendedor_id", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+            orWhere("c.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+        });
+    }
+    
     
     query.totalRegistros = 0;
     query.then(function(total){

@@ -17,6 +17,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.tiempoSeparacion = 0;
             this.cantidadProductos = 0;
             this.farmaciaId;
+            this.productoSeleccionado = {};
         }
 
          PedidoAuditoria.prototype = Object.create(Pedido.getClass().prototype);
@@ -40,6 +41,18 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
 
         PedidoAuditoria.prototype.setTipo = function(tipo) {
             this.tipo = tipo;
+        };
+        
+        PedidoAuditoria.prototype.getTipo = function() {
+            return this.tipo;
+        };
+        
+        PedidoAuditoria.prototype.setProductoSeleccionado = function(productoSeleccionado) {
+            this.productoSeleccionado = productoSeleccionado;
+        };
+        
+        PedidoAuditoria.prototype.getProductoSeleccionado = function() {
+            return this.productoSeleccionado;
         };
         
         PedidoAuditoria.prototype.getProductos = function() {

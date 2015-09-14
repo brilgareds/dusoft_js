@@ -43,12 +43,57 @@ define(["angular", "js/controllers",
                  $scope.tipo = $scope.tipos[0];
                  $scope.filtro = $scope.filtros[0];
                  $scope.justificacion = $scope.justificaciones[0];
-                 
-                 
-                 callback();
+                callback();
             };
             
             
+             $scope.onSeleccionTipo = function(tipo) {
+                $scope.tipo = tipo;
+            };
+            
+            $scope.onSeleccionJustificacion = function(justificacion) {
+                $scope.justificacion = justificacion;
+            };
+
+           
+            $scope.onSeleccionFiltros = function(justificacion) {
+                $scope.filtro = justificacion;
+                
+                self.ventanaListarProductos();
+            };
+            
+            
+            
+             /**
+               * +Descripcion: metodo para desplegar la ventana modal de
+               * cantidades en la separacion
+               * @author Cristian Ardila
+               * @fecha: 10/09/2015
+               * @returns {undefined}
+               */
+             self.ventanaListarProductos = function() {
+                 
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: true,
+                    keyboard: true,
+                    
+                    templateUrl: 'views/separacionpedidos/separacionAsignacionListarProductos.html',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.cerrarListarProductos = function() {
+                            $modalInstance.close();
+                            
+                        };
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
+            };
+            
+            
+
               /**
                * +Descripcion: metodo para desplegar la ventana modal de
                * cantidades en la separacion
@@ -168,6 +213,23 @@ define(["angular", "js/controllers",
              * +Descripcion: Permite seleccionar un producto en el arreglo del pedido
              *  clientes y pedidos temporales clientes
              */
+            
+            $scope.listarProductos = {
+                data: 'myData',
+                
+                enableColumnResize: true,
+                enableRowSelection: true,
+                keepLastSelected:false,
+                multiSelect:false,
+                columnDefs: [
+                    {field: 'pedido', displayName: 'Lote'},
+                    {field: 'fechavencimiento', displayName: 'F. vencimiento'},
+                   
+                     
+                ]
+               
+            };
+         
             self.seleccionarProductoPorPosicion = function(){
                 var pedido = EmpresaPedido.getPedidoSeleccionado();
                 var producto = pedido.getProductos()[$scope.rootSeparacion.paginaactual];

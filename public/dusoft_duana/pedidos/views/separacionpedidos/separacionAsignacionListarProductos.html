@@ -1,0 +1,29 @@
+<div ng-controller="DetallepedidoSeparadoClienteController">
+    <div class="pull-left col-md-11">
+        <h4 class="text-center"><strong>Productos pendientes o sin justificacion</strong></h4>
+    </div>
+    <div class ="row">
+        <br>
+        <div class="col-md-6 pull-right">
+
+            <p class="input-group">
+                <input type="text" class="form-control" 
+                       ng-keypress="onBuscarProductos($event);" 
+                       ng-model="rootSeparacionClientes.terminoBusqueda" 
+                       placeholder="Buscar" name="" id="" 
+                       />
+                <span class="input-group-btn">
+                    <button class="btn btn-default"  type="submit" ng-click="onBuscarProductos({which:13})"><i class="glyphicon glyphicon-search"></i></button>
+                </span>
+            </p>
+        </div>
+        <div class="pull-right ">
+            <label class ="checkbox-listarproductos">Codigo barras</label>
+            <input-check ng-model="filtro.codigo_barras" ></input-check>
+
+        </div>
+    </div>
+    <div class="table-responsive" >
+        <div class="gridStyle2" ng-grid="listarProductos" > </div>
+    </div>
+</div>

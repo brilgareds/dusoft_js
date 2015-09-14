@@ -163,6 +163,11 @@ define(["angular", "js/controllers",
                
             };
             
+           /**
+             * @author Eduar Garcia
+             * +Descripcion: Permite seleccionar un producto en el arreglo del pedido
+             *  clientes y pedidos temporales clientes
+             */
             self.seleccionarProductoPorPosicion = function(){
                 var pedido = EmpresaPedido.getPedidoSeleccionado();
                 var producto = pedido.getProductos()[$scope.rootSeparacion.paginaactual];

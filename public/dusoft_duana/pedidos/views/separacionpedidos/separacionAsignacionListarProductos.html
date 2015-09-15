@@ -1,7 +1,10 @@
-<div ng-controller="DetallepedidoSeparadoClienteController">
-    <div class="pull-left col-md-11">
-        <h4 class="text-center"><strong>Productos pendientes o sin justificacion</strong></h4>
-    </div>
+<div ng-controller="DetallepedidoSeparadoClienteController" >
+    
+    <div class="panel panel-info ">
+                <div class="panel-heading">
+                    <h4 class="h4MarginTopBottom">Productos pendientes o sin justificacion</h4>
+                </div>
+    
     <div class ="row">
         <br>
         <div class="col-md-6 pull-right">
@@ -25,5 +28,7 @@
     </div>
     <div class="table-responsive" >
         <div class="gridStyle2" ng-grid="listarProductos" > </div>
+    </div>
+        
     </div>
 </div>

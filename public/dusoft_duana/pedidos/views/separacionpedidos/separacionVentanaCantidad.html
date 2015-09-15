@@ -6,50 +6,51 @@
         </div>
         <div class="panel-body">
             <div class="row" >
-                <div class ="col-md-3"><div class="lbl_editar_producto">Producto</div>{{}</div>
+                <div class ="col-md-4"><div class="lbl_editar_producto">Producto</div>{{}</div>
             </div>
             <div class="row">
-                <div class="col-md-3"><div class="lbl_editar_producto">Lote</div>{{}}</div>
+                <div class="col-md-4"><div class="lbl_editar_producto">Lote</div>{{}}</div>
                 <div class ="col-md-4"><div class="lbl_editar_producto">Fecha vencimiento</div>{{}}</div>
             </div>
             <div class="row">
-                <div class ="col-md-3"><div class="lbl_editar_producto">Cantidad solicitada</div> {{}} </div>
-                <div class ="col-md-3"><div class="lbl_editar_producto">Cantidad disponible</div><div>{{}}</div></div>
+                <div class ="col-md-4"><div class="lbl_editar_producto">Cantidad solicitada</div> {{}} </div>
+                <div class ="col-md-4"><div class="lbl_editar_producto">Cantidad disponible</div><div>{{}}</div></div>
             </div>
             <div class="row">
-                <div class ="col-md-3"><label class="lbl_editar_producto lbl_caja" >Cantidad</label></div>
-                <div class ="col-md-3">
+                <div class ="col-md-4"><label class="lbl_editar_producto" >Cantidad</label></div>
+                <div class ="col-md-4">
                     <input type="text"
                            class="form-control" />
                 </div>
             </div>
         </div>
     </div>
-
     <div class="panel panel-info panelCaja">
         <div class="panel-heading">
             <h3 class="panel-title">Información Caja / Nevera</h3>
-        </div>
-        <div class="panel-body">
+        </div> 
+    <div class="panel-body">
             <div class="row">
-                <div class="col-lg-10">
-                    <label class="lbl_editar_producto lbl_caja" for="">Numero: </label>
+                <div class="col-lg-8">
+                    <label class="lbl_editar_producto lbl_caja" for="numerocaja">Numero: </label>
                     <div class="input-group input-group-sm">
-                        <input type="text" class="form-control"  />
-                        <div class="input-group-btn" >                         
-                            <button type="button" class="btn btn-default dropdown-toggle" 
-                                    data-toggle="dropdown" aria-haspopup="true" 
-                                    aria-expanded="false" >{{tipo.nombre}} <span class="caret"></span></button>
-                            <ul class="dropdown-menu">
+
+                        <input type="text" role="group" ng-model="rootEditarProducto.caja.numero" class="form-control" ng-keyup="onNumeroCajaDigitado()"  validacion-numero />
+                        <div class="input-group-btn" role="group">
+                            <button ng-disabled="cerrar" type="button"  class="btn btn-default dropdown-toggle btnTipo" data-toggle="dropdown" aria-expanded="false"> 
+                                {{tipo.nombre}} 
+                                <span class="caret"></span>
+                            </button>
+                             <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                 <li ng-repeat="tipo in tipos">
                                     <a href="javascript:void(0)" ng-click="onSeleccionTipo(tipo)">{{tipo.nombre}}</a>
                                 </li>
-                            </ul>                           
-                        </div>
+                            </ul>    
+                        </div>                                              
                         <div class="input-group-btn" >
-                            <button type="button" class="btn btn-default" >
+                            <button type="button" ng-click="onSeleccionarCaja()" ng-disabled="rootEditarProducto.caja.tipo == undefined" class="btn btn-default" >
                                 Seleccionar
-                            </button>                                                     
+                            </button>                                                      
                         </div>
                     </div>
                 </div>

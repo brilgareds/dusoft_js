@@ -1,9 +1,6 @@
 <div ng-controller="AuditoriaPedidosController">
 
     <!--Auditoria de pedidos-->
-
-    <!--route 1 {{welcomemsg}} got to child  <a ui-sref="route1.item">Route item</a>-->
-
     <tabset  class="">
 
         <tab ng-controller="AuditoriaPedidosClientesController">
@@ -11,37 +8,13 @@
                 Clientes <span ng-show="notificacionclientes > 0" class="badge badge-warning">{{notificacionclientes}}</span>
             </tab-heading>
 
-            <!--div flow-init="options"
-                 flow-files-submitted="upload($flow)"
-                 flow-file-success="$file.msg = $message">
 
-                <input type="file" flow-btn/>
-                Input OR Other element as upload button
-                <span class="btn" flow-btn>Upload File</span>
-
-                <table>
-                    <tr ng-repeat="file in $flow.files">
-                        <td>{{$index+1}}</td>
-                        <td>{{file.name}}</td>
-                        <td>{{file.msg}}</td>
-                    </tr>
-                </table>
-            </div>
-
-            <input type="file" nv-file-select uploader="uploader"/><br/-->
             <ul>
                 <li ng-repeat="item in uploader.queue">
                     Name: <span ng-bind="item.file.name"></span><br/>
                     <button ng-click="item.upload()">upload</button>
                 </li>
             </ul>
-            <!--<span class="badge badge-warning">42</span>-->
-            <!--            <ul class="nav nav-pills nav-stacked">
-                            <li class="active">-->
-
-            <!--                </li>
-                        </ul>-->
-
             <div class="input-group navbar-form">
 
                 <input type="text" class="form-control pull-right" ng-keypress="onKeySeparadosPress($event, termino_busqueda)" ng-model="termino_busqueda" placeholder="Buscar" name="srch-term" id="srch-term">
@@ -80,7 +53,7 @@
                 Farmacias <span ng-show="notificacionfarmacias > 0" class="badge badge-warning">{{notificacionfarmacias}}</span>
             </tab-heading>
 
-            
+
             <ui-select  ng-model="$parent.seleccion" style="width:300px"  theme="select2" class="form-control selectgeneral pull-left" ng-change="valorSeleccionado()">
                 <ui-select-match  placeholder="Seleccionar Empresa">{{$select.selected.nombre}}</ui-select-match>
                 <ui-select-choices repeat="empresa in  empresas| filter:$select.search">

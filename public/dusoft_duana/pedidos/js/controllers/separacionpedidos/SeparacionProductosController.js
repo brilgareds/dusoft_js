@@ -210,6 +210,7 @@ define(["angular", "js/controllers",
             };
             
             $scope.onSiguiente = function(){
+               
                 $scope.rootSeparacion.paginaactual++;
                 self.seleccionarProductoPorPosicion();
             };

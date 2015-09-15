@@ -11,10 +11,7 @@
                 <div class ="col-md-3"><div class="lbl_editar_producto">Codigo</div>{{::rootEditarProducto.producto.codigo_producto}}</div>
                 <div class ="col-md-9"><div class="lbl_editar_producto">Descripcion</div>{{::rootEditarProducto.producto.descripcion}}</div>
             </div>
-            <!-- div class="row">
-                <div class ="col-md-3"><div class="lbl_editar_producto">Lote</div>{{rootEditarProducto.producto.lote.codigo_lote}}</div>
-                <div class ="col-md-9"><div class="lbl_editar_producto">Fecha_vencimiento</div>{{rootEditarProducto.producto.lote.fecha_vencimiento}}</div>
-            </div -->
+           
             <div class="row">
                 <div class="col-md-3"><div class="lbl_editar_producto">Solicitado</div>{{::rootEditarProducto.producto.cantidad_solicitada_real}}</div>
                 <div class ="col-md-3"><div class="lbl_editar_producto">Disponible</div>{{rootEditarProducto.producto.disponible}}</div>
@@ -47,7 +44,6 @@
             </div>
             <div class="panel-body">
                 <div class="span6" style="width:250px;">
-                    <!--textarea placeholder="Justificación por pendientes" ng-model="rootEditarProducto.producto.lote.justificacion_auditor" class="col-xs-12 textareajustificacion"></textarea-->
                     
                     <ui-select  ng-model="rootEditarProducto.justificacionAuditor" theme="select2" class="form-control selectgeneral pull-left" ng-change="justificacionSeleccionada()">
                         <ui-select-match  placeholder="Seleccionar Documento">{{$select.selected.descripcion}}</ui-select-match>
@@ -82,18 +78,6 @@
                         </div>
                         
                         
-                        <!-- div class="input-group-btn" >
-                            <button type="button" ng-disabled="rootEditarProducto.caja.tipo == undefined" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">Acción <span class="caret"></span></button>
-                            <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                                <li><a href="javascript:void(0)" ng-click="onSeleccionarCaja()">Seleccionar</a></li>
-                                <li ng-if="existenLotesConNumeroCajaActual()"><a href="javascript:void(0)" ng-click="onCerrarCaja()" >Cerrar</a></li>
-                                <li>
-                                    <a ng-if="cerrar" href="javascript:void(0)" ng-click="onImprimirRotulo()">Generar</a>
-                                    <a ng-if="cerrar" href="javascript:void(0)">Generar</a>
-                                </li>
-                            </ul>
-                        </div -->
-                        
                         
                         <div class="input-group-btn" >
                             <button type="button" ng-click="onSeleccionarCaja()" ng-disabled="rootEditarProducto.caja.tipo == undefined" class="btn btn-default" >
@@ -114,85 +98,11 @@
                 </div>
 
 
-                <!--div class="contenedorTipo">
-                    <span>
-                        <span class="dropdown" id="dropdownMenu1" name="dropdownMenu1">
-                            <button class="btn btn-default dropdown-toggle btn-sm" type="button"  data-toggle="dropdown" aria-expanded="true">
-                                Tipo
-                                <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-                                <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Caja</a></li>
-                                <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Nevera</a></li>
-                            </ul>
-                        </span>
-                    </span>
-                </div>
-                <div class="contenedorCaja">
-                    <label class="lbl_editar_producto lbl_caja" for="numerocaja">Numero: </label>
-                    <div class="input-group validar_caja_contenedor">
-                        <input type="text" id="numerocaja" ng-model="rootEditarProducto.caja.numero" class="form-control" ng-change="onValidarCaja()"  validacion-numero  />
-                        <span class="input-group-btn">
-                            <button class="btn btn-default btn-xs" type="button" ng-click="onSeleccionarCaja()"><span class="glyphicon glyphicon-ok"></span></button>
-                        </span>
-                    </div>
-                </div>
-                <div class="contenedorCaja">
-                    <label class="lbl_editar_producto lbl_caja" for="cerrarcaja">Cerrar</label>
-                    <input-check ng-model="cerrar" id="cerrarcaja" ng-click="onCerrarCaja()" ng-disabled="rootEditarProducto.caja.valida" />
-                </div>
-                <div style="padding-left:10px;">
-                    <button class="btn btn-default ng-binding btn-accion btn-sm" ng-disabled="!cerrar" ng-click="onImprimirRotulo()">Generar</button>
-                </div -->
             </div>
         </div>
     </div>
 
 
-    <!--div class="animate-switch-container"
-        ng-switch on="cerrar">
-
-          <div class="panel panel-info" ng-switch-when="true">
-            <div class="panel-heading">
-                 <h3 class="panel-title">Información Rotulo</h3>
-            </div>
-            <div class="panel-body">
-                <div class="row">
-                    <div class ="col-md-5">
-                       <select ui-select2="selectestados"  class="form-control selectgeneral"  ng-model="estadoseleccionado"  ng-change="seleccionEstado()">
-                            <option></option>
-                        </select>
-                    </div>
-                    <div class ="col-md-5">
-                       <select ui-select2="selectestados"  class="form-control selectgeneral"  ng-model="estadoseleccionado"  ng-change="seleccionEstado()">
-                            <option></option>
-                        </select>
-                    </div>
-
-                    
-                    
-                </div>
-
-                <div class="row">
-                    <div class ="col-md-5">
-                       <select ui-select2="selectestados"  class="form-control selectgeneral"  ng-model="estadoseleccionado"  ng-change="seleccionEstado()">
-                            <option></option>
-                        </select>
-                    </div>
-                    <div class ="col-md-5">
-                       <select ui-select2="selectestados"  class="form-control selectgeneral"  ng-model="estadoseleccionado"  ng-change="seleccionEstado()">
-                            <option></option>
-                        </select>
-                    </div>
-                    <div class ="col-md-2 text-center">
-                        <button class="btn btn-primary ng-binding btn-accion">Generar</button>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-        
-    </div-->
 
     <button class="btn btn-primary ng-binding pull-right" ng-disabled="!rootEditarProducto.itemValido" ng-click="auditarPedido()">Auditar</button>
     <button class="btn btn-warning pull-right" style="margin-right:20px;" ng-click="cerrarModal()">Cancelar</button>

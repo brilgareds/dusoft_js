@@ -6,15 +6,30 @@
             {{ empresa.getNombre()}}
         </ui-select-choices>
     </ui-select>  
-    
+ 
+   
   
-    
-    <ui-select ng-model="root.empresaSeleccionada.centroUtilidadSeleccionado" style='width:200px;'   theme="select2" class="form-control selectgeneral pull-left" >
+    <ui-select ng-model="root.empresaSeleccionada.centroUtilidadSeleccionado" style='width:200px;'   theme="select2" class="form-control selectgeneral pull-left" ng-change="onSeleccionarCentroUtilidad()" >
         <ui-select-match  placeholder="Seleccionar Centro Utilidad" >{{ $select.selected.getNombre()}}</ui-select-match>
         <ui-select-choices  refresh-delay="0" repeat="centroUtilidad in root.empresaSeleccionada.getCentrosUtilidad() | filter:$select.search">
             {{ centroUtilidad.getNombre()}}
         </ui-select-choices>
     </ui-select>  
+    <!--{{root.empresaSeleccionada.getCentrosUtilidad()}}-->
+    
+    <ui-select ng-model="root.empresaSeleccionada.centroUtilidadSeleccionado.bodegaSeleccionado" style='width:200px;'   theme="select2" class="form-control selectgeneral pull-left" >
+        <ui-select-match  placeholder="Seleccionar Bodega" >{{ $select.selected.getNombre()}}</ui-select-match>
+        <ui-select-choices  refresh-delay="0" repeat="bodega in root.empresaSeleccionada.centroUtilidadSeleccionado.getBodegas() | filter:$select.search">
+            {{ bodega.getNombre()}}
+        </ui-select-choices>
+    </ui-select>  
+   
+<!--    <ui-select ng-model="root.empresaSeleccionada.centroUtilidadSeleccionado" style='width:200px;'   theme="select2" class="form-control selectgeneral pull-left" >
+        <ui-select-match  placeholder="Seleccionar Centro Utilidad" >{{ $select.selected.getNombre()}}</ui-select-match>
+        <ui-select-choices  refresh-delay="0" repeat="centroUtilidad in root.empresaSeleccionada.getCentrosUtilidad() | filter:$select.search">
+            {{ bodega.getNombre()}}
+        </ui-select-choices>
+    </ui-select>  -->
     
 <!--    <select ng-model='root.empresaSeleccionada' placeholder="Seleccionar Empresa" ng-change="seleccionarEmpresa()">
         <select name="repeatSelect" ng-model="data.repeatSelect">

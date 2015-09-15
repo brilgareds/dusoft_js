@@ -1,6 +1,6 @@
 //Este controlador sirve como parent para los controladores DetallepedidoSeparadoCliente y DetallepedidoSeparadoFarmacia, encapsula logica en comun por estos dos ultimos
 define(["angular", "js/controllers",
-    'includes/slide/slideContent'], function(angular, controllers) {
+    'includes/slide/slideContent', "controllers/separacionpedidos/SeparacionProductoCantidadController"], function(angular, controllers) {
 
     var fo = controllers.controller('SeparacionProductosController', [
         '$scope', '$rootScope', 'Request', 'API',
@@ -101,22 +101,22 @@ define(["angular", "js/controllers",
              * @fecha: 10/09/2015
              * @returns {undefined}
              */
-             self.ventanaCantidad = function() {
-                 
+             self.ventanaCantidad = function(lote) {
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
                     dialogFade: true,
                     keyboard: true,
-                    
                     templateUrl: 'views/separacionpedidos/separacionVentanaCantidad.html',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
-
-                        $scope.cerrarVentanaCantidadCaja = function() {
-                            $modalInstance.close();
-                            
-                        };
+                    controller: 'SeparacionProductoCantidadController',
+                    resolve: {
+                        lote: function() {
+                            return lote;
+                        },
+                        pedido:function(){
+                            return EmpresaPedido.getPedidoSeleccionado();
+                        }
                     }
                 };
                 var modalInstance = $modal.open($scope.opts);
@@ -248,7 +248,7 @@ define(["angular", "js/controllers",
                 data: 'rootSeparacion.empresa.getPedidoSeleccionado().getProductoSeleccionado().getLotesSeleccionados()',
                 afterSelectionChange:function(rowItem){
                      if(rowItem.selected){
-                         self.ventanaCantidad();
+                         self.ventanaCantidad(rowItem.entity);
                      }
                 },
                 enableColumnResize: true,

@@ -210,9 +210,7 @@ define(["angular", "js/controllers",
                 var lotes = datos.existencias_producto;
                 
                 producto.vaciarLotes();
-                
-                console.log("producto seleccionado ", producto, lotes);
-                
+                                
                 var disponible = (datos.disponibilidad_bodega)? parseInt(datos.disponibilidad_bodega):0;
                 for(var i in lotes){
                     var _lote = lotes[i];
@@ -297,8 +295,10 @@ define(["angular", "js/controllers",
              * +Descripcion: Handler del boton  siguiete
              */            
             $scope.onSiguiente = function(){
-
-                if($scope.rootSeparacion.paginaactual === EmpresaPedido.getPedidoSeleccionado().getProductos().length){
+                var cantidadProductos = EmpresaPedido.getPedidoSeleccionado().getProductos().length - 1;
+                
+                if($scope.rootSeparacion.paginaactual === cantidadProductos){
+                    $scope.mostrarDetallePedidos();
                     return;
                 }
                 

@@ -17,6 +17,9 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.tiempoSeparacion = 0;
             this.cantidadProductos = 0;
             this.farmaciaId;
+            this.empresaDestino;
+            this.centroDestino;
+            this.bodegaDestino;
             this.productoSeleccionado = {};
         }
 
@@ -105,6 +108,33 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             return this.cantidadProductos;
         };
         
+        PedidoAuditoria.prototype.setEmpresaDestino = function(empresaDestino) {
+            this.empresaDestino = empresaDestino;
+            return this;
+        };
+        
+        PedidoAuditoria.prototype.getEmpresaDestino = function() {
+            return this.empresaDestino;
+        };   
+        
+        PedidoAuditoria.prototype.setCentroDestino = function(centroDestino) {
+            this.centroDestino = centroDestino;
+            return this;
+        };
+        
+        PedidoAuditoria.prototype.getCentroDestino = function() {
+            return this.centroDestino;
+        };
+        
+        PedidoAuditoria.prototype.setBodegaDestino= function(bodegaDestino) {
+            this.bodegaDestino = bodegaDestino;
+            return this;
+        };
+        
+        PedidoAuditoria.prototype.getBodegaDestino = function() {
+            return this.bodegaDestino;
+        };
+                
         PedidoAuditoria.prototype.agregarDetallePedido = function(modeloProducto, productos) {
             for(var i in productos){
                 var _producto = productos[i];

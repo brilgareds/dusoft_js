@@ -71,6 +71,16 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
         };        
         
         
+        ProductoPedido.prototype.setDisponible = function(disponible) {
+            this.disponible = disponible;
+            return this;
+        };
+        
+        ProductoPedido.prototype.getDisponible = function() {
+            return this.disponible;
+        };   
+        
+        
         ProductoPedido.prototype.setCantidadPendiente = function(cantidad_pendiente) {
             this.cantidad_pendiente = cantidad_pendiente;
             return this;

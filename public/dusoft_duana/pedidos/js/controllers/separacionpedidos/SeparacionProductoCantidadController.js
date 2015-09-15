@@ -4,12 +4,26 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
     controllers.controller('SeparacionProductoCantidadController',[
         '$scope', '$rootScope', 'Request', 'API',
         "socket", "AlertService", "$modal", "localStorageService", "$state",
-        "pedido", "lote",
+        "pedido",
         function($scope,$rootScope,Request,
                  API,socket,AlertService,$modal,
-                 localStorageService,$state, pedido, lote){
+                 localStorageService,$state, pedido){
          
-            console.log("Lote seleccionado ", lote, pedido);
+            var self = this;
+            console.log("pedido ", pedido);
+            
+            self.init = function(callback){
+                $scope.rootVentanaCantidad = {};
+                $scope.rootVentanaCantidad.pedido = pedido;
+                
+                
+            };
+            
+            
+            self.init(function(){
+                
+            });
+            
         }
         
     ]);

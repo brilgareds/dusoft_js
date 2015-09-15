@@ -6,21 +6,27 @@
         </div>
         <div class="panel-body">
             <div class="row" >
-                <div class ="col-md-4"><div class="lbl_editar_producto">Producto</div>{{}</div>
+                <div class ="col-md-12"><div class="lbl_editar_producto">Producto</div>{{rootVentanaCantidad.pedido.getProductoSeleccionado().getDescripcion()}}</div>
             </div>
             <div class="row">
-                <div class="col-md-4"><div class="lbl_editar_producto">Lote</div>{{}}</div>
-                <div class ="col-md-4"><div class="lbl_editar_producto">Fecha vencimiento</div>{{}}</div>
+                <div class="col-md-4"><div class="lbl_editar_producto">Lote</div>
+                    {{rootVentanaCantidad.pedido.getProductoSeleccionado().getLote().getCodigo()}}
+                </div>
+                <div class ="col-md-4"><div class="lbl_editar_producto">Fecha vencimiento</div>
+                    {{rootVentanaCantidad.pedido.getProductoSeleccionado().getLote().getFechaVencimiento()}}
+                </div>
             </div>
             <div class="row">
-                <div class ="col-md-4"><div class="lbl_editar_producto">Cantidad solicitada</div> {{}} </div>
-                <div class ="col-md-4"><div class="lbl_editar_producto">Cantidad disponible</div><div>{{}}</div></div>
+                <div class ="col-md-4"><div class="lbl_editar_producto">Cantidad solicitada</div> 
+                    {{rootVentanaCantidad.pedido.getProductoSeleccionado().getCantidadSolicitada()}}</div>
+                <div class ="col-md-4"><div class="lbl_editar_producto">Cantidad disponible</div><div>
+                        {{rootVentanaCantidad.pedido.getProductoSeleccionado().getDisponible()}}
+                    </div></div>
             </div>
             <div class="row">
                 <div class ="col-md-4"><label class="lbl_editar_producto" >Cantidad</label></div>
                 <div class ="col-md-4">
-                    <input type="text"
-                           class="form-control" />
+                    <input type="text" class="form-control" />
                 </div>
             </div>
         </div>
@@ -58,6 +64,6 @@
         </div>
     </div>
     <button class="btn btn-warning ng-binding pull-right" ng-click="cerrarVentanaCantidadCaja()">Cerrar</button>
-    <button class="btn btn-primary pull-right" style="margin-right:20px;">Terminar</button>
+    <button class="btn btn-primary pull-right" style="margin-right:20px;">Guardar</button>
 
 </div>

@@ -102,6 +102,9 @@ define(["angular", "js/controllers",
              * @returns {undefined}
              */
              self.ventanaCantidad = function(lote) {
+                var pedido =  EmpresaPedido.getPedidoSeleccionado();
+                var producto = pedido.getProductoSeleccionado().setLote(lote);
+                
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
@@ -111,11 +114,8 @@ define(["angular", "js/controllers",
                     scope: $scope,
                     controller: 'SeparacionProductoCantidadController',
                     resolve: {
-                        lote: function() {
-                            return lote;
-                        },
                         pedido:function(){
-                            return EmpresaPedido.getPedidoSeleccionado();
+                            return pedido;
                         }
                     }
                 };

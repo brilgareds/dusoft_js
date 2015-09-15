@@ -45,25 +45,7 @@ define(["angular", "js/controllers",
                  $scope.justificacion = $scope.justificaciones[0];
                 callback();
             };
-            
-            
-             $scope.onSeleccionTipo = function(tipo) {
-                $scope.tipo = tipo;
-            };
-            
-            $scope.onSeleccionJustificacion = function(justificacion) {
-                $scope.justificacion = justificacion;
-            };
-
-           
-            $scope.onSeleccionFiltros = function(justificacion) {
-                $scope.filtro = justificacion;
-                
-                self.ventanaListarProductos();
-            };
-            
-            
-            
+                   
              /**
                * +Descripcion: metodo para desplegar la ventana modal de
                * cantidades en la separacion
@@ -93,6 +75,17 @@ define(["angular", "js/controllers",
             };
             
             
+            
+            self.seleccionarProductoPorPosicion = function(){
+                var pedido = EmpresaPedido.getPedidoSeleccionado();
+                var producto = pedido.getProductos()[$scope.rootSeparacion.paginaactual];
+                
+                if(!producto){
+                    return;
+                }
+                
+                pedido.setProductoSeleccionado(producto);
+            };
 
               /**
                * +Descripcion: metodo para desplegar la ventana modal de
@@ -152,20 +145,6 @@ define(["angular", "js/controllers",
                     
                 });
             };
-            
-            $scope.onSeleccionJustificacion = function(justificacion) {
-                $scope.justificacion = justificacion;
-            };
-
-           
-            $scope.onSeleccionFiltros = function(justificacion) {
-                $scope.filtro = justificacion;
-            };
-            
-                        
-            $scope.onSeleccionTipo = function(tipo) {
-                $scope.tipo = tipo;
-            };
 
             /**
              * +Descripcion: Datos de prueba
@@ -208,6 +187,11 @@ define(["angular", "js/controllers",
                
             };
             
+           /**
+             * @author Eduar Garcia
+             * +Descripcion: Permite seleccionar un producto en el arreglo del pedido
+             *  clientes y pedidos temporales clientes
+             */
             
             $scope.listarProductos = {
                 data: 'myData',
@@ -221,19 +205,8 @@ define(["angular", "js/controllers",
                     {field: 'fechavencimiento', displayName: 'F. vencimiento'},
                    
                      
-                ],
+                ]
                
-            };
-         
-            self.seleccionarProductoPorPosicion = function(){
-                var pedido = EmpresaPedido.getPedidoSeleccionado();
-                var producto = pedido.getProductos()[$scope.rootSeparacion.paginaactual];
-                
-                if(!producto){
-                    return;
-                }
-                
-                pedido.setProductoSeleccionado(producto);
             };
             
             $scope.onSiguiente = function(){
@@ -257,6 +230,23 @@ define(["angular", "js/controllers",
                 $scope.$emit('mostrarDetallePedidos');
              
             };
+            
+                        
+            $scope.onSeleccionTipo = function(tipo) {
+                $scope.tipo = tipo;
+            };
+            
+            $scope.onSeleccionJustificacion = function(justificacion) {
+                $scope.justificacion = justificacion;
+            };
+
+           
+            $scope.onSeleccionFiltros = function(justificacion) {
+                $scope.filtro = justificacion;
+                
+                self.ventanaListarProductos();
+            };
+            
             
             /*
              * @Author: Eduar

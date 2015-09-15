@@ -1,10 +1,31 @@
 <div >
 
+    <ui-select ng-model="root.empresaSeleccionada" style='width:200px;'   theme="select2" class="form-control selectgeneral pull-left" ng-change="onSeleccionarEmpresa()">
+        <ui-select-match  placeholder="Seleccionar empresa" >{{ $select.selected.getNombre()}}</ui-select-match>
+        <ui-select-choices  refresh-delay="0" repeat="empresa in empresas | filter:$select.search">
+            {{ empresa.getNombre()}}
+        </ui-select-choices>
+    </ui-select>  
+    
+  
+    
+    <ui-select ng-model="root.empresaSeleccionada.centroUtilidadSeleccionado" style='width:200px;'   theme="select2" class="form-control selectgeneral pull-left" >
+        <ui-select-match  placeholder="Seleccionar Centro Utilidad" >{{ $select.selected.getNombre()}}</ui-select-match>
+        <ui-select-choices  refresh-delay="0" repeat="centroUtilidad in root.empresaSeleccionada.getCentrosUtilidad() | filter:$select.search">
+            {{ centroUtilidad.getNombre()}}
+        </ui-select-choices>
+    </ui-select>  
+    
+<!--    <select ng-model='root.empresaSeleccionada' placeholder="Seleccionar Empresa" ng-change="seleccionarEmpresa()">
+        <select name="repeatSelect" ng-model="data.repeatSelect">
+        <option ng-repeat="model in empresas.centrosUtilidad" value="{{model.empresa_id}}">{{model.razon_social}}</option>
+    </select>
+
     <select >
         <option value="-1" style="text-align:center;" >--seleccionar--</option>
-        <option ng-repeat="model in empresas" value="{{model.empresa_id}}">{{model.razon_social}}</option>
-    </select>
-    modulo de induccion
+        <option ng-repeat="models in centroUtilidad" value="{{models.centro_utilidad}}">{{models.descripcion}}</option>
+    </select>-->
+   
 </div>
 
 

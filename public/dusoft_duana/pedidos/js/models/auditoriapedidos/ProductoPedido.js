@@ -210,6 +210,14 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.lotesSeleccionados.push(lote);
         };
         
+        ProductoPedido.prototype.vaciarLotes = function() {
+            this.lotesSeleccionados = [];
+        };
+        
+        ProductoPedido.prototype.getLotesSeleccionados = function() {
+            return this.lotesSeleccionados;
+        };
+        
         ProductoPedido.prototype.setJustificacion = function(justificacion) {
             this.justificacion = justificacion;
         };  

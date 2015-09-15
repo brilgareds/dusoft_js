@@ -153,6 +153,19 @@ define(["angular", "js/services"], function(angular, services) {
                         pedido.setDatos(_pedido);
                         pedido.agregarDetallePedido(ProductoPedido, _pedido.lista_productos);
                         pedido.setCantidadProductos(pedido.getProductos().length);
+                        
+                        if(_pedido.empresa_destino){
+                                pedido.setEmpresaDestino(_pedido.empresa_destino);
+                        }
+
+                        if(_pedido.centro_destino){
+                                pedido.setCentroDestino(_pedido.centro_destino);
+                        }
+
+                        if(_pedido.bodega_destino){
+                                pedido.setBodegaDestino(_pedido.bodega_destino);
+                        }
+                        
                         listaPedidos.push(pedido);
                     }
                 }

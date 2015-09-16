@@ -6,9 +6,11 @@ define(["angular", "js/controllers",
         '$scope', '$rootScope', 'Request', 'API',
         "socket", "AlertService", "$modal", "localStorageService", "$state",
         "SeparacionService","Usuario","EmpresaPedido","LoteProductoPedido",
+        "DocumentoTemporal","PedidoAuditoria","Cliente","Farmacia","ProductoPedido",
         function($scope, $rootScope, Request,
                 API, socket, AlertService, $modal, localStorageService, $state,
-                SeparacionService, Usuario, EmpresaPedido, LoteProductoPedido) {
+                SeparacionService, Usuario, EmpresaPedido, LoteProductoPedido,
+                DocumentoTemporal, PedidoAuditoria, Cliente, Farmacia,ProductoPedido) {
 
 
             var self = this;
@@ -20,10 +22,10 @@ define(["angular", "js/controllers",
                     usuario_id: Usuario.getUsuarioActual().getId(),
                     auth_token: Usuario.getUsuarioActual().getToken()
                 };
-                
                 $scope.rootSeparacion.empresa = EmpresaPedido;
                 $scope.rootSeparacion.paginaactual = 0;
                 $scope.rootSeparacion.nombreCliente = "";
+                $scope.rootSeparacion.documento;
                 
                 $scope.justificaciones = [
                     {nombre: "Guia", id: 1},
@@ -79,17 +81,21 @@ define(["angular", "js/controllers",
              * @author Eduar Garcia
              * permite mostar un producto en determinada posicion
              */
-            self.seleccionarProductoPorPosicion = function(){
+            self.seleccionarProductoPorPosicion = function(callback){
                 var pedido = EmpresaPedido.getPedidoSeleccionado();
                 var producto = pedido.getProductos()[$scope.rootSeparacion.paginaactual];
                 pedido.setProductoSeleccionado(producto);
                 
                 if(!producto){
+                    callback(false);
                     return;
                 }
                 
                 pedido.setProductoSeleccionado(producto);
                 self.traerLotesProducto(function(){
+                    if(callback){
+                        callback(true);
+                    }
                 });
 
             };
@@ -157,9 +163,7 @@ define(["angular", "js/controllers",
                 SeparacionService[metodo]($scope.rootSeparacion.session, filtro, 1, filtroPedido.numeroPedido, function(pedidos){
                    EmpresaPedido.setPedidoSeleccionado((pedidos.length > 0)? pedidos[0] : null);
                    self.renderDescripcionPedido();
-                   console.log("EmpresaPedido.getPedidoSeleccionado", EmpresaPedido.getPedidoSeleccionado())
                    callback();
-                  // self.traerDocumentoTemporal();
                });
             };
             
@@ -193,7 +197,7 @@ define(["angular", "js/controllers",
                     if (data.status === 200) {
 
                       self.serealizarLotesProductos(data.obj);
-
+                      callback(true);
                     } else {
                         callback(false);
                     }
@@ -221,12 +225,103 @@ define(["angular", "js/controllers",
                 
             };
             
-            self.traerDocumentoTemporal = function(){
-                SeparacionService.traerDocumentoTemporal($scope.rootSeparacion.session, $scope.rootSeparacion.pedido, function(){
-                    
+            /**
+             * @author Eduar Garcia
+             * +Descripcion: Realiza la peticion al API para traer el temporal de un pedido
+             */
+            self.traerDocumentoTemporal = function(callback){
+               var url = API.SEPARACION_PEDIDOS.CLIENTES.CONSULTAR_TEMPORAL_CLIENTES;
+               var pedido = EmpresaPedido.getPedidoSeleccionado();
+                
+               if(pedido.getTipo() === '2'){
+                   url = API.SEPARACION_PEDIDOS.FARMACIAS.CONSULTAR_TEMPORAL_FARMACIAS;
+               }
+               
+               var obj = {
+                    session: $scope.rootSeparacion.session,
+                    data: {
+                        documento_temporal: {
+                            numero_pedido: pedido.get_numero_pedido()
+                        }
+                    }
+               };
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                      self.serializacionTemporal(data.obj.documento_temporal);
+                      self.marcarSeparados();
+                      callback(); 
+                      console.log("pedidos clientes >>>>>>>> ", data);
+
+                    } else {
+                        callback(false);
+                    }
                 });
             };
+            
+            
+            self.marcarSeparados = function(){
+                var producto = EmpresaPedido.getPedidoSeleccionado().getProductoSeleccionado();                
+                var lotes = producto.getLotesSeleccionados();
+                var pedido = $scope.rootSeparacion.documento.getPedido();
+                for(var i in lotes){
+                    var lote = lotes[i];
+                    
+                    for(var ii in pedido.getProductos()){
+                        var _producto = pedido.getProductos()[ii];
+                        var _lote = _producto.getLotesSeleccionados()[0];
+                        if(_lote.getCodigo() === lote.getCodigo() && _lote.getFechaVencimiento() === lote.getFechaVencimiento()
+                           && _producto.getCodigoProducto() === producto.getCodigoProducto()){
+                            lote.setSeparado(true);
+                            break;
+                        }
+                        
+                    }
+                    
+                }
+            };
+            
+             /**
+             * @author Eduar Garcia
+             * @param{Object} temporal
+             * +Descripcion: Serializa el temporal del producto
+             */
+            self.serializacionTemporal = function(temporal){
+                var pedido = EmpresaPedido.getPedidoSeleccionado();
+                
+                if(temporal && temporal.length > 0){
+                    var doc = temporal[0];
+                    
+                    $scope.rootSeparacion.documento = DocumentoTemporal.get();
+                    $scope.rootSeparacion.documento.setdocumentoTemporalId(doc.documento_temporal_id || doc.doc_tmp_id).
+                    setBodegasDocId(doc.bodegas_doc_id).setFechaRegistro(doc.fecha_registro);
+            
+                    var _pedido = PedidoAuditoria.get();
+                    _pedido.setNumeroPedido(doc.numero_pedido).//setEstado(doc.estado).
+                    setTipo(pedido.getTipo()).setTemporalId(doc.documento_temporal_id);  
+            
+                    if(_pedido.getTipo() === '1'){
+                        var cliente = Cliente.get(doc.nombre_cliente, doc.direccion_cliente, doc.tipo_id_cliente, doc.identificacion_cliente);
+                        _pedido.setCliente(cliente);
+                    } else {
+                        var farmacia = Farmacia.get(
+                            doc.farmacia_id, doc.bodega_id, doc.nombre_farmacia, 
+                            doc.nombre_bodega, doc.centro_utilidad
+                        );
 
+                        _pedido.setFarmacia(farmacia);
+                    }
+                    
+                    var productos = doc.lista_productos;
+                    
+                    _pedido.agregarDetallePedido(ProductoPedido, productos, true, LoteProductoPedido);
+                    
+                    $scope.rootSeparacion.documento.setPedido(_pedido);
+                    
+            
+                }
+            };
+            
             /**
              * +Descripcion: Datos de prueba
              */
@@ -259,10 +354,9 @@ define(["angular", "js/controllers",
                     {field: 'codigo_lote', displayName: 'Lote'},
                     {field: 'fecha_vencimiento', displayName: 'F. vencimiento'},
                     {field: 'existencia_actual', displayName: 'Existencia'},
-                    {field: 'disponible', width: "10%",
-                        displayName: "Disponible"
-                        
-                    }
+                    {field: 'disponible', width: "10%", displayName: "Disponible"},
+                    {field: 'opciones', displayName: "", cellClass: "txt-center", width: "10%",
+                     cellTemplate: ' <input-check  ng-model="row.entity.separado" />'}
                      
                 ]
                
@@ -359,11 +453,21 @@ define(["angular", "js/controllers",
             self.init(function() {
                if(Object.keys(EmpresaPedido.getPedidoSeleccionado()).length === 0){
                    self.gestionarPedido(function(){
-                       self.seleccionarProductoPorPosicion();
+                       self.seleccionarProductoPorPosicion(function(completo){
+                           console.log("seleccionarProductoPorPosicion")
+                            self.traerDocumentoTemporal(function(){
+
+                            });
+                       });
                    });
                } else {
                    self.renderDescripcionPedido();
-                   self.seleccionarProductoPorPosicion();
+                   self.seleccionarProductoPorPosicion(function(completo){
+                       
+                        self.traerDocumentoTemporal(function(){
+
+                        });
+                   });
                }
 
             });

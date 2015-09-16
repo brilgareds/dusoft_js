@@ -46,6 +46,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             this.justificacion = "";
             this.valorIva = 0;
             this.valorUnitarioConIva = 0;
+            this.itemId = 0;
             
         }
 
@@ -59,8 +60,6 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
             return this.lote;
         };
         
-        
-        
         ProductoPedido.prototype.setCantidadSolicitada = function(cantidad_solicitada) {
             this.cantidad_solicitada = cantidad_solicitada;
             return this;
@@ -69,6 +68,15 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
         ProductoPedido.prototype.getCantidadSolicitada = function() {
             return this.cantidad_solicitada;
         };        
+
+        ProductoPedido.prototype.setItemId = function(itemId) {
+            this.itemId = itemId;
+            return this;
+        };
+        
+        ProductoPedido.prototype.getItemId = function() {
+            return this.itemId;
+        };
         
         
         ProductoPedido.prototype.setDisponible = function(disponible) {

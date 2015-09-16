@@ -20,6 +20,7 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.empresaDestino;
             this.centroDestino;
             this.bodegaDestino;
+            this.temporalId = 0;
             this.productoSeleccionado = {};
         }
 
@@ -42,13 +43,25 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             this.productos.push(producto);
         };
 
+        PedidoAuditoria.prototype.setTemporalId = function(temporalId) {
+            this.temporalId = temporalId;
+            return this;
+        };
+        
+        PedidoAuditoria.prototype.getTemporalId = function() {
+            return this.temporalId;
+        };
+        
+        
         PedidoAuditoria.prototype.setTipo = function(tipo) {
             this.tipo = tipo;
+            return this;
         };
         
         PedidoAuditoria.prototype.getTipo = function() {
             return this.tipo;
         };
+        
         
         PedidoAuditoria.prototype.setProductoSeleccionado = function(productoSeleccionado) {
             this.productoSeleccionado = productoSeleccionado;
@@ -135,26 +148,48 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
             return this.bodegaDestino;
         };
                 
-        PedidoAuditoria.prototype.agregarDetallePedido = function(modeloProducto, productos) {
+        PedidoAuditoria.prototype.agregarDetallePedido = function(modeloProducto, productos, temporal, modeloLote) {
             for(var i in productos){
                 var _producto = productos[i];
                 var producto = modeloProducto.get(_producto.codigo_producto, _producto.descripcion_producto);
                 var cantidadPendiente =  Number(_producto.cantidad_pendiente);
-                			
-                if(cantidadPendiente > 0){
+                
+                if(!temporal){
+                    
+                    if(cantidadPendiente > 0){
+                        producto.setCantidadSolicitada(Number(_producto.cantidad_solicitada));
+                        producto.setCantidadPendiente(cantidadPendiente);
+                        producto.setJustificacion(_producto.justificacion);
+
+                        if(_producto.valor_iva){
+                            producto.setValorIva(parseFloat(_producto.valor_iva));
+                            producto.setValorUnitarioConIva(parseFloat(_producto.valor_unitario_con_iva));
+                            producto.setValorUnitario(parseFloat(_producto.valor_unitario));
+                            producto.setPorcentajeGravament(parseFloat(_producto.porcentaje_iva));
+                        }
+
+                        
+                    } 
+                } else {
                     producto.setCantidadSolicitada(Number(_producto.cantidad_solicitada));
                     producto.setCantidadPendiente(cantidadPendiente);
-                    producto.setJustificacion(_producto.justificacion);
-
-                    if(_producto.valor_iva){
-                        producto.setValorIva(parseFloat(_producto.valor_iva));
-                        producto.setValorUnitarioConIva(parseFloat(_producto.valor_unitario_con_iva));
-                        producto.setValorUnitario(parseFloat(_producto.valor_unitario));
-                        producto.setPorcentajeGravament(parseFloat(_producto.porcentaje_iva));
+                    producto.setItemId(parseInt(_producto.item_id));
+                    
+                    if(_producto.valor_unitario){
+                         producto.setValorUnitario(parseFloat(_producto.valor_unitario));
                     }
-
-                    this.agregarProducto(producto); 
-                } 
+                    
+                    if(_producto.justificacion){
+                         producto.setJustificacion(_producto.justificacion);
+                    }
+                    
+                    var lote =  modeloLote.get(_producto.lote, _producto.fecha_vencimiento);
+                    lote.setCantidadIngresada(parseInt(_producto.cantidad_ingresada));
+                    
+                    producto.agregarLote(lote);
+                }
+                
+                this.agregarProducto(producto); 
             }
         };
         

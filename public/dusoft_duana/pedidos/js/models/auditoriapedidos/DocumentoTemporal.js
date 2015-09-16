@@ -38,6 +38,7 @@ define(["angular", "js/models"], function(angular, models) {
         
         DocumentoTemporal.prototype.setPedido = function(pedido) {
             this.pedido = pedido;
+            return this;
         };
         
         DocumentoTemporal.prototype.setSeparador = function(separador) {
@@ -55,6 +56,7 @@ define(["angular", "js/models"], function(angular, models) {
         
         DocumentoTemporal.prototype.setdocumentoTemporalId = function (documento_temporal_id) {
             this.documento_temporal_id = documento_temporal_id;
+            return this;
         };
         
         DocumentoTemporal.prototype.getdocumentoTemporalId = function () {

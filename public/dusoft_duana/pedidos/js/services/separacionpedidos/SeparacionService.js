@@ -104,13 +104,18 @@ define(["angular", "js/services"], function(angular, services) {
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
-
+                      callback(); 
                       console.log("pedidos clientes >>>>>>>> ", data);
 
                     } else {
                         callback(false);
                     }
                 });
+            };
+            
+            
+            self.serializacionTemporal = function(){
+                
             };
             
             /*

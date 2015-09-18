@@ -108,10 +108,11 @@ define(["angular", "js/controllers",
              * @returns {undefined}
              */
              self.ventanaCantidad = function(lote) {
+                $scope.ventana = true;
                 var pedido =  EmpresaPedido.getPedidoSeleccionado();
                 var producto = pedido.getProductoSeleccionado().setLote(lote);
                 
-                $scope.opts = {
+                var opts = {
                     backdrop: true,
                     backdropClick: true,
                     dialogFade: true,
@@ -125,7 +126,15 @@ define(["angular", "js/controllers",
                         }
                     }
                 };
-                var modalInstance = $modal.open($scope.opts);
+                var modalInstance = $modal.open(opts);
+                
+                modalInstance.result.then(function() {
+
+                }, function() {
+                    self.traerDocumentoTemporal(function(){
+
+                    });
+                });
             };
             
            /**
@@ -248,10 +257,11 @@ define(["angular", "js/controllers",
 
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
-                      self.serializacionTemporal(data.obj.documento_temporal);
-                      self.marcarSeparados();
+                      if(self.serializacionTemporal(data.obj.documento_temporal)){
+                          
+                            self.marcarSeparados();
+                      }
                       callback(); 
-                      console.log("pedidos clientes >>>>>>>> ", data);
 
                     } else {
                         callback(false);
@@ -272,6 +282,7 @@ define(["angular", "js/controllers",
                         var _lote = _producto.getLotesSeleccionados()[0];
                         if(_lote.getCodigo() === lote.getCodigo() && _lote.getFechaVencimiento() === lote.getFechaVencimiento()
                            && _producto.getCodigoProducto() === producto.getCodigoProducto()){
+                            console.log("lote separado", lote);
                             lote.setSeparado(true);
                             break;
                         }
@@ -318,8 +329,10 @@ define(["angular", "js/controllers",
                     
                     $scope.rootSeparacion.documento.setPedido(_pedido);
                     
-            
+                    return true;
                 }
+                
+                return false;
             };
             
             /**
@@ -341,26 +354,38 @@ define(["angular", "js/controllers",
              */
             $scope.separacionProducto = {
                 data: 'rootSeparacion.empresa.getPedidoSeleccionado().getProductoSeleccionado().getLotesSeleccionados()',
-                afterSelectionChange:function(rowItem){
+                /*afterSelectionChange:function(rowItem){
                      if(rowItem.selected){
                          self.ventanaCantidad(rowItem.entity);
                      }
-                },
+                },*/
                 enableColumnResize: true,
-                enableRowSelection: true,
+                enableRowSelection: false,
                 keepLastSelected:false,
                 multiSelect:false,
                 columnDefs: [
+                    {field: 'opciones', displayName: "", cellClass: "txt-center", width: "50",
+                     cellTemplate: ' <input-check   ng-model="row.entity.separado" disabled />'},
                     {field: 'codigo_lote', displayName: 'Lote'},
                     {field: 'fecha_vencimiento', displayName: 'F. vencimiento'},
                     {field: 'existencia_actual', displayName: 'Existencia'},
                     {field: 'disponible', width: "10%", displayName: "Disponible"},
-                    {field: 'opciones', displayName: "", cellClass: "txt-center", width: "10%",
-                     cellTemplate: ' <input-check  ng-model="row.entity.separado" />'}
+                    {field: 'opciones', displayName: "", cellClass: "txt-center", width: 40,
+                        cellTemplate: ' <div class="row">\n\
+                                         <button class="btn btn-default btn-xs"  ng-click="onSeleccion(row.entity)">\n\
+                                             <span class="glyphicon glyphicon-search"></span>\
+                                         </button>\n\
+                                     </div>'
+                    }
                      
                 ]
                
             };
+            
+            
+           $scope.onSeleccion = function(lote){
+                self.ventanaCantidad(lote);
+           };
             
            /**
              * @author Eduar Garcia
@@ -441,16 +466,13 @@ define(["angular", "js/controllers",
             };
             
             
-            /*
-             * @Author: Eduar
-             * +Descripcion: Funcion utilizada para destruir las referencias del controlador ejemplo la variable rootSeparacionClientes
-             */
-            $scope.$on('$destroy', function iVeBeenDismissed() {
-                console.log("goodbye SeparacionClientesController");
-                $scope.rootSeparacionClientes = null;
-            });
 
             self.init(function() {
+                if($scope.ventana){
+                    return;
+                }
+                
+                console.log("init >>>>>>>>>>>>>>>");
                if(Object.keys(EmpresaPedido.getPedidoSeleccionado()).length === 0){
                    self.gestionarPedido(function(){
                        self.seleccionarProductoPorPosicion(function(completo){

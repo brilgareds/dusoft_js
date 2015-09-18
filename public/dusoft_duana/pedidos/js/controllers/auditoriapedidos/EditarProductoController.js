@@ -541,11 +541,16 @@ define(["angular", "js/controllers",
 
             that.auditarItemsSeleccionados = function(index) {
                 if (index > ($scope.rootEditarProducto.producto.lotesSeleccionados.length - 1)) {
-
+                    
+                    console.log("INDEX ", index);
+                    console.log("productoAuditado", $scope.rootEditarProducto.producto, $scope.rootEditarProducto.documento);
                     $rootScope.$emit("productoAuditado", $scope.rootEditarProducto.producto, $scope.rootEditarProducto.documento);
                     $modalInstance.close();
                     return;
                 }
+                
+               // console.log("auditarItemsSeleccionados" );
+               // console.log("INDEX ", index);
                 var lote = $scope.rootEditarProducto.producto.lotesSeleccionados[index];
 
 
@@ -564,7 +569,7 @@ define(["angular", "js/controllers",
                         }
                     };
 
-                    console.log("justificacion de auditor >>>>>>>>>>>>>", $scope.rootEditarProducto.producto.lote.justificacion_auditor, " pendiente ", cantidad_pendiente);
+                 //   console.log("justificacion de auditor >>>>>>>>>>>>>", $scope.rootEditarProducto.producto.lote.justificacion_auditor, " pendiente ", cantidad_pendiente);
                     if ($scope.rootEditarProducto.producto.lote.justificacion_auditor.length > 0 && cantidad_pendiente > 0) {
                         obj.data.documento_temporal.justificacion = {
                             documento_temporal_id: $scope.rootEditarProducto.documento.documento_temporal_id,
@@ -621,6 +626,15 @@ define(["angular", "js/controllers",
                 $scope.rootEditarProducto.producto.lote.justificacion_auditor = $scope.rootEditarProducto.justificacionAuditor.descripcion;
             };
             
+            
+            /**
+             * +Descripcion: Metodo encargado de guardar en caja un lote
+             * antes de guardarlo, se valida si la caja esta abierta,
+             * si es asi, se actualizara la caja de los productos
+             * @author EDU García
+             * @fecha: 00-00-0000
+             * @returns {unresolved}
+             */
             $scope.onSeleccionarCaja = function() {
                 $scope.imprimir = false;
                 if (that.cantidadItemsSeleccionados() === 0) {

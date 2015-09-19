@@ -1,11 +1,14 @@
 <div ng-controller="DetallepedidoSeparadoClienteController" >
-    
-    <div class="panel panel-info ">
+
+    <div class="row paddingToptZero">
+        <div class="col-sm-12 col-md-12"  ng-controller="ContenedorSeparacionController">
+
+            <div class="panel panel-info ">
                 <div class="panel-heading">
-                    <h4 class="h4MarginTopBottom">Productos pendientes o sin justificacion</h4>
+                    <h4 class="h4MarginTopBottom"><span >Separacion de pedidos</span> </h4>
                 </div>
-    
-    <div class ="row">
+
+                <div class ="row">
         <br>
         <div class="col-md-6 pull-right">
 
@@ -20,15 +23,24 @@
                 </span>
             </p>
         </div>
+        
         <div class="pull-right ">
             <label class ="checkbox-listarproductos">Codigo barras</label>
             <input-check ng-model="filtro.codigo_barras" ></input-check>
 
         </div>
     </div>
-    <div class="table-responsive" >
-        <div class="gridStyle2" ng-grid="listarProductos" > </div>
-    </div>
-        
-    </div>
+                <br>
+                <div class="table-responsive" >
+                    <div class="gridStyle2" ng-grid="listarProductos" > </div>
+                </div>
+
+            </div>
+            <div class="col-lg-2 pull-right">
+                <button class="btn btn-warning" ng-click="cerrarListarProductos()">Cancelar</button>
+
+            </div>
+        </div>
+    </div> 
 </div>
+

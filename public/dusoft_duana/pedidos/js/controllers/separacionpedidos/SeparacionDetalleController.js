@@ -223,7 +223,7 @@ define(["angular", "js/controllers",
                     scope: $scope,
                     controller: function($scope, $modalInstance) {
 
-                        $scope.cerrarListarProductos = function() {
+                        $scope.cerrarGenerarAuditar = function() {
                             $modalInstance.close();
                             
                         };

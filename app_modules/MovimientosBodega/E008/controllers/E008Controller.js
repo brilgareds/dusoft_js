@@ -193,7 +193,17 @@ E008Controller.prototype.documentoTemporalFarmacias = function(req, res) {
 
 };
 
-// Finalizar Documento Temporal Clientes
+/**
+ * +Descripcion: Funcion encargada del proceso despues de separar los productos
+ * del pedido por parte del operario logistico a traves de DusotfMovil,
+ * este proceso es almacenado en un temporal cambiandole el estado al pedido
+ * como Separacion finalizada.
+ * @author Camilo Garcia Orozco
+ * @param {type} req
+ * @param {type} res
+ * @returns {void}
+ * 
+ */
 E008Controller.prototype.finalizarDocumentoTemporalFarmacias = function(req, res) {
 
     var that = this;
@@ -1982,13 +1992,18 @@ E008Controller.prototype.generarDocumentoDespachoFarmacias = function(req, res) 
 
 };
 
-// Validar que la caja este abierta
+/**
+ * +Descripcion: Metodo encargado de validar Validar que la caja este abierta
+ * @param {type} req
+ * @param {type} res
+ * @returns {unresolved}
+ */
 E008Controller.prototype.validarCajaProducto = function(req, res) {
 
     var that = this;
 
     var args = req.body.data;
-
+    
     if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined ||
         args.documento_temporal.numero_caja === undefined || args.documento_temporal.tipo === undefined) {
         res.send(G.utils.r(req.url, 'documento_temporal_id, numero_caja o tipo no estan definidos', 404, {}));
@@ -2021,7 +2036,14 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
     var contenido = "";
     var usuario_id = req.session.user.usuario_id;
     var tipo = args.documento_temporal.tipo;
-
+    
+    /**
+     * +Descripcion: funcion que consulta el numero mayor de rotulo en la tabla 
+     * inv_rotulo_caja
+     * @param {String} documento_temporal_id Es el id documento
+     * @param {String} numero_pedido Es el numero de pedido
+     * @param {integer} tipo si es caja o nevera
+     */
     that.m_e008.consultarNumeroMayorRotulo(documento_temporal_id, numero_pedido, tipo, function(err, rotuloMayor){
         if (err) {
             res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
@@ -2035,6 +2057,13 @@ E008Controller.prototype.validarCajaProducto = function(req, res) {
             return;
         }
         
+        /**
+         * +Descripcion: Se consultar la existencia del rotulo de la caja en la
+         * tabla inv_rotulo_caja
+         * @param {String} documento_temporal_id Es el id documento
+         * @param {String} numero_pedido Es el numero de pedido
+         * @param {integer} tipo si es caja o nevera
+         */
         that.m_e008.consultar_rotulo_caja(documento_temporal_id, numero_caja, numero_pedido, function(err, rotulos_cajas) {
             if (err) {
                 res.send(G.utils.r(req.url, 'Se ha generado un error interno ', 500, {movimientos_bodegas: {}}));
@@ -2115,7 +2144,13 @@ E008Controller.prototype.generarRotuloCaja = function(req, res) {
 
 };
 
-
+/**
+ * +Descripcion: Metodo encargado de ejecutar el modelo para actualizar
+ * una caja y los lotes que se le quieran añadir
+ * @param {type} req
+ * @param {type} res
+ * @returns {unresolved}
+ */
 E008Controller.prototype.actualizarCajaDeTemporales = function(req, res) {
     var that = this;
 

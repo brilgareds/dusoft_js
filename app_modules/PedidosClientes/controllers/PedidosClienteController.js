@@ -875,15 +875,18 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
     var cantidad_productos = 0;
     var limite_productos = 25;
 
-    __subir_archivo_plano(req.files, function(continuar, contenido) {
-
+                   
+                
+    __subir_archivo_plano(req.files, function(continuar, contenido) {       
+        
         if (continuar) {
 
             __validar_productos_archivo_plano(that, contenido, function(productos_validos, productos_invalidos) {
 
                 cantidad_productos = productos_validos.length;
 
-                if (cantidad_productos >= limite_productos) {
+                if (cantidad_productos > limite_productos) {
+                    
                     res.send(G.utils.r(req.url, 'Lista de Productos excede el limite permitido 25 productos por pedido ', 400, {pedidos_clientes: {}}));
                     return;
                 }
@@ -898,9 +901,11 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
                     // Validar que si suben varios archivos, siempre se limite la cantidad de productos a ingresar ala cotizacion
                     that.m_pedidos_clientes.consultar_detalle_cotizacion(cotizacion, '', function(err, lista_productos) {
 
-                        cantidad_productos += lista_productos.length;
+                        cantidad_productos = lista_productos.length;
+                     
+                        if (cantidad_productos > limite_productos) {
+                             
 
-                        if (cantidad_productos >= limite_productos) {
                             res.send(G.utils.r(req.url, 'Lista de Productos excede el limite permitido 25 productos por pedido ', 400, {pedidos_clientes: {}}));
                             return;
                         }
@@ -936,7 +941,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
                                                     _productos_invalidos.push(producto);
                                                 }
                                                 if (--i === 0) {
-                                                    res.send(G.utils.r(req.url, 'Cotizacion regitrada correctamente', 200, {pedidos_clientes: {numero_cotizacion: cotizacion.numero_cotizacion, productos_validos: _productos_validos, productos_invalidos: _productos_invalidos.concat(productos_invalidos)}}));
+                                                    res.send(G.utils.r(req.url, 'Cotizacion registrada correctamente', 200, {pedidos_clientes: {numero_cotizacion: cotizacion.numero_cotizacion, productos_validos: _productos_validos, productos_invalidos: _productos_invalidos.concat(productos_invalidos)}}));
                                                     return;
                                                 }
                                             });
@@ -952,7 +957,7 @@ PedidosCliente.prototype.cotizacionArchivoPlano = function(req, res) {
                                             _productos_invalidos.push(producto);
                                         }
                                         if (--i === 0) {
-                                            res.send(G.utils.r(req.url, 'Cotizacion regitrada correctamente', 200, {pedidos_clientes: {numero_cotizacion: cotizacion.numero_cotizacion, productos_validos: _productos_validos, productos_invalidos: _productos_invalidos.concat(productos_invalidos)}}));
+                                            res.send(G.utils.r(req.url, 'Cotizacion registrada correctamente', 200, {pedidos_clientes: {numero_cotizacion: cotizacion.numero_cotizacion, productos_validos: _productos_validos, productos_invalidos: _productos_invalidos.concat(productos_invalidos)}}));
                                             return;
                                         }
                                     });

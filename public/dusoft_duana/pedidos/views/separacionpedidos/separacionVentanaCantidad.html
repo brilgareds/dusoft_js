@@ -23,22 +23,45 @@
                         {{rootVentanaCantidad.pedido.getProductoSeleccionado().getDisponible()}}
                     </div></div>
             </div>
+
+        </div>
+    </div>
+
+
+
+
+
+    <div class="panel panel-info panelCaja">
+        <div class="panel-heading">
+            <h3 class="panel-title">Cantidad Del Lote</h3>
+        </div> 
+        <div class="panel-body">
             <div class="row">
-                <div class ="col-md-4"><label class="lbl_editar_producto" >Cantidad</label></div>
-                <div class ="col-md-4">
-                    <input type="text" class="form-control" ng-model="rootVentanaCantidad.pedido.getProductoSeleccionado().getLote().cantidad_ingresada" />
+                <div class="col-lg-8">
+                    <label class="lbl_editar_producto lbl_caja" for="numerocaja">Cantidad: </label>
+                    <div class="input-group input-group-sm">
+
+                        <input type="text" role="group" ng-model="rootVentanaCantidad.pedido.getProductoSeleccionado().getLote().cantidad_ingresada" class="form-control" ng-keyup="onNumeroCajaDigitado()"  validacion-numero />
+
+                    </div>
                 </div>
+
+
             </div>
         </div>
     </div>
+
+
+
     <div class="panel panel-info panelCaja">
         <div class="panel-heading">
             <h3 class="panel-title">Información Caja / Nevera</h3>
         </div> 
-    <div class="panel-body">
+        <div class="panel-body">
             <div class="row">
+
                 <div class="col-lg-8">
-                    <label class="lbl_editar_producto lbl_caja" for="numerocaja">Numero: </label>
+                    <label class="lbl_editar_producto lbl_caja" for="numerocaja">Número: </label>
                     <div class="input-group input-group-sm">
 
                         <input type="text" role="group" ng-model="rootEditarProducto.caja.numero" class="form-control" ng-keyup="onNumeroCajaDigitado()"  validacion-numero />
@@ -47,7 +70,7 @@
                                 {{tipo.nombre}} 
                                 <span class="caret"></span>
                             </button>
-                             <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                            <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                 <li ng-repeat="tipo in tipos">
                                     <a href="javascript:void(0)" ng-click="onSeleccionTipo(tipo)">{{tipo.nombre}}</a>
                                 </li>
@@ -60,6 +83,8 @@
                         </div>
                     </div>
                 </div>
+
+
             </div>
         </div>
     </div>

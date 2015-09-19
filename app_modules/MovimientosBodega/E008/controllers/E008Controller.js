@@ -146,7 +146,7 @@ E008Controller.prototype.documentoTemporalFarmacias = function(req, res) {
     var args = req.body.data;
 
     if (args.documento_temporal === undefined || args.documento_temporal.numero_pedido === undefined || args.documento_temporal.empresa_id === undefined || args.documento_temporal.observacion === undefined) {
-        res.send(G.utils.r(req.url, 'El numero_pedido, empresa_id u observacion no estan definidos ', 404, {}));
+        res.send(G.utils.r(req.url, 'El numero_pedido, empresa_id u observacion no estan definidos.. ', 404, {}));
         return;
     }
 

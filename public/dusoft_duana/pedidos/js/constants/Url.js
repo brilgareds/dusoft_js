@@ -117,13 +117,17 @@ define(["angular"], function(angular) {
             },
             'SEPARACION_PEDIDOS':{
                 'CONSULTAR_DISPONIBILIDAD': BASE_URL+"/Pedidos/consultarDisponibilidad",
+                'E008_DETALLE' : BASE_URL + "/movBodegas/E008/detalleDocumentoTemporal",
                 'CLIENTES':{
                     'LISTAR_PEDIDOS_OPERARIO_CLIENTE': BASE_URL + "/PedidosClientes/listaPedidosOperarioBodega",
-                    'CONSULTAR_TEMPORAL_CLIENTES' : BASE_URL + "/movBodegas/E008/consultarDocumentoTemporalClientes"
+                    'CONSULTAR_TEMPORAL_CLIENTES' : BASE_URL + "/movBodegas/E008/consultarDocumentoTemporalClientes",
+                    'E008_DOCUMENTO_TEMPORAL_CLIENTES' : BASE_URL + "/movBodegas/E008/documentoTemporalClientes"
+                    
                 },
                 'FARMACIAS':{
                     'LISTAR_PEDIDOS_OPERARIO_FARMACIA': BASE_URL + "/PedidosFarmacias/listaPedidosOperarioBodega",
-                    'CONSULTAR_TEMPORAL_FARMACIAS' : BASE_URL + "/movBodegas/E008/consultarDocumentoTemporalFarmacias"
+                    'CONSULTAR_TEMPORAL_FARMACIAS' : BASE_URL + "/movBodegas/E008/consultarDocumentoTemporalFarmacias",
+                    'E008_DOCUMENTO_TEMPORAL_FARMACIAS' : BASE_URL + "/movBodegas/E008/documentoTemporalFarmacias"
                 }
             },
             'TERCEROS': {

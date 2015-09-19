@@ -153,14 +153,15 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                 var _producto = productos[i];
                 var producto = modeloProducto.get(_producto.codigo_producto, _producto.descripcion_producto);
                 var cantidadPendiente =  Number(_producto.cantidad_pendiente);
+                producto.setCantidadSolicitada(Number(_producto.cantidad_solicitada));
+                producto.setCantidadPendiente(cantidadPendiente);
+                if(_producto.justificacion){
+                     producto.setJustificacion(_producto.justificacion);
+                }
                 
                 if(!temporal){
                     
                     if(cantidadPendiente > 0){
-                        producto.setCantidadSolicitada(Number(_producto.cantidad_solicitada));
-                        producto.setCantidadPendiente(cantidadPendiente);
-                        producto.setJustificacion(_producto.justificacion);
-
                         if(_producto.valor_iva){
                             producto.setValorIva(parseFloat(_producto.valor_iva));
                             producto.setValorUnitarioConIva(parseFloat(_producto.valor_unitario_con_iva));
@@ -171,16 +172,12 @@ define(["angular", "js/models", "includes/classes/Pedido"], function(angular, mo
                         
                     } 
                 } else {
-                    producto.setCantidadSolicitada(Number(_producto.cantidad_solicitada));
-                    producto.setCantidadPendiente(cantidadPendiente);
+
                     producto.setItemId(parseInt(_producto.item_id));
+                    producto.setValorIva(parseFloat(_producto.valor_iva));
                     
                     if(_producto.valor_unitario){
                          producto.setValorUnitario(parseFloat(_producto.valor_unitario));
-                    }
-                    
-                    if(_producto.justificacion){
-                         producto.setJustificacion(_producto.justificacion);
                     }
                     
                     var lote =  modeloLote.get(_producto.lote, _producto.fecha_vencimiento);

@@ -271,6 +271,12 @@ define(["angular", "js/controllers",
             
             
             self.marcarSeparados = function(){
+                
+                //No hay temporal disponible
+                if(!$scope.rootSeparacion.documento){
+                    return;
+                }
+                
                 var producto = EmpresaPedido.getPedidoSeleccionado().getProductoSeleccionado();                
                 var lotes = producto.getLotesSeleccionados();
                 var pedido = $scope.rootSeparacion.documento.getPedido();
@@ -282,14 +288,13 @@ define(["angular", "js/controllers",
                         var _lote = _producto.getLotesSeleccionados()[0];
                         if(_lote.getCodigo() === lote.getCodigo() && _lote.getFechaVencimiento() === lote.getFechaVencimiento()
                            && _producto.getCodigoProducto() === producto.getCodigoProducto()){
-                            console.log("lote separado", lote);
                             lote.setSeparado(true);
                             break;
                         }
                         
                     }
-                    
                 }
+                
             };
             
              /**
@@ -309,7 +314,8 @@ define(["angular", "js/controllers",
             
                     var _pedido = PedidoAuditoria.get();
                     _pedido.setNumeroPedido(doc.numero_pedido).//setEstado(doc.estado).
-                    setTipo(pedido.getTipo()).setTemporalId(doc.documento_temporal_id);  
+                    setTipo(pedido.getTipo());
+                    pedido.setTemporalId(doc.documento_temporal_id);  
             
                     if(_pedido.getTipo() === '1'){
                         var cliente = Cliente.get(doc.nombre_cliente, doc.direccion_cliente, doc.tipo_id_cliente, doc.identificacion_cliente);
@@ -372,7 +378,7 @@ define(["angular", "js/controllers",
                     {field: 'disponible', width: "10%", displayName: "Disponible"},
                     {field: 'opciones', displayName: "", cellClass: "txt-center", width: 40,
                         cellTemplate: ' <div class="row">\n\
-                                         <button class="btn btn-default btn-xs"  ng-click="onSeleccion(row.entity)">\n\
+                                         <button class="btn btn-default btn-xs" disabled ng-disabled="row.entity.separado"  ng-click="onSeleccion(row.entity)">\n\
                                              <span class="glyphicon glyphicon-search"></span>\
                                          </button>\n\
                                      </div>'
@@ -422,7 +428,9 @@ define(["angular", "js/controllers",
                 }
                 
                 $scope.rootSeparacion.paginaactual++;
-                self.seleccionarProductoPorPosicion();
+                self.seleccionarProductoPorPosicion(function(){
+                    self.marcarSeparados();
+                });
             };
             
             /*
@@ -434,7 +442,9 @@ define(["angular", "js/controllers",
                     return;
                 }
                 $scope.rootSeparacion.paginaactual--;
-                self.seleccionarProductoPorPosicion();
+                self.seleccionarProductoPorPosicion(function(){
+                    self.marcarSeparados();
+                });
             };
             
             /**
@@ -472,11 +482,9 @@ define(["angular", "js/controllers",
                     return;
                 }
                 
-                console.log("init >>>>>>>>>>>>>>>");
                if(Object.keys(EmpresaPedido.getPedidoSeleccionado()).length === 0){
                    self.gestionarPedido(function(){
                        self.seleccionarProductoPorPosicion(function(completo){
-                           console.log("seleccionarProductoPorPosicion")
                             self.traerDocumentoTemporal(function(){
 
                             });

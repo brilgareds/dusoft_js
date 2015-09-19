@@ -249,7 +249,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
         };  
         
         ProductoPedido.prototype.getValorIva = function() {
-            this.valorIva;
+            return this.valorIva;
         };
         
         ProductoPedido.prototype.setValorUnitarioConIva = function(valorUnitarioConIva) {

@@ -179,6 +179,33 @@ define(["angular", "js/controllers",
               });  
             };
             
+            
+             /**
+             * +Descripcion: Datos de prueba
+             */
+            $scope.dataDocumentoDespacho = [
+                {nombre: 'Acetaminofen', codigo: 10},
+                {nombre: 'Acetaminofen', codigo: 20},
+                {nombre: 'Acetaminofen', codigo: 30},
+                {nombre: 'Acetaminofen', codigo: 40},
+                
+            ];
+            
+             $scope.listarDocumentoDespacho = {
+                data: 'dataDocumentoDespacho',
+                
+                enableColumnResize: true,
+                enableRowSelection: true,
+                keepLastSelected:false,
+                multiSelect:false,
+                columnDefs: [
+                    {field: 'nombre', displayName: 'Descripcion'},
+                    {field: 'codigo', displayName: 'Codigo'}
+                   
+                     
+                ]
+               
+            };
              /**
              * +Descripcion: Metodo encargado de generar y auditar la separacion
              * @author Cristian Ardila
@@ -186,7 +213,23 @@ define(["angular", "js/controllers",
              * @returns {void}
              */
             self.generarAuditar = function(){
-                console.log("generando y auditar")
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: true,
+                    keyboard: true,
+                    
+                    templateUrl: 'views/separacionpedidos/separacionSeleccionDocumentoDespacho.html',
+                    scope: $scope,
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.cerrarListarProductos = function() {
+                            $modalInstance.close();
+                            
+                        };
+                    }
+                };
+                var modalInstance = $modal.open($scope.opts);
             };  
             
             /*

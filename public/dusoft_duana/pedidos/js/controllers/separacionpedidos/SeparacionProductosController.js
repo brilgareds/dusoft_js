@@ -453,6 +453,7 @@ define(["angular", "js/controllers",
              * 
              */
             $scope.mostrarDetallePedidos = function() {
+                
 
                 $scope.slideurl = "views/separacionpedidos/separacionDetalle.html?time=" + new Date().getTime();
                 $scope.$emit('mostrarDetallePedidos');

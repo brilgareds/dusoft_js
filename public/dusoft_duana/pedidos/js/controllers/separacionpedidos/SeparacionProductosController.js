@@ -1,6 +1,8 @@
 //Este controlador sirve como parent para los controladores DetallepedidoSeparadoCliente y DetallepedidoSeparadoFarmacia, encapsula logica en comun por estos dos ultimos
 define(["angular", "js/controllers",
-    'includes/slide/slideContent', "controllers/separacionpedidos/SeparacionProductoCantidadController"], function(angular, controllers) {
+    "includes/slide/slideContent", "controllers/separacionpedidos/SeparacionProductoCantidadController",
+    "controllers/separacionpedidos/SeparacionProductoJustificacion", "controllers/separacionpedidos/SeparacionProductosPendientesController"],
+    function(angular, controllers) {
 
     var fo = controllers.controller('SeparacionProductosController', [
         '$scope', '$rootScope', 'Request', 'API',
@@ -33,11 +35,12 @@ define(["angular", "js/controllers",
                     {nombre: "Estado", id: 3}
                 ];
                 $scope.filtros = [
-                    {nombre: "Listar productos", id: 1},
+                    {nombre: "Justificar", id: 1},
+                    {nombre: "Listar productos", id: 2},
                     {nombre: "Refrescar", id: 2}
-
                 ];
-                  $scope.tipos = [
+                
+                $scope.tipos = [
                     {nombre: "Tipo 1", id: 1},
                     {nombre: "Tipo 2", id: 2},
                     {nombre: "Tipo 3", id: 3}
@@ -63,17 +66,43 @@ define(["angular", "js/controllers",
                     dialogFade: true,
                     keyboard: true,
                     
-                    templateUrl: 'views/separacionpedidos/separacionAsignacionListarProductos.html',
+                    templateUrl: 'views/separacionpedidos/separacionProductosPendientes.html',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
-
-                        $scope.cerrarListarProductos = function() {
-                            $modalInstance.close();
-                            
-                        };
+                    controller: "SeparacionProductosPendientesController"
+                };
+                var modalInstance = $modal.open($scope.opts);
+            };
+            
+            /**
+              * +Descripcion: metodo para desplegar la ventana modal de
+              * cantidades en la separacion
+              * @author Cristian Ardila
+              * @fecha: 10/09/2015
+              * @returns {undefined}
+              */
+            self.ventanaJustificaciones = function() {
+                var pedido =  EmpresaPedido.getPedidoSeleccionado();
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: true,
+                    keyboard: true,
+                    templateUrl: 'views/separacionpedidos/separacionVentanaJustificacion.html',
+                    scope: $scope,
+                    controller:"SeparacionProductoJustificacion",
+                    resolve: {
+                        pedido:function(){
+                            return pedido;
+                        }
                     }
                 };
                 var modalInstance = $modal.open($scope.opts);
+                
+                modalInstance.result.then(function() {
+                    console.log("ventana justificacion cerrada code 1");
+                }, function() {
+                    
+                });
             };
             
             
@@ -342,18 +371,6 @@ define(["angular", "js/controllers",
             };
             
             /**
-             * +Descripcion: Datos de prueba
-             */
-            $scope.myData = [
-                {pedido: 50, fechavencimiento: "20/08/2015", existencia: 60, disponible: 50},
-                {pedido: 50, fechavencimiento: "20/08/2015", existencia: 60, disponible: 50},
-                {pedido: 50, fechavencimiento: "20/08/2015", existencia: 60, disponible: 50},
-                {pedido: 50, fechavencimiento: "20/08/2015", existencia: 60, disponible: 50},
-                {pedido: 50, fechavencimiento: "20/08/2015", existencia: 60, disponible: 50}
-            ];
-            
-            
-            /**
              * @author Cristian Ardila
              * +Descripcion: Grilla en comun para pedidos asignados 
              *  clientes y pedidos temporales clientes
@@ -392,28 +409,7 @@ define(["angular", "js/controllers",
            $scope.onSeleccion = function(lote){
                 self.ventanaCantidad(lote);
            };
-            
-           /**
-             * @author Eduar Garcia
-             * +Descripcion: Permite seleccionar un producto en el arreglo del pedido
-             *  clientes y pedidos temporales clientes
-             */
-            
-            $scope.listarProductos = {
-                data: 'myData',
-                
-                enableColumnResize: true,
-                enableRowSelection: true,
-                keepLastSelected:false,
-                multiSelect:false,
-                columnDefs: [
-                    {field: 'pedido', displayName: 'Lote'},
-                    {field: 'fechavencimiento', displayName: 'F. vencimiento'}
-                   
-                     
-                ]
-               
-            };
+           
             
             /*
              * @author Eduar Garcia
@@ -470,12 +466,24 @@ define(["angular", "js/controllers",
             };
 
            
-            $scope.onSeleccionFiltros = function(justificacion) {
-                $scope.filtro = justificacion;
-                
-                self.ventanaListarProductos();
+            $scope.onSeleccionFiltros = function(filtro) {
+                $scope.filtro = filtro;
+
+                if(filtro.id === 1){
+                    self.ventanaJustificaciones();
+                } else if(filtro.id === 2){
+                    self.ventanaListarProductos();
+                } else {
+                    
+                }
             };
             
+            
+            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+                $scope.rootSeparacion = {};
+                $scope.$$watchers = null;
+                localStorageService.remove("pedidoSeparacion");
+            });
             
 
             self.init(function() {

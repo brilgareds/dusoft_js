@@ -118,6 +118,7 @@ define(["angular"], function(angular) {
             'SEPARACION_PEDIDOS':{
                 'CONSULTAR_DISPONIBILIDAD': BASE_URL+"/Pedidos/consultarDisponibilidad",
                 'E008_DETALLE' : BASE_URL + "/movBodegas/E008/detalleDocumentoTemporal",
+                'JUSTIFICACION_PENDIENTES' : BASE_URL + "/movBodegas/E008/justificacionPendientes",
                 'CLIENTES':{
                     'LISTAR_PEDIDOS_OPERARIO_CLIENTE': BASE_URL + "/PedidosClientes/listaPedidosOperarioBodega",
                     'CONSULTAR_TEMPORAL_CLIENTES' : BASE_URL + "/movBodegas/E008/consultarDocumentoTemporalClientes",

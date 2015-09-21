@@ -4,10 +4,10 @@ define(["angular", "js/services"], function(angular, services) {
     services.factory('SeparacionService', 
                     ['$rootScope', 'Request', 'API',
                      "$modal", "Usuario","PedidoAuditoria", "Cliente",
-                     "Farmacia","ProductoPedido",
+                     "Farmacia","ProductoPedido", "$modal",
         function($rootScope, Request, API,
                  $modal, Usuario,PedidoAuditoria, Cliente,
-                 Farmacia, ProductoPedido) {
+                 Farmacia, ProductoPedido, $modal) {
 
             var self = this;
             
@@ -114,8 +114,40 @@ define(["angular", "js/services"], function(angular, services) {
             };
             
             
-            self.serializacionTemporal = function(){
+            self.agregarEncabezadoTemporal = function(pedido, session, callback){
+                var url = API.SEPARACION_PEDIDOS.CLIENTES.E008_DOCUMENTO_TEMPORAL_CLIENTES;
+                var obj = {
+                    numero_pedido : pedido.get_numero_pedido(),
+                    empresa_id : pedido.getEmpresaDestino(),
+                    observacion : "Pedido #"+pedido.get_numero_pedido()
+                };
                 
+                
+                if(pedido.getTipo() === '2'){
+                    url = API.SEPARACION_PEDIDOS.FARMACIAS.E008_DOCUMENTO_TEMPORAL_FARMACIAS;
+                } else {
+                    obj.tercero_id = pedido.getCliente().getId();
+                    obj.tipo_tercero_id = pedido.getCliente().getTipoId();
+                }
+                
+               var obj = {
+                    session: session,
+                    data: {
+                        documento_temporal: obj
+                    }
+               };
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                      var id = data.obj.documento_temporal;
+                      id =  (!id.documento_temporal_id)? parseInt(id.doc_tmp_id): parseInt(id.documento_temporal_id);
+                      pedido.setTemporalId(id);
+                      callback(true);
+
+                    } else {
+                      callback(false);
+                    }
+                });
             };
             
             /*
@@ -177,6 +209,38 @@ define(["angular", "js/services"], function(angular, services) {
                 
                 return listaPedidos;
                                 
+            };
+            
+            
+            self.mostrarAlerta = function(titulo, mensaje,callback){ 
+                
+               var opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: false,
+                    keyboard: true,
+                    template: ' <div class="modal-header">\
+                                        <button type="button" class="close" ng-click="close()">&times;</button>\
+                                        <h4 class="modal-title">'+titulo+'</h4>\
+                                    </div>\
+                                    <div class="modal-body">\
+                                        <h4 ><b>'+mensaje+'?</h4>\
+                                    </div>\
+                                    <div class="modal-footer">\
+                                        <button class="btn btn-primary"  ng-click="cerrar()">Cerrar</button>\
+                                    </div>',
+                    controller: function($scope, $modalInstance) {
+
+                        $scope.cerrar = function() {                           
+                            $modalInstance.close();
+                             if(callback){
+                                callback();
+                             }
+                        };
+
+                    }
+                };
+                var modalInstance = $modal.open(opts);
             };
            
 

@@ -13,8 +13,18 @@ define(["angular", "js/controllers",
 
             self.init = function(callback) {
                 $scope.rootDetalle = {};
-                $scope.rootDetalle.pedido;
-              
+                $scope.rootDetalle.pedido = $scope.rootSeparacion.documento.getPedido();
+                $scope.rootDetalle.nombreCliente;
+                
+                
+                if($scope.rootDetalle.pedido.getTipo() === '1'){
+                   $scope.rootDetalle.nombreCliente = $scope.rootDetalle.pedido.getCliente().getNombre(); 
+                } else {
+
+                   $scope.rootDetalle.nombreCliente = $scope.rootDetalle.pedido.getFarmacia().get_nombre_farmacia() 
+                                                         +" -- "+ $scope.rootDetalle.pedido.getFarmacia().getNombreBodega();
+                }
+
                 callback();
             };
             
@@ -133,9 +143,7 @@ define(["angular", "js/controllers",
                   }
               });         
             };
-            
 
-            
             /**
              * @author Cristian Ardila
              * +Descripcion: Grilla en comun para pedidos asignados 
@@ -258,19 +266,6 @@ define(["angular", "js/controllers",
             });*/
 
             self.init(function() {
-                 $scope.rootDetalle.pedido = $scope.rootSeparacion.documento.getPedido();
-
-                 console.log("$scope.rootSeparacionClientes.pedido", $scope.rootDetalle.pedido.productos);
-                /**
-                * +Descripcion: Datos de prueba
-                */
-                $scope.myData = [
-                    {lote: 50, solicitado: "100", ingresado: 60, pendiente: 50, producto: 'ACETAMINOFEN'},
-                    {lote: 50, solicitado: "100", ingresado: 60, pendiente: 50, producto: 'ACETAMINOFEN'},
-                    {lote: 50, solicitado: "100", ingresado: 60, pendiente: 50, producto: 'ACETAMINOFEN'},
-                    {lote: 50, solicitado: "100", ingresado: 60, pendiente: 50, producto: 'ACETAMINOFEN'},
-                    {lote: 50, solicitado: "100", ingresado: 60, pendiente: 50, producto: 'ACETAMINOFEN'}
-                ];
 
             });
 

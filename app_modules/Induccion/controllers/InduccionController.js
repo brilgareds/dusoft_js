@@ -5,7 +5,6 @@ var Induccion = function(induccion) {
 
 };
 
-
 Induccion.prototype.listarEmpresas = function(req, res) {
     
     var that = this;
@@ -25,7 +24,7 @@ Induccion.prototype.listarCentroUtilidad = function(req, res) {
     
     var that = this;
     var args = req.body.data;
-    var empresaId = args.empresaId;
+    var empresaId = args.listarCentroUtilidad.empresaId;
     
     if (empresaId === undefined) {
         res.send(G.utils.r(req.url, 'empresa_id, empresa_id no estan definidas', 404, {}));
@@ -35,14 +34,56 @@ Induccion.prototype.listarCentroUtilidad = function(req, res) {
     that.m_induccion.getListarCentroUtilidad(empresaId,function(err, centroUtilidad ) { 
 
         if (err) {
-            res.send(G.utils.r(req.url, 'Error listando centros de utilidad', 500, {listarCentroUtilidad: err}));
+            res.send(G.utils.r(req.url, 'Error listando centros de utilidad', 500, {listar_CentroUtilidad: err}));
         } else {
-            res.send(G.utils.r(req.url, 'Lista de centros de utilidad OK', 200, {listarCentroUtilidad: centroUtilidad}));
+            res.send(G.utils.r(req.url, 'Lista de centros de utilidad OK', 200, {listar_CentroUtilidad: centroUtilidad}));
         }
     });
 };
 
+Induccion.prototype.listarBodega = function(req, res) {
+    
+    var that = this;
+    var args = req.body.data;
+    var empresaId = args.listarBodegas.empresaId;
+    var centroUtilidadId = args.listarBodegas.centroUtilidadId;
+    
+    if (empresaId === undefined || centroUtilidadId === undefined   ) { 
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+    
+    that.m_induccion.getListarBodega(empresaId,centroUtilidadId,function(err, bodega ) { //,centroUtilidad
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error listando Bodegas', 500, {listar_Bodega: err}));
+        } else {
+            res.send(G.utils.r(req.url, 'Lista de Bodegas OK', 200, {listar_Bodega: bodega}));
+        }
+    });
+};
 
+Induccion.prototype.listarProducto = function(req, res) {
+    
+    var that = this;
+    var args = req.body.data;
+    var empresaIds = args.listarProducto.empresaId;
+    var centroUtilidadId = args.listarProducto.centroUtilidadId;
+    var bodegaId = args.listarProducto.bodegaId;
+    var nombreProducto = args.listarProducto.nombreProducto;
+    var pagina = args.listarProducto.paginaactual;
+    console.log("paginaactual",args.listarProducto);
+    if (empresaIds === undefined || centroUtilidadId === undefined || bodegaId === undefined || nombreProducto === undefined  ) { 
+        res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
+        return;
+    }
+    that.m_induccion.getListarProducto(empresaIds,centroUtilidadId,nombreProducto,bodegaId,pagina,function(err, bodega ) { 
+        if (err) {
+            res.send(G.utils.r(req.url, 'Error listando Producto', 500, {listar_Producto: err}));
+        } else {
+            res.send(G.utils.r(req.url, 'Lista de Producto OK', 200, {listar_Producto: bodega}));
+        }
+    });
+};
 
 Induccion.$inject = ["m_induccion"];
 

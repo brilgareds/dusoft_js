@@ -1,8 +1,8 @@
 define(["angular", "js/controllers"], function (angular, controllers) {
 
     controllers.controller('InduccionController',
-            ['$scope', '$rootScope', 'Request', 'API', 'AlertService', 'Usuario', 'EmpresaInduccion', 'CentroUtilidadInduccion','BodegaInduccion',
-                function ($scope, $rootScope, Request, API, AlertService, Usuario, EmpresaInduccion, CentroUtilidadInduccion,BodegaInduccion) {
+            ['$scope', '$rootScope', 'Request', 'API', 'AlertService', 'Usuario', 'EmpresaInduccion', 'CentroUtilidadInduccion', 'BodegaInduccion', 'ProductoInduccion',
+                function ($scope, $rootScope, Request, API, AlertService, Usuario, EmpresaInduccion, CentroUtilidadInduccion, BodegaInduccion, ProductoInduccion) {
 
                     var that = this;
 
@@ -47,7 +47,6 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                                     var _empresa = EmpresaInduccion.get(data.obj.listar_empresas[i].razon_social, data.obj.listar_empresas[i].empresa_id);
                                     $scope.empresas.push(_empresa);
                                 }
-                                console.log("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE:", data.obj.listar_empresas);
                                 callback(true);
                             } else {
                                 callback(false);
@@ -89,50 +88,161 @@ define(["angular", "js/controllers"], function (angular, controllers) {
 
 
                     that.listarBodegas = function (callback) {
-
+                        var empresa = $scope.root.empresaSeleccionada;
                         var obj = {
                             session: $scope.session,
                             data: {
                                 listarBodegas: {
-                                    pagina: 1
-//                                    empresaId: $scope.root.empresaSeleccionada.getCodigo()
-//                                    empresaId: $scope.root.empresaSeleccionada.centroUtilidadSeleccionado.getCodigo(),
-                                            // centroUtilidad: $scope.root.centroUtilidadSeleccionado.getCodigo(),
+                                    pagina: 2,
+                                    empresaId: empresa.getCodigo(),
+                                    centroUtilidadId: empresa.getCentroUtilidadSeleccionado().getCodigo()
                                 }
                             }
                         };
-                                console.log("bodega scope:", $scope.root);
+                        console.log("bodega scope:", $scope.root);
                         Request.realizarRequest(API.INDUCCION.LISTAR_BODEGAS, "POST", obj, function (data) {
-                            
-                            var empresa=$scope.root.empresaSeleccionada;
-//                            console.log("bodega BBBBBBBBBBBBBBBBBBBBBBBBBB:", empresa.centroUtilidadSeleccionado());
+
+
                             if (data.status === 200) {
                                 AlertService.mostrarMensaje("info", data.msj);
 
                                 for (var i in data.obj.listar_Bodega) {
-                                    var bodega = BodegaInduccion.get(data.obj.listar_Bodega[i].descripcion, data.obj.listar_Bodega[i].centro_utilidad);
+                                    var bodega = BodegaInduccion.get(data.obj.listar_Bodega[i].descripcion, data.obj.listar_Bodega[i].bodega);
                                     empresa.getCentroUtilidadSeleccionado().agregarBodega(bodega);
                                 }
-                              
-
                                 callback(true);
                             } else {
                                 callback(false);
                             }
                         });
                     };
+                    var getProducto;
+                    $scope.paginaactual = 1;
+                    that.listarProducto = function (callback) {
+
+//                        if ($scope.ultima_busqueda !== $scope.termino_busqueda) {
+//                            $scope.paginaactual = 1;
+//                        }
+                        var empresa = $scope.root.empresaSeleccionada;
+
+                        var obj = {
+                            session: $scope.session,
+                            data: {
+                                listarProducto: {
+                                    pagina: $scope.paginaactual,
+                                    empresaId: empresa.getCodigo(),
+                                    centroUtilidadId: empresa.getCentroUtilidadSeleccionado().getCodigo(),
+                                    bodegaId: empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionado().getCodigo(),
+                                    nombreProducto: $scope.termino_busqueda
+                                }
+                            }
+                        };
+
+                        Request.realizarRequest(API.INDUCCION.LISTAR_PRODUCTOS, "POST", obj, function (data) {
+                            if (data.status === 200) {
+                                AlertService.mostrarMensaje("info", data.msj);
+                                empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionado().vaciarProducto();
+                                for (var i in data.obj.listar_Producto) {
+                                    var obj = data.obj.listar_Producto[i];
+                                    var producto = ProductoInduccion.get(obj.descripcion,obj.centro_utilidad);
+                                    empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionado().agregarProducto(producto);
+                                    getProducto = empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionado().getProducto();
+                                    $scope.renderProductos(data.obj);
+                                }
+                                callback(true);
+                            } else {
+                                callback(false);
+                            }
+                        });
+                    };
+
+                    ////
+                  $scope.buscarProductos = function(termino_busqueda, paginando) {
+                
+                if ($scope.ultima_busqueda !== $scope.termino_busqueda) {
+                    $scope.paginaactual = 1;
+                }
+
+                if (empresa.getCodigo() === "") {
+                    AlertService.mostrarMensaje("warning", "Debe seleccionar una empresa");
+                    return;
+                }
+
+
+                Request.realizarRequest(
+                        API.INDUCCION.LISTAR_PRODUCTOS,
+                        "POST",
+                        {
+                            session: $scope.session,
+                            data: {
+                                listarProducto: {
+                                    pagina: $scope.paginaactual,
+                                    empresaId: empresa.getCodigo(),
+                                    centroUtilidadId: empresa.getCentroUtilidadSeleccionado().getCodigo(),
+                                    bodegaId: empresa.getCentroUtilidadSeleccionado().getBodegaSeleccionado().getCodigo(),
+                                    nombreProducto: $scope.termino_busqueda
+                                }
+                            }
+                        },
+                function(data) {
+                    if (data.status === 200) {
+                        $scope.ultima_busqueda = $scope.termino_busqueda;
+                        $scope.renderProductos(data.obj, paginando);
+                    }
+                }
+                );
+            };
+
+            $scope.renderProductos = function(data, paginando) {
+
+
+                $scope.items = data.listar_Producto.length;
+                //se valida que hayan registros en una siguiente pagina
+                if (paginando && $scope.items === 0) {
+                    if ($scope.paginaactual > 1) {
+                        $scope.paginaactual--;
+                    }
+                    AlertService.mostrarMensaje("warning", "No se encontraron mas registros");
+                    return;
+                }
+
+                $scope.EmpresasProductos = [];
+                $scope.paginas = (data.listar_Producto.length / 10);
+                $scope.items = data.listar_Producto.length;
+                
+                for (var i in data.listar_Producto) {
+                    var obj = data.listar_Producto[i];
                     
-                    
+                    var producto = ProductoInduccion.get(
+                            obj.descripcion,
+                            obj.centro_utilidad
+                    );
+                        
+               //     producto.get(obj.tipo_producto_id);
+                }
+
+            };
+
+                    /////
+
+
                     $scope.onSeleccionarEmpresa = function () {
 
                         that.listarCentroUtilidad(function () {
 
                         });
                     };
-                    
-                    $scope.onSeleccionarCentroUtilidad= function () {
+
+                    $scope.onSeleccionarCentroUtilidad = function () {
 
                         that.listarBodegas(function () {
+
+                        });
+                    };
+
+                    $scope.onSeleccionarProducto = function () {
+
+                        that.listarProducto(function () {
 
                         });
                     };
@@ -141,18 +251,38 @@ define(["angular", "js/controllers"], function (angular, controllers) {
                     var empresa = angular.copy(Usuario.getUsuarioActual().getEmpresa());
 
                     that.init(empresa, function () {
-
                         that.listarEmpresas(function (estado) {
-
                             if (estado) {
-                               
-
                             }
                         });
                     })
 
+                    $scope.paginaAnterior = function () {
+                        if ($scope.paginaactual === 1)
+                            return;
+                        $scope.paginaactual--;
+                        that.listarProducto(function () {
+                        });
+                    };
+
+                    $scope.paginaSiguiente = function () {
+                        $scope.paginaactual++;
+                        that.listarProducto(function () {
+                        });
+                    };
+
+                    $scope.lista_productos_movimientos = {
+                        data: 'root.empresaSeleccionada.centroUtilidadSeleccionado.getBodegaSeleccionado().getProducto()',
+                        multiSelect: false,
+                        enableHighlighting: true,
+                        enableRowSelection: false,
+                        filterOptions: $scope.filterOptions,
+                        showFilter: true,
+                        //sortInfo: {fields: ['fecha'], directions: ['desc']},
+                        columnDefs: [
+                            {field: 'codigo_producto', displayName: 'CODIGO PRODUCTO', width: "15%"},
+                            {field: 'existencia', displayName: 'EXISTENCIA', width: "85%"}
+                        ]
+                    };
                 }]);
-
-
-
 });

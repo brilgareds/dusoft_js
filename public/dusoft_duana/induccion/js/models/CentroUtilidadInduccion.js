@@ -8,8 +8,9 @@ define(["angular", "js/models", "includes/classes/CentroUtilidad"], function (an
                 CentroUtilidad.getClass().call(this, nombre, codigo);
                 this.bodegas = [];
                 this.bodegaSeleccionado;
-               
-            };
+
+            }
+            ;
             CentroUtilidadInduccion.prototype = Object.create(CentroUtilidad.getClass().prototype);
 
             CentroUtilidadInduccion.prototype.setBodegaSeleccionado = function (bodegaSeleccionado) {

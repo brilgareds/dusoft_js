@@ -4,7 +4,12 @@ var Induccion = function(induccion) {
     this.m_induccion = induccion;
 
 };
-
+/*
+* funcion para consultar empresas
+* @param {type} req
+* @param {type} res
+* @returns {datos de consulta}
+*/
 Induccion.prototype.listarEmpresas = function(req, res) {
     
     var that = this;
@@ -19,7 +24,12 @@ Induccion.prototype.listarEmpresas = function(req, res) {
         }
     });
 };
-
+/*
+* funcion para consultar CentroUtilidad
+* @param {type} req
+* @param {type} res
+* @returns {datos de consulta}
+*/
 Induccion.prototype.listarCentroUtilidad = function(req, res) {
     
     var that = this;
@@ -40,7 +50,12 @@ Induccion.prototype.listarCentroUtilidad = function(req, res) {
         }
     });
 };
-
+/*
+* funcion para consultar Bodega
+* @param {type} req
+* @param {type} res
+* @returns {datos de consulta}
+*/
 Induccion.prototype.listarBodega = function(req, res) {
     
     var that = this;
@@ -61,7 +76,12 @@ Induccion.prototype.listarBodega = function(req, res) {
         }
     });
 };
-
+/*
+* funcion para Producto
+* @param {type} req
+* @param {type} res
+* @returns {datos de consulta}
+*/
 Induccion.prototype.listarProducto = function(req, res) {
     
     var that = this;
@@ -70,12 +90,12 @@ Induccion.prototype.listarProducto = function(req, res) {
     var centroUtilidadId = args.listarProducto.centroUtilidadId;
     var bodegaId = args.listarProducto.bodegaId;
     var nombreProducto = args.listarProducto.nombreProducto;
-    var pagina = args.listarProducto.paginaactual;
+    var pagina = args.listarProducto.pagina;
     console.log("paginaactual",args.listarProducto);
     if (empresaIds === undefined || centroUtilidadId === undefined || bodegaId === undefined || nombreProducto === undefined  ) { 
         res.send(G.utils.r(req.url, 'Algunos Datos Obligatorios No Estan Definidos', 404, {}));
         return;
-    }
+    }                                                   
     that.m_induccion.getListarProducto(empresaIds,centroUtilidadId,nombreProducto,bodegaId,pagina,function(err, bodega ) { 
         if (err) {
             res.send(G.utils.r(req.url, 'Error listando Producto', 500, {listar_Producto: err}));

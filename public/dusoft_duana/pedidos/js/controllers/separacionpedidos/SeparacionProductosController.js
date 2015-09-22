@@ -401,7 +401,7 @@ define(["angular", "js/controllers",
            * +Descripcion: Evento que se dispara cuando el detalle de separacion cierra
            */
             self.mostrarDetallePedidos = $rootScope.$on("closeDetallePedidos", function(e, datos){
-                if(datos.finalizar){
+                if(!datos.finalizar){
                     self.refrescarProducto(function(){
 
                     });

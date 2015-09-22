@@ -791,14 +791,14 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
         var estado_pedido = '1';
         if (filtro !== undefined) {
 
-            if (filtro.asignados) {
+            if (filtro.estado.asignados || filtro.asignados) {
                  this.whereRaw("  h.doc_tmp_id IS NULL and  g.usuario_id  = ? ", [responsable]);
             }
 
-            if (filtro.temporales) {
+            if (filtro.estado.temporales || filtro.temporales) {
                 this.whereRaw("  h.doc_tmp_id IS NOT NULL AND h.estado = '0' and g.usuario_id = ? ", [responsable]);
             }
-            if (filtro.finalizados) {
+            if (filtro.estado.finalizados || filtro.finalizados) {
                 estado_pedido = '7';
                 this.whereRaw(" g.usuario_id = (select usuario_id from operarios_bodega where operario_id = f.responsable_id ) and  i.usuario_id = ?", [responsable]);
             }
@@ -808,10 +808,15 @@ PedidosFarmaciasModel.prototype.listar_pedidos_del_operario = function(responsab
         
     }).
     andWhere(function(){
-        this.where(G.knex.raw("a.solicitud_prod_a_bod_ppal_id :: varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%").
-        orWhere("d.razon_social", G.constants.db().LIKE, "%" + termino_busqueda + "%").
-        orWhere("b.descripcion", G.constants.db().LIKE, "%" + termino_busqueda + "%").
-        orWhere("e.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+        if(filtro.estado && filtro.estado.numeroPedido){
+            this.where(G.knex.raw("a.solicitud_prod_a_bod_ppal_id :: varchar"), "=", termino_busqueda);
+        } else {
+            
+            this.where(G.knex.raw("a.solicitud_prod_a_bod_ppal_id :: varchar"), G.constants.db().LIKE, "%" + termino_busqueda + "%").
+            orWhere("d.razon_social", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+            orWhere("b.descripcion", G.constants.db().LIKE, "%" + termino_busqueda + "%").
+            orWhere("e.nombre", G.constants.db().LIKE, "%" + termino_busqueda + "%");
+        }
     });
        
     

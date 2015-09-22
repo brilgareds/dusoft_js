@@ -39,13 +39,7 @@ define(["angular", "js/controllers",
                     {nombre: "Listar productos", id: 2},
                     {nombre: "Refrescar", id: 2}
                 ];
-                
-                $scope.tipos = [
-                    {nombre: "Tipo 1", id: 1},
-                    {nombre: "Tipo 2", id: 2},
-                    {nombre: "Tipo 3", id: 3}
-                ];
-                 $scope.tipo = $scope.tipos[0];
+
                  $scope.filtro = $scope.filtros[0];
                  $scope.justificacion = $scope.justificaciones[0];
                  callback();
@@ -59,7 +53,7 @@ define(["angular", "js/controllers",
                * @returns {undefined}
                */
              self.ventanaListarProductos = function() {
-                 
+                var pedido =  EmpresaPedido.getPedidoSeleccionado();
                 $scope.opts = {
                     backdrop: true,
                     backdropClick: true,
@@ -68,7 +62,12 @@ define(["angular", "js/controllers",
                     
                     templateUrl: 'views/separacionpedidos/separacionProductosPendientes.html',
                     scope: $scope,
-                    controller: "SeparacionProductosPendientesController"
+                    controller: "SeparacionProductosPendientesController",
+                    resolve: {
+                        pedido:function(){
+                            return pedido;
+                        }
+                    }
                 };
                 var modalInstance = $modal.open($scope.opts);
             };
@@ -401,12 +400,25 @@ define(["angular", "js/controllers",
            * +Descripcion: Evento que se dispara cuando el detalle de separacion cierra
            */
             self.mostrarDetallePedidos = $rootScope.$on("closeDetallePedidos", function(e, datos){
-                if(datos.finalizar){
+                if(!datos.finalizar){
                     self.refrescarProducto(function(){
 
                     });
                 }
             });
+            
+                        
+           /**
+            * @author Eduar Garcia
+            * +Descripcion:Evento que se dispara desde la ventana de lista de productos
+            */
+            self.onMostarProductoEnPosicion = $scope.$on("onMostarProductoEnPosicion", function(e,index){
+                $scope.rootSeparacion.paginaactual = parseInt(index);
+                self.seleccionarProductoPorPosicion(function(){
+                    self.marcarSeparados();
+                });
+            });
+           
             
             
             /**
@@ -497,17 +509,28 @@ define(["angular", "js/controllers",
              * 
              */
             $scope.mostrarDetallePedidos = function() {
+                var mostrar = true;
                 
-
+                if(!$scope.rootSeparacion.documento){
+                    mostrar = false;
+                } else if($scope.rootSeparacion.documento.getPedido().getTemporalId() === 0){
+                    mostrar = false;
+                } else if($scope.rootSeparacion.documento.getPedido().getProductos().length === 0){
+                    mostrar = false;
+                }
+                
+                if(!mostrar){
+                    SeparacionService.mostrarAlerta("Error", "No se han separado productos");
+                    return;
+                }
+                
+                
                 $scope.slideurl = "views/separacionpedidos/separacionDetalle.html?time=" + new Date().getTime();
                 $scope.$emit('mostrarDetallePedidos');
              
             };
-           
-            $scope.onSeleccionTipo = function(tipo) {
-                $scope.tipo = tipo;
-            };
             
+
             $scope.onSeleccionJustificacion = function(justificacion) {
                 $scope.justificacion = justificacion;
             };
@@ -530,6 +553,7 @@ define(["angular", "js/controllers",
                 $scope.rootSeparacion = {};
                 self.mostrarDetallePedidos();
                 self.onFinalizar();
+                self.onMostarProductoEnPosicion();
                 $scope.$$watchers = null;
                 localStorageService.remove("pedidoSeparacion");
             });

@@ -14,19 +14,19 @@
 
                         <p class="input-group">
                             <input type="text" class="form-control" 
-                                   ng-keypress="onBuscarProductos($event);" 
-                                   ng-model="rootSeparacionClientes.terminoBusqueda" 
+                                   ng-keyup="onFiltrarProducto($event);" 
+                                   ng-model="rootListaProductos.filtro.termino" 
                                    placeholder="Buscar" name="" id="" 
                              />
                             <span class="input-group-btn">
-                                <button class="btn btn-default"  type="submit" ng-click="onBuscarProductos({which:13})"><i class="glyphicon glyphicon-search"></i></button>
+                                <button class="btn btn-default"  type="submit" ng-click="onFiltrarProducto({which:13})"><i class="glyphicon glyphicon-search"></i></button>
                             </span>
                         </p>
                     </div>
 
-                    <div class="pull-right ">
+                    <div class="pull-right " ng-show="false">
                         <label class ="checkbox-listarproductos">Codigo barras</label>
-                        <input-check ng-model="filtro.codigo_barras" ></input-check>
+                        <input-check ng-model="rootListaProductos.filtro.codigoBarras" ></input-check>
 
                     </div>
                 </div>
@@ -37,7 +37,7 @@
 
             </div>
             <div class="col-lg-2 pull-right">
-                <button class="btn btn-warning" ng-click="cerrarListarProductos()">Cancelar</button>
+                <button class="btn btn-warning" ng-click="cerrar()">Cancelar</button>
 
             </div>
         </div>

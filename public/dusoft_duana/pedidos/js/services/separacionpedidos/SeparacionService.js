@@ -4,10 +4,10 @@ define(["angular", "js/services"], function(angular, services) {
     services.factory('SeparacionService', 
                     ['$rootScope', 'Request', 'API',
                      "$modal", "Usuario","PedidoAuditoria", "Cliente",
-                     "Farmacia","ProductoPedido", "$modal",
+                     "Farmacia","ProductoPedido", "$modal","localStorageService",
         function($rootScope, Request, API,
                  $modal, Usuario,PedidoAuditoria, Cliente,
-                 Farmacia, ProductoPedido, $modal) {
+                 Farmacia, ProductoPedido, $modal, localStorageService) {
 
             var self = this;
             
@@ -142,6 +142,14 @@ define(["angular", "js/services"], function(angular, services) {
                       var id = data.obj.documento_temporal;
                       id =  (!id.documento_temporal_id)? parseInt(id.doc_tmp_id): parseInt(id.documento_temporal_id);
                       pedido.setTemporalId(id);
+                      
+                      //El pedido tiene un documento temporal por lo tanto pasa de asignados a temporales separados
+                      var filtroPedido = {};
+                      filtroPedido.temporal = true;
+                      filtroPedido.numeroPedido = pedido.get_numero_pedido();
+                      filtroPedido.tipoPedido  = pedido.getTipo();
+                      localStorageService.set("pedidoSeparacion", filtroPedido);
+                      
                       callback(true);
 
                     } else {
@@ -220,7 +228,7 @@ define(["angular", "js/services"], function(angular, services) {
                     dialogFade: false,
                     keyboard: true,
                     template: ' <div class="modal-header">\
-                                        <button type="button" class="close" ng-click="close()">&times;</button>\
+                                        <button type="button" class="close" ng-click="cerrar()">&times;</button>\
                                         <h4 class="modal-title">'+titulo+'</h4>\
                                     </div>\
                                     <div class="modal-body">\

@@ -35,7 +35,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
              * +Descripcion: Permite crear el encabezado del temporal para posteriormete justificar
              */
              
-            self.agregarEncabezado = function(){
+            self.agregarEncabezado = function(callback){
                 SeparacionService.agregarEncabezadoTemporal(pedido, $scope.rootJustificacion.session, function(continuar){
                     callback(continuar);
                 });  

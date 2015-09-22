@@ -219,7 +219,13 @@ define(["angular", "js/services"], function(angular, services) {
                                 
             };
             
-            
+            /*
+             * @Author: Eduar
+             * @param {String} titulo
+             * @param {Array<Object>} mensaje
+             * @param {function} callback
+             * +Descripcion: Muestra alerta que se reutiliza en la aplicacion de separacion
+             */
             self.mostrarAlerta = function(titulo, mensaje,callback){ 
                 
                var opts = {
@@ -232,7 +238,7 @@ define(["angular", "js/services"], function(angular, services) {
                                         <h4 class="modal-title">'+titulo+'</h4>\
                                     </div>\
                                     <div class="modal-body">\
-                                        <h4 ><b>'+mensaje+'</h4>\
+                                        <p style="font-size:15px;">'+mensaje+'</p>\
                                     </div>\
                                     <div class="modal-footer">\
                                         <button class="btn btn-primary"  ng-click="cerrar()">Cerrar</button>\

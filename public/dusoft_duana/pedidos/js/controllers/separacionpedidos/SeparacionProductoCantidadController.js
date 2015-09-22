@@ -4,13 +4,13 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
     controllers.controller('SeparacionProductoCantidadController',[
         '$scope', '$rootScope', 'Request', 'API',
         "socket", "AlertService", "$modal", "localStorageService", "$state",
-        "pedido","Usuario", "$modalInstance",
+        "pedido","Usuario", "$modalInstance","SeparacionService",
         function($scope,$rootScope,Request,
                  API,socket,AlertService,$modal,
-                 localStorageService,$state, pedido, Usuario, $modalInstance){
+                 localStorageService,$state, pedido, Usuario, $modalInstance,
+                 SeparacionService){
          
             var self = this;
-            console.log("pedido ", pedido);
             
             self.init = function(callback){
                 $scope.rootVentanaCantidad = {};
@@ -23,7 +23,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
             };
             
             
-            
+             /*
+             * @author Eduar Garcia
+             * permite Valida la cantidad del lote a ingresar
+             */ 
            self.validarLote = function(){
                
                 var producto = pedido.getProductoSeleccionado();
@@ -70,47 +73,24 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
             
             /*
              * @author Eduar Garcia
+             * @param{function} callback
              * permite Crea el encabezado del temporal
              */
             self.agregarEncabezado = function(callback){
                 
-                var url = API.SEPARACION_PEDIDOS.CLIENTES.E008_DOCUMENTO_TEMPORAL_CLIENTES;
-                var obj = {
-                    numero_pedido : pedido.get_numero_pedido(),
-                    empresa_id : pedido.getEmpresaDestino(),
-                    observacion : "Pedido #"+pedido.get_numero_pedido()
-                };
                 
-                
-                if(pedido.getTipo() === '2'){
-                    url = API.SEPARACION_PEDIDOS.FARMACIAS.E008_DOCUMENTO_TEMPORAL_FARMACIAS;
-                } else {
-                    obj.tercero_id = pedido.getCliente().getId();
-                    obj.tipo_tercero_id = pedido.getCliente().getTipoId();
-                }
-                
-               var obj = {
-                    session: $scope.rootVentanaCantidad.session,
-                    data: {
-                        documento_temporal: obj
-                    }
-               };
-
-                Request.realizarRequest(url, "POST", obj, function(data) {
-                    if (data.status === 200) {
-                      var id = data.obj.documento_temporal;
-                      id =  (!id.documento_temporal_id)? parseInt(id.doc_tmp_id): parseInt(id.documento_temporal_id);
-                      pedido.setTemporalId(id);
-                      callback(true);
-
-                    } else {
-                      callback(false);
-                    }
+                SeparacionService.agregarEncabezadoTemporal(pedido, $scope.rootVentanaCantidad.session, function(continuar){
+                    callback(continuar);
                 });
+                 
 
             };
             
-            
+            /*
+             * @author Eduar Garcia
+             * @param {function} callback
+             * permite Agrega un item al documento temporal
+             */
             self.agregarItemADocumento = function(callback){
                var url = API.SEPARACION_PEDIDOS.E008_DETALLE;
                var producto = pedido.getProductoSeleccionado();
@@ -137,8 +117,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                     }
                };
                
-               console.log("agregar item al documento iva>>>>>>>>> ", producto.getValorIva());
-
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
                       callback(true, "Producto guardado correctamente");
@@ -150,7 +128,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                 
             };
             
-            
+            /*
+             * @author Eduar Garcia
+             * permite Handler del boton de guardar cantidad
+             */
             $scope.onGuardarCantidad = function(){
                 var validacion = self.validarLote();
                 
@@ -165,6 +146,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                            
                             self.agregarItemADocumento(function(continuar){
                                 AlertService.mostrarMensaje((continuar) ? "success" : "warning", msj);
+                                $modalInstance.close();
                             });
                             
                        } else {
@@ -174,9 +156,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                 } else {
                     self.agregarItemADocumento(function(continuar, msj){
                         AlertService.mostrarMensaje((continuar) ? "success" : "warning", msj);
+                        $modalInstance.close();
                     });
                 }
 
+            };
+            
+            $scope.cerrar = function(){
+                $modalInstance.close();
             };
             
             

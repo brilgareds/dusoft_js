@@ -1,6 +1,8 @@
 //Este controlador sirve como parent para los controladores DetallepedidoSeparadoCliente y DetallepedidoSeparadoFarmacia, encapsula logica en comun por estos dos ultimos
 define(["angular", "js/controllers",
-    'includes/slide/slideContent', "controllers/separacionpedidos/SeparacionProductoCantidadController"], function(angular, controllers) {
+    "includes/slide/slideContent", "controllers/separacionpedidos/SeparacionProductoCantidadController",
+    "controllers/separacionpedidos/SeparacionProductoJustificacion", "controllers/separacionpedidos/SeparacionProductosPendientesController"],
+    function(angular, controllers) {
 
     var fo = controllers.controller('SeparacionProductosController', [
         '$scope', '$rootScope', 'Request', 'API',
@@ -33,11 +35,12 @@ define(["angular", "js/controllers",
                     {nombre: "Estado", id: 3}
                 ];
                 $scope.filtros = [
-                    {nombre: "Listar productos", id: 1},
+                    {nombre: "Justificar", id: 1},
+                    {nombre: "Listar productos", id: 2},
                     {nombre: "Refrescar", id: 2}
-
                 ];
-                  $scope.tipos = [
+                
+                $scope.tipos = [
                     {nombre: "Tipo 1", id: 1},
                     {nombre: "Tipo 2", id: 2},
                     {nombre: "Tipo 3", id: 3}
@@ -63,17 +66,43 @@ define(["angular", "js/controllers",
                     dialogFade: true,
                     keyboard: true,
                     
-                    templateUrl: 'views/separacionpedidos/separacionAsignacionListarProductos.html',
+                    templateUrl: 'views/separacionpedidos/separacionProductosPendientes.html',
                     scope: $scope,
-                    controller: function($scope, $modalInstance) {
-
-                        $scope.cerrarListarProductos = function() {
-                            $modalInstance.close();
-                            
-                        };
+                    controller: "SeparacionProductosPendientesController"
+                };
+                var modalInstance = $modal.open($scope.opts);
+            };
+            
+            /**
+              * +Descripcion: metodo para desplegar la ventana modal de
+              * cantidades en la separacion
+              * @author Cristian Ardila
+              * @fecha: 10/09/2015
+              * @returns {undefined}
+              */
+            self.ventanaJustificaciones = function() {
+                var pedido =  EmpresaPedido.getPedidoSeleccionado();
+                $scope.opts = {
+                    backdrop: true,
+                    backdropClick: true,
+                    dialogFade: true,
+                    keyboard: true,
+                    templateUrl: 'views/separacionpedidos/separacionVentanaJustificacion.html',
+                    scope: $scope,
+                    controller:"SeparacionProductoJustificacion",
+                    resolve: {
+                        pedido:function(){
+                            return pedido;
+                        }
                     }
                 };
                 var modalInstance = $modal.open($scope.opts);
+                
+                modalInstance.result.then(function() {
+                    console.log("ventana justificacion cerrada code 1");
+                }, function() {
+                    
+                });
             };
             
             
@@ -128,12 +157,12 @@ define(["angular", "js/controllers",
                 };
                 var modalInstance = $modal.open(opts);
                 
-                modalInstance.result.then(function() {
-
-                }, function() {
-                    self.traerDocumentoTemporal(function(){
+                modalInstance.result.then(function() {                   
+                    self.refrescarProducto(function(){
 
                     });
+                    
+                }, function() {
                 });
             };
             
@@ -316,6 +345,7 @@ define(["angular", "js/controllers",
                     _pedido.setNumeroPedido(doc.numero_pedido).//setEstado(doc.estado).
                     setTipo(pedido.getTipo());
                     pedido.setTemporalId(doc.documento_temporal_id);  
+                    _pedido.setTemporalId(doc.documento_temporal_id);
             
                     if(_pedido.getTipo() === '1'){
                         var cliente = Cliente.get(doc.nombre_cliente, doc.direccion_cliente, doc.tipo_id_cliente, doc.identificacion_cliente);
@@ -333,6 +363,8 @@ define(["angular", "js/controllers",
                     
                     _pedido.agregarDetallePedido(ProductoPedido, productos, true, LoteProductoPedido);
                     
+                    console.log("pedido del doc tmp", doc);
+                    
                     $scope.rootSeparacion.documento.setPedido(_pedido);
                     
                     return true;
@@ -341,16 +373,40 @@ define(["angular", "js/controllers",
                 return false;
             };
             
-            /**
-             * +Descripcion: Datos de prueba
-             */
-            $scope.myData = [
-                {pedido: 50, fechavencimiento: "20/08/2015", existencia: 60, disponible: 50},
-                {pedido: 50, fechavencimiento: "20/08/2015", existencia: 60, disponible: 50},
-                {pedido: 50, fechavencimiento: "20/08/2015", existencia: 60, disponible: 50},
-                {pedido: 50, fechavencimiento: "20/08/2015", existencia: 60, disponible: 50},
-                {pedido: 50, fechavencimiento: "20/08/2015", existencia: 60, disponible: 50}
-            ];
+         /**
+           * @author Eduar Garcia
+           * +Descripcion: Refresca la informacion del producto actual
+           */
+           self.refrescarProducto = function(callback){
+                self.gestionarPedido(function(){
+                    self.seleccionarProductoPorPosicion(function(completo){
+                         self.traerDocumentoTemporal(function(){
+                             callback();
+                         });
+                    });
+                });
+           };
+           
+         /**
+           * @author Eduar Garcia
+           * +Descripcion: Evento que se emite desde el slide cuando se elimina el temporal o se finaliza la separacion
+           */
+           self.onFinalizar = $scope.$on("onFinalizar", function(){
+               $state.go("SeparacionPedidos");
+           });
+            
+            
+          /**
+           * @author Eduar Garcia
+           * +Descripcion: Evento que se dispara cuando el detalle de separacion cierra
+           */
+            self.mostrarDetallePedidos = $rootScope.$on("closeDetallePedidos", function(e, datos){
+                if(datos.finalizar){
+                    self.refrescarProducto(function(){
+
+                    });
+                }
+            });
             
             
             /**
@@ -392,35 +448,23 @@ define(["angular", "js/controllers",
            $scope.onSeleccion = function(lote){
                 self.ventanaCantidad(lote);
            };
-            
-           /**
-             * @author Eduar Garcia
-             * +Descripcion: Permite seleccionar un producto en el arreglo del pedido
-             *  clientes y pedidos temporales clientes
-             */
-            
-            $scope.listarProductos = {
-                data: 'myData',
-                
-                enableColumnResize: true,
-                enableRowSelection: true,
-                keepLastSelected:false,
-                multiSelect:false,
-                columnDefs: [
-                    {field: 'pedido', displayName: 'Lote'},
-                    {field: 'fechavencimiento', displayName: 'F. vencimiento'}
-                   
-                     
-                ]
-               
-            };
+           
             
             /*
              * @author Eduar Garcia
-             * +Descripcion: Handler del boton  siguiete
+             * +Descripcion: Handler del boton  siguiente, valida que el producto halla sido justificado en caso de tener pendientes y mostrar el slide
+             * si es el ultimo
              */            
             $scope.onSiguiente = function(){
                 var cantidadProductos = EmpresaPedido.getPedidoSeleccionado().getProductos().length - 1;
+                var pedido = EmpresaPedido.getPedidoSeleccionado();
+                var producto =  pedido.getProductos()[$scope.rootSeparacion.paginaactual];
+                
+                if(producto.getJustificacion().length === 0 && producto.getCantidadPendiente() > 0){
+                    console.log("pendiente ", producto);
+                    AlertService.mostrarMensaje("warning", "El producto no tiene justificacion");
+                    return;
+                }
                 
                 if($scope.rootSeparacion.paginaactual === cantidadProductos){
                     $scope.mostrarDetallePedidos();
@@ -453,13 +497,13 @@ define(["angular", "js/controllers",
              * 
              */
             $scope.mostrarDetallePedidos = function() {
+                
 
                 $scope.slideurl = "views/separacionpedidos/separacionDetalle.html?time=" + new Date().getTime();
                 $scope.$emit('mostrarDetallePedidos');
              
             };
-            
-                        
+           
             $scope.onSeleccionTipo = function(tipo) {
                 $scope.tipo = tipo;
             };
@@ -469,12 +513,26 @@ define(["angular", "js/controllers",
             };
 
            
-            $scope.onSeleccionFiltros = function(justificacion) {
-                $scope.filtro = justificacion;
-                
-                self.ventanaListarProductos();
+            $scope.onSeleccionFiltros = function(filtro) {
+                $scope.filtro = filtro;
+
+                if(filtro.id === 1){
+                    self.ventanaJustificaciones();
+                } else if(filtro.id === 2){
+                    self.ventanaListarProductos();
+                } else {
+                    
+                }
             };
             
+            
+            $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+                $scope.rootSeparacion = {};
+                self.mostrarDetallePedidos();
+                self.onFinalizar();
+                $scope.$$watchers = null;
+                localStorageService.remove("pedidoSeparacion");
+            });
             
 
             self.init(function() {
@@ -483,12 +541,8 @@ define(["angular", "js/controllers",
                 }
                 
                if(Object.keys(EmpresaPedido.getPedidoSeleccionado()).length === 0){
-                   self.gestionarPedido(function(){
-                       self.seleccionarProductoPorPosicion(function(completo){
-                            self.traerDocumentoTemporal(function(){
-
-                            });
-                       });
+                   self.refrescarProducto(function(){
+                       
                    });
                } else {
                    self.renderDescripcionPedido();

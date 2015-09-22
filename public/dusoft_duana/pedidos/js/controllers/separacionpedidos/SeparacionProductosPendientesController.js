@@ -7,10 +7,31 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
     
     controllers.controller('SeparacionProductosPendientesController',[
         '$scope', '$rootScope', 'Request', 'API',
-        "socket", "AlertService", "$modal", "localStorageService", "$state",
-        function($scope,$rootScope,Request,API,socket,AlertService,$modal,localStorageService,$state){
-         
-            console.log("Hola mundo");
+        "socket", "AlertService", "$modalInstance", "localStorageService", "$state",
+        function($scope,$rootScope,Request,API,socket,AlertService,
+                 $modalInstance,localStorageService,$state){
+                     
+            $scope.cerrar = function(){
+                $modalInstance.close();
+            };         
+            
+            $scope.listarProductos = {
+                data: 'myData',
+                
+                enableColumnResize: true,
+                enableRowSelection: true,
+                keepLastSelected:false,
+                multiSelect:false,
+                columnDefs: [
+                    {field: 'pedido', displayName: 'Lote'},
+                    {field: 'fechavencimiento', displayName: 'F. vencimiento'}
+                   
+                     
+                ]
+               
+            };
+            
+            
         }
         
     ]);

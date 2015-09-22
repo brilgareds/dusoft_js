@@ -118,16 +118,22 @@ define(["angular"], function(angular) {
             'SEPARACION_PEDIDOS':{
                 'CONSULTAR_DISPONIBILIDAD': BASE_URL+"/Pedidos/consultarDisponibilidad",
                 'E008_DETALLE' : BASE_URL + "/movBodegas/E008/detalleDocumentoTemporal",
+                'JUSTIFICACION_PENDIENTES' : BASE_URL + "/movBodegas/E008/justificacionPendientes",
+                'ELIMINAR_ITEM_TEMPORAL' : BASE_URL + "/movBodegas/E008/eliminarProductoDocumentoTemporal",
                 'CLIENTES':{
                     'LISTAR_PEDIDOS_OPERARIO_CLIENTE': BASE_URL + "/PedidosClientes/listaPedidosOperarioBodega",
                     'CONSULTAR_TEMPORAL_CLIENTES' : BASE_URL + "/movBodegas/E008/consultarDocumentoTemporalClientes",
-                    'E008_DOCUMENTO_TEMPORAL_CLIENTES' : BASE_URL + "/movBodegas/E008/documentoTemporalClientes"
+                    'E008_DOCUMENTO_TEMPORAL_CLIENTES' : BASE_URL + "/movBodegas/E008/documentoTemporalClientes",
+                    'FINALIZAR_DOCUMENTO_CLIENTES' : BASE_URL + "/movBodegas/E008/finalizarDocumentoTemporalClientes",
+                    'ELIMINAR_DOCUMENTO_TEMPORAL_CLIENTES' : BASE_URL + "/movBodegas/E008/eliminarDocumentoTemporalClientes"
                     
                 },
                 'FARMACIAS':{
                     'LISTAR_PEDIDOS_OPERARIO_FARMACIA': BASE_URL + "/PedidosFarmacias/listaPedidosOperarioBodega",
                     'CONSULTAR_TEMPORAL_FARMACIAS' : BASE_URL + "/movBodegas/E008/consultarDocumentoTemporalFarmacias",
-                    'E008_DOCUMENTO_TEMPORAL_FARMACIAS' : BASE_URL + "/movBodegas/E008/documentoTemporalFarmacias"
+                    'E008_DOCUMENTO_TEMPORAL_FARMACIAS' : BASE_URL + "/movBodegas/E008/documentoTemporalFarmacias",
+                    'FINALIZAR_DOCUMENTO_FARMACIAS' : BASE_URL + "/movBodegas/E008/finalizarDocumentoTemporalFarmacias",
+                    'ELIMINAR_DOCUMENTO_TEMPORAL_FARMACIAS' : BASE_URL + "/movBodegas/E008/eliminarDocumentoTemporalFarmacias"
                 }
             },
             'TERCEROS': {

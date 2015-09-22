@@ -224,7 +224,7 @@ define(["angular", "js/services"], function(angular, services) {
                                         <h4 class="modal-title">'+titulo+'</h4>\
                                     </div>\
                                     <div class="modal-body">\
-                                        <h4 ><b>'+mensaje+'?</h4>\
+                                        <h4 ><b>'+mensaje+'</h4>\
                                     </div>\
                                     <div class="modal-footer">\
                                         <button class="btn btn-primary"  ng-click="cerrar()">Cerrar</button>\

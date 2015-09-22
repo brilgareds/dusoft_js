@@ -72,7 +72,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                         $modalInstance.close();
                         
                     } else {
-                        
+                        SeparacionService.mostrarAlerta("Error", "Se ha generado un error");
                     }
                 });
             };

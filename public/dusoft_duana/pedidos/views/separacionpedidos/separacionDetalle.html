@@ -9,7 +9,7 @@
             <div class="col-sm-12 col-md-12"  ng-controller="ContenedorSeparacionController">
 
 
-                <button type="button" class="btn btn-default pull-right boton-separacion-cancelar btn-sm" ng-click="closeDetallePedidos()"  
+                <button type="button" class="btn btn-default pull-right boton-separacion-cancelar btn-sm" ng-click="cerrarDetallePedidos()"  
                         aria-haspopup="true" aria-expanded="false" ><span class="glyphicon glyphicon glyphicon-remove-circle"></span> Cerrar </button>
 
 
@@ -42,11 +42,11 @@
         </div>
         
         <div class="modal-footer ">                                
-            <button class="btn btn-warning" ng-click="onEliminarProductosTodos()">
+            <button class="btn btn-warning" ng-click="onEliminarTemporal()">
                 <span class="glyphicon glyphicon-remove" ></span> Eliminar
             </button>   
             
-            <button class="btn btn-default" ng-click="onGenerarSeparacion()">
+            <button class="btn btn-default" ng-click="onGenerarDocumento()">
                 <span class="glyphicon glyphicon-ok" ></span> Generar
             </button> 
             

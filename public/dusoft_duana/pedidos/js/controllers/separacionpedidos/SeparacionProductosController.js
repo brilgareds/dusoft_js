@@ -157,12 +157,12 @@ define(["angular", "js/controllers",
                 };
                 var modalInstance = $modal.open(opts);
                 
-                modalInstance.result.then(function() {
-
-                }, function() {
-                    self.traerDocumentoTemporal(function(){
+                modalInstance.result.then(function() {                   
+                    self.refrescarProducto(function(){
 
                     });
+                    
+                }, function() {
                 });
             };
             
@@ -345,6 +345,7 @@ define(["angular", "js/controllers",
                     _pedido.setNumeroPedido(doc.numero_pedido).//setEstado(doc.estado).
                     setTipo(pedido.getTipo());
                     pedido.setTemporalId(doc.documento_temporal_id);  
+                    _pedido.setTemporalId(doc.documento_temporal_id);
             
                     if(_pedido.getTipo() === '1'){
                         var cliente = Cliente.get(doc.nombre_cliente, doc.direccion_cliente, doc.tipo_id_cliente, doc.identificacion_cliente);
@@ -362,6 +363,8 @@ define(["angular", "js/controllers",
                     
                     _pedido.agregarDetallePedido(ProductoPedido, productos, true, LoteProductoPedido);
                     
+                    console.log("pedido del doc tmp", doc);
+                    
                     $scope.rootSeparacion.documento.setPedido(_pedido);
                     
                     return true;
@@ -369,6 +372,42 @@ define(["angular", "js/controllers",
                 
                 return false;
             };
+            
+         /**
+           * @author Eduar Garcia
+           * +Descripcion: Refresca la informacion del producto actual
+           */
+           self.refrescarProducto = function(callback){
+                self.gestionarPedido(function(){
+                    self.seleccionarProductoPorPosicion(function(completo){
+                         self.traerDocumentoTemporal(function(){
+                             callback();
+                         });
+                    });
+                });
+           };
+           
+         /**
+           * @author Eduar Garcia
+           * +Descripcion: Evento que se emite desde el slide cuando se elimina el temporal o se finaliza la separacion
+           */
+           self.onFinalizar = $scope.$on("onFinalizar", function(){
+               $state.go("SeparacionPedidos");
+           });
+            
+            
+          /**
+           * @author Eduar Garcia
+           * +Descripcion: Evento que se dispara cuando el detalle de separacion cierra
+           */
+            self.mostrarDetallePedidos = $rootScope.$on("closeDetallePedidos", function(e, datos){
+                if(datos.finalizar){
+                    self.refrescarProducto(function(){
+
+                    });
+                }
+            });
+            
             
             /**
              * @author Cristian Ardila
@@ -413,10 +452,19 @@ define(["angular", "js/controllers",
             
             /*
              * @author Eduar Garcia
-             * +Descripcion: Handler del boton  siguiete
+             * +Descripcion: Handler del boton  siguiente, valida que el producto halla sido justificado en caso de tener pendientes y mostrar el slide
+             * si es el ultimo
              */            
             $scope.onSiguiente = function(){
                 var cantidadProductos = EmpresaPedido.getPedidoSeleccionado().getProductos().length - 1;
+                var pedido = EmpresaPedido.getPedidoSeleccionado();
+                var producto =  pedido.getProductos()[$scope.rootSeparacion.paginaactual];
+                
+                if(producto.getJustificacion().length === 0 && producto.getCantidadPendiente() > 0){
+                    console.log("pendiente ", producto);
+                    AlertService.mostrarMensaje("warning", "El producto no tiene justificacion");
+                    return;
+                }
                 
                 if($scope.rootSeparacion.paginaactual === cantidadProductos){
                     $scope.mostrarDetallePedidos();
@@ -455,8 +503,7 @@ define(["angular", "js/controllers",
                 $scope.$emit('mostrarDetallePedidos');
              
             };
-            
-                        
+           
             $scope.onSeleccionTipo = function(tipo) {
                 $scope.tipo = tipo;
             };
@@ -481,6 +528,8 @@ define(["angular", "js/controllers",
             
             $scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
                 $scope.rootSeparacion = {};
+                self.mostrarDetallePedidos();
+                self.onFinalizar();
                 $scope.$$watchers = null;
                 localStorageService.remove("pedidoSeparacion");
             });
@@ -492,12 +541,8 @@ define(["angular", "js/controllers",
                 }
                 
                if(Object.keys(EmpresaPedido.getPedidoSeleccionado()).length === 0){
-                   self.gestionarPedido(function(){
-                       self.seleccionarProductoPorPosicion(function(completo){
-                            self.traerDocumentoTemporal(function(){
-
-                            });
-                       });
+                   self.refrescarProducto(function(){
+                       
                    });
                } else {
                    self.renderDescripcionPedido();

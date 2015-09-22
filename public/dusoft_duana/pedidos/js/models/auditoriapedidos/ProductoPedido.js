@@ -241,7 +241,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
         };  
         
         ProductoPedido.prototype.getJustificacion = function() {
-            this.justificacion;
+            return this.justificacion;
         };
 
         ProductoPedido.prototype.setValorIva = function(valorIva) {
@@ -257,7 +257,7 @@ define(["angular", "js/models", "includes/classes/Producto"], function(angular, 
         };  
         
         ProductoPedido.prototype.getValorUnitarioConIva = function() {
-            this.valorUnitarioConIva;
+            return this.valorUnitarioConIva;
         };
                 
         ProductoPedido.prototype.obtenerCantidadSeleccionada = function() {

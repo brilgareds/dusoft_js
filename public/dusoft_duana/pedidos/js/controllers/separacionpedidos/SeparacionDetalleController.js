@@ -4,9 +4,12 @@ define(["angular", "js/controllers",
 
     var fo = controllers.controller('SeparacionDetalleController', [
         '$scope', '$rootScope', 'Request', 'API',
-        "socket", "AlertService", "$modal", "localStorageService", "$state",
+        "socket", "AlertService", "$modal", "localStorageService",
+        "$state", "SeparacionService", "Usuario",
         function($scope, $rootScope, Request,
-                API, socket, AlertService, $modal, localStorageService, $state) {
+                API, socket, AlertService, $modal,
+                localStorageService, $state, SeparacionService,
+                Usuario) {
 
 
             var self = this;
@@ -16,6 +19,10 @@ define(["angular", "js/controllers",
                 $scope.rootDetalle.pedido = $scope.rootSeparacion.documento.getPedido();
                 $scope.rootDetalle.nombreCliente;
                 
+                $scope.rootDetalle.session = {
+                    usuario_id: Usuario.getUsuarioActual().getId(),
+                    auth_token: Usuario.getUsuarioActual().getToken()
+                };
                 
                 if($scope.rootDetalle.pedido.getTipo() === '1'){
                    $scope.rootDetalle.nombreCliente = $scope.rootDetalle.pedido.getCliente().getNombre(); 
@@ -74,8 +81,32 @@ define(["angular", "js/controllers",
              * @fecha 10/09/2015
              * @returns {void}
              */
-            self.generarSeparacion = function(){
-                console.log("generando Separacion")
+            self.generarDocumento = function(){
+                var url = API.SEPARACION_PEDIDOS.CLIENTES.FINALIZAR_DOCUMENTO_CLIENTES;
+                var pedido = $scope.rootDetalle.pedido;
+                
+                if(pedido.getTipo() === '2'){
+                    url = API.SEPARACION_PEDIDOS.FARMACIAS.FINALIZAR_DOCUMENTO_FARMACIAS;
+                }
+                
+                var obj = {
+                    session: $scope.rootDetalle.session,
+                    data: {
+                        documento_temporal: {
+                            numero_pedido : pedido.get_numero_pedido()
+                        }
+                    }
+               };
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        $scope.cerrarDetallePedidos();
+                        $state.go("SeparacionPedidos");
+                        AlertService.mostrarMensaje("success", "Separacion finalizada");
+                    } else {
+                        SeparacionService.mostrarAlerta("Error", "Se ha generado un error");
+                    }
+                });
             };  
             
             
@@ -87,8 +118,30 @@ define(["angular", "js/controllers",
              * de la lista de separacion detalle
              * +@author Cristian Ardila
              */
-            self.eliminarProducto = function(producto){
-                console.log(producto);
+            self.eliminarLote = function(producto){
+                var url = API.SEPARACION_PEDIDOS.ELIMINAR_ITEM_TEMPORAL;
+                var pedido = $scope.rootDetalle.pedido;
+                
+                var obj = {
+                    session: $scope.rootDetalle.session,
+                    data: {
+                        documento_temporal: {
+                            item_id : producto.getItemId(),
+                            codigo_producto : producto.getCodigoProducto(),
+                            documento_temporal_id : pedido.getTemporalId()
+                        }
+                    }
+               };
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        var index = pedido.getProductos().indexOf(producto);
+                        pedido.getProductos().splice(index, 1);
+                        AlertService.mostrarMensaje("success", "Lote eliminado correctamente");
+                    } else {
+                        SeparacionService.mostrarAlerta("Error", "Se ha generado un error");
+                    }
+                });
             };
             
            /**
@@ -98,8 +151,32 @@ define(["angular", "js/controllers",
              * @fecha 10/09/2015
              * @returns {void}
              */
-            self.eliminarProductoTodos = function(){
-                console.log("ELIMINACION TODOS")
+            self.eliminarTemporal = function(){
+                var url = API.SEPARACION_PEDIDOS.CLIENTES.ELIMINAR_DOCUMENTO_TEMPORAL_CLIENTES;
+                var pedido = $scope.rootDetalle.pedido;
+                
+                if(pedido.getTipo() === '2'){
+                    url = API.SEPARACION_PEDIDOS.FARMACIAS.ELIMINAR_DOCUMENTO_TEMPORAL_FARMACIAS;
+                }
+                
+                var obj = {
+                    session: $scope.rootDetalle.session,
+                    data: {
+                        documento_temporal: {
+                            numero_pedido : pedido.get_numero_pedido()
+                        }
+                    }
+               };
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    if (data.status === 200) {
+                        $scope.cerrarDetallePedidos(true);
+                        $scope.$emit("onFinalizar");
+                        AlertService.mostrarMensaje("success", "Documento eliminado");
+                    } else {
+                        SeparacionService.mostrarAlerta("Error", "Se ha generado un error");
+                    }
+                });
             };  
             
            /**
@@ -135,11 +212,11 @@ define(["angular", "js/controllers",
              * metodo mas encargado de invocar el servicio para eliminacion,
              * si presiona el boton cancelar, se cancelara el proceso
              */
-            $scope.onEliminarProducto = function(producto){
+            $scope.onEliminarLote = function(producto){
                 
                  self.confirm("Eliminar producto", "Desea eliminar el producto",function(confirmar){                 
                   if(confirmar){                      
-                            self.eliminarProducto(producto);       
+                     self.eliminarLote(producto);       
                   }
               });         
             };
@@ -160,12 +237,13 @@ define(["angular", "js/controllers",
                                    </div>'
                      },
                     {field: 'lotesSeleccionados[0].codigo_lote', displayName: 'Lote'},
+                    {field: 'lotesSeleccionados[0].fecha_vencimiento', displayName: 'F Vencimiento'},
                     {field: 'cantidad_solicitada', displayName: 'Solicitado'},
                     {field: 'lotesSeleccionados[0].cantidad_ingresada',  displayName: 'Ingresado'},
                     {field: 'cantidad_pendiente',  displayName: 'Pendiente'},
-                    {displayName: "Accion", cellClass: "txt-center dropdown-button",width: "10%",
+                    {displayName: "", cellClass: "txt-center dropdown-button",width: "50",
                         cellTemplate: '<div class="btn-group">\
-                                            <button class="btn btn-default btn-xs" ng-click="onEliminarProducto(row.entity)" ng-disabled="planilla.get_estado()==\'2\'" ><span class="glyphicon glyphicon-remove"></span></button>\
+                                            <button class="btn btn-default btn-xs" ng-click="onEliminarLote(row.entity)" ng-disabled="planilla.get_estado()==\'2\'" ><span class="glyphicon glyphicon-remove"></span></button>\
                                         </div>'
                     }
                 ]
@@ -176,10 +254,10 @@ define(["angular", "js/controllers",
              * detalle de separacion de productos
              * @author Cristian Ardila
              */
-            $scope.closeDetallePedidos = function() {
+            $scope.cerrarDetallePedidos = function(finalizar) {
                 
                // self.mostrarDetallePedidosCompleto();
-                $scope.$emit('closeDetallePedidos', {animado: true});              
+                $scope.$emit('closeDetallePedidos', {animado: true, finalizar:finalizar});              
             };
             
             
@@ -191,10 +269,10 @@ define(["angular", "js/controllers",
              * @author Cristian Ardila
              * @fecha: 10/09/2015
              * */
-            $scope.onEliminarProductosTodos = function(){               
+            $scope.onEliminarTemporal = function(){               
               self.confirm("Eliminar toda la separacion", "Desea eliminar la separacion",function(confirmar){                 
                   if(confirmar){                      
-                            self.eliminarProductoTodos();
+                      self.eliminarTemporal();
                   }
               });  
             };
@@ -207,10 +285,10 @@ define(["angular", "js/controllers",
              * @author Cristian Ardila
              * @fecha: 10/09/2015
              * */
-            $scope.onGenerarSeparacion = function(){               
+            $scope.onGenerarDocumento = function(){               
               self.confirm("Generar separacion", "Desea generar la separacion de los productos",function(confirmar){                 
                   if(confirmar){                      
-                            self.generarSeparacion();
+                     self.generarDocumento();
                   }
               });  
             };
@@ -256,7 +334,7 @@ define(["angular", "js/controllers",
             $scope.onGenerarAuditar = function(){               
               self.confirm("Generar y auditar", "Desea generar y auditar la separacion de los productos",function(confirmar){                 
                   if(confirmar){                      
-                            self.generarAuditar();
+                      self.generarAuditar();
                   }
               });  
             };

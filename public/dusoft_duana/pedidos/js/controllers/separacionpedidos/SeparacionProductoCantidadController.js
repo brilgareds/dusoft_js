@@ -11,7 +11,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                  SeparacionService){
          
             var self = this;
-            console.log("pedido ", pedido);
             
             self.init = function(callback){
                 $scope.rootVentanaCantidad = {};
@@ -24,7 +23,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
             };
             
             
-            
+             /*
+             * @author Eduar Garcia
+             * permite Valida la cantidad del lote a ingresar
+             */ 
            self.validarLote = function(){
                
                 var producto = pedido.getProductoSeleccionado();
@@ -71,6 +73,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
             
             /*
              * @author Eduar Garcia
+             * @param{function} callback
              * permite Crea el encabezado del temporal
              */
             self.agregarEncabezado = function(callback){
@@ -83,7 +86,11 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
 
             };
             
-            
+            /*
+             * @author Eduar Garcia
+             * @param {function} callback
+             * permite Agrega un item al documento temporal
+             */
             self.agregarItemADocumento = function(callback){
                var url = API.SEPARACION_PEDIDOS.E008_DETALLE;
                var producto = pedido.getProductoSeleccionado();
@@ -110,8 +117,6 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                     }
                };
                
-               console.log("agregar item al documento iva>>>>>>>>> ", producto.getValorIva());
-
                 Request.realizarRequest(url, "POST", obj, function(data) {
                     if (data.status === 200) {
                       callback(true, "Producto guardado correctamente");
@@ -123,7 +128,10 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                 
             };
             
-            
+            /*
+             * @author Eduar Garcia
+             * permite Handler del boton de guardar cantidad
+             */
             $scope.onGuardarCantidad = function(){
                 var validacion = self.validarLote();
                 
@@ -138,6 +146,7 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                            
                             self.agregarItemADocumento(function(continuar){
                                 AlertService.mostrarMensaje((continuar) ? "success" : "warning", msj);
+                                $modalInstance.close();
                             });
                             
                        } else {
@@ -147,9 +156,14 @@ define(["angular", "js/controllers",'includes/slide/slideContent'], function(ang
                 } else {
                     self.agregarItemADocumento(function(continuar, msj){
                         AlertService.mostrarMensaje((continuar) ? "success" : "warning", msj);
+                        $modalInstance.close();
                     });
                 }
 
+            };
+            
+            $scope.cerrar = function(){
+                $modalInstance.close();
             };
             
             

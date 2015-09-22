@@ -861,12 +861,15 @@ E008Controller.prototype.justificacionPendientes = function(req, res) {
 
 // Actualizar bodegas_doc_id en documento temporal Clientes.
 E008Controller.prototype.actualizarTipoDocumentoTemporalClientes = function(req, res) {
-
+    
+    console.log("********* actualizarTipoDocumentoTemporalClientes *************")
     var that = this;
 
     var args = req.body.data;
-
-    if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined || args.documento_temporal.usuario_id === undefined || args.documento_temporal.bodegas_doc_id === undefined) {
+    
+    console.log(args);
+    if (args.documento_temporal === undefined || args.documento_temporal.documento_temporal_id === undefined || 
+            args.documento_temporal.usuario_id === undefined || args.documento_temporal.bodegas_doc_id === undefined) {
         res.send(G.utils.r(req.url, 'El documento_temporal_id, usuario_id o bodegas_doc_id NO estan definidos', 404, {}));
         return;
     }
@@ -897,7 +900,13 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalClientes = function(req,
     var estado_pedido = '7'; //En auditora
 
     that.m_pedidos_clientes.obtener_responsables_del_pedido(numero_pedido, function(err, responsables) {
-
+        
+        console.log(" *************** obtener_responsables_del_pedido ******************* ");
+        
+        console.log("numero_pedido ",numero_pedido);
+        
+        console.log("err ",err);
+        console.log("responsables ",responsables);
         var existe_estado_auditoria = false;
         var _responsables = [];
 
@@ -1010,8 +1019,6 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalFarmacias = function(req
     //seleccionar el auditor
     that.m_pedidos_farmacias.obtener_responsables_del_pedido(numero_pedido, function(err, responsables) {
         
-        console.log("<<<<<<<<<<<**************responsables ********************>>>>>>>>>>>>>>>>>>>>");
-        console.log("responsables ", responsables.length);
         //valida que sea el usuario que creo el pedido
         var existe_estado_auditoria = false;
         var _responsables = [];
@@ -1066,7 +1073,7 @@ E008Controller.prototype.actualizarTipoDocumentoTemporalFarmacias = function(req
                                         // Emitir evento para actualizar la lista de Documentos Temporales
                                         that.e_e008.onNotificarDocumentosTemporalesFarmacias({numero_pedido: numero_pedido});
 
-                                        res.send(G.utils.r(req.url, 'Documento Temporal Actualizado Correctamete', 200, {movimientos_bodegas: {}}));
+                                        res.send(G.utils.r(req.url, 'Documento Temporal Actualizado Correctamente', 200, {movimientos_bodegas: {}}));
                                     });
                                 }
 

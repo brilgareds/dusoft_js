@@ -367,10 +367,67 @@ define(["angular", "js/controllers",
  
             
             self.onSeleccionDocumento = function(entity){
-                    
-                    console.log(entity)
+               
+                var pedido = $scope.rootDetalle.pedido;
+               
+               /* that.seleccionarDocumentoDespacho($scope.seleccion.bodegas_doc_id);*/
+                var obj = {
+                    session: $scope.rootDetalle.session,
+                    data: {
+                        documento_temporal: {
+                            documento_temporal_id: pedido.getTemporalId(),
+                            usuario_id: Usuario.getUsuarioActual().getId(),
+                            bodegas_doc_id: entity.get_bodegas_doc_id(),
+                            numero_pedido: pedido.get_numero_pedido(),
+                            auditor: Usuario.getUsuarioActual().getId()
+                        }
+                    }
+                };
+                
+               self.renderDocumentoTemporalClienteFarmacia(obj,pedido.getTipo(), function(data){
+                   
+               });
+           /*    
+                $scope.validarDocumentoUsuario(obj, 2, function(data) {
+                    if (data.status === 200) {
+                     
+                       $scope.DocumentoTemporal.bodegas_doc_id = $scope.seleccion.bodegas_doc_id;
+                       $scope.DocumentoTemporal.auditor.usuario_id = $scope.session.usuario_id;
+                        AlertService.mostrarMensaje("success", data.msj);
+                    } else {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+                });
+                */
                 
             };
+            /**
+             * +Descripcion: Metodo encargado de acutalizar el tipo de documento
+             * temporal, dependiendo del tipo que se le envie, si es 1 actualiza
+             * clientes y si es 2 acutaliza farmacias.
+             * @param {type} obj
+             * @param {type} tipo
+             * @param {type} callback
+             * @returns {undefined}
+             */
+            self.renderDocumentoTemporalClienteFarmacia= function(obj, tipo, callback) {
+                var url = API.DOCUMENTOS_TEMPORALES.ACTUALIZAR_TIPO_DOCUMENTO_TEMPORAL_CLIENTES;
+                
+             
+                if (tipo === 2) {
+                    url = API.DOCUMENTOS_TEMPORALES.ACTUALIZAR_TIPO_DOCUMENTO_TEMPORAL_FARMACIAS;
+                }
+
+                Request.realizarRequest(url, "POST", obj, function(data) {
+                    console.log(data)
+                    if (data.status === 200) {
+                        AlertService.mostrarMensaje("success", data.msj);
+                    } else {
+                        AlertService.mostrarMensaje("warning", data.msj);
+                    }
+                    callback(data);
+                });
+               }
             /*
              * +descripcion: confirmar que se genera y audita la separacion
              * si acepta se generara y auditara la separacion invocando al metodo 

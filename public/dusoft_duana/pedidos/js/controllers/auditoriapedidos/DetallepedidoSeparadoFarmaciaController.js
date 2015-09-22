@@ -258,7 +258,7 @@ define(["angular", "js/controllers",
             });
  
             $scope.valorSeleccionado = function() {
-               console.log("VALOR SELECCIOn")
+             
                 that.seleccionarDocumentoDespacho($scope.seleccion.bodegas_doc_id);
                 var obj = {
                     session: $scope.session,

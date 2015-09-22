@@ -283,7 +283,7 @@ define(["angular", "js/controllers",
             //Trae el Listado de Documentos de Usuario
             $scope.traerListadoDocumentosUsuario = function(obj, callback) {
 
-
+                
                 Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.CONSULTAR_DOCUMENTOS_USUARIOS, "POST", obj, function(data) {
 
                     if (data.status === 200) {
@@ -585,7 +585,10 @@ define(["angular", "js/controllers",
                 });
 
             };
-
+            /**
+             * +Descripcion: metodo que se emite al auditar un producto prosiguiendo
+             * a consultar los productos auditados
+             */
             $rootScope.$on("productoAuditado", function(e, producto, DocumentoTemporal) {
                 if (DocumentoTemporal.getPedido() === undefined) {
                     return;

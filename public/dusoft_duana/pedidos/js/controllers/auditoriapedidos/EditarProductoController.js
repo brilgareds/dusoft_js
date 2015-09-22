@@ -459,7 +459,7 @@ define(["angular", "js/controllers",
 
             $scope.auditarPedido = function() {
 
-                console.log("rootEditarProducto.producto.lote.justificacion_auditor ", $scope.rootEditarProducto.producto.lote.justificacion_auditor)
+              //  console.log("rootEditarProducto.producto.lote.justificacion_auditor ", $scope.rootEditarProducto.producto.lote.justificacion_auditor)
                 $scope.rootEditarProducto.validacionproducto.valido = true;
 
 
@@ -491,17 +491,25 @@ define(["angular", "js/controllers",
                     }
 
                 }
-
+                
                 if ($scope.rootEditarProducto.producto.obtenerCantidadSeleccionada() > 0) {
+                   
                     that.auditarItemsSeleccionados(0);
                 } else {
-                    that.justificarPendiente();
+                   
+                   that.justificarPendiente();
                 }
 
             };
-
+            /**
+             * +Descripcion: Este metodo se ejecutara por que la cantidad del 
+             * producto que se auditara estara todo pendiente ( Cantidad = 0 )
+             * lo cual debe enviarse una justificacion
+             * por lo que se debera
+             * @returns {undefined}
+             */
             that.justificarPendiente = function() {
-                //var cantidad_pendiente = $scope.rootEditarProducto.producto.cantidad_solicitada - $scope.rootEditarProducto.producto.obtenerCantidadSeleccionada();
+               
                 var cantidad_pendiente = $scope.rootEditarProducto.producto.cantidad_pendiente;
                 var obj = {
                     session: $scope.session,
@@ -512,10 +520,10 @@ define(["angular", "js/controllers",
                         }
                     }
                 };
-
-                // console.log("$scope.rootEditarProducto.producto.lote.justificacion_auditor ", $scope.rootEditarProducto.producto.lote.justificacion_auditor, " pendiente ",$scope.rootEditarProducto.producto.lote.cantidad_pendiente, " cantidad ingresada ", $scope.rootEditarProducto.producto.lote.cantidad_ingresada);
-
-                if ($scope.rootEditarProducto.producto.lote.justificacion_auditor.length > 0 && $scope.rootEditarProducto.producto.lote.cantidad_pendiente > 0) {
+                
+                if ($scope.rootEditarProducto.producto.lote.justificacion_auditor.length > 0 
+                        && $scope.rootEditarProducto.producto.lote.cantidad_pendiente > 0) 
+                {
                     obj.data.documento_temporal.justificacion = {
                         documento_temporal_id: $scope.rootEditarProducto.documento.documento_temporal_id,
                         codigo_producto: $scope.rootEditarProducto.producto.codigo_producto,
@@ -526,8 +534,11 @@ define(["angular", "js/controllers",
                         justificacion: $scope.rootEditarProducto.producto.lote.justificacion_separador
                     };
                 }
-                //console.log("params to send ",obj, lote);
-                //return;
+                
+                /**
+                 * +Descripcion: Servicio encargado de la accion para auditar
+                 * los documentos temporales
+                 */
                 Request.realizarRequest(API.DOCUMENTOS_TEMPORALES.AUDITAR_DOCUMENTO_TEMPORAL, "POST", obj, function(data) {
                     if (data.status === 200) {
                         $rootScope.$emit("productoAuditado", $scope.rootEditarProducto.producto, $scope.rootEditarProducto.documento);
@@ -538,25 +549,31 @@ define(["angular", "js/controllers",
                     }
                 });
             };
-
+            
+            /**
+             * +Descripcion: metodo encargado de ejecutar un servicio para auditar
+             * el producto
+             * @param {type} index
+             * @returns {unresolved}
+             */
             that.auditarItemsSeleccionados = function(index) {
+                
+                
                 if (index > ($scope.rootEditarProducto.producto.lotesSeleccionados.length - 1)) {
                     
-                    console.log("INDEX ", index);
-                    console.log("productoAuditado", $scope.rootEditarProducto.producto, $scope.rootEditarProducto.documento);
+                    
                     $rootScope.$emit("productoAuditado", $scope.rootEditarProducto.producto, $scope.rootEditarProducto.documento);
                     $modalInstance.close();
                     return;
                 }
                 
-               // console.log("auditarItemsSeleccionados" );
-               // console.log("INDEX ", index);
+              
                 var lote = $scope.rootEditarProducto.producto.lotesSeleccionados[index];
+                console.log(" lote ::::::::::______------------ ", lote);
 
+                if (lote.seleccionado){
 
-                if (lote.seleccionado) {
-
-                    // var cantidad_pendiente = $scope.rootEditarProducto.producto.cantidad_solicitada - $scope.rootEditarProducto.producto.obtenerCantidadSeleccionada();
+                   
                     var cantidad_pendiente = $scope.rootEditarProducto.producto.cantidad_pendiente;
                     var obj = {
                         session: $scope.session,
@@ -569,7 +586,7 @@ define(["angular", "js/controllers",
                         }
                     };
 
-                 //   console.log("justificacion de auditor >>>>>>>>>>>>>", $scope.rootEditarProducto.producto.lote.justificacion_auditor, " pendiente ", cantidad_pendiente);
+                
                     if ($scope.rootEditarProducto.producto.lote.justificacion_auditor.length > 0 && cantidad_pendiente > 0) {
                         obj.data.documento_temporal.justificacion = {
                             documento_temporal_id: $scope.rootEditarProducto.documento.documento_temporal_id,
@@ -592,11 +609,17 @@ define(["angular", "js/controllers",
                 } else {
                     index++;
                     that.auditarItemsSeleccionados(index);
+                   
                 }
             };
-
+            
+            /**
+             * +Descripcion: Metodo el cual valida la cantidad pendiente
+             * para posteriormente pedir una justificacion necesaria
+             * @returns {Boolean}
+             */
             that.esJustificacionNecesaria = function() {
-                console.log("esJustificacionNecesaria >>>>>>>>>>>>>>>>  pendiente", $scope.rootEditarProducto.producto.cantidad_pendiente);
+              
                 if ($scope.rootEditarProducto.producto === undefined)
                     return;
 

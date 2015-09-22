@@ -132,7 +132,11 @@ define(["angular", "js/controllers",
                 $scope.$emit('mostrardetallefarmacia', row.entity);
                 //console.log("Presionado Botón Auditar Farmacia: ", row.entity);
             };
-
+            
+            /**
+             * +Descripcion: Metodo que se carga cuando se selecciona un documento
+             * @param {type} valor
+             */
             $scope.valorSeleccionado = function(valor) {
                 $scope.termino_busqueda = "";
                 $scope.buscarPedidosSeparados(that.obtenerParametros(), 2, false, $scope.renderPedidosSeparados);

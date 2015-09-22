@@ -256,9 +256,9 @@ define(["angular", "js/controllers",
                 $scope.DocumentoTemporal.getPedido().vaciarProductos();
 
             });
-
+ 
             $scope.valorSeleccionado = function() {
-
+             
                 that.seleccionarDocumentoDespacho($scope.seleccion.bodegas_doc_id);
                 var obj = {
                     session: $scope.session,
@@ -275,8 +275,9 @@ define(["angular", "js/controllers",
                
                 $scope.validarDocumentoUsuario(obj, 2, function(data) {
                     if (data.status === 200) {
-                        $scope.DocumentoTemporal.bodegas_doc_id = $scope.seleccion.bodegas_doc_id;
-                        $scope.DocumentoTemporal.auditor.usuario_id = $scope.session.usuario_id;
+                     
+                       $scope.DocumentoTemporal.bodegas_doc_id = $scope.seleccion.bodegas_doc_id;
+                       $scope.DocumentoTemporal.auditor.usuario_id = $scope.session.usuario_id;
                         AlertService.mostrarMensaje("success", data.msj);
                     } else {
                         AlertService.mostrarMensaje("warning", data.msj);

@@ -858,7 +858,7 @@ PedidosClienteModel.prototype.obtener_responsables_del_pedido = function(numero_
         G.knex.raw("COALESCE(a.sw_terminado,'0') as sw_terminado")
     ];
     
-    G.knex.columns(columnas).
+   var sql = G.knex.columns(columnas).
     from("ventas_ordenes_pedidos_estado as a").
     innerJoin("system_usuarios as c", "a.usuario_id", "c.usuario_id").
     leftJoin("operarios_bodega as b", "a.responsable_id", "b.operario_id").

@@ -11,6 +11,9 @@ var Settings = function() {
 
     this.request_obj = {session: { usuario_id: '', auth_token: '' }, data: {}};
     this.auth_request_obj = {session: { usuario_id: '', auth_token: '' }, data: { login : { usuario : 'mauricio.barrios', contrasenia : '123456'} }};
+    /*this.request_obj = {session: { usuario_id: '', auth_token: '', device : '', admin : '' }, data: {}};
+    this.auth_request_obj = {session: { usuario_id: '', auth_token: '', device : '', admin : '' }, data: { login : { usuario : 'mauricio.barrios', contrasenia : '123456'} }};
+*/
     this.response_obj = {service: '', msj: '', status: '', obj: ''};
 
     this.valid_email = 'admin@admin.com';

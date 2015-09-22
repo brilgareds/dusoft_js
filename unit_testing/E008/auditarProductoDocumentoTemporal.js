@@ -23,8 +23,8 @@ vows.describe('Test actualizarTipoDocumentoTemporalClientes').addBatch({
                         auditado: true,
                         numero_caja: 1,
                         justificacion: {
-                            doc_tmp_id: 2308,
-                            codigo_producto: "132H0482480",
+                            doc_tmp_id: 2116,
+                            codigo_producto: "191I0020001",
                             cantidad_pendiente: 50,
                             justificacion: "No Habia",
                             justificacion_auditor: "Auditor Justifica que no y no y no ",

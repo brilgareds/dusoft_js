@@ -19,10 +19,10 @@ vows.describe('Test actualizarTipoDocumentoTemporalClientes').addBatch({
                 obj.session = body.obj.sesion;
                 obj.data = {
                     movimientos_bodegas: {
-                        documento_temporal_id: 2312,
+                        documento_temporal_id: 2116,
                         usuario_id: 1350,
                         bodegas_doc_id: 72,
-                        numero_pedido : 65767
+                        numero_pedido : 106536
                     }
                 };
 
